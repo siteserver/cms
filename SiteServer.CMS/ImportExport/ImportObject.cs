@@ -6,12 +6,12 @@ using System.Text;
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport.Components;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -176,17 +176,17 @@ namespace SiteServer.CMS.ImportExport
                 string imageUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ImageUploadDirectoryName");
                 if(imageUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Additional.ImageUploadDirectoryName), isOverride); 
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.ImageUploadDirectoryName), isOverride); 
                 }
                 string videoUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "VideoUploadDirectoryName");
                 if (videoUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Additional.VideoUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.VideoUploadDirectoryName), isOverride);
                 }
                 string fileUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "FileUploadDirectoryName");
                 if (fileUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Additional.FileUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.FileUploadDirectoryName), isOverride);
                 }
             }
         }
@@ -255,7 +255,7 @@ namespace SiteServer.CMS.ImportExport
 
             var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, false);
+            var taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, nodeInfo.Id, false);
 
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -270,7 +270,7 @@ namespace SiteServer.CMS.ImportExport
 
             var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, false);
+            var taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, nodeInfo.Id, false);
 
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
@@ -320,26 +320,26 @@ namespace SiteServer.CMS.ImportExport
                 contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
 
-                //contentInfo.ID = DataProvider.ContentDAO.Insert(tableName, this.FSO.SiteInfo, contentInfo);
+                //contentInfo.ID = DataProvider.ContentDAO.InsertObject(tableName, this.FSO.SiteInfo, contentInfo);
                 if (isOverride)
                 {
-                    var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIDs.Count > 0)
                     {
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
             }
         }
@@ -391,23 +391,23 @@ namespace SiteServer.CMS.ImportExport
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIds = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
@@ -432,23 +432,23 @@ namespace SiteServer.CMS.ImportExport
 
                 if (isOverride)
                 {
-                    var existsIds = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
             }
         }
@@ -505,27 +505,27 @@ namespace SiteServer.CMS.ImportExport
                 contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
 
-                //int contentID = DataProvider.ContentDAO.Insert(tableName, this.FSO.SiteInfo, contentInfo);
+                //int contentID = DataProvider.ContentDAO.InsertObject(tableName, this.FSO.SiteInfo, contentInfo);
 
                 if (isOverride)
                 {
-                    var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                    var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                     if (existsIDs.Count > 0)
                     {
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                            DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
 
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
@@ -553,23 +553,23 @@ namespace SiteServer.CMS.ImportExport
 
             if (isOverride)
             {
-                var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                 if (existsIDs.Count > 0)
                 {
                     foreach (var id in existsIDs)
                     {
                         contentInfo.Id = id;
-                        DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
             }
             else
             {
-                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
+                contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, _siteInfo, channelInfo, contentInfo);
             }
         }
 
@@ -640,7 +640,7 @@ namespace SiteServer.CMS.ImportExport
         //    foreach (var contentInfo in contentInfoList)
         //    {
         //        contentInfo.IsChecked = isChecked;
-        //        DataProvider.InputContentDao.Insert(contentInfo);
+        //        DataProvider.InputContentDao.InsertObject(contentInfo);
         //    }
         //}
 

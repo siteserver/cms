@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Editors;
+using SiteServer.CMS.Core.RestRoutes.Sys.Editors;
 using SiteServer.CMS.UEditor;
 using SiteServer.Utils.Enumerations;
 

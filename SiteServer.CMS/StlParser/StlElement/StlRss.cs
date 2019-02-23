@@ -4,7 +4,8 @@ using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using SiteServer.Utils.Rss;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -178,7 +179,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var feed = new RssFeed
             {
-                Encoding = ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset),
+                Encoding = ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.FileCharset),
                 Version = RssVersion.RSS20
             };
 
@@ -231,7 +232,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             feed.Channels.Add(channel);
 
             var builder = new StringBuilder();
-            var textWriter = new EncodedStringWriter(builder, ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset));
+            var textWriter = new EncodedStringWriter(builder, ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.FileCharset));
             feed.Write(textWriter);
 
             return builder.ToString();

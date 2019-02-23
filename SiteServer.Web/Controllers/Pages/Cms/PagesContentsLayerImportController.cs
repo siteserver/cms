@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -22,13 +23,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -40,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -61,7 +62,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+                var request = new RequestImpl(HttpContext.Current.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -126,17 +129,17 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var importType = request.GetPostString("importType");
-                var checkedLevel = request.GetPostInt("checkedLevel");
-                var isOverride = request.GetPostBool("isOverride");
-                var fileNames = request.GetPostObject<List<string>>("fileNames");
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var importType = rest.GetPostString("importType");
+                var checkedLevel = rest.GetPostInt("checkedLevel");
+                var isOverride = rest.GetPostBool("isOverride");
+                var fileNames = rest.GetPostObject<List<string>>("fileNames");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -148,7 +151,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.Extend.CheckContentLevel;
 
                 if (importType == "zip")
                 {
@@ -159,8 +162,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Zip, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        var importObject = new ImportObject(siteId, rest.AdminName);
+                        importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, rest.AdminId, 0, SourceManager.Default);
                     }
                 }
                 
@@ -173,8 +176,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Csv, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByCsvFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        var importObject = new ImportObject(siteId, rest.AdminName);
+                        importObject.ImportContentsByCsvFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, rest.AdminId, 0, SourceManager.Default);
                     }
                 }
                 else if (importType == "txt")
@@ -185,12 +188,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         if (!EFileSystemTypeUtils.Equals(EFileSystemType.Txt, PathUtils.GetExtension(localFilePath)))
                             continue;
 
-                        var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByTxtFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        var importObject = new ImportObject(siteId, rest.AdminName);
+                        importObject.ImportContentsByTxtFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, rest.AdminId, 0, SourceManager.Default);
                     }
                 }
 
-                request.AddSiteLog(siteId, channelId, 0, "导入内容", string.Empty);
+                rest.AddSiteLog(siteId, channelId, 0, "导入内容", string.Empty);
 
                 return Ok(new
                 {

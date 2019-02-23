@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;

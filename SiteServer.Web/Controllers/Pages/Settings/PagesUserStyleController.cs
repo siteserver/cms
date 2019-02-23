@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -19,9 +19,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -34,8 +34,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         styleInfo.Id,
                         styleInfo.AttributeName,
                         styleInfo.DisplayName,
-                        InputType = InputTypeUtils.GetText(styleInfo.InputType),
-                        Validate = styleInfo.Additional.VeeValidate,
+                        InputType = InputTypeUtils.GetText(styleInfo.Type),
+                        Validate = styleInfo.Extend.VeeValidate,
                         styleInfo.Taxis,
                         IsSystem = StringUtils.ContainsIgnoreCase(UserAttribute.AllAttributes.Value, styleInfo.AttributeName)
                     });
@@ -44,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = list,
-                    DataProvider.UserDao.TableName,
+                    DataProvider.User.TableName,
                     RelatedIdentities = TableStyleManager.EmptyRelatedIdentities
                 });
             }
@@ -59,16 +59,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var attributeName = request.GetQueryString("attributeName");
+                var attributeName = rest.GetQueryString("attributeName");
 
-                DataProvider.TableStyleDao.Delete(0, DataProvider.UserDao.TableName, attributeName);
+                DataProvider.TableStyle.Delete(0, DataProvider.User.TableName, attributeName);
 
                 var list = new List<object>();
                 foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
@@ -78,7 +78,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         styleInfo.Id,
                         styleInfo.AttributeName,
                         styleInfo.DisplayName,
-                        InputType = InputTypeUtils.GetText(styleInfo.InputType),
+                        InputType = InputTypeUtils.GetText(styleInfo.Type),
                         Validate = TableStyleManager.GetValidateInfo(styleInfo),
                         styleInfo.Taxis,
                         IsSystem = StringUtils.ContainsIgnoreCase(UserAttribute.AllAttributes.Value, styleInfo.AttributeName)

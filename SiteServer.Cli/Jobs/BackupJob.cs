@@ -4,7 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Apis;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -82,7 +83,7 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
                 return;
@@ -98,7 +99,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = DataProvider.DatabaseDao.GetTableNameList();
+            var allTableNames = DatabaseApi.Instance.GetTableNameList();
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -119,8 +120,8 @@ namespace SiteServer.Cli.Jobs
             {
                 var tableInfo = new TableInfo
                 {
-                    Columns = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
-                    TotalCount = DataProvider.DatabaseDao.GetCount(tableName),
+                    Columns = DatabaseApi.Instance.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
+                    TotalCount = DatabaseApi.Instance.GetCount(tableName),
                     RowFiles = new List<string>()
                 };
 
@@ -131,7 +132,7 @@ namespace SiteServer.Cli.Jobs
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = DataProvider.DatabaseDao.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
+                var identityColumnName = DatabaseApi.Instance.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {
@@ -151,7 +152,7 @@ namespace SiteServer.Cli.Jobs
                                 var offset = (current - 1) * CliUtils.PageSize;
                                 var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
 
-                                var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
+                                var rows = DatabaseApi.Instance.GetPageObjects(tableName, identityColumnName, offset, limit);
 
                                 await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                             }
@@ -161,7 +162,7 @@ namespace SiteServer.Cli.Jobs
                     {
                         var fileName = $"{current}.json";
                         tableInfo.RowFiles.Add(fileName);
-                        var rows = DataProvider.DatabaseDao.GetObjects(tableName);
+                        var rows = DatabaseApi.Instance.GetObjects(tableName);
 
                         await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                     }

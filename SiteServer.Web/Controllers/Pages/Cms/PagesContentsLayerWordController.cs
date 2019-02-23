@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -25,13 +27,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -43,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
 
                 return Ok(new
@@ -64,7 +66,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+                var request = new RequestImpl(HttpContext.Current.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -129,22 +133,22 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var isFirstLineTitle = request.GetPostBool("isFirstLineTitle");
-                var isFirstLineRemove = request.GetPostBool("isFirstLineRemove");
-                var isClearFormat = request.GetPostBool("isClearFormat");
-                var isFirstLineIndent = request.GetPostBool("isFirstLineIndent");
-                var isClearFontSize = request.GetPostBool("isClearFontSize");
-                var isClearFontFamily = request.GetPostBool("isClearFontFamily");
-                var isClearImages = request.GetPostBool("isClearImages");
-                var checkedLevel = request.GetPostInt("checkedLevel");
-                var fileNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("fileNames"));
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var isFirstLineTitle = rest.GetPostBool("isFirstLineTitle");
+                var isFirstLineRemove = rest.GetPostBool("isFirstLineRemove");
+                var isClearFormat = rest.GetPostBool("isClearFormat");
+                var isFirstLineIndent = rest.GetPostBool("isFirstLineIndent");
+                var isClearFontSize = rest.GetPostBool("isClearFontSize");
+                var isClearFontFamily = rest.GetPostBool("isClearFontFamily");
+                var isClearImages = rest.GetPostBool("isClearImages");
+                var checkedLevel = rest.GetPostInt("checkedLevel");
+                var fileNames = TranslateUtils.StringCollectionToStringList(rest.GetPostString("fileNames"));
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -158,7 +162,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.Extend.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -176,7 +180,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         ChannelId = channelInfo.Id,
                         SiteId = siteId,
-                        AddUserName = request.AdminName,
+                        AddUserName = rest.AdminName,
                         AddDate = DateTime.Now
                     };
 
@@ -187,7 +191,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     contentInfo.Title = formCollection[ContentAttribute.Title];
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(tableName, siteInfo, channelInfo, contentInfo);
 
                     contentIdList.Add(contentInfo.Id);
                 }

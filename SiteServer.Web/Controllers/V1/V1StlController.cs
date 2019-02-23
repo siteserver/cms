@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.RestRoutes.V1;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 
@@ -17,7 +19,11 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var stlRequest = new StlRequest();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+                var request = new RequestImpl(HttpContext.Current.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
+
+                var stlRequest = new StlRequest(request);
 
                 if (!stlRequest.IsApiAuthorized)
                 {

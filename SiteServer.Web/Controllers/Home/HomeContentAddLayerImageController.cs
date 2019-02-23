@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -21,13 +23,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -41,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = siteInfo.Additional
+                    Value = siteInfo.Extend
                 });
             }
             catch (Exception ex)
@@ -56,7 +58,9 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+                var request = new RequestImpl(HttpContext.Current.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -120,22 +124,22 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var isFix = request.GetPostBool("isFix");
-                var fixWidth = request.GetPostString("fixWidth");
-                var fixHeight = request.GetPostString("fixHeight");
-                var isEditor = request.GetPostBool("isEditor");
-                var editorIsFix = request.GetPostBool("editorIsFix");
-                var editorFixWidth = request.GetPostString("editorFixWidth");
-                var editorFixHeight = request.GetPostString("editorFixHeight");
-                var editorIsLinkToOriginal = request.GetPostBool("editorIsLinkToOriginal");
-                var filePaths = TranslateUtils.StringCollectionToStringList(request.GetPostString("filePaths"));
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var isFix = rest.GetPostBool("isFix");
+                var fixWidth = rest.GetPostString("fixWidth");
+                var fixHeight = rest.GetPostString("fixHeight");
+                var isEditor = rest.GetPostBool("isEditor");
+                var editorIsFix = rest.GetPostBool("editorIsFix");
+                var editorFixWidth = rest.GetPostString("editorFixWidth");
+                var editorFixHeight = rest.GetPostString("editorFixHeight");
+                var editorIsLinkToOriginal = rest.GetPostBool("editorIsLinkToOriginal");
+                var filePaths = TranslateUtils.StringCollectionToStringList(rest.GetPostString("filePaths"));
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -197,50 +201,50 @@ namespace SiteServer.API.Controllers.Home
                 }
 
                 var changed = false;
-                if (siteInfo.Additional.ConfigImageIsFix != isFix)
+                if (siteInfo.Extend.ConfigImageIsFix != isFix)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageIsFix = isFix;
+                    siteInfo.Extend.ConfigImageIsFix = isFix;
                 }
-                if (siteInfo.Additional.ConfigImageFixWidth != fixWidth)
+                if (siteInfo.Extend.ConfigImageFixWidth != fixWidth)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageFixWidth = fixWidth;
+                    siteInfo.Extend.ConfigImageFixWidth = fixWidth;
                 }
-                if (siteInfo.Additional.ConfigImageFixHeight != fixHeight)
+                if (siteInfo.Extend.ConfigImageFixHeight != fixHeight)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageFixHeight = fixHeight;
+                    siteInfo.Extend.ConfigImageFixHeight = fixHeight;
                 }
-                if (siteInfo.Additional.ConfigImageIsEditor != isEditor)
+                if (siteInfo.Extend.ConfigImageIsEditor != isEditor)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageIsEditor = isEditor;
+                    siteInfo.Extend.ConfigImageIsEditor = isEditor;
                 }
-                if (siteInfo.Additional.ConfigImageEditorIsFix != editorIsFix)
+                if (siteInfo.Extend.ConfigImageEditorIsFix != editorIsFix)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorIsFix = editorIsFix;
+                    siteInfo.Extend.ConfigImageEditorIsFix = editorIsFix;
                 }
-                if (siteInfo.Additional.ConfigImageEditorFixWidth != editorFixWidth)
+                if (siteInfo.Extend.ConfigImageEditorFixWidth != editorFixWidth)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorFixWidth = editorFixWidth;
+                    siteInfo.Extend.ConfigImageEditorFixWidth = editorFixWidth;
                 }
-                if (siteInfo.Additional.ConfigImageEditorFixHeight != editorFixHeight)
+                if (siteInfo.Extend.ConfigImageEditorFixHeight != editorFixHeight)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorFixHeight = editorFixHeight;
+                    siteInfo.Extend.ConfigImageEditorFixHeight = editorFixHeight;
                 }
-                if (siteInfo.Additional.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
+                if (siteInfo.Extend.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
+                    siteInfo.Extend.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
                 }
 
                 if (changed)
                 {
-                    DataProvider.SiteDao.Update(siteInfo);
+                    DataProvider.Site.Update(siteInfo);
                 }
 
                 return Ok(new

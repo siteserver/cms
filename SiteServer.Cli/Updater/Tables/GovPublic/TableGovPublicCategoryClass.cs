@@ -65,14 +65,12 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "ClassCode",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "ClassName",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
@@ -87,8 +85,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "ContentAttributeName",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
@@ -98,8 +95,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "Description",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             }
         };
 

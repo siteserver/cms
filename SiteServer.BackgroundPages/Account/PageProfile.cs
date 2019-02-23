@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Account
 {
@@ -34,9 +34,15 @@ namespace SiteServer.BackgroundPages.Account
             adminInfo.Email = TbEmail.Text;
             adminInfo.Mobile = TbMobile.Text;
 
-            DataProvider.AdministratorDao.Update(adminInfo);
-
-            SuccessMessage("资料更改成功");
+            var updated = DataProvider.Administrator.Update(adminInfo, out var errorMessage);
+            if (updated)
+            {
+                SuccessMessage("资料更改成功");
+            }
+            else
+            {
+                FailMessage(errorMessage);
+            }
         }
     }
 }

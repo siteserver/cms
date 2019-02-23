@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Plugin.Impl
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             ContentInfo = contextInfo.ContentInfo;
-            TemplateType = pageInfo.TemplateInfo.TemplateType;
+            TemplateType = pageInfo.TemplateInfo.Type;
             TemplateId = pageInfo.TemplateInfo.Id;
 
             HeadCodes = pageInfo.HeadCodes;

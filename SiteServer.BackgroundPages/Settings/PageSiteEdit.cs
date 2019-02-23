@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Apis;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -49,7 +51,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 PhParentId.Visible = false;
             }
@@ -65,7 +67,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     if (siteId == SiteId) continue;
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.IsRoot == false)
+                    if (siteInfo.Root == false)
                     {
                         if (siteInfo.ParentId == 0)
                         {
@@ -123,10 +125,10 @@ namespace SiteServer.BackgroundPages.Settings
                 return;
             }
             TbSiteName.Text = SiteInfo.SiteName;
-            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.Additional.IsCheckContentLevel.ToString());
-            if (SiteInfo.Additional.IsCheckContentLevel)
+            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.Extend.IsCheckContentLevel.ToString());
+            if (SiteInfo.Extend.IsCheckContentLevel)
             {
-                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.Additional.CheckContentLevel.ToString());
+                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.Extend.CheckContentLevel.ToString());
                 PhCheckContentLevel.Visible = true;
             }
             else
@@ -137,7 +139,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 TbSiteDir.Text = PathUtils.GetDirectoryName(SiteInfo.SiteDir, false);
             }
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 PhSiteDir.Visible = false;
             }
@@ -199,10 +201,10 @@ namespace SiteServer.BackgroundPages.Settings
 
 		    SiteInfo.SiteName = TbSiteName.Text;
 		    SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-		    SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
-		    if (SiteInfo.Additional.IsCheckContentLevel)
+		    SiteInfo.Extend.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+		    if (SiteInfo.Extend.IsCheckContentLevel)
 		    {
-		        SiteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+		        SiteInfo.Extend.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
 		    }
 
 		    var isTableChanged = false;
@@ -216,13 +218,13 @@ namespace SiteServer.BackgroundPages.Settings
 		    else if (tableRule == ETableRule.HandWrite)
 		    {
 		        tableName = TbTableHandWrite.Text;
-		        if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+		        if (!DatabaseApi.Instance.IsTableExists(tableName))
 		        {
-		            DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+		            DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
 		        }
 		        else
 		        {
-		            DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+		            DatabaseApi.Instance.AlterTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty);
 		        }
             }
 
@@ -232,11 +234,11 @@ namespace SiteServer.BackgroundPages.Settings
 		        SiteInfo.TableName = tableName;
 		    }
 
-		    if (SiteInfo.IsRoot == false)
+		    if (SiteInfo.Root == false)
 		    {
 		        if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir, false), TbSiteDir.Text))
 		        {
-		            var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
+		            var list = DataProvider.Site.GetLowerSiteDirList(SiteInfo.ParentId);
 		            if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
 		            {
 		                FailMessage("站点修改失败，已存在相同的发布路径！");
@@ -255,7 +257,7 @@ namespace SiteServer.BackgroundPages.Settings
 		        if (PhParentId.Visible && SiteInfo.ParentId != TranslateUtils.ToInt(DdlParentId.SelectedValue))
 		        {
 		            var newParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
-		            var list = DataProvider.SiteDao.GetLowerSiteDirList(newParentId);
+		            var list = DataProvider.Site.GetLowerSiteDirList(newParentId);
 		            if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
 		            {
 		                FailMessage("站点修改失败，已存在相同的发布路径！");
@@ -269,7 +271,7 @@ namespace SiteServer.BackgroundPages.Settings
 		        SiteInfo.SiteDir = TbSiteDir.Text;
 		    }
 
-            DataProvider.SiteDao.Update(SiteInfo);
+            DataProvider.Site.Update(SiteInfo);
             if (isTableChanged)
             {
                 ContentManager.RemoveCountCache(tableName);

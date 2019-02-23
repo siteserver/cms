@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.ImportExport;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
@@ -22,9 +21,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -46,7 +45,10 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+                var request = new RequestImpl(HttpContext.Current.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
+
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -106,24 +108,24 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
                 
-                var fileNames = request.GetPostObject<List<string>>("fileNames");
+                var fileNames = rest.GetPostObject<List<string>>("fileNames");
 
                 foreach (var fileName in fileNames)
                 {
                     var localFilePath = PathUtils.GetTemporaryFilesPath(fileName);
 
-                    //var importObject = new ImportObject(siteId, request.AdminName);
-                    //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                    //var importObject = new ImportObject(siteId, rest.AdminName);
+                    //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, rest.AdminId, 0, SourceManager.Default);
                 }
 
-                request.AddAdminLog("安装离线插件", string.Empty);
+                rest.AddAdminLog("安装离线插件", string.Empty);
 
                 return Ok(new
                 {

@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,13 +22,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			if (AuthRequest.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("DeleteById"))
 			{
                 var groupName = AuthRequest.GetQueryString("GroupName");
 			
 				try
 				{
-                    DataProvider.ChannelGroupDao.Delete(SiteId, groupName);
+                    DataProvider.ChannelGroup.Delete(SiteId, groupName);
 
                     AuthRequest.AddSiteLog(SiteId, "删除栏目组", $"栏目组:{groupName}");
 				}
@@ -45,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToUp(SiteId, groupName);
+                        DataProvider.ChannelGroup.UpdateTaxisToUp(SiteId, groupName);
                         break;
                     case "DOWN":
-                        DataProvider.ChannelGroupDao.UpdateTaxisToDown(SiteId, groupName);
+                        DataProvider.ChannelGroup.UpdateTaxisToDown(SiteId, groupName);
                         break;
                 }
                 AddWaitAndRedirectScript(GetRedirectUrl(SiteId));
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
-                {"Delete", true.ToString()}
+                {"DeleteById", true.ToString()}
             })}"" onClick=""javascript:return confirm('此操作将删除栏目组“{groupInfo.GroupName}”，确认吗？');"">删除</a>";
         }
 	}

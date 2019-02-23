@@ -5,8 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -54,7 +53,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+            var request = new RequestImpl(Page.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
             if (type == TypeGetCountArray)
             {
@@ -130,7 +131,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId, string.Empty)}';");
             }
             catch (Exception ex)
             {
@@ -188,7 +189,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId, string.Empty)}';");
             }
             catch (Exception ex)
             {
@@ -227,7 +228,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtils.GetMainUrl(siteId, string.Empty)}';");
             }
             catch (Exception ex)
             {

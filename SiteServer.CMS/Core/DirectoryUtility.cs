@@ -1,8 +1,9 @@
 ﻿using System;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System.Collections;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -30,7 +31,7 @@ namespace SiteServer.CMS.Core
         {
             var sitePath = PathUtility.GetSitePath(siteInfo);
 
-            if (siteInfo.IsRoot)
+            if (siteInfo.Root)
             {
                 var filePaths = DirectoryUtils.GetFilePaths(sitePath);
                 foreach (var filePath in filePaths)
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = DataProvider.Site.GetLowerSiteDirListThatNotIsRoot();
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
@@ -65,7 +66,7 @@ namespace SiteServer.CMS.Core
         {
             var sitePath = PathUtility.GetSitePath(siteInfo);
 
-            if (siteInfo.IsRoot)
+            if (siteInfo.Root)
             {
                 var filePaths = DirectoryUtils.GetFilePaths(siteTemplatePath);
                 foreach (var filePath in filePaths)
@@ -78,7 +79,7 @@ namespace SiteServer.CMS.Core
                     }
                 }
 
-                var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = DataProvider.Site.GetLowerSiteDirListThatNotIsRoot();
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
@@ -144,16 +145,16 @@ namespace SiteServer.CMS.Core
 
         public static void ChangeToHeadquarters(SiteInfo siteInfo, bool isMoveFiles)
         {
-            if (siteInfo.IsRoot == false)
+            if (siteInfo.Root == false)
             {
                 var sitePath = PathUtility.GetSitePath(siteInfo);
 
-                DataProvider.SiteDao.UpdateParentIdToZero(siteInfo.Id);
+                DataProvider.Site.UpdateParentIdToZero(siteInfo.Id);
 
-                siteInfo.IsRoot = true;
+                siteInfo.Root = true;
                 siteInfo.SiteDir = string.Empty;
 
-                DataProvider.SiteDao.Update(siteInfo);
+                DataProvider.Site.Update(siteInfo);
                 if (isMoveFiles)
                 {
                     DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
@@ -164,12 +165,12 @@ namespace SiteServer.CMS.Core
 
         public static void ChangeToSubSite(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList)
         {
-            if (siteInfo.IsRoot)
+            if (siteInfo.Root)
             {
-                siteInfo.IsRoot = false;
+                siteInfo.Root = false;
                 siteInfo.SiteDir = psDir.Trim();
 
-                DataProvider.SiteDao.Update(siteInfo);
+                DataProvider.Site.Update(siteInfo);
 
                 var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, psDir);
                 DirectoryUtils.CreateDirectoryIfNotExists(psPath);

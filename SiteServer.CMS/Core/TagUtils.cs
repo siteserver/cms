@@ -4,20 +4,21 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class TagUtils
     {
-        public static void AddTags(StringCollection tags, int siteId, int contentId)
+        public static void AddTags(List<string> tags, int siteId, int contentId)
         {
             if (tags == null || tags.Count == 0) return;
 
             foreach (var tagName in tags)
             {
-                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, AttackUtils.FilterXss(tagName));
+                var tagInfo = DataProvider.Tag.GetTagInfo(siteId, AttackUtils.FilterXss(tagName));
                 if (tagInfo != null)
                 {
                     var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
@@ -26,18 +27,24 @@ namespace SiteServer.CMS.Core
                         contentIdList.Add(contentId);
                         tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
                         tagInfo.UseNum = contentIdList.Count;
-                        DataProvider.TagDao.Update(tagInfo);
+                        DataProvider.Tag.Update(tagInfo);
                     }
                 }
                 else
                 {
-                    tagInfo = new TagInfo(0, siteId, contentId.ToString(), tagName, contentId > 0 ? 1 : 0);
-                    DataProvider.TagDao.Insert(tagInfo);
+                    tagInfo = new TagInfo
+                    {
+                        SiteId = siteId,
+                        ContentIdCollection = contentId.ToString(),
+                        Tag = tagName,
+                        UseNum = contentId > 0 ? 1 : 0
+                    };
+                    DataProvider.Tag.Insert(tagInfo);
                 }
             }
         }
 
-        public static void UpdateTags(string tagsLast, string tagsNow, StringCollection tagCollection, int siteId, int contentId)
+        public static void UpdateTags(string tagsLast, string tagsNow, List<string> tagCollection, int siteId, int contentId)
         {
             if (tagsLast == tagsNow) return;
 
@@ -46,19 +53,19 @@ namespace SiteServer.CMS.Core
             {
                 if (!tagCollection.Contains(tag))//删除
                 {
-                    var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, tag);
+                    var tagInfo = DataProvider.Tag.GetTagInfo(siteId, tag);
                     if (tagInfo != null)
                     {
                         var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
                         contentIdList.Remove(contentId);
                         tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
                         tagInfo.UseNum = contentIdList.Count;
-                        DataProvider.TagDao.Update(tagInfo);
+                        DataProvider.Tag.Update(tagInfo);
                     }
                 }
             }
 
-            var tagsToAdd = new StringCollection();
+            var tagsToAdd = new List<string>();
             foreach (var tag in tagCollection)
             {
                 if (!tagsList.Contains(tag))
@@ -70,7 +77,7 @@ namespace SiteServer.CMS.Core
             AddTags(tagsToAdd, siteId, contentId);
         }
 
-        public static void RemoveTags(int siteId, List<int> contentIdList)
+        public static void RemoveTags(int siteId, IList<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -80,7 +87,7 @@ namespace SiteServer.CMS.Core
 
         public static void RemoveTags(int siteId, int contentId)
         {
-            var tagInfoList = DataProvider.TagDao.GetTagInfoList(siteId, contentId);
+            var tagInfoList = DataProvider.Tag.GetTagInfoList(siteId, contentId);
             if (tagInfoList == null || tagInfoList.Count == 0) return;
 
             foreach (var tagInfo in tagInfoList)
@@ -89,7 +96,7 @@ namespace SiteServer.CMS.Core
                 contentIdList.Remove(contentId);
                 tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
                 tagInfo.UseNum = contentIdList.Count;
-                DataProvider.TagDao.Update(tagInfo);
+                DataProvider.Tag.Update(tagInfo);
             }
         }
 
@@ -107,9 +114,9 @@ namespace SiteServer.CMS.Core
             return tagsBuilder.ToString();
         }
 
-        public static StringCollection ParseTagsString(string tagsString)
+        public static List<string> ParseTagsString(string tagsString)
         {
-            var stringCollection = new StringCollection();
+            var stringCollection = new List<string>();
 
             if (string.IsNullOrEmpty(tagsString)) return stringCollection;
 
@@ -155,7 +162,7 @@ namespace SiteServer.CMS.Core
             return GetTagInfoList(tagInfoList, 0, 0);
         }
 
-        public static List<TagInfo> GetTagInfoList(List<TagInfo> tagInfoList, int totalNum, int tagLevel)
+        public static List<TagInfo> GetTagInfoList(IList<TagInfo> tagInfoList, int totalNum, int tagLevel)
         {
             var list = new List<TagInfo>();
             var sortedlist = new SortedList();

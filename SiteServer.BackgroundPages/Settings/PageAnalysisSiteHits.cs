@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //x轴信息
                 SetXHashtable(key, siteInfo.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(siteInfo.TableName, siteId));
+                SetYHashtable(key, DataProvider.ContentRepository.GetTotalHits(siteInfo.TableName, siteId));
             }
 
             RptContents.DataSource = siteIdList;

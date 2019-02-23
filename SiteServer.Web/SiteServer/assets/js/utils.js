@@ -31,21 +31,25 @@ if (window.Vue && window.VeeValidate) {
   });
 }
 
+var nameUtils = {
+  logout: "logout.cshtml"
+};
+
 var utils = {
   getQueryString: function (name) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
     if (!result || result.length < 1) {
       return "";
     }
-    return decodeURIComponent(result[1]);
+    return decodeURIComponent(decodeURIComponent(result[1]));
   },
 
-  isIntranet: function () {
-    var hostname = location.hostname;
-    if (hostname == 'localhost') return true;
-    var isIpAddress = /^((\d){1,3}\.){3}(\d){1,3}$/.test(hostname);
-    if (!isIpAddress) return false;
-    return _.startsWith(hostname, '192.168.') || _.startsWith(hostname, '10.') || _.startsWith(hostname, '127.');
+  isInnerPage: function () {
+    if (window.top == self) {
+      window.top.location.href = '../main.cshtml?pageUrl=' + encodeURIComponent(location.href);
+      return false;
+    }
+    return true;
   },
 
   getPageAlert: function (error) {
@@ -112,24 +116,25 @@ var utils = {
     return false;
   },
 
-  alertDelete: function (config) {
-    if (!config) return false;
-
-    swal2({
-        title: config.title,
-        text: config.text,
-        type: 'question',
-        confirmButtonText: config.button,
-        confirmButtonClass: 'btn btn-danger',
-        showCancelButton: true,
-        cancelButtonText: '取 消'
-      })
-      .then(function (result) {
-        if (result.value) {
-          config.callback();
-        }
-      });
-
-    return false;
+  getRedirectUrl: function (obj) {
+    if (typeof (obj) == 'object') {
+      var url = $apiUrl + '/pages/loading?siteId=' + obj.siteId;
+      if (obj.channelId) {
+        url += '&channelId=' + obj.channelId;
+      }
+      if (obj.contentId) {
+        url += '&contentId=' + obj.contentId;
+      }
+      if (obj.fileTemplateId) {
+        url += '&fileTemplateId=' + obj.fileTemplateId;
+      }
+      if (obj.specialId) {
+        url += '&specialId=' + obj.specialId;
+      }
+      return url;
+    } else if (typeof (obj) == 'string') {
+      return $apiUrl + '/pages/loading?redirectUrl=' + encodeURIComponent(obj);
+    }
+    return 'javascript:;';
   }
 };

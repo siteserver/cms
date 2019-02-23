@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Repositories.Contents;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -16,15 +16,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var attributeName = request.GetPostString("attributeName");
-                var isDesc = request.GetPostBool("isDesc");
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var attributeName = rest.GetPostString("attributeName");
+                var isDesc = rest.GetPostBool("isDesc");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -36,11 +36,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                channelInfo.ContentRepository.UpdateArrangeTaxis(channelId, attributeName, isDesc);
 
-                DataProvider.ContentDao.UpdateArrangeTaxis(tableName, channelId, attributeName, isDesc);
-
-                request.AddSiteLog(siteId, "批量整理", string.Empty);
+                rest.AddSiteLog(siteId, "批量整理", string.Empty);
 
                 return Ok(new
                 {

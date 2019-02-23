@@ -1,10 +1,10 @@
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Collections.Specialized;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office

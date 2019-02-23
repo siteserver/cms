@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theDepartmentId in departmentIdList)
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.LastNode), theDepartmentId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Settings
                         Summary = TbSummary.Text
                     };
 
-                    DataProvider.DepartmentDao.Insert(departmentInfo);
+                    DataProvider.Department.Insert(departmentInfo);
                 }
                 else
                 {
@@ -126,10 +126,9 @@ namespace SiteServer.BackgroundPages.Settings
 
                     departmentInfo.DepartmentName = TbDepartmentName.Text;
                     departmentInfo.Code = TbCode.Text;
-                    departmentInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
                     departmentInfo.Summary = TbSummary.Text;
 
-                    DataProvider.DepartmentDao.Update(departmentInfo);
+                    DataProvider.Department.Update(departmentInfo);
                 }
 
                 AuthRequest.AddAdminLog("维护部门信息");

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Core.RestRoutes.Preview;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, siteInfo, channelInfo, contentInfo);
+            contentInfo.Id = DataProvider.ContentRepository.InsertPreview(tableName, siteInfo, channelInfo, contentInfo);
 
             return new
             {

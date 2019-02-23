@@ -3,8 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -39,13 +38,13 @@ namespace SiteServer.BackgroundPages.Cms
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
-                var itemChannelId = nodeInfo.Id;
-                var nodeName = nodeInfo.ChannelName;
-                var parentsCount = nodeInfo.ParentsCount;
-                var isLastNode = nodeInfo.IsLastNode;
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
+                var itemChannelId = channelInfo.Id;
+                var nodeName = channelInfo.ChannelName;
+                var parentsCount = channelInfo.ParentsCount;
+                var isLastNode = channelInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
-                value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
+                value = channelInfo.Extend.IsChannelAddable ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))

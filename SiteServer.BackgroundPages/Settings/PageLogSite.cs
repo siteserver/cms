@@ -4,9 +4,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -35,8 +35,8 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
             SpContents.SelectCommand = !AuthRequest.IsQueryExists("LogType")
-                ? DataProvider.SiteLogDao.GetSelectCommend()
-                : DataProvider.SiteLogDao.GetSelectCommend(SiteId, AuthRequest.GetQueryString("LogType"),
+                ? DataProvider.SiteLog.GetSelectCommend()
+                : DataProvider.SiteLog.GetSelectCommend(SiteId, AuthRequest.GetQueryString("LogType"),
                     AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"),
                     AuthRequest.GetQueryString("DateTo"));
 
@@ -44,22 +44,22 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.SortMode = SortMode.DESC;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            if (AuthRequest.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var arraylist = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
-                DataProvider.SiteLogDao.Delete(arraylist);
+                DataProvider.SiteLog.Delete(arraylist);
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
-                DataProvider.SiteLogDao.DeleteAll();
+                DataProvider.SiteLog.DeleteAll();
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogSite = !ConfigManager.SystemConfigInfo.IsLogSite;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogSite ? "启用" : "禁用")}日志记录");
+                ConfigManager.Instance.SystemExtend.IsLogSite = !ConfigManager.Instance.SystemExtend.IsLogSite;
+                DataProvider.Config.Update(ConfigManager.Instance);
+                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogSite ? "启用" : "禁用")}日志记录");
             }
 
             if (IsPostBack) return;
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Settings
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
                     PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
                     {
-                        {"Delete", "True"}
+                        {"DeleteById", "True"}
                     }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogSite)
+            if (ConfigManager.Instance.SystemExtend.IsLogSite)
             {
                 BtnSetting.Text = "禁用站点日志";
                 BtnSetting.Attributes.Add("onclick",
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (siteInfo != null)
                 {
                     siteName =
-                        $"<a href='{siteInfo.Additional.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
+                        $"<a href='{siteInfo.Extend.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }

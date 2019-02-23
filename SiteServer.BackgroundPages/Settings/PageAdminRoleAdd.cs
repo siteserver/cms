@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -90,11 +90,11 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 TbRoleName.Text = _theRoleName;
                 TbRoleName.Enabled = false;
-                TbDescription.Text = DataProvider.RoleDao.GetRoleDescription(_theRoleName);
+                TbDescription.Text = DataProvider.Role.GetRoleDescription(_theRoleName);
 
                 if (AuthRequest.GetQueryString("Return") == null)
                 {
-                    var systemPermissionsInfoList = DataProvider.SitePermissionsDao.GetSystemPermissionsInfoList(_theRoleName);
+                    var systemPermissionsInfoList = DataProvider.SitePermissions.GetSystemPermissionsInfoList(_theRoleName);
                     Session[SystemPermissionsInfoListKey] = systemPermissionsInfoList;
                 }
             }
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 if (!string.IsNullOrEmpty(_theRoleName))
                 {
-                    var permissionList = DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(new[] { _theRoleName });
+                    var permissionList = DataProvider.PermissionsInRoles.GetGeneralPermissionList(new[] { _theRoleName });
                     if (permissionList != null && permissionList.Count > 0)
                     {
                         ControlUtils.SelectMultiItems(CblPermissions, permissionList);
@@ -194,9 +194,9 @@ if (ss_role) {
                     var sitePermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SitePermissionsInfo>;
 
                     var generalPermissionList = ControlUtils.GetSelectedListControlValueStringList(CblPermissions);
-                    DataProvider.PermissionsInRolesDao.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionList);
+                    DataProvider.PermissionsInRoles.UpdateRoleAndGeneralPermissions(_theRoleName, TbDescription.Text, generalPermissionList);
 
-                    DataProvider.SitePermissionsDao.UpdateSitePermissions(_theRoleName, sitePermissionsInRolesInfoList);
+                    DataProvider.SitePermissions.UpdateSitePermissions(_theRoleName, sitePermissionsInRolesInfoList);
 
                     PermissionsImpl.ClearAllCache();
 
@@ -215,7 +215,7 @@ if (ss_role) {
                 {
                     FailMessage($"角色添加失败，{TbRoleName.Text}为系统角色！");
                 }
-                else if (DataProvider.RoleDao.IsRoleExists(TbRoleName.Text))
+                else if (DataProvider.Role.IsRoleExists(TbRoleName.Text))
                 {
                     FailMessage("角色添加失败，角色标识已存在！");
                 }
@@ -226,7 +226,7 @@ if (ss_role) {
 
                     try
                     {
-                        DataProvider.SitePermissionsDao.InsertRoleAndPermissions(TbRoleName.Text, AuthRequest.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
+                        DataProvider.SitePermissions.InsertRoleAndPermissions(TbRoleName.Text, AuthRequest.AdminName, TbDescription.Text, generalPermissionList, sitePermissionsInRolesInfoList);
 
                         PermissionsImpl.ClearAllCache();
 

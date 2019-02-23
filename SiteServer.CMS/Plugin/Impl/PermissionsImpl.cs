@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -170,7 +170,7 @@ namespace SiteServer.CMS.Plugin.Impl
 	        }
 	    }
 
-	    private string[] _roles;
+	    private IList<string> _roles;
         private List<string> _permissionList;
         private readonly string _rolesKey;
         private readonly string _permissionListKey;
@@ -245,7 +245,7 @@ namespace SiteServer.CMS.Plugin.Impl
                             }
                             else
                             {
-                                _permissionList = DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(Roles);
+                                _permissionList = DataProvider.PermissionsInRoles.GetGeneralPermissionList(Roles);
                             }
 
                             DataCacheManager.InsertMinutes(_permissionListKey, _permissionList, 30);
@@ -256,7 +256,7 @@ namespace SiteServer.CMS.Plugin.Impl
             }
         }
 
-        public string[] Roles
+        public IList<string> Roles
         {
             get
             {
@@ -264,19 +264,19 @@ namespace SiteServer.CMS.Plugin.Impl
                 {
                     if (!string.IsNullOrEmpty(UserName))
                     {
-                        _roles = DataCacheManager.Get<string[]>(_rolesKey);
+                        _roles = DataCacheManager.Get<List<string>>(_rolesKey);
                         if (_roles == null)
                         {
-                            _roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(UserName);
+                            _roles = DataProvider.AdministratorsInRoles.GetRolesForUser(UserName);
                             DataCacheManager.InsertMinutes(_rolesKey, _roles, 30);
                         }
                     }
                 }
-                if (_roles != null && _roles.Length > 0)
+                if (_roles != null)
                 {
                     return _roles;
                 }
-                return new[] { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
+                return new List<string> { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
             }
         }
 
@@ -310,7 +310,7 @@ namespace SiteServer.CMS.Plugin.Impl
                             }
                             else
                             {
-                                _websitePermissionDict = DataProvider.SitePermissionsDao.GetWebsitePermissionSortedList(Roles);
+                                _websitePermissionDict = DataProvider.SitePermissions.GetWebsitePermissionSortedList(Roles);
                             }
                             DataCacheManager.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
                         }
@@ -351,7 +351,7 @@ namespace SiteServer.CMS.Plugin.Impl
                             }
                             else
                             {
-                                _channelPermissionDict = DataProvider.SitePermissionsDao.GetChannelPermissionSortedList(Roles);
+                                _channelPermissionDict = DataProvider.SitePermissions.GetChannelPermissionSortedList(Roles);
                             }
                             DataCacheManager.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
                         }
@@ -382,7 +382,7 @@ namespace SiteServer.CMS.Plugin.Impl
                             }
                             else
                             {
-                                _channelPermissionListIgnoreChannelId = DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelId(Roles);
+                                _channelPermissionListIgnoreChannelId = DataProvider.SitePermissions.GetChannelPermissionListIgnoreChannelId(Roles);
                             }
                             DataCacheManager.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreChannelId, 30);
                         }
@@ -530,7 +530,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 return false;
             if (HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))
                 return false;
-            return ConfigManager.SystemConfigInfo.IsViewContentOnlySelf;
+            return ConfigManager.Instance.SystemExtend.IsViewContentOnlySelf;
         }
 
         public static string GetChannelPermissionDictKey(int siteId, int channelId)

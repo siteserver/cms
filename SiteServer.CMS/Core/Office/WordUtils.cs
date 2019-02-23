@@ -2,8 +2,8 @@
 using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.CMS.Core.Office
 {

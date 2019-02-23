@@ -5,7 +5,7 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var theTemplateType = TemplateTypeUtils.GetEnumType(templateType);
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(siteId, theTemplateType);
+            var templateInfoList = DataProvider.Template.GetTemplateInfoListByType(siteId, theTemplateType);
 
             foreach (var templateInfo in templateInfoList)
             {

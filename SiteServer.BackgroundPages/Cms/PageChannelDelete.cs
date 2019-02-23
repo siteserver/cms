@@ -6,7 +6,8 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using System.Collections.Generic;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -118,9 +119,9 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                        var contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId);
                         DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
-                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
+                        DataProvider.ContentRepository.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
@@ -140,8 +141,8 @@ namespace SiteServer.BackgroundPages.Cms
                     foreach (var channelId in channelIdListToDelete)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        DataProvider.ContentDao.UpdateTrashContentsByChannelId(SiteId, channelId, tableName);
-                        DataProvider.ChannelDao.Delete(SiteId, channelId);
+                        DataProvider.ContentRepository.UpdateTrashContentsByChannelId(SiteId, channelId, tableName);
+                        DataProvider.Channel.Delete(SiteId, channelId);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "删除栏目", $"栏目:{builder}");

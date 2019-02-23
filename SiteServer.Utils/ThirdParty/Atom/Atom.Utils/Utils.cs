@@ -35,10 +35,12 @@ using Atom.Core;
 using System;
 using System.Collections;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Web;
+using SiteServer.Utils;
 
 namespace Atom.Utils
 {
@@ -637,7 +639,7 @@ video/vnd.vivo http://www.iana.org/assignments/media-types/video/vnd-vivo"))
 		/// <returns>The escaped <see cref="String"/>.</returns>
 		public static string Escape(string buffer)
 		{
-			return HttpUtility.HtmlEncode(buffer);
+			return StringUtils.HtmlEncode(buffer);
 		}
 
 		/// <summary>
@@ -647,7 +649,7 @@ video/vnd.vivo http://www.iana.org/assignments/media-types/video/vnd-vivo"))
 		/// <returns>The unescaped <see cref="String"/>.</returns>
 		public static string Unescape(string buffer)
 		{
-			return HttpUtility.HtmlDecode(buffer);
+			return StringUtils.HtmlDecode(buffer);
 		}
 
 		/// <summary>

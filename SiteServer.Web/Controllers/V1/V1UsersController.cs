@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Core.RestRoutes.V1;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -28,15 +28,15 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
-                if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
+                var rest = new Rest(Request);
+                var userInfo = new UserInfo(rest.GetPostObject<Dictionary<string, object>>());
+                if (!ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup)
                 {
                     userInfo.GroupId = 0;
                 }
-                var password = request.GetPostString("password");
+                var password = rest.GetPostString("password");
 
-                var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
+                var userId = DataProvider.User.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
                 if (userId == 0)
                 {
                     return BadRequest(errorMessage);
@@ -59,23 +59,23 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var body = request.GetPostObject<Dictionary<string, object>>();
+                var body = rest.GetPostObject<Dictionary<string, object>>();
 
                 if (body == null) return BadRequest("Could not read user from body");
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var retval = DataProvider.UserDao.Update(userInfo, body, out var errorMessage);
+                var retval = DataProvider.User.Update(userInfo, body, out var errorMessage);
                 if (retval == null)
                 {
                     return BadRequest(errorMessage);
@@ -98,20 +98,20 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                request.UserLogout();
-                DataProvider.UserDao.Delete(userInfo);
+                rest.UserLogout();
+                DataProvider.User.Delete(userInfo);
 
                 return Ok(new
                 {
@@ -130,16 +130,16 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                if (!DataProvider.UserDao.IsExists(id)) return NotFound();
+                if (!DataProvider.User.IsExists(id)) return NotFound();
 
                 var user = UserManager.GetUserInfoByUserId(id);
 
@@ -174,13 +174,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
@@ -208,7 +208,7 @@ namespace SiteServer.API.Controllers.V1
 
                     userInfo.AvatarUrl = UserManager.GetUserUploadUrl(userInfo.Id, fileName);
 
-                    DataProvider.UserDao.Update(userInfo);
+                    DataProvider.User.Update(userInfo);
                 }
 
                 return Ok(new
@@ -228,20 +228,20 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
-                var top = request.GetQueryInt("top", 20);
-                var skip = request.GetQueryInt("skip");
+                var top = rest.GetQueryInt("top", 20);
+                var skip = rest.GetQueryInt("skip");
 
-                var users = DataProvider.UserDao.GetUsers(skip, top);
-                var count = DataProvider.UserDao.GetCount();
+                var users = DataProvider.User.GetUsers(skip, top);
+                var count = DataProvider.User.GetCount();
 
-                return Ok(new PageResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(users, top, skip, Request.RequestUri.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -255,20 +255,20 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var account = request.GetPostString("account");
-                var password = request.GetPostString("password");
-                var isAutoLogin = request.GetPostBool("isAutoLogin");
+                var account = rest.GetPostString("account");
+                var password = rest.GetPostString("password");
+                var isAutoLogin = rest.GetPostBool("isAutoLogin");
 
-                var userInfo = DataProvider.UserDao.Validate(account, password, true, out var _, out var errorMessage);
+                var userInfo = DataProvider.User.Validate(account, password, true, out var _, out var errorMessage);
                 if (userInfo == null)
                 {
                     return BadRequest(errorMessage);
                 }
 
-                var accessToken = request.UserLogin(userInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(RequestImpl.AccessTokenExpireDays);
+                var accessToken = rest.UserLogin(userInfo.UserName, isAutoLogin);
+                var expiresAt = DateTime.Now.AddDays(Rest.AccessTokenExpireDays);
 
                 return Ok(new
                 {
@@ -289,9 +289,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var userInfo = request.IsUserLoggin ? request.UserInfo : null;
-                request.UserLogout();
+                var rest = new Rest(Request);
+                var userInfo = rest.IsUserLoggin ? rest.UserInfo : null;
+                rest.UserLogout();
 
                 return Ok(new
                 {
@@ -310,19 +310,19 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var retval = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
+                var retval = DataProvider.UserLog.Insert(userInfo.UserName, logInfo);
 
                 return Ok(new
                 {
@@ -341,24 +341,24 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var top = request.GetQueryInt("top", 20);
-                var skip = request.GetQueryInt("skip");
+                var top = rest.GetQueryInt("top", 20);
+                var skip = rest.GetQueryInt("skip");
 
-                var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
+                var logs = DataProvider.UserLog.ApiGetLogs(userInfo.UserName, skip, top);
 
-                return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
+                return Ok(new PageResponse(logs, top, skip, Request.RequestUri.AbsoluteUri) { Count = DataProvider.User.GetCount() });
             }
             catch (Exception ex)
             {
@@ -372,27 +372,27 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
-                             request.IsUserLoggin &&
-                             request.UserId == id ||
-                             request.IsAdminLoggin &&
-                             request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
+                var rest = new Rest(Request);
+                var isAuth = rest.IsApiAuthenticated &&
+                             AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeUsers) ||
+                             rest.IsUserLoggin &&
+                             rest.UserId == id ||
+                             rest.IsAdminLoggin &&
+                             rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
 
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var password = request.GetPostString("password");
-                var newPassword = request.GetPostString("newPassword");
+                var password = rest.GetPostString("password");
+                var newPassword = rest.GetPostString("newPassword");
 
-                if (!DataProvider.UserDao.CheckPassword(password, false, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
+                if (!DataProvider.User.CheckPassword(password, false, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
                 {
                     return BadRequest("原密码不正确，请重新输入");
                 }
 
-                if (!DataProvider.UserDao.ChangePassword(userInfo.UserName, newPassword, out string errorMessage))
+                if (!DataProvider.User.ChangePassword(userInfo.UserName, newPassword, out string errorMessage))
                 {
                     return BadRequest(errorMessage);
                 }

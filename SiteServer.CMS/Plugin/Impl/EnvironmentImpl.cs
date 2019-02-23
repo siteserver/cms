@@ -1,5 +1,4 @@
-﻿using System.Web;
-using SiteServer.Plugin;
+﻿using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
@@ -20,7 +19,5 @@ namespace SiteServer.CMS.Plugin.Impl
         public string AdminDirectory { get; }
 
         public string PhysicalApplicationPath { get; }
-
-        public IRequest Request => HttpContext.Current != null ? new RequestImpl(HttpContext.Current.Request) : null;
     }
 }

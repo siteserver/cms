@@ -6,9 +6,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbSiteName.Text = SiteInfo.SiteName;
 
-			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Additional.ToDictionary());
+			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Extend.ToDictionary());
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var value = BackgroundInputTypeParser.Parse(SiteInfo, 0, styleInfo, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                if (InputTypeUtils.Equals(styleInfo.Type, InputType.TextEditor))
                 {
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
@@ -112,9 +112,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Page.Request.Form, null);
 
-		    SiteInfo.Additional.Load(dict);
+		    SiteInfo.Extend.Load(dict);
 
-            DataProvider.SiteDao.Update(SiteInfo);
+            DataProvider.Site.Update(SiteInfo);
 
             AuthRequest.AddSiteLog(SiteId, "修改站点设置");
 

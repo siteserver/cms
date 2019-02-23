@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings

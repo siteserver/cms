@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Apis;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Plugin
@@ -14,13 +15,13 @@ namespace SiteServer.CMS.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                if (!DatabaseApi.Instance.IsTableExists(tableName))
                 {
-                    DataProvider.DatabaseDao.CreatePluginTable(service.PluginId, tableName, tableColumns);
+                    DatabaseApi.Instance.CreateTable(tableName, tableColumns, service.PluginId, false, out _, out _);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterPluginTable(service.PluginId, tableName, tableColumns);
+                    DatabaseApi.Instance.AlterTable(tableName, tableColumns, service.PluginId);
                 }
             }
         }

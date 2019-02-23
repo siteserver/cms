@@ -24,16 +24,15 @@ var $methods = {
       $this.installedVersion = res.installedVersion;
       $this.isNightly = res.isNightly;
       $this.version = res.version;
-
-      $this.version();
+      $this.getVersion();
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      utils.loading(false);
+      $this.pageLoad = true;
     });
   },
 
-  version: function () {
+  getVersion: function () {
     var $this = this;
 
     $ssApi.get($ssUrlUpdates, {
@@ -51,8 +50,6 @@ var $methods = {
       $this.updatesUrl = ssUtils.getVersionPageUrl(major, minor);
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
-    }).then(function () {
-      $this.pageLoad = true;
     });
   },
 
@@ -74,8 +71,6 @@ var $methods = {
       $this.step = 3;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
-    }).then(function () {
-      utils.loading(false);
     });
   }
 };

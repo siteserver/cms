@@ -1,17 +1,18 @@
 ﻿using System;
-using SiteServer.CMS.Model;
 using System.Text;
 using SiteServer.Utils;
 using System.Web.UI.WebControls;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.Core
 {
@@ -23,14 +24,14 @@ namespace SiteServer.CMS.Core
         {
             if (siteInfo == null) return content;
             
-            if (siteInfo.Additional.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
+            if (siteInfo.Extend.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
                 content = PathUtility.SaveImage(siteInfo, content);
             }
 
             var builder = new StringBuilder(content);
 
-            var url = siteInfo.Additional.WebUrl;
+            var url = siteInfo.Extend.WebUrl;
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -55,20 +56,20 @@ namespace SiteServer.CMS.Core
             
             var builder = new StringBuilder(content);
 
-            var virtualAssetsUrl = $"@/{siteInfo.Additional.AssetsDir}";
+            var virtualAssetsUrl = $"@/{siteInfo.Extend.AssetsDir}";
             string assetsUrl;
             if (isLocal)
             {
                 assetsUrl = PageUtility.GetSiteUrl(siteInfo,
-                    siteInfo.Additional.AssetsDir, true);
+                    siteInfo.Extend.AssetsDir, true);
             }
             else
             {
-                assetsUrl = siteInfo.Additional.AssetsUrl;
+                assetsUrl = siteInfo.Extend.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Extend.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Extend.WebUrl);
 
             builder.Replace("&#xa0;", "&nbsp;");
 
@@ -261,7 +262,7 @@ namespace SiteServer.CMS.Core
                         {
                             AttributeName = tableStyleInfo.AttributeName,
                             DisplayName = tableStyleInfo.DisplayName,
-                            InputType = tableStyleInfo.InputType,
+                            Type = tableStyleInfo.Type,
                             Taxis = taxis++
                         });
                     }
@@ -390,31 +391,31 @@ namespace SiteServer.CMS.Core
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Title,
-                    InputType = InputType.Text,
+                    Type = InputType.Text,
                     DisplayName = "标题"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.LinkUrl,
-                    InputType = InputType.Text,
+                    Type = InputType.Text,
                     DisplayName = "外部链接"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.AddDate,
-                    InputType = InputType.DateTime,
+                    Type = InputType.DateTime,
                     DisplayName = "添加时间"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.GroupNameCollection,
-                    InputType = InputType.CheckBox,
+                    Type = InputType.CheckBox,
                     DisplayName = "内容组"
                 },
                 new TableStyleInfo
                 {
                     AttributeName = ContentAttribute.Tags,
-                    InputType = InputType.CheckBox,
+                    Type = InputType.CheckBox,
                     DisplayName = "标签"
                 }
             };
@@ -434,15 +435,15 @@ namespace SiteServer.CMS.Core
             {
                 var targetSiteId = 0;
 
-                if (channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
+                if (channelInfo.Extend.TransType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    targetSiteId = channelInfo.Additional.TransSiteId;
+                    targetSiteId = channelInfo.Extend.TransSiteId;
                 }
-                else if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
+                else if (channelInfo.Extend.TransType == ECrossSiteTransType.SelfSite)
                 {
                     targetSiteId = siteInfo.Id;
                 }
-                else if (channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
+                else if (channelInfo.Extend.TransType == ECrossSiteTransType.ParentSite)
                 {
                     targetSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
                 }
@@ -452,7 +453,7 @@ namespace SiteServer.CMS.Core
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     if (targetSiteInfo != null)
                     {
-                        var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
+                        var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Extend.TransChannelIds);
                         if (targetChannelIdArrayList.Count > 0)
                         {
                             foreach (var targetChannelId in targetChannelIdArrayList)
@@ -521,7 +522,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -548,8 +549,8 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
-                var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
-                DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
+                var newContentId = DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                DataProvider.ContentRepository.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -585,7 +586,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
-                int theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                int theContentId = DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
                 CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
@@ -601,7 +602,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
-                var theContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -628,7 +629,7 @@ namespace SiteServer.CMS.Core
             {
                 foreach (var ids in TranslateUtils.StringCollectionToStringList(queryString["IDsCollection"]))
                 {
-                    var channelId = TranslateUtils.ToIntWithNagetive(ids.Split('_')[0]);
+                    var channelId = TranslateUtils.ToIntWithNegative(ids.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(ids.Split('_')[1]);
                     var contentIdList = new List<int>();
                     if (dic.ContainsKey(channelId))

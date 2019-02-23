@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -16,16 +15,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo
+                    Value = ConfigManager.Instance.SystemExtend
                 });
             }
             catch (Exception ex)
@@ -39,31 +38,31 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsUserRegistrationAllowed = request.GetPostBool("isUserRegistrationAllowed");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationChecked = request.GetPostBool("isUserRegistrationChecked");
-                ConfigManager.SystemConfigInfo.IsUserUnRegistrationAllowed = request.GetPostBool("isUserUnRegistrationAllowed");
-                ConfigManager.SystemConfigInfo.UserPasswordMinLength = request.GetPostInt("userPasswordMinLength");
-                ConfigManager.SystemConfigInfo.UserPasswordRestriction = request.GetPostString("userPasswordRestriction");
-                ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes = request.GetPostInt("userRegistrationMinMinutes");
-                ConfigManager.SystemConfigInfo.IsUserLockLogin = request.GetPostBool("isUserLockLogin");
-                ConfigManager.SystemConfigInfo.UserLockLoginCount = request.GetPostInt("userLockLoginCount");
-                ConfigManager.SystemConfigInfo.UserLockLoginType = request.GetPostString("userLockLoginType");
-                ConfigManager.SystemConfigInfo.UserLockLoginHours = request.GetPostInt("userLockLoginHours");
+                ConfigManager.Instance.SystemExtend.IsUserRegistrationAllowed = rest.GetPostBool("isUserRegistrationAllowed");
+                ConfigManager.Instance.SystemExtend.IsUserRegistrationChecked = rest.GetPostBool("isUserRegistrationChecked");
+                ConfigManager.Instance.SystemExtend.IsUserUnRegistrationAllowed = rest.GetPostBool("isUserUnRegistrationAllowed");
+                ConfigManager.Instance.SystemExtend.UserPasswordMinLength = rest.GetPostInt("userPasswordMinLength");
+                ConfigManager.Instance.SystemExtend.UserPasswordRestriction = rest.GetPostString("userPasswordRestriction");
+                ConfigManager.Instance.SystemExtend.UserRegistrationMinMinutes = rest.GetPostInt("userRegistrationMinMinutes");
+                ConfigManager.Instance.SystemExtend.IsUserLockLogin = rest.GetPostBool("isUserLockLogin");
+                ConfigManager.Instance.SystemExtend.UserLockLoginCount = rest.GetPostInt("userLockLoginCount");
+                ConfigManager.Instance.SystemExtend.UserLockLoginType = rest.GetPostString("userLockLoginType");
+                ConfigManager.Instance.SystemExtend.UserLockLoginHours = rest.GetPostInt("userLockLoginHours");
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                DataProvider.Config.Update(ConfigManager.Instance);
 
-                request.AddAdminLog("修改用户设置");
+                rest.AddAdminLog("修改用户设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = ConfigManager.Instance.SystemExtend
                 });
             }
             catch (Exception ex)

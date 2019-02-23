@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -352,7 +353,7 @@ namespace SiteServer.Utils
             var builder = new StringBuilder();
             foreach (string key in queryString.Keys)
             {
-                builder.Append($"&{key}={HttpUtility.UrlEncode(queryString[key])}");
+                builder.Append($"&{key}={UrlEncode(queryString[key])}");
             }
             if (url.IndexOf("?", StringComparison.Ordinal) == -1)
             {
@@ -763,56 +764,12 @@ namespace SiteServer.Utils
 
         public static string UrlEncode(string urlString)
         {
-            if (urlString == null || urlString == "$4")
-            {
-                return string.Empty;
-            }
-
-            var newValue = urlString.Replace("\"", "'");
-            newValue = HttpUtility.UrlEncode(newValue);
-            newValue = newValue.Replace("%2f", "/");
-            return newValue;
-        }
-
-        public static string UrlEncode(string urlString, string encoding)
-        {
-            if (urlString == null || urlString == "$4")
-            {
-                return string.Empty;
-            }
-
-            var newValue = urlString.Replace("\"", "'");
-            newValue = HttpUtility.UrlEncode(newValue, Encoding.GetEncoding(encoding));
-            newValue = newValue.Replace("%2f", "/");
-            return newValue;
-        }
-
-        public static string UrlEncode(string urlString, ECharset charset)
-        {
-            if (urlString == null || urlString == "$4")
-            {
-                return string.Empty;
-            }
-
-            var newValue = urlString.Replace("\"", "'");
-            newValue = HttpUtility.UrlEncode(newValue, ECharsetUtils.GetEncoding(charset));
-            newValue = newValue.Replace("%2f", "/");
-            return newValue;
-        }
-
-        public static string UrlDecode(string urlString, string encoding)
-        {
-            return HttpUtility.UrlDecode(urlString, Encoding.GetEncoding(encoding));
-        }
-
-        public static string UrlDecode(string urlString, ECharset charset)
-        {
-            return HttpUtility.UrlDecode(urlString, ECharsetUtils.GetEncoding(charset));
+            return WebUtility.UrlEncode(urlString);
         }
 
         public static string UrlDecode(string urlString)
         {
-            return HttpUtility.UrlDecode(urlString);
+            return WebUtility.UrlDecode(urlString);
         }
 
         public static void Redirect(string url)
@@ -845,9 +802,18 @@ namespace SiteServer.Utils
             Download(response, filePath, fileName);
         }
 
-        public static string GetMainUrl(int siteId)
+        public static string GetMainUrl(int siteId, string pageUrl)
         {
-            return GetAdminUrl($"main.cshtml?siteId={siteId}");
+            var queryString = new NameValueCollection();
+            if (siteId > 0)
+            {
+                queryString.Add("siteId", siteId.ToString());
+            }
+            if (!string.IsNullOrEmpty(pageUrl))
+            {
+                queryString.Add("pageUrl", UrlEncode(pageUrl));
+            }
+            return AddQueryString(AdminPagesUtils.MainUrl, queryString);
         }
 
         public static string GetAdminUrl(string relatedUrl)
@@ -899,54 +865,28 @@ namespace SiteServer.Utils
             return GetSiteFilesUrl(Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
         }
 
-        public static string GetSiteServerUrl(string className)
-        {
-            return GetAdminUrl(className.ToCamelCase() + ".cshtml");
-        }
-
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
             return AddQueryString(GetAdminUrl(className.ToCamelCase() + ".aspx"), queryString);
         }
 
-        public static string GetPluginsUrl(string className)
-        {
-            return GetAdminUrl(Combine("plugins", className.ToCamelCase() + ".cshtml"));
-        }
-
-        public static string GetPluginsUrl(string className, NameValueCollection queryString)
-        {
-            return AddQueryString(GetAdminUrl(Combine("plugins", className.ToCamelCase() + ".aspx")), queryString);
-        }
-
-        public static string GetSettingsUrl(string className)
-        {
-            return GetAdminUrl(Combine("settings", className.ToCamelCase() + ".cshtml"));
-        }
-
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
-            return AddQueryString(GetAdminUrl(Combine("settings", className.ToCamelCase() + ".aspx")), queryString);
-        }
-
-        public static string GetCmsUrl(string pageName, int siteId, object param = null)
-        {
-            var url = GetAdminUrl(Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
-            return param == null ? url : param.GetType().GetProperties().Aggregate(url, (current, p) => current + $"&{p.Name.ToCamelCase()}={p.GetValue(param)}");
+            return AddQueryString(GetAdminUrl(Combine("Settings", className.ToCamelCase() + ".aspx")), queryString);
         }
 
         public static string GetCmsUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"Cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
         }
 
         public static string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
+            return AddQueryString(GetAdminUrl($"Cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
         }
 
         public static string GetAjaxUrl(string className, NameValueCollection queryString)
@@ -966,12 +906,12 @@ namespace SiteServer.Utils
 
         public static string GetErrorPageUrl(int logId)
         {
-            return GetAdminUrl($"error.cshtml?logId={logId}");
+            return $"{AdminPagesUtils.ErrorUrl}?logId={logId}";
         }
 
         public static string GetErrorPageUrl(string message)
         {
-            return GetAdminUrl($"error.cshtml?message={HttpUtility.UrlPathEncode(message)}");
+            return $"{AdminPagesUtils.ErrorUrl}?message={UrlEncode(message)}";
         }
 
         public static void CheckRequestParameter(params string[] parameters)
@@ -986,14 +926,9 @@ namespace SiteServer.Utils
             }
         }
 
-        public static string GetLoginUrl()
-        {
-            return GetAdminUrl("pageLogin.cshtml");
-        }
-
         public static void RedirectToLoginPage()
         {
-            Redirect(GetLoginUrl());
+            Redirect(AdminPagesUtils.LoginUrl);
         }
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)
@@ -1022,7 +957,12 @@ namespace SiteServer.Utils
 
         public static string GetLoadingUrl(string url)
         {
-            return GetAdminUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
+            return $"{AdminPagesUtils.LoadingUrl}?encryptedUrl={TranslateUtils.EncryptStringBySecretKey(url)}";
+        }
+
+        public static string GetLoadingUrl(int siteId, int channelId, int contentId)
+        {
+            return $"{AdminPagesUtils.LoadingUrl}?siteId={siteId}&channelId={channelId}&contentId={contentId}";
         }
 
         public static string GetRedirectStringWithCheckBoxValue(string redirectUrl, string checkBoxServerId, string checkBoxClientId, string emptyAlertText)

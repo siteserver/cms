@@ -137,8 +137,7 @@ namespace SiteServer.BackgroundPages.Settings
                     return;
                 }
 
-                string errorMessage;
-                if (!DataProvider.AdministratorDao.Insert(adminInfo, out errorMessage))
+                if (DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage) == 0)
                 {
                     FailMessage($"管理员添加失败：{errorMessage}");
                     return;   
@@ -170,11 +169,18 @@ namespace SiteServer.BackgroundPages.Settings
                 adminInfo.DepartmentId = TranslateUtils.ToInt(DdlDepartmentId.SelectedValue);
                 adminInfo.AreaId = TranslateUtils.ToInt(DdlAreaId.SelectedValue);
 
-                DataProvider.AdministratorDao.Update(adminInfo);
+                var updated = DataProvider.AdministratorDao.Update(adminInfo, out var errorMessage);
 
-                AuthRequest.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
-                SuccessMessage("管理员设置成功！");
-                AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
+                if (updated)
+                {
+                    AuthRequest.AddAdminLog("修改管理员属性", $"管理员:{TbUserName.Text.Trim()}");
+                    SuccessMessage("管理员设置成功！");
+                    AddWaitAndRedirectScript(PageAdministrator.GetRedirectUrl());
+                }
+                else
+                {
+                    FailMessage(errorMessage);
+                }
             }
         }
 

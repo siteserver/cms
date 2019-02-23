@@ -1,8 +1,8 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
                         var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
-                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
+                        //picUrl = DataProvider.ContentRepository.GetValueById(tableName, contentId, type);
                         flashUrl = StlContentCache.GetValue(tableName, contentId, type);
                     }
                     else
@@ -348,8 +348,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
 //                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
-//                        //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-//                        picUrl = Content.GetValue(tableName, contentId, type);
+//                        //picUrl = DataProvider.ContentRepository.GetValueById(tableName, contentId, type);
+//                        picUrl = Content.GetValueById(tableName, contentId, type);
 //                    }
 //                    else
 //                    {

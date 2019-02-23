@@ -13,6 +13,8 @@ namespace SiteServer.Utils
         /// </summary>
         public static string PhysicalApplicationPath { get; private set; }
 
+        public static bool IsNightlyUpdate { get; private set; }
+
         public static bool IsProtectData { get; private set; }
         public static DatabaseType DatabaseType { get; private set; }
 
@@ -34,8 +36,6 @@ namespace SiteServer.Utils
         public static string AdminDirectory { get; private set; }
         public static string HomeDirectory { get; private set; }
         public static string SecretKey { get; private set; }
-
-        public static bool IsNightlyUpdate { get; private set; }
 
         public static void Load(string physicalApplicationPath, string webConfigFileName = WebConfigFileName)
         {
@@ -118,7 +118,6 @@ namespace SiteServer.Utils
                                         SecretKey = attrValue.Value;
                                     }
                                 }
-
                                 else if (StringUtils.EqualsIgnoreCase(attrKey.Value, nameof(IsNightlyUpdate)))
                                 {
                                     var attrValue = setting.Attributes["value"];

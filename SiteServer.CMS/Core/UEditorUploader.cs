@@ -2,7 +2,7 @@
 using System.Web;
 using System.Collections;
 using System.IO;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 

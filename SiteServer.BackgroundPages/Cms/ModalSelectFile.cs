@@ -6,8 +6,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -84,12 +85,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.Extend.ConfigSelectFileCurrentUrl.TrimEnd('/');
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectFileCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.Update(SiteInfo);
+                SiteInfo.Extend.ConfigSelectFileCurrentUrl = _currentRootPath;
+                DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 
@@ -419,7 +420,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(SiteInfo.Additional.WebUrl, "@");
+				var attachmentUrl = linkUrl.Replace(SiteInfo.Extend.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =

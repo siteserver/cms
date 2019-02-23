@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -44,8 +43,8 @@ namespace SiteServer.BackgroundPages.Settings
             ltlName.Text = SiteManager.GetSiteName(siteInfo);
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlAssetsDir.Text = siteInfo.Additional.AssetsDir;
-            ltlAssetsUrl.Text = $@"<a href=""{siteInfo.Additional.AssetsUrl}"" target=""_blank"">{siteInfo.Additional.AssetsUrl}</a>";
+            ltlAssetsDir.Text = siteInfo.Extend.AssetsDir;
+            ltlAssetsUrl.Text = $@"<a href=""{siteInfo.Extend.AssetsUrl}"" target=""_blank"">{siteInfo.Extend.AssetsUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlAssetsConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }

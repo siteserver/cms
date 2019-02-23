@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Web.UI;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
@@ -26,7 +24,9 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
+#pragma warning disable CS0612 // '“RequestImpl”已过时
         public RequestImpl AuthRequest { get; private set; }
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -38,7 +38,9 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
+#pragma warning disable CS0612 // '“RequestImpl”已过时
             AuthRequest = new RequestImpl(Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
             if (!IsInstallerPage)
             {
@@ -59,7 +61,7 @@ namespace SiteServer.BackgroundPages
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.IsLockedOut) // 检测管理员是否登录，检测管理员帐号是否被锁定
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
                     PageUtils.RedirectToLoginPage();
@@ -86,7 +88,7 @@ namespace SiteServer.BackgroundPages
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.cshtml"") == -1){{
-	window.top.location.href = ""{PageUtils.GetMainUrl(0)}"";
+	window.top.location.href = ""{PageUtils.GetMainUrl(0, string.Empty)}"";
 }}
 </script>");
             }

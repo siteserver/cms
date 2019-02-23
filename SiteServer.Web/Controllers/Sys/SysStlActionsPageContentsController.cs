@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
@@ -17,22 +16,22 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
+                var siteId = rest.GetPostInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var pageChannelId = request.GetPostInt("pageChannelId");
-                var templateId = request.GetPostInt("templateId");
-                var totalNum = request.GetPostInt("totalNum");
-                var pageCount = request.GetPostInt("pageCount");
-                var currentPageIndex = request.GetPostInt("currentPageIndex");
-                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("stlPageContentsElement"));
+                var pageChannelId = rest.GetPostInt("pageChannelId");
+                var templateId = rest.GetPostInt("templateId");
+                var totalNum = rest.GetPostInt("totalNum");
+                var pageCount = rest.GetPostInt("pageCount");
+                var currentPageIndex = rest.GetPostInt("currentPageIndex");
+                var stlPageContentsElement = TranslateUtils.DecryptStringBySecretKey(rest.GetPostString("stlPageContentsElement"));
 
                 var nodeInfo = ChannelManager.GetChannelInfo(siteId, pageChannelId);
                 var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
                 var pageInfo = new PageInfo(nodeInfo.Id, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
-                    UserInfo = request.UserInfo
+                    UserInfo = rest.UserInfo
                 };
                 var contextInfo = new ContextInfo(pageInfo);
 

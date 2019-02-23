@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -14,7 +15,7 @@ namespace SiteServer.CMS.Core.Create
             foreach (var channelId in channelIdList)
             {
                 var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                var contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
@@ -51,7 +52,7 @@ namespace SiteServer.CMS.Core.Create
                 FileUtils.DeleteFileIfExists(filePath);
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                var contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId);
                 if (contentIdList.Count > 0)
                 {
                     DeleteContents(siteInfo, channelId, contentIdList);
@@ -98,7 +99,7 @@ namespace SiteServer.CMS.Core.Create
             foreach (var templateId in templateIdList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(siteInfo.Id, templateId);
-                if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+                if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
                 {
                     return;
                 }

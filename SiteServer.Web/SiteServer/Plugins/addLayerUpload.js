@@ -39,7 +39,7 @@ var $methods = {
       on: {
         add: function (task) {
           if (task.ext != '.' + $this.importType) {
-            alert({
+            swal2({
               title: '文件错误！',
               text: '离线插件文件格式为：.' + $this.importType,
               type: 'error',
@@ -51,7 +51,7 @@ var $methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return alert({
+            return swal2({
               title: "文件上传失败！",
               type: 'error',
               showConfirmButton: false
@@ -104,7 +104,7 @@ var $methods = {
 
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return alert({
+      return swal2({
         title: "请上传插件安装包文件！",
         type: 'warning',
         showConfirmButton: false

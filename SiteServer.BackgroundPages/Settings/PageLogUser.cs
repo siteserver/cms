@@ -4,9 +4,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = !AuthRequest.IsQueryExists("Keyword") ? DataProvider.UserLogDao.GetSelectCommend() : DataProvider.UserLogDao.GetSelectCommend(AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
+            SpContents.SelectCommand = !AuthRequest.IsQueryExists("Keyword") ? DataProvider.UserLog.GetSelectCommend() : DataProvider.UserLog.GetSelectCommend(AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
 
             SpContents.SortField = nameof(UserLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
@@ -48,27 +48,27 @@ namespace SiteServer.BackgroundPages.Settings
                 TbDateTo.Text = AuthRequest.GetQueryString("DateTo");
             }
 
-            if (AuthRequest.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var list = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
-                DataProvider.UserLogDao.Delete(list);
+                DataProvider.UserLog.Delete(list);
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("DeleteAll"))
             {
-                DataProvider.UserLogDao.DeleteAll();
+                DataProvider.UserLog.DeleteAll();
                 SuccessDeleteMessage();
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogUser = !ConfigManager.SystemConfigInfo.IsLogUser;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogUser ? "启用" : "禁用")}日志记录");
+                ConfigManager.Instance.SystemExtend.IsLogUser = !ConfigManager.Instance.SystemExtend.IsLogUser;
+                DataProvider.Config.Update(ConfigManager.Instance);
+                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogUser ? "启用" : "禁用")}日志记录");
             }
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
             {
-                {"Delete", "True" }
+                {"DeleteById", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogUser)
+            if (ConfigManager.Instance.SystemExtend.IsLogUser)
             {
                 BtnSetting.Text = "禁用用户日志";
                 BtnSetting.Attributes.Add("onclick",

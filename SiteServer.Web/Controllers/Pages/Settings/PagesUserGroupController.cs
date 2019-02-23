@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -17,14 +16,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var adminNames = DataProvider.AdministratorDao.GetUserNameList();
+                var adminNames = DataProvider.Administrator.GetUserNameList();
                 adminNames.Insert(0, string.Empty);
 
                 return Ok(new
@@ -44,16 +43,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetQueryInt("id");
+                var id = rest.GetQueryInt("id");
 
-                DataProvider.UserGroupDao.Delete(id);
+                DataProvider.UserGroup.Delete(id);
 
                 return Ok(new
                 {
@@ -71,9 +70,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -91,19 +90,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         AdminName = itemObj.AdminName
                     };
 
-                    DataProvider.UserGroupDao.Insert(groupInfo);
+                    DataProvider.UserGroup.Insert(groupInfo);
 
-                    request.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
+                    rest.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
                 else if (itemObj.Id == 0)
                 {
-                    ConfigManager.SystemConfigInfo.UserDefaultGroupAdminName = itemObj.AdminName;
+                    ConfigManager.Instance.SystemExtend.UserDefaultGroupAdminName = itemObj.AdminName;
 
-                    DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                    DataProvider.Config.Update(ConfigManager.Instance);
 
                     UserGroupManager.ClearCache();
 
-                    request.AddAdminLog("修改用户组", "用户组:默认用户组");
+                    rest.AddAdminLog("修改用户组", "用户组:默认用户组");
                 }
                 else if (itemObj.Id > 0)
                 {
@@ -117,9 +116,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     groupInfo.GroupName = itemObj.GroupName;
                     groupInfo.AdminName = itemObj.AdminName;
 
-                    DataProvider.UserGroupDao.Update(groupInfo);
+                    DataProvider.UserGroup.Update(groupInfo);
 
-                    request.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
+                    rest.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

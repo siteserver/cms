@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -17,16 +16,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetQueryInt("id");
+                var id = rest.GetQueryInt("id");
 
-                var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(id);
+                var tokenInfo = DataProvider.AccessToken.Get(id);
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
 
                 return Ok(new
@@ -46,16 +45,17 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetPostInt("id");
+                var id = rest.GetPostInt("id");
+                var accessTokenInfo = DataProvider.AccessToken.Get(id);
 
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(id));
+                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessToken.Regenerate(accessTokenInfo));
 
                 return Ok(new
                 {

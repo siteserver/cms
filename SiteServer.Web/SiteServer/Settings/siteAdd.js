@@ -1,6 +1,6 @@
 ﻿var $url = '/pages/settings/siteAdd';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: utils.getQueryString('type') || 'selectType',
@@ -33,7 +33,7 @@ var data = {
   isImportTableStyles: true
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
@@ -199,8 +199,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

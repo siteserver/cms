@@ -26,7 +26,7 @@ var $methods = {
       $this.adminInfo = res.value;
       $this.departments = res.departments;
       $this.areas = res.areas;
-      $this.uploadUrl = apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
+      $this.uploadUrl = $apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
@@ -90,7 +90,7 @@ var $methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'administrators.cshtml';
   }
 };
 

@@ -2,10 +2,10 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -45,11 +45,11 @@ namespace SiteServer.BackgroundPages.Settings
             if (AuthRequest.IsQueryExists("Check"))
             {
                 var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
-                DataProvider.UserDao.Check(userIdList);
+                DataProvider.User.Check(userIdList);
 
                 SuccessCheckMessage();
             }
-            else if (AuthRequest.IsQueryExists("Delete"))
+            else if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
                 try
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
                     foreach (var userId in userIdList)
                     {
                         var userInfo = UserManager.GetUserInfoByUserId(userId);
-                        DataProvider.UserDao.Delete(userInfo);
+                        DataProvider.User.Delete(userInfo);
                     }
 
                     AuthRequest.AddAdminLog("删除用户", string.Empty);
@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
                 try
                 {
-                    DataProvider.UserDao.Lock(userIdList);
+                    DataProvider.User.Lock(userIdList);
 
                     AuthRequest.AddAdminLog("锁定用户", string.Empty);
 
@@ -90,7 +90,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var userIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("UserIDCollection"));
                 try
                 {
-                    DataProvider.UserDao.UnLock(userIdList);
+                    DataProvider.User.UnLock(userIdList);
 
                     AuthRequest.AddAdminLog("解除锁定用户", string.Empty);
 
@@ -108,19 +108,19 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? 25 : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand();
+                SpContents.SelectCommand = DataProvider.User.GetSelectCommand();
             }
             else
             {
                 SpContents.ItemsPerPage = AuthRequest.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : AuthRequest.GetQueryInt("PageNum");
 
-                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(AuthRequest.GetQueryInt("groupId"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryInt("creationDate"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.GetQueryInt("loginCount"), AuthRequest.GetQueryString("searchType"));
+                SpContents.SelectCommand = DataProvider.User.GetSelectCommand(AuthRequest.GetQueryInt("groupId"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryInt("creationDate"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.GetQueryInt("loginCount"), AuthRequest.GetQueryString("searchType"));
             }
 
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.OrderByString = "ORDER BY IsChecked, Id DESC";
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserLockLoginType);
 
             if (IsPostBack) return;
 
@@ -186,7 +186,7 @@ namespace SiteServer.BackgroundPages.Settings
                 $"{backgroundUrl}?UnLock=True", "UserIDCollection", "UserIDCollection", "请选择需要解除锁定的会员！", "此操作将解除锁定所选会员，确认吗？"));
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                $"{backgroundUrl}?Delete=True", "UserIDCollection", "UserIDCollection", "请选择需要删除的会员！", "此操作将删除所选会员，确认吗？"));
+                $"{backgroundUrl}?DeleteById=True", "UserIDCollection", "UserIDCollection", "请选择需要删除的会员！", "此操作将删除所选会员，确认吗？"));
 
             BtnExport.Attributes.Add("onclick", ModalUserExport.GetOpenWindowString());
 
@@ -206,8 +206,8 @@ namespace SiteServer.BackgroundPages.Settings
             var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfLogin));
             var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfFailedLogin));
             var groupId = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.GroupId));
-            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.IsChecked));
-            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.IsLockedOut));
+            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, UserAttribute.IsChecked);
+            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, UserAttribute.IsLockedOut);
             var displayName = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.DisplayName));
             var email = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Email));
             var mobile = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Mobile));
@@ -228,8 +228,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state += @"<span style=""color:red;"">[已锁定]</span>";
             }
-            else if (ConfigManager.SystemConfigInfo.IsUserLockLogin &&
-                     ConfigManager.SystemConfigInfo.UserLockLoginCount <= countOfFailedLogin)
+            else if (ConfigManager.Instance.SystemExtend.IsUserLockLogin &&
+                     ConfigManager.Instance.SystemExtend.UserLockLoginCount <= countOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -238,7 +238,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - lastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.Instance.SystemExtend.UserLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state += $@"<span style=""color:red;"">[已锁定{hours}小时]</span>";

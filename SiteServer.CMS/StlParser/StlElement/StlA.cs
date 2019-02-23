@@ -2,7 +2,7 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -179,7 +179,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         title = ContentUtility.FormatTitle(
                             contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
 
-                        if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
+                        if (pageInfo.SiteInfo.Extend.IsContentTitleBreakLine)
                         {
                             title = title.Replace("  ", string.Empty);
                         }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
@@ -29,9 +29,9 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.PermissionsInRolesDao.TableName;
+        private static readonly string NewTableName = DataProvider.PermissionsInRoles.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.PermissionsInRolesDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.PermissionsInRoles.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

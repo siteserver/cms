@@ -45,15 +45,14 @@ var $methods = {
 
         $this.packages = res.value;
       }).catch(function (error) {
-        this.pageAlert = utils.getPageAlert(error);
+        $this.pageAlert = utils.getPageAlert(error);
       }).then(function () {
         $this.pageLoad = true;
       });
 
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
-    }).then(function () {
       $this.pageLoad = true;
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
 

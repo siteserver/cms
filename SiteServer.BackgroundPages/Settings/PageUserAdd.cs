@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -75,9 +75,9 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.SystemConfigInfo.UserPasswordRestriction, EUserPasswordRestriction.None))
+            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.Instance.SystemExtend.UserPasswordRestriction, EUserPasswordRestriction.None))
             {
-                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
+                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
             }
 
             if (!string.IsNullOrEmpty(_returnUrl))
@@ -102,8 +102,8 @@ namespace SiteServer.BackgroundPages.Settings
                     Password = TbPassword.Text,
                     CreateDate = DateTime.Now,
                     LastActivityDate = DateUtils.SqlMinValue,
-                    IsChecked = true,
-                    IsLockedOut = false,
+                    Checked = true,
+                    LockedOut = false,
                     DisplayName = TbDisplayName.Text,
                     Email = TbEmail.Text,
                     Mobile = TbMobile.Text,
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Settings
                 };
 
                 string errorMessage;
-                var userId = DataProvider.UserDao.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
+                var userId = DataProvider.User.Insert(userInfo, userInfo.Password, string.Empty, out errorMessage);
 
                 if (userId > 0)
                 {
@@ -135,7 +135,7 @@ namespace SiteServer.BackgroundPages.Settings
                 userInfo.Email = TbEmail.Text;
                 userInfo.Mobile = TbMobile.Text;
 
-                DataProvider.UserDao.Update(userInfo);
+                DataProvider.User.Update(userInfo);
 
                 AuthRequest.AddAdminLog("修改用户",
                     $"用户:{TbUserName.Text}");

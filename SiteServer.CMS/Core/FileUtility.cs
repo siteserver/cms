@@ -1,8 +1,8 @@
 using System;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System.Collections.Generic;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.Images;
 
@@ -17,21 +17,21 @@ namespace SiteServer.CMS.Core
                 var fileExtName = PathUtils.GetExtension(imagePath);
                 if (EFileSystemTypeUtils.IsImage(fileExtName))
                 {
-                    if (siteInfo.Additional.IsWaterMark)
+                    if (siteInfo.Extend.IsWaterMark)
                     {
-                        if (siteInfo.Additional.IsImageWaterMark)
+                        if (siteInfo.Extend.IsImageWaterMark)
                         {
-                            if (!string.IsNullOrEmpty(siteInfo.Additional.WaterMarkImagePath))
+                            if (!string.IsNullOrEmpty(siteInfo.Extend.WaterMarkImagePath))
                             {
-                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(siteInfo, siteInfo.Additional.WaterMarkImagePath), siteInfo.Additional.WaterMarkPosition, siteInfo.Additional.WaterMarkTransparency, siteInfo.Additional.WaterMarkMinWidth, siteInfo.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddImageWaterMark(imagePath, PathUtility.MapPath(siteInfo, siteInfo.Extend.WaterMarkImagePath), siteInfo.Extend.WaterMarkPosition, siteInfo.Extend.WaterMarkTransparency, siteInfo.Extend.WaterMarkMinWidth, siteInfo.Extend.WaterMarkMinHeight);
                             }
                         }
                         else
                         {
-                            if (!string.IsNullOrEmpty(siteInfo.Additional.WaterMarkFormatString))
+                            if (!string.IsNullOrEmpty(siteInfo.Extend.WaterMarkFormatString))
                             {
                                 var now = DateTime.Now;
-                                ImageUtils.AddTextWaterMark(imagePath, string.Format(siteInfo.Additional.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), siteInfo.Additional.WaterMarkFontName, siteInfo.Additional.WaterMarkFontSize, siteInfo.Additional.WaterMarkPosition, siteInfo.Additional.WaterMarkTransparency, siteInfo.Additional.WaterMarkMinWidth, siteInfo.Additional.WaterMarkMinHeight);
+                                ImageUtils.AddTextWaterMark(imagePath, string.Format(siteInfo.Extend.WaterMarkFormatString, DateUtils.GetDateString(now), DateUtils.GetTimeString(now)), siteInfo.Extend.WaterMarkFontName, siteInfo.Extend.WaterMarkFontSize, siteInfo.Extend.WaterMarkPosition, siteInfo.Extend.WaterMarkTransparency, siteInfo.Extend.WaterMarkMinWidth, siteInfo.Extend.WaterMarkMinHeight);
                             }
                         }
                     }

@@ -4,9 +4,9 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -116,8 +116,8 @@ namespace SiteServer.BackgroundPages.Ajax
             if (type == TypeGetDetection)
             {
                 var content = Request.Form["content"];
-                var arraylist = DataProvider.KeywordDao.GetKeywordListByContent(content);
-                var keywords = TranslateUtils.ObjectCollectionToString(arraylist);
+                var list = DataProvider.Keyword.GetKeywordListByContent(content);
+                var keywords = string.Join(",", list);
 
                 Page.Response.Write(keywords);
                 Page.Response.End();
@@ -125,11 +125,11 @@ namespace SiteServer.BackgroundPages.Ajax
             else if (type == TypeGetDetectionReplace)
             {
                 var content = Request.Form["content"];
-                var keywordList = DataProvider.KeywordDao.GetKeywordListByContent(content);
+                var keywordList = DataProvider.Keyword.GetKeywordListByContent(content);
                 var keywords = string.Empty;
                 if (keywordList.Count > 0)
                 {
-                    var list = DataProvider.KeywordDao.GetKeywordInfoList(keywordList);
+                    var list = DataProvider.Keyword.GetKeywordInfoList(keywordList);
                     foreach (var keywordInfo in list)
                     {
                         keywords += keywordInfo.Keyword + "|" + keywordInfo.Alternative + ",";
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
+            var titleList = DataProvider.ContentRepository.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)
@@ -168,7 +168,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retval = new StringBuilder();
 
-            var tagList = DataProvider.TagDao.GetTagListByStartString(siteId, tag, 10);
+            var tagList = DataProvider.Tag.GetTagListByStartString(siteId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)
