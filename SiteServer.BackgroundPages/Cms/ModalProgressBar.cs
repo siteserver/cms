@@ -5,7 +5,6 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -168,7 +167,7 @@ namespace SiteServer.BackgroundPages.Cms
             //---------------------------------------------------------------------------------------//
             else if (AuthRequest.IsQueryExists("SiteTemplateDownload"))
             {
-                var userKeyPrefix = StringUtils.Guid();
+                var userKeyPrefix = StringUtils.GetGuid();
 
                 var downloadUrl = TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("DownloadUrl"));
                 var directoryName = PathUtils.GetFileNameWithoutExtension(downloadUrl);
@@ -179,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (AuthRequest.IsQueryExists("SiteTemplateZip"))
             {
-                var userKeyPrefix = StringUtils.Guid();
+                var userKeyPrefix = StringUtils.GetGuid();
 
                 var parameters = AjaxOtherService.GetSiteTemplateZipParameters(AuthRequest.GetQueryString("DirectoryName"), userKeyPrefix);
                 LtlScripts.Text =
@@ -187,7 +186,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else if (AuthRequest.IsQueryExists("SiteTemplateUnZip"))
             {
-                var userKeyPrefix = StringUtils.Guid();
+                var userKeyPrefix = StringUtils.GetGuid();
 
                 var parameters = AjaxOtherService.GetSiteTemplateUnZipParameters(AuthRequest.GetQueryString("FileName"), userKeyPrefix);
                 LtlScripts.Text =
@@ -196,7 +195,7 @@ namespace SiteServer.BackgroundPages.Cms
             //---------------------------------------------------------------------------------------//
             else if (AuthRequest.IsQueryExists("PluginDownload"))
             {
-                var userKeyPrefix = StringUtils.Guid();
+                var userKeyPrefix = StringUtils.GetGuid();
 
                 var parameters = AjaxOtherService.GetPluginDownloadParameters(AuthRequest.GetQueryString("DownloadUrl"), userKeyPrefix);
                 LtlScripts.Text =

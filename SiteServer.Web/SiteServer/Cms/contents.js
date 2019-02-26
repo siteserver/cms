@@ -13,7 +13,7 @@ Object.defineProperty(Object.prototype, "getProp", {
   }
 });
 
-var data = {
+var $data = {
   siteId: parseInt(utils.getQueryString("siteId")),
   channelId: parseInt(utils.getQueryString("channelId")),
   pageLoad: false,
@@ -29,7 +29,7 @@ var data = {
   isAllChecked: false
 };
 
-var methods = {
+var $methods = {
   btnAddClick: function (e) {
     e.stopPropagation();
     location.href =
@@ -239,8 +239,8 @@ Vue.component("multiselect", window.VueMultiselect.default);
 
 var $vue = new Vue({
   el: "#main",
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   computed: {
     selectedContentIds: function () {
       var retval = [];

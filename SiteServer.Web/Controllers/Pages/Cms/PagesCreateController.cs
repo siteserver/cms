@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -21,15 +20,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSitePermissions(rest.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
 
-                var siteId = request.SiteId;
-                var parentId = request.GetQueryInt("parentId");
+                var siteId = rest.SiteId;
+                var parentId = rest.GetQueryInt("parentId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
                 var countDict = new Dictionary<int, int>();
@@ -42,11 +41,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var channelId in channelIdList)
                 {
-                    var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
+                    var enabled = rest.AdminPermissionsImpl.IsOwningChannelId(channelId);
                     
                     if (!enabled)
                     {
-                        if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                        if (!rest.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
                     }
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
@@ -83,9 +82,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -129,7 +128,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                     if (parameter.Scope == "1month")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 720);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 720);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))
@@ -140,7 +139,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     }
                     else if (parameter.Scope == "1day")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 24);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 24);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))
@@ -151,7 +150,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     }
                     else if (parameter.Scope == "2hours")
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 2);
+                        var lastEditList = DataProvider.ContentRepository.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 2);
                         foreach (var channelId in lastEditList)
                         {
                             if (selectedChannelIdList.Contains(channelId))
@@ -191,9 +190,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

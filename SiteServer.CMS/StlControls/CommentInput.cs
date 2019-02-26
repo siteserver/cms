@@ -1,7 +1,6 @@
 using System.Web.UI;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.CMS.StlControls
 {

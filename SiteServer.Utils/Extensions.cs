@@ -1,4 +1,6 @@
-﻿namespace SiteServer.Utils
+﻿using System.Collections.Generic;
+
+namespace SiteServer.Utils
 {
     public static class Extensions
     {
@@ -14,6 +16,23 @@
                 return char.ToLowerInvariant(str[0]) + str.Substring(1);
             }
             return str;
+        }
+
+        public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
+        {
+            if (list == null || items == null) return;
+
+            if (list is List<T>)
+            {
+                ((List<T>)list).AddRange(items);
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    list.Add(item);
+                }
+            }
         }
     }
 }

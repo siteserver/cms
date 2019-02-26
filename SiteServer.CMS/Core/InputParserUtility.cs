@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
         {
             var parsedContent = content;
 
-            var inputType = styleInfo.InputType;
+            var inputType = styleInfo.Type;
 
             if (inputType == InputType.Date)
             {
@@ -106,7 +106,7 @@ namespace SiteServer.CMS.Core
             var value = contentInfo.GetString(styleInfo.AttributeName);
             var parsedContent = string.Empty;
 
-            var inputType = styleInfo.InputType;
+            var inputType = styleInfo.Type;
 
             if (inputType == InputType.Date)
             {

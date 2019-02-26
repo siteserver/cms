@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
 
-	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
+	        LayerUtils.CloseAndRedirect(Page, AdminPagesUtils.Plugins.ManageUrl);
 	    }
 
 	    private void UpdateByUpload()
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
 
-	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
+	        LayerUtils.CloseAndRedirect(Page, AdminPagesUtils.Plugins.ManageUrl);
 	    }
 	}
 }

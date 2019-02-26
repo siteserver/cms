@@ -4,10 +4,11 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -87,7 +88,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
-                var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
+                var referenceSiteId = DataProvider.Channel.GetSiteId(_contentInfo.SourceId);
                 var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
                 var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
 

@@ -3,13 +3,12 @@ using System.Collections.Specialized;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -75,7 +74,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+            var request = new RequestImpl(Page.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
             if (type == TypeBackup)
             {
@@ -105,7 +106,9 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
+#pragma warning disable CS0612 // '“RequestImpl”已过时
             var request = new RequestImpl(Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
             try
             {
@@ -147,7 +150,9 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
+#pragma warning disable CS0612 // '“RequestImpl”已过时
         public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestImpl request)
+#pragma warning restore CS0612 // '“RequestImpl”已过时
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;

@@ -3,10 +3,10 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Core
             if (contentInfo.IsChecked && contentInfo.ChannelId > 0)
             {
                 url =
-                    $"<a href='{PageRedirect.GetRedirectUrlToContent(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
+                    $"<a href='{PageUtils.GetLoadingUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
             }
             else
             {
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
+            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Extend.IsContentAddable)
             {
                 builder.Append($@"
 <a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
@@ -196,7 +196,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
+            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Extend.IsContentAddable)
             {
                 builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
@@ -281,7 +281,7 @@ function detection_{attributeName}(){{
 
         public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo)
         {
-            var isAutoCheckKeywords = siteInfo.Additional.IsAutoCheckKeywords.ToString().ToLower();
+            var isAutoCheckKeywords = siteInfo.Extend.IsAutoCheckKeywords.ToString().ToLower();
             var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
             var getPureText = UEditorUtils.GetPureTextScript(BackgroundContentAttribute.Content);
             var getContent = UEditorUtils.GetContentScript(BackgroundContentAttribute.Content);

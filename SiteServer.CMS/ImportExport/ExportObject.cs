@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport.Components;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -31,7 +32,7 @@ namespace SiteServer.CMS.ImportExport
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+            var siteDirList = DataProvider.Site.GetLowerSiteDirListThatNotIsRoot();
 
             var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(_siteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -45,7 +46,7 @@ namespace SiteServer.CMS.ImportExport
                     {
                         var isSiteDirectory = false;
 
-                        if (_siteInfo.IsRoot)
+                        if (_siteInfo.Root)
                         {
                             foreach (var siteDir in siteDirList)
                             {
@@ -143,7 +144,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(_siteInfo.Id);
+            var relatedFieldInfoList = DataProvider.RelatedField.GetRelatedFieldInfoList(_siteInfo.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 relatedFieldIe.ExportRelatedField(relatedFieldInfo);
@@ -159,7 +160,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var relatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(relatedFieldId);
+            var relatedFieldInfo = DataProvider.RelatedField.Get(relatedFieldId);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, directoryPath);
             relatedFieldIe.ExportRelatedField(relatedFieldInfo);
@@ -186,8 +187,8 @@ namespace SiteServer.CMS.ImportExport
                 styleIe.ExportTableStyles(siteInfo.Id, tableName);
             }
 
-            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.ChannelDao.TableName);
-            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.SiteDao.TableName);
+            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.Channel.TableName);
+            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.Site.TableName);
         }
 
 
@@ -276,23 +277,23 @@ namespace SiteServer.CMS.ImportExport
                 siteIe.Export(_siteInfo.Id, channelId, true);
             } 
              
-            var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.ImageUploadDirectoryName);
+            var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Extend.ImageUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(imageUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.ImageUploadDirectoryName), imageUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Extend.ImageUploadDirectoryName), imageUploadDirectoryPath);
 
-            var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.VideoUploadDirectoryName);
+            var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Extend.VideoUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(videoUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.VideoUploadDirectoryName), videoUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Extend.VideoUploadDirectoryName), videoUploadDirectoryPath);
 
-            var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.FileUploadDirectoryName);
+            var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Extend.FileUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.FileUploadDirectoryName), fileUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Extend.FileUploadDirectoryName), fileUploadDirectoryPath);
 
             Atom.Core.AtomFeed feed = AtomUtility.GetEmptyFeed();  
             var entry = AtomUtility.GetEmptyEntry();  
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", _siteInfo.Additional.ImageUploadDirectoryName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", _siteInfo.Additional.VideoUploadDirectoryName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "FileUploadDirectoryName", _siteInfo.Additional.FileUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", _siteInfo.Extend.ImageUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", _siteInfo.Extend.VideoUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "FileUploadDirectoryName", _siteInfo.Extend.FileUploadDirectoryName);
 
             feed.Entries.Add(entry);
             var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName); 

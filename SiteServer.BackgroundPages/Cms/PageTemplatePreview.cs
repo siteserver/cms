@@ -2,7 +2,8 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                     if (count > 0)
                     {
                         var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
-                        contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
+                        contentId = DataProvider.ContentRepository.GetFirstContentId(tableName, channelId);
                     }
 
                     if (contentId == 0)

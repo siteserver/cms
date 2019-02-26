@@ -7,10 +7,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -53,9 +53,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.Extend.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
+            SpContents.SelectCommand = DataProvider.ContentRepository.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
 
             SpContents.SortField = ContentAttribute.Hits;
             SpContents.SortMode = SortMode.DESC;

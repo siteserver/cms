@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Drawing;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -42,7 +41,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (styleInfo.Type == InputType.TextEditor)
                 {
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
@@ -72,7 +71,7 @@ namespace SiteServer.BackgroundPages.Controls
     </div>
 </div>";
 
-                    if (styleInfo.InputType == InputType.Customize)
+                    if (styleInfo.Type == InputType.Customize)
                     {
                         var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes, styleInfo.AttributeName, html);
                         foreach (var service in PluginManager.Services)

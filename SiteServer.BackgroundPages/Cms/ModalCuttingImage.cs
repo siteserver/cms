@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             try
             {
-                var rotate = TranslateUtils.ToIntWithNagetive(Request.Form["rotate"]);
+                var rotate = TranslateUtils.ToIntWithNegative(Request.Form["rotate"]);
                 rotate = rotate % 4;
                 var flip = Request.Form["flip"];
                 var fileUrl = Request.Form["fileUrl"];
@@ -91,10 +91,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (rotate == 0 && string.IsNullOrEmpty(flip))
                 {
-                    var x1 = TranslateUtils.ToIntWithNagetive(Request.Form["x1"]);
-                    var y1 = TranslateUtils.ToIntWithNagetive(Request.Form["y1"]);
-                    var w = TranslateUtils.ToIntWithNagetive(Request.Form["w"]);
-                    var h = TranslateUtils.ToIntWithNagetive(Request.Form["h"]);
+                    var x1 = TranslateUtils.ToIntWithNegative(Request.Form["x1"]);
+                    var y1 = TranslateUtils.ToIntWithNegative(Request.Form["y1"]);
+                    var w = TranslateUtils.ToIntWithNegative(Request.Form["w"]);
+                    var h = TranslateUtils.ToIntWithNegative(Request.Form["h"]);
 
                     if (w > 0 && h > 0)
                     {

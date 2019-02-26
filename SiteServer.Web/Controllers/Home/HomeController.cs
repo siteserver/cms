@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -26,34 +25,34 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
-                var pageName = request.GetQueryString("pageName");
+                var rest = new Rest(Request);
+                var pageName = rest.GetQueryString("pageName");
 
                 if (pageName == PageNameRegister)
                 {
-                    return Ok(GetRegister(request));
+                    return Ok(GetRegister(rest));
                 }
                 if (pageName == PageNameIndex)
                 {   
-                    return Ok(GetIndex(request));
+                    return Ok(GetIndex(rest));
                 }
                 if (pageName == PageNameProfile)
                 {
-                    return Ok(GetProfile(request));
+                    return Ok(GetProfile(rest));
                 }
                 if (pageName == PageNameContents)
                 {
-                    return Ok(GetContents(request));
+                    return Ok(GetContents(rest));
                 }
                 if (pageName == PageNameContentAdd)
                 {
-                    return Ok(GetContentAdd(request));
+                    return Ok(GetContentAdd(rest));
                 }
 
                 return Ok(new
                 {
-                    Value = request.UserInfo,
-                    Config = ConfigManager.Instance.SystemConfigInfo
+                    Value = rest.UserInfo,
+                    Config = ConfigManager.Instance.SystemExtend
                 });
             }
             catch (Exception ex)
@@ -63,36 +62,36 @@ namespace SiteServer.API.Controllers.Home
             }
         }
 
-        public object GetRegister(RequestImpl request)
+        public object GetRegister(Rest rest)
         {
             return new
             {
-                Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Value = rest.UserInfo,
+                Config = ConfigManager.Instance.SystemExtend,
                 Styles = TableStyleManager.GetUserStyleInfoList(),
                 Groups = UserGroupManager.GetUserGroupInfoList()
             };
         }
 
-        public object GetIndex(RequestImpl request)
+        public object GetIndex(Rest rest)
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
 
-            if (request.IsUserLoggin)
+            if (rest.IsUserLoggin)
             {
                 var userMenus = UserMenuManager.GetAllUserMenuInfoList();
                 foreach (var menuInfo1 in userMenus)
                 {
-                    if (menuInfo1.IsDisabled || menuInfo1.ParentId != 0 ||
+                    if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
                         !string.IsNullOrEmpty(menuInfo1.GroupIdCollection) &&
-                        !StringUtils.In(menuInfo1.GroupIdCollection, request.UserInfo.GroupId)) continue;
+                        !StringUtils.In(menuInfo1.GroupIdCollection, rest.UserInfo.GroupId)) continue;
                     var children = new List<object>();
                     foreach (var menuInfo2 in userMenus)
                     {
-                        if (menuInfo2.IsDisabled || menuInfo2.ParentId != menuInfo1.Id ||
+                        if (menuInfo2.Disabled || menuInfo2.ParentId != menuInfo1.Id ||
                             !string.IsNullOrEmpty(menuInfo2.GroupIdCollection) &&
-                            !StringUtils.In(menuInfo2.GroupIdCollection, request.UserInfo.GroupId)) continue;
+                            !StringUtils.In(menuInfo2.GroupIdCollection, rest.UserInfo.GroupId)) continue;
 
                         children.Add(new
                         {
@@ -118,38 +117,38 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Value = rest.UserInfo,
+                Config = ConfigManager.Instance.SystemExtend,
                 Menus = menus,
                 DefaultPageUrl = defaultPageUrl
             };
         }
 
-        public object GetProfile(RequestImpl request)
+        public object GetProfile(Rest rest)
         {
             return new
             {
-                Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Value = rest.UserInfo,
+                Config = ConfigManager.Instance.SystemExtend,
                 Styles = TableStyleManager.GetUserStyleInfoList()
             };
         }
 
-        public object GetContents(RequestImpl request)
+        public object GetContents(Rest rest)
         {
-            var requestSiteId = request.SiteId;
-            var requestChannelId = request.ChannelId;
+            var requestSiteId = rest.SiteId;
+            var requestChannelId = rest.ChannelId;
 
             var sites = new List<object>();
             var channels = new List<object>();
             object site = null;
             object channel = null;
 
-            if (request.IsUserLoggin)
+            if (rest.IsUserLoggin)
             {
                 SiteInfo siteInfo = null;
                 ChannelInfo channelInfo = null;
-                var siteIdList = request.UserPermissionsImpl.GetSiteIdList();
+                var siteIdList = rest.UserPermissionsImpl.GetSiteIdList();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSiteInfo = SiteManager.GetSiteInfo(siteId);
@@ -171,7 +170,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (siteInfo != null)
                 {
-                    var channelIdList = request.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
+                    var channelIdList = rest.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
                         ConfigManager.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
@@ -207,8 +206,8 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Value = rest.UserInfo,
+                Config = ConfigManager.Instance.SystemExtend,
                 Sites = sites,
                 Channels = channels,
                 Site = site,
@@ -216,11 +215,11 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContentAdd(RequestImpl request)
+        public object GetContentAdd(Rest rest)
         {
-            var requestSiteId = request.SiteId;
-            var requestChannelId = request.ChannelId;
-            var requestContentId = request.ContentId;
+            var requestSiteId = rest.SiteId;
+            var requestChannelId = rest.ChannelId;
+            var requestContentId = rest.ContentId;
 
             var sites = new List<object>();
             var channels = new List<object>();
@@ -233,11 +232,11 @@ namespace SiteServer.API.Controllers.Home
             List<KeyValuePair<int, string>> checkedLevels = null;
             var checkedLevel = 0;
 
-            if (request.IsUserLoggin)
+            if (rest.IsUserLoggin)
             {
                 SiteInfo siteInfo = null;
                 ChannelInfo channelInfo = null;
-                var siteIdList = request.UserPermissionsImpl.GetSiteIdList();
+                var siteIdList = rest.UserPermissionsImpl.GetSiteIdList();
                 foreach (var siteId in siteIdList)
                 {
                     var permissionSiteInfo = SiteManager.GetSiteInfo(siteId);
@@ -259,7 +258,7 @@ namespace SiteServer.API.Controllers.Home
 
                 if (siteInfo != null)
                 {
-                    var channelIdList = request.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
+                    var channelIdList = rest.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
                         ConfigManager.ChannelPermissions.ContentAdd);
                     foreach (var permissionChannelId in channelIdList)
                     {
@@ -296,7 +295,7 @@ namespace SiteServer.API.Controllers.Home
 
                     styles = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
-                    var checkKeyValuePair = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteInfo.Id);
+                    var checkKeyValuePair = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteInfo.Id);
                     checkedLevels = CheckManager.GetCheckedLevels(siteInfo, checkKeyValuePair.Key, checkedLevel, true);
 
                     if (requestContentId != 0)
@@ -326,8 +325,8 @@ namespace SiteServer.API.Controllers.Home
 
             return new
             {
-                Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Value = rest.UserInfo,
+                Config = ConfigManager.Instance.SystemExtend,
                 Sites = sites,
                 Channels = channels,
                 Site = site,

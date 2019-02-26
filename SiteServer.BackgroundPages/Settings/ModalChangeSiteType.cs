@@ -5,7 +5,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils.IO;
 
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var title = siteInfo.IsRoot ? "转移到子目录" : "转移到根目录";
+            var title = siteInfo.Root ? "转移到子目录" : "转移到根目录";
             return LayerUtils.GetOpenScript(title,
                 PageUtils.GetSettingsUrl(nameof(ModalChangeSiteType),
                     new NameValueCollection
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             PageUtils.CheckRequestParameter("siteId");
 
-            _isHeadquarters = SiteInfo.IsRoot;
+            _isHeadquarters = SiteInfo.Root;
 
             var selectedList = new List<string>();
 
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
                 PhChangeToSite.Visible = true;
                 PhChangeToHeadquarters.Visible = false;
                 var fileSystems = FileManager.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath, true);
-                var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = DataProvider.Site.GetLowerSiteDirListThatNotIsRoot();
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {
                     if (fileSystem.IsDirectory)
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
 
                 //主站下的单页模板
-                var fileTemplateInfoList = DataProvider.TemplateDao.GetTemplateInfoListByType(SiteId, TemplateType.FileTemplate);
+                var fileTemplateInfoList = DataProvider.Template.GetTemplateInfoListByType(SiteId, TemplateType.FileTemplate);
                 foreach (var fileT in fileTemplateInfoList)
                 {
                     if (fileT.CreatedFileFullName.StartsWith("@/") || fileT.CreatedFileFullName.StartsWith("~/"))
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var psId in siteIdList)
                 {
                     var psInfo = SiteManager.GetSiteInfo(psId);
-                    if (psInfo.IsRoot)
+                    if (psInfo.Root)
                     {
                         headquartersExists = true;
                         break;
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (_isHeadquarters)
             {
-                var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
+                var list = DataProvider.Site.GetLowerSiteDirList(SiteInfo.ParentId);
                 if (list.IndexOf(TbSiteDir.Text.Trim().ToLower()) != -1)
                 {
                     FailMessage("操作失败，已存在相同的发布路径");

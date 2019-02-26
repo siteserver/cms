@@ -6,10 +6,12 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -55,6 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             PageUtils.CheckRequestParameter("siteId", "channelId");
             var channelId = AuthRequest.GetQueryInt("channelId");
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
             _attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(ChannelManager.GetContentAttributesOfDisplay(SiteId, channelId));
@@ -64,11 +67,11 @@ namespace SiteServer.BackgroundPages.Cms
             _pluginColumns = PluginContentManager.GetContentColumns(_pluginIds);
             _isEdit = TextUtility.IsEdit(SiteInfo, channelId, AuthRequest.AdminPermissionsImpl);
 
-            if (_channelInfo.Additional.IsPreviewContentsExists)
+            if (_channelInfo.Extend.IsPreviewContentsExists)
             {
                 new Action(() =>
                 {
-                    DataProvider.ContentDao.DeletePreviewContents(SiteId, _tableName, _channelInfo);
+                    DataProvider.ContentRepository.DeletePreviewContents(SiteId, _tableName, _channelInfo);
                 }).BeginInvoke(null, null);
             }
 
@@ -90,24 +93,24 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 ControlToPaginate = RptContents,
                 TableName = _tableName,
-                PageSize = SiteInfo.Additional.PageSize,
+                PageSize = SiteInfo.Extend.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
-                OrderSqlString = DataProvider.ContentDao.GetOrderString(_channelInfo, string.Empty),
-                ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList)
+                OrderSqlString = DataProvider.ContentRepository.GetOrderString(_channelInfo, string.Empty),
+                ReturnColumnNames = allAttributeNameList
             };
 
             var administratorName = AuthRequest.AdminPermissionsImpl.IsViewContentOnlySelf(SiteId, channelId) ? AuthRequest.AdminName : string.Empty;
 
             if (AuthRequest.IsQueryExists("searchType"))
             {
-                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
+                pagerParam.WhereSqlString = DataProvider.ContentRepository.GetPagerWhereSqlString(SiteInfo, _channelInfo, AuthRequest.GetQueryString("searchType"), AuthRequest.GetQueryString("keyword"),
                     AuthRequest.GetQueryString("dateFrom"), string.Empty, CheckManager.LevelInt.All, false, true, false, false, false, AuthRequest.AdminPermissionsImpl, allAttributeNameList);
                 pagerParam.TotalCount =
-                    DataProvider.DatabaseDao.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
+                    DatabaseApi.Instance.GetPageTotalCount(_tableName, pagerParam.WhereSqlString);
             }
             else
             {
-                pagerParam.WhereSqlString = DataProvider.ContentDao.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
+                pagerParam.WhereSqlString = DataProvider.ContentRepository.GetPagerWhereSqlString(channelId, ETriState.All, administratorName);
                 var count = ContentManager.GetCount(SiteInfo, _channelInfo);
                 pagerParam.TotalCount = count;
             }
@@ -129,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var styleInfo in _allStyleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
 
                 var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
                 DdlSearchType.Items.Add(listitem);

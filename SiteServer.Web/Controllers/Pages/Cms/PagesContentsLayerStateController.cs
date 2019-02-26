@@ -2,8 +2,8 @@
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -17,14 +17,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentId = request.GetQueryInt("contentId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
+                var contentId = rest.GetQueryInt("contentId");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -44,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     CheckManager.GetCheckState(siteInfo, contentInfo);
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                var contentChecks = DataProvider.ContentCheckDao.GetCheckInfoList(tableName, contentId);
+                var contentChecks = DataProvider.ContentCheck.GetCheckInfoList(tableName, contentId);
 
                 return Ok(new
                 {

@@ -3,10 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
-using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -162,7 +159,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (loadingType == EDepartmentLoadingType.AdministratorTree)
             {
-                var linkUrl = PageAdministrator.GetRedirectUrl();
+                var linkUrl = AdminPagesUtils.Settings.AdministratorsUrl;
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='department'>{_departmentInfo.DepartmentName}</a>");
@@ -178,7 +175,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (loadingType == EDepartmentLoadingType.ContentTree)
             {
-                var linkUrl = CmsPages.GetContentsUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
+                var linkUrl = AdminPagesUtils.Cms.GetContentsUrl(TranslateUtils.ToInt(additional["SiteId"]), _departmentInfo.Id);
 
                 htmlBuilder.Append(
                     $"<a href='{linkUrl}' isLink='true' onclick='fontWeightLink(this)' target='content'>{_departmentInfo.DepartmentName}</a>");

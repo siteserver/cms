@@ -2,7 +2,8 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;

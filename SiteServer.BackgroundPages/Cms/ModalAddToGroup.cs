@@ -4,7 +4,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -118,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             foreach (var contentId in contentIdArrayList)
                             {
-                                DataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
+                                DataProvider.ContentRepository.AddContentGroupList(tableName, contentId, groupNameList);
                             }
                         }
                     }
@@ -138,7 +139,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (int channelId in _channelIdArrayList)
                     {
-                        DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
+                        DataProvider.Channel.AddGroupNameList(SiteId, channelId, groupNameList);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");

@@ -3,12 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Model;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Images;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -52,36 +48,36 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.Additional.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = SiteInfo.Additional.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = SiteInfo.Extend.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Additional.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = SiteInfo.Additional.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = SiteInfo.Extend.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                if (SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
-                     || SiteInfo.Additional.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
-                     || SiteInfo.Additional.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
-                     || SiteInfo.Additional.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
+                if (SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
+                     || SiteInfo.Extend.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
+                     || SiteInfo.Extend.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
+                     || SiteInfo.Extend.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
                 {
-                    SiteInfo.Additional.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                    SiteInfo.Additional.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                    SiteInfo.Additional.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                    SiteInfo.Additional.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                    SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                    SiteInfo.Extend.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                    SiteInfo.Extend.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                    SiteInfo.Extend.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
-                    DataProvider.SiteDao.Update(SiteInfo);
+                    DataProvider.Site.Update(SiteInfo);
                 }
             }
         }

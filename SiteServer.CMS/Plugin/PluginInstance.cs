@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Plugin
 
             bool isDisabled;
             int taxis;
-            DataProvider.PluginDao.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
+            DataProvider.Plugin.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
 
             IsRunnable = plugin != null;
             IsDisabled = isDisabled;

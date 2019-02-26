@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (AuthRequest.IsQueryExists("RelatedFieldID"))
             {
                 var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
-                var relatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(relatedFieldId);
+                var relatedFieldInfo = DataProvider.RelatedField.Get(relatedFieldId);
                 if (relatedFieldInfo != null)
                 {
                     TbRelatedFieldName.Text = relatedFieldInfo.Title;
@@ -136,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
 				try
 				{
                     relatedFieldInfo.Id = AuthRequest.GetQueryInt("RelatedFieldID");
-                    DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
+                    DataProvider.RelatedField.Update(relatedFieldInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
 					isChanged = true;
 				}
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
 			}
 			else
 			{
-                var relatedFieldNameList = DataProvider.RelatedFieldDao.GetTitleList(SiteId);
+                var relatedFieldNameList = DataProvider.RelatedField.GetTitleList(SiteId);
                 if (relatedFieldNameList.IndexOf(TbRelatedFieldName.Text) != -1)
 				{
                     FailMessage("联动字段添加失败，联动字段名称已存在！");
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-                        DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
+                        DataProvider.RelatedField.Insert(relatedFieldInfo);
                         AuthRequest.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
 						isChanged = true;
 					}

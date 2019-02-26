@@ -5,8 +5,9 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -29,12 +30,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (AuthRequest.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var list = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("IDCollection"));
                 try
                 {
-                    DataProvider.ErrorLogDao.Delete(list);
+                    DataProvider.ErrorLog.Delete(list);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -46,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    DataProvider.ErrorLogDao.DeleteAll();
+                    DataProvider.ErrorLog.DeleteAll();
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -56,15 +57,15 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogError = !ConfigManager.SystemConfigInfo.IsLogError;
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogError ? "启用" : "禁用")}日志记录");
+                ConfigManager.Instance.SystemExtend.IsLogError = !ConfigManager.Instance.SystemExtend.IsLogError;
+                DataProvider.Config.Update(ConfigManager.Instance);
+                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogError ? "启用" : "禁用")}日志记录");
             }
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ErrorLogDao.GetSelectCommend(AuthRequest.GetQueryString("category"), AuthRequest.GetQueryString("pluginId"), AuthRequest.GetQueryString("keyword"),
+            SpContents.SelectCommand = DataProvider.ErrorLog.GetSelectCommend(AuthRequest.GetQueryString("category"), AuthRequest.GetQueryString("pluginId"), AuthRequest.GetQueryString("keyword"),
                     AuthRequest.GetQueryString("dateFrom"), AuthRequest.GetQueryString("dateTo"));
 
             SpContents.SortField = nameof(ErrorLogInfo.Id);
@@ -98,7 +99,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
             {
-                {"Delete", "True" }
+                {"DeleteById", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogError)
+            if (ConfigManager.Instance.SystemExtend.IsLogError)
             {
                 BtnSetting.Text = "禁用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",

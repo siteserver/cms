@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 for (var num = 0; num < taxisNum; num++)
                 {
-                    DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
+                    DataProvider.Channel.UpdateTaxis(SiteId, channelId, isSubtract);
                 }
 
                 AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"), $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");

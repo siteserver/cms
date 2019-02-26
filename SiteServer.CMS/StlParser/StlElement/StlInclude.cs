@@ -2,7 +2,7 @@
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageParameters = pageInfo.Parameters;
             pageInfo.Parameters = parameters;
 
-            var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file, pageInfo.TemplateInfo.Charset);
+            var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file, pageInfo.TemplateInfo.FileCharset);
             var contentBuilder = new StringBuilder(content);
             StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
             var parsedContent = contentBuilder.ToString();

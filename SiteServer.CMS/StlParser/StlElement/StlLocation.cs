@@ -2,7 +2,7 @@
 using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement

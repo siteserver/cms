@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -44,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
+        public string TypeCollection => SiteInfo.Extend.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -116,10 +117,10 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay)
             {
-                SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
-                DataProvider.SiteDao.Update(SiteInfo);
+                SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                DataProvider.Site.Update(SiteInfo);
             }
 
             var script = "parent." + UEditorUtils.GetInsertAudioScript(_attributeName, playUrl, SiteInfo);

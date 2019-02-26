@@ -1,4 +1,4 @@
-﻿var data = {
+﻿var $data = {
   pageLoad: false,
   pageAlert: null,
   page: parseInt(utils.getQueryString('page') || 1),
@@ -13,7 +13,7 @@
   allTagNames: []
 };
 
-var methods = {
+var $methods = {
   getDisplayUrl: function (templateId) {
     return ssUtils.getTemplatePageUrl(templateId);
   },
@@ -99,8 +99,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

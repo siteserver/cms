@@ -1,11 +1,11 @@
 ﻿using System;
 using Atom.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -26,8 +26,8 @@ namespace SiteServer.CMS.ImportExport.Components
 
         public int ImportChannelsAndContents(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
         {
-            var psChildCount = DataProvider.ChannelDao.GetCount(_siteInfo.Id);
-            var indexNameList = DataProvider.ChannelDao.GetIndexNameList(_siteInfo.Id);
+            var psChildCount = DataProvider.Channel.GetCount(_siteInfo.Id);
+            var indexNameList = DataProvider.Channel.GetIndexNameList(_siteInfo.Id);
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -56,7 +56,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 orderString = orderString.Substring(0, orderString.LastIndexOf("_", StringComparison.Ordinal));
             }
 
-            var parentId = DataProvider.ChannelDao.GetId(_siteInfo.Id, orderString);
+            var parentId = DataProvider.Channel.GetId(_siteInfo.Id, orderString);
             if (theParentId != 0)
             {
                 parentId = theParentId;
@@ -70,7 +70,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, _siteInfo.Id);
                 _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                DataProvider.ChannelDao.Update(nodeInfo);
+                DataProvider.Channel.Update(nodeInfo);
 
                 if (isImportContents)
                 {
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 }
                 if (!isUpdate)
                 {
-                    channelId = DataProvider.ChannelDao.Insert(nodeInfo);
+                    channelId = DataProvider.Channel.Insert(nodeInfo);
                 }
                 else
                 {
@@ -104,9 +104,9 @@ namespace SiteServer.CMS.ImportExport.Components
                     var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
                     _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                    DataProvider.ChannelDao.Update(nodeInfo);
+                    DataProvider.Channel.Update(nodeInfo);
 
-                    DataProvider.ContentDao.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
+                    DataProvider.ContentRepository.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
                 }
 
                 if (isImportContents)
@@ -126,7 +126,7 @@ namespace SiteServer.CMS.ImportExport.Components
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var fileName = DataProvider.ChannelDao.GetOrderStringInSite(channelId);
+            var fileName = DataProvider.Channel.GetOrderStringInSite(channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 
@@ -135,7 +135,7 @@ namespace SiteServer.CMS.ImportExport.Components
             if (isSaveContents)
             {
                 var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
-                var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
+                var contentIdList = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);

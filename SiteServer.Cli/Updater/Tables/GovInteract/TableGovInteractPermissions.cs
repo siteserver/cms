@@ -45,8 +45,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             new TableColumn
             {
                 AttributeName = "UserName",
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.VarChar
             },
             new TableColumn
             {

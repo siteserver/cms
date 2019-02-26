@@ -1,9 +1,10 @@
 ﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -257,9 +258,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (type.Equals(ChannelAttribute.IsLastNode.ToLower()))
+            else if (type.Equals(ChannelAttribute.LastNode.ToLower()))
             {
-                parsedContent = channel.IsLastNode.ToString();
+                parsedContent = channel.LastNode.ToString();
             }
             else if (type.Equals(ChannelAttribute.ChannelIndex.ToLower()) || type.Equals(ChannelAttribute.IndexName.ToLower()))
             {
@@ -350,7 +351,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.ExtendValues.ToLower()))
             {
-                parsedContent = channel.Additional.ToString();
+                parsedContent = channel.Attributes.ToString();
             }
             else if (type.Equals(ChannelAttribute.Title.ToLower()) || type.Equals(ChannelAttribute.ChannelName.ToLower()))
             {
@@ -373,7 +374,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.PageContent.ToLower()))
             {
-                if (contextInfo.IsInnerElement || pageInfo.TemplateInfo.TemplateType != TemplateType.ChannelTemplate)
+                if (contextInfo.IsInnerElement || pageInfo.TemplateInfo.Type != TemplateType.ChannelTemplate)
                 {
                     parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, channel.Content, pageInfo.IsLocal);
 
@@ -420,15 +421,15 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var attributeName = type;
 
-                var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(channel));
+                var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.Channel.TableName, attributeName, TableStyleManager.GetRelatedIdentities(channel));
                 // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                 if (styleInfo.Id > 0)
                 {
-                    parsedContent = GetValue(attributeName, channel.Additional, false, styleInfo.DefaultValue);
+                    parsedContent = GetValue(attributeName, channel.Attributes, false, styleInfo.DefaultValue);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                        inputType = styleInfo.InputType;
+                        inputType = styleInfo.Type;
                     }
                 }
             }

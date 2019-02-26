@@ -4,10 +4,9 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -80,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = true;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -114,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     contentInfo.IsTop = false;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -133,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
-                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                            DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                         }
                     }
 

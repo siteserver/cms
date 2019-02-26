@@ -1,9 +1,9 @@
 ﻿using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -167,12 +167,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
                             var targetChannelId = contentInfo.SourceId;
-                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                            //var targetSiteId = DataProvider.Channel.GetSiteId(targetChannelId);
                             var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                            //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {

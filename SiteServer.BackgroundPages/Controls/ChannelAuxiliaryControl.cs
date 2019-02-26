@@ -2,8 +2,8 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Controls
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (styleInfo.Type == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">

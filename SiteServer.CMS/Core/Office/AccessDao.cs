@@ -2,8 +2,9 @@
 using System.Data.OleDb;
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -62,7 +63,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
 
             isExport = contentIdList.Count > 0;

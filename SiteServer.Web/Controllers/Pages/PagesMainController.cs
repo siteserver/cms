@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Preview;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -27,12 +26,14 @@ namespace SiteServer.API.Controllers.Pages
         private const string RouteActionsCreate = "actions/create";
         private const string RouteActionsDownload = "actions/download";
 
-        [HttpGet, Route(Route)]
+        [HttpPost, Route(Route)]
         public IHttpActionResult GetConfig()
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
+                var siteId = rest.GetPostInt("siteId");
+                var pageUrl = rest.GetPostString("pageUrl");
 
                 if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
@@ -43,28 +44,27 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                if (ConfigManager.Instance.Initialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
                 {
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = PageSyncDatabase.GetRedirectUrl()
+                        RedirectUrl = AdminPagesUtils.UpdateUrl
                     });
                 }
 
-                if (!request.IsAdminLoggin || request.AdminInfo == null || request.AdminInfo.IsLockedOut)
+                if (!rest.IsAdminLoggin || rest.AdminInfo == null || rest.AdminInfo.Locked)
                 {
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = "pageLogin.cshtml"
+                        RedirectUrl = $"{AdminPagesUtils.LoginUrl}?redirectUrl={PageUtils.UrlEncode(PageUtils.GetMainUrl(siteId, pageUrl))}"
                     });
                 }
-
-                var siteId = request.GetQueryInt("siteId");
+                
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var adminInfo = request.AdminInfo;
-                var permissions = request.AdminPermissionsImpl;
+                var adminInfo = rest.AdminInfo;
+                var permissions = rest.AdminPermissionsImpl;
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
                 var siteIdListWithPermissions = permissions.GetSiteIdList();
 
@@ -75,7 +75,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(adminInfo.SiteId)
+                            RedirectUrl = PageUtils.GetMainUrl(adminInfo.SiteId, pageUrl)
                         });
                     }
 
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(siteIdListWithPermissions[0])
+                            RedirectUrl = PageUtils.GetMainUrl(siteIdListWithPermissions[0], pageUrl)
                         });
                     }
 
@@ -100,7 +100,7 @@ namespace SiteServer.API.Controllers.Pages
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = $"error.cshtml?message={HttpUtility.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
+                        RedirectUrl = $"{AdminPagesUtils.ErrorUrl}?message={PageUtils.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
                     });
                 }
 
@@ -121,7 +121,7 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                var siteIdListLatestAccessed = DataProvider.AdministratorDao.UpdateSiteId(adminInfo, siteInfo.Id);
+                var siteIdListLatestAccessed = DataProvider.Administrator.UpdateSiteId(adminInfo, siteInfo.Id);
 
                 var permissionList = new List<string>(permissions.PermissionList);
                 if (permissions.HasSitePermissions(siteInfo.Id))
@@ -143,39 +143,41 @@ namespace SiteServer.API.Controllers.Pages
                     GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
                 var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
 
-                var local = new
+                var adminInfoToReturn = new
                 {
-                    UserId = adminInfo.Id,
+                    adminInfo.Id,
                     adminInfo.UserName,
                     adminInfo.AvatarUrl,
                     Level = permissions.GetAdminLevel()
                 };
-                object cloud = null;
-                if (permissions.IsConsoleAdministrator && ConfigManager.SystemConfigInfo.IsCloudLoggin &&
-                    ConfigManager.SystemConfigInfo.CloudExpiresAt >= DateTime.Now)
+
+                var defaultPageUrl = PageUtils.UrlDecode(pageUrl);
+                if (string.IsNullOrEmpty(defaultPageUrl))
                 {
-                    cloud = new
-                    {
-                        UserName = ConfigManager.SystemConfigInfo.CloudUserName,
-                        AccessToken = ConfigManager.SystemConfigInfo.CloudAccessToken
-                    };
+                    defaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId);
+                }
+                if (string.IsNullOrEmpty(defaultPageUrl))
+                {
+                    defaultPageUrl = AdminPagesUtils.DashboardUrl;
                 }
 
                 return Ok(new
                 {
                     Value = true,
-                    DefaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId) ?? "dashboard.cshtml",
-                    IsNightly = WebConfigUtils.IsNightlyUpdate,
-                    Version = SystemManager.PluginVersion,
+                    DefaultPageUrl = defaultPageUrl,
+                    WebConfigUtils.IsNightlyUpdate,
+                    SystemManager.PluginVersion,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,
-                    CurrentVersion = SystemManager.Version,
+                    CmsVersion = SystemManager.Version,
+                    ApiManager.ApiPrefix,
+                    WebConfigUtils.AdminDirectory,
+                    WebConfigUtils.HomeDirectory,
                     TopMenus = topMenus,
                     SiteMenus = siteMenus,
                     PluginMenus = pluginMenus,
-                    Local = local,
-                    Cloud = cloud
+                    AdminInfo = adminInfoToReturn
                 });
             }
             catch (Exception ex)
@@ -209,7 +211,7 @@ namespace SiteServer.API.Controllers.Pages
 
                         siteMenus.Add(new Tab
                         {
-                            Href = PageUtils.GetMainUrl(site.Id),
+                            Href = PageUtils.GetMainUrl(site.Id, string.Empty),
                             Target = "_top",
                             Text = site.SiteName
                         });
@@ -314,8 +316,8 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin)
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
@@ -358,15 +360,15 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new RequestImpl();
+            var rest = new Rest(Request);
 
-            if (!request.IsAdminLoggin)
+            if (!rest.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
-            var packageId = request.GetPostString("packageId");
-            var version = request.GetPostString("version");
+            var packageId = rest.GetPostString("packageId");
+            var version = rest.GetPostString("version");
 
             try
             {

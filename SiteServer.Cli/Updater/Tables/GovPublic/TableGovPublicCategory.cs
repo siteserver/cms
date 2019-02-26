@@ -81,20 +81,17 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "ClassCode",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "CategoryName",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "CategoryCode",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
@@ -104,8 +101,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "ParentsPath",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
@@ -135,8 +131,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "Summary",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {

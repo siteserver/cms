@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -66,23 +67,23 @@ namespace SiteServer.BackgroundPages.Cms
             DdlIsValidate.Items[0].Value = true.ToString();
             DdlIsValidate.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Additional.IsValidate.ToString());
+            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Extend.IsValidate.ToString());
 
             DdlIsRequired.Items[0].Value = true.ToString();
             DdlIsRequired.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Additional.IsRequired.ToString());
+            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Extend.IsRequired.ToString());
 
-            PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea);
+            PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.Type, InputType.Text, InputType.TextArea);
 
-            TbMinNum.Text = _styleInfo.Additional.MinNum.ToString();
-            TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
+            TbMinNum.Text = _styleInfo.Extend.MinNum.ToString();
+            TbMaxNum.Text = _styleInfo.Extend.MaxNum.ToString();
 
             ValidateTypeUtils.AddListItems(DdlValidateType);
-            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Additional.ValidateType.Value);
+            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Extend.ValidateType.Value);
 
-            TbRegExp.Text = _styleInfo.Additional.RegExp;
-            TbErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
+            TbRegExp.Text = _styleInfo.Extend.RegExp;
+            TbErrorMessage.Text = _styleInfo.Extend.ErrorMessage;
 
             DdlValidate_SelectedIndexChanged(null, EventArgs.Empty);
         }
@@ -108,13 +109,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
 
-            _styleInfo.Additional.IsValidate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
-            _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
-            _styleInfo.Additional.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
-            _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
-            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
-            _styleInfo.Additional.RegExp = TbRegExp.Text.Trim('/');
-            _styleInfo.Additional.ErrorMessage = TbErrorMessage.Text;
+            _styleInfo.Extend.IsValidate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
+            _styleInfo.Extend.IsRequired = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
+            _styleInfo.Extend.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
+            _styleInfo.Extend.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
+            _styleInfo.Extend.ValidateType = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
+            _styleInfo.Extend.RegExp = TbRegExp.Text.Trim('/');
+            _styleInfo.Extend.ErrorMessage = TbErrorMessage.Text;
 
             try
             {
@@ -122,17 +123,17 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var relatedIdentity = _relatedIdentities[0];
                     _styleInfo.RelatedIdentity = relatedIdentity;
-                    _styleInfo.Id = DataProvider.TableStyleDao.Insert(_styleInfo);
+                    _styleInfo.Id = DataProvider.TableStyle.Insert(_styleInfo);
                 }
 
                 if (_styleInfo.Id > 0)
                 {
-                    DataProvider.TableStyleDao.Update(_styleInfo);
+                    DataProvider.TableStyle.Update(_styleInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 else
                 {
-                    DataProvider.TableStyleDao.Insert(_styleInfo);
+                    DataProvider.TableStyle.Insert(_styleInfo);
                     AuthRequest.AddSiteLog(SiteId, "新增表单验证", $"字段:{_styleInfo.AttributeName}");
                 }
                 isChanged = true;

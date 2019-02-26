@@ -6,9 +6,10 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteName;
             }
@@ -82,14 +83,14 @@ namespace SiteServer.BackgroundPages.Settings
             EBooleanUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllFiles, true.ToString());
 
-            var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
+            var siteDirList = DataProvider.Site.GetLowerSiteDirListThatNotIsRoot();
             var fileSystems = FileManager.GetFileSystemInfoExtendCollection(PathUtility.GetSitePath(SiteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
             {
                 if (!fileSystem.IsDirectory) continue;
 
                 var isSiteDirectory = false;
-                if (SiteInfo.IsRoot)
+                if (SiteInfo.Root)
                 {
                     foreach (var siteDir in siteDirList)
                     {
@@ -146,9 +147,9 @@ namespace SiteServer.BackgroundPages.Settings
             var itemBuilder = new StringBuilder();
             if (channelInfo.Id == SiteId)
             {
-                channelInfo.IsLastNode = true;
+                channelInfo.LastNode = true;
             }
-            if (channelInfo.IsLastNode == false)
+            if (channelInfo.LastNode == false)
             {
                 isLastNodeArray[channelInfo.ParentsCount] = false;
             }
@@ -160,7 +161,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 itemBuilder.Append($"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
-            if (channelInfo.IsLastNode)
+            if (channelInfo.LastNode)
             {
                 itemBuilder.Append(channelInfo.ChildrenCount > 0
                     ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"

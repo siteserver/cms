@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -23,7 +23,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var feed = ExportRelatedFieldInfo(relatedFieldInfo);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
+            var relatedFieldItemInfoList = DataProvider.RelatedFieldItem.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
 			{
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
+            var relatedFieldItemInfoList = DataProvider.RelatedFieldItem.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
@@ -82,22 +82,29 @@ namespace SiteServer.CMS.ImportExport.Components
                 var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes));
                 var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes));
 
-                var relatedFieldInfo = new RelatedFieldInfo(0, title, _siteId, totalLevel, prefixes, suffixes);
+			    var relatedFieldInfo = new RelatedFieldInfo
+			    {
+			        Title = title,
+			        SiteId = _siteId,
+			        TotalLevel = totalLevel,
+			        Prefixes = suffixes,
+			        Suffixes = suffixes
+			    };
 
-                var srcRelatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_siteId, title);
+                var srcRelatedFieldInfo = DataProvider.RelatedField.GetRelatedFieldInfo(_siteId, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
                     {
-                        DataProvider.RelatedFieldDao.Delete(srcRelatedFieldInfo.Id);
+                        DataProvider.RelatedField.Delete(srcRelatedFieldInfo.Id);
                     }
                     else
                     {
-                        relatedFieldInfo.Title = DataProvider.RelatedFieldDao.GetImportTitle(_siteId, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = DataProvider.RelatedField.GetImportTitle(_siteId, relatedFieldInfo.Title);
                     }
                 }
 
-                var relatedFieldId = DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
+                var relatedFieldId = DataProvider.RelatedField.Insert(relatedFieldInfo);
 
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
@@ -113,8 +120,14 @@ namespace SiteServer.CMS.ImportExport.Components
                         parentId = level != lastInertedLevel ? lastInsertedId : lastInsertedParentId;
                     }
 
-                    var relatedFieldItemInfo = new RelatedFieldItemInfo(0, relatedFieldId, itemName, itemValue, parentId, 0);
-                    lastInsertedId = DataProvider.RelatedFieldItemDao.Insert(relatedFieldItemInfo);
+				    var relatedFieldItemInfo = new RelatedFieldItemInfo
+				    {
+				        RelatedFieldId = relatedFieldId,
+				        ItemName = itemName,
+				        ItemValue = itemValue,
+				        ParentId = parentId
+				    };
+                    lastInsertedId = DataProvider.RelatedFieldItem.Insert(relatedFieldItemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
 				}

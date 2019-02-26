@@ -8,11 +8,12 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("returnUrl"));
             if (string.IsNullOrEmpty(ReturnUrl))
             {
-                ReturnUrl = CmsPages.GetContentsUrl(SiteId, channelId);
+                ReturnUrl = AdminPagesUtils.Cms.GetContentsUrl(SiteId, channelId);
             }
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
@@ -145,10 +146,10 @@ namespace SiteServer.BackgroundPages.Cms
                     var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo.Id, out checkedLevel);
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
-                        checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
+                        checkedLevel = TranslateUtils.ToIntWithNegative(AuthRequest.GetQueryString("contentLevel"));
                         if (checkedLevel != CheckManager.LevelInt.NotChange)
                         {
-                            isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+                            isChecked = checkedLevel >= SiteInfo.Extend.CheckContentLevel;
                         }
                     }
 
@@ -271,8 +272,8 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.AddDate = DateTime.Now;
                     }
 
-                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
+                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Extend.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
                     foreach (var service in PluginManager.Services)
@@ -304,7 +305,7 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
+                    contentInfo.Id = DataProvider.ContentRepository.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
 
                     TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);
 
@@ -357,10 +358,10 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+                    var checkedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
                     if (checkedLevel != CheckManager.LevelInt.NotChange)
                     {
-                        contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+                        contentInfo.IsChecked = checkedLevel >= SiteInfo.Extend.CheckContentLevel;
                         contentInfo.CheckedLevel = checkedLevel;
                     }
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
@@ -378,7 +379,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                    DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
 
                     TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
@@ -401,10 +402,10 @@ namespace SiteServer.BackgroundPages.Cms
                     //var tableList = DataProvider.TableDao.GetTableCollectionInfoListCreatedInDb();
                     //foreach (var table in tableList)
                     //{
-                    //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(table.TableName, sourceContentIdList);
+                    //    var targetContentIdList = DataProvider.ContentRepository.GetReferenceIdList(table.TableName, sourceContentIdList);
                     //    foreach (var targetContentId in targetContentIdList)
                     //    {
-                    //        var targetContentInfo = DataProvider.ContentDao.GetContentInfo(table.TableName, targetContentId);
+                    //        var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(table.TableName, targetContentId);
                     //        if (targetContentInfo == null || targetContentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString()) continue;
 
                     //        contentInfo.Id = targetContentId;
@@ -414,7 +415,7 @@ namespace SiteServer.BackgroundPages.Cms
                     //        contentInfo.ReferenceId = targetContentInfo.ReferenceId;
                     //        contentInfo.Taxis = targetContentInfo.Taxis;
                     //        contentInfo.Set(ContentAttribute.TranslateContentType, targetContentInfo.GetString(ContentAttribute.TranslateContentType));
-                    //        DataProvider.ContentDao.Update(table.TableName, contentInfo);
+                    //        DataProvider.ContentRepository.UpdateObject(table.TableName, contentInfo);
 
                     //        //资源：图片，文件，视频
                     //        var targetSiteInfo = SiteManager.GetSiteInfo(targetContentInfo.SiteId);
@@ -474,7 +475,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (contentId == 0)
             {
-                if (_channelInfo == null || _channelInfo.Additional.IsContentAddable == false)
+                if (_channelInfo == null || _channelInfo.Extend.IsContentAddable == false)
                 {
                     PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;

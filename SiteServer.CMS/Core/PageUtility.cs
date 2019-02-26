@@ -1,13 +1,12 @@
-﻿using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using System;
-using SiteServer.CMS.Api.Preview;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+﻿using System;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Core.RestRoutes.Preview;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
@@ -34,7 +33,7 @@ namespace SiteServer.CMS.Core
                 var siteId = PathUtility.GetCurrentSiteId();
                 siteInfo = SiteManager.GetSiteInfo(siteId);
             }
-            if (string.IsNullOrEmpty(physicalPath)) return siteInfo.Additional.WebUrl;
+            if (string.IsNullOrEmpty(physicalPath)) return siteInfo.Extend.WebUrl;
 
             var sitePath = PathUtility.GetSitePath(siteInfo);
             var requestPath = StringUtils.StartsWithIgnoreCase(physicalPath, sitePath)
@@ -46,7 +45,7 @@ namespace SiteServer.CMS.Core
 
         private static string GetRemoteSiteUrl(SiteInfo siteInfo, string requestPath)
         {
-            var url = siteInfo.Additional.WebUrl;
+            var url = siteInfo.Extend.WebUrl;
 
             if (string.IsNullOrEmpty(url))
             {
@@ -71,13 +70,13 @@ namespace SiteServer.CMS.Core
 
             url = PageUtils.Combine(url, requestPath);
 
-            if (!siteInfo.Additional.IsSeparatedAssets) return url;
+            if (!siteInfo.Extend.IsSeparatedAssets) return url;
 
-            var assetsUrl = PageUtils.Combine(siteInfo.Additional.WebUrl,
-                siteInfo.Additional.AssetsDir);
+            var assetsUrl = PageUtils.Combine(siteInfo.Extend.WebUrl,
+                siteInfo.Extend.AssetsDir);
             if (StringUtils.StartsWithIgnoreCase(url, assetsUrl))
             {
-                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, siteInfo.Additional.AssetsUrl);
+                url = StringUtils.ReplaceStartsWithIgnoreCase(url, assetsUrl, siteInfo.Extend.AssetsUrl);
             }
 
             return url;
@@ -309,7 +308,7 @@ namespace SiteServer.CMS.Core
             }
 
             var url = string.Empty;
-            
+
             if (channelInfo.ParentId == 0)
             {
                 url = GetChannelUrlNotComputed(siteInfo, channelInfo.Id, false);
@@ -338,7 +337,7 @@ namespace SiteServer.CMS.Core
                         if (count == 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Extend.DefaultTaxisType)));
                             url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
@@ -356,7 +355,7 @@ namespace SiteServer.CMS.Core
                         else if (count == 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Extend.DefaultTaxisType)));
                             url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
@@ -370,8 +369,8 @@ namespace SiteServer.CMS.Core
                         if (count >= 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Extend.DefaultTaxisType)));
+                            //var contentId = StlCacheManager.FirstContentId.GetValueById(siteInfo, nodeInfo);
                             url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
@@ -385,8 +384,8 @@ namespace SiteServer.CMS.Core
                         if (count >= 1)
                         {
                             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType)));
-                            //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
+                            var contentId = StlContentCache.GetContentId(tableName, channelInfo.Id, ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Extend.DefaultTaxisType)));
+                            //var contentId = StlCacheManager.FirstContentId.GetValueById(siteInfo, nodeInfo);
                             url = GetContentUrl(siteInfo, channelInfo, contentId, false);
                         }
                         else
@@ -426,10 +425,10 @@ namespace SiteServer.CMS.Core
 
         private static string RemoveDefaultFileName(SiteInfo siteInfo, string url)
         {
-            if (!siteInfo.Additional.IsCreateUseDefaultFileName || string.IsNullOrEmpty(url)) return url;
+            if (!siteInfo.Extend.IsCreateUseDefaultFileName || string.IsNullOrEmpty(url)) return url;
 
-            return url.EndsWith("/" + siteInfo.Additional.CreateDefaultFileName)
-                ? url.Substring(0, url.Length - siteInfo.Additional.CreateDefaultFileName.Length)
+            return url.EndsWith("/" + siteInfo.Extend.CreateDefaultFileName)
+                ? url.Substring(0, url.Length - siteInfo.Extend.CreateDefaultFileName.Length)
                 : url;
         }
 
@@ -438,7 +437,7 @@ namespace SiteServer.CMS.Core
             var channelUrl = GetChannelUrl(siteInfo, nodeInfo, isLocal);
             if (string.IsNullOrEmpty(channelUrl)) return channelUrl;
 
-            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, siteInfo.Additional.WebUrl, string.Empty);
+            channelUrl = StringUtils.ReplaceStartsWith(channelUrl, siteInfo.Extend.WebUrl, string.Empty);
             channelUrl = channelUrl.Trim('/');
             if (channelUrl != PageUtils.UnclickedUrl)
             {

@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
+using SiteServer.CMS.Apis;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -334,7 +337,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), siteInfo.Id);
+                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteInfo.Id);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -342,12 +345,12 @@ namespace SiteServer.CMS.StlParser.Utility
                         if (string.IsNullOrEmpty(where))
                         {
                             where =
-                                $"ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                                $"ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList.ToList())})";
                         }
                         else
                         {
                             where +=
-                                $" AND (ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)}))";
+                                $" AND (ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList.ToList())}))";
                         }
                     }
                 }
@@ -415,7 +418,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, string.Empty, string.Empty, string.Empty);
-                //ie = DataProvider.ChannelDao.GetStlDataSource(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
+                //ie = DataProvider.Channel.GetStlDataSource(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
                 ie = StlChannelCache.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
 
@@ -429,7 +432,7 @@ namespace SiteServer.CMS.StlParser.Utility
             if (isTotal)//从所有栏目中选择
             {
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
-                dataSet = DataProvider.ChannelDao.GetStlDataSetBySiteId(siteId, startNum, totalNum, sqlWhereString, orderByString);
+                dataSet = DataProvider.Channel.GetStlDataSetBySiteId(siteId, startNum, totalNum, sqlWhereString, orderByString);
             }
             else
             {
@@ -438,7 +441,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
                 var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, string.Empty, string.Empty, string.Empty);
-                dataSet = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
+                dataSet = DataProvider.Channel.GetStlDataSet(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
             }
             return dataSet;
         }
@@ -452,12 +455,12 @@ namespace SiteServer.CMS.StlParser.Utility
         public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = StlSqlContentsCache.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return DataProvider.DatabaseDao.GetDataSet(connectionString, sqlString);
+            return DatabaseApi.Instance.GetDataSet(connectionString, sqlString);
         }
 
         public static IDataReader GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
         {
-            return DataProvider.SiteDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString);
+            return DataProvider.Site.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, orderByString);
         }
     }
 }

@@ -81,12 +81,12 @@ namespace SiteServer.Utils.Enumerations
             return retval;
         }
 
-		public static EPredefinedRole GetEnumTypeByRoles(string[] roles)
+		public static EPredefinedRole GetEnumTypeByRoles(IList<string> roles)
 		{
 			var isConsoleAdministrator = false;
 			var isSystemAdministrator = false;
 
-			if (roles != null && roles.Length > 0)
+			if (roles != null)
 			{
 				foreach (var role in roles)
 				{
@@ -130,70 +130,62 @@ namespace SiteServer.Utils.Enumerations
 			return item;
 		}
 
-		public static bool IsConsoleAdministrator(string[] roles)
+		public static bool IsConsoleAdministrator(IList<string> roles)
 		{
-			var retval = false;
-			if (roles != null && roles.Length > 0)
-			{
-				foreach (var role in roles)
-				{
-					if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-					{
-						retval = true;
-						break;
-					}
-				}
-			}
-			return retval;
+			return roles != null && roles.Contains(GetValue(EPredefinedRole.ConsoleAdministrator));
 		}
 
-		public static bool IsSystemAdministrator(string[] roles)
+		public static bool IsSystemAdministrator(IList<string> roles)
 		{
-			var retval = false;
-			if (roles != null && roles.Length > 0)
-			{
-				foreach (var role in roles)
-				{
-				    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-					{
-						retval = true;
-						break;
-					}
-				    if (Equals(EPredefinedRole.SystemAdministrator, role))
-				    {
-				        retval = true;
-				        break;
-				    }
-				}
-			}
-			return retval;
+		    return roles != null && (roles.Contains(GetValue(EPredefinedRole.ConsoleAdministrator)) || roles.Contains(GetValue(EPredefinedRole.SystemAdministrator)));
+
+   //         var retval = false;
+			//if (roles != null && roles.Length > 0)
+			//{
+			//	foreach (var role in roles)
+			//	{
+			//	    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
+			//		{
+			//			retval = true;
+			//			break;
+			//		}
+			//	    if (Equals(EPredefinedRole.SystemAdministrator, role))
+			//	    {
+			//	        retval = true;
+			//	        break;
+			//	    }
+			//	}
+			//}
+			//return retval;
 		}
 
-        public static bool IsAdministrator(string[] roles)
+        public static bool IsAdministrator(List<string> roles)
         {
-            var retval = false;
-            if (roles != null && roles.Length > 0)
-            {
-                foreach (var role in roles)
-                {
-                    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-                    {
-                        retval = true;
-                        break;
-                    }
-                    if (Equals(EPredefinedRole.SystemAdministrator, role))
-                    {
-                        retval = true;
-                        break;
-                    }
-                    if(Equals(EPredefinedRole.Administrator,role))
-                    {
-                        retval = true;
-                        break;
-                    }
-                }
-            }
-            return retval;
+            return roles != null && (roles.Contains(GetValue(EPredefinedRole.ConsoleAdministrator)) || roles.Contains(GetValue(EPredefinedRole.SystemAdministrator)) || roles.Contains(GetValue(EPredefinedRole.Administrator)));
+
+            //var retval = false;
+            //if (roles != null && roles.Length > 0)
+            //{
+            //    foreach (var role in roles)
+            //    {
+            //        if (Equals(EPredefinedRole.ConsoleAdministrator, role))
+            //        {
+            //            retval = true;
+            //            break;
+            //        }
+            //        if (Equals(EPredefinedRole.SystemAdministrator, role))
+            //        {
+            //            retval = true;
+            //            break;
+            //        }
+            //        if(Equals(EPredefinedRole.Administrator,role))
+            //        {
+            //            retval = true;
+            //            break;
+            //        }
+            //    }
+            //}
+            //return retval;
         }
 
 		public static List<string> GetAllPredefinedRoleName()

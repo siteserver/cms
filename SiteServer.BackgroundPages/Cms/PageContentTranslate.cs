@@ -6,8 +6,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
-                _returnUrl = CmsPages.GetContentsUrl(SiteId, AuthRequest.GetQueryInt("channelId"));
+                _returnUrl = AdminPagesUtils.Cms.GetContentsUrl(SiteId, AuthRequest.GetQueryInt("channelId"));
             }
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{

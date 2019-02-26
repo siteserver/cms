@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
@@ -115,7 +115,7 @@ namespace SiteServer.CMS.StlParser
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
 
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser
                         currentPageIndex);
                     thePageInfo.AddLastPageScript(pageInfo);
 
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
 
                     thePageInfo.ClearLastPageScript(pageInfo);
                     pageInfo.ClearLastPageScript();
@@ -180,7 +180,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -207,13 +207,13 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
                 }
             }
             else
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, contentBuilder);
             }
         }
 
@@ -236,8 +236,8 @@ namespace SiteServer.CMS.StlParser
             if (!ContentManager.IsCreatable(channelInfo, contentInfo)) return;
             
 
-            if (siteInfo.Additional.IsCreateStaticContentByAddDate &&
-                contentInfo.AddDate < siteInfo.Additional.CreateStaticContentAddDate)
+            if (siteInfo.Extend.IsCreateStaticContentByAddDate &&
+                contentInfo.AddDate < siteInfo.Extend.CreateStaticContentAddDate)
             {
                 return;
             }
@@ -284,7 +284,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -316,7 +316,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageChannels>
@@ -342,7 +342,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -368,13 +368,13 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, pagedBuilder);
                 }
             }
             else //无翻页
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, contentBuilder);
             }
         }
 
@@ -382,7 +382,7 @@ namespace SiteServer.CMS.StlParser
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplatId);
-            if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+            if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
             {
                 return;
             }
@@ -393,7 +393,7 @@ namespace SiteServer.CMS.StlParser
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-            await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+            await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, contentBuilder);
         }
 
         private static async Task CreateSpecialAsync(int siteId, int specialId)
@@ -408,13 +408,13 @@ namespace SiteServer.CMS.StlParser
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.FileCharset, contentBuilder);
             }
         }
 
         //private string CreateIncludeFile(string virtualUrl, bool isCreateIfExists)
         //{
-        //    var templateInfo = new TemplateInfo(0, SiteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+        //    var templateInfo = new TemplateInfo(0, SiteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharsetUtils.GetEnumType(SiteInfo.Extend.Charset), false);
         //    var pageInfo = new PageInfo(SiteId, 0, SiteInfo, templateInfo, null);
         //    var contextInfo = new ContextInfo(pageInfo);
 
@@ -426,7 +426,7 @@ namespace SiteServer.CMS.StlParser
         //    StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
         //    var pageAfterBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, true);
         //    var pageBeforeBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, false);
-        //    contentBuilder.Insert(0, pageBeforeBodyScripts);
+        //    contentBuilder.InsertObject(0, pageBeforeBodyScripts);
         //    contentBuilder.Append(pageAfterBodyScripts);
         //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
         //    return parsedVirtualUrl;

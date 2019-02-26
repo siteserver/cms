@@ -3,8 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             LtlTitle.Text = contentInfo.Title;
             LtlState.Text = CheckManager.GetCheckState(SiteInfo, contentInfo);
 
-            var checkInfoList = DataProvider.ContentCheckDao.GetCheckInfoList(_tableName, _contentId);
+            var checkInfoList = DataProvider.ContentCheck.GetCheckInfoList(_tableName, _contentId);
             if (checkInfoList.Count > 0)
             {
                 PhCheckReasons.Visible = true;

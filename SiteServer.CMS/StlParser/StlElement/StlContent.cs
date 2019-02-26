@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -211,12 +211,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.GetString(ContentAttribute.TranslateContentType) == ETranslateContentType.Reference.ToString())
                 {
                     var targetChannelId = contentInfo.SourceId;
-                    //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                    //var targetSiteId = DataProvider.Channel.GetSiteId(targetChannelId);
                     var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                    //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                    //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                     var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
@@ -250,14 +250,14 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
                     parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                    parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
                     {
                         parsedContent = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), parsedContent);
                     }
 
-                    if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
+                    if (pageInfo.SiteInfo.Extend.IsContentTitleBreakLine)
                     {
                         parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
                     }
@@ -570,7 +570,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
                             parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
-                            parsedContent = InputTypeUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                            parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else
                         {

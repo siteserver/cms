@@ -4,9 +4,10 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     try
                     {
-                        DataProvider.TableStyleDao.Delete(_channelInfo.Id, _tableName, attributeName);
+                        DataProvider.TableStyle.Delete(_channelInfo.Id, _tableName, attributeName);
                         AuthRequest.AddSiteLog(SiteId, "删除数据表单样式", $"表单:{_tableName},字段:{attributeName}");
                         SuccessDeleteMessage();
                     }
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.Type);
 
             var columnInfo = TableColumnManager.GetTableColumnInfo(_tableName, styleInfo.AttributeName);
 

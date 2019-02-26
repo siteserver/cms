@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -16,14 +15,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentId = request.GetQueryInt("contentId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
+                var contentId = rest.GetQueryInt("contentId");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();

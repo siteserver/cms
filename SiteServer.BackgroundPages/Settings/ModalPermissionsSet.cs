@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
+            var roles = DataProvider.AdministratorsInRoles.GetRolesForUser(_userName);
             if (AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
             {
                 DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
@@ -82,12 +82,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             LbAvailableRoles.Items.Clear();
             LbAssignedRoles.Items.Clear();
-            var allRoles = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
-            var userRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
-            var userRoleNameArrayList = new ArrayList(userRoles);
+            var allRoles = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator ? DataProvider.Role.GetRoleNameList() : DataProvider.Role.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
+            var userRoles = DataProvider.AdministratorsInRoles.GetRolesForUser(_userName);
+            var userRoleNameList = new List<string>(userRoles);
             foreach (var roleName in allRoles)
             {
-                if (!EPredefinedRoleUtils.IsPredefinedRole(roleName) && !userRoleNameArrayList.Contains(roleName))
+                if (!EPredefinedRoleUtils.IsPredefinedRole(roleName) && !userRoleNameList.Contains(roleName))
                 {
                     LbAvailableRoles.Items.Add(new ListItem(roleName, roleName));
                 }
@@ -112,7 +112,10 @@ namespace SiteServer.BackgroundPages.Settings
                     var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAvailableRoles);
                     if (selectedRoles.Length > 0)
                     {
-                        DataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, selectedRoles);
+                        foreach (var selectedRole in selectedRoles)
+                        {
+                            DataProvider.AdministratorsInRoles.AddUserToRole(_userName, selectedRole);
+                        }   
                     }
                 }
                 ListBoxDataBind();
@@ -132,7 +135,10 @@ namespace SiteServer.BackgroundPages.Settings
                 var roles = ControlUtils.GetListControlValues(LbAvailableRoles);
                 if (roles.Length > 0)
                 {
-                    DataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, roles);
+                    foreach (var role in roles)
+                    {
+                        DataProvider.AdministratorsInRoles.AddUserToRole(_userName, role);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -151,7 +157,10 @@ namespace SiteServer.BackgroundPages.Settings
                 if (LbAssignedRoles.SelectedIndex != -1)
                 {
                     var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAssignedRoles);
-                    DataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, selectedRoles);
+                    foreach (var selectedRole in selectedRoles)
+                    {
+                        DataProvider.AdministratorsInRoles.RemoveUserFromRole(_userName, selectedRole);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -170,7 +179,10 @@ namespace SiteServer.BackgroundPages.Settings
                 var roles = ControlUtils.GetListControlValues(LbAssignedRoles);
                 if (roles.Length > 0)
                 {
-                    DataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, roles);
+                    foreach (var role in roles)
+                    {
+                        DataProvider.AdministratorsInRoles.RemoveUserFromRole(_userName, role);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -189,13 +201,13 @@ namespace SiteServer.BackgroundPages.Settings
                 var allRoles = EPredefinedRoleUtils.GetAllPredefinedRoleName();
                 foreach (var roleName in allRoles)
                 {
-                    DataProvider.AdministratorsInRolesDao.RemoveUserFromRole(_userName, roleName);
+                    DataProvider.AdministratorsInRoles.RemoveUserFromRole(_userName, roleName);
                 }
-                DataProvider.AdministratorsInRolesDao.AddUserToRole(_userName, DdlPredefinedRole.SelectedValue);
+                DataProvider.AdministratorsInRoles.AddUserToRole(_userName, DdlPredefinedRole.SelectedValue);
 
                 var adminInfo = AdminManager.GetAdminInfoByUserName(_userName);
 
-                DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo,
+                DataProvider.Administrator.UpdateSiteIdCollection(adminInfo,
                     EPredefinedRoleUtils.Equals(EPredefinedRole.SystemAdministrator, DdlPredefinedRole.SelectedValue)
                         ? ControlUtils.SelectedItemsValueToStringCollection(CblSiteId.Items)
                         : string.Empty);
@@ -214,8 +226,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                var redirectUrl = PageAdministrator.GetRedirectUrl();
-                LayerUtils.CloseAndRedirect(Page, redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, AdminPagesUtils.Settings.AdministratorsUrl);
             }
         }
     }

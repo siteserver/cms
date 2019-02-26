@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -54,10 +54,15 @@ namespace SiteServer.BackgroundPages.Settings
                             keyword = value;
                         }
 
-                        if (!string.IsNullOrEmpty(keyword) && !DataProvider.KeywordDao.IsExists(keyword))
+                        if (!string.IsNullOrEmpty(keyword) && !DataProvider.Keyword.IsExists(keyword))
                         {
-                            var keywordInfo = new KeywordInfo(0, keyword, alternative, grade);
-                            DataProvider.KeywordDao.Insert(keywordInfo);
+                            var keywordInfo = new KeywordInfo
+                            {
+                                Keyword = keyword,
+                                Alternative = alternative,
+                                KeywordGrade = grade
+                            };
+                            DataProvider.Keyword.Insert(keywordInfo);
                         }
                     }
                 }

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -97,7 +98,7 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
                 return;
@@ -112,7 +113,7 @@ namespace SiteServer.Cli.Jobs
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                SystemManager.CreateSiteServerTables();
+                SystemManager.SyncSystemTables();
             }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -144,9 +145,9 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
                     {
-                        if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                        if (!DatabaseApi.Instance.CreateTable(tableName, tableInfo.Columns, string.Empty, false, out var ex, out var sqlString))
                         {
                             await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {
@@ -160,7 +161,7 @@ namespace SiteServer.Cli.Jobs
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
+                        DatabaseApi.Instance.AlterTable(tableName, tableInfo.Columns, string.Empty);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -179,7 +180,7 @@ namespace SiteServer.Cli.Jobs
 
                                 try
                                 {
-                                    DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                    DatabaseApi.Instance.InsertMultiple(tableName, objects, tableInfo.Columns);
                                 }
                                 catch (Exception ex)
                                 {
@@ -209,10 +210,10 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DataProvider.DatabaseDao.GetTableNameList();
+                var tableNameList = DatabaseApi.Instance.GetTableNameList();
                 foreach (var tableName in tableNameList)
                 {
-                    DataProvider.DatabaseDao.AlterOracleAutoIncresementIdToMaxValue(tableName);
+                    DatabaseApi.Instance.AlterOracleAutoIdToMaxValue(tableName);
                 }
             }
 

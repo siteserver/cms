@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using Atom.Core;
 using Atom.Core.Collections;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport.Components
@@ -112,7 +112,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
+                        taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -155,13 +155,13 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                                DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                             }
                         }
                         else
@@ -176,7 +176,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
+                        var contentId = DataProvider.ContentRepository.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
                         if (!string.IsNullOrEmpty(tags))
                         {
@@ -230,7 +230,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
+                        taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -275,13 +275,13 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentDao.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (int id in existsIDs)
                             {
                                 contentInfo.Id = id;
-                                DataProvider.ContentDao.Update(_siteInfo, channelInfo, contentInfo);
+                                DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
                             }
                         }
                         else
@@ -296,7 +296,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     if (isInsert)
                     {
-                        var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
+                        var contentId = DataProvider.ContentRepository.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
                         if (!string.IsNullOrEmpty(tags))
                         {
@@ -326,7 +326,7 @@ namespace SiteServer.CMS.ImportExport.Components
             if (contentIdList == null || contentIdList.Count == 0)
             {
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (contentIdList.Count == 0) return false;
 

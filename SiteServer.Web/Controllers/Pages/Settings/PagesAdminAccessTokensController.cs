@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -19,22 +19,22 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var adminNames = new List<string>();
 
-                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (rest.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    adminNames = DataProvider.AdministratorDao.GetUserNameList();
+                    adminNames = DataProvider.Administrator.GetUserNameList().ToList();
                 }
                 else
                 {
-                    adminNames.Add(request.AdminName);
+                    adminNames.Add(rest.AdminName);
                 }
 
                 var scopes = new List<string>(AccessTokenManager.ScopeList);
@@ -49,10 +49,10 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList(),
+                    Value = DataProvider.AccessToken.GetAll(),
                     adminNames,
                     scopes,
-                    request.AdminName
+                    rest.AdminName
                 });
             }
             catch (Exception ex)
@@ -66,20 +66,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetQueryInt("id");
-
-                DataProvider.AccessTokenDao.Delete(id);
+                var id = rest.GetQueryInt("id");
+                DataProvider.AccessToken.Delete(id);
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList()
+                    Value = DataProvider.AccessToken.GetAll()
                 });
             }
             catch (Exception ex)
@@ -93,18 +92,18 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 if (itemObj.Id > 0)
                 {
-                    var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(itemObj.Id);
+                    var tokenInfo = DataProvider.AccessToken.Get(itemObj.Id);
 
-                    if (tokenInfo.Title != itemObj.Title && DataProvider.AccessTokenDao.IsTitleExists(itemObj.Title))
+                    if (tokenInfo.Title != itemObj.Title && DataProvider.AccessToken.IsTitleExists(itemObj.Title))
                     {
                         return BadRequest("保存失败，已存在相同标题的API密钥！");
                     }
@@ -113,13 +112,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     tokenInfo.AdminName = itemObj.AdminName;
                     tokenInfo.Scopes = itemObj.Scopes;
 
-                    DataProvider.AccessTokenDao.Update(tokenInfo);
+                    DataProvider.AccessToken.Update(tokenInfo);
 
-                    request.AddAdminLog("修改API密钥", $"Access Token:{tokenInfo.Title}");
+                    rest.AddAdminLog("修改API密钥", $"Access Token:{tokenInfo.Title}");
                 }
                 else
                 {
-                    if (DataProvider.AccessTokenDao.IsTitleExists(itemObj.Title))
+                    if (DataProvider.AccessToken.IsTitleExists(itemObj.Title))
                     {
                         return BadRequest("保存失败，已存在相同标题的API密钥！");
                     }
@@ -131,14 +130,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         Scopes = itemObj.Scopes
                     };
 
-                    DataProvider.AccessTokenDao.Insert(tokenInfo);
+                    DataProvider.AccessToken.Insert(tokenInfo);
 
-                    request.AddAdminLog("新增API密钥", $"Access Token:{tokenInfo.Title}");
+                    rest.AddAdminLog("新增API密钥", $"Access Token:{tokenInfo.Title}");
                 }
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList()
+                    Value = DataProvider.AccessToken.GetAll()
                 });
             }
             catch (Exception ex)

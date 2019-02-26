@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using System.Text;
-using SiteServer.CMS.Api;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -222,7 +222,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                if (SiteInfo.Additional.IsCreateWithJQuery)
+                if (SiteInfo.Extend.IsCreateWithJQuery)
                 {
                     retval =
                         $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
@@ -342,7 +342,7 @@ wnd_frame.src=url;}}
             {
                 retval = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Additional.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Extend.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)
@@ -369,7 +369,7 @@ wnd_frame.src=url;}}
                 var builder = new StringBuilder();
 
                 //builder.Append(
-                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Additional.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
+                //$@"<script>var $pageInfo = {{siteId : {SiteId}, channelId : {PageChannelId}, contentId : {PageContentId}, siteUrl : ""{SiteInfo.Extend.WebUrl.TrimEnd('/')}"", rootUrl : ""{PageUtils.GetRootUrl(string.Empty).TrimEnd('/')}"", apiUrl : ""{ApiUrl.TrimEnd('/')}""}};</script>").AppendLine();
 
                 foreach (var key in HeadCodes.Keys)
                 {

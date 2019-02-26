@@ -2,8 +2,8 @@
 using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -20,18 +20,18 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
+                    Value = ConfigManager.Instance.SystemExtend,
                     WebConfigUtils.HomeDirectory,
-                    request.AdminToken,
+                    rest.AdminToken,
                     Styles = TableStyleManager.GetUserStyleInfoList()
                 });
             }
@@ -46,32 +46,32 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeClosed).ToCamelCase());
-                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeTitle).ToCamelCase());
-                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeLogo).ToCamelCase());
-                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeLogoUrl).ToCamelCase());
-                ConfigManager.SystemConfigInfo.IsHomeBackground = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeBackground).ToCamelCase());
-                ConfigManager.SystemConfigInfo.HomeBackgroundUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeBackgroundUrl).ToCamelCase());
-                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl).ToCamelCase());
-                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.UserRegistrationAttributes).ToCamelCase());
-                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsUserRegistrationGroup).ToCamelCase());
-                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool(nameof(ConfigManager.SystemConfigInfo.IsHomeAgreement).ToCamelCase());
-                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString(nameof(ConfigManager.SystemConfigInfo.HomeAgreementHtml).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.IsHomeClosed = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeClosed).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.HomeTitle = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeTitle).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.IsHomeLogo = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeLogo).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.HomeLogoUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeLogoUrl).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.IsHomeBackground = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeBackground).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.HomeBackgroundUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeBackgroundUrl).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.HomeDefaultAvatarUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeDefaultAvatarUrl).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.UserRegistrationAttributes = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.UserRegistrationAttributes).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.IsHomeAgreement = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeAgreement).ToCamelCase());
+                ConfigManager.Instance.SystemExtend.HomeAgreementHtml = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeAgreementHtml).ToCamelCase());
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                DataProvider.Config.Update(ConfigManager.Instance);
 
-                request.AddAdminLog("修改用户中心设置");
+                rest.AddAdminLog("修改用户中心设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = ConfigManager.Instance.SystemExtend
                 });
             }
             catch (Exception ex)
@@ -85,9 +85,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }

@@ -1,7 +1,6 @@
-﻿using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+﻿using SiteServer.CMS.Database.Attributes;
+using SiteServer.Utils;
+using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 

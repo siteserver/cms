@@ -40,23 +40,6 @@ var $methods = {
     });
   },
 
-  getRedirectUrl: function (task) {
-    var url = '../pageRedirect.aspx?siteId=' + task.siteId;
-    if (task.channelId) {
-      url += '&channelId=' + task.channelId;
-    }
-    if (task.contentId) {
-      url += '&contentId=' + task.contentId;
-    }
-    if (task.fileTemplateId) {
-      url += '&fileTemplateId=' + task.fileTemplateId;
-    }
-    if (task.specialId) {
-      url += '&specialId=' + task.specialId;
-    }
-    return url;
-  },
-
   btnCancelClick: function () {
     var $this = this;
     clearTimeout(this.timeoutId);

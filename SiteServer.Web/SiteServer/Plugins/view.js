@@ -2,7 +2,7 @@
 var returnUrl = utils.getQueryString('returnUrl');
 var $url = '/pages/plugins/view/' + pluginId;
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   isNightly: null,
@@ -16,7 +16,7 @@ var data = {
   userInfo: {}
 };
 
-var methods = {
+var $methods = {
   getIconUrl: function (url) {
     if (url && url.indexOf('://') !== -1) return url;
     return ssUtils.getPluginsUrl(url);
@@ -70,6 +70,22 @@ var methods = {
     });
   },
 
+  btnUpgradeClick: function () {
+    location.href = 'install.cshtml?isUpdate=true&pluginIds=' + this.pluginInfo.pluginId;
+  },
+
+  btnPurchaseClick: function () {
+    location.href = ssUtils.getPluginPageUrl(this.pluginInfo.pluginId);
+  },
+
+  btnInstallClick: function () {
+    location.href = 'install.cshtml?pluginIds=' + this.pluginInfo.pluginId;
+  },
+
+  btnTagClick: function (tagName) {
+    location.href = 'add.cshtml?q=' + encodeURIComponent(tagName);
+  },
+
   btnReturn: function () {
     location.href = returnUrl;
   }
@@ -77,8 +93,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -88,7 +90,7 @@ namespace SiteServer.Cli.Jobs
                 await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
                 await Console.Out.WriteLineAsync($"系统文件夹: {CliUtils.PhysicalApplicationPath}");
 
-                if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
                 {
                     await CliUtils.PrintErrorAsync("系统无法连接到 web.config 中设置的数据库");
                     return;

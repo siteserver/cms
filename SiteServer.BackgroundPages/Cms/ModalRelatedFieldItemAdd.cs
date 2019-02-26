@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -54,8 +54,14 @@ namespace SiteServer.BackgroundPages.Cms
                         itemName = itemName.Substring(0, itemName.IndexOf('|'));
                     }
 
-                    var itemInfo = new RelatedFieldItemInfo(0, _relatedFieldId, itemName, itemValue, _parentId, 0);
-                    DataProvider.RelatedFieldItemDao.Insert(itemInfo);
+                    var itemInfo = new RelatedFieldItemInfo
+                    {
+                        RelatedFieldId = _relatedFieldId,
+                        ItemName = itemName,
+                        ItemValue = itemValue,
+                        ParentId = _parentId
+                    };
+                    DataProvider.RelatedFieldItem.Insert(itemInfo);
                 }
 
                 isChanged = true;

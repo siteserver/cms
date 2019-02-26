@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings

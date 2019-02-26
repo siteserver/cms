@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Apis;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -54,8 +56,6 @@ namespace SiteServer.BackgroundPages
         protected override bool IsSinglePage => true;
 
 	    protected override bool IsAccessable => true;
-
-	    protected override bool IsInstallerPage => true;
 
 	    public static string GetRedirectUrl()
 	    {
@@ -198,7 +198,7 @@ namespace SiteServer.BackgroundPages
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == DatabaseType.Oracle);
-                    isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    isConnectValid = DatabaseApi.Instance.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
                 
                 if (isConnectValid)

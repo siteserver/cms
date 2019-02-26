@@ -166,14 +166,20 @@ var $methods = {
   btnResetClick: function () {
     var $this = this;
 
-    utils.alertDelete({
-      title: '重置用户菜单',
-      text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
-      button: '确认重置',
-      callback: function () {
-        $this.reset();
-      }
-    });
+    swal2({
+        title: '重置用户菜单',
+        text: '此操作将把用户菜单恢复为系统默认值，确定吗？',
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonClass: 'btn btn-danger',
+        cancelButtonText: '取 消',
+        confirmButtonText: '确认重置'
+      })
+      .then(function (result) {
+        if (result.value) {
+          $this.reset();
+        }
+      });
   },
 
   btnEditClick: function (item) {

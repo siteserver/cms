@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Core
 {

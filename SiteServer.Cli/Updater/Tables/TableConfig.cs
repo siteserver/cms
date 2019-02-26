@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
@@ -49,14 +49,14 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.ConfigDao.TableName;
+        private static readonly string NewTableName = DataProvider.Config.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.ConfigDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.Config.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ConfigInfo.SystemConfig), nameof(SettingsXml)}
+                {"SystemConfig", nameof(SettingsXml)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

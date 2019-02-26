@@ -9,9 +9,11 @@ using SiteServer.Cli.Updater.Tables;
 using SiteServer.Cli.Updater.Tables.GovInteract;
 using SiteServer.Cli.Updater.Tables.GovPublic;
 using SiteServer.Cli.Updater.Tables.Jobs;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Provider;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Repositories;
+using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.Utils;
+using TableInfo = SiteServer.Cli.Core.TableInfo;
 
 namespace SiteServer.Cli.Updater
 {
@@ -136,9 +138,9 @@ namespace SiteServer.Cli.Updater
 
                         foreach (var newRow in newRows)
                         {
-                            if (newRow.ContainsKey(nameof(CMS.Model.ContentInfo.SiteId)))
+                            if (newRow.ContainsKey(nameof(ContentInfo.SiteId)))
                             {
-                                var siteId = Convert.ToInt32(newRow[nameof(CMS.Model.ContentInfo.SiteId)]);
+                                var siteId = Convert.ToInt32(newRow[nameof(ContentInfo.SiteId)]);
                                 if (siteIdList.Contains(siteId))
                                 {
                                     var rows = siteIdWithRows[siteId];
@@ -150,7 +152,7 @@ namespace SiteServer.Cli.Updater
                         foreach (var siteId in siteIdList)
                         {
                             var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = ContentDao.GetContentTableName(siteId);
+                            var siteTableName = ContentRepository.GetContentTableName(siteId);
                             var siteTableInfo = splitSiteTableDict[siteId];
                             siteTableInfo.TotalCount += siteRows.Count;
 
@@ -278,10 +280,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
             {
                 converter = TableTemplateLog.Converter;
-            }
-            else if (StringUtils.ContainsIgnoreCase(TableTemplateMatch.OldTableNames, oldTableName))
-            {
-                converter = TableTemplateMatch.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableUser.OldTableName, oldTableName))
             {

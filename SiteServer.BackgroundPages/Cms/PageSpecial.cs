@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,8 +56,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             RptContents.DataSource = string.IsNullOrEmpty(keyword)
-                ? DataProvider.SpecialDao.GetSpecialInfoList(SiteId)
-                : DataProvider.SpecialDao.GetSpecialInfoList(SiteId, keyword);
+                ? DataProvider.Special.GetSpecialInfoList(SiteId)
+                : DataProvider.Special.GetSpecialInfoList(SiteId, keyword);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -77,7 +77,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = $@"<a href=""{SpecialManager.GetSpecialUrl(SiteInfo, specialInfo.Url)}"" target=""_blank"">{specialInfo.Title}</a>";
             ltlUrl.Text = specialInfo.Url;
-            ltlAddDate.Text = specialInfo.AddDate.ToString("yyyy-MM-dd HH:mm");
+            if (specialInfo.AddDate != null)
+            {
+                ltlAddDate.Text = specialInfo.AddDate.Value.ToString("yyyy-MM-dd HH:mm");
+            }
 
             ltlActions.Text = $@"
 <a class=""m-r-10"" href=""javascript:;"" onclick=""{ModalSpecialAdd.GetOpenWindowString(SiteId, specialInfo.Id)}"">编辑</a>

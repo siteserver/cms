@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,11 +22,11 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
                     departments.Add(new KeyValuePair<int, string>(departmentId,
                         GetDepartment(isLastNodeArrayOfDepartment, departmentInfo.DepartmentName,
-                            departmentInfo.ParentsCount, departmentInfo.IsLastNode)));
+                            departmentInfo.ParentsCount, departmentInfo.LastNode)));
                 }
 
                 var areas = new List<KeyValuePair<int, string>>
@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     var areaInfo = AreaManager.GetAreaInfo(areaId);
                     areas.Add(new KeyValuePair<int, string>(areaId,
-                        GetArea(isLastNodeArrayOfArea, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode)));
+                        GetArea(isLastNodeArrayOfArea, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode)));
                 }
 
                 return Ok(new
@@ -74,7 +74,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     Value = adminInfo,
                     Departments = departments,
                     Areas = areas,
-                    request.AdminToken
+                    rest.AdminToken
                 });
             }
             catch (Exception ex)
@@ -128,13 +128,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -180,11 +180,11 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -200,30 +200,30 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     adminInfo = new AdministratorInfo();
                 }
 
-                var userName = request.GetPostString("userName");
-                var password = request.GetPostString("password");
-                var displayName = request.GetPostString("displayName");
-                var avatarUrl = request.GetPostString("avatarUrl");
-                var mobile = request.GetPostString("mobile");
-                var email = request.GetPostString("email");
-                var departmentId = request.GetPostInt("departmentId");
-                var areaId = request.GetPostInt("areaId");
+                var userName = rest.GetPostString("userName");
+                var password = rest.GetPostString("password");
+                var displayName = rest.GetPostString("displayName");
+                var avatarUrl = rest.GetPostString("avatarUrl");
+                var mobile = rest.GetPostString("mobile");
+                var email = rest.GetPostString("email");
+                var departmentId = rest.GetPostInt("departmentId");
+                var areaId = rest.GetPostInt("areaId");
 
                 if (adminInfo.Id == 0)
                 {
                     adminInfo.UserName = userName;
                     adminInfo.Password = password;
-                    adminInfo.CreatorUserName = request.AdminName;
+                    adminInfo.CreatorUserName = rest.AdminName;
                     adminInfo.CreationDate = DateTime.Now;
                 }
                 else
                 {
-                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && DataProvider.AdministratorDao.IsMobileExists(mobile))
+                    if (adminInfo.Mobile != mobile && !string.IsNullOrEmpty(mobile) && DataProvider.Administrator.IsMobileExists(mobile))
                     {
                         return BadRequest("资料修改失败，手机号码已存在");
                     }
 
-                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && DataProvider.AdministratorDao.IsEmailExists(email))
+                    if (adminInfo.Email != email && !string.IsNullOrEmpty(email) && DataProvider.Administrator.IsEmailExists(email))
                     {
                         return BadRequest("资料修改失败，邮箱地址已存在");
                     }
@@ -238,16 +238,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 if (adminInfo.Id == 0)
                 {
-                    if (!DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage))
+                    if (DataProvider.Administrator.Insert(adminInfo, out var errorMessage) == 0)
                     {
-                        return BadRequest($"管理员添加失败：{errorMessage}");
+                        return BadRequest(errorMessage);
                     }
-                    request.AddAdminLog("添加管理员", $"管理员:{adminInfo.UserName}");
+                    rest.AddAdminLog("添加管理员", $"管理员:{adminInfo.UserName}");
                 }
                 else
                 {
-                    DataProvider.AdministratorDao.Update(adminInfo);
-                    request.AddAdminLog("修改管理员属性", $"管理员:{adminInfo.UserName}");
+                    if (!DataProvider.Administrator.Update(adminInfo, out var errorMessage))
+                    {
+                        return BadRequest(errorMessage);
+                    }
+                    rest.AddAdminLog("修改管理员属性", $"管理员:{adminInfo.UserName}");
                 }
 
                 return Ok(new

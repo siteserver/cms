@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -32,7 +32,13 @@ namespace SiteServer.CMS.ImportExport.Components
 
 	        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ChannelGroupInfo.Taxis)));
 	        var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ChannelGroupInfo.Description));
-	        DataProvider.ChannelGroupDao.Insert(new ChannelGroupInfo(groupName, siteId, taxis, description));
+	        DataProvider.ChannelGroup.Insert(new ChannelGroupInfo
+	        {
+                GroupName = groupName,
+	            SiteId = siteId,
+	            Taxis = taxis,
+	            Description = description
+            });
 
 	        return true;
 	    }

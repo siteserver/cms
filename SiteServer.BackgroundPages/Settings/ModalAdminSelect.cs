@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Settings
                     if (_departmentId > 0)
                     {
                         LtlDepartment.Text = DepartmentManager.GetDepartmentName(_departmentId);
-                        RptUser.DataSource = DataProvider.AdministratorDao.GetUserNameList(_departmentId, false);
+                        RptUser.DataSource = DataProvider.Administrator.GetUserNameList(_departmentId);
                         RptUser.ItemDataBound += RptUser_ItemDataBound;
                         RptUser.DataBind();
                     }
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            RptDepartment.DataSource = DataProvider.DepartmentDao.GetIdListByParentId(0);
+            RptDepartment.DataSource = DataProvider.Department.GetIdListByParentId(0);
             RptDepartment.ItemDataBound += rptDepartment_ItemDataBound;
             RptDepartment.DataBind();
         }

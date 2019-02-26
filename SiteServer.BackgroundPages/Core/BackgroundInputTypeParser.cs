@@ -6,13 +6,14 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Editors;
-using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Editors;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Core
                 extraBuilder.Append($@"<small class=""form-text text-muted"">{styleInfo.HelpText}</small>");
             }
 
-            var inputType = styleInfo.InputType;
+            var inputType = styleInfo.Type;
 
             if (inputType == InputType.Text)
             {
@@ -102,15 +103,15 @@ namespace SiteServer.BackgroundPages.Core
 
         public static string ParseText(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
 
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            if (styleInfo.Additional.IsFormatString)
+            if (styleInfo.Extend.IsFormatString)
             {
                 var formatStrong = false;
                 var formatEm = false;
@@ -243,15 +244,15 @@ $('#Title').keyup(function (e) {
 
         public static string ParseTextArea(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                 $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
 
-            var height = styleInfo.Additional.Height;
+            var height = styleInfo.Extend.Height;
             if (height == 0)
             {
                 height = 80;
@@ -295,7 +296,7 @@ $(function(){{
 
         private static string ParseSelectOne(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -306,7 +307,7 @@ $(function(){{
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
             builder.Append($@"<select id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control""  isListItem=""true"" {validateAttributes}>");
 
             var isTicked = false;
@@ -328,7 +329,7 @@ $(function(){{
 
         private static string ParseSelectMultiple(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -339,7 +340,7 @@ $(function(){{
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
-            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
             builder.Append($@"<select id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control"" isListItem=""true"" multiple  {validateAttributes}>");
 
             foreach (var styleItem in styleItems)
@@ -355,15 +356,15 @@ $(function(){{
         private static string ParseSelectCascading(IAttributes attributes, SiteInfo siteInfo, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
-            var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(styleInfo.Additional.RelatedFieldId);
+            var fieldInfo = DataProvider.RelatedField.Get(styleInfo.Extend.RelatedFieldId);
             if (fieldInfo == null) return string.Empty;
 
-            var list = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(styleInfo.Additional.RelatedFieldId, 0);
+            var list = DataProvider.RelatedFieldItem.GetRelatedFieldItemInfoList(styleInfo.Extend.RelatedFieldId, 0);
 
             var prefixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Prefixes);
             var suffixes = TranslateUtils.StringCollectionToStringCollection(fieldInfo.Suffixes);
 
-            var style = ERelatedFieldStyleUtils.GetEnumType(styleInfo.Additional.RelatedFieldStyle);
+            var style = ERelatedFieldStyleUtils.GetEnumType(styleInfo.Extend.RelatedFieldStyle);
 
             var builder = new StringBuilder();
             builder.Append($@"
@@ -418,7 +419,7 @@ function getRelatedField_{fieldInfo.Id}(level){{
     var itemID = $('option:selected', obj).attr('itemID');
     if (itemID){{
         var url = '{ApiRouteActionsRelatedField.GetUrl(ApiManager.InnerApiUrl, siteInfo.Id,
-                styleInfo.Additional.RelatedFieldId, 0)}' + itemID;
+                styleInfo.Extend.RelatedFieldId, 0)}' + itemID;
         var values = '{values}';
         var value = (values) ? values.split(',')[level - 1] : '';
         $.post(url + '&callback=?', '', function(data, textStatus){{
@@ -464,7 +465,7 @@ $(document).ready(function(){{
 
         private static string ParseCheckBox(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -478,13 +479,13 @@ $(document).ready(function(){{
             {
                 CssClass = "checkbox checkbox-primary",
                 ID = styleInfo.AttributeName,
-                RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = styleInfo.Additional.Columns
+                RepeatDirection = styleInfo.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
+                RepeatColumns = styleInfo.Extend.Columns
             };
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
-            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
 
             foreach (var styleItem in styleItems)
             {
@@ -512,7 +513,7 @@ $(document).ready(function(){{
 
         private static string ParseRadio(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -541,13 +542,13 @@ $(document).ready(function(){{
             {
                 CssClass = "radio radio-primary",
                 ID = styleInfo.AttributeName,
-                RepeatDirection = styleInfo.IsHorizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
-                RepeatColumns = styleInfo.Additional.Columns
+                RepeatDirection = styleInfo.Horizontal ? RepeatDirection.Horizontal : RepeatDirection.Vertical,
+                RepeatColumns = styleInfo.Extend.Columns
             };
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
-            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Extend.IsValidate, styleInfo.DisplayName, styleInfo.Extend.IsRequired, styleInfo.Extend.MinNum, styleInfo.Extend.MaxNum, styleInfo.Extend.ValidateType, styleInfo.Extend.RegExp, styleInfo.Extend.ErrorMessage);
 
             var isTicked = false;
             foreach (var styleItem in styleItems)
@@ -572,7 +573,7 @@ $(document).ready(function(){{
 
         private static string ParseDate(IAttributes attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -599,7 +600,7 @@ $(document).ready(function(){{
 
         private static string ParseDateTime(IAttributes attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
@@ -891,15 +892,15 @@ function add_{attributeName}(val,foucs){{
 
         private static string ParseCustomize(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
-            if (styleInfo.Additional.IsValidate)
+            if (styleInfo.Extend.IsValidate)
             {
                 extraBuilder.Append(
                     $@"<span id=""{styleInfo.AttributeName}_msg"" style=""color:red;display:none;"">*</span><script>event_observe('{styleInfo.AttributeName}', 'blur', checkAttributeValue);</script>");
             }
 
             var value = attributes.GetString(styleInfo.AttributeName);
-            var left = styleInfo.Additional.CustomizeLeft.Replace(Value, value);
-            var right = styleInfo.Additional.CustomizeRight.Replace(Value, value);
+            var left = styleInfo.Extend.CustomizeLeft.Replace(Value, value);
+            var right = styleInfo.Extend.CustomizeRight.Replace(Value, value);
 
             extraBuilder.Append(right);
             return left;
@@ -920,7 +921,7 @@ function add_{attributeName}(val,foucs){{
                 //var theValue = GetValueByForm(styleInfo, siteInfo, formCollection);
 
                 var theValue = formCollection[styleInfo.AttributeName] ?? string.Empty;
-                var inputType = styleInfo.InputType;
+                var inputType = styleInfo.Type;
                 if (inputType == InputType.TextEditor)
                 {
                     theValue = ContentUtility.TextEditorContentEncode(siteInfo, theValue);
@@ -934,7 +935,7 @@ function add_{attributeName}(val,foucs){{
 
                 dict[styleInfo.AttributeName] = theValue;
 
-                if (styleInfo.Additional.IsFormatString)
+                if (styleInfo.Extend.IsFormatString)
                 {
                     var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
                     var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);
@@ -983,7 +984,7 @@ function add_{attributeName}(val,foucs){{
         //        attributes.Set(styleInfo.AttributeName, theValue);
         //        //TranslateUtils.SetOrRemoveAttributeLowerCase(attributes, styleInfo.AttributeName, theValue);
 
-        //        if (styleInfo.Additional.IsFormatString)
+        //        if (styleInfo.Extend.IsFormatString)
         //        {
         //            var formatString = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatStrong"]);
         //            var formatEm = TranslateUtils.ToBool(formCollection[styleInfo.AttributeName + "_formatEM"]);

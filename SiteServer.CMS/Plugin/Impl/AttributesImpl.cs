@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -227,7 +228,7 @@ namespace SiteServer.CMS.Plugin.Impl
             var value = Get(key);
             if (value == null) return defaultValue;
             if (value is int) return (int)value;
-            return TranslateUtils.ToIntWithNagetive(value.ToString(), defaultValue);
+            return TranslateUtils.ToIntWithNegative(value.ToString(), defaultValue);
         }
 
         public decimal GetDecimal(string key, decimal defaultValue = 0)
@@ -235,7 +236,7 @@ namespace SiteServer.CMS.Plugin.Impl
             var value = Get(key);
             if (value == null) return defaultValue;
             if (value is decimal) return (decimal)value;
-            return TranslateUtils.ToDecimalWithNagetive(value.ToString(), defaultValue);
+            return TranslateUtils.ToDecimalWithNegative(value.ToString(), defaultValue);
         }
 
         public DateTime GetDateTime(string key, DateTime defaultValue)
@@ -246,6 +247,14 @@ namespace SiteServer.CMS.Plugin.Impl
             return TranslateUtils.ToDateTime(value.ToString(), defaultValue);
         }
 
+        public DateTime? GetDateTime(string key)
+        {
+            var value = Get(key);
+            if (value == null) return null;
+            if (value is DateTime) return (DateTime)value;
+            return TranslateUtils.ToDateTime(value.ToString());
+        }
+
         public void Remove(string key)
         {
             if (string.IsNullOrEmpty(key)) return;
@@ -253,7 +262,7 @@ namespace SiteServer.CMS.Plugin.Impl
             _dataDict.Remove(key);
         }
 
-        public void Set(string name, object value)
+        public virtual void Set(string name, object value)
         {
             if (string.IsNullOrEmpty(name)) return;
 

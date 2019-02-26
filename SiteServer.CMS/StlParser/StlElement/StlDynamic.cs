@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Caches.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlEntity;
@@ -100,7 +100,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlParserManager.ParseInnerContent(new StringBuilder(templateContent), pageInfo, contextInfo);
 
             var apiUrl = ApiRouteActionsDynamic.GetUrl(pageInfo.ApiUrl);
-            var currentPageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+            var currentPageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
             currentPageUrl = PageUtils.AddQuestionOrAndToUrl(currentPageUrl);
             var apiParameters = ApiRouteActionsDynamic.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, currentPageUrl, ajaxDivId, isPageRefresh, templateContent);
 

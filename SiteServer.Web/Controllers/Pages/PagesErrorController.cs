@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -15,17 +15,17 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin)
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
 
-                var logId = request.GetQueryInt("logId");
+                var logId = rest.GetQueryInt("logId");
 
                 return Ok(new
                 {
-                    LogInfo = DataProvider.ErrorLogDao.GetErrorLogInfo(logId),
+                    LogInfo = DataProvider.ErrorLog.GetErrorLogInfo(logId),
                     SystemManager.Version
                 });
             }

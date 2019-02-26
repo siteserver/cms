@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -20,14 +20,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("contentIds"));
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -68,15 +68,15 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
-                var isRetainFiles = request.GetPostBool("isRetainFiles");
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
+                var isRetainFiles = rest.GetPostBool("isRetainFiles");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -98,17 +98,17 @@ namespace SiteServer.API.Controllers.Home
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                    request.AddSiteLog(siteId, channelId, contentId, "删除内容",
+                    var contentTitle = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
+                    rest.AddSiteLog(siteId, channelId, contentId, "删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
                 }
                 else
                 {
-                    request.AddSiteLog(siteId, "批量删除内容",
+                    rest.AddSiteLog(siteId, "批量删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+                DataProvider.ContentRepository.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

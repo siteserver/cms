@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -47,18 +47,18 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Additional.IsCrossSiteTransChecked.ToString());
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Extend.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
+		    SiteInfo.Extend.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 				
 		    try
 		    {
-		        DataProvider.SiteDao.Update(SiteInfo);
+		        DataProvider.Site.Update(SiteInfo);
 
 		        AuthRequest.AddSiteLog(SiteId, "修改默认跨站转发设置");
 

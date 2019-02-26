@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater.Tables;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Provider;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Repositories;
+using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.Utils;
 using TableInfo = SiteServer.Cli.Core.TableInfo;
 
@@ -26,7 +27,7 @@ namespace SiteServer.Cli.Updater
 
             foreach (var oldRow in oldRows)
             {
-                var newRow = TranslateUtils.JsonGetDictionaryIgnorecase(oldRow);
+                var newRow = TranslateUtils.JsonGetDictionaryIgnoreCase(oldRow);
                 foreach (var key in convertKeyDict.Keys)
                 {
                     var convertKey = convertKeyDict[key];
@@ -72,7 +73,7 @@ namespace SiteServer.Cli.Updater
                         var rows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                         foreach (var row in rows)
                         {
-                            var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                            var dict = TranslateUtils.JsonGetDictionaryIgnoreCase(row);
                             if (dict.ContainsKey(nameof(TableSite.PublishmentSystemId)))
                             {
                                 var value = Convert.ToInt32(dict[nameof(TableSite.PublishmentSystemId)]);
@@ -121,22 +122,22 @@ namespace SiteServer.Cli.Updater
 
         public static async Task UpdateSitesSplitTableNameAsync(TreeInfo newTreeInfo, Dictionary<int, TableInfo> splitSiteTableDict)
         {
-            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.SiteDao.TableName);
+            var siteMetadataFilePath = newTreeInfo.GetTableMetadataFilePath(DataProvider.Site.TableName);
             if (FileUtils.IsFileExists(siteMetadataFilePath))
             {
                 var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(siteMetadataFilePath, Encoding.UTF8));
                 foreach (var fileName in siteTableInfo.RowFiles)
                 {
-                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, fileName);
+                    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.Site.TableName, fileName);
                     var oldRows = TranslateUtils.JsonDeserialize<List<JObject>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                     var newRows = new List<Dictionary<string, object>>();
                     foreach (var row in oldRows)
                     {
-                        var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
+                        var dict = TranslateUtils.JsonGetDictionaryIgnoreCase(row);
                         if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = ContentDao.GetContentTableName(siteId);
+                            dict[nameof(SiteInfo.TableName)] = ContentRepository.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);
@@ -158,7 +159,7 @@ namespace SiteServer.Cli.Updater
             //if (FileUtils.IsFileExists(tableFilePath))
             //{
             //    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(tableFilePath, Encoding.UTF8));
-            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
+            //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.Site.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
             //    var tableInfoList = TranslateUtils.JsonDeserialize<List<CMS.Model.TableInfo>>(FileUtils.ReadText(filePath, Encoding.UTF8));
                 
 

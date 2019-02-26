@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SiteServer.CMS.StlParser.Model
+﻿namespace SiteServer.CMS.StlParser.Model
 {
     public class MinContentInfo
     {

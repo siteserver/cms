@@ -63,8 +63,8 @@
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.1.3\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -145,9 +145,11 @@
     <Compile Include="Controllers\Home\HomeContentsLayerTaxisController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerViewController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerWordController.cs" />
-    <Compile Include="Controllers\Pages\Cloud\PagesDashboardController.cs" />
-    <Compile Include="Controllers\Pages\Cloud\PagesLogoutController.cs" />
-    <Compile Include="Controllers\Pages\Cloud\PagesLayerLoginController.cs" />
+    <Compile Include="Controllers\Pages\Connect\PagesIndexController.cs" />
+    <Compile Include="Controllers\Pages\Connect\PagesDashboardController.cs" />
+    <Compile Include="Controllers\Pages\Connect\PagesAuthorizeController.cs" />
+    <Compile Include="Controllers\Pages\Connect\PagesLogoutController.cs" />
+    <Compile Include="Controllers\Pages\Connect\PagesLayerLoginController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCopyController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCutController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerArrangeController.cs" />
@@ -165,6 +167,8 @@
     <Compile Include="Controllers\Pages\Cms\PagesContentsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\PagesLoadingController.cs" />
+    <Compile Include="Controllers\Pages\PagesUpdateController.cs" />
     <Compile Include="Controllers\Pages\PagesUpgradeController.cs" />
     <Compile Include="Controllers\Pages\PagesErrorController.cs" />
     <Compile Include="Controllers\Pages\PagesMainController.cs" />
@@ -173,6 +177,7 @@
     <Compile Include="Controllers\Pages\Plugins\PagesViewController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesAddController.cs" />
     <Compile Include="Controllers\Pages\Plugins\PagesInstallController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdministratorsController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminPasswordController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminViewController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminProfileController.cs" />
@@ -192,11 +197,6 @@
     <Compile Include="Controllers\V1\V1ContentsController.cs" />
     <Compile Include="Controllers\V1\V1CaptchaController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminAccessTokensController.cs" />
-    <Compile Include="Controllers\Sys\SysPackagingClearCacheController.cs" />
-    <Compile Include="Controllers\Sys\SysPackagingUpdateSsCmsController.cs" />
-    <Compile Include="Controllers\Sys\SysPackagingUpdateController.cs" />
-    <Compile Include="Controllers\Sys\SysPackagingSyncDatabaseController.cs" />
-    <Compile Include="Controllers\Sys\SysPackagingDownloadController.cs" />
     <Compile Include="Controllers\Sys\SysUEditorController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsDownloadController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsDynamicController.cs" />
@@ -207,7 +207,7 @@
     <Compile Include="Controllers\Sys\SysStlActionsSearchController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsTriggerController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsUploadController.cs" />
-    <Compile Include="Controllers\V1\V1TestController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\V1\V1AdministratorsController.cs" />
     <Compile Include="Controllers\V1\V1UsersController.cs" />
     <Compile Include="Controllers\V1\V1PingController.cs" />
@@ -215,6 +215,7 @@
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="NamespaceHttpControllerSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rest.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
@@ -226,6 +227,10 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{b50a541a-29dc-4084-bbfa-d60110d7ab0f}</Project>
+      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>

@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -41,10 +41,10 @@ namespace SiteServer.BackgroundPages.Settings
             EKeywordGradeUtils.AddListItems(DdlGrade);
             if (_keywordId <= 0) return;
 
-            var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
+            var keywordInfo = DataProvider.Keyword.Get(_keywordId);
             TbKeyword.Text = keywordInfo.Keyword;
             TbAlternative.Text = keywordInfo.Alternative;
-            ControlUtils.SelectSingleItem(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
+            ControlUtils.SelectSingleItem(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.KeywordGrade));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -55,11 +55,11 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 try
                 {
-                    var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
+                    var keywordInfo = DataProvider.Keyword.Get(_keywordId);
                     keywordInfo.Keyword = TbKeyword.Text.Trim();
                     keywordInfo.Alternative = TbAlternative.Text.Trim();
-                    keywordInfo.Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
-                    DataProvider.KeywordDao.Update(keywordInfo);
+                    keywordInfo.KeywordGrade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
+                    DataProvider.Keyword.Update(keywordInfo);
 
                     isChanged = true;
                 }
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                if (DataProvider.KeywordDao.IsExists(TbKeyword.Text))
+                if (DataProvider.Keyword.IsExists(TbKeyword.Text))
                 {
                     FailMessage("敏感词添加失败，敏感词名称已存在！");
                 }
@@ -82,9 +82,9 @@ namespace SiteServer.BackgroundPages.Settings
                         {
                             Keyword = TbKeyword.Text.Trim(),
                             Alternative = TbAlternative.Text.Trim(),
-                            Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue)
+                            KeywordGrade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue)
                         };
-                        DataProvider.KeywordDao.Insert(keywordInfo);
+                        DataProvider.Keyword.Insert(keywordInfo);
                         isChanged = true;
                     }
                     catch (Exception ex)

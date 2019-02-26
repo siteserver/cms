@@ -5,9 +5,9 @@ using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Plugin;
@@ -373,7 +373,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = siteInfo.Additional.WebUrl;
+                currentUrl = siteInfo.Extend.WebUrl;
             }
             else if (templateType == TemplateType.ContentTemplate)
             {

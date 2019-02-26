@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -34,12 +34,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("DepartmentIDCollection"))
+            if (AuthRequest.IsQueryExists("DeleteById") && AuthRequest.IsQueryExists("DepartmentIDCollection"))
             {
                 var departmentIdArrayList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("DepartmentIDCollection"));
                 foreach (var departmentId in departmentIdArrayList)
                 {
-                    DataProvider.DepartmentDao.Delete(departmentId);
+                    DataProvider.Department.Delete(departmentId);
                 }
                 SuccessMessage("成功删除所选部门");
             }
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var departmentId = AuthRequest.GetQueryInt("DepartmentID");
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
-                DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
+                DataProvider.Department.UpdateTaxis(departmentId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(departmentId));
                 return;
@@ -73,10 +73,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
             {
-                {"Delete", "True" }
+                {"DeleteById", "True" }
             }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
 
-            RptContents.DataSource = DataProvider.DepartmentDao.GetIdListByParentId(0);
+            RptContents.DataSource = DataProvider.Department.GetIdListByParentId(0);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }

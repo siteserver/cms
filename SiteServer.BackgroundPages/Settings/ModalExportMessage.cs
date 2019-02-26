@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.ImportExport;
 
 namespace SiteServer.BackgroundPages.Settings

@@ -1,9 +1,10 @@
 ﻿using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
@@ -33,7 +34,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelInfo.Id, isPeriods,
+                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelInfo.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
@@ -114,10 +115,10 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            List<int> userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False);
+            var userIdList = DataProvider.User.GetIdList(checkedState != ETriState.False);
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(DataProvider.UserDao.GetIdList(false));
+                userIdList.AddRange(DataProvider.User.GetIdList(false));
             }
 
             foreach (var userId in userIdList)
