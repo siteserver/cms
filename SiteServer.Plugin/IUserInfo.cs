@@ -6,7 +6,7 @@ namespace SiteServer.Plugin
     /// <summary>
     /// 用户实体接口。
     /// </summary>
-    public interface IUserInfo : IAttributes
+    public interface IUserInfo
     {
         /// <summary>
         /// 用户Id。
@@ -71,7 +71,7 @@ namespace SiteServer.Plugin
         /// <summary>
         /// 是否被锁定。
         /// </summary>
-        bool LockedOut { get; set; }
+        bool Locked { get; set; }
 
         /// <summary>
         /// 姓名。

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -41,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 TbSiteName.Text = SiteInfo.SiteName;
 
-			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Extend.ToDictionary());
+			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.ToDictionary());
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
@@ -64,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_styleInfoList == null) return string.Empty;
 
-            var attributes = new AttributesImpl(formCollection);
+            var attributes = TranslateUtils.ToDictionary(formCollection);
 
             var builder = new StringBuilder();
             foreach (var styleInfo in _styleInfoList)
@@ -112,7 +114,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Page.Request.Form, null);
 
-		    SiteInfo.Extend.Load(dict);
+		    foreach (var o in dict)
+		    {
+		        SiteInfo.Set(o.Key, o.Value);
+		    }
 
             DataProvider.Site.Update(SiteInfo);
 

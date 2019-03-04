@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
@@ -207,11 +207,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.Extend.WebUrl;
+                parsedContent = pageInfo.SiteInfo.WebUrl;
             }
-            else if (pageInfo.SiteInfo.Extend.GetString(type) != null)
+            else if (pageInfo.SiteInfo.ContainsKey(type))
             {
-                parsedContent = pageInfo.SiteInfo.Extend.GetString(type);
+                parsedContent = pageInfo.SiteInfo.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.Site.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));

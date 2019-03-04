@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -105,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
 
                 var value = enabled ? channelInfo.Id.ToString() : string.Empty;
-                value = channelInfo.Extend.IsContentAddable ? value : string.Empty;
+                value = channelInfo.IsContentAddable ? value : string.Empty;
 
                 var text = GetTitle(channelInfo);
                 var listItem = new ListItem(text, value);
@@ -140,7 +141,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
 		    str = string.Concat(str, channelInfo.LastNode ? "└" : "├");
 		    str = string.Concat(str, channelInfo.ChannelName);
-		    var count = ContentManager.GetCount(SiteInfo, channelInfo);
+		    var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelInfo.Id);
+            var count = ContentManager.GetCount(SiteInfo, channelInfo, onlyAdminId);
             if (count != 0)
             {
                 str = $"{str} ({count})";
@@ -354,7 +356,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
 
                 var value = IsOwningChannelId(channelInfo.Id) ? channelInfo.Id.ToString() : "";
-                value = channelInfo.Extend.IsContentAddable ? value : "";
+                value = channelInfo.IsContentAddable ? value : "";
                 var listItem = new ListItem(GetTitle(channelInfo), value);
                 DdlChannelIdTo.Items.Add(listItem);
 			}

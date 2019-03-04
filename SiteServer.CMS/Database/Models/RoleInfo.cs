@@ -1,22 +1,17 @@
-using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Role")]
-    public class RoleInfo : IDataInfo
+    public class RoleInfo : DynamicEntity
     {
-        public int Id { get; set; }
+        [TableColumn]
+        public string RoleName { get; set; }
 
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
-        public string RoleName  { get; set; }
-
+        [TableColumn]
         public string CreatorUserName { get; set; }
 
+        [TableColumn]
         public string Description { get; set; }
     }
 }

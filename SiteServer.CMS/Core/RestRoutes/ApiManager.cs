@@ -1,13 +1,13 @@
-﻿using SiteServer.CMS.Database.Caches;
+﻿using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.RestRoutes
 {
     public static class ApiManager
     {
-        public static bool IsSeparatedApi => ConfigManager.Instance.SystemExtend.IsSeparatedApi;
+        public static bool IsSeparatedApi => ConfigManager.Instance.IsSeparatedApi;
 
-        public static string ApiUrl => ConfigManager.Instance.SystemExtend.ApiUrl;
+        public static string ApiUrl => ConfigManager.Instance.ApiUrl;
 
         public static string RootUrl => PageUtils.ApplicationPath;
 

@@ -2,8 +2,8 @@
 using SiteServer.Utils;
 using Word.Plugin;
 using System.Collections.Specialized;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.CMS.Core.Office
 {
@@ -124,7 +124,7 @@ namespace SiteServer.CMS.Core.Office
 
                 wordContent = StringUtils.ReplaceFirst("<p></p>", wordContent, string.Empty);
 
-                formCollection[BackgroundContentAttribute.Content] = wordContent;
+                formCollection[ContentAttribute.Content] = wordContent;
             }
             return formCollection;
         }

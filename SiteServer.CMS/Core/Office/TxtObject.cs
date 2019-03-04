@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core.Office
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };
                             var contentInfo = new ContentInfo(dict);
-                            contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
+                            contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);
                         }

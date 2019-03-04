@@ -33,21 +33,21 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Extend.ConfigUEditorVideoIsAutoPlay.ToString()},
-                {StlPlayer.PlayBy, siteInfo.Extend.ConfigUEditorVideoPlayBy},
+                {StlPlayer.IsAutoPlay, siteInfo.ConfigUEditorVideoIsAutoPlay.ToString()},
+                {StlPlayer.PlayBy, siteInfo.ConfigUEditorVideoPlayBy},
                 {"style", "width: 333px; height: 333px;" }
             };
-            if (siteInfo.Extend.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
+            if (siteInfo.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
             {
                 dict.Add(StlPlayer.ImageUrl, imageUrl);
             }
-            if (siteInfo.Extend.ConfigUEditorVideoIsWidth)
+            if (siteInfo.ConfigUEditorVideoIsWidth)
             {
-                dict.Add(StlPlayer.Width, siteInfo.Extend.ConfigUEditorVideoWidth.ToString());
+                dict.Add(StlPlayer.Width, siteInfo.ConfigUEditorVideoWidth.ToString());
             }
-            if (siteInfo.Extend.ConfigUEditorVideoIsHeight)
+            if (siteInfo.ConfigUEditorVideoIsHeight)
             {
-                dict.Add(StlPlayer.Height, siteInfo.Extend.ConfigUEditorVideoHeight.ToString());
+                dict.Add(StlPlayer.Height, siteInfo.ConfigUEditorVideoHeight.ToString());
             }
 
             return GetInsertHtmlScript(attributeName,
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Extend.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlPlayer.IsAutoPlay, siteInfo.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 
@@ -100,6 +100,8 @@ namespace SiteServer.CMS.Core
 
         public static string TranslateToHtml(string html)
         {
+            if (string.IsNullOrWhiteSpace(html)) return string.Empty;
+
             var retval = html;
             if (!string.IsNullOrEmpty(retval))
             {

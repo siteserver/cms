@@ -134,11 +134,5 @@ namespace SiteServer.Plugin
         /// 页面描述。
         /// </summary>
         string Description { get; set; }
-
-        /// <summary>
-        /// 栏目可扩展属性，以键/值对的方式存储栏目数据，键不区分大小写。
-        /// 除了存储栏目本身数据，还将用于存储栏目的自定义字段数据。
-        /// </summary>
-        IAttributes Attributes { get; }
     }
 }

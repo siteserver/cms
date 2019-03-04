@@ -1,6 +1,7 @@
-﻿using SiteServer.CMS.Core.Enumerations;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Plugin;
@@ -188,8 +189,8 @@ namespace SiteServer.CMS.Core.Create
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Extend.CreateChannelIdsIfContentChanged);
-            if (channelInfo.Extend.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
+            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.CreateChannelIdsIfContentChanged);
+            if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
                 channelIdList.Add(channelId);
             }

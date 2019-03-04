@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -96,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 BtnSubmit.Attributes.Add("onclick", $"if (UE && UE.getEditor('Content', {UEditorUtils.ConfigValues})){{ UE.getEditor('Content', {UEditorUtils.ConfigValues}).sync(); }}");
 
-                CacAttributes.Attributes = channelInfo.Attributes;
+                CacAttributes.Attributes = channelInfo.ToDictionary();
 
                 if (PhLinkType.Visible)
                 {
@@ -145,7 +148,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
                 }
-                ControlUtils.SelectSingleItem(DdlTaxisType, channelInfo.Extend.DefaultTaxisType);
+                ControlUtils.SelectSingleItem(DdlTaxisType, channelInfo.DefaultTaxisType);
 
                 TbImageUrl.Text = channelInfo.ImageUrl;
                 LtlImageUrlButtonGroup.Text = WebUtils.GetImageUrlButtonGroupHtml(SiteInfo, TbImageUrl.ClientID);
@@ -161,7 +164,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new AttributesImpl(Request.Form);
+                CacAttributes.Attributes = TranslateUtils.ToDictionary(Request.Form);
             }
         }
 
@@ -215,7 +218,10 @@ namespace SiteServer.BackgroundPages.Cms
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
                 if (extendedAttributes.Count > 0)
                 {
-                    channelInfo.Extend.Load(extendedAttributes);
+                    foreach (var extendedAttribute in extendedAttributes)
+                    {
+                        channelInfo.Set(extendedAttribute.Key, extendedAttribute.Value);
+                    }
                 }
 
                 channelInfo.ChannelName = TbNodeName.Text;
@@ -253,7 +259,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     channelInfo.LinkType = DdlLinkType.SelectedValue;
                 }
-                channelInfo.Extend.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                channelInfo.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
                 if (PhChannelTemplateId.Visible)
                 {
                     channelInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;

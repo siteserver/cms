@@ -3,8 +3,9 @@ using SiteServer.Utils;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -46,7 +47,7 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
+        public string GetItemHtml(ELoadingType loadingType, string returnUrl, int? onlyAdminId, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
             var parentsCount = _channelInfo.ParentsCount;
@@ -140,9 +141,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_channelInfo));
 
-                var count = ContentManager.GetCount(_siteInfo, _channelInfo);
+                var count = ContentManager.GetCount(_siteInfo, _channelInfo, onlyAdminId);
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

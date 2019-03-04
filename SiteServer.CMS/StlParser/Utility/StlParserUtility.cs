@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -368,12 +368,12 @@ namespace SiteServer.CMS.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = siteInfo.Extend.WebUrl;
+                currentUrl = siteInfo.WebUrl;
             }
             else if (templateType == TemplateType.ContentTemplate)
             {

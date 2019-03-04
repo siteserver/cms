@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Apis
@@ -96,12 +98,12 @@ namespace SiteServer.CMS.Apis
                         InputType = styleInfo.Type,
                         DisplayName = styleInfo.DisplayName,
                         DefaultValue = styleInfo.DefaultValue,
-                        IsRequired = styleInfo.Extend.IsRequired,
-                        ValidateType = styleInfo.Extend.ValidateType,
-                        MinNum = styleInfo.Extend.MinNum,
-                        MaxNum = styleInfo.Extend.MaxNum,
-                        RegExp = styleInfo.Extend.RegExp,
-                        Width = styleInfo.Extend.Width,
+                        IsRequired = styleInfo.Required,
+                        ValidateType = ValidateTypeUtils.GetEnumType(styleInfo.ValidateType),
+                        MinNum = styleInfo.MinNum,
+                        MaxNum = styleInfo.MaxNum,
+                        RegExp = styleInfo.RegExp,
+                        Width = styleInfo.Width,
                     }
                 });
             }
@@ -173,12 +175,12 @@ namespace SiteServer.CMS.Apis
 
         public IContentInfo NewInstance(int siteId, int channelId)
         {
-            return new ContentInfo(new Dictionary<string, object>
+            return new ContentInfo
             {
-                {ContentAttribute.SiteId, siteId},
-                {ContentAttribute.ChannelId, channelId},
-                {ContentAttribute.AddDate, DateTime.Now}
-            });
+                SiteId = siteId,
+                ChannelId = channelId,
+                AddDate = DateTime.Now
+            };
         }
 
         //public void SetValuesToContentInfo(int siteId, int channelId, NameValueCollection form, IContentInfo contentInfo)
@@ -189,7 +191,7 @@ namespace SiteServer.CMS.Apis
         //    var tableStyle = NodeManager.GetTableStyle(siteInfo, nodeInfo);
         //    var relatedIdentities = RelatedIdentities.GetChannelRelatedIdentities(siteId, channelId);
 
-        //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl);
+        //    var extendImageUrl = ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl);
         //    if (form.AllKeys.Contains(StringUtils.LowerFirst(extendImageUrl)))
         //    {
         //        form[extendImageUrl] = form[StringUtils.LowerFirst(extendImageUrl)];
@@ -204,23 +206,21 @@ namespace SiteServer.CMS.Apis
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return DataProvider.ContentRepository.Insert(tableName, siteInfo, channelInfo, contentInfo);
+            return DataProvider.ContentRepository.Insert(tableName, siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
+            DataProvider.ContentRepository.Update(siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Delete(int siteId, int channelId, int contentId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentRepository.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+            channelInfo.ContentRepository.UpdateTrashContents(siteId, channelId, contentIdList);
         }
 
         public List<int> GetContentIdList(int siteId, int channelId)

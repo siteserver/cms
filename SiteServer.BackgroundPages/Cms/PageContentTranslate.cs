@@ -5,9 +5,10 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.BackgroundPages.Cms
 {

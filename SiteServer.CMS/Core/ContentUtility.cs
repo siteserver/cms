@@ -8,9 +8,10 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -24,14 +25,14 @@ namespace SiteServer.CMS.Core
         {
             if (siteInfo == null) return content;
             
-            if (siteInfo.Extend.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
+            if (siteInfo.IsSaveImageInTextEditor && !string.IsNullOrEmpty(content))
             {
                 content = PathUtility.SaveImage(siteInfo, content);
             }
 
             var builder = new StringBuilder(content);
 
-            var url = siteInfo.Extend.WebUrl;
+            var url = siteInfo.WebUrl;
             if (!string.IsNullOrEmpty(url) && url != "/")
             {
                 StringUtils.ReplaceHrefOrSrc(builder, url, "@");
@@ -52,24 +53,25 @@ namespace SiteServer.CMS.Core
 
         public static string TextEditorContentDecode(SiteInfo siteInfo, string content, bool isLocal)
         {
+            if (string.IsNullOrWhiteSpace(content)) return string.Empty;
             if (siteInfo == null) return content;
             
             var builder = new StringBuilder(content);
 
-            var virtualAssetsUrl = $"@/{siteInfo.Extend.AssetsDir}";
+            var virtualAssetsUrl = $"@/{siteInfo.AssetsDir}";
             string assetsUrl;
             if (isLocal)
             {
                 assetsUrl = PageUtility.GetSiteUrl(siteInfo,
-                    siteInfo.Extend.AssetsDir, true);
+                    siteInfo.AssetsDir, true);
             }
             else
             {
-                assetsUrl = siteInfo.Extend.AssetsUrl;
+                assetsUrl = siteInfo.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Extend.WebUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Extend.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.WebUrl);
 
             builder.Replace("&#xa0;", "&nbsp;");
 
@@ -162,10 +164,10 @@ namespace SiteServer.CMS.Core
         {
             if (contentInfo == null) return;
 
-            var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
-            var videoUrl = contentInfo.GetString(BackgroundContentAttribute.VideoUrl);
-            var fileUrl = contentInfo.GetString(BackgroundContentAttribute.FileUrl);
-            var content = contentInfo.GetString(BackgroundContentAttribute.Content);
+            var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
+            var videoUrl = contentInfo.Get<string>(ContentAttribute.VideoUrl);
+            var fileUrl = contentInfo.Get<string>(ContentAttribute.FileUrl);
+            var content = contentInfo.Get<string>(ContentAttribute.Content);
 
             if (!string.IsNullOrEmpty(imageUrl) && PageUtility.IsVirtualUrl(imageUrl))
             {
@@ -434,16 +436,17 @@ namespace SiteServer.CMS.Core
             if (isCrossSiteTrans && isAutomatic)
             {
                 var targetSiteId = 0;
+                var transType = ECrossSiteTransTypeUtils.GetEnumType(channelInfo.TransType);
 
-                if (channelInfo.Extend.TransType == ECrossSiteTransType.SpecifiedSite)
+                if (transType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    targetSiteId = channelInfo.Extend.TransSiteId;
+                    targetSiteId = channelInfo.TransSiteId;
                 }
-                else if (channelInfo.Extend.TransType == ECrossSiteTransType.SelfSite)
+                else if (transType == ECrossSiteTransType.SelfSite)
                 {
                     targetSiteId = siteInfo.Id;
                 }
-                else if (channelInfo.Extend.TransType == ECrossSiteTransType.ParentSite)
+                else if (transType == ECrossSiteTransType.ParentSite)
                 {
                     targetSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
                 }
@@ -453,7 +456,7 @@ namespace SiteServer.CMS.Core
                     var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                     if (targetSiteInfo != null)
                     {
-                        var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Extend.TransChannelIds);
+                        var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);
                         if (targetChannelIdArrayList.Count > 0)
                         {
                             foreach (var targetChannelId in targetChannelIdArrayList)
@@ -507,7 +510,6 @@ namespace SiteServer.CMS.Core
             var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelInfo);
 
             var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
@@ -550,7 +552,7 @@ namespace SiteServer.CMS.Core
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
-                DataProvider.ContentRepository.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
+                channelInfo.ContentRepository.DeleteContents(siteInfo.Id, TranslateUtils.ToIntList(contentId), channelId);
 
                 foreach (var service in PluginManager.Services)
                 {

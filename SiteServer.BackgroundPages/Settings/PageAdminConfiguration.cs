@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -29,31 +29,31 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Admin);
 
-            TbLoginUserNameMinLength.Text = ConfigManager.Instance.SystemExtend.AdminUserNameMinLength.ToString();
-            TbLoginPasswordMinLength.Text = ConfigManager.Instance.SystemExtend.AdminPasswordMinLength.ToString();
+            TbLoginUserNameMinLength.Text = ConfigManager.Instance.AdminUserNameMinLength.ToString();
+            TbLoginPasswordMinLength.Text = ConfigManager.Instance.AdminPasswordMinLength.ToString();
             EUserPasswordRestrictionUtils.AddListItems(DdlLoginPasswordRestriction);
-            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.Instance.SystemExtend.AdminPasswordRestriction);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.Instance.AdminPasswordRestriction);
 
             EBooleanUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
-            ControlUtils.SelectSingleItemIgnoreCase(RblIsLoginFailToLock, ConfigManager.Instance.SystemExtend.IsAdminLockLogin.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsLoginFailToLock, ConfigManager.Instance.IsAdminLockLogin.ToString());
 
-            PhFailToLock.Visible = ConfigManager.Instance.SystemExtend.IsAdminLockLogin;
+            PhFailToLock.Visible = ConfigManager.Instance.IsAdminLockLogin;
 
-            TbLoginFailToLockCount.Text = ConfigManager.Instance.SystemExtend.AdminLockLoginCount.ToString();
+            TbLoginFailToLockCount.Text = ConfigManager.Instance.AdminLockLoginCount.ToString();
 
             DdlLoginLockingType.Items.Add(new ListItem("按小时锁定", EUserLockTypeUtils.GetValue(EUserLockType.Hours)));
             DdlLoginLockingType.Items.Add(new ListItem("永久锁定", EUserLockTypeUtils.GetValue(EUserLockType.Forever)));
-            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginLockingType, ConfigManager.Instance.SystemExtend.AdminLockLoginType);
+            ControlUtils.SelectSingleItemIgnoreCase(DdlLoginLockingType, ConfigManager.Instance.AdminLockLoginType);
 
             PhLoginLockingHours.Visible = false;
-            if (!EUserLockTypeUtils.Equals(ConfigManager.Instance.SystemExtend.AdminLockLoginType, EUserLockType.Forever))
+            if (!EUserLockTypeUtils.Equals(ConfigManager.Instance.AdminLockLoginType, EUserLockType.Forever))
             {
                 PhLoginLockingHours.Visible = true;
-                TbLoginLockingHours.Text = ConfigManager.Instance.SystemExtend.AdminLockLoginHours.ToString();
+                TbLoginLockingHours.Text = ConfigManager.Instance.AdminLockLoginHours.ToString();
             }
 
             EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
-            ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.Instance.SystemExtend.IsViewContentOnlySelf.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.Instance.IsViewContentOnlySelf.ToString());
         }
 
         public void RblIsLoginFailToLock_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,16 +70,16 @@ namespace SiteServer.BackgroundPages.Settings
         {
             try
             {
-                ConfigManager.Instance.SystemExtend.AdminUserNameMinLength = TranslateUtils.ToInt(TbLoginUserNameMinLength.Text);
-                ConfigManager.Instance.SystemExtend.AdminPasswordMinLength = TranslateUtils.ToInt(TbLoginPasswordMinLength.Text);
-                ConfigManager.Instance.SystemExtend.AdminPasswordRestriction = DdlLoginPasswordRestriction.SelectedValue;
+                ConfigManager.Instance.AdminUserNameMinLength = TranslateUtils.ToInt(TbLoginUserNameMinLength.Text);
+                ConfigManager.Instance.AdminPasswordMinLength = TranslateUtils.ToInt(TbLoginPasswordMinLength.Text);
+                ConfigManager.Instance.AdminPasswordRestriction = DdlLoginPasswordRestriction.SelectedValue;
 
-                ConfigManager.Instance.SystemExtend.IsAdminLockLogin = TranslateUtils.ToBool(RblIsLoginFailToLock.SelectedValue);
-                ConfigManager.Instance.SystemExtend.AdminLockLoginCount = TranslateUtils.ToInt(TbLoginFailToLockCount.Text, 3);
-                ConfigManager.Instance.SystemExtend.AdminLockLoginType = DdlLoginLockingType.SelectedValue;
-                ConfigManager.Instance.SystemExtend.AdminLockLoginHours = TranslateUtils.ToInt(TbLoginLockingHours.Text);
+                ConfigManager.Instance.IsAdminLockLogin = TranslateUtils.ToBool(RblIsLoginFailToLock.SelectedValue);
+                ConfigManager.Instance.AdminLockLoginCount = TranslateUtils.ToInt(TbLoginFailToLockCount.Text, 3);
+                ConfigManager.Instance.AdminLockLoginType = DdlLoginLockingType.SelectedValue;
+                ConfigManager.Instance.AdminLockLoginHours = TranslateUtils.ToInt(TbLoginLockingHours.Text);
 
-                ConfigManager.Instance.SystemExtend.IsViewContentOnlySelf = TranslateUtils.ToBool(RblIsViewContentOnlySelf.SelectedValue);
+                ConfigManager.Instance.IsViewContentOnlySelf = TranslateUtils.ToBool(RblIsViewContentOnlySelf.SelectedValue);
 
                 DataProvider.Config.Update(ConfigManager.Instance);
 

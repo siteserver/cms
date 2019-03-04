@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
 		}
 
-        public string SiteUrl => SiteInfo.Extend.WebUrl;
+        public string SiteUrl => SiteInfo.WebUrl;
 
 	    public string RootUrl => PageUtils.ApplicationPath;
 
@@ -65,11 +65,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Extend.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                if (string.IsNullOrEmpty(SiteInfo.ConfigSelectVideoCurrentUrl))
+                {
+                    _currentRootPath = "@/" + SiteInfo.VideoUploadDirectoryName;
+                }
+                else
+                {
+                    _currentRootPath = SiteInfo.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                }
             }
             else
             {
-                SiteInfo.Extend.ConfigSelectVideoCurrentUrl = _currentRootPath;
+                SiteInfo.ConfigSelectVideoCurrentUrl = _currentRootPath;
                 DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');

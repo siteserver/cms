@@ -1,9 +1,10 @@
 ﻿using System;
 using Atom.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -101,12 +102,11 @@ namespace SiteServer.CMS.ImportExport.Components
                 {
                     channelId = theSameNameChannelId;
                     nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, theSameNameChannelId);
-                    var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
                     _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                     DataProvider.Channel.Update(nodeInfo);
 
-                    DataProvider.ContentRepository.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
+                    nodeInfo.ContentRepository.DeleteContentsByChannelId(_siteInfo.Id, theSameNameChannelId);
                 }
 
                 if (isImportContents)

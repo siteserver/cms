@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Preview;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Packaging;
@@ -32,28 +32,13 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var rest = new Rest(Request);
+                var redirect = rest.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
+                if (redirect != null) return Ok(redirect);
+
                 var siteId = rest.GetPostInt("siteId");
                 var pageUrl = rest.GetPostString("pageUrl");
 
-                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = "Installer/"
-                    });
-                }
-
-                if (ConfigManager.Instance.Initialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = AdminPagesUtils.UpdateUrl
-                    });
-                }
-
-                if (!rest.IsAdminLoggin || rest.AdminInfo == null || rest.AdminInfo.Locked)
+                if (!rest.IsAdminLoggin || rest.AdminInfo == null)
                 {
                     return Ok(new
                     {
@@ -61,21 +46,28 @@ namespace SiteServer.API.Controllers.Pages
                         RedirectUrl = $"{AdminPagesUtils.LoginUrl}?redirectUrl={PageUtils.UrlEncode(PageUtils.GetMainUrl(siteId, pageUrl))}"
                     });
                 }
+                if (rest.AdminInfo.Locked)
+                {
+                    return Ok(new
+                    {
+                        Value = false,
+                        RedirectUrl = $"{AdminPagesUtils.ErrorUrl}?message={PageUtils.UrlEncode("管理员账号已被锁定，请联系超级管理员协助解决")}"
+                    });
+                }
                 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var adminInfo = rest.AdminInfo;
                 var permissions = rest.AdminPermissionsImpl;
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
                 var siteIdListWithPermissions = permissions.GetSiteIdList();
 
                 if (siteInfo == null || !siteIdListWithPermissions.Contains(siteInfo.Id))
                 {
-                    if (siteIdListWithPermissions.Contains(adminInfo.SiteId))
+                    if (siteIdListWithPermissions.Contains(rest.AdminInfo.SiteId))
                     {
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(adminInfo.SiteId, pageUrl)
+                            RedirectUrl = PageUtils.GetMainUrl(rest.AdminInfo.SiteId, pageUrl)
                         });
                     }
 
@@ -121,7 +113,7 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                var siteIdListLatestAccessed = DataProvider.Administrator.UpdateSiteId(adminInfo, siteInfo.Id);
+                var siteIdListLatestAccessed = DataProvider.Administrator.UpdateSiteId(rest.AdminInfo, siteInfo.Id);
 
                 var permissionList = new List<string>(permissions.PermissionList);
                 if (permissions.HasSitePermissions(siteInfo.Id))
@@ -145,9 +137,9 @@ namespace SiteServer.API.Controllers.Pages
 
                 var adminInfoToReturn = new
                 {
-                    adminInfo.Id,
-                    adminInfo.UserName,
-                    adminInfo.AvatarUrl,
+                    rest.AdminInfo.Id,
+                    rest.AdminInfo.UserName,
+                    rest.AdminInfo.AvatarUrl,
                     Level = permissions.GetAdminLevel()
                 };
 

@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => SiteInfo.Extend.WebUrl;
+        public string SiteUrl => SiteInfo.WebUrl;
 
         public string RootUrl => PageUtils.ApplicationPath;
 
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},
-                    {"CurrentRootPath", siteInfo.Extend.ImageUploadDirectoryName},
+                    {"CurrentRootPath", siteInfo.ImageUploadDirectoryName},
                     {"TextBoxClientID", textBoxClientId}
                 }));
         }
@@ -62,11 +62,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Extend.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                if (string.IsNullOrEmpty(SiteInfo.ConfigSelectImageCurrentUrl))
+                {
+                    _currentRootPath = "@/" + SiteInfo.ImageUploadDirectoryName;
+                }
+                else
+                {
+                    _currentRootPath = SiteInfo.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                }
             }
             else
             {
-                SiteInfo.Extend.ConfigSelectImageCurrentUrl = _currentRootPath;
+                SiteInfo.ConfigSelectImageCurrentUrl = _currentRootPath;
                 DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');

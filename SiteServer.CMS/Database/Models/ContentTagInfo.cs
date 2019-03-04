@@ -1,22 +1,17 @@
-using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ContentTag")]
-    public class ContentTagInfo : IDataInfo
+    public class ContentTagInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string TagName { get; set; }
 
-	    public int SiteId { get; set; }
+        [TableColumn]
+        public int SiteId { get; set; }
 
-	    public int UseNum { get; set; }
-	}
+        [TableColumn]
+        public int UseNum { get; set; }
+    }
 }

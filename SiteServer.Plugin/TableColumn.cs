@@ -30,6 +30,8 @@
         /// </summary>
         public bool IsIdentity { get; set; }
 
+        public bool IsExtend { get; set; }
+
         /// <summary>
         /// 字段提交表单样式。
         /// </summary>

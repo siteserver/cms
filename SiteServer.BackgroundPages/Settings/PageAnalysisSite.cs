@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.V1;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -29,8 +30,15 @@ namespace SiteServer.API.Controllers.V1
             try
             {
                 var rest = new Rest(Request);
-                var userInfo = new UserInfo(rest.GetPostObject<Dictionary<string, object>>());
-                if (!ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup)
+                var dict = rest.GetPostObject<Dictionary<string, object>>();
+
+                var userInfo = new UserInfo();
+                foreach (var o in dict)
+                {
+                    userInfo.Set(o.Key, o.Value);
+                }
+
+                if (!ConfigManager.Instance.IsUserRegistrationGroup)
                 {
                     userInfo.GroupId = 0;
                 }

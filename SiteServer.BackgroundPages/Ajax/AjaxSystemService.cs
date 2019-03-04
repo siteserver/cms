@@ -6,7 +6,7 @@ using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Ajax

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            if (ETaxisTypeUtils.Equals(channelInfo.Extend.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }

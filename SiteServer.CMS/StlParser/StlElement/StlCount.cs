@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;

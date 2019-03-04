@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -125,10 +126,10 @@ namespace SiteServer.BackgroundPages.Settings
                 return;
             }
             TbSiteName.Text = SiteInfo.SiteName;
-            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.Extend.IsCheckContentLevel.ToString());
-            if (SiteInfo.Extend.IsCheckContentLevel)
+            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.IsCheckContentLevel.ToString());
+            if (SiteInfo.IsCheckContentLevel)
             {
-                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.Extend.CheckContentLevel.ToString());
+                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.CheckContentLevel.ToString());
                 PhCheckContentLevel.Visible = true;
             }
             else
@@ -201,10 +202,10 @@ namespace SiteServer.BackgroundPages.Settings
 
 		    SiteInfo.SiteName = TbSiteName.Text;
 		    SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-		    SiteInfo.Extend.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
-		    if (SiteInfo.Extend.IsCheckContentLevel)
+		    SiteInfo.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+		    if (SiteInfo.IsCheckContentLevel)
 		    {
-		        SiteInfo.Extend.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+		        SiteInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
 		    }
 
 		    var isTableChanged = false;

@@ -2,10 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -23,7 +23,6 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbRelatedFileName;
         public PlaceHolder PhCreatedFileFullName;
         public TextBox TbCreatedFileFullName;
-		public DropDownList DdlCharset;
         public Literal LtlCommands;
         public TextBox TbContent;
         public PlaceHolder PhCodeMirror;
@@ -98,13 +97,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = AuthRequest.GetQueryInt("TemplateID") > 0 ? "编辑模板" : "添加模板";
 
-            var isCodeMirror = SiteInfo.Extend.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
             EFileSystemTypeUtils.AddWebPageListItems(DdlCreatedFileExtName);
-
-            ECharsetUtils.AddListItems(DdlCharset);
 
             if (AuthRequest.GetQueryInt("TemplateID") > 0)
             {
@@ -139,8 +136,6 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, ECharsetUtils.GetValue(templateInfo.FileCharset));
-
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, GetTemplateFileExtension(templateInfo));
                 HihTemplateType.Value = templateInfo.Type.Value;
             }
@@ -148,7 +143,6 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbRelatedFileName.Text = "T_";
                 TbCreatedFileFullName.Text = _templateType == TemplateType.ChannelTemplate ? "index" : "@/";
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Extend.Charset);
                 ControlUtils.SelectSingleItem(DdlCreatedFileExtName, EFileSystemTypeUtils.GetValue(EFileSystemType.Html));
                 HihTemplateType.Value = AuthRequest.GetQueryString("TemplateType");
             }
@@ -158,9 +152,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = SiteInfo.Extend.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            SiteInfo.Extend.ConfigTemplateIsCodeMirror = isCodeMirror;
+            SiteInfo.ConfigTemplateIsCodeMirror = isCodeMirror;
             DataProvider.Site.Update(SiteInfo);
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
@@ -231,7 +225,6 @@ namespace SiteServer.BackgroundPages.Cms
 		                RelatedFileName = templateInfo.RelatedFileName,
 		                CreatedFileExtName = templateInfo.CreatedFileFullName,
 		                CreatedFileFullName = templateInfo.CreatedFileExtName,
-		                FileCharset = templateInfo.FileCharset,
 		                Default = templateInfo.Default
                     };
 		        }
@@ -240,7 +233,6 @@ namespace SiteServer.BackgroundPages.Cms
 		        templateInfo.RelatedFileName = TbRelatedFileName.Text + DdlCreatedFileExtName.SelectedValue;
 		        templateInfo.CreatedFileExtName = DdlCreatedFileExtName.SelectedValue;
 		        templateInfo.CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue;
-		        templateInfo.FileCharset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
 
 		        DataProvider.Template.Update(SiteInfo, templateInfo, TbContent.Text, AuthRequest.AdminName);
 		        if (previousTemplateInfo != null)
@@ -278,7 +270,6 @@ namespace SiteServer.BackgroundPages.Cms
 		            RelatedFileName = TbRelatedFileName.Text + DdlCreatedFileExtName.SelectedValue,
 		            CreatedFileExtName = DdlCreatedFileExtName.SelectedValue,
 		            CreatedFileFullName = TbCreatedFileFullName.Text + DdlCreatedFileExtName.SelectedValue,
-		            FileCharset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue),
 		            Default = false
 		        };
 

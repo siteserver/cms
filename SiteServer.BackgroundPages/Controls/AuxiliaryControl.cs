@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Controls
 {
     public class AuxiliaryControl : Control
     {
-        public IAttributes Attributes { get; set; }
+        public IDictionary<string, object> Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 
@@ -36,8 +36,7 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Title)) continue;
 
-                string extra;
-                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out extra);
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
@@ -46,7 +45,7 @@ namespace SiteServer.BackgroundPages.Controls
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-1 col-form-label text-right text-truncate"" title=""{styleInfo.DisplayName}"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-10"">
         {commands}
         <div class=""m-t-10"">
@@ -62,7 +61,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     var html = $@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-1 col-form-label text-right text-truncate"" title=""{styleInfo.DisplayName}"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
         {value}
     </div>

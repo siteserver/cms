@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;

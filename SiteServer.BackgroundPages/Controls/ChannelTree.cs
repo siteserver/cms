@@ -2,8 +2,8 @@
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;

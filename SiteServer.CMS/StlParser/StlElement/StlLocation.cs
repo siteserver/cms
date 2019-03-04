@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
                         var url = PageUtility.GetIndexPageUrl(pageInfo.SiteInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
@@ -131,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
@@ -154,7 +154,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             stlAnchor.Attributes.Add("class", linkClass);
                         }
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }

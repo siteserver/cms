@@ -118,11 +118,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                [Attr.Description] = description
-            }, Q.Where(Attr.RoleName, roleName));
+            
+            UpdateAll(Q
+                .Set(Attr.Description, description)
+                .Where(Attr.RoleName, roleName)
+            );
         }
 
 

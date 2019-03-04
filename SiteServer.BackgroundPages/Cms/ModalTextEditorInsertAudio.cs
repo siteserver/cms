@@ -45,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = SiteInfo.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => SiteInfo.Extend.VideoUploadTypeCollection;
+        public string TypeCollection => SiteInfo.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -117,9 +117,9 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != SiteInfo.ConfigUEditorAudioIsAutoPlay)
             {
-                SiteInfo.Extend.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                SiteInfo.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
                 DataProvider.Site.Update(SiteInfo);
             }
 

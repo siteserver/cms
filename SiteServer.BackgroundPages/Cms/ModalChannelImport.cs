@@ -2,8 +2,8 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var parentsCount = channelInfo.ParentsCount;
                 var isLastNode = channelInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
-                value = channelInfo.Extend.IsChannelAddable ? value : string.Empty;
+                value = channelInfo.IsChannelAddable ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))

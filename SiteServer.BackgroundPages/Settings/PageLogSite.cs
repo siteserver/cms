@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -57,9 +57,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.Instance.SystemExtend.IsLogSite = !ConfigManager.Instance.SystemExtend.IsLogSite;
+                ConfigManager.Instance.IsLogSite = !ConfigManager.Instance.IsLogSite;
                 DataProvider.Config.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogSite ? "启用" : "禁用")}日志记录");
+                SuccessMessage($"成功{(ConfigManager.Instance.IsLogSite ? "启用" : "禁用")}日志记录");
             }
 
             if (IsPostBack) return;
@@ -107,7 +107,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.Instance.SystemExtend.IsLogSite)
+            if (ConfigManager.Instance.IsLogSite)
             {
                 BtnSetting.Text = "禁用站点日志";
                 BtnSetting.Attributes.Add("onclick",
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (siteInfo != null)
                 {
                     siteName =
-                        $"<a href='{siteInfo.Extend.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
+                        $"<a href='{siteInfo.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }

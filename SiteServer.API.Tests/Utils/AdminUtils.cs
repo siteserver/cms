@@ -1,5 +1,5 @@
 ﻿using System;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -44,7 +44,7 @@ namespace SiteServer.API.Tests.Utils
 
         public static string GetAccessToken(AdministratorInfo adminInfo)
         {
-            var expiresAt = DateTime.Now.AddDays(7);
+            var expiresAt = TimeSpan.FromDays(7);
             return Rest.GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
         }
     }

@@ -1,26 +1,18 @@
-using System;
 using System.Collections.Generic;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_PermissionsInRoles")]
-    public class PermissionsInRolesInfo : IDataInfo
+    public class PermissionsInRolesInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string RoleName { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         private string GeneralPermissions { get; set; }
 
-        [Computed]
         public List<string> GeneralPermissionList
         {
             get => TranslateUtils.StringCollectionToStringList(GeneralPermissions);

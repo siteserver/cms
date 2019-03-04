@@ -2,7 +2,8 @@
 using System.Data.OleDb;
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -80,7 +81,7 @@ namespace SiteServer.CMS.Core.Office
                 {
                     if (displayAttributes.Contains(tableStyleInfo.AttributeName))
                     {
-                        var value = contentInfo.GetString(tableStyleInfo.AttributeName);
+                        var value = contentInfo.Get<string>(tableStyleInfo.AttributeName);
                         insertBuilder.Append($"'{SqlUtils.ToSqlString(StringUtils.StripTags(value))}', ");
                     }
                 }

@@ -1,7 +1,7 @@
 ﻿using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -144,10 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            string loading;
-            string yes;
-            string no;
-            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
 
             if (string.IsNullOrEmpty(loading))
             {

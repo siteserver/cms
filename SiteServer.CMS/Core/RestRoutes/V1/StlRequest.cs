@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.RestRoutes.V1
 {
@@ -74,7 +73,6 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
                 RelatedFileName = string.Empty,
                 CreatedFileFullName = string.Empty,
                 CreatedFileExtName = string.Empty,
-                FileCharset = ECharset.utf_8,
                 Default = true
             };
 

@@ -5,9 +5,9 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
@@ -404,19 +404,15 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var channelIdList =
-                ChannelManager.GetChannelIdList(
-                    ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
-                    string.Empty, string.Empty, string.Empty);
-
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-
+            var parentChannelInfo = ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId);
+            var channelIdList =
+                ChannelManager.GetChannelIdList(parentChannelInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
             foreach (var channelId in channelIdList)
             {
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-
                 var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
                 if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))

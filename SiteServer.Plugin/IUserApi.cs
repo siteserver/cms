@@ -148,7 +148,7 @@ namespace SiteServer.Plugin
         /// <param name="userName">用户名。</param>
         /// <param name="expiresAt">Access Token 到期时间。</param>
         /// <returns>返回此用户的Access Token。</returns>
-        string GetAccessToken(int userId, string userName, DateTime expiresAt);
+        string GetAccessToken(int userId, string userName, TimeSpan expiresAt);
 
         /// <summary>
         /// 解析Access Token字符串。

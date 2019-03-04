@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser;
@@ -15,7 +15,6 @@ using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
@@ -70,7 +69,6 @@ namespace SiteServer.API.Controllers.Sys
                     RelatedFileName = string.Empty,
                     CreatedFileFullName = string.Empty,
                     CreatedFileExtName = string.Empty,
-                    FileCharset = ECharset.utf_8,
                     Default = false
                 };
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
@@ -123,7 +121,6 @@ namespace SiteServer.API.Controllers.Sys
                 else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
                 {
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                    var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                     var stlPageSqlContents = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
                     
@@ -137,8 +134,8 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (currentPageIndex != pageIndex) continue;
 
-                        var pageHtml = stlPageSqlContents.Parse(currentPageIndex, pageCount);
-                        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
+                        var pageHtml = stlPageSqlContents.Parse(totalNum, currentPageIndex, pageCount, false);
+                        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElement, pageHtml));
 
                         StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 

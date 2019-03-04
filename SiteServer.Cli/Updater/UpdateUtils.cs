@@ -143,7 +143,7 @@ namespace SiteServer.Cli.Updater
                         newRows.Add(dict);
                     }
 
-                    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
+                    await FileUtils.WriteTextAsync(filePath, TranslateUtils.JsonSerialize(newRows));
                 }
             }
 

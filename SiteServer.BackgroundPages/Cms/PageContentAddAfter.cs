@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -108,7 +109,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var siblingNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, siblingChannelId);
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickedUrl))
                         {
                             stlAnchor.Target = string.Empty;
                         }
@@ -145,7 +146,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             //var siblingContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, siblingContentId);
                             var siblingContentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
                             var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, siblingContentInfo, pageInfo.IsLocal);
-                            if (url.Equals(PageUtils.UnclickedUrl))
+                            if (url.Equals(PageUtils.UnClickedUrl))
                             {
                                 stlAnchor.Target = string.Empty;
                             }

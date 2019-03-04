@@ -99,7 +99,7 @@ namespace SiteServer.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -111,7 +111,7 @@ namespace SiteServer.Cli.Core
                 builder.AppendLine();
             }
 
-            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+            await FileUtils.AppendTextAsync(filePath, builder.ToString());
         }
 
         public static async Task AppendErrorLogAsync(string filePath, TextLogInfo log)
@@ -120,7 +120,7 @@ namespace SiteServer.Cli.Core
 
             if (!FileUtils.IsFileExists(filePath))
             {
-                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, string.Empty);
+                await FileUtils.WriteTextAsync(filePath, string.Empty);
             }
 
             var builder = new StringBuilder();
@@ -129,7 +129,7 @@ namespace SiteServer.Cli.Core
             builder.Append(log);
             builder.AppendLine();
 
-            await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
+            await FileUtils.AppendTextAsync(filePath, builder.ToString());
         }
     }
 }

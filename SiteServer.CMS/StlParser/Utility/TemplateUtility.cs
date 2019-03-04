@@ -1,9 +1,10 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
@@ -98,7 +99,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsTop))//置顶内容
             {
-                if (contextInfo.ContentInfo.IsTop)
+                if (contextInfo.ContentInfo.Top)
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -106,7 +107,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedImage))//带图片的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.Get<string>(ContentAttribute.ImageUrl)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -114,7 +115,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedVideo))//带视频的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.Get<string>(ContentAttribute.VideoUrl)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -122,7 +123,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedFile))//带附件的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.Get<string>(ContentAttribute.FileUrl)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -130,7 +131,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsRecommend))//推荐的内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsRecommend)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.Get<string>(ContentAttribute.IsRecommend)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -138,7 +139,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsHot))//热点内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsHot)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.Get<string>(ContentAttribute.IsHot)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -146,7 +147,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsColor))//醒目内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsColor)))
+                if (TranslateUtils.ToBool(contextInfo.ContentInfo.Get<string>(ContentAttribute.IsColor)))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;

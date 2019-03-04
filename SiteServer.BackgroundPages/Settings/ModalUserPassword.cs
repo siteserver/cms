@@ -45,8 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                string errorMessage;
-                if (DataProvider.User.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                if (DataProvider.User.ChangePassword(_userName, TbPassword.Text, out var errorMessage))
                 {
                     SuccessMessage("重设密码成功！");
                 }

@@ -4,8 +4,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = SiteInfo.Extend.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
             SpContents.SelectCommand = DataProvider.Tag.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);

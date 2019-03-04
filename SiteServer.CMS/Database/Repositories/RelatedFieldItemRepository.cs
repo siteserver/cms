@@ -214,10 +214,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, cmd);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                [Attr.Taxis] = taxis
-            }, Q.Where(nameof(Attr.Id), id));
+            UpdateAll(Q
+                .Set(Attr.Taxis, taxis)
+                .Where(Attr.Id, id)
+            );
         }
 
         private int GetMaxTaxis(int parentId)

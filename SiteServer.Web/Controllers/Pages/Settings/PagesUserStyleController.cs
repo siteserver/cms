@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -35,7 +35,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         styleInfo.AttributeName,
                         styleInfo.DisplayName,
                         InputType = InputTypeUtils.GetText(styleInfo.Type),
-                        Validate = styleInfo.Extend.VeeValidate,
+                        Validate = styleInfo.VeeValidate,
                         styleInfo.Taxis,
                         IsSystem = StringUtils.ContainsIgnoreCase(UserAttribute.AllAttributes.Value, styleInfo.AttributeName)
                     });

@@ -1,22 +1,18 @@
 using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_DbCache")]
-    public class DbCacheInfo : IDataInfo
+    public class DbCacheInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string CacheKey { get; set; }
 
-	    public string CacheValue { get; set; }
+        [TableColumn]
+        public string CacheValue { get; set; }
 
+        [TableColumn]
         public DateTime? AddDate { get; set; }
     }
 }

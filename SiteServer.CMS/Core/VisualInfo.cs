@@ -1,4 +1,4 @@
-﻿using SiteServer.CMS.Database.Caches;
+﻿using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;

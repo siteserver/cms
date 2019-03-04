@@ -18,11 +18,6 @@ namespace SiteServer.API.Controllers.V1
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
-        public class CaptchaInfo
-        {
-            public string Captcha { get; set; }
-        }
-
         [HttpGet, Route(ApiRoute)]
         public void Get(string name)
         {
@@ -34,7 +29,7 @@ namespace SiteServer.API.Controllers.V1
                 code = VcManager.CreateValidateCode();
             }
 
-            CookieUtils.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));
+            CookieUtils.SetCookie("SS-" + name, code, TimeSpan.FromMinutes(10));
 
             response.BufferOutput = true;  //特别注意
             response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意
@@ -80,8 +75,11 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPost, Route(ApiRouteActionsCheck)]
-        public IHttpActionResult Check(string name, [FromBody] CaptchaInfo captchaInfo)
+        public IHttpActionResult Check(string name)
         {
+            var rest = new Rest(Request);
+            var captcha = rest.GetPostString("captcha");
+
             try
             {
                 var code = CookieUtils.GetCookie("SS-" + name);
@@ -94,7 +92,7 @@ namespace SiteServer.API.Controllers.V1
                 CookieUtils.Erase("SS-" + name);
                 CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
 
-                if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))
+                if (!StringUtils.EqualsIgnoreCase(code, captcha))
                 {
                     return BadRequest("验证码不正确，请重新输入！");
                 }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Collections.Specialized;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
@@ -77,7 +77,7 @@ namespace SiteServer.CMS.Core.Office
 
                         foreach (DataRow row in oleDt.Rows)
                         {
-                            var contentInfo = new ContentInfo(row);
+                            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(row));
 
                             if (!string.IsNullOrEmpty(contentInfo.Title))
                             {

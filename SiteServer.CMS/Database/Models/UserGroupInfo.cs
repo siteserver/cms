@@ -1,20 +1,14 @@
-﻿using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+﻿using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_UserGroup")]
-    public class UserGroupInfo : IDataInfo
+    public class UserGroupInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string GroupName { get; set; }
 
+        [TableColumn]
         public string AdminName { get; set; }
     }
 }

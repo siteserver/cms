@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlName.Text = SiteManager.GetSiteName(siteInfo);
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Extend.WebUrl}"" target=""_blank"">{siteInfo.Extend.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.WebUrl}"" target=""_blank"">{siteInfo.WebUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlWebConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }

@@ -1,25 +1,20 @@
-using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_PluginConfig")]
-    public class PluginConfigInfo : IDataInfo
+    public class PluginConfigInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string PluginId { get; set; }
 
+        [TableColumn]
         public int SiteId { get; set; }
 
-	    public string ConfigName { get; set; }
+        [TableColumn]
+        public string ConfigName { get; set; }
 
-        [Text]
-	    public string ConfigValue { get; set; }
-	}
+        [TableColumn(Text = true)]
+        public string ConfigValue { get; set; }
+    }
 }

@@ -2,7 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id, string.Empty))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Extend.WebUrl}"" target=""_blank"">{siteInfo.Extend.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.WebUrl}"" target=""_blank"">{siteInfo.WebUrl}</a>";
         }
     }
 }

@@ -7,10 +7,10 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Database.Repositories.Contents;
@@ -111,9 +111,12 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
+            var onlyAdminId = _isAdminOnly
+                ? AuthRequest.AdminId
+                : AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteInfo.Id, _channelInfo.Id);
             var whereString = DataProvider.ContentRepository.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
-                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
+                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, onlyAdminId,
                 AuthRequest.AdminPermissionsImpl,
                 allAttributeNameList);
 
@@ -121,7 +124,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 ControlToPaginate = RptContents,
                 TableName = tableName,
-                PageSize = SiteInfo.Extend.PageSize,
+                PageSize = SiteInfo.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
                 ReturnColumnNames = allAttributeNameList,
@@ -148,15 +151,17 @@ namespace SiteServer.BackgroundPages.Cms
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
                     foreach (var channelId in idsDictionary.Keys)
                     {
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+
                         var contentIdList = idsDictionary[channelId];
-                        DataProvider.ContentRepository.UpdateTrashContents(SiteId, channelId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdList);
+                        channelInfo.ContentRepository.UpdateTrashContents(SiteId, channelId, contentIdList);
                     }
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentRepository.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
+                    _channelInfo.ContentRepository.UpdateRestoreContentsByTrash(SiteId, _channelId);
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }
@@ -263,7 +268,8 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+            var record = (IDataRecord) e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(record));
 
             var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
             var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");

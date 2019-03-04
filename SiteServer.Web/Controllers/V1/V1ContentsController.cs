@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.RestRoutes.V1;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
@@ -47,14 +49,14 @@ namespace SiteServer.API.Controllers.V1
                                  ConfigManager.ChannelPermissions.ContentAdd);
                 }
                 if (!isAuth) return Unauthorized();
-
+                
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (!channelInfo.Extend.IsContentAddable) return BadRequest("此栏目不能添加内容");
+                if (!channelInfo.IsContentAddable) return BadRequest("此栏目不能添加内容");
 
                 var attributes = rest.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
@@ -63,7 +65,7 @@ namespace SiteServer.API.Controllers.V1
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var adminName = rest.AdminName;
 
-                var isChecked = checkedLevel >= siteInfo.Extend.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
                 if (isChecked)
                 {
                     if (sourceId == SourceManager.User || rest.IsUserLoggin)
@@ -88,7 +90,7 @@ namespace SiteServer.API.Controllers.V1
                     AdminId = rest.AdminId,
                     UserId = rest.UserId,
                     SourceId = sourceId,
-                    IsChecked = isChecked,
+                    Checked = isChecked,
                     CheckedLevel = checkedLevel
                 };
 
@@ -98,7 +100,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -106,7 +108,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (contentInfo.IsChecked)
+                if (contentInfo.Checked)
                 {
                     CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
@@ -165,32 +167,30 @@ namespace SiteServer.API.Controllers.V1
 
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
-                var isChecked = contentInfo.IsChecked;
+                var isChecked = contentInfo.Checked;
                 var checkedLevel = contentInfo.CheckedLevel;
 
-                contentInfo.Load(attributes);
-                contentInfo.Load(new
+                foreach (var attribute in attributes)
                 {
-                    SiteId = siteId,
-                    ChannelId = channelId,
-                    AddUserName = adminName,
-                    LastEditDate = DateTime.Now,
-                    LastEditUserName = adminName,
-                    SourceId = sourceId
-                });
+                    contentInfo.Set(attribute.Key, attribute.Value);
+                }
+
+                contentInfo.SiteId = siteId;
+                contentInfo.ChannelId = channelId;
+                contentInfo.AddUserName = adminName;
+                contentInfo.LastEditDate = DateTime.Now;
+                contentInfo.LastEditUserName = adminName;
+                contentInfo.SourceId = sourceId;
 
                 var postCheckedLevel = rest.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
                 if (postCheckedLevel != CheckManager.LevelInt.NotChange)
                 {
-                    isChecked = postCheckedLevel >= siteInfo.Extend.CheckContentLevel;
+                    isChecked = postCheckedLevel >= siteInfo.CheckContentLevel;
                     checkedLevel = postCheckedLevel;
                 }
 
-                contentInfo.Load(new
-                {
-                    IsChecked = isChecked,
-                    CheckedLevel = checkedLevel
-                });
+                contentInfo.Checked = isChecked;
+                contentInfo.CheckedLevel = checkedLevel;
 
                 DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
 
@@ -198,7 +198,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -206,7 +206,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (contentInfo.IsChecked)
+                if (contentInfo.Checked)
                 {
                     CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
@@ -261,12 +261,10 @@ namespace SiteServer.API.Controllers.V1
                 if (!rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentDelete)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                DataProvider.ContentRepository.DeleteContent(tableName, siteInfo, channelId, id);
+                channelInfo.ContentRepository.DeleteContent(siteId, channelId, id);
 
                 return Ok(new
                 {
@@ -367,18 +365,19 @@ namespace SiteServer.API.Controllers.V1
 
                 var parameters = new ApiContentsParameters(request);
 
-                var tupleList = DataProvider.ContentRepository.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
-                var value = new List<Dictionary<string, object>>();
-                foreach (var tuple in tupleList)
+                var list = DataProvider.ContentRepository.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
+
+                var retVal = new List<IDictionary<string, object>>();
+                foreach (var (channelId, contentId) in list)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelId, contentId);
                     if (contentInfo != null)
                     {
-                        value.Add(contentInfo.ToDictionary());
+                        retVal.Add(contentInfo.ToDictionary());
                     }
                 }
 
-                return Ok(new PageResponse(value, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
+                return Ok(new PageResponse(retVal, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
             }
             catch (Exception ex)
             {
@@ -431,19 +430,19 @@ namespace SiteServer.API.Controllers.V1
                 var like = request.GetQueryString("like");
                 var orderBy = request.GetQueryString("orderBy");
 
-                int count;
-                var contentIdList = DataProvider.ContentRepository.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out count);
-                var value = new List<Dictionary<string, object>>();
-                foreach(var contentId in contentIdList)
+                var list = DataProvider.ContentRepository.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out var count);
+
+                var retVal = new List<IDictionary<string, object>>();
+                foreach (var (contentChannelId, contentId) in list)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
                     if (contentInfo != null)
                     {
-                        value.Add(contentInfo.ToDictionary());
+                        retVal.Add(contentInfo.ToDictionary());
                     }
                 }
 
-                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(retVal, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {

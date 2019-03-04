@@ -1,29 +1,27 @@
 using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_TemplateLog")]
-    public class TemplateLogInfo : IDataInfo
+    public class TemplateLogInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public int TemplateId { get; set; }
 
+        [TableColumn]
         public int SiteId { get; set; }
 
+        [TableColumn]
         public DateTime? AddDate { get; set; }
 
+        [TableColumn]
         public string AddUserName { get; set; }
 
+        [TableColumn]
         public int ContentLength { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         public string TemplateContent { get; set; }
     }
 }

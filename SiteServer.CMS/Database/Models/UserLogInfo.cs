@@ -1,27 +1,25 @@
 using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_UserLog")]
-    public class UserLogInfo : IDataInfo, ILogInfo
+    public class UserLogInfo : DynamicEntity, ILogInfo
     {
-        public int Id { get; set; }
+        [TableColumn]
+        public string UserName { get; set; }
 
-        public string Guid { get; set; }
+        [TableColumn]
+        public string IpAddress { get; set; }
 
-        public DateTime? LastModifiedDate { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
-	    public string UserName { get; set; }
+        [TableColumn]
+        public string Action { get; set; }
 
-	    public string IpAddress { get; set; }
-
-	    public DateTime? AddDate { get; set; }
-
-	    public string Action { get; set; }
-
-	    public string Summary { get; set; }
-	}
+        [TableColumn]
+        public string Summary { get; set; }
+    }
 }

@@ -1,46 +1,49 @@
 using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Department")]
-    public class DepartmentInfo : IDataInfo
+    public class DepartmentInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string DepartmentName { get; set; }
 
-	    public string Code { get; set; }
+        [TableColumn]
+        public string Code { get; set; }
 
-	    public int ParentId { get; set; }
+        [TableColumn]
+        public int ParentId { get; set; }
 
-	    public string ParentsPath { get; set; }
+        [TableColumn]
+        public string ParentsPath { get; set; }
 
-	    public int ParentsCount { get; set; }
+        [TableColumn]
+        public int ParentsCount { get; set; }
 
-	    public int ChildrenCount { get; set; }
+        [TableColumn]
+        public int ChildrenCount { get; set; }
 
+        [TableColumn]
         private string IsLastNode { get; set; }
 
-        [Computed]
         public bool LastNode
         {
-            get => TranslateUtils.ToBool(IsLastNode);
+            get => IsLastNode == "True";
             set => IsLastNode = value.ToString();
         }
 
+        [TableColumn]
         public int Taxis { get; set; }
 
-	    public DateTime? AddDate { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
-	    public string Summary { get; set; }
+        [TableColumn]
+        public string Summary { get; set; }
 
-	    public int CountOfAdmin { get; set; }
-	}
+        [TableColumn]
+        public int CountOfAdmin { get; set; }
+    }
 }

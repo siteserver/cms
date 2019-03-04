@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
+using SqlKata;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var departmentId = rest.GetQueryInt("departmentId");
                 var areaId = rest.GetQueryInt("areaId");
 
-                var query = DataProvider.Administrator.NewQuery();
+                var query = new Query();
 
                 if (!string.IsNullOrEmpty(keyword))
                 {
@@ -117,16 +118,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var areas = AreaManager.GetRestAreas();
 
                 var adminLockLoginType =
-                    EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.AdminLockLoginType);
-                var isAdminLockLogin = ConfigManager.Instance.SystemExtend.IsAdminLockLogin;
-                var adminLockLoginCount = ConfigManager.Instance.SystemExtend.AdminLockLoginCount;
-                var adminLockLoginHours = ConfigManager.Instance.SystemExtend.AdminLockLoginHours;
+                    EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.AdminLockLoginType);
+                var isAdminLockLogin = ConfigManager.Instance.IsAdminLockLogin;
+                var adminLockLoginCount = ConfigManager.Instance.AdminLockLoginCount;
+                var adminLockLoginHours = ConfigManager.Instance.AdminLockLoginHours;
 
                 var pageContents = new List<IDictionary<string, object>>();
 
                 foreach (var administratorInfo in administratorInfoList)
                 {
-                    dynamic wrapper = new DynamicWrapper<AdministratorInfo>(administratorInfo, true);
+                    dynamic dynamicObj = administratorInfo;
 
                     var state = string.Empty;
                     if (administratorInfo.Locked)
@@ -150,21 +151,21 @@ namespace SiteServer.API.Controllers.Pages.Settings
                         }
                     }
 
-                    wrapper.State = state;
-                    wrapper.DepartmentName =
+                    dynamicObj.State = state;
+                    dynamicObj.DepartmentName =
                         DepartmentManager.GetDepartmentName(administratorInfo.DepartmentId);
-                    wrapper.AreaName =
+                    dynamicObj.AreaName =
                         AreaManager.GetAreaName(administratorInfo.AreaId);
                     if (administratorInfo.LastActivityDate.HasValue)
                     {
-                        wrapper.LastLoginDate = DateUtils.ParseThisMoment(administratorInfo.LastActivityDate.Value);
+                        dynamicObj.LastLoginDate = DateUtils.ParseThisMoment(administratorInfo.LastActivityDate.Value);
                     }
 
-                    wrapper.RoleName = AdminManager.GetRoleNames(administratorInfo.UserName);
+                    dynamicObj.RoleName = AdminManager.GetRoleNames(administratorInfo.UserName);
 
-                    wrapper.NotMe = administratorInfo.Id != rest.AdminId;
+                    dynamicObj.NotMe = administratorInfo.Id != rest.AdminId;
 
-                    pageContents.Add(((DynamicWrapper<AdministratorInfo>)wrapper).ToDictionary());
+                    pageContents.Add((IDictionary<string, object>)dynamicObj);
                 }
                 
 

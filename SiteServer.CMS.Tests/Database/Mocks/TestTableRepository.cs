@@ -76,15 +76,15 @@ namespace SiteServer.CMS.Tests.Database.Mocks
         }
 
 
-        public bool Update(TestTableInfo dataInfo)
+        public new bool UpdateObject(TestTableInfo dataInfo)
         {
-            return UpdateObject(dataInfo);
+            return base.UpdateObject(dataInfo);
         }
 
 
-        public new int UpdateValue(IDictionary<string, object> values, Query query)
+        public new int UpdateAll(Query query)
         {
-            return base.UpdateValue(values, query);
+            return base.UpdateAll(query);
         }
 
 

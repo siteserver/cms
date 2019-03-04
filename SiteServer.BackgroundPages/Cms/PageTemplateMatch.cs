@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -339,7 +339,6 @@ namespace SiteServer.BackgroundPages.Cms
 		                RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
 		                CreatedFileFullName = "index.html",
 		                CreatedFileExtName = ".html",
-		                FileCharset = ECharsetUtils.GetEnumType(SiteInfo.Extend.Charset),
 		                Default = false
                     };
 
@@ -392,7 +391,6 @@ namespace SiteServer.BackgroundPages.Cms
 		            RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
 		            CreatedFileFullName = "index.html",
 		            CreatedFileExtName = ".html",
-		            FileCharset = ECharsetUtils.GetEnumType(SiteInfo.Extend.Charset),
 		            Default = false
 		        };
 								
@@ -459,7 +457,6 @@ namespace SiteServer.BackgroundPages.Cms
 		                RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
 		                CreatedFileFullName = "index.html",
 		                CreatedFileExtName = ".html",
-		                FileCharset = ECharsetUtils.GetEnumType(SiteInfo.Extend.Charset),
 		                Default = false
 		            };
 		            if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
@@ -509,7 +506,6 @@ namespace SiteServer.BackgroundPages.Cms
 		            RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
 		            CreatedFileFullName = "index.html",
 		            CreatedFileExtName = ".html",
-		            FileCharset = ECharsetUtils.GetEnumType(SiteInfo.Extend.Charset),
 		            Default = false
 		        };
 								

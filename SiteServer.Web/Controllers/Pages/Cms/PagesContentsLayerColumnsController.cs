@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -72,7 +72,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                channelInfo.Extend.ContentAttributesOfDisplay = attributeNames;
+                channelInfo.ContentAttributesOfDisplay = attributeNames;
 
                 DataProvider.Channel.Update(channelInfo);
 

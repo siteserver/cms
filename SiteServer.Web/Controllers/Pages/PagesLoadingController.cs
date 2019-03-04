@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Preview;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
-            var isLocal = siteInfo.Extend.IsSeparatedWeb || siteInfo.Extend.IsSeparatedAssets;
+            var isLocal = siteInfo.IsSeparatedWeb || siteInfo.IsSeparatedAssets;
 
             if (siteId > 0 && channelId > 0 && contentId > 0)
             {
@@ -73,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages
                 redirectUrl = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
             }
 
-            if (string.IsNullOrEmpty(redirectUrl) || StringUtils.EqualsIgnoreCase(redirectUrl, PageUtils.UnclickedUrl))
+            if (string.IsNullOrEmpty(redirectUrl) || StringUtils.EqualsIgnoreCase(redirectUrl, PageUtils.UnClickedUrl))
             {
                 if (siteId == 0)
                 {
@@ -87,9 +87,9 @@ namespace SiteServer.API.Controllers.Pages
                 else
                 {
                     var redirectSiteInfo = SiteManager.GetSiteInfo(siteId);
-                    redirectUrl = redirectSiteInfo.Extend.IsSeparatedWeb
+                    redirectUrl = redirectSiteInfo.IsSeparatedWeb
                         ? ApiRoutePreview.GetSiteUrl(siteId)
-                        : redirectSiteInfo.Extend.WebUrl;
+                        : redirectSiteInfo.WebUrl;
                 }
             }
 

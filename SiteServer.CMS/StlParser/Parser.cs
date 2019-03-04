@@ -67,7 +67,7 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.SiteInfo.Extend.IsCreateBrowserNoCache)
+                if (pageInfo.SiteInfo.IsCreateBrowserNoCache)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""Pragma"" CONTENT=""no-cache"">
@@ -75,25 +75,25 @@ namespace SiteServer.CMS.StlParser
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.SiteInfo.Extend.IsCreateIe8Compatible)
+                if (pageInfo.SiteInfo.IsCreateIe8Compatible)
                 {
                     const string templateString = @"
 <META HTTP-EQUIV=""x-ua-compatible"" CONTENT=""ie=7"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                if (pageInfo.SiteInfo.Extend.IsCreateJsIgnoreError)
+                if (pageInfo.SiteInfo.IsCreateJsIgnoreError)
                 {
                     const string templateString = @"
 <script type=""text/javascript"">window.onerror=function(){return true;}</script>";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
                 }
 
-                var isShowPageInfo = pageInfo.SiteInfo.Extend.IsCreateShowPageInfo;
+                var isShowPageInfo = pageInfo.SiteInfo.IsCreateShowPageInfo;
 
                 if (!pageInfo.IsLocal)
                 {
-                    if (pageInfo.SiteInfo.Extend.IsCreateDoubleClick)
+                    if (pageInfo.SiteInfo.IsCreateDoubleClick)
                     {
                         var fileTemplateId = 0;
                         if (pageInfo.TemplateInfo.Type == TemplateType.FileTemplate)

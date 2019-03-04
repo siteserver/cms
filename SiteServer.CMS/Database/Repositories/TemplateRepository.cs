@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //var id = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(TemplateInfo.Id), sqlInsertTemplate, parameters);
 
-            var id = base.InsertObject(templateInfo);
+            var id = InsertObject(templateInfo);
 
             var siteInfo = SiteManager.GetSiteInfo(templateInfo.SiteId);
             TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdateTemplate = "UPDATE siteserver_Template SET TemplateName = @TemplateName, TemplateType = @TemplateType, RelatedFileName = @RelatedFileName, CreatedFileFullName = @CreatedFileFullName, CreatedFileExtName = @CreatedFileExtName, Charset = @Charset, IsDefault = @IsDefault WHERE  Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateTemplate, parameters);
 
-            base.UpdateObject(templateInfo);
+            UpdateObject(templateInfo);
 
             TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
 
@@ -99,12 +99,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsDefault, false.ToString()}
-            }, Q
+            UpdateAll(Q
+                .Set(Attr.IsDefault, false.ToString())
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.TemplateType, templateType.Value));
+                .Where(Attr.TemplateType, templateType.Value)
+            );
         }
 
         public void SetDefault(int siteId, int id)
@@ -122,10 +121,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsDefault, true.ToString()}
-            }, Q.Where(Attr.Id, id));
+            UpdateAll(Q
+                .Set(Attr.IsDefault, true.ToString())
+                .Where(Attr.Id, id)
+            );
 
             TemplateManager.RemoveCache(siteId);
         }
@@ -143,7 +142,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDeleteTemplate = "DELETE FROM siteserver_Template WHERE Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDeleteTemplate, parameters);
 
-            base.DeleteById(id);
+            DeleteById(id);
 
             FileUtils.DeleteFileIfExists(filePath);
 
@@ -230,7 +229,14 @@ namespace SiteServer.CMS.Database.Repositories
                 var templateType = TemplateTypeUtils.GetEnumType(data.TemplateType);
                 var count = data.Count;
 
-                dictionary.Add(templateType, count);
+                if (dictionary.ContainsKey(templateType))
+                {
+                    dictionary[templateType] += count;
+                }
+                else
+                {
+                    dictionary.Add(templateType, count);
+                }
             }
 
             return dictionary;
@@ -414,7 +420,6 @@ namespace SiteServer.CMS.Database.Repositories
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var templateInfoList = new List<TemplateInfo>();
-            var charset = ECharsetUtils.GetEnumType(siteInfo.Extend.Charset);
 
             var templateInfo = new TemplateInfo
             {
@@ -424,7 +429,6 @@ namespace SiteServer.CMS.Database.Repositories
                 RelatedFileName = "T_系统首页模板.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
-                FileCharset = charset,
                 Default = true
             };
             templateInfoList.Add(templateInfo);
@@ -437,7 +441,6 @@ namespace SiteServer.CMS.Database.Repositories
                 RelatedFileName = "T_系统栏目模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                FileCharset = charset,
                 Default = true
             };
             templateInfoList.Add(templateInfo);
@@ -450,7 +453,6 @@ namespace SiteServer.CMS.Database.Repositories
                 RelatedFileName = "T_系统内容模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                FileCharset = charset,
                 Default = true
             };
             templateInfoList.Add(templateInfo);
@@ -910,7 +912,7 @@ namespace SiteServer.CMS.Database.Repositories
 //            var siteInfo = SiteManager.GetSiteInfo(siteId);
 
 //            var templateInfoList = new List<TemplateInfo>();
-//            var charset = ECharsetUtils.GetEnumType(siteInfo.Extend.Charset);
+//            var charset = ECharsetUtils.GetEnumType(siteInfo.Charset);
 
 //            var templateInfo = new TemplateInfo(0, siteInfo.Id, "系统首页模板", TemplateType.IndexPageTemplate, "T_系统首页模板.html", "@/index.html", ".html", charset, true);
 //            templateInfoList.Add(templateInfo);

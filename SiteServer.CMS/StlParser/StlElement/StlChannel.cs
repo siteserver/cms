@@ -1,8 +1,9 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
@@ -196,7 +197,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
             {
-                return channel.ToDictionary();
+                return channel;
             }
 
             return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
@@ -351,7 +352,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.ExtendValues.ToLower()))
             {
-                parsedContent = channel.Attributes.ToString();
+                parsedContent = channel.ExtendValues;
             }
             else if (type.Equals(ChannelAttribute.Title.ToLower()) || type.Equals(ChannelAttribute.ChannelName.ToLower()))
             {
@@ -425,7 +426,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                 if (styleInfo.Id > 0)
                 {
-                    parsedContent = GetValue(attributeName, channel.Attributes, false, styleInfo.DefaultValue);
+                    parsedContent = channel.Get(attributeName, styleInfo.DefaultValue);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
@@ -438,16 +439,6 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             parsedContent = InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
             return leftText + parsedContent + rightText;
-        }
-
-        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
-        {
-            var value = attributes.Get(attributeName);
-            if (isAddAndNotPostBack && value == null)
-            {
-                value = defaultValue;
-            }
-            return value.ToString();
         }
     }
 }

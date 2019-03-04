@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport.Components;
@@ -176,17 +176,17 @@ namespace SiteServer.CMS.ImportExport
                 string imageUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "ImageUploadDirectoryName");
                 if(imageUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.ImageUploadDirectoryName), isOverride); 
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, imageUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.ImageUploadDirectoryName), isOverride); 
                 }
                 string videoUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "VideoUploadDirectoryName");
                 if (videoUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.VideoUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, videoUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.VideoUploadDirectoryName), isOverride);
                 }
                 string fileUploadDirectoryPath = AtomUtility.GetDcElementContent(entry.AdditionalElements, "FileUploadDirectoryName");
                 if (fileUploadDirectoryPath != null)
                 {
-                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.Extend.FileUploadDirectoryName), isOverride);
+                    DirectoryUtils.MoveDirectory(PathUtils.Combine(siteContentDirectoryPath, fileUploadDirectoryPath), PathUtils.Combine(_sitePath, _siteInfo.FileUploadDirectoryName), isOverride);
                 }
             }
         }
@@ -317,7 +317,7 @@ namespace SiteServer.CMS.ImportExport
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.IsChecked = isChecked;
+                contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
 
                 //contentInfo.ID = DataProvider.ContentDAO.InsertObject(tableName, this.FSO.SiteInfo, contentInfo);
@@ -387,7 +387,7 @@ namespace SiteServer.CMS.ImportExport
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.IsChecked = isChecked;
+                contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
@@ -422,7 +422,7 @@ namespace SiteServer.CMS.ImportExport
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.IsChecked = isChecked;
+                contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
                 contentInfo.AddDate = DateTime.Now;
                 contentInfo.LastEditDate = DateTime.Now;
@@ -502,7 +502,7 @@ namespace SiteServer.CMS.ImportExport
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.IsChecked = isChecked;
+                contentInfo.Checked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
 
                 //int contentID = DataProvider.ContentDAO.InsertObject(tableName, this.FSO.SiteInfo, contentInfo);
@@ -542,7 +542,7 @@ namespace SiteServer.CMS.ImportExport
                 ChannelId = channelInfo.Id,
                 Title = PathUtils.GetFileNameWithoutExtension(txtFilePath),
                 Content = StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath, Encoding.UTF8)),
-                IsChecked = isChecked,
+                Checked = isChecked,
                 CheckedLevel = checkedLevel,
                 AddDate = DateTime.Now,
                 LastEditDate = DateTime.Now,

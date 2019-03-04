@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -53,19 +54,19 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = true;
+                                contentInfo.Recommend = true;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = true;
+                                contentInfo.Hot = true;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = true;
+                                contentInfo.Color = true;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = true;
+                                contentInfo.Top = true;
                             }
                             DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                         }
@@ -84,19 +85,19 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = false;
+                                contentInfo.Recommend = false;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = false;
+                                contentInfo.Hot = false;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = false;
+                                contentInfo.Color = false;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = false;
+                                contentInfo.Top = false;
                             }
                             DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                         }

@@ -7,8 +7,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Extend.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
             SpContents.SelectCommand = DataProvider.ContentRepository.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
 
@@ -116,7 +116,8 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var dataView = (DataRowView) e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataView));
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 

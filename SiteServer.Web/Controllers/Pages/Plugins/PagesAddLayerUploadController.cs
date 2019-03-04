@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 

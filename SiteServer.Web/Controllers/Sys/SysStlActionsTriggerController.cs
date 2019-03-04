@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -86,16 +87,9 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         var parameters = new NameValueCollection();
                         var returnUrl = rest.GetQueryString("returnUrl");
-                        if (!string.IsNullOrEmpty(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("?"))
                         {
-                            if (returnUrl.StartsWith("?"))
-                            {
-                                parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
-                            }
-                            else
-                            {
-                                redirectUrl = returnUrl;
-                            }
+                            parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
                         }
                         
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();

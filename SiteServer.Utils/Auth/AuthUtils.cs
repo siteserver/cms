@@ -21,6 +21,7 @@ namespace SiteServer.Utils.Auth
 
         public static string Md5ByString(string str)
         {
+            if (string.IsNullOrEmpty(str)) return string.Empty;
             var bytes = Encoding.UTF8.GetBytes(str);
             using (var md5 = MD5.Create())
             {

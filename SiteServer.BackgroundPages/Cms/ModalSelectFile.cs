@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -85,11 +85,18 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Extend.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                if (string.IsNullOrEmpty(SiteInfo.ConfigSelectFileCurrentUrl))
+                {
+                    _currentRootPath = "@/" + SiteInfo.FileUploadDirectoryName;
+                }
+                else
+                {
+                    _currentRootPath = SiteInfo.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                }
             }
             else
             {
-                SiteInfo.Extend.ConfigSelectFileCurrentUrl = _currentRootPath;
+                SiteInfo.ConfigSelectFileCurrentUrl = _currentRootPath;
                 DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
@@ -224,12 +231,12 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				if (!cookieExists)
 				{
-					CookieUtils.SetCookie(cookieName, DdlListType.SelectedValue, DateTime.MaxValue);
+					CookieUtils.SetCookie(cookieName, DdlListType.SelectedValue, TimeSpan.FromDays(1));
 				}
 			}
 			else
 			{
-                CookieUtils.SetCookie(cookieName, AuthRequest.GetQueryString("ListType"), DateTime.MaxValue);
+                CookieUtils.SetCookie(cookieName, AuthRequest.GetQueryString("ListType"), TimeSpan.FromDays(1));
 			}
 			if (DdlListType.SelectedValue == "List")
 			{
@@ -420,7 +427,7 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				var fileModifyDateTime = fileInfo.LastWriteTime;
 				var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-				var attachmentUrl = linkUrl.Replace(SiteInfo.Extend.WebUrl, "@");
+				var attachmentUrl = linkUrl.Replace(SiteInfo.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl,_hiddenClientId);
                 string trHtml =

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -160,7 +160,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
             styleInfo.Type = body.Type;
             styleInfo.DefaultValue = body.DefaultValue;
             styleInfo.Horizontal = body.Horizontal;
-            styleInfo.SetExtendValues(body.Extend.ToString());
+            styleInfo.ExtendValues = body.ExtendValues;
             styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
             if (body.Type == InputType.CheckBox || body.Type == InputType.Radio || body.Type == InputType.SelectMultiple || body.Type == InputType.SelectOne)
@@ -217,7 +217,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
             styleInfo.Type = body.Type;
             styleInfo.DefaultValue = body.DefaultValue;
             styleInfo.Horizontal = body.Horizontal;
-            styleInfo.SetExtendValues(body.Extend.ToString());
+            styleInfo.ExtendValues = body.ExtendValues;
             styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
             if (body.Type == InputType.CheckBox || body.Type == InputType.Radio || body.Type == InputType.SelectMultiple || body.Type == InputType.SelectOne)

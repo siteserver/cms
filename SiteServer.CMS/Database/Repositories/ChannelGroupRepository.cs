@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -111,12 +111,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.Taxis, taxis}
-            }, Q
+            UpdateAll(Q
+                .Set(Attr.Taxis, taxis)
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.GroupName, groupName));
+                .Where(Attr.GroupName, groupName)
+            );
 
             ChannelGroupManager.ClearCache();
         }

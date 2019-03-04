@@ -2,10 +2,11 @@
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -16,11 +17,11 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetContentTitle(SiteInfo siteInfo, ContentInfo contentInfo, string pageUrl)
         {
             string url;
-            var title = ContentUtility.FormatTitle(contentInfo.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), contentInfo.Title);
+            var title = ContentUtility.FormatTitle(contentInfo.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), contentInfo.Title);
 
-            var displayString = contentInfo.IsColor ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
+            var displayString = contentInfo.Color ? $"<span style='color:#ff0000;text-decoration:none' title='醒目'>{title}</span>" : title;
 
-            if (contentInfo.IsChecked && contentInfo.ChannelId > 0)
+            if (contentInfo.Checked && contentInfo.ChannelId > 0)
             {
                 url =
                     $"<a href='{PageUtils.GetLoadingUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
@@ -32,47 +33,47 @@ namespace SiteServer.BackgroundPages.Core
             }
 
             var image = string.Empty;
-            if (contentInfo.IsRecommend)
+            if (contentInfo.Recommend)
             {
                 image += "&nbsp;<img src='../pic/icon/recommend.gif' title='推荐' align='absmiddle' border=0 />";
             }
-            if (contentInfo.IsHot)
+            if (contentInfo.Hot)
             {
                 image += "&nbsp;<img src='../pic/icon/hot.gif' title='热点' align='absmiddle' border=0 />";
             }
-            if (contentInfo.IsTop)
+            if (contentInfo.Top)
             {
                 image += "&nbsp;<img src='../pic/icon/top.gif' title='置顶' align='absmiddle' border=0 />";
             }
             if (contentInfo.ReferenceId > 0)
             {
-                if (contentInfo.GetString(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
+                if (contentInfo.Get<string>(ContentAttribute.TranslateContentType) == ETranslateContentType.ReferenceContent.ToString())
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用内容' align='absmiddle' border=0 />(引用内容)";
                 }
-                else if (contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+                else if (contentInfo.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
                 {
                     image += "&nbsp;<img src='../pic/icon/reference.png' title='引用地址' align='absmiddle' border=0 />(引用地址)";
                 }
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.LinkUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.LinkUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/link.png' title='外部链接' align='absmiddle' border=0 />";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.ImageUrl)))
             {
-                var imageUrl = PageUtility.ParseNavigationUrl(siteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), true);
+                var imageUrl = PageUtility.ParseNavigationUrl(siteInfo, contentInfo.Get<string>(ContentAttribute.ImageUrl), true);
                 var openWindowString = ModalMessage.GetOpenWindowString(siteInfo.Id, "预览图片", $"<img src='{imageUrl}' />", 500, 500);
                 image +=
                     $@"&nbsp;<a href=""javascript:;"" onclick=""{openWindowString}""><img src='../assets/icons/img.gif' title='预览图片' align='absmiddle' border=0 /></a>";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.VideoUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.VideoUrl)))
             {
-                var openWindowString = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(siteInfo.Id, contentInfo.GetString(BackgroundContentAttribute.VideoUrl));
+                var openWindowString = ModalMessage.GetOpenWindowStringToPreviewVideoByUrl(siteInfo.Id, contentInfo.Get<string>(ContentAttribute.VideoUrl));
                 image +=
                     $@"&nbsp;<a href=""javascript:;"" onclick=""{openWindowString}""><img src='../pic/icon/video.png' title='预览视频' align='absmiddle' border=0 /></a>";
             }
-            if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
+            if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.FileUrl)))
             {
                 image += "&nbsp;<img src='../pic/icon/attachment.gif' title='附件' align='absmiddle' border=0 />";
             }
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Extend.IsContentAddable)
+            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
             {
                 builder.Append($@"
 <a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
@@ -113,7 +114,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var count = ContentManager.GetCount(siteInfo, channelInfo);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
             if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
@@ -196,7 +198,7 @@ namespace SiteServer.BackgroundPages.Core
         {
             var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Extend.IsContentAddable)
+            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
             {
                 builder.Append($@"
 <a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
@@ -204,7 +206,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var count = ContentManager.GetCount(siteInfo, channelInfo);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
             if (count > 0)
             {
@@ -279,70 +282,70 @@ function detection_{attributeName}(){{
 ";
         }
 
-        public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo)
-        {
-            var isAutoCheckKeywords = siteInfo.Extend.IsAutoCheckKeywords.ToString().ToLower();
-            var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
-            var getPureText = UEditorUtils.GetPureTextScript(BackgroundContentAttribute.Content);
-            var getContent = UEditorUtils.GetContentScript(BackgroundContentAttribute.Content);
-            var setContent = UEditorUtils.GetSetContentScript(BackgroundContentAttribute.Content, "htmlContent");
-            var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
-                "autoReplaceKeywords");
+//        public static string GetAutoCheckKeywordsScript(SiteInfo siteInfo)
+//        {
+//            var isAutoCheckKeywords = siteInfo.IsAutoCheckKeywords.ToString().ToLower();
+//            var url = AjaxCmsService.GetDetectionReplaceUrl(siteInfo.Id);
+//            var getPureText = UEditorUtils.GetPureTextScript(ContentAttribute.Content);
+//            var getContent = UEditorUtils.GetContentScript(ContentAttribute.Content);
+//            var setContent = UEditorUtils.GetSetContentScript(ContentAttribute.Content, "htmlContent");
+//            var tipsWarn = AlertUtils.Warning("敏感词检测", "内容中共检测到' + i + '个敏感词，已用黄色背景标明", "取 消", "自动替换并保存",
+//                "autoReplaceKeywords");
 
-            var command = $@"
-<script type=""text/javascript"">
-var bairongKeywordArray;
-function autoCheckKeywords() {{
-    if({isAutoCheckKeywords}) {{
-        var pureText = {getPureText}
-        var htmlContent = {getContent}
-	    $.post('{url}&r=' + Math.random(), {{content:pureText}}, function(data) {{
-		    if(data) {{
-                bairongKeywordArray = data;
-			    var arr = data.split(',');
-                var i=0;
-			    for(;i<arr.length;i++)
-			    {{
-                    var tmpArr = arr[i].split('|');
-                    var keyword = tmpArr[0];
-                    var replace = tmpArr.length==2?tmpArr[1]:'';
-                    var reg = new RegExp(keyword, 'gi');
-				    htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + keyword + '</span>');
-			    }}
-			    {setContent}
-                {tipsWarn}
-		    }} else {{
-                $('#BtnSubmit').attr('onclick', '').click();
-            }}
-	    }});
-        return false;	
-    }}
-}}
-function autoReplaceKeywords() {{
-    var arr = bairongKeywordArray.split(',');
-    var i=0;
-    var htmlContent = {getContent}
-	for(;i<arr.length;i++)
-	{{
-        var tmpArr = arr[i].split('|');
-        var keyword = tmpArr[0];
-        var replace = tmpArr.length==2?tmpArr[1]:'';
-        var reg = new RegExp('<span style=""background-color:#ffff00;"">' + keyword + '</span>', 'gi');
-		htmlContent = htmlContent.replace(reg, replace);
-        //IE8
-        reg = new RegExp('<span style=""background-color:#ffff00"">' + keyword + '</span>', 'gi');
-		htmlContent = htmlContent.replace(reg, replace);
-	}}
-    {setContent}
-    $('#BtnSubmit').attr('onclick', '').click();
-}}
-</script>
-";
+//            var command = $@"
+//<script type=""text/javascript"">
+//var bairongKeywordArray;
+//function autoCheckKeywords() {{
+//    if({isAutoCheckKeywords}) {{
+//        var pureText = {getPureText}
+//        var htmlContent = {getContent}
+//	    $.post('{url}&r=' + Math.random(), {{content:pureText}}, function(data) {{
+//		    if(data) {{
+//                bairongKeywordArray = data;
+//			    var arr = data.split(',');
+//                var i=0;
+//			    for(;i<arr.length;i++)
+//			    {{
+//                    var tmpArr = arr[i].split('|');
+//                    var keyword = tmpArr[0];
+//                    var replace = tmpArr.length==2?tmpArr[1]:'';
+//                    var reg = new RegExp(keyword, 'gi');
+//				    htmlContent = htmlContent.replace(reg,'<span style=""background-color:#ffff00;"">' + keyword + '</span>');
+//			    }}
+//			    {setContent}
+//                {tipsWarn}
+//		    }} else {{
+//                $('#BtnSubmit').attr('onclick', '').click();
+//            }}
+//	    }});
+//        return false;	
+//    }}
+//}}
+//function autoReplaceKeywords() {{
+//    var arr = bairongKeywordArray.split(',');
+//    var i=0;
+//    var htmlContent = {getContent}
+//	for(;i<arr.length;i++)
+//	{{
+//        var tmpArr = arr[i].split('|');
+//        var keyword = tmpArr[0];
+//        var replace = tmpArr.length==2?tmpArr[1]:'';
+//        var reg = new RegExp('<span style=""background-color:#ffff00;"">' + keyword + '</span>', 'gi');
+//		htmlContent = htmlContent.replace(reg, replace);
+//        //IE8
+//        reg = new RegExp('<span style=""background-color:#ffff00"">' + keyword + '</span>', 'gi');
+//		htmlContent = htmlContent.replace(reg, replace);
+//	}}
+//    {setContent}
+//    $('#BtnSubmit').attr('onclick', '').click();
+//}}
+//</script>
+//";
             
 
 
-            return command;
-        }
+//            return command;
+//        }
 
         public static string GetImageUrlButtonGroupHtml(SiteInfo siteInfo, string attributeName)
         {

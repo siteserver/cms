@@ -8,9 +8,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AdminPermissionsImpl.ChannelIdList, AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
                     ETriState.True, true);
-            SpContents.ItemsPerPage = SiteInfo.Extend.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
@@ -115,7 +115,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
                 var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-                var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+                var dataRowView = (DataRowView) e.Item.DataItem;
+                var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataRowView));
 
                 var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)

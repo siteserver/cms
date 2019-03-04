@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -40,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (ETaxisTypeUtils.Equals(channelInfo.Extend.DefaultTaxisType, ETaxisType.OrderByTaxis))
+                if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
                 {
                     isUp = !isUp;
                 }
@@ -57,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    var isTop = contentInfo.IsTop;
+                    var isTop = contentInfo.Top;
                     for (var i = 1; i <= taxis; i++)
                     {
                         if (isUp)

@@ -1,9 +1,10 @@
 ﻿using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -79,7 +80,7 @@ namespace SiteServer.API.Controllers.Sys
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
-                    if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {

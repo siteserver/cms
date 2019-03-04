@@ -4,11 +4,11 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
                             contentInfo.LastEditDate = contentInfo.AddDate;
 
                             contentInfo.CheckedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
-                            contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Extend.CheckContentLevel;
+                            contentInfo.Checked = contentInfo.CheckedLevel >= SiteInfo.CheckContentLevel;
 
                             contentInfo.Title = formCollection[ContentAttribute.Title];
 

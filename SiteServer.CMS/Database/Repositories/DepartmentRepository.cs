@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -85,11 +85,11 @@ namespace SiteServer.CMS.Database.Repositories
             //sqlString = $"UPDATE siteserver_Department SET IsLastNode = '{false}' WHERE ParentID = {departmentInfo.ParentId}";
 
             //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLastNode, false.ToString()}
-            }, Q.Where(Attr.ParentId, departmentInfo.ParentId));
+            
+            UpdateAll(Q
+                .Set(Attr.IsLastNode, false.ToString())
+                .Where(Attr.ParentId, departmentInfo.ParentId)
+            );
 
             //sqlString =
             //    $"UPDATE siteserver_Department SET IsLastNode = '{true}' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Department WHERE ParentID = {departmentInfo.ParentId} ORDER BY Taxis DESC))";
@@ -106,10 +106,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (topId > 0)
             {
-                UpdateValue(new Dictionary<string, object>
-                {
-                    {Attr.IsLastNode, true.ToString()}
-                }, Q.Where(Attr.Id, topId));
+                UpdateAll(Q
+                    .Set(Attr.IsLastNode, true.ToString())
+                    .Where(Attr.Id, topId)
+                );
             }
 
             DepartmentManager.ClearCache();
@@ -302,11 +302,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLastNode, false.ToString()}
-            }, Q.Where(Attr.ParentId, parentId));
+            
+            UpdateAll(Q
+                .Set(Attr.IsLastNode, false.ToString())
+                .Where(Attr.ParentId, parentId)
+            );
 
             //sqlString =
             //    $"UPDATE siteserver_Department SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString("siteserver_Department", new List<string> { nameof(DepartmentInfo.Id) }, $"WHERE ParentID = {parentId}", "ORDER BY Taxis DESC", 1)}))";
@@ -320,10 +320,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (topId > 0)
             {
-                UpdateValue(new Dictionary<string, object>
-                {
-                    {Attr.IsLastNode, true.ToString()}
-                }, Q.Where(Attr.Id, topId));
+                UpdateAll(Q
+                    .Set(Attr.IsLastNode, true.ToString())
+                    .Where(Attr.Id, topId)
+                );
             }
         }
 
@@ -400,11 +400,11 @@ namespace SiteServer.CMS.Database.Repositories
                 var count = DataProvider.Administrator.GetCountByDepartmentId(departmentId);
                 //string sqlString = $"UPDATE {TableName} SET CountOfAdmin = {count} WHERE Id = {departmentId}";
                 //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
-
-                UpdateValue(new Dictionary<string, object>
-                {
-                    {Attr.CountOfAdmin, count}
-                }, Q.Where(nameof(Attr.Id), departmentId));
+                
+                UpdateAll(Q
+                    .Set(Attr.CountOfAdmin, count)
+                    .Where(Attr.Id, departmentId)
+                );
             }
             DepartmentManager.ClearCache();
         }

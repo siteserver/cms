@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             return
-                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{siteInfo.Extend.WebUrl}' target='_blank' title='{siteInfo.SiteName}'>{StringUtils.MaxLengthText(siteInfo.SiteName, 20)}</a>";
+                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{siteInfo.WebUrl}' target='_blank' title='{siteInfo.SiteName}'>{StringUtils.MaxLengthText(siteInfo.SiteName, 20)}</a>";
         }
     }
 }

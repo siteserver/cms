@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (!UserManager.IsIpAddressCached(ipAddress))
             {
-                errorMessage = $"同一IP在{ConfigManager.Instance.SystemExtend.UserRegistrationMinMinutes}分钟内只能注册一次";
+                errorMessage = $"同一IP在{ConfigManager.Instance.UserRegistrationMinMinutes}分钟内只能注册一次";
                 return false;
             }
             if (string.IsNullOrEmpty(password))
@@ -30,15 +30,15 @@ namespace SiteServer.CMS.Database.Repositories
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
                 return false;
             }
             if (string.IsNullOrEmpty(userName))
@@ -133,7 +133,7 @@ namespace SiteServer.CMS.Database.Repositories
             errorMessage = string.Empty;
             if (userInfo == null) return 0;
 
-            if (!ConfigManager.Instance.SystemExtend.IsUserRegistrationAllowed)
+            if (!ConfigManager.Instance.IsUserRegistrationAllowed)
             {
                 errorMessage = "对不起，系统已禁止新用户注册！";
                 return 0;
@@ -141,7 +141,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             try
             {
-                userInfo.Checked = ConfigManager.Instance.SystemExtend.IsUserRegistrationChecked;
+                userInfo.Checked = ConfigManager.Instance.IsUserRegistrationChecked;
                 if (StringUtils.IsMobile(userInfo.UserName) && string.IsNullOrEmpty(userInfo.Mobile))
                 {
                     userInfo.Mobile = userInfo.UserName;
@@ -235,15 +235,15 @@ namespace SiteServer.CMS.Database.Repositories
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
                 return false;
             }
             return true;
@@ -253,7 +253,10 @@ namespace SiteServer.CMS.Database.Repositories
         {
             if (!UpdateValidate(body, userInfo.UserName, userInfo.Email, userInfo.Mobile, out errorMessage)) return null;
 
-            userInfo.Load(body);
+            foreach (var o in body)
+            {
+                userInfo.Set(o.Key, o.Value);
+            }
 
             Update(userInfo);
 
@@ -427,19 +430,19 @@ namespace SiteServer.CMS.Database.Repositories
         public bool ChangePassword(string userName, string password, out string errorMessage)
         {
             errorMessage = null;
-            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
                 return false;
             }
-            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
                 return false;
             }
 
-            var passwordFormat = EPasswordFormat.Encrypted;
+            const EPasswordFormat passwordFormat = EPasswordFormat.Encrypted;
             var passwordSalt = GenerateSalt();
             password = EncodePassword(password, passwordFormat, passwordSalt);
             ChangePassword(userName, passwordFormat, passwordSalt, password);
@@ -483,10 +486,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsChecked, true.ToString()}
-            }, Q.WhereIn(Attr.Id, idList));
+            UpdateAll(Q
+                .Set(Attr.IsChecked, true.ToString())
+                .WhereIn(Attr.Id, idList)
+            );
 
             UserManager.ClearCache();
         }
@@ -498,10 +501,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLockedOut, true.ToString()}
-            }, Q.WhereIn(Attr.Id, idList));
+            UpdateAll(Q
+                .Set(Attr.IsLockedOut, true.ToString())
+                .WhereIn(Attr.Id, idList)
+            );
 
             UserManager.ClearCache();
         }
@@ -513,10 +516,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLockedOut, false.ToString()}
-            }, Q.WhereIn(Attr.Id, idList));
+            UpdateAll(Q
+                .Set(Attr.IsLockedOut, false.ToString())
+                .WhereIn(Attr.Id, idList)
+            );
 
             UserManager.ClearCache();
         }
@@ -857,17 +860,17 @@ namespace SiteServer.CMS.Database.Repositories
                 return null;
             }
 
-            if (userInfo.LockedOut)
+            if (userInfo.Locked)
             {
                 errorMessage = "此账号被锁定，无法登录";
                 return null;
             }
 
-            if (ConfigManager.Instance.SystemExtend.IsUserLockLogin)
+            if (ConfigManager.Instance.IsUserLockLogin)
             {
-                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.Instance.SystemExtend.UserLockLoginCount)
+                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.Instance.UserLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserLockLoginType);
+                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.UserLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
@@ -878,7 +881,7 @@ namespace SiteServer.CMS.Database.Repositories
                         if (userInfo.LastActivityDate.HasValue)
                         {
                             var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Value.Ticks);
-                            var hours = Convert.ToInt32(ConfigManager.Instance.SystemExtend.UserLockLoginHours - ts.TotalHours);
+                            var hours = Convert.ToInt32(ConfigManager.Instance.UserLockLoginHours - ts.TotalHours);
                             if (hours > 0)
                             {
                                 errorMessage =
@@ -1227,7 +1230,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //            if (!UserManager.IsIpAddressCached(ipAddress))
 //            {
-//                errorMessage = $"同一IP在{ConfigManager.Instance.SystemExtend.UserRegistrationMinMinutes}分钟内只能注册一次";
+//                errorMessage = $"同一IP在{ConfigManager.Instance.UserRegistrationMinMinutes}分钟内只能注册一次";
 //                return false;
 //            }
 //            if (string.IsNullOrEmpty(password))
@@ -1235,15 +1238,15 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //                errorMessage = "密码不能为空";
 //                return false;
 //            }
-//            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+//            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
 //            {
-//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
 //                return false;
 //            }
-//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
 //            {
 //                errorMessage =
-//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
 //                return false;
 //            }
 //            if (string.IsNullOrEmpty(userName))
@@ -1338,7 +1341,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //            errorMessage = string.Empty;
 //            if (userInfo == null) return 0;
 
-//            if (!ConfigManager.Instance.SystemExtend.IsUserRegistrationAllowed)
+//            if (!ConfigManager.Instance.IsUserRegistrationAllowed)
 //            {
 //                errorMessage = "对不起，系统已禁止新用户注册！";
 //                return 0;
@@ -1346,7 +1349,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //            try
 //            {
-//                userInfo.IsChecked = ConfigManager.Instance.SystemExtend.IsUserRegistrationChecked;
+//                userInfo.IsChecked = ConfigManager.Instance.IsUserRegistrationChecked;
 //                if (StringUtils.IsMobile(userInfo.UserName) && string.IsNullOrEmpty(userInfo.Mobile))
 //                {
 //                    userInfo.Mobile = userInfo.UserName;
@@ -1431,15 +1434,15 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //                errorMessage = "密码不能为空";
 //                return false;
 //            }
-//            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+//            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
 //            {
-//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
 //                return false;
 //            }
-//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
 //            {
 //                errorMessage =
-//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
 //                return false;
 //            }
 //            return true;
@@ -1617,15 +1620,15 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //        public bool ChangePassword(string userName, string password, out string errorMessage)
 //        {
 //            errorMessage = null;
-//            if (password.Length < ConfigManager.Instance.SystemExtend.UserPasswordMinLength)
+//            if (password.Length < ConfigManager.Instance.UserPasswordMinLength)
 //            {
-//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.UserPasswordMinLength}";
+//                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.UserPasswordMinLength}";
 //                return false;
 //            }
-//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.UserPasswordRestriction))
+//            if (!EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.UserPasswordRestriction))
 //            {
 //                errorMessage =
-//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+//                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
 //                return false;
 //            }
 
@@ -2018,11 +2021,11 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //                return null;
 //            }
 
-//            if (ConfigManager.Instance.SystemExtend.IsUserLockLogin)
+//            if (ConfigManager.Instance.IsUserLockLogin)
 //            {
-//                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.Instance.SystemExtend.UserLockLoginCount)
+//                if (userInfo.CountOfFailedLogin > 0 && userInfo.CountOfFailedLogin >= ConfigManager.Instance.UserLockLoginCount)
 //                {
-//                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserLockLoginType);
+//                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.UserLockLoginType);
 //                    if (lockType == EUserLockType.Forever)
 //                    {
 //                        errorMessage = "此账号错误登录次数过多，已被永久锁定";
@@ -2031,7 +2034,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //                    if (lockType == EUserLockType.Hours)
 //                    {
 //                        var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Ticks);
-//                        var hours = Convert.ToInt32(ConfigManager.Instance.SystemExtend.UserLockLoginHours - ts.TotalHours);
+//                        var hours = Convert.ToInt32(ConfigManager.Instance.UserLockLoginHours - ts.TotalHours);
 //                        if (hours > 0)
 //                        {
 //                            errorMessage =

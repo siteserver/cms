@@ -1,6 +1,8 @@
-﻿using SiteServer.CMS.Database.Attributes;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -87,7 +89,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    parsedContent = pageInfo.UserInfo.GetString(attributeName);
+                    if (pageInfo.UserInfo.ContainsKey(attributeName))
+                    {
+                        parsedContent = pageInfo.UserInfo.Get<string>(attributeName);
+                    }
                 }
             }
 	        catch

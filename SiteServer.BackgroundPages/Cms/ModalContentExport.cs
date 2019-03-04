@@ -3,8 +3,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
@@ -61,30 +61,30 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigExportType))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigExportType))
                 {
-                    DdlExportType.SelectedValue = SiteInfo.Extend.ConfigExportType;
+                    DdlExportType.SelectedValue = SiteInfo.ConfigExportType;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigExportPeriods))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigExportPeriods))
                 {
-                    DdlPeriods.SelectedValue = SiteInfo.Extend.ConfigExportPeriods;
+                    DdlPeriods.SelectedValue = SiteInfo.ConfigExportPeriods;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigExportDisplayAttributes))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigExportDisplayAttributes))
                 {
-                    var displayAttributes = TranslateUtils.StringCollectionToStringList(SiteInfo.Extend.ConfigExportDisplayAttributes);
+                    var displayAttributes = TranslateUtils.StringCollectionToStringList(SiteInfo.ConfigExportDisplayAttributes);
                     ControlUtils.SelectMultiItems(CblDisplayAttributes, displayAttributes);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigExportIsChecked))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigExportIsChecked))
                 {
-                    DdlIsChecked.SelectedValue = SiteInfo.Extend.ConfigExportIsChecked;
+                    DdlIsChecked.SelectedValue = SiteInfo.ConfigExportIsChecked;
                 }
             }
             else
             {
-                SiteInfo.Extend.ConfigExportType = DdlExportType.SelectedValue;
-                SiteInfo.Extend.ConfigExportPeriods = DdlPeriods.SelectedValue;
-                SiteInfo.Extend.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
-                SiteInfo.Extend.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
+                SiteInfo.ConfigExportType = DdlExportType.SelectedValue;
+                SiteInfo.ConfigExportPeriods = DdlPeriods.SelectedValue;
+                SiteInfo.ConfigExportDisplayAttributes = ControlUtils.GetSelectedListControlValueCollection(CblDisplayAttributes);
+                SiteInfo.ConfigExportIsChecked = DdlIsChecked.SelectedValue;
                 DataProvider.Site.Update(SiteInfo);
             }
         }

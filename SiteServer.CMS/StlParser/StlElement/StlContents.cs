@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -21,12 +22,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
             var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
 
-            if (contextInfo.IsStlEntity)
-            {
-                return ParseEntity(pageInfo, dataSource);
-            }
-
-            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
+            return contextInfo.IsStlEntity
+                ? ParseEntity(pageInfo, dataSource)
+                : ParseElement(pageInfo, contextInfo, listInfo, dataSource);
         }
 
         private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -116,7 +114,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
         {
-            var contentInfoList = new List<Dictionary<string, object>>();
+            var contentInfoList = new List<IDictionary<string, object>>();
 
             var table = dataSource.Tables[0];
             foreach (DataRow row in table.Rows)

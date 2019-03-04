@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -52,7 +53,7 @@ namespace SiteServer.API.Controllers.Home
                 return Ok(new
                 {
                     Value = rest.UserInfo,
-                    Config = ConfigManager.Instance.SystemExtend
+                    Config = ConfigManager.Instance
                 });
             }
             catch (Exception ex)
@@ -67,7 +68,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = rest.UserInfo,
-                Config = ConfigManager.Instance.SystemExtend,
+                Config = ConfigManager.Instance,
                 Styles = TableStyleManager.GetUserStyleInfoList(),
                 Groups = UserGroupManager.GetUserGroupInfoList()
             };
@@ -118,7 +119,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = rest.UserInfo,
-                Config = ConfigManager.Instance.SystemExtend,
+                Config = ConfigManager.Instance,
                 Menus = menus,
                 DefaultPageUrl = defaultPageUrl
             };
@@ -129,7 +130,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = rest.UserInfo,
-                Config = ConfigManager.Instance.SystemExtend,
+                Config = ConfigManager.Instance,
                 Styles = TableStyleManager.GetUserStyleInfoList()
             };
         }
@@ -207,7 +208,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = rest.UserInfo,
-                Config = ConfigManager.Instance.SystemExtend,
+                Config = ConfigManager.Instance,
                 Sites = sites,
                 Channels = channels,
                 Site = site,
@@ -312,13 +313,13 @@ namespace SiteServer.API.Controllers.Home
                     }
                     else
                     {
-                        contentInfo = new ContentInfo(new
+                        contentInfo = new ContentInfo
                         {
                             Id = 0,
                             SiteId = siteInfo.Id,
                             ChannelId = channelInfo.Id,
                             AddDate = DateTime.Now
-                        });
+                        };
                     }
                 }
             }
@@ -326,7 +327,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = rest.UserInfo,
-                Config = ConfigManager.Instance.SystemExtend,
+                Config = ConfigManager.Instance,
                 Sites = sites,
                 Channels = channels,
                 Site = site,

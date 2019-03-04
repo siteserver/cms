@@ -48,34 +48,34 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = SiteInfo.Extend.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = SiteInfo.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = SiteInfo.Extend.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = SiteInfo.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                if (SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
-                     || SiteInfo.Extend.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
-                     || SiteInfo.Extend.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
-                     || SiteInfo.Extend.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
+                if (SiteInfo.ConfigUploadImageIsLinkToOriginal != CbIsLinkToOriginal.Checked.ToString()
+                     || SiteInfo.ConfigUploadImageIsSmallImage != CbIsSmallImage.Checked.ToString()
+                     || SiteInfo.ConfigUploadImageSmallImageWidth != TbSmallImageWidth.Text
+                     || SiteInfo.ConfigUploadImageSmallImageHeight != TbSmallImageHeight.Text)
                 {
-                    SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                    SiteInfo.Extend.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                    SiteInfo.Extend.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                    SiteInfo.Extend.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                    SiteInfo.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                    SiteInfo.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                    SiteInfo.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                    SiteInfo.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
                     DataProvider.Site.Update(SiteInfo);
                 }

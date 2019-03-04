@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -40,22 +41,23 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    var dict = contentInfo.ToDictionary();
-                    dict["title"] = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
-                    dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
-                    retval.Add(dict);
+                    var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
+                    {
+                        {"title", WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty)},
+                        {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                    };
+                    retVal.Add(dict);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)
@@ -110,7 +112,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                DataProvider.ContentRepository.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+                channelInfo.ContentRepository.UpdateTrashContents(siteId, channelId, contentIdList);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

@@ -6,8 +6,8 @@ using System.IO;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.BackgroundPages.Settings
 {

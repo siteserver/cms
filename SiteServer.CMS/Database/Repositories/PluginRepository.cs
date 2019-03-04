@@ -39,11 +39,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsDisabled, isDisabled.ToString()}
-            }, Q.Where(Attr.PluginId, pluginId));
+            
+            UpdateAll(Q
+                .Set(Attr.IsDisabled, isDisabled.ToString())
+                .Where(Attr.PluginId, pluginId)
+            );
         }
 
         public void UpdateTaxis(string pluginId, int taxis)
@@ -57,11 +57,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.Taxis, taxis}
-            }, Q.Where(Attr.PluginId, pluginId));
+            
+            UpdateAll(Q
+                .Set(Attr.Taxis, taxis)
+                .Where(Attr.PluginId, pluginId)
+            );
         }
 
         public void SetIsDisabledAndTaxis(string pluginId, out bool isDisabled, out int taxis)
