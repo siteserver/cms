@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms

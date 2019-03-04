@@ -4,6 +4,7 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;

@@ -57,5 +57,10 @@ namespace SiteServer.CMS.DataCache.Core
         {
             CacheUtils.RemoveByStartString(GetCacheKey(className));
         }
+
+        public static void RemoveByPrefix(string prefix)
+        {
+            CacheUtils.RemoveByStartString(prefix);
+        }
     }
 }

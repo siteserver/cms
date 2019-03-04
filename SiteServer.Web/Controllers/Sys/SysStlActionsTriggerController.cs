@@ -5,6 +5,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
@@ -87,18 +88,11 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         var parameters = new NameValueCollection();
                         var returnUrl = request.GetQueryString("returnUrl");
-                        if (!string.IsNullOrEmpty(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("?"))
                         {
-                            if (returnUrl.StartsWith("?"))
-                            {
-                                parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
-                            }
-                            else
-                            {
-                                redirectUrl = returnUrl;
-                            }
+                            parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
                         }
-                        
+
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
                         PageUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));

@@ -12,6 +12,7 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -390,7 +391,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
@@ -720,7 +721,7 @@ var stltree_isNodeTree = {isNodeTree};
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }

@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;

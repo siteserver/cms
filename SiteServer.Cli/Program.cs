@@ -32,8 +32,21 @@ namespace SiteServer.Cli
 
         private static void Main(string[] args)
         {
-            //Console.OutputEncoding = Encoding.UTF8;
-            Console.OutputEncoding = Encoding.GetEncoding(936);
+            try
+            {
+                Console.OutputEncoding = Encoding.GetEncoding(936);
+            }
+            catch
+            {
+                try
+                {
+                    Console.OutputEncoding = Encoding.UTF8;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
 
             if (!CliUtils.ParseArgs(Options, args)) return;
 

@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public IPermissions GetPermissions(string userName)
         {
-            return new PermissionsImpl(userName);
+            return new PermissionsImpl(AdminManager.GetAdminInfoByUserName(userName));
         }
 
         public bool IsUserNameExists(string userName)

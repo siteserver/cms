@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
@@ -33,33 +32,8 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = new RequestImpl();
-
-                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = "Installer/"
-                    });
-                }
-
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = PageSyncDatabase.GetRedirectUrl()
-                    });
-                }
-
-                if (!request.IsAdminLoggin || request.AdminInfo == null || request.AdminInfo.IsLockedOut)
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = "pageLogin.cshtml"
-                    });
-                }
+                var redirect = request.AdminRedirectCheck(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
+                if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);

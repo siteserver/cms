@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using System.Text.RegularExpressions;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;

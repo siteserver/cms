@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.Core
 {

@@ -3,6 +3,7 @@ using System.Data.OleDb;
 using System.Collections.Generic;
 using System.Text;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;

@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var departmentName = DepartmentManager.GetDepartmentName(adminInfo.DepartmentId);
                 var areaName = AreaManager.GetAreaName(adminInfo.AreaId);
 
-                var permissions = new PermissionsImpl(adminInfo.UserName);
+                var permissions = new PermissionsImpl(adminInfo);
                 var level = permissions.GetAdminLevel();
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
                 var siteNames = new List<string>();

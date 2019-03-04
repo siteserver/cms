@@ -318,9 +318,6 @@
     <Compile Include="Cms\PageConfigurationWaterMark.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageContentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -570,9 +567,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageLogUser.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageRecord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSite.cs">

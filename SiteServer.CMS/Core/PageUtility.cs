@@ -3,6 +3,7 @@ using SiteServer.CMS.Model.Enumerations;
 using System;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;

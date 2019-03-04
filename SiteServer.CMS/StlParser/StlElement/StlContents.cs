@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;

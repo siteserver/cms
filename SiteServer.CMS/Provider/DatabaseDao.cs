@@ -1976,21 +1976,13 @@ SET IDENTITY_INSERT {tableName} OFF
                 }
                 else
                 {
-                    if (limit == 0)
-                    {
-                        limit = DataProvider.DatabaseDao.GetIntResult($"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
-                    }
-                    orderSqlString = orderSqlString.ToUpper();
-                    var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" DESC2", " ASC");
+                    var rowWhere = limit == 0
+                        ? $@"WHERE [row_num] > {offset}"
+                        : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                    retval = $@"
-SELECT * FROM (
-    SELECT TOP {limit} * FROM (
-        SELECT TOP {limit + offset} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}
-    ) AS t1 {orderSqlStringReverse}
-) AS t2 {orderSqlString}";
+                    retval = $@"SELECT * FROM (
+    SELECT {columnNames}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
+) as T {rowWhere}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)

@@ -156,11 +156,12 @@ namespace SiteServer.CMS.Provider
 		}
 
 
-		public List<string> GetGeneralPermissionList(string[] roles)
+		public List<string> GetGeneralPermissionList(IEnumerable<string> roles)
 		{
             var list = new List<string>();
-            var roleNameCollection = new List<string>(roles);
-			foreach (var roleName in roleNameCollection)
+		    if (roles == null) return list;
+            
+			foreach (var roleName in roles)
 			{
                 var permissionsInRolesInfo = GetPermissionsInRolesInfo(roleName);
                 if (permissionsInRolesInfo != null)

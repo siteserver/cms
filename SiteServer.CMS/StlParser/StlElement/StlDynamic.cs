@@ -170,8 +170,7 @@ function {functionName}(pageNum)
                 var stlPageContentsElementReplaceString = stlElement;
 
                 var pageContentsElementParser = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo);
-                int totalNum;
-                var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
+                var pageCount = pageContentsElementParser.GetPageCount(out var totalNum);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
@@ -225,7 +224,7 @@ function {functionName}(pageNum)
                 {
                     if (currentPageIndex == pageIndex)
                     {
-                        var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                        var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                         contentBuilder.Replace(stlPageSqlContentsElementReplaceString, pageHtml);
 
                         StlParserManager.ReplacePageElementsInDynamicPage(contentBuilder, pageInfo, stlElementList, pageUrl, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);

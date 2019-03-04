@@ -1,3 +1,4 @@
+var $url = '/pages/login';
 var $urlLogin = '/v1/administrators/actions/login';
 var $urlGetCaptcha = '/v1/captcha/LOGIN-CAPTCHA';
 var $urlCheckCaptcha = '/v1/captcha/LOGIN-CAPTCHA/actions/check';
@@ -18,6 +19,24 @@ var data = {
 };
 
 var methods = {
+  load: function () {
+    var $this = this;
+
+    $api.get($url).then(function (response) {
+      var res = response.data;
+
+      if (res.value) {
+        $this.reload();
+      } else {
+        location.href = res.redirectUrl;
+      }
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+    });
+  },
+
   reload: function () {
     this.pageLoad = true;
     this.captcha = '';
@@ -83,6 +102,6 @@ var $vue = new Vue({
   },
   methods: methods,
   created: function () {
-    this.reload();
+    this.load();
   }
 });

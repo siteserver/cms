@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
@@ -500,7 +501,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -527,7 +528,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -564,7 +565,7 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
@@ -594,12 +595,12 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
 
-        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, bool[] isLastNodeArray, bool isShowContentNum)
+        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
@@ -623,7 +624,8 @@ namespace SiteServer.CMS.DataCache
 
             if (isShowContentNum)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo);
+                var onlyAdminId = adminPermissions.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
                 retval = string.Concat(retval, " (", count, ")");
             }
 

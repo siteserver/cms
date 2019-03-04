@@ -3,6 +3,7 @@ using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;

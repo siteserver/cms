@@ -2,6 +2,7 @@
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;

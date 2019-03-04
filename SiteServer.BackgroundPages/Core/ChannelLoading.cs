@@ -17,7 +17,8 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo nodeInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionsImpl permissionsImpl)
         {
             var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, nodeInfo, enabled, permissionsImpl);
-            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, nodeInfo.Id), additional);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, nodeInfo.Id);
+            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, nodeInfo.Id), onlyAdminId, additional);
 
             var rowHtml = string.Empty;
 

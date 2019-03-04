@@ -96,9 +96,6 @@ namespace SiteServer.CMS.Core
         private static PluginDao _pluginDao;
         public static PluginDao PluginDao => _pluginDao ?? (_pluginDao = new PluginDao());
 
-        private static RecordDao _recordDao;
-        public static RecordDao RecordDao => _recordDao ?? (_recordDao = new RecordDao());
-
         private static RelatedFieldDao _relatedFieldDao;
         public static RelatedFieldDao RelatedFieldDao => _relatedFieldDao ?? (_relatedFieldDao = new RelatedFieldDao());
 
@@ -174,7 +171,6 @@ namespace SiteServer.CMS.Core
             _permissionsInRolesDao = null;
             _pluginConfigDao = null;
             _pluginDao = null;
-            _recordDao = null;
             _relatedFieldDao = null;
             _relatedFieldItemDao = null;
             _roleDao = null;
@@ -216,7 +212,6 @@ namespace SiteServer.CMS.Core
             PermissionsInRolesDao,
             PluginConfigDao,
             PluginDao,
-            RecordDao,
             RelatedFieldDao,
             RelatedFieldItemDao,
             RoleDao,

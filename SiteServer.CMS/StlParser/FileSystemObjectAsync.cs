@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -21,7 +22,7 @@ namespace SiteServer.CMS.StlParser
     public static class FileSystemObjectAsync
     {
         public static async Task ExecuteAsync(int siteId, ECreateType createType, int channelId, int contentId,
-            int fileTemplatId, int specialId)
+            int fileTemplateId, int specialId)
         {
             if (createType == ECreateType.Channel)
             {
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.StlParser
             }
             else if (createType == ECreateType.File)
             {
-                await CreateFileAsync(siteId, fileTemplatId);
+                await CreateFileAsync(siteId, fileTemplateId);
             }
             else if (createType == ECreateType.Special)
             {
@@ -198,7 +199,7 @@ namespace SiteServer.CMS.StlParser
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                    var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -299,8 +300,7 @@ namespace SiteServer.CMS.StlParser
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageContentsElementParser = new StlPageContents(stlElement, pageInfo, contextInfo);
-                int totalNum;
-                var pageCount = pageContentsElementParser.GetPageCount(out totalNum);
+                var pageCount = pageContentsElementParser.GetPageCount(out var totalNum);
 
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
@@ -352,14 +352,14 @@ namespace SiteServer.CMS.StlParser
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                 var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
-                var pageCount = pageSqlContentsElementParser.GetPageCount(out _);
+                var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     var thePageInfo = pageInfo.Clone();
-                    var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                    var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, true);
                     var pagedBuilder =
                         new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
@@ -378,10 +378,10 @@ namespace SiteServer.CMS.StlParser
             }
         }
 
-        private static async Task CreateFileAsync(int siteId, int fileTemplatId)
+        private static async Task CreateFileAsync(int siteId, int fileTemplateId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplatId);
+            var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplateId);
             if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
             {
                 return;

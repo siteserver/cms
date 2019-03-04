@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {

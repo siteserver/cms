@@ -144,6 +144,10 @@
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
     <Compile Include="DataCache\ContentTagManager.cs" />
+    <Compile Include="DataCache\Content\ContentManager.ContentCache.cs" />
+    <Compile Include="DataCache\Content\ContentManager.CountCache.cs" />
+    <Compile Include="DataCache\Content\ContentManager.cs" />
+    <Compile Include="DataCache\Content\ContentManager.ListCache.cs" />
     <Compile Include="DataCache\UserMenuManager .cs" />
     <Compile Include="DataCache\UserGroupManager.cs" />
     <Compile Include="DataCache\ChannelGroupManager.cs" />
@@ -153,7 +157,6 @@
     <Compile Include="Api\ApiManager.cs" />
     <Compile Include="DataCache\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
-    <Compile Include="DataCache\ContentManager.cs" />
     <Compile Include="DataCache\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
     <Compile Include="DataCache\ConfigManager.cs" />
@@ -274,7 +277,6 @@
     <Compile Include="Model\RelatedFieldInfo.cs" />
     <Compile Include="Model\RelatedFieldItemInfo.cs" />
     <Compile Include="Model\Attributes\SiteAttribute.cs" />
-    <Compile Include="Model\RecordInfo.cs" />
     <Compile Include="Model\SiteInfo.cs" />
     <Compile Include="Model\Attributes\SiteInfoExtend.cs" />
     <Compile Include="Model\SiteLogInfo.cs" />
@@ -344,7 +346,6 @@
     <Compile Include="Provider\PermissionsInRolesDao.cs" />
     <Compile Include="Provider\PluginConfigDao.cs" />
     <Compile Include="Provider\PluginDao.cs" />
-    <Compile Include="Provider\RecordDao.cs" />
     <Compile Include="Provider\RelatedFieldDao.cs" />
     <Compile Include="Provider\RelatedFieldItemDao.cs" />
     <Compile Include="Provider\RoleDao.cs" />
@@ -363,7 +364,6 @@
     <Compile Include="Provider\UserMenuDao.cs" />
     <Compile Include="Provider\UserGroupDao.cs" />
     <Compile Include="Provider\UserLogDao.cs" />
-    <Compile Include="StlControls\CommentInput.cs" />
     <Compile Include="DataCache\Stl\StlContentCache.cs" />
     <Compile Include="DataCache\Stl\StlDatabaseCache.cs" />
     <Compile Include="DataCache\Stl\StlChannelCache.cs" />

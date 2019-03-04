@@ -108,9 +108,12 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
+            var onlyAdminId = _isAdminOnly
+                ? AuthRequest.AdminId
+                : AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteInfo.Id, _channelInfo.Id);
             var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
-                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
+                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, onlyAdminId,
                 AuthRequest.AdminPermissionsImpl,
                 allAttributeNameList);
 

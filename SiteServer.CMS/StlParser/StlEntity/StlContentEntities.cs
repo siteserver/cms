@@ -3,6 +3,7 @@ using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;

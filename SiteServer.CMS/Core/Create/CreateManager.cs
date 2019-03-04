@@ -1,4 +1,5 @@
 ﻿using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;

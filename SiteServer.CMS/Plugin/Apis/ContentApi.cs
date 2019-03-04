@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
@@ -209,14 +210,14 @@ namespace SiteServer.CMS.Plugin.Apis
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+            return DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+            DataProvider.ContentDao.Update(siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Delete(int siteId, int channelId, int contentId)

@@ -4,6 +4,7 @@ using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -113,7 +114,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var count = ContentManager.GetCount(siteInfo, channelInfo);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
             if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
@@ -204,7 +206,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var count = ContentManager.GetCount(siteInfo, channelInfo);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
             if (count > 0)
             {

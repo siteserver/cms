@@ -382,21 +382,16 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (_userPermissionsImpl != null) return _userPermissionsImpl;
 
-                var adminName = string.Empty;
                 if (UserInfo != null)
                 {
                     var groupInfo = UserGroupManager.GetUserGroupInfo(UserInfo.GroupId);
                     if (groupInfo != null)
                     {
-                        adminName = groupInfo.AdminName;
+                        AdminInfo = AdminManager.GetAdminInfoByUserName(groupInfo.AdminName);
                     }
                 }
 
-                _userPermissionsImpl = new PermissionsImpl(adminName);
-                if (!string.IsNullOrEmpty(adminName))
-                {
-                    AdminInfo = AdminManager.GetAdminInfoByUserName(adminName);
-                }
+                _userPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _userPermissionsImpl;
             }
@@ -412,12 +407,7 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (_adminPermissionsImpl != null) return _adminPermissionsImpl;
 
-                var adminName = string.Empty;
-                if (AdminInfo != null)
-                {
-                    adminName = AdminInfo.UserName;
-                }
-                _adminPermissionsImpl = new PermissionsImpl(adminName);
+                _adminPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _adminPermissionsImpl;
             }
@@ -564,6 +554,41 @@ namespace SiteServer.CMS.Plugin.Impl
             }
 
             return new AccessTokenImpl();
+        }
+
+        public object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false,
+            bool checkLogin = false)
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
+
+            if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("Installer/");
+            }
+            else if (checkDatabaseVersion && ConfigManager.Instance.IsInitialized &&
+                     ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("pageSyncDatabase.aspx");
+            }
+            else if (checkLogin && (!IsAdminLoggin || AdminInfo == null || AdminInfo.IsLockedOut))
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("pageLogin.cshtml");
+            }
+
+            if (redirect)
+            {
+                return new
+                {
+                    Value = false,
+                    RedirectUrl = redirectUrl
+                };
+            }
+
+            return null;
         }
 
         #endregion

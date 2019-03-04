@@ -1,6 +1,7 @@
 using System.Collections.Specialized;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.Model
