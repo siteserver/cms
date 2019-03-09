@@ -323,6 +323,7 @@
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />
     <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PluginMenu.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
     <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />
