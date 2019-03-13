@@ -176,7 +176,12 @@ namespace SiteServer.BackgroundPages.Cms
                     else
                     {
                         SuccessMessage("成功从回收站清空内容！");
-                        DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
+                        //DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
+
+                        foreach (var contentId in contentIdList)
+                        {
+                            ContentUtility.Delete(tableName, SiteInfo, channelId, contentId);
+                        }
 
                         AuthRequest.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
                     }

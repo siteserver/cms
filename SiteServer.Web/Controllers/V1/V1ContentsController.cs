@@ -265,7 +265,9 @@ namespace SiteServer.API.Controllers.V1
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
+                ContentUtility.Delete(tableName, siteInfo, channelId, id);
+
+                //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
                 return Ok(new
                 {
@@ -424,12 +426,11 @@ namespace SiteServer.API.Controllers.V1
                 var like = request.GetQueryString("like");
                 var orderBy = request.GetQueryString("orderBy");
 
-                int count;
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out count);
+                var list = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out var count);
                 var value = new List<Dictionary<string, object>>();
-                foreach(var contentId in contentIdList)
+                foreach(var (contentChannelId, contentId) in list)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());

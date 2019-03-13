@@ -135,7 +135,14 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AuthRequest.IsQueryExists("IsDeleteAll"))
                 {
-                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
+                    //DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
+
+                    var list = DataProvider.ContentDao.GetContentIdListByTrash(SiteId, tableName);
+                    foreach (var (contentChannelId, contentId) in list)
+                    {
+                        ContentUtility.Delete(tableName, SiteInfo, contentChannelId, contentId);
+                    }
+
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                 }

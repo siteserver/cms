@@ -295,19 +295,7 @@ namespace SiteServer.CMS.Provider
             ContentManager.RemoveCache(tableName, channelId);
         }
 
-        public void DeleteContentsByTrash(int siteId, int channelId, string tableName)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var contentIdList = GetContentIdListByTrash(siteId, tableName);
-            TagUtils.RemoveTags(siteId, contentIdList);
-
-            var sqlString =
-                $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
-            ExecuteNonQuery(sqlString);
-
-            ContentManager.RemoveCache(tableName, channelId);
-        }
+        
 
         public void SetAutoPageContentToSite(SiteInfo siteInfo)
         {
@@ -343,7 +331,7 @@ namespace SiteServer.CMS.Provider
             var referenceIdList = GetReferenceIdList(tableName, contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteContents(siteId, channelId, tableName, referenceIdList);
+                DeleteReferenceContents(siteId, channelId, tableName, referenceIdList);
             }
 
             var updateNum = 0;
@@ -368,7 +356,7 @@ namespace SiteServer.CMS.Provider
             var referenceIdList = GetReferenceIdList(tableName, contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteContents(siteId, channelId, tableName, referenceIdList);
+                DeleteReferenceContents(siteId, channelId, tableName, referenceIdList);
             }
             var updateNum = 0;
 
@@ -384,25 +372,96 @@ namespace SiteServer.CMS.Provider
             ContentManager.RemoveCache(tableName, channelId);
         }
 
-        public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        public void Delete(string tableName, int siteId, int channelId, int contentId)
         {
-            if (string.IsNullOrEmpty(tableName)) return;
+            if (string.IsNullOrEmpty(tableName) || siteId <= 0 || channelId <= 0 || contentId <= 0) return;
 
-            if (!string.IsNullOrEmpty(tableName) && contentId > 0)
-            {
-                TagUtils.RemoveTags(siteInfo.Id, contentId);
-
-                var sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
-                ExecuteNonQuery(sqlString);
-            }
-
-            if (channelId <= 0) return;
-
-            ContentManager.RemoveCache(tableName, channelId);
+            ExecuteNonQuery($"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id = {contentId}");
         }
 
-        public void DeleteContents(int siteId, string tableName, List<int> contentIdList, int channelId)
+        //public void DeleteContentsByTrash(int siteId, int channelId, string tableName)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
+
+        //    var contentIdList = GetContentIdListByTrash(siteId, tableName);
+        //    TagUtils.RemoveTags(siteId, contentIdList);
+
+        //    var sqlString =
+        //        $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
+        //    ExecuteNonQuery(sqlString);
+
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
+
+        //public void DeleteContent(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
+
+        //    if (!string.IsNullOrEmpty(tableName) && contentId > 0)
+        //    {
+        //        TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+        //        var sqlString =
+        //            $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND Id = {contentId}";
+        //        ExecuteNonQuery(sqlString);
+        //    }
+
+        //    if (channelId <= 0) return;
+
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
+
+        //public void DeleteContents(int siteId, string tableName, List<int> contentIdList, int channelId)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
+
+        //    var deleteNum = 0;
+
+        //    if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
+        //    {
+        //        TagUtils.RemoveTags(siteId, contentIdList);
+
+        //        var sqlString =
+        //            $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+        //        deleteNum = ExecuteNonQuery(sqlString);
+        //    }
+
+        //    if (channelId <= 0 || deleteNum <= 0) return;
+
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
+
+        //public void DeleteContentsByChannelId(int siteId, string tableName, int channelId)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
+
+        //    var contentIdList = GetContentIdListChecked(tableName, channelId, string.Empty);
+
+        //    TagUtils.RemoveTags(siteId, contentIdList);
+
+        //    var sqlString =
+        //        $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
+        //    var deleteNum = ExecuteNonQuery(sqlString);
+
+        //    if (channelId <= 0 || deleteNum <= 0) return;
+
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
+
+        //public void DeleteContentsByDeletedChannelIdList(IDbTransaction trans, SiteInfo siteInfo, List<int> channelIdList)
+        //{
+        //    foreach (var channelId in channelIdList)
+        //    {
+        //        var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+        //        if (string.IsNullOrEmpty(tableName)) continue;
+
+        //        ExecuteNonQuery(trans, $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelId}");
+
+        //        ContentManager.RemoveCache(tableName, channelId);
+        //    }
+        //}
+
+        private void DeleteReferenceContents(int siteId, int channelId, string tableName, List<int> contentIdList)
         {
             if (string.IsNullOrEmpty(tableName)) return;
 
@@ -411,46 +470,39 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
             {
                 TagUtils.RemoveTags(siteId, contentIdList);
-
+                
                 var sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND {ContentAttribute.ReferenceId} > 0 AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
+
                 deleteNum = ExecuteNonQuery(sqlString);
             }
 
-            if (channelId <= 0 || deleteNum <= 0) return;
+            if (deleteNum <= 0) return;
 
             ContentManager.RemoveCache(tableName, channelId);
         }
 
-        public void DeleteContentsByChannelId(int siteId, string tableName, int channelId)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
+        //public void DeletePreviewContents(int siteId, string tableName, ChannelInfo channelInfo)
+        //{
+        //    if (string.IsNullOrEmpty(tableName)) return;
 
-            var contentIdList = GetContentIdListChecked(tableName, channelId, string.Empty);
+        //    channelInfo.Additional.IsPreviewContentsExists = false;
+        //    DataProvider.ChannelDao.UpdateAdditional(channelInfo);
 
-            TagUtils.RemoveTags(siteId, contentIdList);
+        //    var sqlString =
+        //        $"DELETE FROM {tableName} WHERE {nameof(ContentInfo.SiteId)} = @{nameof(ContentInfo.SiteId)} AND {nameof(ContentInfo.ChannelId)} = @{nameof(ContentInfo.ChannelId)} AND {nameof(ContentInfo.SourceId)} = @{nameof(ContentInfo.SourceId)}";
 
-            var sqlString =
-                $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId}";
-            var deleteNum = ExecuteNonQuery(sqlString);
-
-            if (channelId <= 0 || deleteNum <= 0) return;
-
-            ContentManager.RemoveCache(tableName, channelId);
-        }
-
-        public void DeleteContentsByDeletedChannelIdList(IDbTransaction trans, SiteInfo siteInfo, List<int> channelIdList)
-        {
-            foreach (var channelId in channelIdList)
-            {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                if (string.IsNullOrEmpty(tableName)) continue;
-
-                ExecuteNonQuery(trans, $"DELETE FROM {tableName} WHERE SiteId = {siteInfo.Id} AND {nameof(ContentInfo.ChannelId)} = {channelId}");
-
-                ContentManager.RemoveCache(tableName, channelId);
-            }
-        }
+        //    using (var connection = GetConnection())
+        //    {
+        //        connection.Execute(sqlString, new
+        //            {
+        //                SiteId = siteId,
+        //                ChannelId = channelInfo.Id,
+        //                SourceId = SourceManager.Preview
+        //            }
+        //        );
+        //    }
+        //}
 
         public void UpdateRestoreContentsByTrash(int siteId, int channelId, string tableName)
         {
@@ -474,48 +526,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString);
 
             ContentManager.RemoveCache(tableName, channelId);
-        }
-
-        private void DeleteContents(int siteId, int channelId, string tableName, List<int> contentIdList)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            var deleteNum = 0;
-
-            if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
-            {
-                TagUtils.RemoveTags(siteId, contentIdList);
-
-                var sqlString =
-                    $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
-                deleteNum = ExecuteNonQuery(sqlString);
-            }
-
-            if (deleteNum <= 0) return;
-
-            ContentManager.RemoveCache(tableName, channelId);
-        }
-
-        public void DeletePreviewContents(int siteId, string tableName, ChannelInfo channelInfo)
-        {
-            if (string.IsNullOrEmpty(tableName)) return;
-
-            channelInfo.Additional.IsPreviewContentsExists = false;
-            DataProvider.ChannelDao.UpdateAdditional(channelInfo);
-
-            var sqlString =
-                $"DELETE FROM {tableName} WHERE {nameof(ContentInfo.SiteId)} = @{nameof(ContentInfo.SiteId)} AND {nameof(ContentInfo.ChannelId)} = @{nameof(ContentInfo.ChannelId)} AND {nameof(ContentInfo.SourceId)} = @{nameof(ContentInfo.SourceId)}";
-
-            using (var connection = GetConnection())
-            {
-                connection.Execute(sqlString, new
-                    {
-                        SiteId = siteId,
-                        ChannelId = channelInfo.Id,
-                        SourceId = SourceManager.Preview
-                    }
-                );
-            }
         }
 
         public void UpdateArrangeTaxis(string tableName, int channelId, string attributeName, bool isDesc)
@@ -1366,11 +1376,19 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        private List<int> GetContentIdListByTrash(int siteId, string tableName)
+        public List<(int, int)> GetContentIdListByTrash(int siteId, string tableName)
         {
+            List<(int, int)> retVal;
+
             var sqlString =
-                $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
-            return DataProvider.DatabaseDao.GetIntList(sqlString);
+                $"SELECT Id, ChannelId FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
+
+            using (var connection = GetConnection())
+            {
+                retVal = connection.Query<ContentInfo>(sqlString).Select(o => (Math.Abs(o.ChannelId), o.Id)).ToList();
+            }
+
+            return retVal;
         }
 
         private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
@@ -1710,16 +1728,16 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
             return tupleList;
         }
 
-        public List<int> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderby, NameValueCollection queryString, out int totalCount)
+        public IList<(int, int)> ApiGetContentIdListByChannelId(string tableName, int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString, out int totalCount)
         {
-            var list = new List<int>();
+            var retVal = new List<(int, int)>();
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty);
             var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {ContentAttribute.IsChecked} = '{true}'";
 
             var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
-            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderby));
+            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderBy));
             var dbArgs = new Dictionary<string, object>();
 
             if (queryString != null && queryString.Count > 0)
@@ -1759,11 +1777,11 @@ WHERE {nameof(ContentInfo.Id)} = @{nameof(ContentInfo.Id)}";
 
                 using (var connection = GetConnection())
                 {
-                    list = connection.Query<int>(sqlString, dbArgs).ToList();
+                    retVal = connection.Query<ContentInfo>(sqlString, dbArgs).Select(o => (o.ChannelId, o.Id)).ToList();
                 }
             }
 
-            return list;
+            return retVal;
         }
 
         #region Table

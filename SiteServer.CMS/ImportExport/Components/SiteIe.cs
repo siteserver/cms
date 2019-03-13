@@ -107,7 +107,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     DataProvider.ChannelDao.Update(nodeInfo);
 
-                    DataProvider.ContentDao.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
+                    //DataProvider.ContentDao.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
                 }
 
                 if (isImportContents)

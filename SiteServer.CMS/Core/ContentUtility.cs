@@ -498,6 +498,29 @@ namespace SiteServer.CMS.Core
             }
         }
 
+        public static void Delete(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || siteInfo == null || channelId <= 0 || contentId <= 0) return;
+            
+            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, channelId, contentId);
+
+            TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelId, contentId));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                }
+            }
+
+            ContentManager.RemoveCache(tableName, channelId);
+        }
+
         public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
@@ -550,7 +573,6 @@ namespace SiteServer.CMS.Core
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
-                DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -562,16 +584,11 @@ namespace SiteServer.CMS.Core
                     {
                         LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
-
-                    try
-                    {
-                        service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
-                    }
                 }
+
+                Delete(tableName, siteInfo, channelId, contentId);
+
+                //DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
                 CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);

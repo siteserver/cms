@@ -808,6 +808,8 @@ namespace SiteServer.CMS.Provider
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (channelInfo == null) return;
 
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var idList = new List<int>();
             if (channelInfo.ChildrenCount > 0)
             {
@@ -820,8 +822,6 @@ namespace SiteServer.CMS.Provider
 
             int deletedNum;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-
             using (var conn = GetConnection())
             {
                 conn.Open();
@@ -829,8 +829,6 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
-
                         deletedNum = ExecuteNonQuery(trans, deleteCmd);
 
                         if (channelInfo.ParentId != 0)
@@ -851,6 +849,12 @@ namespace SiteServer.CMS.Provider
             }
             UpdateIsLastNode(channelInfo.ParentId);
             UpdateSubtractChildrenCount(channelInfo.ParentsPath, deletedNum);
+
+            foreach (var channelIdDeleted in idList)
+            {
+                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo.Id, channelIdDeleted, tableName);
+            }
+            //DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
 
             if (channelInfo.ParentId == 0)
             {
