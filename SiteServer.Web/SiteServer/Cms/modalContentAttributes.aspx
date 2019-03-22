@@ -73,6 +73,9 @@
             <li id="tab3" class="tab">
               <a href="javascript:;" onClick="_toggleTab(3,3);">设置点击量</a>
             </li>
+            <li id="tab4" class="tab">
+              <a href="javascript:;" onClick="_toggleTab(4,4);">设置下载量</a>
+            </li>
           </ul>
         </div>
 
@@ -96,6 +99,17 @@
             </div>
             <div class="col-1">
               <asp:RegularExpressionValidator ControlToValidate="TbHits" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="点击量必须为整数"
+                foreColor="red" runat="server" />
+            </div>
+          </div>
+
+          <div class="form-group form-row" id="column4" style="display: none">
+            <label class="col-3 col-form-label text-right">下载量</label>
+            <div class="col-8">
+              <asp:TextBox class="form-control" MaxLength="50" id="TbDownloads" Text="0" runat="server" />
+            </div>
+            <div class="col-1">
+              <asp:RegularExpressionValidator ControlToValidate="TbDownloads" ValidationExpression="\d+" Display="Dynamic" ErrorMessage="点击量必须为整数"
                 foreColor="red" runat="server" />
             </div>
           </div>

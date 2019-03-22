@@ -108,6 +108,10 @@ namespace SiteServer.BackgroundPages.Core
             {
                 value = DateUtils.GetDateAndTimeString(contentInfo.LastHitsDate);
             }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Downloads))
+            {
+                value = contentInfo.Downloads.ToString();
+            }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
                 value = StringUtils.GetTrueImageHtml(contentInfo.GetString(styleInfo.AttributeName));

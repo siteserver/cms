@@ -74,21 +74,25 @@ namespace SiteServer.BackgroundPages.Cms
             if (after == EContentAddAfter.ContinueAdd)
             {
                 PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, AuthRequest.GetQueryString("ReturnUrl")));
+                return;
             }
-            else if (after == EContentAddAfter.ManageContents)
-            {
-                PageUtils.Redirect(_returnUrl);
-            }
-            else if (after == EContentAddAfter.Contribute)
-            {
-                CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
 
-                if (DdlSiteId.Items.Count > 0)
-                {
-                    DdlSiteId_SelectedIndexChanged(sender, e);
-                }
-                PhSiteId.Visible = PhSubmit.Visible = true;
-            }
+		    if (after == EContentAddAfter.ManageContents)
+		    {
+		        PageUtils.Redirect(_returnUrl);
+		        return;
+		    }
+
+		    if (after == EContentAddAfter.Contribute)
+		    {
+		        CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
+
+		        if (DdlSiteId.Items.Count > 0)
+		        {
+		            DdlSiteId_SelectedIndexChanged(sender, e);
+		        }
+		        PhSiteId.Visible = PhSubmit.Visible = true;
+		    }
 		}
 
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)

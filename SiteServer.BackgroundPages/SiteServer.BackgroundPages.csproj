@@ -410,6 +410,9 @@
     </Compile>
     <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />
     <Compile Include="Cms\ModalUploadWordHandler.cs" />
+    <Compile Include="Cms\PageTemplateReference.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Controls\Alerts.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />

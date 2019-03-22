@@ -363,6 +363,12 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
+                    AttributeName = ContentAttribute.Downloads,
+                    DisplayName = "下载量",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
                     AttributeName = ContentAttribute.CheckUserName,
                     DisplayName = "审核人",
                     Taxis = taxis++

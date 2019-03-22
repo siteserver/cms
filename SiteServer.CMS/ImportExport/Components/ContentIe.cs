@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using Atom.Core;
@@ -101,6 +100,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
                     var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
                     var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsTop));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsRecommend));
@@ -137,6 +137,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     contentInfo.HitsByWeek = hitsByWeek;
                     contentInfo.HitsByMonth = hitsByMonth;
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
+                    contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
                     contentInfo.IsTop = isTop;
                     contentInfo.IsRecommend = isRecommend;
@@ -219,6 +220,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
                     var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
                     var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsTop));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsRecommend));
@@ -257,6 +259,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     contentInfo.HitsByWeek = hitsByWeek;
                     contentInfo.HitsByMonth = hitsByMonth;
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
+                    contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
                     contentInfo.IsTop = isTop;
                     contentInfo.IsRecommend = isRecommend;
@@ -415,6 +418,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByWeek, contentInfo.HitsByWeek.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByMonth, contentInfo.HitsByMonth.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastHitsDate, contentInfo.LastHitsDate.ToString(CultureInfo.InvariantCulture));
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, contentInfo.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(contentInfo.Title));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, contentInfo.IsTop.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsRecommend, contentInfo.IsRecommend.ToString());

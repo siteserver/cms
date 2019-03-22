@@ -20,6 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
         protected CheckBox CbIsTop;
         protected HtmlInputHidden HihType;
         protected TextBox TbHits;
+        protected TextBox TbDownloads;
 
         private ChannelInfo _channelInfo;
         private List<int> _idList;
@@ -91,6 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
 
                     break;
+
                 case "2":
                     if (CbIsRecommend.Checked || CbIsHot.Checked || CbIsColor.Checked || CbIsTop.Checked)
                     {
@@ -125,6 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
 
                     break;
+
                 case "3":
                     var hits = TranslateUtils.ToInt(TbHits.Text);
 
@@ -139,6 +142,24 @@ namespace SiteServer.BackgroundPages.Cms
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "设置内容点击量");
+
+                    isChanged = true;
+                    break;
+
+                case "4":
+                    var downloads = TranslateUtils.ToInt(TbDownloads.Text);
+
+                    foreach (var contentId in _idList)
+                    {
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                        if (contentInfo != null)
+                        {
+                            contentInfo.Downloads = downloads;
+                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                        }
+                    }
+
+                    AuthRequest.AddSiteLog(SiteId, "设置内容下载量");
 
                     isChanged = true;
                     break;

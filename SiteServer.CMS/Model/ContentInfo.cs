@@ -180,6 +180,12 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.LastHitsDate, value);
         }
 
+	    public int Downloads
+        {
+	        get => GetInt(ContentAttribute.Downloads);
+	        set => Set(ContentAttribute.Downloads, value);
+	    }
+
         public string Title
 		{
             get => GetString(ContentAttribute.Title);
