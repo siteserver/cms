@@ -735,8 +735,8 @@ namespace SiteServer.CMS.Core
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
-                        var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                        value = StlContentCache.GetSequence(tableName, channelId, contentId).ToString();
+                        var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                        value = StlContentCache.GetSequence(channelInfo, contentId).ToString();
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, ParentRule))//继承父级设置 20151113 sessionliang
                     {

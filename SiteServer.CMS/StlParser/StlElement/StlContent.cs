@@ -250,7 +250,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
-                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
@@ -356,7 +356,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
                             parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.Get<string>(ContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.Get<string>(ContentAttribute.ImageUrl), contextInfo.Attributes, false);
@@ -407,7 +407,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
                             parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.Get<string>(ContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
@@ -457,7 +457,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             //第一条
-                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false));
+                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl);
                             var extendValues = contentInfo.Get<string>(extendAttributeName);
@@ -465,7 +465,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false));
+                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                                 }
                             }
 
@@ -476,7 +476,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (contextInfo.IsStlEntity)
                         {
                             if (num <= 1)
@@ -511,7 +511,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             if (num <= 1)
                             {
-                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.Get<string>(ContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -524,7 +524,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                                             break;
                                         }
                                         index++;
@@ -570,7 +570,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
-                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else

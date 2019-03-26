@@ -151,11 +151,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
-                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
+                        var channelInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
 
                         //picUrl = DataProvider.ContentRepository.GetValueById(tableName, contentId, type);
-                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
+                        flashUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                     }
                     else
                     {

@@ -5,9 +5,6 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using Attr = SiteServer.CMS.Database.Attributes.ContentAttribute;
 
@@ -210,7 +207,19 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             }
         }
 
-        private void Update(int channelId, int contentId, string name, string value)
+        public void AddContentGroupList(int contentId, List<string> contentGroupList)
+        {
+            if (!GetChanelIdAndValue<string>(contentId, Attr.GroupNameCollection, out var channelId, out var value)) return;
+
+            var list = TranslateUtils.StringCollectionToStringList(value);
+            foreach (var groupName in contentGroupList)
+            {
+                if (!list.Contains(groupName)) list.Add(groupName);
+            }
+            Update(channelId, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
+        }
+
+        public void Update(int channelId, int contentId, string name, string value)
         {
             //var sqlString = $"UPDATE {tableName} SET {name} = @{name} WHERE Id = @Id";
 
@@ -223,10 +232,14 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //    connection.Execute(sqlString, parameters);
             //}
 
-            UpdateAll(Q
+            //ContentManager.RemoveCache(tableName, channelId);
+
+            var updateNum = UpdateAll(Q
                 .Set(name, value)
                 .Where(Attr.Id, contentId)
             );
+
+            if (updateNum <= 0) return;
 
             ContentManager.RemoveCache(TableName, channelId);
         }
@@ -236,7 +249,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             var referenceIdList = GetReferenceIdList(contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteContents(siteId, channelId, referenceIdList);
+                DeleteReferenceContents(siteId, channelId, referenceIdList);
+                //DeleteContents(siteId, channelId, referenceIdList);
             }
 
             var updateNum = 0;
@@ -266,7 +280,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             var referenceIdList = GetReferenceIdList(contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteContents(siteId, channelId, referenceIdList);
+                DeleteReferenceContents(siteId, channelId, referenceIdList);
+                //DeleteContents(siteId, channelId, referenceIdList);
             }
 
             //var sqlString =
@@ -303,30 +318,82 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             ContentManager.RemoveCache(TableName, channelId);
         }
 
-        public void DeletePreviewContents(int siteId, ChannelInfo channelInfo)
+        public void AddDownloads(int channelId, int contentId)
         {
-            channelInfo.IsPreviewContentsExists = false;
-            DataProvider.Channel.UpdateExtend(channelInfo);
+            IncrementAll(Attr.Downloads, Q.Where(Attr.Id, contentId));
 
-            //var sqlString =
-            //    $"DELETE FROM {tableName} WHERE {ContentAttribute.SiteId)} = @{ContentAttribute.SiteId)} AND {ContentAttribute.ChannelId)} = @{ContentAttribute.ChannelId)} AND {ContentAttribute.SourceId)} = @{ContentAttribute.SourceId)}";
+            ContentManager.RemoveCache(TableName, channelId);
+        }
 
-            //using (var connection = GetConnection())
-            //{
-            //    connection.Execute(sqlString, new
-            //        {
-            //            SiteId = siteId,
-            //            ChannelId = channelInfo.Id,
-            //            SourceId = SourceManager.Preview
-            //        }
-            //    );
-            //}
-
-            base.DeleteAll(Q
-                .Where(Attr.SiteId, siteId)
-                .Where(Attr.ChannelId, channelInfo.Id)
-                .Where(Attr.SourceId, SourceManager.Preview)
+        private void UpdateTaxis(int channelId, int contentId, int taxis)
+        {
+            var updateNum = UpdateAll(Q
+                .Set(Attr.Taxis, taxis)
+                .Where(Attr.Id, contentId)
             );
+
+            if (updateNum <= 0) return;
+
+            ContentManager.RemoveCache(TableName, channelId);
+
+            //var sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
+            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
+
+            //ContentManager.RemoveCache(tableName, channelId);
+        }
+
+        public bool SetTaxisToUp(int channelId, int contentId, bool isTop)
+        {
+            var taxis = GetTaxis(contentId);
+
+            var result = GetValue<(int HigherId, int HigherTaxis)?>(Q
+                .Select(Attr.Id, Attr.Taxis)
+                .Where(Attr.ChannelId, channelId)
+                .Where(Attr.Taxis, ">", taxis)
+                .Where(Attr.Taxis, isTop ? ">=" : "<", TaxisIsTopStartValue)
+                .OrderBy(Attr.Taxis));
+
+            var higherId = 0;
+            var higherTaxis = 0;
+            if (result != null)
+            {
+                higherId = result.Value.HigherId;
+                higherTaxis = result.Value.HigherTaxis;
+            }
+
+            if (higherId == 0) return false;
+
+            UpdateTaxis(channelId, contentId, higherTaxis);
+            UpdateTaxis(channelId, higherId, taxis);
+
+            return true;
+        }
+
+        public bool SetTaxisToDown(int channelId, int contentId, bool isTop)
+        {
+            var taxis = GetTaxis(contentId);
+
+            var result = GetValue<(int LowerId, int LowerTaxis)?>(Q
+                .Select(Attr.Id, Attr.Taxis)
+                .Where(Attr.ChannelId, channelId)
+                .Where(Attr.Taxis, "<", taxis)
+                .Where(Attr.Taxis, isTop ? ">=" : "<", TaxisIsTopStartValue)
+                .OrderByDesc(Attr.Taxis));
+
+            var lowerId = 0;
+            var lowerTaxis = 0;
+            if (result != null)
+            {
+                lowerId = result.Value.LowerId;
+                lowerTaxis = result.Value.LowerTaxis;
+            }
+
+            if (lowerId == 0) return false;
+
+            UpdateTaxis(channelId, contentId, lowerTaxis);
+            UpdateTaxis(channelId, lowerId, taxis);
+
+            return true;
         }
     }
 }

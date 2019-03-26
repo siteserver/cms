@@ -59,8 +59,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                        var siblingContentId = StlContentCache.GetContentId(channelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);

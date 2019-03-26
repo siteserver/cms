@@ -116,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
+                                    ContentManager.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
                                     AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
                                 }

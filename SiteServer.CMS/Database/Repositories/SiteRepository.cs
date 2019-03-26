@@ -373,7 +373,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             //const string sqlString = "SELECT MAX(Taxis) FROM siteserver_Site";
             //return DatabaseApi.GetIntResult(sqlString);
-            return Max(Attr.Taxis);
+            return Max(Attr.Taxis) ?? 0;
         }
     }
 }

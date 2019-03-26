@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
@@ -140,7 +141,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var repository in ContentTableRepository.GetContentRepositoryList(SiteInfo))
                     {
-                        repository.DeleteContentsByTrash();
+                        //repository.DeleteContentsByTrash();
+
+                        var list = repository.GetContentIdListByTrash(SiteId);
+                        foreach (var (contentChannelId, contentId) in list)
+                        {
+                            var channelInfo = ChannelManager.GetChannelInfo(SiteId, contentChannelId);
+                            ContentManager.Delete(SiteInfo, channelInfo, contentId);
+                        }
                     }
                     
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");

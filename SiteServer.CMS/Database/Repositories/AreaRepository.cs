@@ -309,7 +309,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             return Max(Attr.Taxis, Q
                 .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, parentPath + ","));
+                .OrWhereStarts(Attr.ParentsPath, parentPath + ",")) ?? 0;
 
             //var sqlString = string.Concat("SELECT MAX(Taxis) AS MaxTaxis FROM siteserver_Area WHERE (ParentsPath = '", AttackUtils.FilterSql(parentPath), "') OR (ParentsPath LIKE '", AttackUtils.FilterSql(parentPath), ",%')");
             //var maxTaxis = 0;

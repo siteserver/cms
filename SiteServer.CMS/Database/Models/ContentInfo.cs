@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models
 {
@@ -314,6 +312,9 @@ namespace SiteServer.CMS.Database.Models
 
         [TableColumn]
         public DateTime? LastHitsDate { get; set; }
+
+        [TableColumn]
+        public int Downloads { get; set; }
 
         [TableColumn]
         public string Title { get; set; }

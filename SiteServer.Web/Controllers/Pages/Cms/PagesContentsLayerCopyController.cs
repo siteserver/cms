@@ -157,7 +157,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    ContentUtility.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
+                    ContentManager.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
                 }
 
                 rest.AddSiteLog(siteId, channelId, "复制内容", string.Empty);

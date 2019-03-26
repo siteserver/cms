@@ -9,7 +9,6 @@ using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Repositories
 {
@@ -235,7 +234,7 @@ namespace SiteServer.CMS.Database.Repositories
                 }
                 else
                 {
-                    dictionary.Add(templateType, count);
+                    dictionary[templateType] = count;
                 }
             }
 

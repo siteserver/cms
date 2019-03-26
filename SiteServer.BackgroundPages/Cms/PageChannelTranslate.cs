@@ -338,7 +338,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in contentIdList)
 			{
-                ContentUtility.Translate(SiteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
+			    ContentManager.Translate(SiteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
 			}
 		}
 

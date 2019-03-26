@@ -42,7 +42,7 @@ namespace SiteServer.CMS.Tests.Database.Mocks
             return base.GetValue<TValue>(query);
         }
 
-        public new int Max(string columnName, Query query)
+        public new int? Max(string columnName, Query query)
         {
             return base.Max(columnName, query);
         }

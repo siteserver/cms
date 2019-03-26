@@ -125,6 +125,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caches\Content\ContentManager.Trigger.cs" />
     <Compile Include="Caches\Content\ContentManager.ListCache.cs" />
     <Compile Include="Caches\Content\ContentManager.ContentCache.cs" />
     <Compile Include="Caches\Content\ContentManager.CountCache.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />
     <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PluginMenu.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
     <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />

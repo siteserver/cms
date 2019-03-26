@@ -236,7 +236,7 @@ namespace SiteServer.CMS.Database.Core
             return values;
         }
 
-        public static int Max(string tableName, string columnName, Query query = null)
+        public static int? Max(string tableName, string columnName, Query query = null)
         {
             int? value;
 
@@ -248,7 +248,7 @@ namespace SiteServer.CMS.Database.Core
                 value = connection.QueryFirstOrDefault<int?>(sql, bindings);
             }
 
-            return value ?? 0;
+            return value;
         }
 
         public static T GetObject<T>(string tableName, Query query = null) where T : DynamicEntity

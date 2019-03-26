@@ -40,11 +40,12 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.Content)
             {
-                var tuple = DataProvider.ContentRepository.GetValue(ChannelManager.GetTableName(
-                    SiteManager.GetSiteInfo(siteId), channelId), contentId, ContentAttribute.Title);
-                if (tuple != null)
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
+                var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
+                if (!string.IsNullOrEmpty(title))
                 {
-                    name = tuple.Item2;
+                    name = title;
                     pageCount = 1;
                 }
             }

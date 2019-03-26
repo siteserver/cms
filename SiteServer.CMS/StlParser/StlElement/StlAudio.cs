@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Caches.Stl;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
@@ -75,13 +76,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contextInfo.ContentInfo == null)
                     {
                         //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteInfo.Id, pageInfo.SiteInfo.Id);
+                        playUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
                                 //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, ContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
@@ -89,7 +91,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
                                 //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, ContentAttribute.FileUrl);
+                                playUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }

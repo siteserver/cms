@@ -28,6 +28,7 @@ namespace SiteServer.CMS.Database.Attributes
         public const string HitsByWeek = nameof(HitsByWeek);
         public const string HitsByMonth = nameof(HitsByMonth);
         public const string LastHitsDate = nameof(LastHitsDate);
+        public const string Downloads = nameof(Downloads);
         public const string SettingsXml = nameof(SettingsXml);
         public const string Title = nameof(Title);
         public const string IsTop = nameof(IsTop);
@@ -90,6 +91,7 @@ namespace SiteServer.CMS.Database.Attributes
             HitsByWeek,
             HitsByMonth,
             LastHitsDate,
+            Downloads,
             SettingsXml,
             Title,
             IsTop,
@@ -122,6 +124,7 @@ namespace SiteServer.CMS.Database.Attributes
             HitsByWeek,
             HitsByMonth,
             LastHitsDate,
+            Downloads,
             SettingsXml,
             IsTop,
             IsRecommend,
@@ -129,23 +132,6 @@ namespace SiteServer.CMS.Database.Attributes
             IsColor,
             AddDate,
             LinkUrl
-        });
-
-        public static readonly Lazy<List<string>> IncludedAttributes = new Lazy<List<string>>(() => new List<string>
-        {
-            Sequence,
-            PageContent,
-            NavigationUrl,
-            CheckState,
-            CheckUserName,
-            CheckDate,
-            CheckReasons,
-            TranslateContentType
-        });
-
-        public static readonly Lazy<List<string>> ExcludedAttributes = new Lazy<List<string>>(() => new List<string>
-        {
-            SettingsXml
         });
 
         public static readonly Lazy<List<string>> CalculateAttributes = new Lazy<List<string>>(() => new List<string>

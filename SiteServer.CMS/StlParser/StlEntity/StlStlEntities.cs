@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                                         pageInfo.IsLocal)
                                     : InputParserUtility.GetContentByTableStyle(parsedContent, string.Empty,
                                         pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty,
-                                        true);
+                                        true, false, false);
                             }
                             else
                             { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空

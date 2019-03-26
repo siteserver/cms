@@ -121,16 +121,13 @@ namespace SiteServer.CMS.Core
                 }
             }
 
-            var menus = new Dictionary<string, SiteServer.Plugin.Menu>();
+            var menus = new List<PluginMenu>();
             if (siteId > 0 && topId == string.Empty)
             {
                 var siteMenus = PluginMenuManager.GetSiteMenus(siteId);
                 if (siteMenus != null)
                 {
-                    foreach (var siteMenu in siteMenus)
-                    {
-                        menus.Add(siteMenu.Key, siteMenu.Value);
-                    }
+                    menus.AddRange(siteMenus);
                 }
             }
             else if (topId == "Plugins")
@@ -138,17 +135,12 @@ namespace SiteServer.CMS.Core
                 var topMenus = PluginMenuManager.GetTopMenus();
                 if (topMenus != null)
                 {
-                    foreach (var topMenu in topMenus)
-                    {
-                        menus.Add(topMenu.Key, topMenu.Value);
-                    }
+                    menus.AddRange(topMenus);
                 }
             }
 
-            foreach (var pluginId in menus.Keys)
+            foreach (var menu in menus)
             {
-                var menu = menus[pluginId];
-
                 var isExists = false;
                 foreach (var childTab in tabs)
                 {
@@ -160,7 +152,7 @@ namespace SiteServer.CMS.Core
 
                 if (isExists) continue;
 
-                tabs.Add(GetPluginTab(menu, pluginId));
+                tabs.Add(GetPluginTab(menu, menu.PluginId));
 
                 //if (string.IsNullOrEmpty(menu.ParentId))
                 //{

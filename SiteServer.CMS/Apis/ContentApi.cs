@@ -165,12 +165,10 @@ namespace SiteServer.CMS.Apis
         public string GetContentValue(int siteId, int channelId, int contentId, string attributeName)
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
+            
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-
-            var tuple = DataProvider.ContentRepository.GetValue(tableName, contentId, attributeName);
-            return tuple?.Item2;
+            return channelInfo.ContentRepository.GetValue<string>(contentId, attributeName);
         }
 
         public IContentInfo NewInstance(int siteId, int channelId)
@@ -223,11 +221,10 @@ namespace SiteServer.CMS.Apis
             channelInfo.ContentRepository.UpdateTrashContents(siteId, channelId, contentIdList);
         }
 
-        public List<int> GetContentIdList(int siteId, int channelId)
+        public IList<int> GetContentIdList(int siteId, int channelId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-            return DataProvider.ContentRepository.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            return channelInfo.ContentRepository.GetContentIdListCheckedByChannelId(siteId, channelId);
         }
 
         public string GetContentUrl(int siteId, int channelId, int contentId)

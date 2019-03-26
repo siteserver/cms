@@ -153,8 +153,11 @@ namespace SiteServer.BackgroundPages.Cms
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                    var title = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
+                    //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+
+                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+
+                    var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
                 LayerUtils.CloseWithoutRefresh(Page, builder.ToString());

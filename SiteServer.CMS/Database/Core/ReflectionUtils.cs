@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dapper;
-using Newtonsoft.Json;
 using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
 
@@ -241,8 +239,25 @@ namespace SiteServer.CMS.Database.Core
 
             if (property != null && property.CanWrite)
             {
-                property.SetValue(obj, Convert.ChangeType(val, property.PropertyType), null);
+                property.SetValue(obj, val == null ? null : ChangeType(val, property.PropertyType), null);
             }
+        }
+
+        private static object ChangeType(object value, Type conversionType)
+        {
+            try
+            {
+                return Convert.ChangeType(value, conversionType);
+            }
+            catch
+            {
+                return GetDefault(conversionType);
+            }
+        }
+
+        private static object GetDefault(Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
     }
 }

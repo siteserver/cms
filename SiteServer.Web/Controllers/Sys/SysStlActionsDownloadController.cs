@@ -16,7 +16,6 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsDownload.Route)]
         public void Main()
         {
-            var isSuccess = false;
             try
             {
                 var rest = new Rest(Request);
@@ -28,27 +27,25 @@ namespace SiteServer.API.Controllers.Sys
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        isSuccess = true;
                         PageUtils.Redirect(fileUrl);
+                        return;
+                    }
+
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var filePath = PathUtility.MapPath(siteInfo, fileUrl);
+                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                    if (EFileSystemTypeUtils.IsDownload(fileType))
+                    {
+                        if (FileUtils.IsFileExists(filePath))
+                        {
+                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            return;
+                        }
                     }
                     else
                     {
-                        var siteInfo = SiteManager.GetSiteInfo(siteId);
-                        var filePath = PathUtility.MapPath(siteInfo, fileUrl);
-                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                        if (EFileSystemTypeUtils.IsDownload(fileType))
-                        {
-                            if (FileUtils.IsFileExists(filePath))
-                            {
-                                isSuccess = true;
-                                PageUtils.Download(HttpContext.Current.Response, filePath);
-                            }
-                        }
-                        else
-                        {
-                            isSuccess = true;
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
-                        }
+                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(rest.GetQueryString("filePath")))
@@ -59,15 +56,15 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            isSuccess = true;
                             PageUtils.Download(HttpContext.Current.Response, filePath);
+                            return;
                         }
                     }
                     else
                     {
-                        isSuccess = true;
                         var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
                         PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(rest.GetQueryString("siteId")) && !string.IsNullOrEmpty(rest.GetQueryString("channelId")) && !string.IsNullOrEmpty(rest.GetQueryString("contentId")) && !string.IsNullOrEmpty(rest.GetQueryString("fileUrl")))
@@ -80,30 +77,30 @@ namespace SiteServer.API.Controllers.Sys
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
+                    channelInfo.ContentRepository.AddDownloads(channelId, contentId);
+
                     if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            isSuccess = true;
                             PageUtils.Redirect(fileUrl);
+                            return;
+                        }
+
+                        var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
+                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                        if (EFileSystemTypeUtils.IsDownload(fileType))
+                        {
+                            if (FileUtils.IsFileExists(filePath))
+                            {
+                                PageUtils.Download(HttpContext.Current.Response, filePath);
+                                return;
+                            }
                         }
                         else
                         {
-                            var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
-                            var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                            if (EFileSystemTypeUtils.IsDownload(fileType))
-                            {
-                                if (FileUtils.IsFileExists(filePath))
-                                {
-                                    isSuccess = true;
-                                    PageUtils.Download(HttpContext.Current.Response, filePath);
-                                }
-                            }
-                            else
-                            {
-                                isSuccess = true;
-                                PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
-                            }
+                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            return;
                         }
                     }
                 }
@@ -112,10 +109,8 @@ namespace SiteServer.API.Controllers.Sys
             {
                 // ignored
             }
-            if (!isSuccess)
-            {
-                HttpContext.Current.Response.Write("下载失败，不存在此文件！");
-            }
+
+            HttpContext.Current.Response.Write("下载失败，不存在此文件！");
         }
     }
 }

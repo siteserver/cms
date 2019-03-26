@@ -8,6 +8,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -106,6 +107,10 @@ namespace SiteServer.BackgroundPages.Core
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.LastHitsDate))
             {
                 value = DateUtils.GetDateAndTimeString(contentInfo.LastHitsDate);
+            }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Downloads))
+            {
+                value = contentInfo.Downloads.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
@@ -206,7 +211,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, List<Menu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, List<PluginMenu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 

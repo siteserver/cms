@@ -18,8 +18,7 @@ namespace SiteServer.CMS.Core.Office
 
             var sourceFilePath = SiteServerAssets.GetPath(SiteServerAssets.Default.AccessMdb);
             FileUtils.CopyFile(sourceFilePath, filePath);
-
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            
             var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, nodeInfo);
             styleInfoList = ContentUtility.GetAllTableStyleInfoList(styleInfoList);
 
@@ -28,9 +27,7 @@ namespace SiteServer.CMS.Core.Office
             var createTableSqlString = accessDao.GetCreateTableSqlString(nodeInfo.ChannelName, styleInfoList, displayAttributes);
             accessDao.ExecuteSqlString(createTableSqlString);
 
-            bool isExport;
-
-            var insertSqlList = accessDao.GetInsertSqlStringList(nodeInfo.ChannelName, siteInfo.Id, nodeInfo.Id, tableName, styleInfoList, displayAttributes, contentIdList, isPeriods, dateFrom, dateTo, checkedState, out isExport);
+            var insertSqlList = accessDao.GetInsertSqlStringList(nodeInfo.ChannelName, siteInfo.Id, nodeInfo.Id, styleInfoList, displayAttributes, contentIdList, isPeriods, dateFrom, dateTo, checkedState, out var isExport);
 
             foreach (var insertSql in insertSqlList)
             {

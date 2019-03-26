@@ -26,16 +26,16 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "翻页时是否刷新页面")]
         private const string IsPageRefresh = nameof(IsPageRefresh);
 
-        [StlAttribute(Title = "动态请求发送前执行的JS代码")]
+        [StlAttribute(Title = "请求前触发事件")]
         private const string OnBeforeSend = nameof(OnBeforeSend);
 
-        [StlAttribute(Title = "动态请求成功后执行的JS代码")]
+        [StlAttribute(Title = "请求成功后触发事件")]
         private const string OnSuccess = nameof(OnSuccess);
 
-        [StlAttribute(Title = "动态请求结束后执行的JS代码")]
+        [StlAttribute(Title = "请求结束后触发事件")]
         private const string OnComplete = nameof(OnComplete);
 
-        [StlAttribute(Title = "动态请求失败后执行的JS代码")]
+        [StlAttribute(Title = "请求失败后触发事件")]
         private const string OnError = nameof(OnError);
 
         internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)

@@ -557,7 +557,7 @@ namespace SiteServer.CMS.Database.Repositories
             //return maxTaxis;
             return Max(Attr.Taxis, Q
                 .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},"));
+                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")) ?? 0;
         }
 
         private int GetParentId(int channelId)

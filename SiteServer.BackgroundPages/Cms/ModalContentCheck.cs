@@ -9,9 +9,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Repositories.Contents;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -77,11 +75,12 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
                     titles.Append(title + "<br />");
                 }
             }

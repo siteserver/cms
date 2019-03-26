@@ -68,7 +68,7 @@ namespace SiteServer.Plugin
         /// <returns>
         /// 如果站点与栏目存在，则返回此栏目下的所有内容的Id列表；否则返回 null。
         /// </returns>
-        List<int> GetContentIdList(int siteId, int channelId);
+        IList<int> GetContentIdList(int siteId, int channelId);
 
         /// <summary>
         /// 获取内容的属性值。

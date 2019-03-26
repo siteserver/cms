@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using SiteServer.CMS.Caches.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,104 +23,104 @@ namespace SiteServer.CMS.Caches.Stl
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContentIdListChecked),
                     tableName, channelId.ToString(), orderByFormatString);
-            var retval = StlCacheManager.Get<List<int>>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<List<int>>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<List<int>>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<List<int>>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByFormatString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.ContentRepository.GetContentIdListChecked(tableName, channelId, orderByFormatString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlDataSourceChecked),
                     TranslateUtils.ObjectCollectionToString(channelIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, TranslateUtils.NameValueCollectionToString(others));
-            var retval = StlCacheManager.Get<DataSet>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<DataSet>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<DataSet>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<DataSet>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, whereString, others);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.ContentRepository.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, whereString, others);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
-        public static string GetValue(string tableName, int contentId, string type)
+        public static string GetValue(ChannelInfo channelInfo, int contentId, string type)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetValue), tableName,
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetValue), channelInfo.Id.ToString(),
                        contentId.ToString(), type);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    var tuple = DataProvider.ContentRepository.GetValue(tableName, contentId, type);
-                    if (tuple != null)
+                    var value = channelInfo.ContentRepository.GetValue<string>(contentId, type);
+                    if (value != null)
                     {
-                        retval = tuple.Item2;
-                        StlCacheManager.Set(cacheKey, retval);
+                        retVal = value;
+                        StlCacheManager.Set(cacheKey, retVal);
                     }
                 }                
             }
 
-            return retval;
+            return retVal;
         }
 
-        public static int GetSequence(string tableName, int channelId, int contentId)
+        public static int GetSequence(ChannelInfo channelInfo, int contentId)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetSequence),
-                    tableName, channelId.ToString(), contentId.ToString());
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+                channelInfo.Id.ToString(), contentId.ToString());
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetSequence(tableName, channelId, contentId);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = channelInfo.ContentRepository.GetSequence(channelInfo.Id, contentId);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
-        public static int GetCountCheckedImage(int siteId, int channelId)
+        public static int GetCountCheckedImage(int siteId, ChannelInfo channelInfo)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountCheckedImage),
-                    siteId.ToString(), channelId.ToString());
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+                    siteId.ToString(), channelInfo.Id.ToString());
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetCountCheckedImage(siteId, channelId);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = channelInfo.ContentRepository.GetCountCheckedImage(siteId, channelInfo.Id);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope,
@@ -128,81 +129,80 @@ namespace SiteServer.CMS.Caches.Stl
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetCountOfContentAdd),
                     siteId.ToString(), channelId.ToString(), EScopeTypeUtils.GetValue(scope),
                     DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName, ETriStateUtils.GetValue(checkedState));
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetCountOfContentAdd(tableName, siteId, channelId, scope,
+                    retVal = DataProvider.ContentRepository.GetCountOfContentAdd(tableName, siteId, channelId, scope,
                     begin, end, userName, checkedState);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
-        public static int GetContentId(string tableName, int channelId, int taxis, bool isNextContent)
+        public static int GetContentId(ChannelInfo channelInfo, int taxis, bool isNextContent)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContentId), tableName,
-                       channelId.ToString(), taxis.ToString(), isNextContent.ToString());
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContentId), channelInfo.Id.ToString(), taxis.ToString(), isNextContent.ToString());
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetContentId(tableName, channelId, taxis, isNextContent);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = channelInfo.ContentRepository.GetContentId(channelInfo.Id, taxis, isNextContent);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetContentId(string tableName, int channelId, string orderByString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContentId), tableName,
                     channelId.ToString(), orderByString);
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetContentId(tableName, channelId, orderByString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.ContentRepository.GetContentId(tableName, channelId, orderByString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }        
 
         public static int GetChannelId(string tableName, int contentId)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetChannelId), tableName,
                        contentId.ToString());
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.ContentRepository.GetChannelId(tableName, contentId);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.ContentRepository.GetChannelId(tableName, contentId);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
@@ -213,23 +213,23 @@ namespace SiteServer.CMS.Caches.Stl
                     isFileExists.ToString(), isFile.ToString(), isTopExists.ToString(), isTop.ToString(),
                     isRecommendExists.ToString(), isRecommend.ToString(), isHotExists.ToString(), isHot.ToString(),
                     isColorExists.ToString(), isColor.ToString(), where);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetStlWhereString(siteId, group,
+                    retVal = DataProvider.ContentRepository.GetStlWhereString(siteId, group,
                     groupNot,
                     tags, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlWhereString(int siteId, string group, string groupNot, string tags, bool isTopExists, bool isTop, string where)
@@ -237,21 +237,21 @@ namespace SiteServer.CMS.Caches.Stl
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetStlWhereString),
                     siteId.ToString(), group, groupNot, tags, isTopExists.ToString(), isTop.ToString(),
                     where);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetStlWhereString(siteId, group, groupNot, tags,
+                    retVal = DataProvider.ContentRepository.GetStlWhereString(siteId, group, groupNot, tags,
                     isTopExists, isTop, where);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlSqlStringChecked(string tableName, int siteId, int channelId, int startNum, int totalNum, string orderByString, string whereString, EScopeType scopeType, string groupChannel, string groupChannelNot)
@@ -260,23 +260,23 @@ namespace SiteServer.CMS.Caches.Stl
                     tableName, siteId.ToString(), channelId.ToString(), startNum.ToString(),
                     totalNum.ToString(), orderByString, whereString, EScopeTypeUtils.GetValue(scopeType), groupChannel,
                     groupChannelNot);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
-                    retval = DataProvider.ContentRepository.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
+                    retVal = DataProvider.ContentRepository.GetStlSqlStringChecked(channelIdList, tableName, siteId, channelId, startNum,
                     totalNum, orderByString, whereString, scopeType, groupChannel, groupChannelNot);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlWhereStringBySearch(string group, string groupNot, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
@@ -285,22 +285,22 @@ namespace SiteServer.CMS.Caches.Stl
                     isVideoExists.ToString(), isVideo.ToString(), isFileExists.ToString(), isFile.ToString(),
                     isTopExists.ToString(), isTop.ToString(), isRecommendExists.ToString(), isRecommend.ToString(),
                     isHotExists.ToString(), isHot.ToString(), isColorExists.ToString(), isColor.ToString(), where);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetStlWhereStringBySearch(group, groupNot,
+                    retVal = DataProvider.ContentRepository.GetStlWhereStringBySearch(group, groupNot,
                     isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop,
                     isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlSqlStringCheckedBySearch(string tableName, int startNum, int totalNum, string orderByString, string whereString)
@@ -308,21 +308,21 @@ namespace SiteServer.CMS.Caches.Stl
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache),
                        nameof(GetStlSqlStringCheckedBySearch),
                        tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.ContentRepository.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum,
+                    retVal = DataProvider.ContentRepository.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum,
                     orderByString, whereString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

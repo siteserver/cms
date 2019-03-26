@@ -23,8 +23,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeChannelIndex = "channelIndex";
         public const string AttributeChannelName = "channelName";
         public const string AttributeScope = "scope";
-        public const string AttributeGroup = "group";
-        public const string AttributeGroupNot = "groupNot";
         public const string AttributeGroupChannel = "groupChannel";
         public const string AttributeGroupChannelNot = "groupChannelNot";
         public const string AttributeGroupContent = "groupContent";

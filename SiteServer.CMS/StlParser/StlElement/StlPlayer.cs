@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -104,12 +105,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, pageInfo.SiteId);
+                        playUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, ContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                     }

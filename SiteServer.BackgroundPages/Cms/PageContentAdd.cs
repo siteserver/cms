@@ -331,7 +331,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
-                    ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
+                    ContentManager.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                     redirectUrl = PageContentAddAfter.GetRedirectUrl(SiteId, _channelInfo.Id, contentInfo.Id,
                         ReturnUrl);
@@ -407,7 +407,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
-                    ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
+                    ContentManager.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                     CreateManager.CreateContent(SiteId, _channelInfo.Id, contentId);
                     CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);

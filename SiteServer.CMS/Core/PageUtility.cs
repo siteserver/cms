@@ -6,7 +6,6 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
@@ -202,7 +201,8 @@ namespace SiteServer.CMS.Core
                 {
                     var tableName = ChannelManager.GetTableName(siteInfo, channelId);
                     channelId = StlContentCache.GetChannelId(tableName, referenceId);
-                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    linkUrl = StlContentCache.GetValue(channelInfo, referenceId, ContentAttribute.LinkUrl);
                     if (ChannelManager.IsExists(siteInfo.Id, channelId))
                     {
                         return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
@@ -255,7 +255,8 @@ namespace SiteServer.CMS.Core
                 {
                     var tableName = ChannelManager.GetTableName(siteInfo, channelId);
                     channelId = StlContentCache.GetChannelId(tableName, referenceId);
-                    linkUrl = StlContentCache.GetValue(tableName, referenceId, ContentAttribute.LinkUrl);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    linkUrl = StlContentCache.GetValue(channelInfo, referenceId, ContentAttribute.LinkUrl);
                     return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
             }

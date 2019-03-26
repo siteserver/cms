@@ -206,7 +206,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                                 parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }

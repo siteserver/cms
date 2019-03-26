@@ -101,6 +101,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
                     var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
                     var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsTop));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsRecommend));
@@ -113,7 +114,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
+                        taxis = channelInfo.ContentRepository.GetMaxTaxis(channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -137,6 +138,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     contentInfo.HitsByWeek = hitsByWeek;
                     contentInfo.HitsByMonth = hitsByMonth;
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
+                    contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
                     contentInfo.Top = isTop;
                     contentInfo.Recommend = isRecommend;
@@ -156,7 +158,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
+                        var existsIDs = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
                         if (existsIDs.Count > 0)
                         {
                             foreach (int id in existsIDs)
@@ -219,6 +221,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     var hitsByWeek = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByWeek));
                     var hitsByMonth = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.HitsByMonth));
                     var lastHitsDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastHitsDate);
+                    var downloads = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Downloads));
                     var title = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Title);
                     var isTop = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsTop));
                     var isRecommend = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.IsRecommend));
@@ -231,7 +234,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = DataProvider.ContentRepository.GetMaxTaxis(tableName, channelInfo.Id, true) + 1;
+                        taxis = channelInfo.ContentRepository.GetMaxTaxis(channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -257,6 +260,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     contentInfo.HitsByWeek = hitsByWeek;
                     contentInfo.HitsByMonth = hitsByMonth;
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
+                    contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
                     contentInfo.Top = isTop;
                     contentInfo.Recommend = isRecommend;
@@ -276,10 +280,10 @@ namespace SiteServer.CMS.ImportExport.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = DataProvider.ContentRepository.GetIdListBySameTitle(tableName, contentInfo.ChannelId, contentInfo.Title);
-                        if (existsIDs.Count > 0)
+                        var existsIds = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
+                        if (existsIds.Count > 0)
                         {
-                            foreach (int id in existsIDs)
+                            foreach (var id in existsIds)
                             {
                                 contentInfo.Id = id;
                                 DataProvider.ContentRepository.Update(_siteInfo, channelInfo, contentInfo);
@@ -318,7 +322,7 @@ namespace SiteServer.CMS.ImportExport.Components
             }
         }
 
-        public bool ExportContents(SiteInfo siteInfo, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        public bool ExportContents(SiteInfo siteInfo, int channelId, IList<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
@@ -326,8 +330,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
             if (contentIdList.Count == 0) return false;
 
@@ -421,6 +424,7 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastHitsDate, contentInfo.LastHitsDate.Value.ToString(CultureInfo.InvariantCulture));
             }
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, contentInfo.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(contentInfo.Title));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, contentInfo.Top.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsRecommend, contentInfo.Recommend.ToString());

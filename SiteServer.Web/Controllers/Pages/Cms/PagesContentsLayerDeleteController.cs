@@ -7,7 +7,6 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -97,14 +96,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     DeleteManager.DeleteContents(siteInfo, channelId, contentIdList);
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                //var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
-                    rest.AddSiteLog(siteId, channelId, contentId, "删除内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
+
+                    if (channelInfo.ContentRepository.GetChanelIdAndValue<string>(contentId, ContentAttribute.Title,
+                        out var contentChannelId, out var contentTitle))
+                    {
+                        rest.AddSiteLog(siteId, contentChannelId, contentId, "删除内容",
+                            $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentChannelId)},内容标题:{contentTitle}");
+                    }
                 }
                 else
                 {

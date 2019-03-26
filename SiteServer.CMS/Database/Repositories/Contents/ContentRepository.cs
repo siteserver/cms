@@ -10,7 +10,6 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.V1;
-using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -23,7 +22,6 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 {
     public class ContentRepository : DataProviderBase
     {
-
         private const int TaxisIsTopStartValue = 2000000000;
 
         private static readonly List<string> MinListColumns = new List<string>
@@ -46,6 +44,118 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         }
 
         public override List<TableColumn> TableColumns => ReflectionUtils.GetTableColumns(typeof(ContentInfo));
+
+        public List<TableColumn> TableColumnsDefault
+        {
+            get
+            {
+                var tableColumns = new List<TableColumn>();
+                tableColumns.AddRange(TableColumns);
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.SubTitle,
+                    DataType = DataType.VarChar
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.ImageUrl,
+                    DataType = DataType.VarChar
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.VideoUrl,
+                    DataType = DataType.VarChar
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.FileUrl,
+                    DataType = DataType.VarChar
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.Content,
+                    DataType = DataType.Text
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.Summary,
+                    DataType = DataType.Text
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.Author,
+                    DataType = DataType.VarChar
+                });
+                tableColumns.Add(new TableColumn
+                {
+                    AttributeName = Attr.Source,
+                    DataType = DataType.VarChar
+                });
+
+                return tableColumns;
+            }
+        }
+
+        public int GetContentId(string tableName, int channelId, string orderByString)
+        {
+            var contentId = 0;
+            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
+            {
+                Attr.Id
+            }, $"WHERE (ChannelId = {channelId})", orderByString, 1);
+
+            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            {
+                if (rdr.Read())
+                {
+                    contentId = DatabaseApi.GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return contentId;
+        }
+
+        public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
+        {
+            var inStr = SqlUtils.GetInStr(name, startString);
+            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string> { name }, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, 0, totalNum, true);
+            return DatabaseApi.GetStringList(sqlString);
+        }
+
+        public int GetChannelId(string tableName, int contentId)
+        {
+            var channelId = 0;
+            var sqlString = $"SELECT {Attr.ChannelId} FROM {tableName} WHERE (Id = {contentId})";
+
+            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            {
+                if (rdr.Read())
+                {
+                    channelId = DatabaseApi.GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return channelId;
+        }
+
+        public List<int> GetChannelIdListCheckedByLastEditDateHour(string tableName, int siteId, int hour)
+        {
+            var list = new List<int>();
+
+            var sqlString =
+                $"SELECT DISTINCT ChannelId FROM {tableName} WHERE (SiteId = {siteId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
+
+            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var channelId = DatabaseApi.GetInt(rdr, 0);
+                    list.Add(channelId);
+                }
+                rdr.Close();
+            }
+            return list;
+        }
 
         //public override List<TableColumn> TableColumns => new List<TableColumn>
         //{
@@ -193,64 +303,13 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         //    }
         //};
 
-        public List<TableColumn> TableColumnsDefault
-        {
-            get
-            {
-                var tableColumns = new List<TableColumn>();
-                tableColumns.AddRange(TableColumns);
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.SubTitle,
-                    DataType = DataType.VarChar
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.ImageUrl,
-                    DataType = DataType.VarChar
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.VideoUrl,
-                    DataType = DataType.VarChar
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.FileUrl,
-                    DataType = DataType.VarChar
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = Attr.Content,
-                    DataType = DataType.Text
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.Summary,
-                    DataType = DataType.Text
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.Author,
-                    DataType = DataType.VarChar
-                });
-                tableColumns.Add(new TableColumn
-                {
-                    AttributeName = ContentAttribute.Source,
-                    DataType = DataType.VarChar
-                });
+        //private void UpdateTaxis(int channelId, int id, int taxis, string tableName)
+        //{
+        //    var sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
+        //    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-                return tableColumns;
-            }
-        }
-
-        private void UpdateTaxis(int channelId, int id, int taxis, string tableName)
-        {
-            var sqlString = $"UPDATE {tableName} SET Taxis = {taxis} WHERE Id = {id}";
-            DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
-            ContentManager.RemoveCache(tableName, channelId);
-        }
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
 
         //public void DeleteContentsByTrash(int siteId, int channelId, string tableName)
         //{
@@ -529,330 +588,345 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         //        GetOrderString(channelInfo, string.Empty), offset, limit);
         //}
 
-        public bool SetTaxisToUp(string tableName, int channelId, int contentId, bool isTop)
-        {
-            //Get Higher Taxis and Id
-            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
-                {
-                    Attr.Id,
-                    Attr.Taxis
-                },
-                isTop
-                    ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
-                    : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
-                "ORDER BY Taxis", 1);
-            var higherId = 0;
-            var higherTaxis = 0;
+        //public bool SetTaxisToUp(string tableName, int channelId, int contentId, bool isTop)
+        //{
+        //    //Get Higher Taxis and Id
+        //    var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
+        //        {
+        //            Attr.Id,
+        //            Attr.Taxis
+        //        },
+        //        isTop
+        //            ? $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
+        //            : $"WHERE (Taxis > (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
+        //        "ORDER BY Taxis", 1);
+        //    var higherId = 0;
+        //    var higherTaxis = 0;
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                if (rdr.Read())
-                {
-                    higherId = DatabaseApi.GetInt(rdr, 0);
-                    higherTaxis = DatabaseApi.GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    {
+        //        if (rdr.Read())
+        //        {
+        //            higherId = DatabaseApi.GetInt(rdr, 0);
+        //            higherTaxis = DatabaseApi.GetInt(rdr, 1);
+        //        }
+        //        rdr.Close();
+        //    }
 
-            if (higherId != 0)
-            {
-                //Get Taxis Of Selected Id
-                var selectedTaxis = GetTaxis(contentId, tableName);
+        //    if (higherId != 0)
+        //    {
+        //        //Get Taxis Of Selected Id
+        //        var selectedTaxis = GetTaxis(contentId, tableName);
 
-                //Set The Selected Class Taxis To Higher Level
-                UpdateTaxis(channelId, contentId, higherTaxis, tableName);
-                //Set The Higher Class Taxis To Lower Level
-                UpdateTaxis(channelId, higherId, selectedTaxis, tableName);
-                return true;
-            }
-            return false;
-        }
+        //        //Set The Selected Class Taxis To Higher Level
+        //        UpdateTaxis(channelId, contentId, higherTaxis, tableName);
+        //        //Set The Higher Class Taxis To Lower Level
+        //        UpdateTaxis(channelId, higherId, selectedTaxis, tableName);
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
-        public bool SetTaxisToDown(string tableName, int channelId, int contentId, bool isTop)
-        {
-            //Get Lower Taxis and Id
-            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
-                {
-                    Attr.Id,
-                    Attr.Taxis
-                },
-                isTop
-                    ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
-                    : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
-                "ORDER BY Taxis DESC", 1);
-            var lowerId = 0;
-            var lowerTaxis = 0;
+        //public bool SetTaxisToDown(string tableName, int channelId, int contentId, bool isTop)
+        //{
+        //    //Get Lower Taxis and Id
+        //    var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
+        //        {
+        //            Attr.Id,
+        //            Attr.Taxis
+        //        },
+        //        isTop
+        //            ? $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis >= {TaxisIsTopStartValue} AND ChannelId = {channelId})"
+        //            : $"WHERE (Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND Taxis < {TaxisIsTopStartValue} AND ChannelId = {channelId})",
+        //        "ORDER BY Taxis DESC", 1);
+        //    var lowerId = 0;
+        //    var lowerTaxis = 0;
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                if (rdr.Read())
-                {
-                    lowerId = DatabaseApi.GetInt(rdr, 0);
-                    lowerTaxis = DatabaseApi.GetInt(rdr, 1);
-                }
-                rdr.Close();
-            }
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    {
+        //        if (rdr.Read())
+        //        {
+        //            lowerId = DatabaseApi.GetInt(rdr, 0);
+        //            lowerTaxis = DatabaseApi.GetInt(rdr, 1);
+        //        }
+        //        rdr.Close();
+        //    }
 
-            if (lowerId != 0)
-            {
-                //Get Taxis Of Selected Class
-                var selectedTaxis = GetTaxis(contentId, tableName);
+        //    if (lowerId != 0)
+        //    {
+        //        //Get Taxis Of Selected Class
+        //        var selectedTaxis = GetTaxis(contentId, tableName);
 
-                //Set The Selected Class Taxis To Lower Level
-                UpdateTaxis(channelId, contentId, lowerTaxis, tableName);
-                //Set The Lower Class Taxis To Higher Level
-                UpdateTaxis(channelId, lowerId, selectedTaxis, tableName);
-                return true;
-            }
-            return false;
-        }
+        //        //Set The Selected Class Taxis To Lower Level
+        //        UpdateTaxis(channelId, contentId, lowerTaxis, tableName);
+        //        //Set The Lower Class Taxis To Higher Level
+        //        UpdateTaxis(channelId, lowerId, selectedTaxis, tableName);
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
-        public int GetMaxTaxis(string tableName, int channelId, bool isTop)
-        {
-            var maxTaxis = 0;
-            if (isTop)
-            {
-                maxTaxis = TaxisIsTopStartValue;
+        //public int GetMaxTaxis(string tableName, int channelId, bool isTop)
+        //{
+        //    var maxTaxis = 0;
+        //    if (isTop)
+        //    {
+        //        maxTaxis = TaxisIsTopStartValue;
 
-                var sqlString =
-                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
+        //        var sqlString =
+        //            $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis >= {TaxisIsTopStartValue}";
 
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            maxTaxis = DatabaseApi.GetInt(rdr, 0);
-                        }
-                        rdr.Close();
-                    }
-                }
+        //        using (var conn = GetConnection())
+        //        {
+        //            conn.Open();
+        //            using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
+        //            {
+        //                if (rdr.Read())
+        //                {
+        //                    maxTaxis = DatabaseApi.GetInt(rdr, 0);
+        //                }
+        //                rdr.Close();
+        //            }
+        //        }
 
-                if (maxTaxis < TaxisIsTopStartValue)
-                {
-                    maxTaxis = TaxisIsTopStartValue;
-                }
-            }
-            else
-            {
-                var sqlString =
-                    $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            maxTaxis = DatabaseApi.GetInt(rdr, 0);
-                        }
-                        rdr.Close();
-                    }
-                }
-            }
-            return maxTaxis;
-        }
+        //        if (maxTaxis < TaxisIsTopStartValue)
+        //        {
+        //            maxTaxis = TaxisIsTopStartValue;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var sqlString =
+        //            $"SELECT MAX(Taxis) FROM {tableName} WHERE ChannelId = {channelId} AND Taxis < {TaxisIsTopStartValue}";
+        //        using (var conn = GetConnection())
+        //        {
+        //            conn.Open();
+        //            using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
+        //            {
+        //                if (rdr.Read())
+        //                {
+        //                    maxTaxis = DatabaseApi.GetInt(rdr, 0);
+        //                }
+        //                rdr.Close();
+        //            }
+        //        }
+        //    }
+        //    return maxTaxis;
+        //}
 
-        public Tuple<int, string> GetValue(string tableName, int contentId, string name)
-        {
-            Tuple<int, string> tuple = null;
+        //public Tuple<int, string> GetValue(string tableName, int contentId, string name)
+        //{
+        //    Tuple<int, string> tuple = null;
 
-            try
-            {
-                var sqlString = $"SELECT {Attr.ChannelId}, {name} FROM {tableName} WHERE Id = {contentId}";
+        //    try
+        //    {
+        //        var sqlString = $"SELECT {Attr.ChannelId}, {name} FROM {tableName} WHERE Id = {contentId}";
 
-                using (var conn = GetConnection())
-                {
-                    conn.Open();
-                    using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
-                    {
-                        if (rdr.Read())
-                        {
-                            var channelId = DatabaseApi.GetInt(rdr, 0);
-                            var value = DatabaseApi.GetString(rdr, 1);
+        //        using (var conn = GetConnection())
+        //        {
+        //            conn.Open();
+        //            using (var rdr = DatabaseApi.ExecuteReader(conn, sqlString))
+        //            {
+        //                if (rdr.Read())
+        //                {
+        //                    var channelId = DatabaseApi.GetInt(rdr, 0);
+        //                    var value = DatabaseApi.GetString(rdr, 1);
 
-                            tuple = new Tuple<int, string>(channelId, value);
-                        }
+        //                    tuple = new Tuple<int, string>(channelId, value);
+        //                }
 
-                        rdr.Close();
-                    }
-                }
-            }
-            catch
-            {
-                // ignored
-            }
+        //                rdr.Close();
+        //            }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        // ignored
+        //    }
 
-            return tuple;
-        }
+        //    return tuple;
+        //}
 
-        public void AddContentGroupList(string tableName, int contentId, List<string> contentGroupList)
-        {
-            var tuple = GetValue(tableName, contentId, Attr.GroupNameCollection);
+        //public void AddContentGroupList(string tableName, int contentId, List<string> contentGroupList)
+        //{
+        //    var tuple = GetValue(tableName, contentId, Attr.GroupNameCollection);
 
-            if (tuple != null)
-            {
-                var list = TranslateUtils.StringCollectionToStringList(tuple.Item2);
-                foreach (var groupName in contentGroupList)
-                {
-                    if (!list.Contains(groupName)) list.Add(groupName);
-                }
-                Update(tableName, tuple.Item1, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
-            }
-        }
-        
+        //    if (tuple != null)
+        //    {
+        //        var list = TranslateUtils.StringCollectionToStringList(tuple.Item2);
+        //        foreach (var groupName in contentGroupList)
+        //        {
+        //            if (!list.Contains(groupName)) list.Add(groupName);
+        //        }
+        //        Update(tableName, tuple.Item1, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
+        //    }
+        //}
 
-        public List<int> GetContentIdList(string tableName, int channelId, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
-        {
-            var list = new List<int>();
 
-            var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
-            if (isPeriods)
-            {
-                var dateString = string.Empty;
-                if (!string.IsNullOrEmpty(dateFrom))
-                {
-                    dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
-                }
-                if (!string.IsNullOrEmpty(dateTo))
-                {
-                    dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
-                }
-                sqlString += dateString;
-            }
+        //public List<int> GetContentIdList(string tableName, int channelId, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
+        //{
+        //    var list = new List<int>();
 
-            if (checkedState != ETriState.All)
-            {
-                sqlString += $" AND IsChecked = '{ETriStateUtils.GetValue(checkedState)}'";
-            }
+        //    var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId}";
+        //    if (isPeriods)
+        //    {
+        //        var dateString = string.Empty;
+        //        if (!string.IsNullOrEmpty(dateFrom))
+        //        {
+        //            dateString = $" AND AddDate >= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateFrom))} ";
+        //        }
+        //        if (!string.IsNullOrEmpty(dateTo))
+        //        {
+        //            dateString += $" AND AddDate <= {SqlUtils.GetComparableDate(TranslateUtils.ToDateTime(dateTo).AddDays(1))} ";
+        //        }
+        //        sqlString += dateString;
+        //    }
 
-            sqlString += " ORDER BY Taxis DESC, Id DESC";
+        //    if (checkedState != ETriState.All)
+        //    {
+        //        sqlString += $" AND IsChecked = '{ETriStateUtils.GetValue(checkedState)}'";
+        //    }
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var contentId = DatabaseApi.GetInt(rdr, 0);
-                    list.Add(contentId);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+        //    sqlString += " ORDER BY Taxis DESC, Id DESC";
 
-        public List<int> GetContentIdListCheckedByChannelId(string tableName, int siteId, int channelId)
-        {
-            var list = new List<int>();
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    {
+        //        while (rdr.Read())
+        //        {
+        //            var contentId = DatabaseApi.GetInt(rdr, 0);
+        //            list.Add(contentId);
+        //        }
+        //        rdr.Close();
+        //    }
+        //    return list;
+        //}
 
-            var sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId} AND IsChecked = '{true}'";
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(DatabaseApi.GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+        //public List<int> GetContentIdListCheckedByChannelId(string tableName, int siteId, int channelId)
+        //{
+        //    var list = new List<int>();
 
-        public int GetContentId(string tableName, int channelId, int taxis, bool isNextContent)
-        {
-            var contentId = 0;
-            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
-            {
-                Attr.Id
-            }, $"WHERE (ChannelId = {channelId} AND Taxis > {taxis} AND IsChecked = 'True')", "ORDER BY Taxis", 1);
-            if (isNextContent)
-            {
-                sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
-                    {
-                        Attr.Id
-                    },
-                $"WHERE (ChannelId = {channelId} AND Taxis < {taxis} AND IsChecked = 'True')", "ORDER BY Taxis DESC", 1);
-            }
+        //    var sqlString = $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId = {channelId} AND IsChecked = '{true}'";
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    {
+        //        while (rdr.Read())
+        //        {
+        //            list.Add(DatabaseApi.GetInt(rdr, 0));
+        //        }
+        //        rdr.Close();
+        //    }
+        //    return list;
+        //}
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                if (rdr.Read())
-                {
-                    contentId = DatabaseApi.GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return contentId;
-        }
+        //public int GetContentId(string tableName, int channelId, int taxis, bool isNextContent)
+        //{
+        //    var contentId = 0;
+        //    var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
+        //    {
+        //        Attr.Id
+        //    }, $"WHERE (ChannelId = {channelId} AND Taxis > {taxis} AND IsChecked = 'True')", "ORDER BY Taxis", 1);
+        //    if (isNextContent)
+        //    {
+        //        sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
+        //            {
+        //                Attr.Id
+        //            },
+        //        $"WHERE (ChannelId = {channelId} AND Taxis < {taxis} AND IsChecked = 'True')", "ORDER BY Taxis DESC", 1);
+        //    }
 
-        public int GetContentId(string tableName, int channelId, string orderByString)
-        {
-            var contentId = 0;
-            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string>
-            {
-                Attr.Id
-            }, $"WHERE (ChannelId = {channelId})", orderByString, 1);
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    {
+        //        if (rdr.Read())
+        //        {
+        //            contentId = DatabaseApi.GetInt(rdr, 0);
+        //        }
+        //        rdr.Close();
+        //    }
+        //    return contentId;
+        //}
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                if (rdr.Read())
-                {
-                    contentId = DatabaseApi.GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return contentId;
-        }
 
-        public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
-        {
-            var inStr = SqlUtils.GetInStr(name, startString);
-            var sqlString = SqlDifferences.GetSqlString(tableName, new List<string> { name }, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, 0, totalNum, true);
-            return DatabaseApi.GetStringList(sqlString);
-        }
 
-        public int GetChannelId(string tableName, int contentId)
-        {
-            var channelId = 0;
-            var sqlString = $"SELECT {Attr.ChannelId} FROM {tableName} WHERE (Id = {contentId})";
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                if (rdr.Read())
-                {
-                    channelId = DatabaseApi.GetInt(rdr, 0);
-                }
-                rdr.Close();
-            }
-            return channelId;
-        }
 
-        public int GetSequence(string tableName, int channelId, int contentId)
-        {
-            var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {Attr.ChannelId} = {channelId} AND {Attr.IsChecked} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {Attr.SourceId} != {SourceManager.Preview}";
 
-            return DatabaseApi.GetIntResult(sqlString) + 1;
-        }
 
-        public List<int> GetChannelIdListCheckedByLastEditDateHour(string tableName, int siteId, int hour)
-        {
-            var list = new List<int>();
+        //public int GetSequence(string tableName, int channelId, int contentId)
+        //{
+        //    var sqlString =
+        //        $"SELECT COUNT(*) FROM {tableName} WHERE {Attr.ChannelId} = {channelId} AND {Attr.IsChecked} = '{true}' AND Taxis < (SELECT Taxis FROM {tableName} WHERE Id = {contentId}) AND {Attr.SourceId} != {SourceManager.Preview}";
 
-            var sqlString =
-                $"SELECT DISTINCT ChannelId FROM {tableName} WHERE (SiteId = {siteId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
+        //    return DatabaseApi.GetIntResult(sqlString) + 1;
+        //}
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var channelId = DatabaseApi.GetInt(rdr, 0);
-                    list.Add(channelId);
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+        //public List<int> GetIdListBySameTitle(string tableName, int channelId, string title)
+        //{
+        //    var list = new List<int>();
+        //    var sql = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} AND Title = '{title}'";
+        //    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sql))
+        //    {
+        //        while (rdr.Read())
+        //        {
+        //            list.Add(DatabaseApi.GetInt(rdr, 0));
+        //        }
+        //        rdr.Close();
+        //    }
+        //    return list;
+        //}
+
+        //public void Update(string tableName, int channelId, int contentId, string name, string value)
+        //{
+        //    var sqlString = $"UPDATE {tableName} SET {name} = @{name} WHERE Id = @Id";
+
+        //    var parameters = new DynamicParameters();
+        //    parameters.Add($"@{name}", value);
+        //    parameters.Add("@Id", contentId);
+
+        //    using (var connection = GetConnection())
+        //    {
+        //        connection.Execute(sqlString, parameters);
+        //    }
+
+        //    ContentManager.RemoveCache(tableName, channelId);
+        //}
+
+        //public int GetCountCheckedImage(int siteId, int channelId)
+        //{
+        //    var tableName = SiteManager.GetSiteInfo(siteId).TableName;
+        //    var sqlString =
+        //        $"SELECT COUNT(*) FROM {tableName} WHERE {Attr.ChannelId} = {channelId} AND {Attr.ImageUrl} != '' AND {Attr.IsChecked} = '{true}' AND {Attr.SourceId} != {SourceManager.Preview}";
+
+        //    return DatabaseApi.GetIntResult(sqlString);
+        //}
+
+        //private int GetTaxis(int selectedId, string tableName)
+        //{
+        //    var sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
+
+        //    return DatabaseApi.GetIntResult(sqlString);
+        //}
+
+        //private List<int> GetContentIdListByTrash(int siteId, string tableName)
+        //{
+        //    var sqlString =
+        //        $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
+        //    return DatabaseApi.GetIntList(sqlString);
+        //}
+
+        //private int GetTaxisToInsert(string tableName, int channelId, bool isTop)
+        //{
+        //    int taxis;
+
+        //    if (isTop)
+        //    {
+        //        taxis = GetMaxTaxis(tableName, channelId, true) + 1;
+        //    }
+        //    else
+        //    {
+        //        taxis = GetMaxTaxis(tableName, channelId, false) + 1;
+        //    }
+
+        //    return taxis;
+        //}
 
         public DataSet GetDataSetOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
         {
@@ -871,7 +945,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             }
             else
             {
-                taxis = GetTaxisToInsert(tableName, contentInfo.ChannelId, contentInfo.Top);
+                taxis = channelInfo.ContentRepository.GetTaxisToInsert(contentInfo.ChannelId, contentInfo.Top);
             }
             return InsertWithTaxis(tableName, siteInfo, channelInfo, contentInfo, taxis);
         }
@@ -889,7 +963,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             if (string.IsNullOrEmpty(tableName)) return 0;
 
-            if (siteInfo.IsAutoPageInTextEditor && contentInfo.ContainsKey(ContentAttribute.Content))
+            if (siteInfo.IsAutoPageInTextEditor && contentInfo.ContainsKey(Attr.Content))
             {
                 contentInfo.Content = ContentUtility.GetAutoPageContent(contentInfo.Content, siteInfo.AutoPageWordNum);
             }
@@ -961,6 +1035,7 @@ INSERT INTO {tableName} (
     {Attr.HitsByWeek},
     {Attr.HitsByMonth},
     {Attr.LastHitsDate},
+    {Attr.Downloads},
     {Attr.SettingsXml},
     {Attr.Title},
     {Attr.IsTop},
@@ -990,6 +1065,7 @@ INSERT INTO {tableName} (
     @{Attr.HitsByWeek},
     @{Attr.HitsByMonth},
     @{Attr.LastHitsDate},
+    @{Attr.Downloads},
     @{Attr.SettingsXml},
     @{Attr.Title},
     @{Attr.IsTop},
@@ -1022,6 +1098,7 @@ INSERT INTO {tableName} (
                 GetParameter(Attr.HitsByWeek, contentInfo.HitsByWeek),
                 GetParameter(Attr.HitsByMonth, contentInfo.HitsByMonth),
                 GetParameter(Attr.LastHitsDate,contentInfo.LastHitsDate),
+                GetParameter(Attr.Downloads, contentInfo.Downloads),
                 GetParameter(Attr.SettingsXml,contentInfo.SettingsXml),
                 GetParameter(Attr.Title, contentInfo.Title),
                 GetParameter(Attr.IsTop, contentInfo.Top.ToString()),
@@ -1045,7 +1122,7 @@ INSERT INTO {tableName} (
             if (contentInfo == null) return;
 
             if (siteInfo.IsAutoPageInTextEditor &&
-                contentInfo.ContainsKey(ContentAttribute.Content))
+                contentInfo.ContainsKey(Attr.Content))
             {
                 contentInfo.Content =  ContentUtility.GetAutoPageContent(contentInfo.Content,
                         siteInfo.AutoPageWordNum);
@@ -1056,11 +1133,11 @@ INSERT INTO {tableName} (
             //出现IsTop与Taxis不同步情况
             if (contentInfo.Top == false && contentInfo.Taxis >= TaxisIsTopStartValue)
             {
-                contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, false) + 1;
+                contentInfo.Taxis = channelInfo.ContentRepository.GetMaxTaxis(contentInfo.ChannelId, false) + 1;
             }
             else if (contentInfo.Top && contentInfo.Taxis < TaxisIsTopStartValue)
             {
-                contentInfo.Taxis = GetMaxTaxis(tableName, contentInfo.ChannelId, true) + 1;
+                contentInfo.Taxis = channelInfo.ContentRepository.GetMaxTaxis(contentInfo.ChannelId, true) + 1;
             }
 
             contentInfo.LastEditDate = DateTime.Now;
@@ -1130,6 +1207,7 @@ UPDATE {tableName} SET
 {Attr.HitsByWeek} = @{Attr.HitsByWeek},
 {Attr.HitsByMonth} = @{Attr.HitsByMonth},
 {Attr.LastHitsDate} = @{Attr.LastHitsDate},
+{Attr.Downloads} = @{Attr.Downloads},
 {Attr.SettingsXml} = @{Attr.SettingsXml},
 {Attr.Title} = @{Attr.Title},
 {Attr.IsTop} = @{Attr.IsTop},
@@ -1167,6 +1245,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             parameters.Add(GetParameter(Attr.HitsByWeek, contentInfo.HitsByWeek));
             parameters.Add(GetParameter(Attr.HitsByMonth, contentInfo.HitsByMonth));
             parameters.Add(GetParameter(Attr.LastHitsDate, contentInfo.LastHitsDate));
+            parameters.Add(GetParameter(Attr.Downloads, contentInfo.Downloads));
             parameters.Add(GetParameter(Attr.SettingsXml, contentInfo.SettingsXml));
             parameters.Add(GetParameter(Attr.Title, contentInfo.Title));
             parameters.Add(GetParameter(Attr.IsTop, contentInfo.Top.ToString()));
@@ -1184,21 +1263,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             ContentManager.UpdateCache(siteInfo, channelInfo, contentInfo);
         }
 
-        public void Update(string tableName, int channelId, int contentId, string name, string value)
-        {
-            var sqlString = $"UPDATE {tableName} SET {name} = @{name} WHERE Id = @Id";
-
-            var parameters = new DynamicParameters();
-            parameters.Add($"@{name}", value);
-            parameters.Add("@Id", contentId);
-
-            using (var connection = GetConnection())
-            {
-                connection.Execute(sqlString, parameters);
-            }
-
-            ContentManager.RemoveCache(tableName, channelId);
-        }
+        
 
         public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName, ETriState checkedState)
         {
@@ -1243,20 +1308,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
         }
 
-        public List<int> GetIdListBySameTitle(string tableName, int channelId, string title)
-        {
-            var list = new List<int>();
-            var sql = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} AND Title = '{title}'";
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sql))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(DatabaseApi.GetInt(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
+        
 
         public int GetCount(string tableName, string whereString)
         {
@@ -1285,29 +1337,6 @@ WHERE {Attr.Id} = @{Attr.Id}";
 
             return list;
         }
-
-        public int GetCountCheckedImage(int siteId, int channelId)
-        {
-            var tableName = SiteManager.GetSiteInfo(siteId).TableName;
-            var sqlString =
-                $"SELECT COUNT(*) FROM {tableName} WHERE {Attr.ChannelId} = {channelId} AND {ContentAttribute.ImageUrl} != '' AND {Attr.IsChecked} = '{true}' AND {Attr.SourceId} != {SourceManager.Preview}";
-
-            return DatabaseApi.GetIntResult(sqlString);
-        }
-
-        private int GetTaxis(int selectedId, string tableName)
-        {
-            var sqlString = $"SELECT Taxis FROM {tableName} WHERE (Id = {selectedId})";
-
-            return DatabaseApi.GetIntResult(sqlString);
-        }
-
-        //private List<int> GetContentIdListByTrash(int siteId, string tableName)
-        //{
-        //    var sqlString =
-        //        $"SELECT Id FROM {tableName} WHERE SiteId = {siteId} AND ChannelId < 0";
-        //    return DatabaseApi.GetIntList(sqlString);
-        //}
 
         private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
         {
@@ -1460,22 +1489,6 @@ WHERE {Attr.Id} = @{Attr.Id}";
                 dataSet = DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
             }
             return dataSet;
-        }
-
-        private int GetTaxisToInsert(string tableName, int channelId, bool isTop)
-        {
-            int taxis;
-
-            if (isTop)
-            {
-                taxis = GetMaxTaxis(tableName, channelId, true) + 1;
-            }
-            else
-            {
-                taxis = GetMaxTaxis(tableName, channelId, false) + 1;
-            }
-
-            return taxis;
         }
 
         private int GetCountOfContentAdd(string tableName, int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName, ETriState checkedState)
@@ -2010,22 +2023,22 @@ group by tmp.userName";
             if (isImageExists)
             {
                 whereBuilder.Append(isImage
-                    ? $" AND {ContentAttribute.ImageUrl} <> '' "
-                    : $" AND {ContentAttribute.ImageUrl} = '' ");
+                    ? $" AND {Attr.ImageUrl} <> '' "
+                    : $" AND {Attr.ImageUrl} = '' ");
             }
 
             if (isVideoExists)
             {
                 whereBuilder.Append(isVideo
-                    ? $" AND {ContentAttribute.VideoUrl} <> '' "
-                    : $" AND {ContentAttribute.VideoUrl} = '' ");
+                    ? $" AND {Attr.VideoUrl} <> '' "
+                    : $" AND {Attr.VideoUrl} = '' ");
             }
 
             if (isFileExists)
             {
                 whereBuilder.Append(isFile
-                    ? $" AND {ContentAttribute.FileUrl} <> '' "
-                    : $" AND {ContentAttribute.FileUrl} = '' ");
+                    ? $" AND {Attr.FileUrl} <> '' "
+                    : $" AND {Attr.FileUrl} = '' ");
             }
 
             if (isTopExists)
@@ -2118,22 +2131,22 @@ group by tmp.userName";
             if (isImageExists)
             {
                 whereBuilder.Append(isImage
-                    ? $" AND {ContentAttribute.ImageUrl} <> '' "
-                    : $" AND {ContentAttribute.ImageUrl} = '' ");
+                    ? $" AND {Attr.ImageUrl} <> '' "
+                    : $" AND {Attr.ImageUrl} = '' ");
             }
 
             if (isVideoExists)
             {
                 whereBuilder.Append(isVideo
-                    ? $" AND {ContentAttribute.VideoUrl} <> '' "
-                    : $" AND {ContentAttribute.VideoUrl} = '' ");
+                    ? $" AND {Attr.VideoUrl} <> '' "
+                    : $" AND {Attr.VideoUrl} = '' ");
             }
 
             if (isFileExists)
             {
                 whereBuilder.Append(isFile
-                    ? $" AND {ContentAttribute.FileUrl} <> '' "
-                    : $" AND {ContentAttribute.FileUrl} = '' ");
+                    ? $" AND {Attr.FileUrl} <> '' "
+                    : $" AND {Attr.FileUrl} = '' ");
             }
 
             if (isTopExists)

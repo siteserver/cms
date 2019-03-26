@@ -253,13 +253,13 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return null;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             if (isRelatedContents && contentId > 0)
             {
                 var isTags = false;
-                var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
+                var tagCollection = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
                     var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteInfo.Id);
@@ -293,7 +293,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
 
-            var sqlWhereString = PluginManager.IsExists(nodeInfo.ContentModelPluginId)
+            var sqlWhereString = PluginManager.IsExists(channelInfo.ContentModelPluginId)
                 ? StlContentCache.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
                 : StlContentCache.GetStlWhereString(siteInfo.Id, groupContent,
@@ -301,7 +301,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
 
-            var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
             return StlContentCache.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 

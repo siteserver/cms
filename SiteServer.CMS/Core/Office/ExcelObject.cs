@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Core.Office
     public static class ExcelObject
     {
         public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
-            ChannelInfo channelInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+            ChannelInfo channelInfo, IList<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -21,8 +21,7 @@ namespace SiteServer.CMS.Core.Office
 
             var head = new List<string>();
             var rows = new List<List<string>>();
-
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
@@ -35,7 +34,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelInfo.Id, isPeriods,
+                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelInfo.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 

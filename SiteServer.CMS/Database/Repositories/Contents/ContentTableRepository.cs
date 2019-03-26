@@ -8,6 +8,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 {
     public partial class ContentTableRepository : GenericRepositoryAbstract
     {
+        private const int TaxisIsTopStartValue = 2000000000;
+
         public int SiteId { get; }
         public override string TableName { get; }
         public override List<TableColumn> TableColumns { get; }

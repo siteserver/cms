@@ -197,9 +197,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                     //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(channelInfo, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -765,7 +765,7 @@ function {functionName}(pageNum)
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
-                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
+                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -785,9 +785,9 @@ function {functionName}(pageNum)
 
             if (contextInfo.ContentInfo == null)
             {
-                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                 //theValue = DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = StlContentCache.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                theValue = StlContentCache.GetValue(channelInfo, contextInfo.ContentId, testTypeStr);
             }
             else
             {

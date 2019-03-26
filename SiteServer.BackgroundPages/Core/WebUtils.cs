@@ -1,14 +1,10 @@
-﻿using System.Text;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Caches;
-using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -96,143 +92,143 @@ namespace SiteServer.BackgroundPages.Core
             return PageContentAdd.GetRedirectUrlOfEdit(siteId, nodeInfo.Id, id, returnUrl);
         }
 
-        public static string GetContentCommands(PermissionsImpl permissionsImpl, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
-        {
-            var builder = new StringBuilder();
+//        public static string GetContentCommands(PermissionsImpl permissionsImpl, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
+//        {
+//            var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
-            {
-                builder.Append($@"
-<a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
-    <i class=""ion-plus""></i>
-    添加
-</a>");
+//            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
+//            {
+//                builder.Append($@"
+//<a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
+//    <i class=""ion-plus""></i>
+//    添加
+//</a>");
 
-                builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, channelInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
-    导入Word
-</a>");
-            }
+//                builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalUploadWord.GetOpenWindowString(siteInfo.Id, channelInfo.Id, StringUtils.ValueToUrl(pageUrl))}"">
+//    导入Word
+//</a>");
+//            }
 
-            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+//            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+//            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
-            if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
-            {
-                builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, channelInfo.Id, false, pageUrl)}"">
-    <i class=""ion-trash-a""></i>
-    删 除
-</a>");
-            }
+//            if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
+//            {
+//                builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{PageContentDelete.GetRedirectClickStringForSingleChannel(siteInfo.Id, channelInfo.Id, false, pageUrl)}"">
+//    <i class=""ion-trash-a""></i>
+//    删 除
+//</a>");
+//            }
 
-            if (count > 0)
-            {
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
-                {
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
-    <i class=""ion-flag""></i>
-    属性
-</a>");
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, channelInfo.Id)}"">
-    内容组
-</a>");
-                }
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
-                {
-                    var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, channelInfo.Id, pageUrl);
-                    var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{clickString}"">
-    转 移
-</a>");
-                }
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
-                {
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
-    排 序
-</a>");
-                }
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
-                {
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
-    审 核
-</a>");
-                }
-                if (permissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
-                {
-                    builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, channelInfo.Id)}"">
-    <i class=""ion-wand""></i>
-    生 成
-</a>");
-                }
-            }
+//            if (count > 0)
+//            {
+//                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
+//                {
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentAttributes.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
+//    <i class=""ion-flag""></i>
+//    属性
+//</a>");
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalAddToGroup.GetOpenWindowStringToContent(siteInfo.Id, channelInfo.Id)}"">
+//    内容组
+//</a>");
+//                }
+//                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate))
+//                {
+//                    var redirectUrl = PageContentTranslate.GetRedirectUrl(siteInfo.Id, channelInfo.Id, pageUrl);
+//                    var clickString = PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{clickString}"">
+//    转 移
+//</a>");
+//                }
+//                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit))
+//                {
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentTaxis.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
+//    排 序
+//</a>");
+//                }
+//                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
+//                {
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalContentCheck.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
+//    审 核
+//</a>");
+//                }
+//                if (permissionsImpl.HasSitePermissions(siteInfo.Id, ConfigManager.WebSitePermissions.Create) || permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.CreatePage))
+//                {
+//                    builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateContentsOneByOne(siteInfo.Id, channelInfo.Id)}"">
+//    <i class=""ion-wand""></i>
+//    生 成
+//</a>");
+//                }
+//            }
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
-            {
-                builder.Append($@"
-<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
-    <i class=""ion-ios-list-outline""></i>
-    显示项
-</a>");
-            }
+//            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ChannelEdit))
+//            {
+//                builder.Append($@"
+//<a href=""javascript:;"" class=""btn btn-light text-secondary"" onclick=""{ModalSelectColumns.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
+//    <i class=""ion-ios-list-outline""></i>
+//    显示项
+//</a>");
+//            }
 
-            if (count > 0)
-            {
-                builder.Append(@"
-<a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
-    <i class=""ion-search""></i>
-    查找
-</a>");
-            }
+//            if (count > 0)
+//            {
+//                builder.Append(@"
+//<a href=""javascript:;;"" class=""btn btn-light text-secondary text-secondary"" onClick=""$('#contentSearch').toggle(); return false"">
+//    <i class=""ion-search""></i>
+//    查找
+//</a>");
+//            }
 
-            return builder.ToString();
-        }
+//            return builder.ToString();
+//        }
 
-        public static string GetContentMoreCommands(PermissionsImpl permissionsImpl, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
-        {
-            var builder = new StringBuilder();
+//        public static string GetContentMoreCommands(PermissionsImpl permissionsImpl, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
+//        {
+//            var builder = new StringBuilder();
 
-            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
-            {
-                builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
-    导 入
-</a>");
-            }
+//            if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable)
+//            {
+//                builder.Append($@"
+//<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentImport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
+//    导 入
+//</a>");
+//            }
 
-            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+//            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+//            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
-            if (count > 0)
-            {
-                builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
-    导 出
-</a>");
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
-                {
-                    builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
-    整 理
-</a>");
-                }
-                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, channelInfo) && !CrossSiteTransUtility.IsAutomatic(channelInfo))
-                {
-                    builder.Append($@"
-<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
-    跨站转发
-</a>");
-                }
-            }
+//            if (count > 0)
+//            {
+//                builder.Append($@"
+//<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentExport.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
+//    导 出
+//</a>");
+//                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentOrder))
+//                {
+//                    builder.Append($@"
+//<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentTidyUp.GetOpenWindowString(siteInfo.Id, channelInfo.Id, pageUrl)}"">
+//    整 理
+//</a>");
+//                }
+//                if (CrossSiteTransUtility.IsCrossSiteTrans(siteInfo, channelInfo) && !CrossSiteTransUtility.IsAutomatic(channelInfo))
+//                {
+//                    builder.Append($@"
+//<a class=""dropdown-item"" href=""javascript:;"" onclick=""{ModalContentCrossSiteTrans.GetOpenWindowString(siteInfo.Id, channelInfo.Id)}"">
+//    跨站转发
+//</a>");
+//                }
+//            }
 
-            return builder.ToString();
-        }
+//            return builder.ToString();
+//        }
 
         public static string GetTextEditorCommands(SiteInfo siteInfo, string attributeName)
         {

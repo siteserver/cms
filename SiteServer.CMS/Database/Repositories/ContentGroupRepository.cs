@@ -121,7 +121,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q.Where(Attr.SiteId, siteId));
+            return Max(Attr.Taxis, Q.Where(Attr.SiteId, siteId)) ?? 0;
         }
 
         public void UpdateTaxisToUp(int siteId, string groupName)

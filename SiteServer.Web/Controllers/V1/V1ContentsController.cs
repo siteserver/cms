@@ -264,7 +264,9 @@ namespace SiteServer.API.Controllers.V1
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                channelInfo.ContentRepository.DeleteContent(siteId, channelId, id);
+                //channelInfo.ContentRepository.DeleteContent(siteId, channelId, id);
+
+                ContentManager.Delete(siteInfo, channelInfo, id);
 
                 return Ok(new
                 {

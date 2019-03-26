@@ -156,7 +156,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 foreach (var contentId in contentIdList)
                 {
-                    ContentUtility.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
+                    ContentManager.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
                 }
 
                 rest.AddSiteLog(siteId, channelId, "转移内容", string.Empty);

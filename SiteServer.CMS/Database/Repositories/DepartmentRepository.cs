@@ -345,7 +345,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             return Max(Attr.Taxis, Q
                 .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},"));
+                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")) ?? 0;
         }
 
         public void Insert(DepartmentInfo departmentInfo)

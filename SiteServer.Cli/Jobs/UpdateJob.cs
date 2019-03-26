@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.Cli.Updater;
-using SiteServer.CMS.Database.Repositories;
 using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -17,10 +16,10 @@ namespace SiteServer.Cli.Jobs
     {
         public const string CommandName = "update";
         private const string Folder = "update";
-
-        private static bool _isHelp;
+        
         private static string _directory;
         private static bool _contentSplit;
+        private static bool _isHelp;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "d|directory=", "指定需要转换至最新版本的备份数据文件夹",

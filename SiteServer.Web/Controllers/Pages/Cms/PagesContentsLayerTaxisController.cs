@@ -5,7 +5,6 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -51,8 +50,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     contentIdList.Reverse();
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
@@ -63,14 +60,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentRepository.SetTaxisToUp(tableName, channelId, contentId, isTop) == false)
+                            if (channelInfo.ContentRepository.SetTaxisToUp(channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentRepository.SetTaxisToDown(tableName, channelId, contentId, isTop) == false)
+                            if (channelInfo.ContentRepository.SetTaxisToDown(channelId, contentId, isTop) == false)
                             {
                                 break;
                             }

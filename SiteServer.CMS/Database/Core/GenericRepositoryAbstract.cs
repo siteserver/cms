@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Database.Core
             return RepositoryHelper.GetValueList<TValue>(TableName, query);
         }
 
-        protected int Max(string columnName, Query query = null)
+        protected int? Max(string columnName, Query query = null)
         {
             return RepositoryHelper.Max(TableName, columnName, query);
         }

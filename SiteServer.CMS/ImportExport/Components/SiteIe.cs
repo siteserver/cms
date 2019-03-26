@@ -106,7 +106,7 @@ namespace SiteServer.CMS.ImportExport.Components
 
                     DataProvider.Channel.Update(nodeInfo);
 
-                    nodeInfo.ContentRepository.DeleteContentsByChannelId(_siteInfo.Id, theSameNameChannelId);
+                    //nodeInfo.ContentRepository.DeleteContentsByChannelId(_siteInfo.Id, theSameNameChannelId);
                 }
 
                 if (isImportContents)

@@ -168,7 +168,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true, false, false);
                             }
                         }
                     }

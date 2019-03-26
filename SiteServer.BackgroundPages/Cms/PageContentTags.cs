@@ -33,13 +33,12 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentRepository.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
-                            if (tuple != null)
-                            {
-                                var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
-                                contentTagList.Remove(tagName);
-                                DataProvider.ContentRepository.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
-                            }
+                            if (!SiteInfo.ContentRepository.GetChanelIdAndValue(contentId, ContentAttribute.Tags,
+                                out var channelId, out string tags)) continue;
+
+                            var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
+                            contentTagList.Remove(tagName);
+                            SiteInfo.ContentRepository.Update(channelId, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                         }
                     }
                     DataProvider.Tag.DeleteTag(tagName, SiteId);

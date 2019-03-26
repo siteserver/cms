@@ -138,9 +138,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                         //var siblingContentId = DataProvider.ContentRepository.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = StlContentCache.GetContentId(channelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             //var siblingContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, siblingContentId);
@@ -215,9 +215,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                         //var siblingContentId = DataProvider.ContentRepository.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = StlContentCache.GetContentId(channelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;

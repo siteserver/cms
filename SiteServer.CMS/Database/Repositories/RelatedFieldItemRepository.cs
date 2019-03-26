@@ -233,7 +233,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q.Where(Attr.ParentId, parentId));
+            return Max(Attr.Taxis, Q.Where(Attr.ParentId, parentId)) ?? 0;
         }
 
         public RelatedFieldItemInfo GetRelatedFieldItemInfo(int id)
