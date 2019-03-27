@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -66,14 +65,14 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //contentInfo.LinkUrl = TbLinkUrl.Text;
             contentInfo.AddDate = TranslateUtils.ToDateTime(form["TbAddDate"]);
-            contentInfo.IsChecked = false;
+            contentInfo.Checked = false;
             contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
             foreach (var service in PluginManager.Services)
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(form), contentInfo));
+                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, TranslateUtils.ToDictionary(form), contentInfo));
                 }
                 catch (Exception ex)
                 {

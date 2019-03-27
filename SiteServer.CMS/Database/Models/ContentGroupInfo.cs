@@ -1,25 +1,20 @@
-using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ContentGroup")]
-    public class ContentGroupInfo : IDataInfo
+    public class ContentGroupInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string GroupName { get; set; }
 
-	    public int SiteId { get; set; }
+        [TableColumn]
+        public int SiteId { get; set; }
 
-	    public int Taxis { get; set; }
+        [TableColumn]
+        public int Taxis { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         public string Description { get; set; }
-	}
+    }
 }

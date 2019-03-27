@@ -56,51 +56,51 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (isLoad)
             {
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsTitleImage))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsTitleImage))
                 {
-                    CbIsTitleImage.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsTitleImage);
+                    CbIsTitleImage.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsTitleImage);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageTitleImageWidth))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageTitleImageWidth))
                 {
-                    TbTitleImageWidth.Text = SiteInfo.Extend.ConfigUploadImageTitleImageWidth;
+                    TbTitleImageWidth.Text = SiteInfo.ConfigUploadImageTitleImageWidth;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageTitleImageHeight))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageTitleImageHeight))
                 {
-                    TbTitleImageHeight.Text = SiteInfo.Extend.ConfigUploadImageTitleImageHeight;
+                    TbTitleImageHeight.Text = SiteInfo.ConfigUploadImageTitleImageHeight;
                 }
 
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsShowImageInTextEditor))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsShowImageInTextEditor))
                 {
-                    CbIsShowImageInTextEditor.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsShowImageInTextEditor);
+                    CbIsShowImageInTextEditor.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsShowImageInTextEditor);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsLinkToOriginal))
                 {
-                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal);
+                    CbIsLinkToOriginal.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsLinkToOriginal);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageIsSmallImage))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageIsSmallImage))
                 {
-                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.Extend.ConfigUploadImageIsSmallImage);
+                    CbIsSmallImage.Checked = TranslateUtils.ToBool(SiteInfo.ConfigUploadImageIsSmallImage);
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageWidth))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageSmallImageWidth))
                 {
-                    TbSmallImageWidth.Text = SiteInfo.Extend.ConfigUploadImageSmallImageWidth;
+                    TbSmallImageWidth.Text = SiteInfo.ConfigUploadImageSmallImageWidth;
                 }
-                if (!string.IsNullOrEmpty(SiteInfo.Extend.ConfigUploadImageSmallImageHeight))
+                if (!string.IsNullOrEmpty(SiteInfo.ConfigUploadImageSmallImageHeight))
                 {
-                    TbSmallImageHeight.Text = SiteInfo.Extend.ConfigUploadImageSmallImageHeight;
+                    TbSmallImageHeight.Text = SiteInfo.ConfigUploadImageSmallImageHeight;
                 }
             }
             else
             {
-                SiteInfo.Extend.ConfigUploadImageIsTitleImage = CbIsTitleImage.Checked.ToString();
-                SiteInfo.Extend.ConfigUploadImageTitleImageWidth = TbTitleImageWidth.Text;
-                SiteInfo.Extend.ConfigUploadImageTitleImageHeight = TbTitleImageHeight.Text;
+                SiteInfo.ConfigUploadImageIsTitleImage = CbIsTitleImage.Checked.ToString();
+                SiteInfo.ConfigUploadImageTitleImageWidth = TbTitleImageWidth.Text;
+                SiteInfo.ConfigUploadImageTitleImageHeight = TbTitleImageHeight.Text;
 
-                SiteInfo.Extend.ConfigUploadImageIsShowImageInTextEditor = CbIsShowImageInTextEditor.Checked.ToString();
-                SiteInfo.Extend.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
-                SiteInfo.Extend.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
-                SiteInfo.Extend.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
-                SiteInfo.Extend.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
+                SiteInfo.ConfigUploadImageIsShowImageInTextEditor = CbIsShowImageInTextEditor.Checked.ToString();
+                SiteInfo.ConfigUploadImageIsLinkToOriginal = CbIsLinkToOriginal.Checked.ToString();
+                SiteInfo.ConfigUploadImageIsSmallImage = CbIsSmallImage.Checked.ToString();
+                SiteInfo.ConfigUploadImageSmallImageWidth = TbSmallImageWidth.Text;
+                SiteInfo.ConfigUploadImageSmallImageHeight = TbSmallImageHeight.Text;
 
                 DataProvider.Site.Update(SiteInfo);
             }

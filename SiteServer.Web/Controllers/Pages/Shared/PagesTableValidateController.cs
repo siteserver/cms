@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 var veeValidate = string.Empty;
                 if (styleInfo != null)
                 {
-                    veeValidate = styleInfo.Extend.VeeValidate;
+                    veeValidate = styleInfo.VeeValidate;
                 }
 
                 return Ok(new
@@ -57,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var styleInfo =
                     TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
-                styleInfo.Extend.VeeValidate = value;
+                styleInfo.VeeValidate = value;
 
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
                 if (styleInfo.Id == 0 && styleInfo.RelatedIdentity == 0 || styleInfo.RelatedIdentity != relatedIdentities[0])

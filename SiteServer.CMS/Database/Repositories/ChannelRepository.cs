@@ -4,8 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -318,10 +318,11 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamParentId, channelInfo.ParentId)
             //};
             //DatabaseApi.ExecuteNonQuery(trans, sqlUpdateIsLastNode, parameters);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLastNode, false.ToString()}
-            }, Q.Where(Attr.ParentId, channelInfo.ParentId));
+
+            UpdateAll(Q
+                .Set(Attr.IsLastNode, false.ToString())
+                .Where(Attr.ParentId, channelInfo.ParentId)
+            );
 
             //sqlUpdateIsLastNode =
             //    $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString(TableName, new List<string>{ nameof(ChannelInfo.Id) }, $"WHERE ParentId = {channelInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
@@ -333,10 +334,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (topId > 0)
             {
-                UpdateValue(new Dictionary<string, object>
-                {
-                    {Attr.IsLastNode, true.ToString()}
-                }, Q.Where(nameof(Attr.Id), topId));
+                UpdateAll(Q
+                    .Set(Attr.IsLastNode, true.ToString())
+                    .Where(nameof(Attr.Id), topId)
+                );
             }
 
             //OwningIdCache.IsChanged = true;
@@ -518,10 +519,11 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamParentId, parentId)
             //};
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLastNode, false.ToString()}
-            }, Q.Where(Attr.ParentId, parentId));
+
+            UpdateAll(Q
+                .Set(Attr.IsLastNode, false.ToString())
+                .Where(Attr.ParentId, parentId)
+            );
 
             //sqlString =
             //    $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString(TableName, new List<string> { Attr.Id }, $"WHERE ParentId = {parentId}", "ORDER BY Taxis DESC", 1)}))";
@@ -533,10 +535,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (topId > 0)
             {
-                UpdateValue(new Dictionary<string, object>
-                {
-                    {Attr.IsLastNode, true.ToString()}
-                }, Q.Where(nameof(Attr.Id), topId));
+                UpdateAll(Q
+                    .Set(Attr.IsLastNode, true.ToString())
+                    .Where(Attr.Id, topId)
+                );
             }
         }
 
@@ -555,7 +557,7 @@ namespace SiteServer.CMS.Database.Repositories
             //return maxTaxis;
             return Max(Attr.Taxis, Q
                 .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},"));
+                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")) ?? 0;
         }
 
         private int GetParentId(int channelId)
@@ -675,10 +677,11 @@ namespace SiteServer.CMS.Database.Repositories
             //var sqlString =
             //    $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.SiteId, channelInfo.Id}
-            }, Q.Where(nameof(Attr.Id), channelInfo.Id));
+
+            UpdateAll(Q
+                .Set(Attr.SiteId, channelInfo.Id)
+                .Where(Attr.Id, channelInfo.Id)
+            );
 
             DataProvider.Template.CreateDefaultTemplateInfo(channelInfo.Id, administratorName);
             return channelInfo.Id;
@@ -727,10 +730,11 @@ namespace SiteServer.CMS.Database.Repositories
             //string sqlString =
             //    $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelInfo.ChannelTemplateId} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.ChannelTemplateId, channelInfo.ChannelTemplateId}
-            }, Q.Where(nameof(Attr.Id), channelInfo.Id));
+
+            UpdateAll(Q
+                .Set(Attr.ChannelTemplateId, channelInfo.ChannelTemplateId)
+                .Where(Attr.Id, channelInfo.Id)
+            );
 
             ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
@@ -740,10 +744,11 @@ namespace SiteServer.CMS.Database.Repositories
             //string sqlString =
             //    $"UPDATE siteserver_Channel SET ContentTemplateId = {channelInfo.ContentTemplateId} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.ContentTemplateId, channelInfo.ContentTemplateId}
-            }, Q.Where(nameof(Attr.Id), channelInfo.Id));
+
+            UpdateAll(Q
+                .Set(Attr.ContentTemplateId, channelInfo.ContentTemplateId)
+                .Where(Attr.Id, channelInfo.Id)
+            );
 
             ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
@@ -752,16 +757,16 @@ namespace SiteServer.CMS.Database.Repositories
         {
             //IDataParameter[] parameters =
             //{
-            //    GetParameter(ParamExtendValues,channelInfo.Extend.ToString()),
+            //    GetParameter(ParamExtendValues,channelInfo.ToString()),
             //    GetParameter(ParamId, channelInfo.Id)
             //};
             //"UPDATE siteserver_Channel SET ExtendValues = @ExtendValues WHERE Id = @Id"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateExtendValues, parameters);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.ExtendValues, channelInfo.GetExtendValues()}
-            }, Q.Where(nameof(Attr.Id), channelInfo.Id));
+            UpdateAll(Q
+                .Set(Attr.ExtendValues, channelInfo.ExtendValues)
+                .Where(Attr.Id, channelInfo.Id)
+            );
 
             ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
         }
@@ -802,10 +807,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //"UPDATE siteserver_Channel SET GroupNameCollection = @GroupNameCollection WHERE Id = @Id"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateGroupNameCollection, parameters);
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.GroupNameCollection, channelInfo.GroupNameCollection}
-            }, Q.Where(nameof(Attr.Id), channelId));
+
+            UpdateAll(Q
+                .Set(Attr.GroupNameCollection, channelInfo.GroupNameCollection)
+                .Where(Attr.Id, channelId)
+            );
 
             ChannelManager.UpdateCache(siteId, channelInfo);
         }
@@ -822,9 +828,15 @@ namespace SiteServer.CMS.Database.Repositories
             }
             idList.Add(channelId);
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            //var siteInfo = SiteManager.GetSiteInfo(siteId);
 
-            DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(siteInfo, idList);
+            foreach (var i in idList)
+            {
+                var cInfo = ChannelManager.GetChannelInfo(siteId, i);
+                cInfo.ContentRepository.UpdateTrashContentsByChannelId(siteId, i);
+            }
+
+            //DataProvider.ContentRepository.DeleteContentsByDeletedChannelIdList(siteInfo, idList);
 
             //var deleteCmd =
             //    $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
@@ -2165,7 +2177,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //        {
 //            IDataParameter[] parameters =
 //            {
-//                GetParameter(ParamExtendValues,channelInfo.Extend.ToString()),
+//                GetParameter(ParamExtendValues,channelInfo.ToString()),
 //                GetParameter(ParamId, channelInfo.Id)
 //            };
 

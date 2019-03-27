@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,7 +14,7 @@ namespace SiteServer.Utils
     {
         public const char SeparatorChar = '/';
 
-        public const string UnclickedUrl = "javascript:;";
+        public const string UnClickedUrl = "javascript:;";
 
         public static string ParseNavigationUrl(string url)
         {
@@ -50,7 +49,7 @@ namespace SiteServer.Utils
         /// <returns></returns>
         public static string AddProtocolToUrl(string url, string host)
         {
-            if (url == UnclickedUrl)
+            if (url == UnClickedUrl)
             {
                 return url;
             }
@@ -505,7 +504,7 @@ namespace SiteServer.Utils
                     i *= b + 1;
                 }
                 sessionId = $"{i - DateTime.Now.Ticks:x}";
-                CookieUtils.SetCookie("SiteServer.SessionID", sessionId, DateTime.Now.AddDays(100));
+                CookieUtils.SetCookie("SiteServer.SessionID", sessionId, TimeSpan.FromDays(100));
                 return sessionId;
             }
         }
@@ -774,6 +773,7 @@ namespace SiteServer.Utils
 
         public static void Redirect(string url)
         {
+            if (string.IsNullOrWhiteSpace(url)) return;
             var response = HttpContext.Current.Response;
             response.Clear();//这里是关键，清除在返回前已经设置好的标头信息，这样后面的跳转才不会报错
             response.BufferOutput = true;//设置输出缓冲

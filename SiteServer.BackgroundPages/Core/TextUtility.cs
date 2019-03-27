@@ -4,10 +4,11 @@ using SiteServer.Utils;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckUserName))
             {
-                var checkUserName = contentInfo.GetString(ContentAttribute.CheckUserName);
+                var checkUserName = contentInfo.Get<string>(ContentAttribute.CheckUserName);
                 if (!string.IsNullOrEmpty(checkUserName))
                 {
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
@@ -57,15 +58,15 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
             {
-                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
-                if (checkDate != DateTime.MinValue)
+                var checkDate = contentInfo.Get<DateTime?>(ContentAttribute.CheckDate);
+                if (checkDate.HasValue)
                 {
                     value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
             {
-                value = contentInfo.GetString(ContentAttribute.CheckReasons);
+                value = contentInfo.Get<string>(ContentAttribute.CheckReasons);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddDate))
             {
@@ -107,13 +108,17 @@ namespace SiteServer.BackgroundPages.Core
             {
                 value = DateUtils.GetDateAndTimeString(contentInfo.LastHitsDate);
             }
+            else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.Downloads))
+            {
+                value = contentInfo.Downloads.ToString();
+            }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
-                value = StringUtils.GetTrueImageHtml(contentInfo.GetString(styleInfo.AttributeName));
+                value = StringUtils.GetTrueImageHtml(contentInfo.Get<string>(styleInfo.AttributeName));
             }
             else
             {
-                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), siteInfo, styleInfo);
+                value = InputParserUtility.GetContentByTableStyle(contentInfo.Get<string>(styleInfo.AttributeName), siteInfo, styleInfo);
             }
             return value;
         }
@@ -125,7 +130,7 @@ namespace SiteServer.BackgroundPages.Core
 
         //public static bool IsComment(SiteInfo siteInfo, int channelId, string administratorName)
         //{
-        //    return siteInfo.Extend.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
+        //    return siteInfo.IsCommentable && AdminUtility.HasChannelPermissions(administratorName, siteInfo.Id, channelId, ConfigManager.Permissions.Channel.CommentCheck, ConfigManager.Permissions.Channel.CommentDelete);
         //}
 
         public static string GetColumnsHeadHtml(List<TableStyleInfo> tableStyleInfoList, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns, StringCollection attributesOfDisplay)
@@ -206,7 +211,7 @@ namespace SiteServer.BackgroundPages.Core
             return builder.ToString();
         }
 
-        public static string GetCommandsHtml(SiteInfo siteInfo, List<Menu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
+        public static string GetCommandsHtml(SiteInfo siteInfo, List<PluginMenu> pluginMenus, ContentInfo contentInfo, string pageUrl, string administratorName, bool isEdit)
         {
             var builder = new StringBuilder();
 

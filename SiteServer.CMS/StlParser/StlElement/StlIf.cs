@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -196,9 +197,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                     //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(channelInfo, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -764,7 +765,7 @@ function {functionName}(pageNum)
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
-                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
+                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -773,7 +774,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = channel.Attributes.GetString(testTypeStr);
+                theValue = channel.Get(testTypeStr, string.Empty);
             }
             return theValue;
         }
@@ -784,21 +785,21 @@ function {functionName}(pageNum)
 
             if (contextInfo.ContentInfo == null)
             {
-                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
+                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
                 //theValue = DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = StlContentCache.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                theValue = StlContentCache.GetValue(channelInfo, contextInfo.ContentId, testTypeStr);
             }
             else
             {
-                theValue = contextInfo.ContentInfo.GetString(testTypeStr);
+                theValue = contextInfo.ContentInfo.Get<string>(testTypeStr);
             }
 
             return theValue;
         }
 
-        private static DateTime GetAddDateByContext(PageInfo pageInfo, ContextInfo contextInfo)
+        private static DateTime? GetAddDateByContext(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var addDate = DateUtils.SqlMinValue;
+            DateTime? addDate = null;
 
             if (contextInfo.ContextType == EContextType.Content)
             {
@@ -844,9 +845,9 @@ function {functionName}(pageNum)
             return addDate;
         }
 
-        private static DateTime GetLastEditDateByContext(ContextInfo contextInfo)
+        private static DateTime? GetLastEditDateByContext(ContextInfo contextInfo)
         {
-            var lastEditDate = DateUtils.SqlMinValue;
+            DateTime? lastEditDate = null;
 
             if (contextInfo.ContextType == EContextType.Content)
             {
@@ -920,7 +921,7 @@ function {functionName}(pageNum)
             return isSuccess;
         }
 
-        private static bool IsDateTime(DateTime dateTime, string testOperate, string testValue)
+        private static bool IsDateTime(DateTime? dateTime, string testOperate, string testValue)
         {
             var isSuccess = false;
 
@@ -942,7 +943,7 @@ function {functionName}(pageNum)
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals) || StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                isSuccess = dateTime.Date == dateTimeToTest.Date;
+                isSuccess = dateTime.HasValue && dateTime.Value.Date == dateTimeToTest.Date;
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateGreatThan))
             {
@@ -954,7 +955,7 @@ function {functionName}(pageNum)
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals) || StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                isSuccess = dateTime.Date != dateTimeToTest.Date;
+                isSuccess = dateTime.HasValue && dateTime.Value.Date != dateTimeToTest.Date;
             }
 
             return isSuccess;

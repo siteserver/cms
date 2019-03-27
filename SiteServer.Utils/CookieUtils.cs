@@ -5,12 +5,12 @@ namespace SiteServer.Utils
 {
     public static class CookieUtils
     {
-        public static void SetCookie(string name, string value, DateTime expires, bool isEncrypt = true)
+        public static void SetCookie(string name, string value, TimeSpan expiresAt, bool isEncrypt = true)
         {
             SetCookie(new HttpCookie(name)
             {
                 Value = value,
-                Expires = expires,
+                Expires = DateUtils.GetExpiresAt(expiresAt),
                 Domain = PageUtils.HttpContextRootDomain
             }, isEncrypt);
         }
@@ -36,12 +36,12 @@ namespace SiteServer.Utils
             HttpContext.Current.Response.Cookies.Add(cookie);
         }
 
-        public static string GetCookie(string name)
+        public static string GetCookie(string name, bool isDecrypt = true)
         {
             if (HttpContext.Current.Request.Cookies[name] == null) return string.Empty;
 
             var value = HttpContext.Current.Request.Cookies[name].Value;
-            return TranslateUtils.DecryptStringBySecretKey(value);
+            return isDecrypt ? TranslateUtils.DecryptStringBySecretKey(value) : value;
         }
 
         public static bool IsExists(string name)
@@ -53,7 +53,7 @@ namespace SiteServer.Utils
         {
             if (HttpContext.Current.Request.Cookies[name] != null)
             {
-                SetCookie(name, string.Empty, DateTime.Now.AddDays(-1d));
+                SetCookie(name, string.Empty, TimeSpan.FromDays(-1));
             }
         }
     }

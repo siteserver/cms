@@ -1,6 +1,7 @@
-﻿using SiteServer.CMS.Core.Enumerations;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Plugin;
@@ -39,11 +40,12 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.Content)
             {
-                var tuple = DataProvider.ContentRepository.GetValue(ChannelManager.GetTableName(
-                    SiteManager.GetSiteInfo(siteId), channelId), contentId, ContentAttribute.Title);
-                if (tuple != null)
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
+                var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
+                if (!string.IsNullOrEmpty(title))
                 {
-                    name = tuple.Item2;
+                    name = title;
                     pageCount = 1;
                 }
             }
@@ -188,8 +190,8 @@ namespace SiteServer.CMS.Core.Create
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Extend.CreateChannelIdsIfContentChanged);
-            if (channelInfo.Extend.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
+            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.CreateChannelIdsIfContentChanged);
+            if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
                 channelIdList.Add(channelId);
             }

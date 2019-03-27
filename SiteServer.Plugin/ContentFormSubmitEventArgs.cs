@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SiteServer.Plugin
 {
@@ -15,7 +16,7 @@ namespace SiteServer.Plugin
         /// <param name="contentId">内容Id。</param>
         /// <param name="form">表单数据。</param>
         /// <param name="contentInfo">内容对象。</param>
-        public ContentFormSubmitEventArgs(int siteId, int channelId, int contentId, IAttributes form,
+        public ContentFormSubmitEventArgs(int siteId, int channelId, int contentId, IDictionary<string, object> form,
             IContentInfo contentInfo)
         {
             SiteId = siteId;
@@ -44,7 +45,7 @@ namespace SiteServer.Plugin
         /// <summary>
         /// 表单数据。
         /// </summary>
-        public IAttributes Form { get; }
+        public IDictionary<string, object> Form { get; }
 
         /// <summary>
         /// 即将保存至数据库的内容对象，可以从表单数据 <see cref="T:SiteServer.Plugin.IAttributes" /> 中获取属性值并设置到内容对象中。

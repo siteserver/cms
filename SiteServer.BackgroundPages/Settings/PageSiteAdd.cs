@@ -8,9 +8,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Database.Repositories;
@@ -477,13 +477,13 @@ namespace SiteServer.BackgroundPages.Settings
                     Root = isRoot
                 };
 
-                siteInfo.Extend.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+                siteInfo.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
 
-                if (siteInfo.Extend.IsCheckContentLevel)
+                if (siteInfo.IsCheckContentLevel)
                 {
-                    siteInfo.Extend.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                    siteInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
                 }
-                siteInfo.Extend.Charset = DdlCharset.SelectedValue;
+                siteInfo.Charset = DdlCharset.SelectedValue;
 
                 var siteId = DataProvider.Channel.InsertSiteInfo(nodeInfo, siteInfo, AuthRequest.AdminName);
 

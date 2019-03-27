@@ -15,9 +15,6 @@ namespace SiteServer.CMS.Database.Core
 {
     public static class SqlUtils
     {
-        public const string Asterisk = "*";
-        public const string OracleEmptyValue = "_EMPTY_";
-
         public static IDbCommand GetIDbCommand()
         {
             IDbCommand command = null;
@@ -256,7 +253,7 @@ namespace SiteServer.CMS.Database.Core
 
         public static string ToTopSqlString(string sqlString, string orderString, int topN)
         {
-            string retVal = $"SELECT * FROM ({sqlString}) {orderString}";
+            string retVal = $"SELECT * FROM ({sqlString}) temp {orderString}";
             if (topN <= 0) return retVal;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
@@ -265,7 +262,7 @@ namespace SiteServer.CMS.Database.Core
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retVal = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
+                retVal = $"SELECT TOP {topN} * FROM ({sqlString}) temp {orderString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
@@ -704,7 +701,7 @@ SELECT * FROM (
             // Oracle internally changes empty string to NULL values. Oracle simply won't let insert an empty string. So we replace string.Empty value to placeholder _EMPTY_
             if ((dataType == DataType.Text || dataType == DataType.VarChar) && value != null && value.ToString() == string.Empty)
             {
-                return OracleEmptyValue;
+                return StringUtils.Constants.OracleEmptyValue;
             }
             return value;
         }
@@ -1246,7 +1243,7 @@ SELECT * FROM (
             {
                 value = AttackUtils.UnFilterSql(value);
             }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == OracleEmptyValue)
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == StringUtils.Constants.OracleEmptyValue)
             {
                 value = string.Empty;
             }

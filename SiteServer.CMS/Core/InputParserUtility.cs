@@ -16,12 +16,12 @@ namespace SiteServer.CMS.Core
         {
             if (!string.IsNullOrEmpty(content))
             {
-                return GetContentByTableStyle(content, ",", siteInfo, styleInfo, string.Empty, null, string.Empty, false);
+                return GetContentByTableStyle(content, ",", siteInfo, styleInfo, string.Empty, null, string.Empty, false, false, false);
             }
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             var parsedContent = content;
 
@@ -95,15 +95,15 @@ namespace SiteServer.CMS.Core
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerHtml, isStlEntity);
+                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerHtml, isStlEntity, isLower, isUpper);
             }
 
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            var value = contentInfo.GetString(styleInfo.AttributeName);
+            var value = contentInfo.Get<string>(styleInfo.AttributeName);
             var parsedContent = string.Empty;
 
             var inputType = styleInfo.Type;
@@ -163,7 +163,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -208,12 +208,12 @@ namespace SiteServer.CMS.Core
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerHtml, isStlEntity);
+                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerHtml, isStlEntity, isLower, isUpper);
                 }
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -221,7 +221,7 @@ namespace SiteServer.CMS.Core
                         {
                             if (index == no)
                             {
-                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerHtml, isStlEntity);
+                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerHtml, isStlEntity, isLower, isUpper);
                                 break;
                             }
                             index++;
@@ -239,13 +239,13 @@ namespace SiteServer.CMS.Core
 
         public static string GetImageOrFlashHtml(SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
                 imageUrl = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
                 if (isStlEntity)
                 {
-                    retval = imageUrl;
+                    retVal = imageUrl;
                 }
                 else
                 {
@@ -254,7 +254,7 @@ namespace SiteServer.CMS.Core
                         var htmlImage = new HtmlImage();
                         ControlUtils.AddAttributesIfNotExists(htmlImage, attributes);
                         htmlImage.Src = imageUrl;
-                        retval = ControlUtils.GetControlRenderHtml(htmlImage);
+                        retVal = ControlUtils.GetControlRenderHtml(htmlImage);
                     }
                     else
                     {
@@ -285,7 +285,7 @@ namespace SiteServer.CMS.Core
                                 }
                             }
                         }
-                        retval = $@"
+                        retVal = $@"
 <object classid=""clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"" codebase=""http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0"" width=""{width}"" height=""{height}"">
                 <param name=""movie"" value=""{imageUrl}"">
                 <param name=""quality"" value=""high"">
@@ -295,76 +295,88 @@ namespace SiteServer.CMS.Core
                     }
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetVideoHtml(SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
                 videoUrl = PageUtility.ParseNavigationUrl(siteInfo, videoUrl, false);
                 if (isStlEntity)
                 {
-                    retval = videoUrl;
+                    retVal = videoUrl;
                 }
                 else
                 {
-                    retval = $@"
+                    retVal = $@"
 <embed src=""{SiteFilesAssets.GetUrl(ApiManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
             }
-            return retval;
+            return retVal;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            var retval = string.Empty;
-            if (!string.IsNullOrEmpty(fileUrl))
-            {
-                if (isStlEntity)
-                {
-                    retval = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
-                }
-                else
-                {
-                    var stlAnchor = new HtmlAnchor();
-                    ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                    stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
-                    stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
+            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-                    retval = ControlUtils.GetControlRenderHtml(stlAnchor);
-                }
+            string retVal;
+            if (isStlEntity)
+            {
+                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
             }
-            return retval;
+            else
+            {
+                var stlAnchor = new HtmlAnchor();
+                ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId, fileUrl);
+                stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
+
+                if (isLower)
+                {
+                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToLower();
+                }
+                if (isUpper)
+                {
+                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToUpper();
+                }
+
+                retVal = ControlUtils.GetControlRenderHtml(stlAnchor);
+            }
+            return retVal;
         }
 
-        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            if (siteInfo != null)
-            {
-                var retval = string.Empty;
-                if (!string.IsNullOrEmpty(fileUrl))
-                {
-                    if (isStlEntity)
-                    {
-                        retval = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
-                    }
-                    else
-                    {
-                        var stlAnchor = new HtmlAnchor();
-                        ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                        stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
-                        stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
+            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
-                        retval = ControlUtils.GetControlRenderHtml(stlAnchor);
-                    }
-                }
-                return retval;
+            string retVal;
+            if (isStlEntity)
+            {
+                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
             }
-            return string.Empty;
+            else
+            {
+                var stlAnchor = new HtmlAnchor();
+                ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
+                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
+
+                if (isLower)
+                {
+                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToLower();
+                }
+                if (isUpper)
+                {
+                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToUpper();
+                }
+
+                retVal = ControlUtils.GetControlRenderHtml(stlAnchor);
+            }
+            return retVal;
         }
 
         

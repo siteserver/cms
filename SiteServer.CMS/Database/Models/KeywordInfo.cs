@@ -1,26 +1,20 @@
-﻿using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Core;
+﻿using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ErrorLog")]
-    public class KeywordInfo : IDataInfo
+    public class KeywordInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string Keyword { get; set; }
 
+        [TableColumn]
         public string Alternative { get; set; }
 
+        [TableColumn]
         private string Grade { get; set; }
 
-        [Computed]
         public EKeywordGrade KeywordGrade
         {
             get => EKeywordGradeUtils.GetEnumType(Grade);

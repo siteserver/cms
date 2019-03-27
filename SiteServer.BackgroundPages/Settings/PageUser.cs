@@ -2,8 +2,8 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.OrderByString = "ORDER BY IsChecked, Id DESC";
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserLockLoginType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.UserLockLoginType);
 
             if (IsPostBack) return;
 
@@ -228,8 +228,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state += @"<span style=""color:red;"">[已锁定]</span>";
             }
-            else if (ConfigManager.Instance.SystemExtend.IsUserLockLogin &&
-                     ConfigManager.Instance.SystemExtend.UserLockLoginCount <= countOfFailedLogin)
+            else if (ConfigManager.Instance.IsUserLockLogin &&
+                     ConfigManager.Instance.UserLockLoginCount <= countOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -238,7 +238,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - lastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.Instance.SystemExtend.UserLockLoginHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.Instance.UserLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state += $@"<span style=""color:red;"">[已锁定{hours}小时]</span>";

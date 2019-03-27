@@ -1,4 +1,6 @@
-﻿namespace SiteServer.Plugin
+﻿using System.Collections.Generic;
+
+namespace SiteServer.Plugin
 {
     /// <summary>
     /// 站点实体接口。
@@ -40,11 +42,5 @@
         /// 排序。
         /// </summary>
         int Taxis { get; set; }
-
-        /// <summary>
-        /// 站点可扩展属性，以键/值对的方式存储站点数据，键不区分大小写。
-        /// 除了存储站点本身数据，还将用于存储站点的自定义字段数据。
-        /// </summary>
-        IAttributes Attributes { get; }
     }
 }

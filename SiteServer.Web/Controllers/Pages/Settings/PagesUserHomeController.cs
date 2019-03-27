@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemExtend,
+                    Value = ConfigManager.Instance,
                     WebConfigUtils.HomeDirectory,
                     rest.AdminToken,
                     Styles = TableStyleManager.GetUserStyleInfoList()
@@ -53,17 +53,17 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                ConfigManager.Instance.SystemExtend.IsHomeClosed = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeClosed).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.HomeTitle = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeTitle).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.IsHomeLogo = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeLogo).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.HomeLogoUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeLogoUrl).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.IsHomeBackground = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeBackground).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.HomeBackgroundUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeBackgroundUrl).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.HomeDefaultAvatarUrl = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeDefaultAvatarUrl).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.UserRegistrationAttributes = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.UserRegistrationAttributes).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsUserRegistrationGroup).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.IsHomeAgreement = rest.GetPostBool(nameof(ConfigManager.Instance.SystemExtend.IsHomeAgreement).ToCamelCase());
-                ConfigManager.Instance.SystemExtend.HomeAgreementHtml = rest.GetPostString(nameof(ConfigManager.Instance.SystemExtend.HomeAgreementHtml).ToCamelCase());
+                ConfigManager.Instance.IsHomeClosed = rest.GetPostBool(nameof(ConfigManager.Instance.IsHomeClosed).ToCamelCase());
+                ConfigManager.Instance.HomeTitle = rest.GetPostString(nameof(ConfigManager.Instance.HomeTitle).ToCamelCase());
+                ConfigManager.Instance.IsHomeLogo = rest.GetPostBool(nameof(ConfigManager.Instance.IsHomeLogo).ToCamelCase());
+                ConfigManager.Instance.HomeLogoUrl = rest.GetPostString(nameof(ConfigManager.Instance.HomeLogoUrl).ToCamelCase());
+                ConfigManager.Instance.IsHomeBackground = rest.GetPostBool(nameof(ConfigManager.Instance.IsHomeBackground).ToCamelCase());
+                ConfigManager.Instance.HomeBackgroundUrl = rest.GetPostString(nameof(ConfigManager.Instance.HomeBackgroundUrl).ToCamelCase());
+                ConfigManager.Instance.HomeDefaultAvatarUrl = rest.GetPostString(nameof(ConfigManager.Instance.HomeDefaultAvatarUrl).ToCamelCase());
+                ConfigManager.Instance.UserRegistrationAttributes = rest.GetPostString(nameof(ConfigManager.Instance.UserRegistrationAttributes).ToCamelCase());
+                ConfigManager.Instance.IsUserRegistrationGroup = rest.GetPostBool(nameof(ConfigManager.Instance.IsUserRegistrationGroup).ToCamelCase());
+                ConfigManager.Instance.IsHomeAgreement = rest.GetPostBool(nameof(ConfigManager.Instance.IsHomeAgreement).ToCamelCase());
+                ConfigManager.Instance.HomeAgreementHtml = rest.GetPostString(nameof(ConfigManager.Instance.HomeAgreementHtml).ToCamelCase());
 
                 DataProvider.Config.Update(ConfigManager.Instance);
 
@@ -71,7 +71,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemExtend
+                    Value = ConfigManager.Instance
                 });
             }
             catch (Exception ex)

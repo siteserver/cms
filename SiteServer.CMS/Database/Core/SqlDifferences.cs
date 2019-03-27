@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using MySql.Data.MySqlClient;
@@ -152,30 +151,13 @@ namespace SiteServer.CMS.Database.Core
                 }
                 else
                 {
-                    if (limit == 0)
-                    {
-                        limit = DatabaseApi.Instance.GetIntResult($"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
-                    }
+                    var rowWhere = limit == 0
+                        ? $@"WHERE [row_num] > {offset}"
+                        : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                    if (string.IsNullOrEmpty(orderSqlString))
-                    {
-                        orderSqlString = "ORDER BY Id DESC";
-                    }
-                    orderSqlString = orderSqlString.ToUpper().Trim();
-                    if (!orderSqlString.EndsWith(" ASC") && !orderSqlString.EndsWith(" DESC"))
-                    {
-                        orderSqlString += " ASC";
-                    }
-                    var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" DESC2", " ASC");
-
-                    retVal = $@"
-{select} * FROM (
-    SELECT TOP {limit} * FROM (
-        SELECT TOP {limit + offset} {columns} FROM {tableName} {whereSqlString} {orderSqlString}
-    ) AS t1 {orderSqlStringReverse}
-) AS t2 {orderSqlString}";
+                    retVal = $@"SELECT * FROM (
+    {select} {columns}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
+) as T {rowWhere}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)

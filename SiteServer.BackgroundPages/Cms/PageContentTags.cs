@@ -4,8 +4,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -33,13 +33,12 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentRepository.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
-                            if (tuple != null)
-                            {
-                                var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
-                                contentTagList.Remove(tagName);
-                                DataProvider.ContentRepository.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
-                            }
+                            if (!SiteInfo.ContentRepository.GetChanelIdAndValue(contentId, ContentAttribute.Tags,
+                                out var channelId, out string tags)) continue;
+
+                            var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
+                            contentTagList.Remove(tagName);
+                            SiteInfo.ContentRepository.Update(channelId, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                         }
                     }
                     DataProvider.Tag.DeleteTag(tagName, SiteId);
@@ -53,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = SiteInfo.Extend.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
             SpContents.SelectCommand = DataProvider.Tag.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);

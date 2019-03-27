@@ -280,7 +280,7 @@ namespace SiteServer.CMS.Database.Core
         {
             var retVal = base.GetString(rdr, i);
 
-            if (retVal == SqlUtils.OracleEmptyValue)
+            if (retVal == StringUtils.Constants.OracleEmptyValue)
             {
                 retVal = string.Empty;
             }

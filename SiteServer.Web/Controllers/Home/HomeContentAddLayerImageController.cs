@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -43,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = siteInfo.Extend
+                    Value = siteInfo
                 });
             }
             catch (Exception ex)
@@ -201,45 +201,45 @@ namespace SiteServer.API.Controllers.Home
                 }
 
                 var changed = false;
-                if (siteInfo.Extend.ConfigImageIsFix != isFix)
+                if (siteInfo.ConfigImageIsFix != isFix)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageIsFix = isFix;
+                    siteInfo.ConfigImageIsFix = isFix;
                 }
-                if (siteInfo.Extend.ConfigImageFixWidth != fixWidth)
+                if (siteInfo.ConfigImageFixWidth != fixWidth)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageFixWidth = fixWidth;
+                    siteInfo.ConfigImageFixWidth = fixWidth;
                 }
-                if (siteInfo.Extend.ConfigImageFixHeight != fixHeight)
+                if (siteInfo.ConfigImageFixHeight != fixHeight)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageFixHeight = fixHeight;
+                    siteInfo.ConfigImageFixHeight = fixHeight;
                 }
-                if (siteInfo.Extend.ConfigImageIsEditor != isEditor)
+                if (siteInfo.ConfigImageIsEditor != isEditor)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageIsEditor = isEditor;
+                    siteInfo.ConfigImageIsEditor = isEditor;
                 }
-                if (siteInfo.Extend.ConfigImageEditorIsFix != editorIsFix)
+                if (siteInfo.ConfigImageEditorIsFix != editorIsFix)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageEditorIsFix = editorIsFix;
+                    siteInfo.ConfigImageEditorIsFix = editorIsFix;
                 }
-                if (siteInfo.Extend.ConfigImageEditorFixWidth != editorFixWidth)
+                if (siteInfo.ConfigImageEditorFixWidth != editorFixWidth)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageEditorFixWidth = editorFixWidth;
+                    siteInfo.ConfigImageEditorFixWidth = editorFixWidth;
                 }
-                if (siteInfo.Extend.ConfigImageEditorFixHeight != editorFixHeight)
+                if (siteInfo.ConfigImageEditorFixHeight != editorFixHeight)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageEditorFixHeight = editorFixHeight;
+                    siteInfo.ConfigImageEditorFixHeight = editorFixHeight;
                 }
-                if (siteInfo.Extend.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
+                if (siteInfo.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
                 {
                     changed = true;
-                    siteInfo.Extend.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
+                    siteInfo.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
                 }
 
                 if (changed)

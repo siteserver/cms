@@ -1,7 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -103,7 +102,5 @@ namespace SiteServer.CMS.Apis
             }
             return true;
         }
-
-        public IAttributes Config => ConfigManager.Instance.SystemExtend;
     }
 }

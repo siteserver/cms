@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue), tableStyleInfo.DefaultValue);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.Horizontal), tableStyleInfo.Horizontal.ToString());
             //SettingsXML
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.Extend), tableStyleInfo.Extend.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues), tableStyleInfo.ExtendValues);
 
             //保存此栏目样式在系统中的排序号
             var orderString = string.Empty;
@@ -174,7 +174,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue));
                 var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Horizontal)));
                 //SettingsXML
-                var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Extend));
+                var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues));
 
                 var styleInfo = new TableStyleInfo
                 {
@@ -187,9 +187,9 @@ namespace SiteServer.CMS.ImportExport.Components
                     VisibleInList = isVisibleInList,
                     Type = inputType,
                     DefaultValue = defaultValue,
-                    Horizontal = isHorizontal
+                    Horizontal = isHorizontal,
+                    ExtendValues = extendValues
                 };
-                styleInfo.SetExtendValues(extendValues);
 
                 var styleItems = new List<TableStyleItemInfo>();
                 foreach (AtomEntry entry in feed.Entries)
@@ -256,7 +256,7 @@ namespace SiteServer.CMS.ImportExport.Components
                         var inputType = InputTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Type)));
                         var defaultValue = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DefaultValue));
                         var isHorizontal = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Horizontal)));
-                        var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Extend));
+                        var extendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.ExtendValues));
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
@@ -275,9 +275,9 @@ namespace SiteServer.CMS.ImportExport.Components
                             VisibleInList = isVisibleInList,
                             Type = inputType,
                             DefaultValue = defaultValue,
-                            Horizontal = isHorizontal
+                            Horizontal = isHorizontal,
+                            ExtendValues = extendValues
                         };
-                        styleInfo.SetExtendValues(extendValues);
 
                         var styleItems = new List<TableStyleItemInfo>();
                         foreach (AtomEntry entry in feed.Entries)

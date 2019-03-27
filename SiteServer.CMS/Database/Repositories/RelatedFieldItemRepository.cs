@@ -214,10 +214,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, cmd);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                [Attr.Taxis] = taxis
-            }, Q.Where(nameof(Attr.Id), id));
+            UpdateAll(Q
+                .Set(Attr.Taxis, taxis)
+                .Where(Attr.Id, id)
+            );
         }
 
         private int GetMaxTaxis(int parentId)
@@ -233,7 +233,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q.Where(Attr.ParentId, parentId));
+            return Max(Attr.Taxis, Q.Where(Attr.ParentId, parentId)) ?? 0;
         }
 
         public RelatedFieldItemInfo GetRelatedFieldItemInfo(int id)

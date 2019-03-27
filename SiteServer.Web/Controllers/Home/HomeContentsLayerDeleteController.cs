@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -39,21 +39,22 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    var dict = contentInfo.ToDictionary();
-                    dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
-                    retval.Add(dict);
+                    var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
+                    {
+                        {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                    };
+                    retVal.Add(dict);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)
@@ -93,14 +94,18 @@ namespace SiteServer.API.Controllers.Home
                     DeleteManager.DeleteContents(siteInfo, channelId, contentIdList);
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+                //var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
-                    rest.AddSiteLog(siteId, channelId, contentId, "删除内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
+
+                    if (channelInfo.ContentRepository.GetChanelIdAndValue<string>(contentId, ContentAttribute.Title,
+                        out var contentChannelId, out var contentTitle))
+                    {
+                        rest.AddSiteLog(siteId, contentChannelId, contentId, "删除内容",
+                            $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentChannelId)},内容标题:{contentTitle}");
+                    }
                 }
                 else
                 {
@@ -108,7 +113,7 @@ namespace SiteServer.API.Controllers.Home
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                DataProvider.ContentRepository.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+                channelInfo.ContentRepository.UpdateTrashContents(siteId, channelId, contentIdList);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

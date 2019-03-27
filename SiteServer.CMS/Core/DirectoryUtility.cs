@@ -1,7 +1,7 @@
 ﻿using System;
 using SiteServer.Utils;
 using System.Collections;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -29,6 +29,8 @@ namespace SiteServer.CMS.Core
 
         public static void DeleteSiteFiles(SiteInfo siteInfo)
         {
+            if (siteInfo == null) return;
+            
             var sitePath = PathUtility.GetSitePath(siteInfo);
 
             if (siteInfo.Root)

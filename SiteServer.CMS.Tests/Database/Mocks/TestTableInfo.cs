@@ -1,40 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Tests.Database.Mocks
 {
     [Table("TestTable")]
-    public class TestTableInfo : IDataInfo
+    public class TestTableInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
-        [VarChar(100)]
+        [TableColumn(Length = 100)]
         public string VarChar100 { get; set; }
 
+        [TableColumn(Length = 100)]
         public string VarCharDefault { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         public string Content { get; set; }
 
+        [TableColumn]
         public int Num { get; set; }
 
+        [TableColumn]
         public decimal Currency { get; set; }
 
+        [TableColumn]
         public DateTime? Date { get; set; }
 
+        [TableColumn]
         private string IsLockedOut { get; set; }
 
-        [Computed]
         public bool Locked
         {
             get => TranslateUtils.ToBool(IsLockedOut);

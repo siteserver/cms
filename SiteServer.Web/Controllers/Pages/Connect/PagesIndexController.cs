@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -53,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Connect
                 var pluginVersion = SystemManager.PluginVersion;
                 var apiVersion = SystemManager.ApiVersion;
                 var adminName = adminInfo.UserName;
-                var adminToken = Rest.GetAccessToken(adminInfo.Id, adminInfo.UserName, DateTime.Now.AddYears(30));
+                var adminToken = Rest.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(3650));
 
                 return Ok(new
                 {
@@ -87,9 +87,9 @@ namespace SiteServer.API.Controllers.Pages.Connect
                 var repositoryName = rest.GetPostString("repositoryName");
                 var repositoryToken = rest.GetPostString("repositoryToken");
 
-                ConfigManager.Instance.SystemExtend.RepositoryOwner = repositoryOwner;
-                ConfigManager.Instance.SystemExtend.RepositoryName = repositoryName;
-                ConfigManager.Instance.SystemExtend.RepositoryToken = repositoryToken;
+                ConfigManager.Instance.RepositoryOwner = repositoryOwner;
+                ConfigManager.Instance.RepositoryName = repositoryName;
+                ConfigManager.Instance.RepositoryToken = repositoryToken;
                 DataProvider.Config.Update(ConfigManager.Instance);
 
                 return Ok(new

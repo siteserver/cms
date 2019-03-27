@@ -46,7 +46,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 stlAnchor.Attributes.Add(attributeName, contextInfo.Attributes[attributeName]);
             }
 
-            var url = PageUtils.UnclickedUrl;
+            var url = PageUtils.UnClickedUrl;
             var onclick = string.Empty;
 
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);

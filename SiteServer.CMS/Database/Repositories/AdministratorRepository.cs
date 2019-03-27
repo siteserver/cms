@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -262,12 +262,14 @@ namespace SiteServer.CMS.Database.Repositories
             adminInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
             adminInfo.PasswordSalt = passwordSalt;
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.Password, adminInfo.Password},
-                {Attr.PasswordFormat, adminInfo.PasswordFormat},
-                {Attr.PasswordSalt, adminInfo.PasswordSalt}
-            }, Q.Where(nameof(Attr.Id), adminInfo.Id));
+            //UpdateValue(new Dictionary<string, object>
+            //{
+            //    {Attr.Password, adminInfo.Password},
+            //    {Attr.PasswordFormat, adminInfo.PasswordFormat},
+            //    {Attr.PasswordSalt, adminInfo.PasswordSalt}
+            //}, Q.Where(nameof(Attr.Id), adminInfo.Id));
+
+            UpdateObject(adminInfo, Attr.Password, Attr.PasswordFormat, Attr.PasswordSalt);
 
             //var sqlString =
             //    $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE Id = @Id";
@@ -319,10 +321,15 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLockedOut, true.ToString()}
-            }, Q.WhereIn(Attr.Id, userIdList));
+            //UpdateValue(new Dictionary<string, object>
+            //{
+            //    {Attr.IsLockedOut, true.ToString()}
+            //}, Q.WhereIn(Attr.Id, userIdList));
+
+            UpdateAll(Q
+                .Set(Attr.IsLockedOut, true.ToString())
+                .WhereIn(Attr.Id, userIdList)
+            );
 
             AdminManager.ClearCache();
         }
@@ -334,10 +341,15 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsLockedOut, false.ToString()}
-            }, Q.WhereIn(Attr.Id, userIdList));
+            //UpdateValue(new Dictionary<string, object>
+            //{
+            //    {Attr.IsLockedOut, false.ToString()}
+            //}, Q.WhereIn(Attr.Id, userIdList));
+
+            UpdateAll(Q
+                .Set(Attr.IsLockedOut, false.ToString())
+                .WhereIn(Attr.Id, userIdList)
+            );
 
             AdminManager.ClearCache();
         }
@@ -618,9 +630,9 @@ namespace SiteServer.CMS.Database.Repositories
                     errorMessage = "用户名不能为空";
                     return false;
                 }
-                if (adminInfoToUpdate.UserName.Length < ConfigManager.Instance.SystemExtend.AdminUserNameMinLength)
+                if (adminInfoToUpdate.UserName.Length < ConfigManager.Instance.AdminUserNameMinLength)
                 {
-                    errorMessage = $"用户名长度必须大于等于{ConfigManager.Instance.SystemExtend.AdminUserNameMinLength}";
+                    errorMessage = $"用户名长度必须大于等于{ConfigManager.Instance.AdminUserNameMinLength}";
                     return false;
                 }
                 if (IsUserNameExists(adminInfoToUpdate.UserName))
@@ -659,9 +671,9 @@ namespace SiteServer.CMS.Database.Repositories
                 errorMessage = "用户名不能为空";
                 return false;
             }
-            if (userName.Length < ConfigManager.Instance.SystemExtend.AdminUserNameMinLength)
+            if (userName.Length < ConfigManager.Instance.AdminUserNameMinLength)
             {
-                errorMessage = $"用户名长度必须大于等于{ConfigManager.Instance.SystemExtend.AdminUserNameMinLength}";
+                errorMessage = $"用户名长度必须大于等于{ConfigManager.Instance.AdminUserNameMinLength}";
                 return false;
             }
             if (IsUserNameExists(userName))
@@ -675,17 +687,17 @@ namespace SiteServer.CMS.Database.Repositories
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.Instance.SystemExtend.AdminPasswordMinLength)
+            if (password.Length < ConfigManager.Instance.AdminPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.AdminPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.AdminPasswordMinLength}";
                 return false;
             }
             if (
                 !EUserPasswordRestrictionUtils.IsValid(password,
-                    ConfigManager.Instance.SystemExtend.AdminPasswordRestriction))
+                    ConfigManager.Instance.AdminPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.AdminPasswordRestriction))}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.AdminPasswordRestriction))}";
                 return false;
             }
 
@@ -712,16 +724,16 @@ namespace SiteServer.CMS.Database.Repositories
                 errorMessage = "密码不能为空";
                 return false;
             }
-            if (password.Length < ConfigManager.Instance.SystemExtend.AdminPasswordMinLength)
+            if (password.Length < ConfigManager.Instance.AdminPasswordMinLength)
             {
-                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.SystemExtend.AdminPasswordMinLength}";
+                errorMessage = $"密码长度必须大于等于{ConfigManager.Instance.AdminPasswordMinLength}";
                 return false;
             }
             if (
-                !EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.SystemExtend.AdminPasswordRestriction))
+                !EUserPasswordRestrictionUtils.IsValid(password, ConfigManager.Instance.AdminPasswordRestriction))
             {
                 errorMessage =
-                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.AdminPasswordRestriction))}";
+                    $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.AdminPasswordRestriction))}";
                 return false;
             }
 
@@ -761,12 +773,12 @@ namespace SiteServer.CMS.Database.Repositories
                 return false;
             }
 
-            if (ConfigManager.Instance.SystemExtend.IsAdminLockLogin)
+            if (ConfigManager.Instance.IsAdminLockLogin)
             {
                 if (adminInfo.CountOfFailedLogin > 0 &&
-                    adminInfo.CountOfFailedLogin >= ConfigManager.Instance.SystemExtend.AdminLockLoginCount)
+                    adminInfo.CountOfFailedLogin >= ConfigManager.Instance.AdminLockLoginCount)
                 {
-                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.SystemExtend.AdminLockLoginType);
+                    var lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.AdminLockLoginType);
                     if (lockType == EUserLockType.Forever)
                     {
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
@@ -777,7 +789,7 @@ namespace SiteServer.CMS.Database.Repositories
                         if (adminInfo.LastActivityDate.HasValue)
                         {
                             var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastActivityDate.Value.Ticks);
-                            var hours = Convert.ToInt32(ConfigManager.Instance.SystemExtend.AdminLockLoginHours - ts.TotalHours);
+                            var hours = Convert.ToInt32(ConfigManager.Instance.AdminLockLoginHours - ts.TotalHours);
                             if (hours > 0)
                             {
                                 errorMessage =

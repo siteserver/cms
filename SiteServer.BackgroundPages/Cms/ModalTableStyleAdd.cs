@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -103,16 +103,16 @@ namespace SiteServer.BackgroundPages.Cms
             TbHelpText.Text = _styleInfo.HelpText;
             ControlUtils.SelectSingleItem(DdlInputType, _styleInfo.Type.Value);
             TbTaxis.Text = _styleInfo.Taxis.ToString();
-            ControlUtils.SelectSingleItem(DdlIsFormatString, _styleInfo.Extend.IsFormatString.ToString());
+            ControlUtils.SelectSingleItem(DdlIsFormatString, _styleInfo.FormatString.ToString());
             TbDefaultValue.Text = _styleInfo.DefaultValue;
             DdlIsHorizontal.SelectedValue = _styleInfo.Horizontal.ToString();
-            TbColumns.Text = _styleInfo.Extend.Columns.ToString();
+            TbColumns.Text = _styleInfo.Columns.ToString();
 
-            ControlUtils.SelectSingleItem(DdlRelatedFieldId, _styleInfo.Extend.RelatedFieldId.ToString());
-            ControlUtils.SelectSingleItem(DdlRelatedFieldStyle, _styleInfo.Extend.RelatedFieldStyle);
+            ControlUtils.SelectSingleItem(DdlRelatedFieldId, _styleInfo.RelatedFieldId.ToString());
+            ControlUtils.SelectSingleItem(DdlRelatedFieldStyle, _styleInfo.RelatedFieldStyle);
 
-            TbHeight.Text = _styleInfo.Extend.Height == 0 ? string.Empty : _styleInfo.Extend.Height.ToString();
-            TbWidth.Text = _styleInfo.Extend.Width;
+            TbHeight.Text = _styleInfo.Height == 0 ? string.Empty : _styleInfo.Height.ToString();
+            TbWidth.Text = _styleInfo.Width;
 
             var styleItems = _styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
             TbItemCount.Text = styleItems.Count.ToString();
@@ -139,8 +139,8 @@ namespace SiteServer.BackgroundPages.Cms
             DdlIsRapid.SelectedValue = (!isSelected && !isNotEquals).ToString();
             TbRapidValues.Text = string.Join(",", list);
 
-            TbCustomizeLeft.Text = _styleInfo.Extend.CustomizeLeft;
-            TbCustomizeRight.Text = _styleInfo.Extend.CustomizeRight;
+            TbCustomizeLeft.Text = _styleInfo.CustomizeLeft;
+            TbCustomizeRight.Text = _styleInfo.CustomizeRight;
 
             ReFresh(null, EventArgs.Empty);
         }
@@ -303,14 +303,14 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
-            _styleInfo.Extend.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Extend.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Extend.Width = TbWidth.Text;
-            _styleInfo.Extend.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
-            _styleInfo.Extend.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Extend.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
-            _styleInfo.Extend.CustomizeLeft = TbCustomizeLeft.Text;
-            _styleInfo.Extend.CustomizeRight = TbCustomizeRight.Text;
+            _styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+            _styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+            _styleInfo.Width = TbWidth.Text;
+            _styleInfo.FormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
+            _styleInfo.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
+            _styleInfo.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.CustomizeLeft = TbCustomizeLeft.Text;
+            _styleInfo.CustomizeRight = TbCustomizeRight.Text;
 
             _styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
@@ -413,14 +413,14 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.DefaultValue = TbDefaultValue.Text;
             _styleInfo.Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
-            _styleInfo.Extend.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Extend.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Extend.Width = TbWidth.Text;
-            _styleInfo.Extend.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
-            _styleInfo.Extend.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Extend.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
-            _styleInfo.Extend.CustomizeLeft = TbCustomizeLeft.Text;
-            _styleInfo.Extend.CustomizeRight = TbCustomizeRight.Text;
+            _styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+            _styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+            _styleInfo.Width = TbWidth.Text;
+            _styleInfo.FormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
+            _styleInfo.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
+            _styleInfo.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.CustomizeLeft = TbCustomizeLeft.Text;
+            _styleInfo.CustomizeRight = TbCustomizeRight.Text;
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {

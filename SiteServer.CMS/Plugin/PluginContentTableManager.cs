@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -100,46 +100,46 @@ namespace SiteServer.CMS.Plugin
                     styleInfo.Taxis = columnTaxis;
                 }
 
-                if (styleInfo.Extend.IsRequired != inputStyle.IsRequired)
+                if (styleInfo.Required != inputStyle.IsRequired)
                 {
                     isEquals = false;
-                    styleInfo.Extend.IsRequired = inputStyle.IsRequired;
+                    styleInfo.Required = inputStyle.IsRequired;
                 }
 
-                if (styleInfo.Extend.ValidateType != inputStyle.ValidateType)
+                if (!ValidateTypeUtils.Equals(inputStyle.ValidateType, styleInfo.ValidateType))
                 {
                     isEquals = false;
-                    styleInfo.Extend.ValidateType = inputStyle.ValidateType;
+                    styleInfo.ValidateType = inputStyle.ValidateType.Value;
                 }
 
-                if (styleInfo.Extend.MinNum != inputStyle.MinNum)
+                if (styleInfo.MinNum != inputStyle.MinNum)
                 {
                     isEquals = false;
-                    styleInfo.Extend.MinNum = inputStyle.MinNum;
+                    styleInfo.MinNum = inputStyle.MinNum;
                 }
 
-                if (styleInfo.Extend.MaxNum != inputStyle.MaxNum)
+                if (styleInfo.MaxNum != inputStyle.MaxNum)
                 {
                     isEquals = false;
-                    styleInfo.Extend.MaxNum = inputStyle.MaxNum;
+                    styleInfo.MaxNum = inputStyle.MaxNum;
                 }
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Extend.RegExp, inputStyle.RegExp))
+                if (!StringUtils.EqualsIgnoreNull(styleInfo.RegExp, inputStyle.RegExp))
                 {
                     isEquals = false;
-                    styleInfo.Extend.RegExp = inputStyle.RegExp;
+                    styleInfo.RegExp = inputStyle.RegExp;
                 }
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Extend.Width, inputStyle.Width))
+                if (!StringUtils.EqualsIgnoreNull(styleInfo.Width, inputStyle.Width))
                 {
                     isEquals = false;
-                    styleInfo.Extend.Width = inputStyle.Width;
+                    styleInfo.Width = inputStyle.Width;
                 }
 
-                if (!(styleInfo.Extend.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Extend.Height != TranslateUtils.ToInt(inputStyle.Height))
+                if (!(styleInfo.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Height != TranslateUtils.ToInt(inputStyle.Height))
                 {
                     isEquals = false;
-                    styleInfo.Extend.Height = TranslateUtils.ToInt(inputStyle.Height);
+                    styleInfo.Height = TranslateUtils.ToInt(inputStyle.Height);
                 }
 
                 if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
@@ -195,7 +195,7 @@ namespace SiteServer.CMS.Plugin
                 if (isEquals) continue;
 
                 styleInfo.VisibleInList = false;
-                styleInfo.Extend.IsValidate = true;
+                styleInfo.Validate = true;
                 styleInfoList.Add(styleInfo);
             }
 

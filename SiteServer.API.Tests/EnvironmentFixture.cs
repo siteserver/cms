@@ -16,7 +16,7 @@ namespace SiteServer.API.Tests
             var dirPath = Path.GetDirectoryName(codeBasePath);
             ApplicationPhysicalPath = PathUtils.Combine(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(dirPath))), "SiteServer.Web");
 
-            WebConfigUtils.Load(ApplicationPhysicalPath);
+            WebConfigUtils.Load(ApplicationPhysicalPath, PathUtils.Combine(ApplicationPhysicalPath, WebConfigUtils.WebConfigFileName));
         }
 
         public void Dispose()

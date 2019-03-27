@@ -44,7 +44,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlEntity = mc[i].Value;
-                var pageHtml = StlPageItem.ParseEntity(stlEntity, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                var pageHtml = StlPageItem.ParseEntity(stlEntity, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, contextType);
                 html = html.Replace(stlEntity, pageHtml);
             }
 

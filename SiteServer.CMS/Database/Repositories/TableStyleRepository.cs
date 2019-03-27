@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamInputType, styleInfo.InputType.Value),
             //    GetParameter(ParamDefaultValue, styleInfo.DefaultValue),
             //    GetParameter(ParamIsHorizontal, styleInfo.IsHorizontal.ToString()),
-            //    GetParameter(ParamExtendValues,styleInfo.Extend.ToString())
+            //    GetParameter(ParamExtendValues,styleInfo.ToString())
             //};
 
             //using (var conn = GetConnection())
@@ -78,7 +78,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamInputType, info.InputType.Value),
             //    GetParameter(ParamDefaultValue, info.DefaultValue),
             //    GetParameter(ParamIsHorizontal, info.IsHorizontal.ToString()),
-            //    GetParameter(ParamExtendValues,info.Extend.ToString()),
+            //    GetParameter(ParamExtendValues,info.ToString()),
             //    GetParameter(ParamId, info.Id)
             //};
 
@@ -338,7 +338,7 @@ namespace SiteServer.CMS.Database.Repositories
 //				GetParameter(ParamInputType, styleInfo.InputType.Value),
 //                GetParameter(ParamDefaultValue, styleInfo.DefaultValue),
 //                GetParameter(ParamIsHorizontal, styleInfo.IsHorizontal.ToString()),
-//                GetParameter(ParamExtendValues,styleInfo.Extend.ToString())
+//                GetParameter(ParamExtendValues,styleInfo.ToString())
 //			};
 
 //            using (var conn = GetConnection())
@@ -379,7 +379,7 @@ namespace SiteServer.CMS.Database.Repositories
 //				GetParameter(ParamInputType, info.InputType.Value),
 //                GetParameter(ParamDefaultValue, info.DefaultValue),
 //                GetParameter(ParamIsHorizontal, info.IsHorizontal.ToString()),
-//                GetParameter(ParamExtendValues,info.Extend.ToString()),
+//                GetParameter(ParamExtendValues,info.ToString()),
 //                GetParameter(ParamId, info.Id)
 //			};
 

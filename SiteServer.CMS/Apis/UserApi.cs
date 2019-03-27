@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Apis
             return DataProvider.UserLog.List(userName, totalNum, action);
         }
 
-        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
 #pragma warning disable CS0612 // '“RequestImpl”已过时
             return RequestImpl.GetAccessToken(userId, userName, expiresAt);

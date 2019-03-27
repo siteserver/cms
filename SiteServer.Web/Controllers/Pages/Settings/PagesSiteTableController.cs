@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings

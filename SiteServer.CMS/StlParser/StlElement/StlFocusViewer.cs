@@ -1,11 +1,12 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -22,8 +23,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeChannelIndex = "channelIndex";
         public const string AttributeChannelName = "channelName";
         public const string AttributeScope = "scope";
-        public const string AttributeGroup = "group";
-        public const string AttributeGroupNot = "groupNot";
         public const string AttributeGroupChannel = "groupChannel";
         public const string AttributeGroupChannelNot = "groupChannelNot";
         public const string AttributeGroupContent = "groupContent";
@@ -129,7 +128,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                    orderByString = StlDataUtility.GetContentOrderByString(value, ETaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
                 {
@@ -316,7 +315,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -377,7 +376,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     foreach (var minContentInfo in minContentInfoList)
                     {
                         var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var imageUrl = contentInfo.Get<string>(ContentAttribute.ImageUrl);
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {

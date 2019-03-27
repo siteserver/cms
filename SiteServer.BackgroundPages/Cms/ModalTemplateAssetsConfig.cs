@@ -46,15 +46,15 @@ namespace SiteServer.BackgroundPages.Cms
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
-                _assetsDir = SiteInfo.Extend.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
-                _assetsDir = SiteInfo.Extend.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
-                _assetsDir = SiteInfo.Extend.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
@@ -73,15 +73,15 @@ namespace SiteServer.BackgroundPages.Cms
                 var assetsDir = TbDirectoryPath.Text.Trim('/');
                 if (_type == PageTemplateAssets.TypeInclude)
                 {
-                    SiteInfo.Extend.TemplatesAssetsIncludeDir = assetsDir;
+                    SiteInfo.TemplatesAssetsIncludeDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeJs)
                 {
-                    SiteInfo.Extend.TemplatesAssetsJsDir = assetsDir;
+                    SiteInfo.TemplatesAssetsJsDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeCss)
                 {
-                    SiteInfo.Extend.TemplatesAssetsCssDir = assetsDir;
+                    SiteInfo.TemplatesAssetsCssDir = assetsDir;
                 }
 
                 DataProvider.Site.Update(SiteInfo);

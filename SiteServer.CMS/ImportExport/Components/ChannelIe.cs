@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Atom.AdditionalElements;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
@@ -68,7 +68,7 @@ namespace SiteServer.CMS.ImportExport.Components
             nodeInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Keywords);
             nodeInfo.Description = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Description);
 
-            nodeInfo.SetExtendValues(AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues));
+            nodeInfo.ExtendValues = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues);
         }
 
         public AtomFeed ExportNodeInfo(ChannelInfo channelInfo)
@@ -104,7 +104,7 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentTemplateId, channelInfo.ContentTemplateId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Keywords, channelInfo.Keywords);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Description, channelInfo.Description);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ExtendValues, channelInfo.Attributes.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ExtendValues, channelInfo.ExtendValues);
 
             if (channelInfo.ChannelTemplateId != 0)
             {

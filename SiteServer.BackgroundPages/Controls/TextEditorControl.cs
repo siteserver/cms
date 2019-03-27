@@ -1,9 +1,10 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -26,8 +27,10 @@ namespace SiteServer.BackgroundPages.Controls
 
 		    var pageScripts = new NameValueCollection();
 
-		    var attributes = new AttributesImpl();
-		    attributes.Set(_attributeName, _value);
+		    var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+		    {
+		        [_attributeName] = _value
+		    };
 
 		    var extraBuilder = new StringBuilder();
 		    var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _siteInfo, pageScripts, extraBuilder);

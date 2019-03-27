@@ -2,9 +2,9 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var isChecked = false;
             var checkedLevel = TranslateUtils.ToIntWithNegative(DdlContentLevel.SelectedValue);
-            if (checkedLevel >= SiteInfo.Extend.CheckContentLevel)
+            if (checkedLevel >= SiteInfo.CheckContentLevel)
             {
                 isChecked = true;
             }

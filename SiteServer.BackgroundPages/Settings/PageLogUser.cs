@@ -4,7 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -61,9 +61,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.Instance.SystemExtend.IsLogUser = !ConfigManager.Instance.SystemExtend.IsLogUser;
+                ConfigManager.Instance.IsLogUser = !ConfigManager.Instance.IsLogUser;
                 DataProvider.Config.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogUser ? "启用" : "禁用")}日志记录");
+                SuccessMessage($"成功{(ConfigManager.Instance.IsLogUser ? "启用" : "禁用")}日志记录");
             }
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.Instance.SystemExtend.IsLogUser)
+            if (ConfigManager.Instance.IsLogUser)
             {
                 BtnSetting.Text = "禁用用户日志";
                 BtnSetting.Attributes.Add("onclick",

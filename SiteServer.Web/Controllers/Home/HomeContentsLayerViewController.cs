@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -37,11 +39,10 @@ namespace SiteServer.API.Controllers.Home
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                contentInfo.Load(new
+                var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
                 {
-                    CheckState =
-                        CheckManager.GetCheckState(siteInfo, contentInfo)
-                });
+                    {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                };
 
                 var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = contentInfo,
+                    Value = dict,
                     ChannelName = channelName,
                     Attributes = attributes
                 });

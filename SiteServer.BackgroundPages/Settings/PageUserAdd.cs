@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -75,9 +75,9 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.Instance.SystemExtend.UserPasswordRestriction, EUserPasswordRestriction.None))
+            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.Instance.UserPasswordRestriction, EUserPasswordRestriction.None))
             {
-                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.SystemExtend.UserPasswordRestriction))}";
+                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
             }
 
             if (!string.IsNullOrEmpty(_returnUrl))
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
                     CreateDate = DateTime.Now,
                     LastActivityDate = DateUtils.SqlMinValue,
                     Checked = true,
-                    LockedOut = false,
+                    Locked = false,
                     DisplayName = TbDisplayName.Text,
                     Email = TbEmail.Text,
                     Mobile = TbMobile.Text,

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -149,7 +149,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= siteInfo.Extend.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
 
                 if (importType == "zip")
                 {

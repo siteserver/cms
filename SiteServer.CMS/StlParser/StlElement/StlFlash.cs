@@ -1,8 +1,8 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = BackgroundContentAttribute.ImageUrl;
+            var type = ContentAttribute.ImageUrl;
             var src = string.Empty;
             var altSrc = string.Empty;
             var width = "100%";
@@ -151,15 +151,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
-                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
+                        var channelInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
 
                         //picUrl = DataProvider.ContentRepository.GetValueById(tableName, contentId, type);
-                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
+                        flashUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                     }
                     else
                     {
-                        flashUrl = contextInfo.ContentInfo.GetString(type);
+                        flashUrl = contextInfo.ContentInfo.Get<string>(type);
                     }
                 }
                 else//获取栏目Flash
@@ -247,7 +246,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //            var channelName = string.Empty;
 //            var upLevel = 0;
 //            var topLevel = -1;
-//            var type = BackgroundContentAttribute.ImageUrl;
+//            var type = ContentAttribute.ImageUrl;
 //            var src = string.Empty;
 //            var altSrc = string.Empty;
 //            var width = "100%";

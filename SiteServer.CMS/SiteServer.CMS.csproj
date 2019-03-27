@@ -37,9 +37,6 @@
     <Reference Include="Dapper, Version=1.50.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.50.7\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Dapper.Contrib, Version=1.50.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.Contrib.1.50.7\lib\net451\Dapper.Contrib.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -128,6 +125,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caches\Content\ContentManager.Trigger.cs" />
+    <Compile Include="Caches\Content\ContentManager.ListCache.cs" />
+    <Compile Include="Caches\Content\ContentManager.ContentCache.cs" />
+    <Compile Include="Caches\Content\ContentManager.CountCache.cs" />
+    <Compile Include="Caches\Content\ContentManager.cs" />
     <Compile Include="Core\RestRoutes\V1\ApiContentsParameters.cs" />
     <Compile Include="Core\RestRoutes\V1\StlRequest.cs" />
     <Compile Include="Core\RestRoutes\ApiRoutePlugin.cs" />
@@ -148,28 +150,36 @@
     <Compile Include="Core\ContentColumn.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\Enumerations\ETaxisType.cs" />
-    <Compile Include="Database\Core\DynamicWrapper.cs" />
+    <Compile Include="Database\Models\ChannelInfo.Extend.cs" />
+    <Compile Include="Database\Models\ConfigInfo.Extend.cs" />
+    <Compile Include="Database\Models\SiteInfo.Extend.cs" />
+    <Compile Include="Database\Models\TableStyleInfo.Extend.cs" />
+    <Compile Include="Database\Wrapper\DynamicEntity.cs" />
     <Compile Include="Database\Core\GenericRepositoryAbstract.cs" />
+    <Compile Include="Database\Wrapper\DynamicWrapper.cs" />
+    <Compile Include="Database\Wrapper\IExtend.cs" />
     <Compile Include="Database\Core\IRepository.cs" />
-    <Compile Include="Database\Core\RepositoryUtils.cs" />
+    <Compile Include="Database\Core\QueryExtentions.cs" />
+    <Compile Include="Database\Core\ReflectionUtils.cs" />
+    <Compile Include="Database\Core\RepositoryHelper.cs" />
     <Compile Include="Database\Core\SqlDifferences.cs" />
     <Compile Include="Database\Core\SqlUtils.cs" />
-    <Compile Include="Database\Core\VarCharAttribute.cs" />
+    <Compile Include="Database\Wrapper\TableAttribute.cs" />
+    <Compile Include="Database\Wrapper\TableColumnAttribute.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
-    <Compile Include="Database\Caches\ContentTagManager.cs" />
-    <Compile Include="Database\Caches\UserMenuManager .cs" />
-    <Compile Include="Database\Caches\UserGroupManager.cs" />
-    <Compile Include="Database\Caches\ChannelGroupManager.cs" />
-    <Compile Include="Database\Caches\ContentGroupManager.cs" />
-    <Compile Include="Database\Caches\Core\DataCacheManager.cs" />
-    <Compile Include="Database\Caches\AdminManager.cs" />
+    <Compile Include="Caches\ContentTagManager.cs" />
+    <Compile Include="Caches\UserMenuManager .cs" />
+    <Compile Include="Caches\UserGroupManager.cs" />
+    <Compile Include="Caches\ChannelGroupManager.cs" />
+    <Compile Include="Caches\ContentGroupManager.cs" />
+    <Compile Include="Caches\Core\DataCacheManager.cs" />
+    <Compile Include="Caches\AdminManager.cs" />
     <Compile Include="Core\RestRoutes\ApiManager.cs" />
-    <Compile Include="Database\Caches\AreaManager.cs" />
+    <Compile Include="Caches\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
-    <Compile Include="Database\Caches\ContentManager.cs" />
-    <Compile Include="Database\Caches\ChannelManager.cs" />
+    <Compile Include="Caches\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
-    <Compile Include="Database\Caches\ConfigManager.cs" />
+    <Compile Include="Caches\ConfigManager.cs" />
     <Compile Include="Core\ContentUtility.cs" />
     <Compile Include="Core\Create\CreateManager.cs" />
     <Compile Include="Core\Create\CreateTaskManager.cs" />
@@ -177,7 +187,7 @@
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Database\Core\DataProvider.cs" />
-    <Compile Include="Database\Caches\DepartmentManager.cs" />
+    <Compile Include="Caches\DepartmentManager.cs" />
     <Compile Include="Core\DirectoryUtility.cs" />
     <Compile Include="Core\FileUtility.cs" />
     <Compile Include="Core\InputParserUtility.cs" />
@@ -191,32 +201,33 @@
     <Compile Include="Core\PageUtility.cs" />
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
-    <Compile Include="Database\Caches\PermissionConfigManager.cs" />
-    <Compile Include="Database\Core\IDataInfo.cs" />
+    <Compile Include="Caches\PermissionConfigManager.cs" />
     <Compile Include="Database\Core\GenericRepository.cs" />
-    <Compile Include="Database\Core\TextAttribute.cs" />
     <Compile Include="Database\Models\ContentTagInfo.cs" />
+    <Compile Include="Database\Repositories\Contents\ContentTableRepository.Select.cs" />
+    <Compile Include="Database\Repositories\Contents\ContentTableRepository.Delete.cs" />
+    <Compile Include="Database\Repositories\Contents\ContentTableRepository.Update.cs" />
     <Compile Include="Database\Repositories\Contents\ContentTableRepository.cs" />
     <Compile Include="Database\Repositories\Contents\ContentRepository.cs" />
     <Compile Include="Env.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
-    <Compile Include="Database\Caches\SiteManager.cs" />
+    <Compile Include="Caches\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
     <Compile Include="Core\SourceManager.cs" />
-    <Compile Include="Database\Caches\AccessTokenManager.cs" />
+    <Compile Include="Caches\AccessTokenManager.cs" />
     <Compile Include="Core\SystemManager.cs" />
-    <Compile Include="Database\Caches\TableColumnManager.cs" />
-    <Compile Include="Database\Caches\TableStyleManager.cs" />
+    <Compile Include="Caches\TableColumnManager.cs" />
+    <Compile Include="Caches\TableStyleManager.cs" />
     <Compile Include="Core\TabManager.cs" />
     <Compile Include="Core\TagUtils.cs" />
-    <Compile Include="Database\Caches\SpecialManager.cs" />
-    <Compile Include="Database\Caches\TemplateManager.cs" />
+    <Compile Include="Caches\SpecialManager.cs" />
+    <Compile Include="Caches\TemplateManager.cs" />
     <Compile Include="Core\TemplateTypeUtils.cs" />
     <Compile Include="Core\UEditorUploader.cs" />
     <Compile Include="Core\UEditorUtils.cs" />
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
-    <Compile Include="Database\Caches\UserManager.cs" />
+    <Compile Include="Caches\UserManager.cs" />
     <Compile Include="Database\Core\DataProviderBase.cs" />
     <Compile Include="Apis\DatabaseApi.cs" />
     <Compile Include="Database\Core\MySql.cs" />
@@ -240,11 +251,9 @@
     <Compile Include="Database\Attributes\UserAttribute.cs" />
     <Compile Include="Database\Models\DbCacheInfo.cs" />
     <Compile Include="Database\Models\AreaInfo.cs" />
-    <Compile Include="Database\Attributes\BackgroundContentAttribute.cs" />
     <Compile Include="Database\Attributes\ChannelAttribute.cs" />
     <Compile Include="Database\Models\ChannelGroupInfo.cs" />
     <Compile Include="Database\Models\ChannelInfo.cs" />
-    <Compile Include="Database\Extends\ChannelInfoExtend.cs" />
     <Compile Include="Database\Models\ConfigInfo.cs" />
     <Compile Include="Database\Attributes\ContentAttribute.cs" />
     <Compile Include="Database\Models\ContentCheckInfo.cs" />
@@ -282,7 +291,6 @@
     <Compile Include="Database\Models\ErrorLogInfo.cs" />
     <Compile Include="Database\Models\UserGroupInfo.cs" />
     <Compile Include="Database\Models\UserMenuInfo.cs" />
-    <Compile Include="Plugin\Impl\AttributesImpl.cs" />
     <Compile Include="Database\Models\AccessTokenInfo.cs" />
     <Compile Include="Database\Models\KeywordInfo.cs" />
     <Compile Include="Database\Models\LogInfo.cs" />
@@ -294,15 +302,10 @@
     <Compile Include="Database\Models\RelatedFieldItemInfo.cs" />
     <Compile Include="Database\Attributes\SiteAttribute.cs" />
     <Compile Include="Database\Models\SiteInfo.cs" />
-    <Compile Include="Database\Extends\SiteInfoExtend.cs" />
     <Compile Include="Database\Models\SiteLogInfo.cs" />
     <Compile Include="Database\Models\SitePermissionsInfo.cs" />
     <Compile Include="Core\SiteTemplateInfo.cs" />
-    <Compile Include="Database\Extends\ConfigInfoSystemExtend.cs" />
-    <Compile Include="Database\Models\TableInfo.cs" />
-    <Compile Include="Database\Models\TableMetadataInfo.cs" />
     <Compile Include="Database\Models\TableStyleInfo.cs" />
-    <Compile Include="Database\Extends\TableStyleInfoExtend.cs" />
     <Compile Include="Database\Models\TableStyleItemInfo.cs" />
     <Compile Include="Database\Models\TagInfo.cs" />
     <Compile Include="Database\Models\SpecialInfo.cs" />
@@ -337,6 +340,7 @@
     <Compile Include="Plugin\PluginDatabaseTableManager.cs" />
     <Compile Include="Plugin\PluginDebugger.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PluginMenu.cs" />
     <Compile Include="Plugin\PluginMenuManager.cs" />
     <Compile Include="Plugin\PluginJobManager.cs" />
     <Compile Include="Plugin\PluginStlParserManager.cs" />
@@ -375,14 +379,13 @@
     <Compile Include="Database\Repositories\UserMenuRepository.cs" />
     <Compile Include="Database\Repositories\UserGroupRepository.cs" />
     <Compile Include="Database\Repositories\UserLogRepository.cs" />
-    <Compile Include="StlControls\CommentInput.cs" />
-    <Compile Include="Database\Caches\Stl\StlContentCache.cs" />
-    <Compile Include="Database\Caches\Stl\StlDatabaseCache.cs" />
-    <Compile Include="Database\Caches\Stl\StlChannelCache.cs" />
-    <Compile Include="Database\Caches\Stl\StlSiteCache.cs" />
-    <Compile Include="Database\Caches\Core\StlCacheManager.cs" />
-    <Compile Include="Database\Caches\Stl\StlSqlContentsCache.cs" />
-    <Compile Include="Database\Caches\Stl\StlTagCache.cs" />
+    <Compile Include="Caches\Stl\StlContentCache.cs" />
+    <Compile Include="Caches\Stl\StlDatabaseCache.cs" />
+    <Compile Include="Caches\Stl\StlChannelCache.cs" />
+    <Compile Include="Caches\Stl\StlSiteCache.cs" />
+    <Compile Include="Caches\Core\StlCacheManager.cs" />
+    <Compile Include="Caches\Stl\StlSqlContentsCache.cs" />
+    <Compile Include="Caches\Stl\StlTagCache.cs" />
     <Compile Include="StlParser\FileSystemObjectAsync.cs" />
     <Compile Include="StlParser\Model\ChannelIdContentId.cs" />
     <Compile Include="StlParser\Model\ChannelItemInfo.cs" />

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -131,7 +131,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
         {
-            var channelInfoList = new List<Dictionary<string,object>>();
+            var channelInfoList = new List<IDictionary<string,object>>();
             var table = dataSource.Tables[0];
             foreach (DataRow row in table.Rows)
             {

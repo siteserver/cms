@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 
 namespace SiteServer.API.Controllers
 {

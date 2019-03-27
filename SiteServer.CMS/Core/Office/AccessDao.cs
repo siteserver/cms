@@ -2,7 +2,8 @@
 using System.Data.OleDb;
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -41,7 +42,7 @@ namespace SiteServer.CMS.Core.Office
             return createBuilder.ToString();
         }
 
-        public List<string> GetInsertSqlStringList(string nodeName, int siteId, int channelId, string tableName, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
+        public List<string> GetInsertSqlStringList(string nodeName, int siteId, int channelId, List<TableStyleInfo> styleInfoList, List<string> displayAttributes, IList<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out bool isExport)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
@@ -63,7 +64,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
 
             isExport = contentIdList.Count > 0;
@@ -80,7 +81,7 @@ namespace SiteServer.CMS.Core.Office
                 {
                     if (displayAttributes.Contains(tableStyleInfo.AttributeName))
                     {
-                        var value = contentInfo.GetString(tableStyleInfo.AttributeName);
+                        var value = contentInfo.Get<string>(tableStyleInfo.AttributeName);
                         insertBuilder.Append($"'{SqlUtils.ToSqlString(StringUtils.StripTags(value))}', ");
                     }
                 }

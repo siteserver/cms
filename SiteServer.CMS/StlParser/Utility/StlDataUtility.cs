@@ -2,12 +2,11 @@
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Caches.Stl;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
@@ -16,34 +15,34 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
-    public class StlDataUtility
+    public static class StlDataUtility
     {
         public static int GetChannelIdByChannelIdOrChannelIndexOrChannelName(int siteId, int channelId, string channelIndex, string channelName)
         {
-            var retval = channelId;
+            var retVal = channelId;
 
             if (!string.IsNullOrEmpty(channelIndex))
             {
                 var theChannelId = ChannelManager.GetChannelIdByIndexName(siteId, channelIndex);
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
             if (!string.IsNullOrEmpty(channelName))
             {
-                var theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                var theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, retVal, channelName, true);
                 if (theChannelId == 0)
                 {
                     theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
                 }
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetChannelIdByLevel(int siteId, int channelId, int upLevel, int topLevel)
@@ -101,106 +100,32 @@ namespace SiteServer.CMS.StlParser.Utility
 
         //public static int GetChannelIdByChannelIDOrChannelIndexOrChannelName(int siteID, int channelID, string channelIndex, string channelName)
         //{
-        //    int retval = channelID;
+        //    int retVal = channelID;
         //    if (!string.IsNullOrEmpty(channelIndex))
         //    {
         //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByNodeIndexName(siteID, channelIndex);
         //        if (theChannelId != 0)
         //        {
-        //            retval = theChannelId;
+        //            retVal = theChannelId;
         //        }
         //    }
         //    if (!string.IsNullOrEmpty(channelName))
         //    {
-        //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(retval, channelName, true);
+        //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(retVal, channelName, true);
         //        if (theChannelId == 0)
         //        {
         //            theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(siteID, channelName, true);
         //        }
         //        if (theChannelId != 0)
         //        {
-        //            retval = theChannelId;
+        //            retVal = theChannelId;
         //        }
         //    }
-        //    return retval;
+        //    return retVal;
         //}
 
-        public static ETaxisType GetETaxisTypeByOrder(string order, bool isChannel, ETaxisType defaultType)
-        {
-            var taxisType = defaultType;
-            if (!string.IsNullOrEmpty(order))
-            {
-                if (isChannel)
-                {
-                    if (order.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxis;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDate;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHits;
-                    }
-                }
-                else
-                {
-                    if (order.ToLower().Equals(StlParserUtility.OrderDefault.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxisDesc;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByTaxis;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderAddDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDate;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByAddDateDesc;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderLastEditDate.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByLastEditDate;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderAddDateBack.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByLastEditDateDesc;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderHits.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHits;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderHitsByDay.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByDay;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderHitsByWeek.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByWeek;
-                    }
-                    else if (order.ToLower().Equals(StlParserUtility.OrderHitsByMonth.ToLower()))
-                    {
-                        taxisType = ETaxisType.OrderByHitsByMonth;
-                    }
-                }
-            }
-            return taxisType;
-        }
-
-        public static string GetChannelOrderByString(int siteId, string orderValue, ETaxisType defaultType)
+        
+        public static string GetChannelOrderByString(string orderValue, ETaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
@@ -239,7 +164,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return ETaxisTypeUtils.GetChannelOrderByString(taxisType, orderByString, null);
         }
 
-        public static string GetContentOrderByString(int siteId, string orderValue, ETaxisType defaultType)
+        public static string GetContentOrderByString(string orderValue, ETaxisType defaultType)
         {
             var taxisType = defaultType;
             var orderByString = string.Empty;
@@ -302,10 +227,10 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return string.Empty;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            var sqlWhereString = ChannelManager.IsContentModelPlugin(siteInfo, nodeInfo)
+            var sqlWhereString = ChannelManager.IsContentModelPlugin(channelInfo)
                 ? StlContentCache.GetStlWhereString(siteInfo.Id, listInfo.GroupContent, listInfo.GroupContentNot,
                     listInfo.Tags, listInfo.IsTopExists, listInfo.IsTop, listInfo.Where)
                 : StlContentCache.GetStlWhereString(siteInfo.Id, listInfo.GroupContent,
@@ -316,7 +241,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return StlContentCache.GetStlSqlStringChecked(tableName, siteInfo.Id, channelId, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, sqlWhereString, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot);
         }
 
-        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
+        public static string GetPageContentsSqlStringBySearch(string tableName, string groupContent, string groupContentNot, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where)
         {
             var sqlWhereString = StlContentCache.GetStlWhereStringBySearch(groupContent, groupContentNot, isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where);
             var sqlString = StlContentCache.GetStlSqlStringCheckedBySearch(tableName, startNum, totalNum, orderByString, sqlWhereString);
@@ -328,13 +253,13 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (!ChannelManager.IsExists(siteInfo.Id, channelId)) return null;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             if (isRelatedContents && contentId > 0)
             {
                 var isTags = false;
-                var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
+                var tagCollection = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
                     var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteInfo.Id);
@@ -368,7 +293,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
 
-            var sqlWhereString = PluginManager.IsExists(nodeInfo.ContentModelPluginId)
+            var sqlWhereString = PluginManager.IsExists(channelInfo.ContentModelPluginId)
                 ? StlContentCache.GetStlWhereString(siteInfo.Id, groupContent, groupContentNot,
                     tags, isTopExists, isTop, where)
                 : StlContentCache.GetStlWhereString(siteInfo.Id, groupContent,
@@ -376,7 +301,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor,
                     where);
 
-            var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
+            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
             return StlContentCache.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
         }
 
@@ -450,12 +375,6 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             var sqlString = StlSqlContentsCache.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
             return StlDatabaseCache.GetDataSet(connectionString, sqlString);
-        }
-
-        public static DataSet GetPageSqlContentsDataSet(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
-        {
-            var sqlString = StlSqlContentsCache.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            return DatabaseApi.Instance.GetDataSet(connectionString, sqlString);
         }
 
         public static IDataReader GetSitesDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)

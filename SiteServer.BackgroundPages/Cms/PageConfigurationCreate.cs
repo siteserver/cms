@@ -2,7 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
@@ -37,42 +37,42 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
             EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.Extend.IsCreateContentIfContentChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.IsCreateContentIfContentChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, SiteInfo.Extend.IsCreateChannelIfChannelChanged.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, SiteInfo.IsCreateChannelIfChannelChanged.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, SiteInfo.Extend.IsCreateShowPageInfo.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, SiteInfo.IsCreateShowPageInfo.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, SiteInfo.Extend.IsCreateIe8Compatible.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, SiteInfo.IsCreateIe8Compatible.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, SiteInfo.Extend.IsCreateBrowserNoCache.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, SiteInfo.IsCreateBrowserNoCache.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, SiteInfo.Extend.IsCreateJsIgnoreError.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, SiteInfo.IsCreateJsIgnoreError.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, SiteInfo.Extend.IsCreateWithJQuery.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, SiteInfo.IsCreateWithJQuery.ToString());
 
             EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.Extend.IsCreateDoubleClick.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.IsCreateDoubleClick.ToString());
 
-            TbCreateStaticMaxPage.Text = SiteInfo.Extend.CreateStaticMaxPage.ToString();
+            TbCreateStaticMaxPage.Text = SiteInfo.CreateStaticMaxPage.ToString();
 
             EBooleanUtils.AddListItems(DdlIsCreateUseDefaultFileName, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, SiteInfo.Extend.IsCreateUseDefaultFileName.ToString());
-            PhIsCreateUseDefaultFileName.Visible = SiteInfo.Extend.IsCreateUseDefaultFileName;
-            TbCreateDefaultFileName.Text = SiteInfo.Extend.CreateDefaultFileName;
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, SiteInfo.IsCreateUseDefaultFileName.ToString());
+            PhIsCreateUseDefaultFileName.Visible = SiteInfo.IsCreateUseDefaultFileName;
+            TbCreateDefaultFileName.Text = SiteInfo.CreateDefaultFileName;
 
             EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, SiteInfo.Extend.IsCreateStaticContentByAddDate.ToString());
-            PhIsCreateStaticContentByAddDate.Visible = SiteInfo.Extend.IsCreateStaticContentByAddDate;
-            if (SiteInfo.Extend.CreateStaticContentAddDate != DateTime.MinValue)
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, SiteInfo.IsCreateStaticContentByAddDate.ToString());
+            PhIsCreateStaticContentByAddDate.Visible = SiteInfo.IsCreateStaticContentByAddDate;
+            if (SiteInfo.CreateStaticContentAddDate.HasValue)
             {
-                TbCreateStaticContentAddDate.DateTime = SiteInfo.Extend.CreateStaticContentAddDate;
+                TbCreateStaticContentAddDate.DateTime = SiteInfo.CreateStaticContentAddDate.Value;
             }
         }
 
@@ -90,28 +90,28 @@ namespace SiteServer.BackgroundPages.Cms
 		{
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.Extend.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
-		    SiteInfo.Extend.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
+		    SiteInfo.IsCreateContentIfContentChanged = TranslateUtils.ToBool(DdlIsCreateContentIfContentChanged.SelectedValue);
+		    SiteInfo.IsCreateChannelIfChannelChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfChannelChanged.SelectedValue);
 
-		    SiteInfo.Extend.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
-		    SiteInfo.Extend.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
-		    SiteInfo.Extend.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
-		    SiteInfo.Extend.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
-		    SiteInfo.Extend.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
+		    SiteInfo.IsCreateShowPageInfo = TranslateUtils.ToBool(DdlIsCreateShowPageInfo.SelectedValue);
+		    SiteInfo.IsCreateIe8Compatible = TranslateUtils.ToBool(DdlIsCreateIe8Compatible.SelectedValue);
+		    SiteInfo.IsCreateBrowserNoCache = TranslateUtils.ToBool(DdlIsCreateBrowserNoCache.SelectedValue);
+		    SiteInfo.IsCreateJsIgnoreError = TranslateUtils.ToBool(DdlIsCreateJsIgnoreError.SelectedValue);
+		    SiteInfo.IsCreateWithJQuery = TranslateUtils.ToBool(DdlIsCreateWithJQuery.SelectedValue);
 
-		    SiteInfo.Extend.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-		    SiteInfo.Extend.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
+		    SiteInfo.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
+		    SiteInfo.CreateStaticMaxPage = TranslateUtils.ToInt(TbCreateStaticMaxPage.Text);
 
-		    SiteInfo.Extend.IsCreateUseDefaultFileName = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
-		    if (SiteInfo.Extend.IsCreateUseDefaultFileName)
+		    SiteInfo.IsCreateUseDefaultFileName = TranslateUtils.ToBool(DdlIsCreateUseDefaultFileName.SelectedValue);
+		    if (SiteInfo.IsCreateUseDefaultFileName)
 		    {
-		        SiteInfo.Extend.CreateDefaultFileName = TbCreateDefaultFileName.Text;
+		        SiteInfo.CreateDefaultFileName = TbCreateDefaultFileName.Text;
 		    }
 
-            SiteInfo.Extend.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
-		    if (SiteInfo.Extend.IsCreateStaticContentByAddDate)
+            SiteInfo.IsCreateStaticContentByAddDate = TranslateUtils.ToBool(DdlIsCreateStaticContentByAddDate.SelectedValue);
+		    if (SiteInfo.IsCreateStaticContentByAddDate)
 		    {
-		        SiteInfo.Extend.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
+		        SiteInfo.CreateStaticContentAddDate = TbCreateStaticContentAddDate.DateTime;
 		    } 
 
             DataProvider.Site.Update(SiteInfo);

@@ -76,21 +76,21 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 TagUtils.AddTags(tagCollection, SiteId, contentId);
 
-                                var tuple = DataProvider.ContentRepository.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                                if (!SiteInfo.ContentRepository.GetChanelIdAndValue<string>(contentId, ContentAttribute.Tags,
+                                    out var channelId, out var tags)) continue;
 
-                                if (tuple != null)
+                                var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
+                                contentTagList.Remove(_tagName);
+                                foreach (var theTag in tagCollection)
                                 {
-                                    var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
-                                    contentTagList.Remove(_tagName);
-                                    foreach (var theTag in tagCollection)
+                                    if (!contentTagList.Contains(theTag))
                                     {
-                                        if (!contentTagList.Contains(theTag))
-                                        {
-                                            contentTagList.Add(theTag);
-                                        }
+                                        contentTagList.Add(theTag);
                                     }
-                                    DataProvider.ContentRepository.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                                 }
+
+                                SiteInfo.ContentRepository.Update(channelId, contentId, ContentAttribute.Tags,
+                                    TranslateUtils.ObjectCollectionToString(contentTagList));
                             }
                         }
                         else

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.V1;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -219,7 +220,7 @@ namespace SiteServer.API.Controllers.V1
                 var top = rest.GetQueryInt("top", 20);
                 var skip = rest.GetQueryInt("skip");
 
-                var query = DataProvider.Administrator.NewQuery().Limit(top).Offset(skip);
+                var query = new Query().Limit(top).Offset(skip);
                 var administrators = DataProvider.Administrator.GetAll(query);
                 var count = DataProvider.Administrator.GetCount();
 

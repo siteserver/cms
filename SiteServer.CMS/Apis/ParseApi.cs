@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Apis
         {
             var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
             return StlParserUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
-                context.ContentInfo, context.TemplateType, context.TemplateId, false);
+                (ContentInfo)context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }
     }
 }

@@ -4,8 +4,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
@@ -57,9 +57,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.Instance.SystemExtend.IsLogError = !ConfigManager.Instance.SystemExtend.IsLogError;
+                ConfigManager.Instance.IsLogError = !ConfigManager.Instance.IsLogError;
                 DataProvider.Config.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.Instance.SystemExtend.IsLogError ? "启用" : "禁用")}日志记录");
+                SuccessMessage($"成功{(ConfigManager.Instance.IsLogError ? "启用" : "禁用")}日志记录");
             }
 
             SpContents.ControlToPaginate = RptContents;
@@ -109,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.Instance.SystemExtend.IsLogError)
+            if (ConfigManager.Instance.IsLogError)
             {
                 BtnSetting.Text = "禁用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 

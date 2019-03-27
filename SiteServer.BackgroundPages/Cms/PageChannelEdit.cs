@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -114,9 +116,9 @@ namespace SiteServer.BackgroundPages.Cms
                     PhContentRelatedPluginIds.Visible = false;
                 }
 
-                CacAttributes.Attributes = channelInfo.Attributes;
+                CacAttributes.Attributes = channelInfo.ToDictionary();
 
-                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.Extend.WebUrl));
+                TbImageUrl.Attributes.Add("onchange", GetShowImageScript("preview_NavigationPicPath", SiteInfo.WebUrl));
 
                 var showPopWinString = ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, true, TbChannelFilePathRule.ClientID);
                 BtnCreateChannelRule.Attributes.Add("onclick", showPopWinString);
@@ -161,9 +163,9 @@ namespace SiteServer.BackgroundPages.Cms
                 TbContentFilePathRule.Text = channelInfo.ContentFilePathRule;
 
                 ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
-                ControlUtils.SelectSingleItem(DdlTaxisType, channelInfo.Extend.DefaultTaxisType);
-                ControlUtils.SelectSingleItem(RblIsChannelAddable, channelInfo.Extend.IsChannelAddable.ToString());
-                ControlUtils.SelectSingleItem(RblIsContentAddable, channelInfo.Extend.IsContentAddable.ToString());
+                ControlUtils.SelectSingleItem(DdlTaxisType, channelInfo.DefaultTaxisType);
+                ControlUtils.SelectSingleItem(RblIsChannelAddable, channelInfo.IsChannelAddable.ToString());
+                ControlUtils.SelectSingleItem(RblIsContentAddable, channelInfo.IsContentAddable.ToString());
 
                 TbImageUrl.Text = channelInfo.ImageUrl;
 
@@ -177,7 +179,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                CacAttributes.Attributes = new AttributesImpl(Request.Form);
+                CacAttributes.Attributes = TranslateUtils.ToDictionary(Request.Form);
             }
         }
 
@@ -261,7 +263,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
-                channelInfo.Attributes.Load(extendedAttributes);
+                foreach (var extendedAttribute in extendedAttributes)
+                {
+                    channelInfo.Set(extendedAttribute.Key, extendedAttribute.Value);
+                }
 
                 channelInfo.ChannelName = TbNodeName.Text;
                 channelInfo.IndexName = TbNodeIndexName.Text;
@@ -284,12 +289,12 @@ namespace SiteServer.BackgroundPages.Cms
                 channelInfo.Keywords = TbKeywords.Text;
                 channelInfo.Description = TbDescription.Text;
 
-                channelInfo.Extend.IsChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
-                channelInfo.Extend.IsContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
+                channelInfo.IsChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
+                channelInfo.IsContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
 
                 channelInfo.LinkUrl = TbLinkUrl.Text;
                 channelInfo.LinkType = DdlLinkType.SelectedValue;
-                channelInfo.Extend.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                channelInfo.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
                 channelInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
                 channelInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
 

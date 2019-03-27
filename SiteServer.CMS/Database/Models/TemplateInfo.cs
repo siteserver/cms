@@ -1,60 +1,46 @@
-using System;
-using Dapper.Contrib.Extensions;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Template")]
-    public class TemplateInfo : IDataInfo
+    public class TemplateInfo : DynamicEntity
     {
-        public int Id { get; set; }
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
-		public int SiteId { get; set; }
-
+        [TableColumn]
         public string TemplateName { get; set; }
 
+        [TableColumn]
         private string TemplateType { get; set; }
 
-        [Computed]
         public TemplateType Type
         {
             get => TemplateTypeUtils.GetEnumType(TemplateType);
             set => TemplateType = value.Value;
         }
 
+        [TableColumn]
         public string RelatedFileName { get; set; }
 
+        [TableColumn]
         public string CreatedFileFullName { get; set; }
 
+        [TableColumn]
         public string CreatedFileExtName { get; set; }
 
-        private string Charset { get; set; }
-
-        [Computed]
-        public ECharset FileCharset
-        {
-            get => ECharsetUtils.GetEnumType(Charset);
-            set => Charset = ECharsetUtils.GetValue(value);
-        }
-
+        [TableColumn]
         private string IsDefault { get; set; }
 
-        [Computed]
         public bool Default
         {
-            get => TranslateUtils.ToBool(IsDefault);
+            get => IsDefault == "True";
             set => IsDefault = value.ToString();
         }
 
-        [Computed]
         public string Content { get; set; }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -113,13 +113,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdArrayList = _idsDictionary[channelId];
-                        if (contentIdArrayList != null)
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var contentIdList = _idsDictionary[channelId];
+                        if (contentIdList != null)
                         {
-                            foreach (var contentId in contentIdArrayList)
+                            foreach (var contentId in contentIdList)
                             {
-                                DataProvider.ContentRepository.AddContentGroupList(tableName, contentId, groupNameList);
+                                channelInfo.ContentRepository.AddContentGroupList(contentId, groupNameList);
                             }
                         }
                     }

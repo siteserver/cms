@@ -180,8 +180,8 @@ namespace SiteServer.Plugin
         /// </summary>
         /// <param name="name">cookie名称。</param>
         /// <param name="value">cookie值。</param>
-        /// <param name="expires">到期时间。</param>
-        void SetCookie(string name, string value, DateTime expires);
+        /// <param name="expiresAt">到期时间。</param>
+        void SetCookie(string name, string value, TimeSpan expiresAt);
 
         /// <summary>
         /// 获取cookie。

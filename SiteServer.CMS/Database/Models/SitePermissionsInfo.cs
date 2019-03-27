@@ -1,29 +1,23 @@
-using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_SitePermissions")]
-    public class SitePermissionsInfo : IDataInfo
+    public class SitePermissionsInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string RoleName { get; set; }
 
+        [TableColumn]
         public int SiteId { get; set; }
 
-        [Text]
-		public string ChannelIdCollection { get; set; }
+        [TableColumn(Text = true)]
+        public string ChannelIdCollection { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         public string ChannelPermissions { get; set; }
 
-        [Text]
+        [TableColumn(Text = true)]
         public string WebsitePermissions { get; set; }
     }
 }

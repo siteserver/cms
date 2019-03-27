@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
@@ -22,10 +23,13 @@ namespace SiteServer.API.Controllers.Pages
                 }
 
                 var logId = rest.GetQueryInt("logId");
+                var logInfo = DataProvider.ErrorLog.GetErrorLogInfo(logId);
+                if (logInfo == null) return NotFound();
+                var retVal = logInfo.ToDictionary();
 
                 return Ok(new
                 {
-                    LogInfo = DataProvider.ErrorLog.GetErrorLogInfo(logId),
+                    LogInfo = logInfo,
                     SystemManager.Version
                 });
             }

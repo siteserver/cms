@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -125,7 +125,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))//
                 {
-                    parsedContent = pageInfo.SiteInfo.Extend.GetString(attributeName.Substring(4));
+                    parsedContent = pageInfo.SiteInfo.Get<string>(attributeName.Substring(4));
                 }
                 else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(attributeName))
                 {
@@ -133,9 +133,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    if (pageInfo.SiteInfo.Extend.ContainsKey(attributeName))
+                    if (pageInfo.SiteInfo.ContainsKey(attributeName))
                     {
-                        parsedContent = pageInfo.SiteInfo.Extend.GetString(attributeName);
+                        parsedContent = pageInfo.SiteInfo.Get<string>(attributeName);
                          
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
@@ -150,7 +150,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                                         pageInfo.IsLocal)
                                     : InputParserUtility.GetContentByTableStyle(parsedContent, string.Empty,
                                         pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty,
-                                        true);
+                                        true, false, false);
                             }
                             else
                             { // 如果字段已经被删除或不再显示了，则此字段的值为空。有时虚拟字段值不会清空

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin;
@@ -90,23 +91,25 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var onlyAdminId = rest.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo);
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Extend.PageSize));
+                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
                     for (var page = 1; page <= pages; page++)
                     {
-                        var offset = siteInfo.Extend.PageSize * (page - 1);
-                        var limit = siteInfo.Extend.PageSize;
+                        var offset = siteInfo.PageSize * (page - 1);
+                        var limit = siteInfo.PageSize;
 
-                        var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, offset, limit);
+                        var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
 
                         var sequence = offset + 1;
 
@@ -118,9 +121,9 @@ namespace SiteServer.API.Controllers.Home
                             if (!isAllCheckedLevel)
                             {
                                 var checkedLevel = contentInfo.CheckedLevel;
-                                if (contentInfo.IsChecked)
+                                if (contentInfo.Checked)
                                 {
-                                    checkedLevel = siteInfo.Extend.CheckContentLevel;
+                                    checkedLevel = siteInfo.CheckContentLevel;
                                 }
                                 if (!checkedLevelKeys.Contains(checkedLevel))
                                 {
@@ -136,7 +139,8 @@ namespace SiteServer.API.Controllers.Home
                                 }
                             }
 
-                            contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                            //contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                            contentInfoList.Add(contentInfo);
                         }
                     }
 

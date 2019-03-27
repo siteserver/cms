@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Extend.ContentAttributesOfDisplay);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            channelInfo.Extend.ContentAttributesOfDisplay = attributesOfDisplay;
+            channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
 
             DataProvider.Channel.Update(channelInfo);
 

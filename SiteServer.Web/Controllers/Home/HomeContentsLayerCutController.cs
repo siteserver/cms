@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -39,16 +40,17 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    var dict = contentInfo.ToDictionary();
-                    dict["checkState"] =
-                        CheckManager.GetCheckState(siteInfo, contentInfo);
-                    retval.Add(dict);
+                    var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
+                    {
+                        {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                    };
+                    retVal.Add(dict);
                 }
 
                 var sites = new List<object>();
@@ -79,7 +81,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = retval,
+                    Value = retVal,
                     Sites = sites,
                     Channels = channels,
                     Site = siteInfo
@@ -154,7 +156,7 @@ namespace SiteServer.API.Controllers.Home
 
                 foreach (var contentId in contentIdList)
                 {
-                    ContentUtility.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
+                    ContentManager.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
                 }
 
                 rest.AddSiteLog(siteId, channelId, "转移内容", string.Empty);

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -80,10 +80,10 @@ namespace SiteServer.BackgroundPages.Cms
                 ControlUtils.SelectSingleItem(DdlInputType, styleInfo.Type.Value);
                 TbDefaultValue.Text = styleInfo.DefaultValue;
                 DdlIsHorizontal.SelectedValue = styleInfo.Horizontal.ToString();
-                TbColumns.Text = styleInfo.Extend.Columns.ToString();
+                TbColumns.Text = styleInfo.Columns.ToString();
 
-                TbHeight.Text = styleInfo.Extend.Height == 0 ? string.Empty : styleInfo.Extend.Height.ToString();
-                TbWidth.Text = styleInfo.Extend.Width;
+                TbHeight.Text = styleInfo.Height == 0 ? string.Empty : styleInfo.Height.ToString();
+                TbWidth.Text = styleInfo.Width;
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -190,9 +190,9 @@ namespace SiteServer.BackgroundPages.Cms
                     DefaultValue = TbDefaultValue.Text,
                     Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue)
                 };
-                styleInfo.Extend.Columns = TranslateUtils.ToInt(TbColumns.Text);
-                styleInfo.Extend.Height = TranslateUtils.ToInt(TbHeight.Text);
-                styleInfo.Extend.Width = TbWidth.Text;
+                styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+                styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+                styleInfo.Width = TbWidth.Text;
 
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
                 {

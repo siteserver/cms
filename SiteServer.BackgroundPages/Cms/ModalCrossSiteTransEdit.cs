@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -45,21 +45,21 @@ namespace SiteServer.BackgroundPages.Cms
 
             ECrossSiteTransTypeUtils.AddAllListItems(DdlTransType, SiteInfo.ParentId > 0);
 
-            ControlUtils.SelectSingleItem(DdlTransType, ECrossSiteTransTypeUtils.GetValue(_channelInfo.Extend.TransType));
+            ControlUtils.SelectSingleItem(DdlTransType, _channelInfo.TransType);
 
             DdlTransType_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectSingleItem(DdlSiteId, _channelInfo.Extend.TransSiteId.ToString());
+            ControlUtils.SelectSingleItem(DdlSiteId, _channelInfo.TransSiteId.ToString());
 
 
             DdlSiteId_OnSelectedIndexChanged(null, EventArgs.Empty);
-            ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(_channelInfo.Extend.TransChannelIds));
-            TbNodeNames.Text = _channelInfo.Extend.TransChannelNames;
+            ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(_channelInfo.TransChannelIds));
+            TbNodeNames.Text = _channelInfo.TransChannelNames;
 
             EBooleanUtils.AddListItems(DdlIsAutomatic, "系统自动转发", "需手动操作");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channelInfo.Extend.TransIsAutomatic.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channelInfo.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtils.AddListItems(DdlTranslateDoneType, false);
-            ControlUtils.SelectSingleItem(DdlTranslateDoneType, ETranslateContentTypeUtils.GetValue(_channelInfo.Extend.TransDoneType));
+            ControlUtils.SelectSingleItem(DdlTranslateDoneType, _channelInfo.TransDoneType);
         }
 
         protected void DdlTransType_OnSelectedIndexChanged(object sender, EventArgs e)
@@ -159,15 +159,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                _channelInfo.Extend.TransType = ECrossSiteTransTypeUtils.GetEnumType(DdlTransType.SelectedValue);
-                _channelInfo.Extend.TransSiteId = _channelInfo.Extend.TransType == ECrossSiteTransType.SpecifiedSite ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
-                _channelInfo.Extend.TransChannelIds = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
-                _channelInfo.Extend.TransChannelNames = TbNodeNames.Text;
+                _channelInfo.TransType = DdlTransType.SelectedValue;
+                _channelInfo.TransSiteId = ECrossSiteTransTypeUtils.Equals(_channelInfo.TransType, ECrossSiteTransType.SpecifiedSite) ? TranslateUtils.ToInt(DdlSiteId.SelectedValue) : 0;
+                _channelInfo.TransChannelIds = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
+                _channelInfo.TransChannelNames = TbNodeNames.Text;
 
-                _channelInfo.Extend.TransIsAutomatic = TranslateUtils.ToBool(DdlIsAutomatic.SelectedValue);
+                _channelInfo.TransIsAutomatic = TranslateUtils.ToBool(DdlIsAutomatic.SelectedValue);
 
-                var translateDoneType = ETranslateContentTypeUtils.GetEnumType(DdlTranslateDoneType.SelectedValue);
-                _channelInfo.Extend.TransDoneType = translateDoneType;
+                _channelInfo.TransDoneType = DdlTranslateDoneType.SelectedValue;
 
                 DataProvider.Channel.Update(_channelInfo);
 

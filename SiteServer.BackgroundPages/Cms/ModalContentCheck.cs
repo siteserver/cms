@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
-using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Repositories.Contents;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -76,11 +75,12 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentRepository.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
                     titles.Append(title + "<br />");
                 }
             }
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var checkedLevel = TranslateUtils.ToIntWithNegative(DdlCheckType.SelectedValue);
 
-            var isChecked = checkedLevel >= SiteInfo.Extend.CheckContentLevel;
+            var isChecked = checkedLevel >= SiteInfo.CheckContentLevel;
 
             var contentInfoListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
-                        if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);

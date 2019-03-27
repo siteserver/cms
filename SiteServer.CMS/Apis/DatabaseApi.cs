@@ -36,10 +36,12 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using Oracle.ManagedDataAccess.Client;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -509,7 +511,7 @@ SELECT * FROM (
             var realTableColumns = new List<TableColumn>();
             foreach (var tableColumn in tableColumns)
             {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(IDataInfo.Id)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(IDataInfo.Guid)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(IDataInfo.LastModifiedDate)))
+                if (string.IsNullOrEmpty(tableColumn.AttributeName) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.Id)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.Guid)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.LastModifiedDate)))
                 {
                     continue;
                 }
@@ -525,20 +527,20 @@ SELECT * FROM (
             {
                 new TableColumn
                 {
-                    AttributeName = nameof(IDataInfo.Id),
+                    AttributeName = nameof(DynamicEntity.Id),
                     DataType = DataType.Integer,
                     IsIdentity = true,
                     IsPrimaryKey = true
                 },
                 new TableColumn
                 {
-                    AttributeName = nameof(IDataInfo.Guid),
+                    AttributeName = nameof(DynamicEntity.Guid),
                     DataType = DataType.VarChar,
                     DataLength = 50
                 },
                 new TableColumn
                 {
-                    AttributeName = nameof(IDataInfo.LastModifiedDate),
+                    AttributeName = nameof(DynamicEntity.LastModifiedDate),
                     DataType = DataType.DateTime
                 }
             });
@@ -608,9 +610,9 @@ SELECT * FROM (
             list.Add(sqlBuilder.ToString());
             if (isContentTable)
             {
-                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_General")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(nameof(ContentInfo.IsTop))} DESC, {SqlUtils.GetQuotedIdentifier(nameof(ContentInfo.Taxis))} DESC, {SqlUtils.GetQuotedIdentifier(nameof(ContentInfo.Id))} DESC)");
+                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_General")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(ContentAttribute.IsTop)} DESC, {SqlUtils.GetQuotedIdentifier(ContentAttribute.Taxis)} DESC, {SqlUtils.GetQuotedIdentifier(ContentAttribute.Id)} DESC)");
 
-                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_Taxis")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(nameof(ContentInfo.Taxis))} DESC)");
+                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_Taxis")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(ContentAttribute.Taxis)} DESC)");
             }
 
             sqlString = TranslateUtils.ObjectCollectionToString(list, @"
@@ -1191,7 +1193,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
             }
             else
             {
-                sqlString = string.IsNullOrEmpty(orderByString) ? queryString : $"SELECT * FROM ({queryString}) {orderByString}";
+                sqlString = string.IsNullOrEmpty(orderByString) ? queryString : $"SELECT * FROM ({queryString}) tmp {orderByString}";
             }
             return sqlString;
         }
@@ -2361,9 +2363,8 @@ SET IDENTITY_INSERT {tableName} OFF
 
             // Create a command and prepare it for execution
             var cmd = transaction.Connection.CreateCommand();
-            bool mustCloseConnection;
             PrepareCommand(cmd, transaction.Connection, transaction, commandText, commandParameters,
-                out mustCloseConnection);
+                out _);
             CleanParameterSyntax(cmd);
 
             return ExecuteDataset(cmd);

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,6 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         private string _returnUrl;
         private List<int> _contentIdList;
         private string _tableName;
+        private ChannelInfo _channelInfo;
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
@@ -40,6 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
             if (IsPostBack) return;
 
@@ -54,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            if (ETaxisTypeUtils.Equals(channelInfo.Extend.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }
@@ -66,22 +69,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var tuple = DataProvider.ContentRepository.GetValue(_tableName, contentId, ContentAttribute.IsTop);
-                if (tuple == null) continue;
+                if (!_channelInfo.ContentRepository.GetChanelIdAndValue(contentId, ContentAttribute.IsTop,
+                    out var channelId, out string value)) continue;
 
-                var isTop = TranslateUtils.ToBool(tuple.Item2);
+                var isTop = TranslateUtils.ToBool(value);
                 for (var i = 1; i <= taxisNum; i++)
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentRepository.SetTaxisToUp(_tableName, _channelId, contentId, isTop) == false)
+                        if (channelInfo.ContentRepository.SetTaxisToUp(channelId, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentRepository.SetTaxisToDown(_tableName, _channelId, contentId, isTop) == false)
+                        if (channelInfo.ContentRepository.SetTaxisToDown(channelId, contentId, isTop) == false)
                         {
                             break;
                         }

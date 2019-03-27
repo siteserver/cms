@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.CMS.Tests.Database.Mocks;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using SqlKata;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -88,16 +89,15 @@ namespace SiteServer.CMS.Tests.Database.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.False(dataInfo.Date.HasValue);
             Assert.True(dataInfo.Date == null);
-
-            _output.WriteLine(dataInfo.Guid);
-            _output.WriteLine(DateUtils.GetDateAndTimeString(dataInfo.LastModifiedDate));
+            Assert.False(dataInfo.Locked);
 
             dataInfo = new TestTableInfo
             {
                 Guid = "wrong guid",
                 VarChar100 = "string",
                 Num = -100,
-                Date = DateTime.Now
+                Date = DateTime.Now,
+                Locked = true
             };
             _repository.Insert(dataInfo);
             Assert.Equal(2, dataInfo.Id);
@@ -109,6 +109,10 @@ namespace SiteServer.CMS.Tests.Database.Core
             Assert.Equal(-100, dataInfo.Num);
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
+            Assert.True(dataInfo.Locked);
+
+            _output.WriteLine(dataInfo.Guid);
+            _output.WriteLine(DateUtils.GetDateAndTimeString(dataInfo.LastModifiedDate));
         }
 
         [SkippableFact, TestPriority(2)]
@@ -150,7 +154,7 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var dataInfo = _repository.First(_repository.Q.Where(Attr.VarChar100, "string"));
+            var dataInfo = _repository.First(new Query().Where(Attr.VarChar100, "string"));
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
             Assert.True(StringUtils.IsGuid(dataInfo.Guid));
@@ -186,10 +190,10 @@ namespace SiteServer.CMS.Tests.Database.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.First(_repository.Q.Where(Attr.VarChar100, "not exists"));
+            dataInfo = _repository.First(new Query().Where(Attr.VarChar100, "not exists"));
             Assert.Null(dataInfo);
 
-            dataInfo = _repository.First(_repository.Q);
+            dataInfo = _repository.First(new Query());
             Assert.NotNull(dataInfo);
         }
 
@@ -198,14 +202,14 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var exists = _repository.Exists(_repository.Q
-                .Where("VarChar100", "string"));
+            var exists = _repository.Exists(new Query()
+                .Where(nameof(TestTableInfo.VarChar100), "string"));
             Assert.True(exists);
 
-            exists = _repository.Exists(_repository.Q.Where("VarChar100", "not exists"));
+            exists = _repository.Exists(new Query().Where(nameof(TestTableInfo.VarChar100), "not exists"));
             Assert.False(exists);
 
-            exists = _repository.Exists(_repository.Q);
+            exists = _repository.Exists(new Query());
             Assert.True(exists);
         }
 
@@ -217,7 +221,7 @@ namespace SiteServer.CMS.Tests.Database.Core
             var count = _repository.Count();
             Assert.Equal(2, count);
 
-            count = _repository.Count(_repository.Q.Where("Id", 1));
+            count = _repository.Count(new Query().Where("Id", 1));
             Assert.Equal(1, count);
         }
 
@@ -226,15 +230,15 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var guid = _repository.GetValue<string>(_repository.Q
-                .Select(nameof(IDataInfo.Guid)).Where("Id", 1));
+            var guid = _repository.GetValue<string>(new Query()
+                .Select(nameof(DynamicEntity.Guid)).Where("Id", 1));
             Assert.True(StringUtils.IsGuid(guid));
 
-            var date = _repository.GetValue<DateTime?>(_repository.Q
+            var date = _repository.GetValue<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date)).Where("Guid", guid));
             Assert.False(date.HasValue);
 
-            var lastModifiedDate = _repository.GetValue<DateTime?>(_repository.Q
+            var lastModifiedDate = _repository.GetValue<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.LastModifiedDate))
                 .Where("Guid", guid));
             Assert.True(lastModifiedDate.HasValue);
@@ -246,19 +250,19 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var guidList = _repository.GetValueList<string>(_repository.Q
+            var guidList = _repository.GetValueList<string>(new Query()
                 .Select(nameof(TestTableInfo.Guid))
                 .Where("Id", 1)).ToList();
 
             Assert.NotNull(guidList);
             Assert.True(StringUtils.IsGuid(guidList.First()));
 
-            var dateList = _repository.GetValueList<DateTime?>(_repository.Q
+            var dateList = _repository.GetValueList<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date))
                 .Where("Guid", guidList.First())).ToList();
             Assert.False(dateList.First().HasValue);
 
-            var lastModifiedDateList = _repository.GetValueList<DateTime?>(_repository.Q
+            var lastModifiedDateList = _repository.GetValueList<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.LastModifiedDate))
                 .Where("Id", 1)).ToList();
             Assert.True(lastModifiedDateList.First().HasValue);
@@ -272,7 +276,7 @@ namespace SiteServer.CMS.Tests.Database.Core
             var allList = _repository.GetAll().ToList();
             Assert.Equal(2, allList.Count);
 
-            var list = _repository.GetAll(_repository.Q
+            var list = _repository.GetAll(new Query()
                 .Where("Guid", allList[0].Guid)).ToList();
 
             Assert.Single(list);
@@ -290,7 +294,7 @@ namespace SiteServer.CMS.Tests.Database.Core
             dataInfo.Content = "new content";
             dataInfo.LastModifiedDate = DateTime.Now.AddDays(-1);
 
-            var updated = _repository.Update(dataInfo);
+            var updated = _repository.UpdateObject(dataInfo);
             Assert.True(updated);
 
             Assert.Equal(1, dataInfo.Id);
@@ -309,7 +313,7 @@ namespace SiteServer.CMS.Tests.Database.Core
             _output.WriteLine(lastModified2.ToString());
             Assert.True(lastModified2 > lastModified);
 
-            updated = _repository.Update(null);
+            updated = _repository.UpdateObject(null);
             Assert.False(updated);
         }
 
@@ -318,15 +322,14 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var lastModified = _repository.GetValue<DateTime?>(_repository.Q
-                .Select(nameof(IDataInfo.LastModifiedDate)).Where("Id", 1));
+            var lastModified = _repository.GetValue<DateTime?>(new Query()
+                .Select(nameof(DynamicEntity.LastModifiedDate)).Where("Id", 1));
             Assert.True(lastModified.HasValue);
 
-            var updated = _repository.UpdateValue(new Dictionary<string, object>
-            {
-                {"Content", "new content2"},
-                {"LastModifiedDate", DateTime.Now.AddDays(-1)}
-            }, _repository.Q.Where(nameof(Attr.Id), 1));
+            var updated = _repository.UpdateAll(new Query()
+                .Set("Content", "new content2")
+                .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
+                .Where(nameof(Attr.Id), 1));
             Assert.True(updated == 1);
 
             var dataInfo = _repository.First(1);
@@ -346,8 +349,8 @@ namespace SiteServer.CMS.Tests.Database.Core
             
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
-            updated = _repository.UpdateValue(null, _repository.Q);
-            Assert.True(updated == 0);
+            updated = _repository.UpdateAll(new Query());
+            Assert.True(updated == 2);
         }
 
         [SkippableFact, TestPriority(3)]
@@ -355,23 +358,21 @@ namespace SiteServer.CMS.Tests.Database.Core
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            var lastModified = _repository.GetValue<DateTime?>(_repository.Q
-                .Select(nameof(IDataInfo.LastModifiedDate))
+            var lastModified = _repository.GetValue<DateTime?>(new Query()
+                .Select(nameof(DynamicEntity.LastModifiedDate))
                 .Where("Id", 1));
             Assert.True(lastModified.HasValue);
 
-            var updatedCount = _repository.UpdateValue(new Dictionary<string, object>
-            {
-                {"Content", "new content2"},
-                {"LastModifiedDate", DateTime.Now.AddDays(-1)}
-            }, _repository.Q.Where("Id", 1));
+            var updatedCount = _repository.UpdateAll(new Query()
+                .Set("Content", "new content2")
+                .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
+                .Where("Id", 1));
 
             Assert.True(updatedCount == 1);
 
-            updatedCount = _repository.UpdateValue(new Dictionary<string, object>
-            {
-                {"Content", "new content3"}
-            }, _repository.Q.Where("Content", "new content2"));
+            updatedCount = _repository.UpdateAll(new Query()
+                .Set("Content", "new content3")
+                .Where("Content", "new content2"));
 
             Assert.True(updatedCount == 1);
 
@@ -381,8 +382,29 @@ namespace SiteServer.CMS.Tests.Database.Core
 
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
-            updatedCount = _repository.UpdateValue(null, null);
-            Assert.True(updatedCount == 0);
+            updatedCount = _repository.UpdateAll(null);
+            Assert.True(updatedCount == 2);
+        }
+
+        [SkippableFact, TestPriority(3)]
+        public void TestIncrementAll()
+        {
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
+
+            var dataInfo = _repository.First(1);
+            Assert.Equal(0, dataInfo.Num);
+
+            var affected = _repository.IncrementAll(Attr.Num, new Query().Where(Attr.Id, 1));
+            Assert.True(affected == 1);
+
+            dataInfo = _repository.First(1);
+            Assert.Equal(1, dataInfo.Num);
+
+            affected = _repository.DecrementAll(Attr.Num, new Query().Where(Attr.Id, 1));
+            Assert.True(affected == 1);
+
+            dataInfo = _repository.First(1);
+            Assert.Equal(0, dataInfo.Num);
         }
 
         [SkippableFact, TestPriority(4)]

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -84,16 +84,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    list = connection.Query<UserGroupInfo>(sqlString).ToList();
             //}
 
-            var list = GetObjectList(Q.OrderBy(Attr.Id));
-
-            list.Insert(0, new UserGroupInfo
-            {
-                Id = 0,
-                GroupName = "默认用户组",
-                AdminName = ConfigManager.Instance.SystemExtend.UserDefaultGroupAdminName
-            });
-
-            return list;
+            return GetObjectList(Q.OrderBy(Attr.Id));
         }
     }
 }
@@ -209,7 +200,7 @@ namespace SiteServer.CMS.Database.Repositories
 //            {
 //                Id = 0,
 //                GroupName = "默认用户组",
-//                AdminName = ConfigManager.Instance.SystemExtend.UserDefaultGroupAdminName
+//                AdminName = ConfigManager.Instance.UserDefaultGroupAdminName
 //            });
 
 //            return list;

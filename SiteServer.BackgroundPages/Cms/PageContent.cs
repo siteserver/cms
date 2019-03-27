@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 new Action(() =>
                 {
-                    DataProvider.ContentRepository.DeletePreviewContents(SiteId, _tableName, _channelInfo);
+                    _channelInfo.ContentRepository.DeletePreviewContents(SiteId, _channelInfo);
                 }).BeginInvoke(null, null);
             }
 

@@ -23,11 +23,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 		[StlAttribute(Title = "需要下载的文件地址")]
         private const string Src = nameof(Src);
 
-        [StlAttribute(Title = "显示文件大小")]
-        private const string IsFileSize = nameof(IsFileSize);
+	    [StlAttribute(Title = "仅显示文件名称")]
+	    private const string IsFileName = nameof(IsFileName);
 
-        [StlAttribute(Title = "是否记录文件下载次数")]
-        private const string IsCount = nameof(IsCount);
+	    [StlAttribute(Title = "仅显示文件类型")]
+	    private const string IsFileType = nameof(IsFileType);
+
+	    [StlAttribute(Title = "仅显示文件大小")]
+	    private const string IsFileSize = nameof(IsFileSize);
+
+	    [StlAttribute(Title = "仅显示下载次数")]
+	    private const string IsCount = nameof(IsCount);
+
+	    [StlAttribute(Title = "是否转换为小写")]
+	    private const string IsLower = nameof(IsLower);
+
+	    [StlAttribute(Title = "是否转换为大写")]
+	    private const string IsUpper = nameof(IsUpper);
 
         [StlAttribute(Title = "显示在信息前的文字")]
         private const string LeftText = nameof(LeftText);
@@ -37,11 +49,15 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var type = BackgroundContentAttribute.FileUrl;
+            var type = ContentAttribute.FileUrl;
             var no = 0;
             var src = string.Empty;
-            var isFilesize = false;
-            var isCount = true;
+            var isFileName = false;
+            var isFileType = false;
+            var isFileSize = false;
+            var isCount = false;
+            var isLower = false;
+            var isUpper = false;
             var leftText = string.Empty;
             var rightText = string.Empty;
 
@@ -61,13 +77,29 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     src = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, IsFileName))
+                {
+                    isFileName = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, IsFileType))
+                {
+                    isFileType = TranslateUtils.ToBool(value);
+                }
                 else if (StringUtils.EqualsIgnoreCase(name, IsFileSize))
                 {
-                    isFilesize = TranslateUtils.ToBool(value);
+                    isFileSize = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsCount))
                 {
                     isCount = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, IsLower))
+                {
+                    isLower = TranslateUtils.ToBool(value);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, IsUpper))
+                {
+                    isUpper = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, LeftText))
                 {
@@ -79,10 +111,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, no, src, isFilesize, isCount, leftText, rightText);
+            return ParseImpl(pageInfo, contextInfo, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFilesize, bool isCount, string leftText, string rightText)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText)
         {
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
@@ -108,16 +140,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var contentInfo = contextInfo.ContentInfo;
 
-                        if (!string.IsNullOrEmpty(contentInfo?.GetString(type)))
+                        var value = contentInfo?.Get<string>(type);
+                        
+                        if (!string.IsNullOrEmpty(value))
                         {
                             if (no <= 1)
                             {
-                                fileUrl = contentInfo.GetString(StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl) ? BackgroundContentAttribute.FileUrl : type);
+                                fileUrl = value;
                             }
                             else
                             {
                                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                                var extendValues = contentInfo.GetString(extendAttributeName);
+                                var extendValues = contentInfo.Get<string>(extendAttributeName);
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;
@@ -142,23 +176,50 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            var parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
+            string parsedContent;
 
-            if (isFilesize)
+            if (isFileName)
+            {
+                parsedContent = PathUtils.RemoveExtension(PageUtils.GetFileNameFromUrl(fileUrl));
+                if (isLower)
+                {
+                    parsedContent = parsedContent.ToLower();
+                }
+                if (isUpper)
+                {
+                    parsedContent = parsedContent.ToUpper();
+                }
+            }
+            else if (isFileType)
             {
                 var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
-                parsedContent += " (" + FileUtils.GetFileSizeByFilePath(filePath) + ")";
+                parsedContent = PathUtils.GetExtension(filePath).Trim('.');
+                if (isLower)
+                {
+                    parsedContent = parsedContent.ToLower();
+                }
+                if (isUpper)
+                {
+                    parsedContent = parsedContent.ToUpper();
+                }
+            }
+            else if (isFileSize)
+            {
+                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
+                parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
+            }
+            else if (isCount)
+            {
+                parsedContent = (contextInfo.ContentInfo?.Downloads ?? 0).ToString();
             }
             else
             {
-                if (isCount && contextInfo.ContentInfo != null)
-                {
-                    parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId, contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
-                }
-                else
-                {
-                    parsedContent = InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml, contextInfo.IsStlEntity);
-                }                
+                parsedContent = contextInfo.ContentInfo != null
+                    ? InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId,
+                        contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, contextInfo.InnerHtml,
+                        contextInfo.IsStlEntity, isLower, isUpper)
+                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes,
+                        contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

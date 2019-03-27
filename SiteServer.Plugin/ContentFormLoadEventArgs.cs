@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SiteServer.Plugin
 {
@@ -16,7 +17,7 @@ namespace SiteServer.Plugin
         /// <param name="form">表单数据。</param>
         /// <param name="attributeName">内容属性名称。</param>
         /// <param name="attributeHtml">内容属性Html标签。</param>
-        public ContentFormLoadEventArgs(int siteId, int channelId, int contentId, IAttributes form,
+        public ContentFormLoadEventArgs(int siteId, int channelId, int contentId, IDictionary<string, object> form,
             string attributeName, string attributeHtml)
         {
             SiteId = siteId;
@@ -46,7 +47,7 @@ namespace SiteServer.Plugin
         /// <summary>
         /// 表单数据。
         /// </summary>
-        public IAttributes Form { get; }
+        public IDictionary<string, object> Form { get; }
 
         /// <summary>
         /// 内容属性名称，代表内容编辑（新增）页面中的内容字段名称。

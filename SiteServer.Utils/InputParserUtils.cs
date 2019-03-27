@@ -19,18 +19,18 @@ namespace SiteServer.Utils
         //    return string.Empty;
         //}
 
-        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
+        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, string validateType, string regExp, string errorMessage)
         {
             if (isValidate)
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType.Value}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
         }
 
-        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
+        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, string validateType, string regExp, string errorMessage)
         {
             if (!isValidate) return;
 
@@ -39,7 +39,7 @@ namespace SiteServer.Utils
             control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
             control.Attributes.Add("minNum", minNum.ToString());
             control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", validateType.Value);
+            control.Attributes.Add("validateType", validateType);
             control.Attributes.Add("regExp", regExp);
             control.Attributes.Add("errorMessage", errorMessage);
             control.Attributes.Add("isListItem", true.ToString().ToLower());
@@ -59,7 +59,11 @@ namespace SiteServer.Utils
         /// <returns></returns>
         public static string GetValidateSubmitOnClickScript(string formId, bool isConfirm, string confirmFunction)
         {
-            return !isConfirm ? GetValidateSubmitOnClickScript(formId) : $"return checkFormValueById('{formId}') && {confirmFunction};";
+            if (!string.IsNullOrWhiteSpace(confirmFunction))
+            {
+                return !isConfirm ? GetValidateSubmitOnClickScript(formId) : $"return checkFormValueById('{formId}') && {confirmFunction};";
+            }
+            return !isConfirm ? GetValidateSubmitOnClickScript(formId) : $"return checkFormValueById('{formId}');";
         }
 
         //public static string GetAdditionalAttributes(string whereUsed, InputType inputType)

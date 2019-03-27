@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Cloud

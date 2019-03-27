@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -66,7 +66,6 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.FileCharset), ECharsetUtils.GetValue(templateInfo.FileCharset));
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Default), templateInfo.Default.ToString());
 
             var templateContent = TemplateManager.GetTemplateContent(siteInfo, templateInfo);
@@ -95,7 +94,6 @@ namespace SiteServer.CMS.ImportExport.Components
 			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
 			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
 			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
-			        FileCharset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.FileCharset))),
 			        Default = false
 			    };
 
@@ -113,7 +111,6 @@ namespace SiteServer.CMS.ImportExport.Components
 			            srcTemplateInfo.Type = templateInfo.Type;
 			            srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
 			            srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
-			            srcTemplateInfo.FileCharset = templateInfo.FileCharset;
 			            DataProvider.Template.Update(siteInfo, srcTemplateInfo, templateContent, administratorName);
 			            templateId = srcTemplateInfo.Id;
 			        }

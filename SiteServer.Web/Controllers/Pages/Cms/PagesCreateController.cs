@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
@@ -31,8 +32,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var parentId = rest.GetQueryInt("parentId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
-                var countDict = new Dictionary<int, int>();
-                countDict[parent.Id] = ContentManager.GetCount(siteInfo, parent, true);
+                var countDict = new Dictionary<int, int>
+                {
+                    [parent.Id] = ContentManager.GetCount(siteInfo, parent, true)
+                };
 
                 var channelInfoList = new List<ChannelInfo>();
 

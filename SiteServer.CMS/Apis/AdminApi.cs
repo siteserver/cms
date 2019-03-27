@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Apis
 
         public IPermissions GetPermissions(string userName)
         {
-            return new PermissionsImpl(userName);
+            return new PermissionsImpl(AdminManager.GetAdminInfoByUserName(userName));
         }
 
         public bool IsUserNameExists(string userName)
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.Apis
             return DataProvider.Administrator.IsMobileExists(mobile);
         }
 
-        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
 #pragma warning disable CS0612 // '“RequestImpl”已过时
             return RequestImpl.GetAccessToken(userId, userName, expiresAt);

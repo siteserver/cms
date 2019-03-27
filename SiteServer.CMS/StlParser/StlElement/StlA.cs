@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -177,9 +177,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(
-                            contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
+                            contextInfo.ContentInfo?.Get<string>("ContentAttribute.TitleFormatString"), title);
 
-                        if (pageInfo.SiteInfo.Extend.IsContentTitleBreakLine)
+                        if (pageInfo.SiteInfo.IsContentTitleBreakLine)
                         {
                             title = title.Replace("  ", string.Empty);
                         }
@@ -216,7 +216,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            if (url.Equals(PageUtils.UnclickedUrl))
+            if (url.Equals(PageUtils.UnClickedUrl))
             {
                 removeTarget = true;
             }

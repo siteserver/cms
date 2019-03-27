@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit([FromBody] UserGroupInfo itemObj)
+        public IHttpActionResult Submit()
         {
             try
             {
@@ -77,26 +77,30 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                if (itemObj.Id == -1)
+                var id = rest.GetPostInt("id");
+                var groupName = rest.GetPostString("groupName");
+                var adminName = rest.GetPostString("adminName");
+
+                if (id == -1)
                 {
-                    if (UserGroupManager.IsExists(itemObj.GroupName))
+                    if (UserGroupManager.IsExists(groupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
 
                     var groupInfo = new UserGroupInfo
                     {
-                        GroupName = itemObj.GroupName,
-                        AdminName = itemObj.AdminName
+                        GroupName = groupName,
+                        AdminName = adminName
                     };
 
                     DataProvider.UserGroup.Insert(groupInfo);
 
                     rest.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
-                else if (itemObj.Id == 0)
+                else if (id == 0)
                 {
-                    ConfigManager.Instance.SystemExtend.UserDefaultGroupAdminName = itemObj.AdminName;
+                    ConfigManager.Instance.UserDefaultGroupAdminName = adminName;
 
                     DataProvider.Config.Update(ConfigManager.Instance);
 
@@ -104,17 +108,17 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     rest.AddAdminLog("修改用户组", "用户组:默认用户组");
                 }
-                else if (itemObj.Id > 0)
+                else if (id > 0)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupInfo(itemObj.Id);
+                    var groupInfo = UserGroupManager.GetUserGroupInfo(id);
 
-                    if (groupInfo.GroupName != itemObj.GroupName && UserGroupManager.IsExists(itemObj.GroupName))
+                    if (groupInfo.GroupName != groupName && UserGroupManager.IsExists(groupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
 
-                    groupInfo.GroupName = itemObj.GroupName;
-                    groupInfo.AdminName = itemObj.AdminName;
+                    groupInfo.GroupName = groupName;
+                    groupInfo.AdminName = adminName;
 
                     DataProvider.UserGroup.Update(groupInfo);
 

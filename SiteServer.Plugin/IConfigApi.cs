@@ -67,10 +67,5 @@
         /// </returns>
         bool RemoveConfig(string pluginId, int siteId, string key = "");
 #pragma warning restore CS1573 // 参数“pluginId”在“IConfigApi.RemoveConfig(string, int, string)”的 XML 注释中没有匹配的 param 标记(但其他参数有)
-
-        /// <summary>
-        /// 获取 SiteServer CMS 的系统配置字典。
-        /// </summary>
-        IAttributes Config { get; }
     }
 }

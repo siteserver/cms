@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using SiteServer.CMS.Apis;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -52,9 +52,9 @@ namespace SiteServer.CMS.Database.Repositories
 
         public void DeleteIfThreshold()
         {
-            if (!ConfigManager.Instance.SystemExtend.IsTimeThreshold) return;
+            if (!ConfigManager.Instance.IsTimeThreshold) return;
 
-            var days = ConfigManager.Instance.SystemExtend.TimeThreshold;
+            var days = ConfigManager.Instance.TimeThreshold;
             if (days <= 0) return;
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
@@ -391,9 +391,9 @@ SELECT COUNT(*) AS AddNum, UserName FROM (
 
 //        public void DeleteIfThreshold()
 //        {
-//            if (!ConfigManager.Instance.SystemExtend.IsTimeThreshold) return;
+//            if (!ConfigManager.Instance.IsTimeThreshold) return;
 
-//            var days = ConfigManager.Instance.SystemExtend.TimeThreshold;
+//            var days = ConfigManager.Instance.TimeThreshold;
 //            if (days <= 0) return;
 
 //            DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");

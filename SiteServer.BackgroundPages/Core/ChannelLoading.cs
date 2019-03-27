@@ -3,9 +3,9 @@ using System.Text;
 using SiteServer.Utils;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -18,7 +18,8 @@ namespace SiteServer.BackgroundPages.Core
         public static string GetChannelRowHtml(SiteInfo siteInfo, ChannelInfo channelInfo, bool enabled, ELoadingType loadingType, NameValueCollection additional, PermissionsImpl permissionsImpl)
         {
             var nodeTreeItem = ChannelTreeItem.CreateInstance(siteInfo, channelInfo, enabled, permissionsImpl);
-            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, channelInfo.Id), additional);
+            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+            var title = nodeTreeItem.GetItemHtml(loadingType, PageChannel.GetRedirectUrl(siteInfo.Id, channelInfo.Id), onlyAdminId, additional);
 
             var rowHtml = string.Empty;
 
@@ -122,7 +123,7 @@ namespace SiteServer.BackgroundPages.Core
                 }
 
                 var nodeNameBuilder = new StringBuilder();
-                var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Extend.CreateChannelIdsIfContentChanged);
+                var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.CreateChannelIdsIfContentChanged);
                 foreach (var theChannelId in channelIdList)
                 {
                     var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, theChannelId);

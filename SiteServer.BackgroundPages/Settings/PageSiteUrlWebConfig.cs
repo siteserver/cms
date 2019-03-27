@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
@@ -36,9 +36,9 @@ namespace SiteServer.BackgroundPages.Settings
             LtlSiteName.Text = SiteInfo.SiteName;
 
             EBooleanUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.Extend.IsSeparatedWeb.ToString());
-            PhSeparatedWeb.Visible = SiteInfo.Extend.IsSeparatedWeb;
-            TbSeparatedWebUrl.Text = SiteInfo.Extend.SeparatedWebUrl;
+            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.IsSeparatedWeb.ToString());
+            PhSeparatedWeb.Visible = SiteInfo.IsSeparatedWeb;
+            TbSeparatedWebUrl.Text = PageUtils.AddEndSlashToUrl(SiteInfo.SeparatedWebUrl);
         }
 
         public void RblIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
@@ -48,11 +48,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            SiteInfo.Extend.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
-            SiteInfo.Extend.SeparatedWebUrl = TbSeparatedWebUrl.Text;
-            if (!string.IsNullOrEmpty(SiteInfo.Extend.SeparatedWebUrl) && !SiteInfo.Extend.SeparatedWebUrl.EndsWith("/"))
+            SiteInfo.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
+            SiteInfo.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            if (!string.IsNullOrEmpty(SiteInfo.SeparatedWebUrl) && !SiteInfo.SeparatedWebUrl.EndsWith("/"))
             {
-                SiteInfo.Extend.SeparatedWebUrl = SiteInfo.Extend.SeparatedWebUrl + "/";
+                SiteInfo.SeparatedWebUrl = PageUtils.AddEndSlashToUrl(SiteInfo.SeparatedWebUrl);
             }
 
             DataProvider.Site.Update(SiteInfo);

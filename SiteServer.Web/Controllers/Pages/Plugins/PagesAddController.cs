@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 

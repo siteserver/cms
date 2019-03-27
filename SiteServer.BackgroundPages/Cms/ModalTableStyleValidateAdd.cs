@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
@@ -67,23 +67,23 @@ namespace SiteServer.BackgroundPages.Cms
             DdlIsValidate.Items[0].Value = true.ToString();
             DdlIsValidate.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Extend.IsValidate.ToString());
+            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Validate.ToString());
 
             DdlIsRequired.Items[0].Value = true.ToString();
             DdlIsRequired.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Extend.IsRequired.ToString());
+            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Required.ToString());
 
             PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.Type, InputType.Text, InputType.TextArea);
 
-            TbMinNum.Text = _styleInfo.Extend.MinNum.ToString();
-            TbMaxNum.Text = _styleInfo.Extend.MaxNum.ToString();
+            TbMinNum.Text = _styleInfo.MinNum.ToString();
+            TbMaxNum.Text = _styleInfo.MaxNum.ToString();
 
             ValidateTypeUtils.AddListItems(DdlValidateType);
-            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Extend.ValidateType.Value);
+            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.ValidateType);
 
-            TbRegExp.Text = _styleInfo.Extend.RegExp;
-            TbErrorMessage.Text = _styleInfo.Extend.ErrorMessage;
+            TbRegExp.Text = _styleInfo.RegExp;
+            TbErrorMessage.Text = _styleInfo.ErrorMessage;
 
             DdlValidate_SelectedIndexChanged(null, EventArgs.Empty);
         }
@@ -109,13 +109,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var isChanged = false;
 
-            _styleInfo.Extend.IsValidate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
-            _styleInfo.Extend.IsRequired = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
-            _styleInfo.Extend.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
-            _styleInfo.Extend.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
-            _styleInfo.Extend.ValidateType = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
-            _styleInfo.Extend.RegExp = TbRegExp.Text.Trim('/');
-            _styleInfo.Extend.ErrorMessage = TbErrorMessage.Text;
+            _styleInfo.Validate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
+            _styleInfo.Required = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
+            _styleInfo.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
+            _styleInfo.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
+            _styleInfo.ValidateType = DdlValidateType.SelectedValue;
+            _styleInfo.RegExp = TbRegExp.Text.Trim('/');
+            _styleInfo.ErrorMessage = TbErrorMessage.Text;
 
             try
             {

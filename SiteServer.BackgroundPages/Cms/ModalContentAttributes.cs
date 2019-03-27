@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -65,19 +66,19 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = true;
+                                    contentInfo.Recommend = true;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = true;
+                                    contentInfo.Hot = true;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = true;
+                                    contentInfo.Color = true;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = true;
+                                    contentInfo.Top = true;
                                 }
                                 DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                             }
@@ -99,19 +100,19 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = false;
+                                    contentInfo.Recommend = false;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = false;
+                                    contentInfo.Hot = false;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = false;
+                                    contentInfo.Color = false;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = false;
+                                    contentInfo.Top = false;
                                 }
                                 DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                             }

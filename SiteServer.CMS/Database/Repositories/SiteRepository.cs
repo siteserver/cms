@@ -2,7 +2,7 @@
 using System.Data;
 using System.Linq;
 using SiteServer.CMS.Apis;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
@@ -39,7 +39,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamIsRoot, siteInfo.IsRoot.ToString()),
             //    GetParameter(ParamParentId, siteInfo.ParentId),
             //    GetParameter(ParamTaxis, taxis),
-            //    GetParameter(ParamSettingsXml,siteInfo.Extend.ToString())
+            //    GetParameter(ParamSettingsXml,siteInfo.ToString())
             //};
 
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
@@ -83,7 +83,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    GetParameter(ParamIsRoot, siteInfo.IsRoot.ToString()),
             //    GetParameter(ParamParentId, siteInfo.ParentId),
             //    GetParameter(ParamTaxis, siteInfo.Taxis),
-            //    GetParameter(ParamSettingsXml,siteInfo.Extend.ToString()),
+            //    GetParameter(ParamSettingsXml,siteInfo.ToString()),
             //    GetParameter(ParamId, siteInfo.Id)
             //};
 
@@ -110,11 +110,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.TableName, tableName }
-            }, Q.Where(nameof(Attr.Id), siteId));
+            
+            UpdateAll(Q
+                .Set(Attr.TableName, tableName)
+                .Where(Attr.Id, siteId)
+            );
 
             SiteManager.ClearCache();
         }
@@ -124,11 +124,11 @@ namespace SiteServer.CMS.Database.Repositories
             //var sqlString = "UPDATE siteserver_Site SET ParentId = 0 WHERE ParentId = " + parentId;
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.ParentId, 0}
-            }, Q.Where(Attr.ParentId, parentId));
+            
+            UpdateAll(Q
+                .Set(Attr.ParentId, 0)
+                .Where(Attr.ParentId, parentId)
+            );
 
             SiteManager.ClearCache();
         }
@@ -171,11 +171,10 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-            UpdateValue(new Dictionary<string, object>
-            {
-                {Attr.IsRoot, false.ToString()}
-            });
+            
+            UpdateAll(Q
+                .Set(Attr.IsRoot, false.ToString())
+            );
 
             SiteManager.ClearCache();
         }
@@ -374,7 +373,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             //const string sqlString = "SELECT MAX(Taxis) FROM siteserver_Site";
             //return DatabaseApi.GetIntResult(sqlString);
-            return Max(Attr.Taxis);
+            return Max(Attr.Taxis) ?? 0;
         }
     }
 }
@@ -467,7 +466,7 @@ namespace SiteServer.CMS.Database.Repositories
 //				GetParameter(ParamIsRoot, siteInfo.IsRoot.ToString()),
 //                GetParameter(ParamParentId, siteInfo.ParentId),
 //                GetParameter(ParamTaxis, taxis),
-//				GetParameter(ParamSettingsXml,siteInfo.Extend.ToString())
+//				GetParameter(ParamSettingsXml,siteInfo.ToString())
 //			};
 
 //            DatabaseApi.ExecuteNonQuery(trans, sqlString, parameters);
@@ -505,7 +504,7 @@ namespace SiteServer.CMS.Database.Repositories
 //				GetParameter(ParamIsRoot, siteInfo.IsRoot.ToString()),
 //                GetParameter(ParamParentId, siteInfo.ParentId),
 //                GetParameter(ParamTaxis, siteInfo.Taxis),
-//				GetParameter(ParamSettingsXml,siteInfo.Extend.ToString()),
+//				GetParameter(ParamSettingsXml,siteInfo.ToString()),
 //				GetParameter(ParamId, siteInfo.Id)
 //			};
 

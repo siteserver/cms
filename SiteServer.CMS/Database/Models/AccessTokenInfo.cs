@@ -1,28 +1,27 @@
 ﻿using System;
-using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Wrapper;
 
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_AccessToken")]
-    public class AccessTokenInfo : IDataInfo
+    public class AccessTokenInfo : DynamicEntity
     {
-        public int Id { get; set; }
-
-        public string Guid { get; set; }
-
-        public DateTime? LastModifiedDate { get; set; }
-
+        [TableColumn]
         public string Title { get; set; }
 
+        [TableColumn]
         public string Token { get; set; }
 
+        [TableColumn]
         public string AdminName { get; set; }
 
+        [TableColumn]
         public string Scopes { get; set; }
 
+        [TableColumn]
         public int RateLimit { get; set; }
 
+        [TableColumn]
         public DateTimeOffset? AddDate { get; set; }
     }
 }

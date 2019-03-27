@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Dapper;
-using Dapper.Contrib.Extensions;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SqlKata;
-using SqlKata.Compilers;
 
 namespace SiteServer.CMS.Database.Core
 {
@@ -16,209 +12,76 @@ namespace SiteServer.CMS.Database.Core
         public abstract string TableName { get; }
         public abstract List<TableColumn> TableColumns { get; }
 
-        private readonly Lazy<Compiler> _compiler = new Lazy<Compiler>(() => SqlDifferences.GetCompiler(WebConfigUtils.DatabaseType));
-
-        private KeyValuePair<string, Dictionary<string, object>> Compile(Query xQuery, Tuple<string, Dictionary<string, object>> replace = null)
-        {
-            string sql;
-            Dictionary<string, object> bindings;
-            var compiled = _compiler.Value.Compile(xQuery);
-
-            if (replace != null)
-            {
-                sql = replace.Item1;
-                bindings = replace.Item2;
-
-                var index = compiled.Sql.IndexOf(" WHERE ", StringComparison.Ordinal);
-                if (index != -1)
-                {
-                    sql += compiled.Sql.Substring(index);
-                }
-                foreach (var binding in compiled.NamedBindings)
-                {
-                    bindings[binding.Key] = binding.Value;
-                }
-
-//#if DEBUG
-//                FileUtils.AppendText(PathUtils.GetTemporaryFilesPath($"log.{DateUtils.GetDateString(DateTime.Now)}.sql"), $@"
-//sql:{sql}
-//bindings:{TranslateUtils.JsonSerialize(bindings)}
-//");
-//#endif
-            }
-            else
-            {
-                sql = compiled.Sql;
-                bindings = compiled.NamedBindings;
-//#if DEBUG
-//                FileUtils.AppendText(PathUtils.GetTemporaryFilesPath($"log.{DateUtils.GetDateString(DateTime.Now)}.sql"), $@"
-//{compiled}
-//");
-//#endif
-            }
-
-            return new KeyValuePair<string, Dictionary<string, object>>(sql, bindings);
-        }
-
-        private Query GetXQuery(Query query)
-        {
-            return query != null ? query.Clone().From(TableName) : new Query(TableName);
-        }
-
-        private IDbConnection GetConnection()
-        {
-            return SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-        }
-
-        protected Query Q => NewQuery();
-
-        public Query NewQuery()
-        {
-            return new Query();
-        }
-
-        protected int InsertObject<T>(T dataInfo) where T : class, IDataInfo
-        {
-            if (dataInfo == null) return 0;
-            dataInfo.Guid = StringUtils.GetGuid();
-            dataInfo.LastModifiedDate = DateTime.Now;
-            using (var connection = GetConnection())
-            {
-                dataInfo.Id = Convert.ToInt32(connection.Insert(dataInfo));
-            }
-
-            return dataInfo.Id;
-        }
+        protected Query Q => new Query();
 
         protected bool Exists(int id)
         {
-            return id > 0 && Exists(Q.Where(nameof(IDataInfo.Id), id));
+            return id > 0 && Exists(Q.Where(nameof(DynamicEntity.Id), id));
         }
 
         protected bool Exists(string guid)
         {
-            return StringUtils.IsGuid(guid) && Exists(Q.Where(nameof(IDataInfo.Guid), guid));
+            return StringUtils.IsGuid(guid) && Exists(Q.Where(nameof(DynamicEntity.Guid), guid));
         }
 
         protected bool Exists(Query query = null)
         {
-            bool exists;
-            var xQuery = GetXQuery(query);
-            xQuery.ClearComponent("select").SelectRaw("COUNT(1)").ClearComponent("order");
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                exists = connection.ExecuteScalar<bool>(result.Key, result.Value);
-            }
-
-            return exists;
+            return RepositoryHelper.Exists(TableName, query);
         }
 
         protected int Count(Query query = null)
         {
-            int count;
-            var xQuery = GetXQuery(query);
-            xQuery.ClearComponent("order").AsCount();
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                count = connection.ExecuteScalar<int>(result.Key, result.Value);
-            }
+            return RepositoryHelper.Count(TableName, query);
+        }
 
-            return count;
+        protected int Sum(string column, Query query = null)
+        {
+            return RepositoryHelper.Sum(TableName, column, query);
         }
 
         protected TValue GetValue<TValue>(Query query)
         {
-            if (query == null) return default(TValue);
-
-            TValue value;
-
-            var xQuery = GetXQuery(query);
-            xQuery.Limit(1);
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                value = connection.QueryFirstOrDefault<TValue>(result.Key, result.Value);
-            }
-
-            return value;
+            return RepositoryHelper.GetValue<TValue>(TableName, query);
         }
 
         protected IList<TValue> GetValueList<TValue>(Query query = null)
         {
-            IList<TValue> values;
-
-            var xQuery = GetXQuery(query);
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                values = connection.Query<TValue>(result.Key, result.Value).ToList();
-            }
-
-            return values;
+            return RepositoryHelper.GetValueList<TValue>(TableName, query);
         }
 
-        protected int Max(string columnName, Query query = null)
+        protected int? Max(string columnName, Query query = null)
         {
-            int? value;
-
-            var xQuery = GetXQuery(query);
-            xQuery.AsMax(columnName);
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                value = connection.QueryFirstOrDefault<int?>(result.Key, result.Value);
-            }
-
-            return value ?? 0;
+            return RepositoryHelper.Max(TableName, columnName, query);
         }
 
-        protected T GetObjectById<T>(int id) where T : class, IDataInfo
+        protected T GetObjectById<T>(int id) where T : DynamicEntity
         {
-            return id <= 0 ? null : GetObject<T>(Q.Where(nameof(IDataInfo.Id), id));
+            return id <= 0 ? null : GetObject<T>(Q.Where(nameof(DynamicEntity.Id), id));
         }
 
-        protected T GetObjectByGuid<T>(string guid) where T : class, IDataInfo
+        protected T GetObjectByGuid<T>(string guid) where T : DynamicEntity
         {
-            return !StringUtils.IsGuid(guid) ? null : GetObject<T>(Q.Where(nameof(IDataInfo.Guid), guid));
+            return !StringUtils.IsGuid(guid) ? null : GetObject<T>(Q.Where(nameof(DynamicEntity.Guid), guid));
         }
 
-        protected T GetObject<T>(Query query = null) where T : class, IDataInfo
+        protected T GetObject<T>(Query query = null) where T : DynamicEntity
         {
-            T value;
-            var xQuery = GetXQuery(query);
-            xQuery.ClearComponent("select").SelectRaw("*").Limit(1);
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                value = connection.QueryFirstOrDefault<T>(result.Key, result.Value);
-            }
-
-            return _CheckGuid(value);
+            return RepositoryHelper.GetObject<T>(TableName, query);
         }
 
-        protected IList<T> GetObjectList<T>(Query query = null) where T : class, IDataInfo
+        protected IList<T> GetObjectList<T>(Query query = null) where T : DynamicEntity
         {
-            IList<T> values;
-            var xQuery = GetXQuery(query);
-            xQuery.ClearComponent("select").SelectRaw("*");
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                values = connection.Query<T>(result.Key, result.Value).ToList();
-            }
-            foreach (var dataInfo in values)
-            {
-                _CheckGuid(dataInfo);
-            }
-            return values;
+            return RepositoryHelper.GetObjectList<T>(TableName, query);
         }
 
-        protected bool UpdateObject<T>(T dataInfo) where T : class, IDataInfo
+        protected int InsertObject<T>(T dataInfo) where T : DynamicEntity
         {
-            bool updated;
-            if (dataInfo == null) return false;
+            return RepositoryHelper.InsertObject(TableName, TableColumns, dataInfo);
+        }
+
+        protected bool UpdateObject<T>(T dataInfo) where T : DynamicEntity
+        {
+            if (dataInfo == null || dataInfo.Id <= 0) return false;
 
             if (!StringUtils.IsGuid(dataInfo.Guid))
             {
@@ -226,12 +89,33 @@ namespace SiteServer.CMS.Database.Core
             }
             dataInfo.LastModifiedDate = DateTime.Now;
 
-            using (var connection = GetConnection())
+            var query = Q.Where(nameof(DynamicEntity.Id), dataInfo.Id);
+            
+            foreach (var tableColumn in TableColumns)
             {
-                updated = connection.Update(dataInfo);
+                if (StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.Id))) continue;
+
+                var value = tableColumn.IsExtend
+                    ? TranslateUtils.JsonSerialize(dataInfo.ToDictionary(dataInfo.GetColumnNames()))
+                    : dataInfo.Get(tableColumn.AttributeName);
+
+                query.Set(tableColumn.AttributeName, value);
             }
 
-            return updated;
+            //var values = RepositoryUtils.ObjToDict(dataInfo, TableColumns.Select(x => x.AttributeName).ToList(), nameof(IEntity.Id));
+            //foreach (var value in values)
+            //{
+            //    query.Set(value.Key, value.Value);
+            //}
+
+            return RepositoryHelper.UpdateAll(TableName, query) > 0;
+
+            //using (var connection = GetConnection())
+            //{
+            //    updated = connection.Update(values);
+            //}
+
+            //return updated;
         }
 
         //protected bool UpdateById(IDictionary<string, object> values, int id)
@@ -248,126 +132,80 @@ namespace SiteServer.CMS.Database.Core
         //    return UpdateValue(values, Q.Where(nameof(IDataInfo.Guid), guid)) > 0;
         //}
 
-        protected bool UpdateObject<T>(T dataInfo, params string[] columnNames) where T : class, IDataInfo
+        protected bool UpdateObject<T>(T dataInfo, params string[] columnNames) where T : DynamicEntity
         {
-            var values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            foreach (var columnName in columnNames)
-            {
-                values[columnName] = ReflectionUtils.GetValue(dataInfo, columnName);
-            }
-
             if (dataInfo.Id > 0)
             {
-                return UpdateValue(values, Q.Where(nameof(IDataInfo.Id), dataInfo.Id)) > 0;
+                var query = Q.Where(nameof(DynamicEntity.Id), dataInfo.Id);
+
+                foreach (var columnName in columnNames)
+                {
+                    if (StringUtils.EqualsIgnoreCase(columnName, nameof(DynamicEntity.Id))) continue;
+                    query.Set(columnName, ReflectionUtils.GetValue(dataInfo, columnName));
+                }
+
+                //var values = RepositoryUtils.ObjToDict(dataInfo, columnNames, nameof(IEntity.Id));
+                //foreach (var value in values)
+                //{
+                //    query.Set(value.Key, value.Value);
+                //}
+                return RepositoryHelper.UpdateAll(TableName, query) > 0;
             }
             if (StringUtils.IsGuid(dataInfo.Guid))
             {
-                return UpdateValue(values, Q.Where(nameof(IDataInfo.Guid), dataInfo.Guid)) > 0;
+                var query = Q.Where(nameof(DynamicEntity.Guid), dataInfo.Guid);
+
+                foreach (var columnName in columnNames)
+                {
+                    if (StringUtils.EqualsIgnoreCase(columnName, nameof(DynamicEntity.Id)) || 
+                        StringUtils.EqualsIgnoreCase(columnName, nameof(DynamicEntity.Guid))) continue;
+                    query.Set(columnName, ReflectionUtils.GetValue(dataInfo, columnName));
+                }
+
+                //var values = RepositoryUtils.ObjToDict(dataInfo, columnNames, nameof(IEntity.Id), nameof(IEntity.Guid));
+                //foreach (var value in values)
+                //{
+                //    query.Set(value.Key, value.Value);
+                //}
+                
+                return RepositoryHelper.UpdateAll(TableName, query) > 0;
             }
 
             return false;
         }
 
-        protected int UpdateValue(IDictionary<string, object> values, Query query = null)
+        protected int UpdateAll(Query query)
         {
-            if (values == null || values.Count == 0) return 0;
-
-            int affected;
-            var dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            foreach (var key in values.Keys)
-            {
-                dictionary[key] = values[key];
-            }
-            dictionary[nameof(IDataInfo.LastModifiedDate)] = DateTime.Now;
-            var xQuery = GetXQuery(query);
-            xQuery.AsUpdate(dictionary);
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                affected = connection.Execute(result.Key, result.Value);
-            }
-
-            return affected;
+            return RepositoryHelper.UpdateAll(TableName, query);
         }
 
         protected bool DeleteById(int id)
         {
             if (id <= 0) return false;
 
-            return DeleteAll(Q.Where(nameof(IDataInfo.Id), id)) > 0;
+            return DeleteAll(Q.Where(nameof(DynamicEntity.Id), id)) > 0;
         }
 
         protected bool DeleteByGuid(string guid)
         {
             if (!StringUtils.IsGuid(guid)) return false;
 
-            return DeleteAll(Q.Where(nameof(IDataInfo.Guid), guid)) > 0;
+            return DeleteAll(Q.Where(nameof(DynamicEntity.Guid), guid)) > 0;
         }
 
         protected int DeleteAll(Query query = null)
         {
-            int affected;
-            var xQuery = GetXQuery(query);
-            xQuery.AsDelete();
-            var result = Compile(xQuery);
-            using (var connection = GetConnection())
-            {
-                affected = connection.Execute(result.Key, result.Value);
-            }
-
-            return affected;
+            return RepositoryHelper.DeleteAll(TableName, query);
         }
 
         protected int IncrementAll(string columnName, Query query, int num = 1)
         {
-            if (string.IsNullOrWhiteSpace(columnName)) return 0;
-
-            int affected;
-            var sql =
-                $"UPDATE {TableName} SET {columnName} = {SqlDifferences.ColumnIncrement(columnName, num)}, {nameof(IDataInfo.LastModifiedDate)} = @{nameof(IDataInfo.LastModifiedDate)}";
-            var bindings = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-            {
-                [nameof(IDataInfo.LastModifiedDate)] = DateTime.Now
-            };
-            var xQuery = GetXQuery(query);
-            var result = Compile(xQuery, new Tuple<string, Dictionary<string, object>>(sql, bindings));
-            using (var connection = GetConnection())
-            {
-                affected = connection.Execute(result.Key, result.Value);
-            }
-
-            return affected;
+            return RepositoryHelper.IncrementAll(TableName, columnName, query, num);
         }
 
         protected int DecrementAll(string columnName, Query query, int num = 1)
         {
-            if (string.IsNullOrWhiteSpace(columnName)) return 0;
-
-            int affected;
-            var sql =
-                $"UPDATE {TableName} SET {columnName} = {SqlDifferences.ColumnDecrement(columnName, num)}, {nameof(IDataInfo.LastModifiedDate)} = @{nameof(IDataInfo.LastModifiedDate)}";
-            var bindings = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
-            {
-                [nameof(IDataInfo.LastModifiedDate)] = DateTime.Now
-            };
-            var xQuery = GetXQuery(query);
-            var result = Compile(xQuery, new Tuple<string, Dictionary<string, object>>(sql, bindings));
-            using (var connection = GetConnection())
-            {
-                affected = connection.Execute(result.Key, result.Value);
-            }
-
-            return affected;
-        }
-
-        private T _CheckGuid<T>(T dataInfo) where T : class, IDataInfo
-        {
-            if (dataInfo != null && !StringUtils.IsGuid(dataInfo.Guid))
-            {
-                UpdateObject(dataInfo);
-            }
-
-            return dataInfo;
+            return RepositoryHelper.DecrementAll(TableName, columnName, query, num);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                if (!ConfigManager.Instance.SystemExtend.IsLogError) return 0;
+                if (!ConfigManager.Instance.IsLogError) return 0;
 
                 DataProvider.ErrorLog.DeleteIfThreshold();
 
@@ -119,7 +119,7 @@ stl: {stlContent}
 
         public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
         {
-            if (!ConfigManager.Instance.SystemExtend.IsLogSite) return;
+            if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
@@ -166,7 +166,7 @@ stl: {stlContent}
 
         public static void AddAdminLog(string adminName, string action, string summary = "")
         {
-            if (!ConfigManager.Instance.SystemExtend.IsLogAdmin) return;
+            if (!ConfigManager.Instance.IsLogAdmin) return;
 
             try
             {
@@ -204,7 +204,7 @@ stl: {stlContent}
 
         public static void AddUserLog(string userName, string actionType, string summary)
         {
-            if (!ConfigManager.Instance.SystemExtend.IsLogUser) return;
+            if (!ConfigManager.Instance.IsLogUser) return;
 
             try
             {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
@@ -8,14 +8,15 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.Create
 {
-    public class DeleteManager
+    public static class DeleteManager
     {
         public static void DeleteContentsByPage(SiteInfo siteInfo, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                
+                var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
@@ -29,7 +30,7 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteContents(SiteInfo siteInfo, int channelId, List<int> contentIdList)
+        public static void DeleteContents(SiteInfo siteInfo, int channelId, IList<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -51,8 +52,9 @@ namespace SiteServer.CMS.Core.Create
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentRepository.GetContentIdList(tableName, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                
+                var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
                     DeleteContents(siteInfo, channelId, contentIdList);

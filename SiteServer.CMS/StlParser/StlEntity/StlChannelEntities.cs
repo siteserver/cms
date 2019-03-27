@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -159,7 +159,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        parsedContent = GetValue(attributeName, nodeInfo.Attributes, false, styleInfo.DefaultValue);
+                        parsedContent = nodeInfo.Get(attributeName, styleInfo.DefaultValue);
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
                             if (InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
@@ -168,7 +168,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, null, pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty, true, false, false);
                             }
                         }
                     }
@@ -180,17 +180,6 @@ namespace SiteServer.CMS.StlParser.StlEntity
             }
 
             return parsedContent;
-        }
-
-        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
-        {
-            var value = attributes.Get(attributeName);
-            if (isAddAndNotPostBack && value == null)
-            {
-                value = defaultValue;
-            } 
-
-            return value.ToString();
         }
     }
 }

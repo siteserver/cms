@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 
@@ -86,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 
-            if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (_contentInfo.ReferenceId > 0 && _contentInfo.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 var referenceSiteId = DataProvider.Channel.GetSiteId(_contentInfo.SourceId);
                 var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var styleInfo = (TableStyleInfo)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), SiteInfo, styleInfo);
+            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.Get<string>(styleInfo.AttributeName), SiteInfo, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

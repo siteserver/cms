@@ -4,11 +4,11 @@ using System.IO;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Attributes;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -162,7 +162,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-                var isChecked = checkedLevel >= siteInfo.Extend.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -185,7 +185,7 @@ namespace SiteServer.API.Controllers.Home
                         SourceId = SourceManager.User,
                         AdminId = rest.AdminId,
                         UserId = rest.UserId,
-                        IsChecked = isChecked,
+                        Checked = isChecked,
                         CheckedLevel = checkedLevel
                     };
 

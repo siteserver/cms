@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Database.Caches;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemExtend
+                    Value = ConfigManager.Instance
                 });
             }
             catch (Exception ex)
@@ -45,16 +45,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                ConfigManager.Instance.SystemExtend.IsUserRegistrationAllowed = rest.GetPostBool("isUserRegistrationAllowed");
-                ConfigManager.Instance.SystemExtend.IsUserRegistrationChecked = rest.GetPostBool("isUserRegistrationChecked");
-                ConfigManager.Instance.SystemExtend.IsUserUnRegistrationAllowed = rest.GetPostBool("isUserUnRegistrationAllowed");
-                ConfigManager.Instance.SystemExtend.UserPasswordMinLength = rest.GetPostInt("userPasswordMinLength");
-                ConfigManager.Instance.SystemExtend.UserPasswordRestriction = rest.GetPostString("userPasswordRestriction");
-                ConfigManager.Instance.SystemExtend.UserRegistrationMinMinutes = rest.GetPostInt("userRegistrationMinMinutes");
-                ConfigManager.Instance.SystemExtend.IsUserLockLogin = rest.GetPostBool("isUserLockLogin");
-                ConfigManager.Instance.SystemExtend.UserLockLoginCount = rest.GetPostInt("userLockLoginCount");
-                ConfigManager.Instance.SystemExtend.UserLockLoginType = rest.GetPostString("userLockLoginType");
-                ConfigManager.Instance.SystemExtend.UserLockLoginHours = rest.GetPostInt("userLockLoginHours");
+                ConfigManager.Instance.IsUserRegistrationAllowed = rest.GetPostBool("isUserRegistrationAllowed");
+                ConfigManager.Instance.IsUserRegistrationChecked = rest.GetPostBool("isUserRegistrationChecked");
+                ConfigManager.Instance.IsUserUnRegistrationAllowed = rest.GetPostBool("isUserUnRegistrationAllowed");
+                ConfigManager.Instance.UserPasswordMinLength = rest.GetPostInt("userPasswordMinLength");
+                ConfigManager.Instance.UserPasswordRestriction = rest.GetPostString("userPasswordRestriction");
+                ConfigManager.Instance.UserRegistrationMinMinutes = rest.GetPostInt("userRegistrationMinMinutes");
+                ConfigManager.Instance.IsUserLockLogin = rest.GetPostBool("isUserLockLogin");
+                ConfigManager.Instance.UserLockLoginCount = rest.GetPostInt("userLockLoginCount");
+                ConfigManager.Instance.UserLockLoginType = rest.GetPostString("userLockLoginType");
+                ConfigManager.Instance.UserLockLoginHours = rest.GetPostInt("userLockLoginHours");
 
                 DataProvider.Config.Update(ConfigManager.Instance);
 
@@ -62,7 +62,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemExtend
+                    Value = ConfigManager.Instance
                 });
             }
             catch (Exception ex)

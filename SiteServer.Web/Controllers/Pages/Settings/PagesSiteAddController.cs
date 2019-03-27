@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Database.Repositories;
@@ -189,8 +189,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     Root = isRoot
                 };
 
-                siteInfo.Extend.IsCheckContentLevel = false;
-                siteInfo.Extend.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
+                siteInfo.IsCheckContentLevel = false;
+                siteInfo.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
                 var siteId = DataProvider.Channel.InsertSiteInfo(channelInfo, siteInfo, rest.AdminName);
 

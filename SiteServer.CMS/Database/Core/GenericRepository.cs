@@ -1,82 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dapper.Contrib.Extensions;
+﻿using System.Collections.Generic;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 using SqlKata;
 
 namespace SiteServer.CMS.Database.Core
 {
-    public class GenericRepository<T> : GenericRepositoryAbstract where T : class, IDataInfo, new()
+    public class GenericRepository<T> : GenericRepositoryAbstract where T : DynamicEntity, new()
     {
-        private readonly Lazy<string> _tableName = new Lazy<string>(() =>
-        {
-            var type = typeof(T);
+        public override string TableName => ReflectionUtils.GetTableName(typeof(T));
 
-            var attribute = (TableAttribute)Attribute.GetCustomAttribute(type, typeof(TableAttribute));
-            return attribute == null ? string.Empty : attribute.Name;
-        });
-
-        public override string TableName => _tableName.Value;
-
-        private readonly Lazy<List<TableColumn>> _tableColumns = new Lazy<List<TableColumn>>(() =>
-        {
-            var tableColumns = new List<TableColumn>();
-
-            foreach (var propertyInfo in ReflectionUtils.GetAllInstancePropertyInfos(typeof(T)))
-            {
-                var attributes = propertyInfo.GetCustomAttributes(true);
-
-                if (attributes.Any(a => a is ComputedAttribute)) continue;
-
-                var dataType = DataType.VarChar;
-                var dataLength = 0;
-                if (propertyInfo.PropertyType == typeof(string))
-                {
-                    var isText = attributes.Any(a => a is TextAttribute);
-                    if (isText)
-                    {
-                        dataType = DataType.Text;
-                    }
-                    else
-                    {
-                        dataType = DataType.VarChar;
-                        var varCharAttribute = (VarCharAttribute)attributes.FirstOrDefault(a => a is VarCharAttribute);
-                        dataLength = varCharAttribute?.Length ?? 2000;
-                    }
-                }
-                else if (propertyInfo.PropertyType == typeof(int))
-                {
-                    dataType = DataType.Integer;
-                }
-                else if (propertyInfo.PropertyType == typeof(bool))
-                {
-                    dataType = DataType.Boolean;
-                }
-                else if (propertyInfo.PropertyType == typeof(DateTimeOffset) || propertyInfo.PropertyType == typeof(DateTime))
-                {
-                    dataType = DataType.DateTime;
-                }
-                else if (propertyInfo.PropertyType == typeof(double) || propertyInfo.PropertyType == typeof(decimal))
-                {
-                    dataType = DataType.Decimal;
-                }
-
-                var tableColumn = new TableColumn
-                {
-                    AttributeName = propertyInfo.Name,
-                    DataType = dataType,
-                    DataLength = dataLength
-                };
-
-                tableColumns.Add(tableColumn);
-            }
-
-            return tableColumns;
-        });
-
-        public override List<TableColumn> TableColumns => _tableColumns.Value;
+        public override List<TableColumn> TableColumns => ReflectionUtils.GetTableColumns(typeof(T));
 
         protected int InsertObject(T dataInfo)
         {
