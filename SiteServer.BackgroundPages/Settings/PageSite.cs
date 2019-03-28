@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            _hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
+            _hqSiteId = DataProvider.Site.GetIdByIsRoot();
 
             RptContents.DataSource = SiteManager.GetSiteIdListOrderByLevel();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -59,10 +59,10 @@ namespace SiteServer.BackgroundPages.Settings
             builder.Append($@"<a href=""{PageSiteEdit.GetRedirectUrl(siteId)}"" class=""m-r-5"">修改</a>");
             if (siteInfo.ParentId == 0 && (_hqSiteId == 0 || siteId == _hqSiteId))
             {
-                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(siteInfo.IsRoot ? "转移到子目录" : "转移到根目录")}</a>");
+                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(siteInfo.Root ? "转移到子目录" : "转移到根目录")}</a>");
             }
 
-            if (siteInfo.IsRoot == false)
+            if (siteInfo.Root == false)
             {
                 builder.Append($@"<a href=""{PageSiteDelete.GetRedirectUrl(siteId)}"" class=""m-r-5"">删除</a>");
             }
@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             var level = SiteManager.GetSiteLevel(siteInfo.Id);
             string psLogo;
-            if (siteInfo.IsRoot)
+            if (siteInfo.Root)
             {
                 psLogo = "siteHQ.gif";
             }
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             return
-                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{siteInfo.Additional.WebUrl}' target='_blank' title='{siteInfo.SiteName}'>{StringUtils.MaxLengthText(siteInfo.SiteName, 20)}</a>";
+                $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;<a href='{siteInfo.WebUrl}' target='_blank' title='{siteInfo.SiteName}'>{StringUtils.MaxLengthText(siteInfo.SiteName, 20)}</a>";
         }
     }
 }

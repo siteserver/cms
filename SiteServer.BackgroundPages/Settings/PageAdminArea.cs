@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -34,12 +34,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("AreaIDCollection"))
+            if (AuthRequest.IsQueryExists("DeleteById") && AuthRequest.IsQueryExists("AreaIDCollection"))
             {
                 var areaIdArrayList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("AreaIDCollection"));
                 foreach (var areaId in areaIdArrayList)
                 {
-                    DataProvider.AreaDao.Delete(areaId);
+                    DataProvider.Area.Delete(areaId);
                 }
                 SuccessMessage("成功删除所选区域");
             }
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var areaId = int.Parse(AuthRequest.GetQueryString("AreaID"));
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
-                DataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
+                DataProvider.Area.UpdateTaxis(areaId, isSubtract);
 
                 PageUtils.Redirect(GetRedirectUrl(areaId));
                 return;
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
             {
-                {"Delete", "True"}
+                {"DeleteById", "True"}
             });
 
             BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(urlDelete, "AreaIDCollection", "AreaIDCollection", "请选择需要删除的区域！", "此操作将删除对应区域以及所有下级区域，确认删除吗？"));
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void BindGrid()
         {
-            RptContents.DataSource = DataProvider.AreaDao.GetIdListByParentId(0);
+            RptContents.DataSource = DataProvider.Area.GetIdListByParentId(0);
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             RptContents.DataBind();
         }

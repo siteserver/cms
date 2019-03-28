@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -18,13 +19,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -55,18 +56,18 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
-                var pageType = request.GetPostString("pageType");
-                var groupNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("groupNames"));
-                var groupName = request.GetPostString("groupName");
-                var description = request.GetPostString("description");
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
+                var pageType = rest.GetPostString("pageType");
+                var groupNames = TranslateUtils.StringCollectionToStringList(rest.GetPostString("groupNames"));
+                var groupName = rest.GetPostString("groupName");
+                var description = rest.GetPostString("description");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -92,10 +93,10 @@ namespace SiteServer.API.Controllers.Home
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    request.AddSiteLog(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    rest.AddSiteLog(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
                 }
                 else if(pageType == "cancelGroup")
                 {
@@ -111,10 +112,10 @@ namespace SiteServer.API.Controllers.Home
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    request.AddSiteLog(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    rest.AddSiteLog(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
                 }
                 else if (pageType == "addGroup")
                 {
@@ -127,13 +128,13 @@ namespace SiteServer.API.Controllers.Home
 
                     if (ContentGroupManager.IsExists(siteId, groupInfo.GroupName))
                     {
-                        DataProvider.ContentGroupDao.Update(groupInfo);
-                        request.AddSiteLog(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
+                        DataProvider.ContentGroup.Update(groupInfo);
+                        rest.AddSiteLog(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
                     }
                     else
                     {
-                        DataProvider.ContentGroupDao.Insert(groupInfo);
-                        request.AddSiteLog(siteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
+                        DataProvider.ContentGroup.Insert(groupInfo);
+                        rest.AddSiteLog(siteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
                     }
 
                     foreach (var contentId in contentIdList)
@@ -145,10 +146,10 @@ namespace SiteServer.API.Controllers.Home
                         if (!list.Contains(groupInfo.GroupName)) list.Add(groupInfo.GroupName);
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    request.AddSiteLog(siteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
+                    rest.AddSiteLog(siteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

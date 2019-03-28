@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -45,12 +45,12 @@ namespace SiteServer.BackgroundPages.Cms
             _relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
             _parentId = AuthRequest.GetQueryInt("ParentID");
             _level = AuthRequest.GetQueryInt("Level");
-            _totalLevel = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_relatedFieldId).TotalLevel;
+            _totalLevel = DataProvider.RelatedField.Get(_relatedFieldId).TotalLevel;
 
-            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("ID"))
+            if (AuthRequest.IsQueryExists("DeleteById") && AuthRequest.IsQueryExists("ID"))
             {
                 var id = AuthRequest.GetQueryInt("ID");
-                DataProvider.RelatedFieldItemDao.Delete(id);
+                DataProvider.RelatedFieldItem.Delete(id);
                 if (_level != _totalLevel)
                 {
                     AddScript($@"parent.location.href = '{PageRelatedFieldMain.GetRedirectUrl(SiteId, _relatedFieldId, _totalLevel)}';");
@@ -62,11 +62,11 @@ namespace SiteServer.BackgroundPages.Cms
                 var isDown = AuthRequest.IsQueryExists("Down");
                 if (isDown)
                 {
-                    DataProvider.RelatedFieldItemDao.UpdateTaxisToUp(id, _parentId);
+                    DataProvider.RelatedFieldItem.UpdateTaxisToUp(id, _parentId);
                 }
                 else
                 {
-                    DataProvider.RelatedFieldItemDao.UpdateTaxisToDown(id, _parentId);
+                    DataProvider.RelatedFieldItem.UpdateTaxisToDown(id, _parentId);
                 }
             }
             else if (_level != _totalLevel)
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Cms
             //    RptContents.Columns[1].Visible = false;
             //}
 
-            RptContents.DataSource = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(_relatedFieldId, _parentId);
+            RptContents.DataSource = DataProvider.RelatedFieldItem.GetRelatedFieldItemInfoList(_relatedFieldId, _parentId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
                     SiteId, _relatedFieldId, _parentId, _level, itemInfo.Id)}"">编辑</a>";
 
             ltlDeleteUrl.Text =
-                $@"<a href=""{GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level)}&Delete=True&ID={itemInfo.Id}"" onClick=""javascript:return confirm('此操作将删除字段项“{itemInfo.ItemName}”及其子类，确认吗？');"">删除</a>";
+                $@"<a href=""{GetRedirectUrl(SiteId, _relatedFieldId, _parentId, _level)}&DeleteById=True&ID={itemInfo.Id}"" onClick=""javascript:return confirm('此操作将删除字段项“{itemInfo.ItemName}”及其子类，确认吗？');"">删除</a>";
         }
     }
 }

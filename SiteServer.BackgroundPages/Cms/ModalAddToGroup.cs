@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -112,13 +113,14 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdArrayList = _idsDictionary[channelId];
-                        if (contentIdArrayList != null)
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                        var contentIdList = _idsDictionary[channelId];
+                        if (contentIdList != null)
                         {
-                            foreach (var contentId in contentIdArrayList)
+                            foreach (var contentId in contentIdList)
                             {
-                                DataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
+                                channelInfo.ContentRepository.AddContentGroupList(contentId, groupNameList);
                             }
                         }
                     }
@@ -138,7 +140,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (int channelId in _channelIdArrayList)
                     {
-                        DataProvider.ChannelDao.AddGroupNameList(SiteId, channelId, groupNameList);
+                        DataProvider.Channel.AddGroupNameList(SiteId, channelId, groupNameList);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "添加栏目到栏目组", $"栏目组:{TranslateUtils.ObjectCollectionToString(groupNameList)}");

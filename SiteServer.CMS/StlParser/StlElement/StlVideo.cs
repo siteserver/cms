@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            var type = BackgroundContentAttribute.VideoUrl;
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var width = 0;
@@ -107,21 +108,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contextInfo.ContentInfo == null)
                         {
-                            videoUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                            var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, pageInfo.SiteId);
+                            videoUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                                if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                    videoUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }
                         else
                         {
-                            videoUrl = contextInfo.ContentInfo.GetString(type);
+                            videoUrl = contextInfo.ContentInfo.Get<string>(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                                videoUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.VideoUrl);
                             }
                         }
                     }

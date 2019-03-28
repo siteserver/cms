@@ -1,5 +1,5 @@
-﻿using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 
@@ -77,7 +77,7 @@ namespace SiteServer.CMS.Core
             {
                 visualInfo.TemplateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.IsRoot, visualInfo.PageIndex);
+                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.Root, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {

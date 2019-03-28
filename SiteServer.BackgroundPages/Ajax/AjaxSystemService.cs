@@ -6,8 +6,8 @@ using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = EDepartmentLoadingTypeUtils.GetEnumType(loadingType);
 
-            var departmentIdList = DataProvider.DepartmentDao.GetIdListByParentId(parentId);
+            var departmentIdList = DataProvider.Department.GetIdListByParentId(parentId);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
             if (!string.IsNullOrEmpty(nameValueCollection["DepartmentIDCollection"]))
             {
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
             var eLoadingType = EAreaLoadingTypeUtils.GetEnumType(loadingType);
 
-            var areaIdList = DataProvider.AreaDao.GetIdListByParentId(parentId);
+            var areaIdList = DataProvider.Area.GetIdListByParentId(parentId);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
             if (!string.IsNullOrEmpty(nameValueCollection["AreaIDCollection"]))
             {

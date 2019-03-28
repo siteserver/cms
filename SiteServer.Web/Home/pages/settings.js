@@ -139,7 +139,7 @@ var methods = {
   deleteAccount: function () {
     var $this = this;
 
-    alert({
+    swal2({
       title: "永久删除账户",
       text: "帐户删除操作无法撤销，此操作会删除您的帐户以及帐户中的所有数据",
       type: "warning",
@@ -160,7 +160,7 @@ var methods = {
             return;
           }
 
-          alert({
+          swal2({
             title: "账户已关闭",
             type: "success",
             showConfirmButton: false

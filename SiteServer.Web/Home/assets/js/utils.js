@@ -2,9 +2,9 @@ var config = {
   apiUrl: '../api'
 };
 
-var alert = swal.mixin({
+var swal2 = swal.mixin({
   confirmButtonClass: 'btn btn-primary',
-  cancelButtonClass: 'btn btn-default ml-3',
+  cancelButtonClass: 'btn btn-default ml-2',
   buttonsStyling: false,
 });
 
@@ -133,8 +133,28 @@ var utils = {
     if (!isRoot && apiUrl.indexOf('..') !== -1) {
       apiUrl = '../' + apiUrl;
     }
-    apiUrl += '/' + _.trimStart(path, '/');
-    return apiUrl;
+    if (!path) return apiUrl;
+    return apiUrl + '/' + _.trimStart(path, '/');
+  },
+
+  getPageAlert: function (error) {
+    var message = error.message;
+    if (error.response) {
+      if (error.response.status === 401) {
+        message = '检测到用户未登录或者登录已超时，请重新登录';
+      } else if (error.response.data) {
+        if (error.response.data.exceptionMessage) {
+          message = error.response.data.exceptionMessage;
+        } else if (error.response.data.message) {
+          message = error.response.data.message;
+        }
+      }
+    }
+
+    return {
+      type: "danger",
+      html: message
+    };
   },
 
   parse: function (responseText) {
@@ -286,7 +306,7 @@ var utils = {
         api.get(params, function (err, res) {
           if (err) return utils.alertError(err);
           if (res.config.isHomeClosed) {
-            alert({
+            swal2({
               title: '用户中心已关闭！',
               type: 'error',
               showConfirmButton: false,
@@ -298,7 +318,7 @@ var utils = {
         });
       }
       if (res.config.isHomeClosed) {
-        alert({
+        swal2({
           title: '用户中心已关闭！',
           text: ' ',
           type: 'error',
@@ -312,7 +332,7 @@ var utils = {
   },
 
   alertError: function (err) {
-    alert({
+    swal2({
       title: '系统错误！',
       text: '请联系管理员协助解决',
       type: 'error',
@@ -325,7 +345,7 @@ var utils = {
   alertDelete: function (config) {
     if (!config) return false;
 
-    alert({
+    swal2({
       title: config.title,
       text: config.text,
       type: 'question',

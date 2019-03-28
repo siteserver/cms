@@ -2,9 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,15 +46,15 @@ namespace SiteServer.BackgroundPages.Cms
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
             }
 
             if (string.IsNullOrEmpty(_assetsDir)) return;
@@ -75,18 +73,18 @@ namespace SiteServer.BackgroundPages.Cms
                 var assetsDir = TbDirectoryPath.Text.Trim('/');
                 if (_type == PageTemplateAssets.TypeInclude)
                 {
-                    SiteInfo.Additional.TemplatesAssetsIncludeDir = assetsDir;
+                    SiteInfo.TemplatesAssetsIncludeDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeJs)
                 {
-                    SiteInfo.Additional.TemplatesAssetsJsDir = assetsDir;
+                    SiteInfo.TemplatesAssetsJsDir = assetsDir;
                 }
                 else if (_type == PageTemplateAssets.TypeCss)
                 {
-                    SiteInfo.Additional.TemplatesAssetsCssDir = assetsDir;
+                    SiteInfo.TemplatesAssetsCssDir = assetsDir;
                 }
 
-                DataProvider.SiteDao.Update(SiteInfo);
+                DataProvider.Site.Update(SiteInfo);
 
                 AuthRequest.AddSiteLog(SiteId, "模板文件夹设置");
 

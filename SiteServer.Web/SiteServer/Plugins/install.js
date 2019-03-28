@@ -1,9 +1,9 @@
 ﻿var $url = '/pages/plugins/install';
 
-var $pluginIds = pageUtils.getQueryStringByName('pluginIds').split(',');
-var $pageType = pageUtils.getQueryStringByName('isUpdate') === 'true' ? '升级' : '安装';
+var $pluginIds = utils.getQueryString('pluginIds').split(',');
+var $pageType = utils.getQueryString('isUpdate') === 'true' ? '升级' : '安装';
 
-var data = {
+var $data = {
   pluginIds: $pluginIds,
   pageLoad: false,
   pageAlert: null,
@@ -12,11 +12,9 @@ var data = {
   isNightly: false,
   pluginVersion: null,
   downloadPlugins: null,
-
   listPackages: [],
   listPackageIds: [],
   listIndex: 0,
-
   currentPackage: {},
   currentPackages: [],
   currentDownloadingId: 0,
@@ -25,7 +23,7 @@ var data = {
   currentUpdatedIds: []
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
@@ -45,7 +43,7 @@ var methods = {
   getPackages: function () {
     var $this = this;
 
-    $apiCloud.get('updates', {
+    $ssApi.get($ssUrlUpdates, {
       params: {
         isNightly: $this.isNightly,
         pluginVersion: $this.pluginVersion,
@@ -214,8 +212,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

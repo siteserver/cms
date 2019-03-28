@@ -4,11 +4,6 @@ namespace SiteServer.Utils
 {
     public static class LayerUtils
     {
-        public static string OpenFull(string title, string url)
-        {
-            return $@"pageUtils.openLayer({{title: ""{title}"", url: ""{url}"", full: true}});return false";
-        }
-
         public const string CloseScript = "if (window.parent.closeWindow) window.parent.closeWindow();if (window.parent.layer) window.parent.layer.closeAll();";
 
         public const string OpenPageCreateStatusFuncName = "openPageCreateStatus";

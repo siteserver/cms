@@ -1,9 +1,10 @@
 ﻿using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -54,7 +55,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = BackgroundContentAttribute.ImageUrl;
+            var type = ContentAttribute.ImageUrl;
 		    var no = 0;
             var isOriginal = false;
             var src = string.Empty;
@@ -167,12 +168,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                         if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0)
                         {
                             var targetChannelId = contentInfo.SourceId;
-                            //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
+                            //var targetSiteId = DataProvider.Channel.GetSiteId(targetChannelId);
                             var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
                             var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
                             var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
-                            //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
+                            //var targetContentInfo = DataProvider.ContentRepository.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
@@ -190,12 +191,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (no <= 1)
                         {
-                            picUrl = contentInfo.GetString(type);
+                            picUrl = contentInfo.Get<string>(type);
                         }
                         else
                         {
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                            var extendValues = contentInfo.GetString(extendAttributeName);
+                            var extendValues = contentInfo.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;

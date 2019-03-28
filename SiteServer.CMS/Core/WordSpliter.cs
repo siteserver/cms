@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.CMS.Core
 {
@@ -38,7 +39,7 @@ namespace SiteServer.CMS.Core
             {
                 var arrText = new SortedList();
 
-                var tagList = DataProvider.TagDao.GetTagList(siteId);
+                var tagList = DataProvider.Tag.GetTagList(siteId);
                 if (tagList.Count > 0)
                 {
                     foreach (var line in tagList)
@@ -219,12 +220,12 @@ namespace SiteServer.CMS.Core
         public static string GetKeywords(string content, int siteId, int totalNum)
         {
             var value = "";
-            var _key = DoSplit(content, siteId);
+            var split = DoSplit(content, siteId);
             var currentNum = 1;
-            for (var i = 1; i < _key.Length; i++)
+            for (var i = 1; i < split.Length; i++)
             {
                 if (totalNum > 0 && currentNum > totalNum) break;
-                var key = _key[i].Trim();
+                var key = split[i].Trim();
                 if (key.Length == 1) continue;
                 if (i == 1)
                     value = key;

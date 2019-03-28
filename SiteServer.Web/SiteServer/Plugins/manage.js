@@ -1,7 +1,7 @@
 ﻿var $url = '/pages/plugins/manage';
 var $urlReload = '/pages/plugins/manage/actions/reload';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: parseInt(utils.getQueryString("pageType") || '1'),
@@ -17,9 +17,9 @@ var data = {
   referencePackageIds: []
 };
 
-var methods = {
+var $methods = {
   getIconUrl: function (url) {
-    return 'https://plugins.siteserver.cn/' + url;
+    return ssUtils.getPluginsUrl(url);
   },
 
   load: function () {
@@ -46,7 +46,7 @@ var methods = {
         }
       }
 
-      $apiCloud.get('updates', {
+      $ssApi.get($ssUrlUpdates, {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion,
@@ -126,11 +126,12 @@ var methods = {
     if (isReference) {
       return swal("无法删除", "存在其他插件依赖此插件，需要删除依赖插件后才能进行删除操作", "error");
     }
-    swal({
+    swal2({
         title: '删除插件',
         text: '此操作将会删除“' + pkg.id + '”，确认吗？',
         type: 'question',
         showCancelButton: true,
+        confirmButtonClass: 'btn btn-danger',
         cancelButtonText: '取 消',
         confirmButtonText: '确认删除'
       })
@@ -171,8 +172,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

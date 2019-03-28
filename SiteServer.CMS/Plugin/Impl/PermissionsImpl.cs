@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Core;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -12,33 +13,59 @@ namespace SiteServer.CMS.Plugin.Impl
 {
 	public class PermissionsImpl: IPermissions
 	{
+	    private readonly AdministratorInfo _adminInfo;
+	    private readonly string _rolesKey;
+	    private readonly string _permissionListKey;
+	    private readonly string _websitePermissionDictKey;
+	    private readonly string _channelPermissionDictKey;
+	    private readonly string _channelPermissionListIgnoreChannelIdKey;
+	    private readonly string _channelIdListKey;
+
+        private IList<string> _roles;
+	    private List<string> _permissionList;
+	    private Dictionary<int, List<string>> _websitePermissionDict;
+	    private Dictionary<string, List<string>> _channelPermissionDict;
+	    private List<string> _channelPermissionListIgnoreChannelId;
+	    private List<int> _channelIdList;
+
+        public PermissionsImpl(AdministratorInfo adminInfo)
+	    {
+	        if (adminInfo == null || adminInfo.Locked) return;
+
+	        _adminInfo = adminInfo;
+
+	        _rolesKey = GetRolesCacheKey(adminInfo.UserName);
+	        _permissionListKey = GetPermissionListCacheKey(adminInfo.UserName);
+	        _websitePermissionDictKey = GetWebsitePermissionDictCacheKey(adminInfo.UserName);
+	        _channelPermissionDictKey = GetChannelPermissionDictCacheKey(adminInfo.UserName);
+	        _channelPermissionListIgnoreChannelIdKey = GetChannelPermissionListIgnoreChannelIdCacheKey(adminInfo.UserName);
+	        _channelIdListKey = GetChannelIdListCacheKey(adminInfo.UserName);
+	    }
+
         public List<int> ChannelIdList
         {
             get
             {
+                if (_channelIdList != null) return _channelIdList;
+                if (_adminInfo == null || _adminInfo.Locked) return new List<int>();
+
+                _channelIdList = DataCacheManager.Get<List<int>>(_channelIdListKey);
+
                 if (_channelIdList == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
+                    _channelIdList = new List<int>();
+
+                    if (!IsSystemAdministrator)
                     {
-                        _channelIdList = DataCacheManager.Get<List<int>>(_channelIdListKey);
-
-                        if (_channelIdList == null)
+                        foreach (var dictKey in ChannelPermissionDict.Keys)
                         {
-                            _channelIdList = new List<int>();
-
-                            if (!IsSystemAdministrator)
-                            {
-                                foreach (var dictKey in ChannelPermissionDict.Keys)
-                                {
-                                    var kvp = ParseChannelPermissionDictKey(dictKey);
-                                    var channelInfo = ChannelManager.GetChannelInfo(kvp.Key, kvp.Value);
-                                    _channelIdList.AddRange(ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty));
-                                }
-                            }
-
-                            DataCacheManager.InsertMinutes(_channelIdListKey, _channelIdList, 30);
+                            var kvp = ParseChannelPermissionDictKey(dictKey);
+                            var channelInfo = ChannelManager.GetChannelInfo(kvp.Key, kvp.Value);
+                            _channelIdList.AddRange(ChannelManager.GetChannelIdList(channelInfo, EScopeType.All, string.Empty, string.Empty, string.Empty));
                         }
                     }
+
+                    DataCacheManager.InsertMinutes(_channelIdListKey, _channelIdList, 30);
                 }
                 return _channelIdList ?? (_channelIdList = new List<int>());
             }
@@ -74,10 +101,9 @@ namespace SiteServer.CMS.Plugin.Impl
 	        }
 	        else if (IsSystemAdministrator)
 	        {
-                var adminInfo = AdminManager.GetAdminInfoByUserName(UserName);
-	            if (adminInfo != null)
+	            if (_adminInfo != null)
 	            {
-	                foreach (var siteId in TranslateUtils.StringCollectionToIntList(adminInfo.SiteIdCollection))
+	                foreach (var siteId in TranslateUtils.StringCollectionToIntList(_adminInfo.SiteIdCollection))
 	                {
 	                    if (!siteIdList.Contains(siteId))
 	                    {
@@ -170,36 +196,6 @@ namespace SiteServer.CMS.Plugin.Impl
 	        }
 	    }
 
-	    private string[] _roles;
-        private List<string> _permissionList;
-        private readonly string _rolesKey;
-        private readonly string _permissionListKey;
-
-        private Dictionary<int, List<string>> _websitePermissionDict;
-        private Dictionary<string, List<string>> _channelPermissionDict;
-        private List<string> _channelPermissionListIgnoreChannelId;
-        private List<int> _channelIdList;
-
-        private readonly string _websitePermissionDictKey;
-        private readonly string _channelPermissionDictKey;
-        private readonly string _channelPermissionListIgnoreChannelIdKey;
-        private readonly string _channelIdListKey;
-
-        public PermissionsImpl(string userName)
-        {
-            UserName = userName;
-            if (string.IsNullOrEmpty(userName)) return;
-
-            _rolesKey = GetRolesCacheKey(userName);
-            _permissionListKey = GetPermissionListCacheKey(userName);
-            _websitePermissionDictKey = GetWebsitePermissionDictCacheKey(userName);
-            _channelPermissionDictKey = GetChannelPermissionDictCacheKey(userName);
-            _channelPermissionListIgnoreChannelIdKey = GetChannelPermissionListIgnoreChannelIdCacheKey(userName);
-            _channelIdListKey = GetChannelIdListCacheKey(userName);
-        }
-
-        public string UserName { get; }
-
         public bool IsConsoleAdministrator => EPredefinedRoleUtils.IsConsoleAdministrator(Roles);
 
         public bool IsSystemAdministrator => EPredefinedRoleUtils.IsSystemAdministrator(Roles);
@@ -220,63 +216,55 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             get
             {
-                if (_permissionList == null)
+                if (_permissionList != null) return _permissionList;
+                if (_adminInfo == null || _adminInfo.Locked) return new List<string>();
+
+                _permissionList = DataCacheManager.Get<List<string>>(_permissionListKey);
+
+                if (_permissionList  == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
+                    if (EPredefinedRoleUtils.IsConsoleAdministrator(Roles))
                     {
-                        _permissionList = DataCacheManager.Get<List<string>>(_permissionListKey);
-
-                        if (_permissionList  == null)
+                        _permissionList = new List<string>();
+                        foreach (var permission in PermissionConfigManager.Instance.GeneralPermissions)
                         {
-                            if (EPredefinedRoleUtils.IsConsoleAdministrator(Roles))
-                            {
-                                _permissionList = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.GeneralPermissions)
-                                {
-                                    _permissionList.Add(permission.Name);
-                                }
-                            }
-                            else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
-                            {
-                                _permissionList = new List<string>
-                                {
-                                    ConfigManager.SettingsPermissions.Admin
-                                };
-                            }
-                            else
-                            {
-                                _permissionList = DataProvider.PermissionsInRolesDao.GetGeneralPermissionList(Roles);
-                            }
-
-                            DataCacheManager.InsertMinutes(_permissionListKey, _permissionList, 30);
+                            _permissionList.Add(permission.Name);
                         }
                     }
+                    else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
+                    {
+                        _permissionList = new List<string>
+                        {
+                            ConfigManager.SettingsPermissions.Admin
+                        };
+                    }
+                    else
+                    {
+                        _permissionList = DataProvider.PermissionsInRoles.GetGeneralPermissionList(Roles);
+                    }
+
+                    DataCacheManager.InsertMinutes(_permissionListKey, _permissionList, 30);
                 }
                 return _permissionList ?? (_permissionList = new List<string>());
             }
         }
 
-        public string[] Roles
+	    private IList<string> Roles
         {
             get
             {
+                if (_roles != null) return _roles;
+                if (_adminInfo == null || _adminInfo.Locked)
+                    return new List<string> { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
+
+                _roles = DataCacheManager.Get<List<string>>(_rolesKey);
                 if (_roles == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
-                    {
-                        _roles = DataCacheManager.Get<string[]>(_rolesKey);
-                        if (_roles == null)
-                        {
-                            _roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(UserName);
-                            DataCacheManager.InsertMinutes(_rolesKey, _roles, 30);
-                        }
-                    }
+                    _roles = DataProvider.AdministratorsInRoles.GetRolesForUser(_adminInfo.UserName);
+                    DataCacheManager.InsertMinutes(_rolesKey, _roles, 30);
                 }
-                if (_roles != null && _roles.Length > 0)
-                {
-                    return _roles;
-                }
-                return new[] { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
+
+                return _roles ?? new List<string> {EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator)};
             }
         }
 
@@ -284,37 +272,34 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             get
             {
-                if (_websitePermissionDict == null)
+                if (_websitePermissionDict != null) return _websitePermissionDict;
+                if (_adminInfo == null || _adminInfo.Locked) return new Dictionary<int, List<string>>();
+
+                _websitePermissionDict = DataCacheManager.Get<Dictionary<int, List<string>>>(_websitePermissionDictKey);
+
+                if (_websitePermissionDict  == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
+                    if (IsSystemAdministrator)
                     {
-                        _websitePermissionDict = DataCacheManager.Get<Dictionary<int, List<string>>>(_websitePermissionDictKey);
-
-                        if (_websitePermissionDict  == null)
+                        var allWebsitePermissionList = new List<string>();
+                        foreach (var permission in PermissionConfigManager.Instance.WebsitePermissions)
                         {
-                            if (IsSystemAdministrator)
-                            {
-                                var allWebsitePermissionList = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.WebsitePermissions)
-                                {
-                                    allWebsitePermissionList.Add(permission.Name);
-                                }
+                            allWebsitePermissionList.Add(permission.Name);
+                        }
 
-                                var siteIdList = GetSiteIdList();
+                        var siteIdList = GetSiteIdList();
 
-                                _websitePermissionDict = new Dictionary<int, List<string>>();
-                                foreach (var siteId in siteIdList)
-                                {
-                                    _websitePermissionDict[siteId] = allWebsitePermissionList;
-                                }
-                            }
-                            else
-                            {
-                                _websitePermissionDict = DataProvider.SitePermissionsDao.GetWebsitePermissionSortedList(Roles);
-                            }
-                            DataCacheManager.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
+                        _websitePermissionDict = new Dictionary<int, List<string>>();
+                        foreach (var siteId in siteIdList)
+                        {
+                            _websitePermissionDict[siteId] = allWebsitePermissionList;
                         }
                     }
+                    else
+                    {
+                        _websitePermissionDict = DataProvider.SitePermissions.GetWebsitePermissionSortedList(Roles);
+                    }
+                    DataCacheManager.InsertMinutes(_websitePermissionDictKey, _websitePermissionDict, 30);
                 }
                 return _websitePermissionDict ?? (_websitePermissionDict = new Dictionary<int, List<string>>());
             }
@@ -324,39 +309,37 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             get
             {
+                if (_channelPermissionDict != null) return _channelPermissionDict;
+                if (_adminInfo == null || _adminInfo.Locked) return new Dictionary<string, List<string>>();
+
+                _channelPermissionDict = DataCacheManager.Get<Dictionary<string, List<string>>>(_channelPermissionDictKey);
+
                 if (_channelPermissionDict == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
+                    if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                     {
-                        _channelPermissionDict = DataCacheManager.Get<Dictionary<string, List<string>>>(_channelPermissionDictKey);
-
-                        if (_channelPermissionDict == null)
+                        var allChannelPermissionList = new List<string>();
+                        foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
                         {
-                            if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
-                            {
-                                var allChannelPermissionList = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
-                                {
-                                    allChannelPermissionList.Add(permission.Name);
-                                }
+                            allChannelPermissionList.Add(permission.Name);
+                        }
 
-                                _channelPermissionDict = new Dictionary<string, List<string>>();
+                        _channelPermissionDict = new Dictionary<string, List<string>>();
 
-                                var siteIdList = GetSiteIdList();
+                        var siteIdList = GetSiteIdList();
 
-                                foreach (var siteId in siteIdList)
-                                {
-                                    _channelPermissionDict[GetChannelPermissionDictKey(siteId, siteId)] = allChannelPermissionList;
-                                }
-                            }
-                            else
-                            {
-                                _channelPermissionDict = DataProvider.SitePermissionsDao.GetChannelPermissionSortedList(Roles);
-                            }
-                            DataCacheManager.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
+                        foreach (var siteId in siteIdList)
+                        {
+                            _channelPermissionDict[GetChannelPermissionDictKey(siteId, siteId)] = allChannelPermissionList;
                         }
                     }
+                    else
+                    {
+                        _channelPermissionDict = DataProvider.SitePermissions.GetChannelPermissionSortedList(Roles);
+                    }
+                    DataCacheManager.InsertMinutes(_channelPermissionDictKey, _channelPermissionDict, 30);
                 }
+
                 return _channelPermissionDict ?? (_channelPermissionDict = new Dictionary<string, List<string>>());
             }
         }
@@ -365,29 +348,27 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             get
             {
+                if (_channelPermissionListIgnoreChannelId != null) return _channelPermissionListIgnoreChannelId;
+                if (_adminInfo == null || _adminInfo.Locked) return new List<string>();
+
+                _channelPermissionListIgnoreChannelId = DataCacheManager.Get<List<string>>(_channelPermissionListIgnoreChannelIdKey);
                 if (_channelPermissionListIgnoreChannelId == null)
                 {
-                    if (!string.IsNullOrEmpty(UserName))
+                    if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                     {
-                        _channelPermissionListIgnoreChannelId = DataCacheManager.Get<List<string>>(_channelPermissionListIgnoreChannelIdKey);
-                        if (_channelPermissionListIgnoreChannelId == null)
+                        _channelPermissionListIgnoreChannelId = new List<string>();
+                        foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
                         {
-                            if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
-                            {
-                                _channelPermissionListIgnoreChannelId = new List<string>();
-                                foreach (var permission in PermissionConfigManager.Instance.ChannelPermissions)
-                                {
-                                    _channelPermissionListIgnoreChannelId.Add(permission.Name);
-                                }
-                            }
-                            else
-                            {
-                                _channelPermissionListIgnoreChannelId = DataProvider.SitePermissionsDao.GetChannelPermissionListIgnoreChannelId(Roles);
-                            }
-                            DataCacheManager.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreChannelId, 30);
+                            _channelPermissionListIgnoreChannelId.Add(permission.Name);
                         }
                     }
+                    else
+                    {
+                        _channelPermissionListIgnoreChannelId = DataProvider.SitePermissions.GetChannelPermissionListIgnoreChannelId(Roles);
+                    }
+                    DataCacheManager.InsertMinutes(_channelPermissionListIgnoreChannelIdKey, _channelPermissionListIgnoreChannelId, 30);
                 }
+
                 return _channelPermissionListIgnoreChannelId ?? (_channelPermissionListIgnoreChannelId = new List<string>());
             }
         }
@@ -524,16 +505,19 @@ namespace SiteServer.CMS.Plugin.Impl
             return false;
         }
 
-        public bool IsViewContentOnlySelf(int siteId, int channelId)
-        {
-            if (IsConsoleAdministrator || IsSystemAdministrator)
-                return false;
-            if (HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))
-                return false;
-            return ConfigManager.SystemConfigInfo.IsViewContentOnlySelf;
-        }
+	    public int? GetOnlyAdminId(int siteId, int channelId)
+	    {
+	        if (!ConfigManager.Instance.IsViewContentOnlySelf
+	            || IsConsoleAdministrator
+	            || IsSystemAdministrator
+	            || HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))
+	        {
+	            return null;
+	        }
+	        return _adminInfo.Id;
+	    }
 
-        public static string GetChannelPermissionDictKey(int siteId, int channelId)
+	    public static string GetChannelPermissionDictKey(int siteId, int channelId)
         {
             return $"{siteId}_{channelId}";
         }

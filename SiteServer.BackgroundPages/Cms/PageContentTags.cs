@@ -4,10 +4,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,27 +22,26 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            if (AuthRequest.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var tagName = AuthRequest.GetQueryString("TagName");
 
                 try
                 {
-                    var contentIdList = DataProvider.TagDao.GetContentIdListByTag(tagName, SiteId);
+                    var contentIdList = DataProvider.Tag.GetContentIdListByTag(tagName, SiteId);
                     if (contentIdList.Count > 0)
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
-                            if (tuple != null)
-                            {
-                                var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
-                                contentTagList.Remove(tagName);
-                                DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
-                            }
+                            if (!SiteInfo.ContentRepository.GetChanelIdAndValue(contentId, ContentAttribute.Tags,
+                                out var channelId, out string tags)) continue;
+
+                            var contentTagList = TranslateUtils.StringCollectionToStringList(tags);
+                            contentTagList.Remove(tagName);
+                            SiteInfo.ContentRepository.Update(channelId, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                         }
                     }
-                    DataProvider.TagDao.DeleteTag(tagName, SiteId);
+                    DataProvider.Tag.DeleteTag(tagName, SiteId);
                     AuthRequest.AddSiteLog(SiteId, "删除内容标签", $"内容标签:{tagName}");
                     SuccessDeleteMessage();
                 }
@@ -53,9 +52,9 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(SiteId, 0, true, 0);
+            SpContents.SelectCommand = DataProvider.Tag.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);
             SpContents.SortMode = SortMode.DESC;
 
@@ -103,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
             var urlDelete = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
             {
                 {"TagName", tag},
-                {"Delete", true.ToString()}
+                {"DeleteById", true.ToString()}
             });
             ltlDeleteUrl.Text =
                 $"<a href=\"{urlDelete}\" onClick=\"javascript:return confirm('此操作将删除内容标签“{tag}”，确认吗？');\">删除</a>";

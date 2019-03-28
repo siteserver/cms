@@ -1,16 +1,17 @@
+'use strict';
+
 var fs = require("fs");
-var path = require("path");
+var del = require('del');
 var gulp = require("gulp");
 var minifier = require("gulp-minifier");
 var minify = require("gulp-minify");
-var rimraf = require("rimraf");
 var rename = require("gulp-rename");
 var replace = require("gulp-replace");
 var zip = require("gulp-zip");
 var filter = require("gulp-filter");
-var runSequence = require("run-sequence");
+var pjson = require('./package.json');
 
-var version = process.env.APPVEYOR_BUILD_VERSION || '0.0.0';
+var version = process.env.APPVEYOR_BUILD_VERSION || pjson.version;
 
 function getDependencies() {
   var str = "";
@@ -35,6 +36,11 @@ function getDependencies() {
   str = "<dependencies>" + str + "</dependencies>";
   return str;
 }
+
+gulp.task('build-clean', function () {
+  console.log("build version: " + version);
+  return del(['./build']);
+});
 
 gulp.task("build-nuspec", function () {
   var dependencies = getDependencies();
@@ -167,25 +173,21 @@ gulp.task("build-webconfig", function () {
     .pipe(gulp.dest("./build"));
 });
 
-gulp.task("build", function (callback) {
-  console.log("build version: " + version);
-  runSequence(
-    "build-docs",
-    "build-webconfig",
-    "build-nuspec",
-    "build-bin",
-    "build-sitefiles-all",
-    "build-sitefiles-min",
-    "build-siteserver-all",
-    "build-siteserver-html",
-    "build-siteserver-min-css",
-    "build-siteserver-min-js",
-    "build-home-all",
-    "build-home-html",
-    "build-home-min-css",
-    "build-home-min-js"
-  );
-});
+gulp.task('build', gulp.series("build-clean",
+  "build-docs",
+  "build-webconfig",
+  "build-nuspec",
+  "build-bin",
+  "build-sitefiles-all",
+  "build-sitefiles-min",
+  "build-siteserver-all",
+  "build-siteserver-html",
+  "build-siteserver-min-css",
+  "build-siteserver-min-js",
+  "build-home-all",
+  "build-home-html",
+  "build-home-min-css",
+  "build-home-min-js"));
 
 gulp.task("zip", function (callback) {
   gulp

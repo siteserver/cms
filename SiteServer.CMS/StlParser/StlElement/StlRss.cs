@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.Utils.IO;
 using SiteServer.Utils.Rss;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -147,7 +149,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Order))
                 {
-                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                    orderByString = StlDataUtility.GetContentOrderByString(value, ETaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsTop))
                 {
@@ -178,7 +180,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var feed = new RssFeed
             {
-                Encoding = ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset),
+                Encoding = Encoding.UTF8,
                 Version = RssVersion.RSS20
             };
 
@@ -221,7 +223,11 @@ namespace SiteServer.CMS.StlParser.StlElement
                         item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
                     }
                     item.Description = StringUtils.Replace("&", item.Description, "&amp;");
-                    item.PubDate = contentInfo.AddDate;
+                    if (contentInfo.AddDate.HasValue)
+                    {
+                        item.PubDate = contentInfo.AddDate.Value;
+                    }
+                    
                     item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
 
                     channel.Items.Add(item);
@@ -231,7 +237,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             feed.Channels.Add(channel);
 
             var builder = new StringBuilder();
-            var textWriter = new EncodedStringWriter(builder, ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset));
+            var textWriter = new EncodedStringWriter(builder, Encoding.UTF8);
             feed.Write(textWriter);
 
             return builder.ToString();

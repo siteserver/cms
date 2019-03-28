@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -166,7 +167,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypTemplateType))
             {
-                isSuccess = TestTypeValue(testOperate, testValue, pageInfo.TemplateInfo.TemplateType.Value);
+                isSuccess = TestTypeValue(testOperate, testValue, pageInfo.TemplateInfo.Type.Value);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {
@@ -196,9 +197,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (contextInfo.ContextType == EContextType.Content)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                    //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(tableName, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
+                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                    //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(StlContentCache.GetValue(channelInfo, contextInfo.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -396,7 +397,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return string.Empty;
             }
 
-            var pageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+            var pageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
 
             var ifApiUrl = ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl);
             var ifApiParms = ApiRouteActionsIf.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
@@ -473,7 +474,7 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    //var parentId = DataProvider.Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
@@ -492,7 +493,7 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    //var parentId = DataProvider.Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
@@ -519,7 +520,7 @@ function {functionName}(pageNum)
                     var channelIndexes = TranslateUtils.StringCollectionToStringList(testValue);
                     foreach (var channelIndex in channelIndexes)
                     {
-                        //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                        //var parentId = DataProvider.Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                         if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                         {
@@ -542,7 +543,7 @@ function {functionName}(pageNum)
                 var isIn = false;
                 foreach (var channelIndex in channelIndexes)
                 {
-                    //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                    //var parentId = DataProvider.Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (parentId != pageInfo.PageChannelId &&
                         ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
@@ -571,7 +572,7 @@ function {functionName}(pageNum)
                     var channelIndexes = TranslateUtils.StringCollectionToStringList(testValue);
                     foreach (var channelIndex in channelIndexes)
                     {
-                        //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
+                        //var parentId = DataProvider.Channel.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                         if (parentId != pageInfo.PageChannelId &&
                             ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
@@ -764,7 +765,7 @@ function {functionName}(pageNum)
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(pageInfo.SiteId, channel.ChannelId);
-                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
+                var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -773,7 +774,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                theValue = channel.Additional.GetString(testTypeStr);
+                theValue = channel.Get(testTypeStr, string.Empty);
             }
             return theValue;
         }
@@ -784,21 +785,21 @@ function {functionName}(pageNum)
 
             if (contextInfo.ContentInfo == null)
             {
-                var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = StlContentCache.GetValue(tableName, contextInfo.ContentId, testTypeStr);
+                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                //theValue = DataProvider.ContentRepository.GetValueById(tableName, contextInfo.ContentId, testTypeStr);
+                theValue = StlContentCache.GetValue(channelInfo, contextInfo.ContentId, testTypeStr);
             }
             else
             {
-                theValue = contextInfo.ContentInfo.GetString(testTypeStr);
+                theValue = contextInfo.ContentInfo.Get<string>(testTypeStr);
             }
 
             return theValue;
         }
 
-        private static DateTime GetAddDateByContext(PageInfo pageInfo, ContextInfo contextInfo)
+        private static DateTime? GetAddDateByContext(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var addDate = DateUtils.SqlMinValue;
+            DateTime? addDate = null;
 
             if (contextInfo.ContextType == EContextType.Content)
             {
@@ -807,7 +808,7 @@ function {functionName}(pageNum)
             else if (contextInfo.ContextType == EContextType.Channel)
             {
                 var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
-                addDate = channel.AddDate;
+                if (channel.AddDate != null) addDate = channel.AddDate.Value;
             }
             else
             {
@@ -837,16 +838,16 @@ function {functionName}(pageNum)
                 else if (contextInfo.ChannelId != 0)//获取栏目
                 {
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
-                    addDate = channel.AddDate;
+                    if (channel.AddDate != null) addDate = channel.AddDate.Value;
                 }
             }
 
             return addDate;
         }
 
-        private static DateTime GetLastEditDateByContext(ContextInfo contextInfo)
+        private static DateTime? GetLastEditDateByContext(ContextInfo contextInfo)
         {
-            var lastEditDate = DateUtils.SqlMinValue;
+            DateTime? lastEditDate = null;
 
             if (contextInfo.ContextType == EContextType.Content)
             {
@@ -920,7 +921,7 @@ function {functionName}(pageNum)
             return isSuccess;
         }
 
-        private static bool IsDateTime(DateTime dateTime, string testOperate, string testValue)
+        private static bool IsDateTime(DateTime? dateTime, string testOperate, string testValue)
         {
             var isSuccess = false;
 
@@ -942,7 +943,7 @@ function {functionName}(pageNum)
 
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals) || StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                isSuccess = dateTime.Date == dateTimeToTest.Date;
+                isSuccess = dateTime.HasValue && dateTime.Value.Date == dateTimeToTest.Date;
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateGreatThan))
             {
@@ -954,7 +955,7 @@ function {functionName}(pageNum)
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals) || StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                isSuccess = dateTime.Date != dateTimeToTest.Date;
+                isSuccess = dateTime.HasValue && dateTime.Value.Date != dateTimeToTest.Date;
             }
 
             return isSuccess;

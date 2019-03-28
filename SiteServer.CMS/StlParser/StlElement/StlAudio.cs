@@ -1,7 +1,8 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Stl;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -29,7 +30,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 	    public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
 		{
-            var type = BackgroundContentAttribute.VideoUrl;
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var isAutoPlay = false;
             var isPreLoad = true;
@@ -74,35 +75,36 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteInfo.Id, pageInfo.SiteInfo.Id);
+                        playUrl = StlContentCache.GetValue(channelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                                //playUrl = DataProvider.ContentRepository.GetValueById(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
+                                playUrl = StlContentCache.GetValue(channelInfo, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.GetString(type);
+                        playUrl = contextInfo.ContentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                            playUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.VideoUrl);
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
+                            playUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.FileUrl);
                         }
                     }
                 }

@@ -13,9 +13,14 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(Route)]
         public HttpResponseMessage Get()
         {
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            //var response = Request.CreateResponse(HttpStatusCode.OK);
 
-            response.Content = new StringContent("pong", Encoding.UTF8);
+            //response.Content = new StringContent("pong", Encoding.UTF8);
+
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("pong", Encoding.UTF8)
+            };
 
             return response;
         }

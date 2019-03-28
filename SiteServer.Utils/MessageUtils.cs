@@ -3,15 +3,11 @@ using System.Web.UI;
 
 namespace SiteServer.Utils
 {
-    public class MessageUtils
+    public static class MessageUtils
     {
-        private MessageUtils()
-        {
-        }
-
         public static void SaveMessage(Message.EMessageType messageType, string message)
         {
-            CookieUtils.SetCookie(Message.GetCookieName(messageType), message, DateTime.MaxValue);
+            CookieUtils.SetCookie(Message.GetCookieName(messageType), message, TimeSpan.FromDays(1));
         }
 
         private static string DecodeMessage(string message)

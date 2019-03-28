@@ -1,8 +1,8 @@
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core.Office
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };
                             var contentInfo = new ContentInfo(dict);
-                            contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
+                            contentInfo.Set(ContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
 
                             contentInfoList.Add(contentInfo);
                         }

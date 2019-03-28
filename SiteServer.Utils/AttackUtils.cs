@@ -23,7 +23,7 @@ namespace SiteServer.Utils
             if (string.IsNullOrEmpty(objStr)) return string.Empty;
 
             var isSqlExists = false;
-            const string strSql = "',--,\\(,\\)";
+            const string strSql = "',\\(,\\)";
             var strSqls = strSql.Split(',');
             foreach (var sql in strSqls)
             {
@@ -35,7 +35,7 @@ namespace SiteServer.Utils
             }
             if (isSqlExists)
             {
-                return objStr.Replace("'", "_sqlquote_").Replace("--", "_sqldoulbeline_").Replace("\\(", "_sqlleftparenthesis_").Replace("\\)", "_sqlrightparenthesis_");
+                return objStr.Replace("'", "_sqlquote_").Replace("\\(", "_sqlleftparenthesis_").Replace("\\)", "_sqlrightparenthesis_");
             }
             return objStr;
         }
@@ -44,7 +44,7 @@ namespace SiteServer.Utils
         {
             if (string.IsNullOrEmpty(objStr)) return string.Empty;
 
-            return objStr.Replace("_sqlquote_", "'").Replace("_sqldoulbeline_", "--").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
+            return objStr.Replace("_sqlquote_", "'").Replace("_sqlleftparenthesis_", "\\(").Replace("_sqlrightparenthesis_", "\\)");
         }
     }
 }

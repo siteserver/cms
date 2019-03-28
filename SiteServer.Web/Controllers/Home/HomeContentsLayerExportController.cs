@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -22,13 +22,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -64,22 +64,22 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
                 var downloadUrl = string.Empty;
 
-                var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var exportType = request.GetPostString("exportType");
-                var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
-                var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
-                var isAllDate = request.GetPostBool("isAllDate");
-                var startDate = request.GetPostDateTime("startDate", DateTime.Now);
-                var endDate = request.GetPostDateTime("endDate", DateTime.Now);
-                var columnNames = request.GetPostObject<List<string>>("columnNames");
+                var siteId = rest.GetPostInt("siteId");
+                var channelId = rest.GetPostInt("channelId");
+                var exportType = rest.GetPostString("exportType");
+                var isAllCheckedLevel = rest.GetPostBool("isAllCheckedLevel");
+                var checkedLevelKeys = rest.GetPostObject<List<int>>("checkedLevelKeys");
+                var isAllDate = rest.GetPostBool("isAllDate");
+                var startDate = rest.GetPostDateTime("startDate", DateTime.Now);
+                var endDate = rest.GetPostDateTime("endDate", DateTime.Now);
+                var columnNames = rest.GetPostObject<List<string>>("columnNames");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -91,23 +91,25 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var onlyAdminId = rest.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo);
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
+                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
                     for (var page = 1; page <= pages; page++)
                     {
-                        var offset = siteInfo.Additional.PageSize * (page - 1);
-                        var limit = siteInfo.Additional.PageSize;
+                        var offset = siteInfo.PageSize * (page - 1);
+                        var limit = siteInfo.PageSize;
 
-                        var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, offset, limit);
+                        var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
 
                         var sequence = offset + 1;
 
@@ -119,9 +121,9 @@ namespace SiteServer.API.Controllers.Home
                             if (!isAllCheckedLevel)
                             {
                                 var checkedLevel = contentInfo.CheckedLevel;
-                                if (contentInfo.IsChecked)
+                                if (contentInfo.Checked)
                                 {
-                                    checkedLevel = siteInfo.Additional.CheckContentLevel;
+                                    checkedLevel = siteInfo.CheckContentLevel;
                                 }
                                 if (!checkedLevelKeys.Contains(checkedLevel))
                                 {
@@ -137,7 +139,8 @@ namespace SiteServer.API.Controllers.Home
                                 }
                             }
 
-                            contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                            //contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                            contentInfoList.Add(contentInfo);
                         }
                     }
 
@@ -147,7 +150,7 @@ namespace SiteServer.API.Controllers.Home
                         {
                             var fileName = $"{channelInfo.ChannelName}.zip";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            var exportObject = new ExportObject(siteId, request.AdminName);
+                            var exportObject = new ExportObject(siteId, rest.AdminName);
                             contentInfoList.Reverse();
                             if (exportObject.ExportContents(filePath, contentInfoList))
                             {

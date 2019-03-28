@@ -2,8 +2,9 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -46,6 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
             var sep = true;
             foreach (var styleInfo in TableStyleManager.GetUserStyleInfoList())
             {
+                var value = _userInfo.Get<string>(styleInfo.AttributeName) ?? string.Empty;
                 if (sep)
                 {
                     builder.Append(@"<div class=""form-group form-row"">");
@@ -54,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
                 builder.Append($@"
 <label class=""col-2 text-right col-form-label"">{styleInfo.DisplayName}</label>
 <div class=""col-4 form-control-plaintext"">
-    {_userInfo.Get(styleInfo.AttributeName)}
+    {value}
 </div>
 ");
 

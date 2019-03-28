@@ -5,10 +5,12 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -52,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
-                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                DataProvider.ContentRepository.Update(SiteInfo, _channelInfo, contentInfo);
                 AuthRequest.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
@@ -60,8 +62,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
+            SpContents.SelectCommand = DataProvider.ContentRepository.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
@@ -83,7 +85,8 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
             var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var dataView = (DataRowView) e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataView));
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);

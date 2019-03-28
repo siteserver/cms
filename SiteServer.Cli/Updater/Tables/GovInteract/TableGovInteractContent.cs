@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -126,7 +126,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "RealName",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -137,7 +136,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "Organization",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -148,7 +146,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "CardType",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.SelectOne,
@@ -187,7 +184,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "CardNo",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -198,7 +194,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "Phone",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -209,7 +204,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "PostCode",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -220,7 +214,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "Address",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -231,7 +224,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "Email",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -242,7 +234,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "Fax",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -310,7 +301,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "IsPublic",
                 DataType = DataType.VarChar,
-                DataLength = 18,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Radio,
@@ -347,7 +337,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.File,
@@ -368,7 +357,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "DepartmentName",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -379,7 +367,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "QueryCode",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -390,7 +377,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "State",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -401,7 +387,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "IpAddress",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -422,7 +407,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "ReplyFileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 255,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -433,7 +417,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "ReplyDepartmentName",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -444,7 +427,6 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "ReplyUserName",
                 DataType = DataType.VarChar,
-                DataLength = 50,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Hidden,
@@ -466,7 +448,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
             foreach (var tableColumnInfo in oldColumns)

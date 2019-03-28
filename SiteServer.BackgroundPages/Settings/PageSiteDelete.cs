@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -56,12 +57,12 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 AddScript(
-                    $@"setTimeout(""window.top.location.href='{PageUtils.GetMainUrl(0)}'"", 1500);");
+                    $@"setTimeout(""window.top.location.href='{PageUtils.GetMainUrl(0, string.Empty)}'"", 1500);");
             }
 
             AuthRequest.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");
 
-            DataProvider.SiteDao.Delete(SiteId);
+            DataProvider.Site.Delete(SiteId);
         }
 
 	    public void Return_OnClick(object sender, EventArgs e)

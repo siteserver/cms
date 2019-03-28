@@ -5,10 +5,11 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -128,6 +129,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 foreach (var channelId in _idsDictionary.Keys)
                 {
+                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+
                     var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                     var contentIdList = _idsDictionary[channelId];
 
@@ -146,9 +149,12 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentIdList.Count == 1)
                         {
                             var contentId = contentIdList[0];
-                            var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                            AuthRequest.AddSiteLog(SiteId, channelId, contentId, "删除内容",
-                                $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容标题:{contentTitle}");
+                            if (channelInfo.ContentRepository.GetChanelIdAndValue(contentId, ContentAttribute.Title,
+                                out var contentChannelId, out string contentTitle))
+                            {
+                                AuthRequest.AddSiteLog(SiteId, contentChannelId, contentId, "删除内容",
+                                    $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentChannelId)},内容标题:{contentTitle}");
+                            }
                         }
                         else
                         {
@@ -156,17 +162,17 @@ namespace SiteServer.BackgroundPages.Cms
                                 $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, channelId)},内容条数:{contentIdList.Count}");
                         }
 
-                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
+                        channelInfo.ContentRepository.UpdateTrashContents(SiteId, channelId, contentIdList);
 
                         //引用内容，需要删除
                         //var siteTableNameList = SiteManager.GetTableNameList();
                         //foreach (var siteTableName in siteTableNameList)
                         //{
-                        //    var targetContentIdList = DataProvider.ContentDao.GetReferenceIdList(siteTableName, contentIdList);
+                        //    var targetContentIdList = DataProvider.ContentRepository.GetReferenceIdList(siteTableName, contentIdList);
                         //    if (targetContentIdList.Count > 0)
                         //    {
                         //        var targetContentInfo = ContentManager.GetContentInfo(siteTableName, TranslateUtils.ToInt(targetContentIdList[0].ToString()));
-                        //        DataProvider.ContentDao.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
+                        //        DataProvider.ContentRepository.DeleteContents(targetContentInfo.SiteId, siteTableName, targetContentIdList, targetContentInfo.ChannelId);
                         //    }
                         //}
 
@@ -175,7 +181,12 @@ namespace SiteServer.BackgroundPages.Cms
                     else
                     {
                         SuccessMessage("成功从回收站清空内容！");
-                        DataProvider.ContentDao.DeleteContents(SiteId, tableName, contentIdList, channelId);
+                        //channelInfo.ContentRepository.DeleteContents(SiteId, contentIdList, channelId);
+
+                        foreach (var contentId in contentIdList)
+                        {
+                            ContentManager.Delete(SiteInfo, channelInfo, contentId);
+                        }
 
                         AuthRequest.AddSiteLog(SiteId, "从回收站清空内容", $"内容条数:{contentIdList.Count}");
                     }

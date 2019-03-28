@@ -12,17 +12,17 @@ namespace SiteServer.Utils
 
         public static string Combine(params string[] paths)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (paths != null && paths.Length > 0)
             {
-                retval = paths[0]?.Replace(PageUtils.SeparatorChar, SeparatorChar).TrimEnd(SeparatorChar) ?? string.Empty;
+                retVal = paths[0]?.Replace(PageUtils.SeparatorChar, SeparatorChar).TrimEnd(SeparatorChar) ?? string.Empty;
                 for (var i = 1; i < paths.Length; i++)
                 {
                     var path = paths[i] != null ? paths[i].Replace(PageUtils.SeparatorChar, SeparatorChar).Trim(SeparatorChar) : string.Empty;
-                    retval = Path.Combine(retval, path);
+                    retVal = Path.Combine(retVal, path);
                 }
             }
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -32,57 +32,69 @@ namespace SiteServer.Utils
         /// <returns></returns>
         public static bool IsDirectoryPath(string path)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(path))
             {
                 var ext = Path.GetExtension(path);
                 if (string.IsNullOrEmpty(ext))		//path为文件路径
                 {
-                    retval = true;
+                    retVal = true;
                 }
             }
-            return retval;
+            return retVal;
+        }
+
+        public static bool IsFilePath(string val)
+        {
+            try
+            {
+                return FileUtils.IsFileExists(val);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public static string GetExtension(string path)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(path))
             {
                 path = PageUtils.RemoveQueryString(path);
                 path = path.Trim('/', '\\').Trim();
                 try
                 {
-                    retval = Path.GetExtension(path);
+                    retVal = Path.GetExtension(path);
                 }
                 catch
                 {
                     // ignored
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static string RemoveExtension(string fileName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(fileName))
             {
                 var index = fileName.LastIndexOf('.');
-                retval = index != -1 ? fileName.Substring(0, index) : fileName;
+                retVal = index != -1 ? fileName.Substring(0, index) : fileName;
             }
-            return retval;
+            return retVal;
         }
 
         public static string RemoveParentPath(string path)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(path))
             {
-                retval = path.Replace("../", string.Empty);
-                retval = retval.Replace("./", string.Empty);
+                retVal = path.Replace("../", string.Empty);
+                retVal = retVal.Replace("./", string.Empty);
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetFileName(string filePath)
@@ -115,8 +127,8 @@ namespace SiteServer.Utils
         {
             if (!string.IsNullOrEmpty(path) && StringUtils.StartsWithIgnoreCase(path, rootPath))
             {
-                var retval = path.Substring(rootPath.Length, path.Length - rootPath.Length);
-                return retval.Trim('/', '\\');
+                var retVal = path.Substring(rootPath.Length, path.Length - rootPath.Length);
+                return retVal.Trim('/', '\\');
             }
             return string.Empty;
         }
@@ -202,7 +214,7 @@ namespace SiteServer.Utils
         public static string MapPath(string virtualPath)
         {
             virtualPath = RemovePathInvalidChar(virtualPath);
-            string retval;
+            string retVal;
             if (!string.IsNullOrEmpty(virtualPath))
             {
                 if (virtualPath.StartsWith("~"))
@@ -217,18 +229,18 @@ namespace SiteServer.Utils
             }
             if (HttpContext.Current != null)
             {
-                retval = HttpContext.Current.Server.MapPath(virtualPath);
+                retVal = HttpContext.Current.Server.MapPath(virtualPath);
             }
             else
             {
                 var rootPath = WebConfigUtils.PhysicalApplicationPath;
 
                 virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
-                retval = Combine(rootPath, virtualPath);
+                retVal = Combine(rootPath, virtualPath);
             }
 
-            if (retval == null) retval = string.Empty;
-            return retval.Replace("/", "\\");
+            if (retVal == null) retVal = string.Empty;
+            return retVal.Replace("/", "\\");
         }
 
         public static bool IsFileExtenstionAllowed(string sAllowedExt, string sExt)

@@ -5,10 +5,10 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -25,12 +25,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            if (AuthRequest.IsQueryExists("Delete") && AuthRequest.IsQueryExists("KeywordID"))
+            if (AuthRequest.IsQueryExists("DeleteById") && AuthRequest.IsQueryExists("KeywordID"))
             {
                 var keywordId = AuthRequest.GetQueryInt("KeywordID");
                 try
                 {
-                    DataProvider.KeywordDao.Delete(keywordId);
+                    DataProvider.Keyword.Delete(keywordId);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.SelectCommand = DataProvider.KeywordDao.GetSelectCommand();
+            SpContents.SelectCommand = DataProvider.Keyword.GetSelectCommand();
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             SpContents.SortField = nameof(KeywordInfo.Id);
             SpContents.SortMode = SortMode.DESC; //排序
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Settings
             var keywordId = SqlUtils.EvalInt(e.Item.DataItem, nameof(KeywordInfo.Id));
             var keyword = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Keyword));
             var alternative = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Alternative));
-            var grade = EKeywordGradeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Grade)));
+            var grade = EKeywordGradeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, "Grade"));
 
             var ltlKeyword = (Literal)e.Item.FindControl("ltlKeyword");
             var ltlAlternative = (Literal)e.Item.FindControl("ltlAlternative");
@@ -78,7 +78,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteKeyword), new NameValueCollection
             {
-                {"Delete", "True"},
+                {"DeleteById", "True"},
                 {"KeywordID", keywordId.ToString()}
             });
             ltlDelete.Text =
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Settings
         protected void ExportWord_Click(object sender, EventArgs e)
         {
             var sbContent = new StringBuilder();
-            var list = DataProvider.KeywordDao.GetKeywordInfoList();
+            var list = DataProvider.Keyword.GetKeywordInfoList();
             if (list.Count <= 0) return;
 
             foreach (var keywordInfo in list)

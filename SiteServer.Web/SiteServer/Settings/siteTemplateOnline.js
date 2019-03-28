@@ -1,4 +1,4 @@
-﻿var data = {
+﻿var $data = {
   pageLoad: false,
   pageAlert: null,
   page: parseInt(utils.getQueryString('page') || 1),
@@ -13,17 +13,17 @@
   allTagNames: []
 };
 
-var methods = {
+var $methods = {
   getDisplayUrl: function (templateId) {
-    return 'https://www.siteserver.cn/templates/template.html?id=' + templateId;
+    return ssUtils.getTemplatePageUrl(templateId);
   },
 
   getTemplateUrl: function (relatedUrl) {
-    return 'https://templates.siteserver.cn/' + relatedUrl;
+    return ssUtils.getTemplatesUrl(relatedUrl);
   },
 
   getPreviewUrl: function (templateId) {
-    return 'https://demo.siteserver.cn/' + templateId;
+    return ssUtils.getDemoUrl(templateId);
   },
 
   getPageUrl: function (page) {
@@ -71,7 +71,7 @@ var methods = {
   load: function () {
     var $this = this;
 
-    $apiCloud.get('templates', {
+    $ssApi.get($ssUrlTemplates, {
         params: {
           page: this.page,
           word: this.word,
@@ -99,8 +99,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

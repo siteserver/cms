@@ -7,34 +7,34 @@ namespace SiteServer.Utils
 	{
 		public static DataType GetEnumType(string typeStr)
 		{
-			var retval = DataType.VarChar;
+			var retVal = DataType.VarChar;
 
 			if (Equals(DataType.Boolean, typeStr))
 			{
-				retval = DataType.Boolean;
+				retVal = DataType.Boolean;
 			}
 			else if (Equals(DataType.DateTime, typeStr))
 			{
-				retval = DataType.DateTime;
+				retVal = DataType.DateTime;
 			}
 			else if (Equals(DataType.Decimal, typeStr))
 			{
-				retval = DataType.Decimal;
+				retVal = DataType.Decimal;
 			}
 			else if (Equals(DataType.Integer, typeStr))
 			{
-				retval = DataType.Integer;
+				retVal = DataType.Integer;
 			}
 			else if (Equals(DataType.Text, typeStr))
 			{
-				retval = DataType.Text;
+				retVal = DataType.Text;
 			}
 			else if (Equals(DataType.VarChar, typeStr))
 			{
-				retval = DataType.VarChar;
+				retVal = DataType.VarChar;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(DataType type, string typeStr)
@@ -71,32 +71,32 @@ namespace SiteServer.Utils
 
         public static string GetText(DataType dataType)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (dataType == DataType.VarChar)
             {
-                retval = "文本";
+                retVal = "文本";
             }
             else if (dataType == DataType.Text)
             {
-                retval = "备注";
+                retVal = "备注";
             }
             else if (dataType == DataType.Integer)
             {
-                retval = "整数";
+                retVal = "整数";
             }
             else if (dataType == DataType.DateTime)
             {
-                retval = "日期";
+                retVal = "日期";
             }
             else if (dataType == DataType.Decimal)
             {
-                retval = "小数";
+                retVal = "小数";
             }
             else if (dataType == DataType.Boolean)
             {
-                retval = "布尔值";
+                retVal = "布尔值";
             }
-            return retval;
+            return retVal;
         }
 	}
 }

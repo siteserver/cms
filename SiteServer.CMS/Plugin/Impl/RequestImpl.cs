@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
+    [Obsolete]
     public class RequestImpl : IRequest
     {
         private const string AuthKeyUserHeader = "X-SS-USER-TOKEN";
@@ -25,10 +27,6 @@ namespace SiteServer.CMS.Plugin.Impl
         private const string AuthKeyApiQuery = "apiKey";
 
         public const int AccessTokenExpireDays = 7;
-
-        public RequestImpl() : this(HttpContext.Current.Request)
-        {
-        }
 
         public RequestImpl(HttpRequest request)
         {
@@ -45,7 +43,7 @@ namespace SiteServer.CMS.Plugin.Impl
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
                         {
                             var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
-                            if (adminInfo != null && !adminInfo.IsLockedOut)
+                            if (adminInfo != null && !adminInfo.Locked)
                             {
                                 AdminInfo = adminInfo;
                                 IsAdminLoggin = true;
@@ -63,7 +61,7 @@ namespace SiteServer.CMS.Plugin.Impl
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
-                        if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
+                        if (userInfo != null && !userInfo.Locked && userInfo.Checked && userInfo.UserName == tokenImpl.UserName)
                         {
                             UserInfo = userInfo;
                             IsUserLoggin = true;
@@ -78,7 +76,7 @@ namespace SiteServer.CMS.Plugin.Impl
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
-                        if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
+                        if (adminInfo != null && !adminInfo.Locked && adminInfo.UserName == tokenImpl.UserName)
                         {
                             AdminInfo = adminInfo;
                             IsAdminLoggin = true;
@@ -230,14 +228,14 @@ namespace SiteServer.CMS.Plugin.Impl
         public int GetQueryInt(string name, int defaultValue = 0)
         {
             return !string.IsNullOrEmpty(HttpRequest.QueryString[name])
-                ? TranslateUtils.ToIntWithNagetive(HttpRequest.QueryString[name])
+                ? TranslateUtils.ToIntWithNegative(HttpRequest.QueryString[name])
                 : defaultValue;
         }
 
         public decimal GetQueryDecimal(string name, decimal defaultValue = 0)
         {
             return !string.IsNullOrEmpty(HttpRequest.QueryString[name])
-                ? TranslateUtils.ToDecimalWithNagetive(HttpRequest.QueryString[name])
+                ? TranslateUtils.ToDecimalWithNegative(HttpRequest.QueryString[name])
                 : defaultValue;
         }
 
@@ -289,7 +287,7 @@ namespace SiteServer.CMS.Plugin.Impl
             var value = GetPostObject(name);
             if (value == null) return defaultValue;
             if (value is int) return (int)value;
-            return TranslateUtils.ToIntWithNagetive(value.ToString(), defaultValue);
+            return TranslateUtils.ToIntWithNegative(value.ToString(), defaultValue);
         }
 
         public decimal GetPostDecimal(string name, decimal defaultValue = 0)
@@ -297,7 +295,7 @@ namespace SiteServer.CMS.Plugin.Impl
             var value = GetPostObject(name);
             if (value == null) return defaultValue;
             if (value is decimal) return (decimal)value;
-            return TranslateUtils.ToDecimalWithNagetive(value.ToString(), defaultValue);
+            return TranslateUtils.ToDecimalWithNegative(value.ToString(), defaultValue);
         }
 
         public bool GetPostBool(string name, bool defaultValue = false)
@@ -357,9 +355,9 @@ namespace SiteServer.CMS.Plugin.Impl
             CookieUtils.SetCookie(name, value);
         }
 
-        public void SetCookie(string name, string value, DateTime expires)
+        public void SetCookie(string name, string value, TimeSpan expiresAt)
         {
-            CookieUtils.SetCookie(name, value, expires);
+            CookieUtils.SetCookie(name, value, expiresAt);
         }
 
         public string GetCookie(string name)
@@ -381,22 +379,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_userPermissionsImpl != null) return _userPermissionsImpl;
-
-                var adminName = string.Empty;
+                
                 if (UserInfo != null)
                 {
                     var groupInfo = UserGroupManager.GetUserGroupInfo(UserInfo.GroupId);
                     if (groupInfo != null)
                     {
-                        adminName = groupInfo.AdminName;
+                        AdminInfo = AdminManager.GetAdminInfoByUserName(groupInfo.AdminName);
                     }
                 }
 
-                _userPermissionsImpl = new PermissionsImpl(adminName);
-                if (!string.IsNullOrEmpty(adminName))
-                {
-                    AdminInfo = AdminManager.GetAdminInfoByUserName(adminName);
-                }
+                _userPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _userPermissionsImpl;
             }
@@ -412,12 +405,7 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (_adminPermissionsImpl != null) return _adminPermissionsImpl;
 
-                var adminName = string.Empty;
-                if (AdminInfo != null)
-                {
-                    adminName = AdminInfo.UserName;
-                }
-                _adminPermissionsImpl = new PermissionsImpl(adminName);
+                _adminPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _adminPermissionsImpl;
             }
@@ -457,12 +445,12 @@ namespace SiteServer.CMS.Plugin.Impl
         {
             if (string.IsNullOrEmpty(userName)) return null;
             var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
-            if (adminInfo == null || adminInfo.IsLockedOut) return null;
+            if (adminInfo == null || adminInfo.Locked) return null;
 
             AdminInfo = adminInfo;
             IsAdminLoggin = true;
 
-            var expiresAt = DateTime.Now.AddDays(AccessTokenExpireDays);
+            var expiresAt = TimeSpan.FromDays(AccessTokenExpireDays);
             var accessToken = GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
 
             LogUtils.AddAdminLog(adminInfo.UserName, "管理员登录");
@@ -499,14 +487,14 @@ namespace SiteServer.CMS.Plugin.Impl
             if (string.IsNullOrEmpty(userName)) return null;
 
             var userInfo = UserManager.GetUserInfoByUserName(userName);
-            if (userInfo == null || userInfo.IsLockedOut || !userInfo.IsChecked) return null;
+            if (userInfo == null || userInfo.Locked || !userInfo.Checked) return null;
 
             UserInfo = userInfo;
 
-            var expiresAt = DateTime.Now.AddDays(AccessTokenExpireDays);
+            var expiresAt = TimeSpan.FromDays(AccessTokenExpireDays);
             var accessToken = GetAccessToken(UserId, UserName, expiresAt);
 
-            DataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(UserInfo);
+            DataProvider.User.UpdateLastActivityDateAndCountOfLogin(UserInfo);
             LogUtils.AddUserLoginLog(userName);
 
             if (isAutoLogin)
@@ -531,7 +519,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         #region Utils
 
-        public static string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        public static string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
             if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
 
@@ -539,7 +527,7 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 UserId = userId,
                 UserName = userName,
-                ExpiresAt = expiresAt
+                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
             };
 
             return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);

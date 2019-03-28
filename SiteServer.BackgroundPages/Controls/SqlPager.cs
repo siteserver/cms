@@ -6,7 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Apis;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -671,7 +672,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         private int GetQueryVirtualCount()
         {
-            var recCount = DataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
+            var recCount = DatabaseApi.Instance.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(DataProvider.ADOType, ConnectionString);
@@ -732,7 +733,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             var cmdText = SqlUtils.GetPageSqlString(SelectCommand, orderString, ItemsPerPage, CurrentPageIndex, countInfo.PageCount, countInfo.RecordsInLastPage);
 
-            var conn = SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var conn = SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
             var cmd = SqlUtils.GetIDbCommand();
             cmd.Connection = conn;
             cmd.CommandText = cmdText;

@@ -7,8 +7,8 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Settings
                 return;
             }
 
-            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            var ds = DataProvider.ContentRepository.GetDataSetOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;
 
             var dt = ds.Tables[0];
@@ -117,7 +117,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            SpContents.SelectCommand = DataProvider.ContentRepository.GetSqlStringOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
 
             SpContents.DataBind();
         }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameInclude;
                 _ext = ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
                 
                 tips = $@"包含文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;stl:include file=""/{_assetsDir}/包含文件.html""&gt;&lt;/stl:include&gt; 引用。";
             }
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameJs;
                 _ext = ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
                 tips =
                     $@"脚本文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;script type=""text/javascript"" src=""{{stl.siteUrl}}/{_assetsDir}/脚本文件.js""&gt;&lt;/script&gt; 引用。";
             }
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameCss;
                 _ext = ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
                 tips = $@"样式文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;link rel=""stylesheet"" type=""text/css"" href=""{{stl.siteUrl}}/{_assetsDir}/样式文件.css"" /&gt; 引用。";
             }
 

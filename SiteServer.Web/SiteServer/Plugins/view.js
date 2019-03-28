@@ -2,7 +2,7 @@
 var returnUrl = utils.getQueryString('returnUrl');
 var $url = '/pages/plugins/view/' + pluginId;
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   isNightly: null,
@@ -16,10 +16,10 @@ var data = {
   userInfo: {}
 };
 
-var methods = {
+var $methods = {
   getIconUrl: function (url) {
     if (url && url.indexOf('://') !== -1) return url;
-    return 'http://plugins.siteserver.cn/' + url;
+    return ssUtils.getPluginsUrl(url);
   },
 
   getTagNames: function (pluginInfo) {
@@ -42,7 +42,7 @@ var methods = {
       $this.installedVersion = res.installedVersion;
       $this.package = res.package || {};
 
-      $apiCloud.get('plugins/' + pluginId, {
+      $ssApi.get($ssUrlPlugins + '/' + pluginId, {
         params: {
           isNightly: $this.isNightly,
           pluginVersion: $this.pluginVersion
@@ -70,6 +70,22 @@ var methods = {
     });
   },
 
+  btnUpgradeClick: function () {
+    location.href = 'install.cshtml?isUpdate=true&pluginIds=' + this.pluginInfo.pluginId;
+  },
+
+  btnPurchaseClick: function () {
+    location.href = ssUtils.getPluginPageUrl(this.pluginInfo.pluginId);
+  },
+
+  btnInstallClick: function () {
+    location.href = 'install.cshtml?pluginIds=' + this.pluginInfo.pluginId;
+  },
+
+  btnTagClick: function (tagName) {
+    location.href = 'add.cshtml?q=' + encodeURIComponent(tagName);
+  },
+
   btnReturn: function () {
     location.href = returnUrl;
   }
@@ -77,8 +93,8 @@ var methods = {
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

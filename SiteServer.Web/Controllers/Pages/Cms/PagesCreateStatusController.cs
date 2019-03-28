@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -17,14 +16,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSitePermissions(rest.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
 
-                var siteId = request.SiteId;
+                var siteId = rest.SiteId;
 
                 var summary = CreateTaskManager.GetTaskSummary(siteId);
 
@@ -44,10 +43,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
-                var siteId = request.GetPostInt("siteId");
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+                var rest = new Rest(Request);
+                var siteId = rest.GetPostInt("siteId");
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

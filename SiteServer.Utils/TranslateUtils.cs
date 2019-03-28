@@ -6,16 +6,175 @@ using System.Data;
 using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using SiteServer.Plugin;
 using SiteServer.Utils.Auth;
 
 namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
+        public static object Get(IDictionary<string, object> dict, string name)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+
+            return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
+        }
+
+        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue)
+        {
+            return Get(Get(dict, name), defaultValue);
+        }
+
+        public static T Get<T>(object value, T defaultValue = default(T))
+        {
+            switch (value)
+            {
+                case null:
+                    return defaultValue;
+                case T variable:
+                    return variable;
+                default:
+                    try
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T));
+                    }
+                    catch (InvalidCastException)
+                    {
+                        return defaultValue;
+                    }
+            }
+        }
+
+        public static IDictionary<string, object> ToDictionary(IDataReader reader)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (reader == null) return dict;
+
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                var name = reader.GetName(i);
+                var value = reader.GetValue(i);
+
+                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == StringUtils.Constants.OracleEmptyValue)
+                {
+                    value = string.Empty;
+                }
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    dict[name] = value;
+                }
+            }
+
+            return dict;
+        }
+
+        public static IDictionary<string, object> ToDictionary(DataRowView rowView)
+        {
+            if (rowView == null) return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            return ToDictionary(rowView.Row);
+        }
+
+        public static IDictionary<string, object> ToDictionary(DataRow row)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (row == null) return dict;
+
+            return row.Table.Columns
+                .Cast<DataColumn>()
+                .ToDictionary(c => c.ColumnName, c => row[c]);
+        }
+
+        public static IDictionary<string, object> ToDictionary(IDataRecord record)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (record == null) return dict;
+
+            for (var i = 0; i < record.FieldCount; i++)
+            {
+                var name = record.GetName(i);
+                var value = record.GetValue(i);
+
+                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == StringUtils.Constants.OracleEmptyValue)
+                {
+                    value = string.Empty;
+                }
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    dict[name] = value;
+                }
+            }
+
+            return dict;
+        }
+
+        public static IDictionary<string, object> ToDictionary(NameValueCollection collection)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (collection == null) return dict;
+
+            foreach (var key in collection.AllKeys)
+            {
+                dict[key] = collection[key];
+            }
+
+            return dict;
+        }
+
+        public static IDictionary<string, object> ToDictionary<T>(T o)
+        {
+            IDictionary<string, object> res = new Dictionary<string, object>();
+            var props = typeof(T).GetProperties();
+            foreach (var prop in props)
+            {
+                if (prop.CanRead)
+                {
+                    res.Add(prop.Name, prop.GetValue(o, null));
+                }
+            }
+            return res;
+        }
+
+        public static Dictionary<string, object> ToDictionary(string json)
+        {
+            var dict = new Dictionary<string, object>();
+
+            if (string.IsNullOrEmpty(json)) return dict;
+
+            if (json.StartsWith("{") && json.EndsWith("}"))
+            {
+                dict = JsonDeserialize<Dictionary<string, object>>(json);
+                return dict;
+            }
+
+            json = json.Replace("/u0026", "&");
+
+            var pairs = json.Split('&');
+            foreach (var pair in pairs)
+            {
+                if (pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
+                var name = pair.Split('=')[0];
+                if (string.IsNullOrEmpty(name)) continue;
+
+                name = name.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
+                var value = pair.Split('=')[1];
+                if (!string.IsNullOrEmpty(value))
+                {
+                    value = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
+                }
+
+                dict[name] = value;
+            }
+
+            return dict;
+        }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
 
@@ -24,16 +183,16 @@ namespace SiteServer.Utils
         /// </summary>
         public static object ToEnum(Type enumType, string value, object defaultType)
         {
-            object retval;
+            object retVal;
             try
             {
-                retval = Enum.Parse(enumType, value, true);
+                retVal = Enum.Parse(enumType, value, true);
             }
             catch
             {
-                retval = defaultType;
+                retVal = defaultType;
             }
-            return retval;
+            return retVal;
         }
 
         public static List<int> ToIntList(int intValue)
@@ -54,7 +213,7 @@ namespace SiteServer.Utils
             return i;
         }
 
-        public static int ToIntWithNagetive(string intStr, int defaultValue = 0)
+        public static int ToIntWithNegative(string intStr, int defaultValue = 0)
         {
             if (!int.TryParse(intStr?.Trim(), out var i))
             {
@@ -76,7 +235,7 @@ namespace SiteServer.Utils
             return i;
         }
 
-        public static decimal ToDecimalWithNagetive(string intStr, decimal defaultValue = 0)
+        public static decimal ToDecimalWithNegative(string intStr, decimal defaultValue = 0)
         {
             if (!decimal.TryParse(intStr?.Trim(), out var i))
             {
@@ -114,6 +273,15 @@ namespace SiteServer.Utils
                 boolean = defaultValue;
             }
             return boolean;
+        }
+
+        public static DateTime? ToNullableDateTime(string dateTimeStr)
+        {
+            if (DateTime.TryParse(dateTimeStr.Trim(), out var datetime))
+            {
+                return datetime;
+            }
+            return null;
         }
 
         public static DateTime ToDateTime(string dateTimeStr)
@@ -198,56 +366,49 @@ namespace SiteServer.Utils
         public static List<string> StringCollectionToStringList(string collection, char split = ',')
         {
             var list = new List<string>();
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var array = collection.Split(split);
-                foreach (var s in array)
-                {
-                    list.Add(s);
-                }
-            }
+            if (string.IsNullOrEmpty(collection)) return list;
+
+            var array = collection.Split(split);
+            list.AddRange(array);
             return list;
         }
 
         public static StringCollection StringCollectionToStringCollection(string collection, char separator = ',')
         {
-            var arraylist = new StringCollection();
-            if (!string.IsNullOrEmpty(collection))
+            var list = new StringCollection();
+            if (string.IsNullOrEmpty(collection)) return list;
+
+            var array = collection.Split(separator);
+            foreach (var s in array)
             {
-                var array = collection.Split(separator);
-                foreach (var s in array)
-                {
-                    arraylist.Add(s.Trim());
-                }
+                list.Add(s.Trim());
             }
-            return arraylist;
+            return list;
         }
 
         public static string ObjectCollectionToString(ICollection collection)
         {
             var builder = new StringBuilder();
-            if (collection != null)
+            if (collection == null) return builder.ToString();
+
+            foreach (var obj in collection)
             {
-                foreach (var obj in collection)
-                {
-                    builder.Append(obj.ToString().Trim()).Append(",");
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
+                builder.Append(obj.ToString().Trim()).Append(",");
             }
+            if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
             return builder.ToString();
         }
 
         public static string ObjectCollectionToString(ICollection collection, string separatorStr)
         {
             var builder = new StringBuilder();
-            if (collection != null)
+            if (collection == null) return builder.ToString();
+
+            foreach (var obj in collection)
             {
-                foreach (var obj in collection)
-                {
-                    builder.Append(obj.ToString().Trim()).Append(separatorStr);
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
+                builder.Append(obj.ToString().Trim()).Append(separatorStr);
             }
+            if (builder.Length != 0) builder.Remove(builder.Length - separatorStr.Length, separatorStr.Length);
             return builder.ToString();
         }
 
@@ -259,14 +420,13 @@ namespace SiteServer.Utils
         public static string ToSqlInStringWithQuote(ICollection collection)
         {
             var builder = new StringBuilder();
-            if (collection != null)
+            if (collection == null) return builder.Length == 0 ? "null" : builder.ToString();
+
+            foreach (var obj in collection)
             {
-                foreach (var obj in collection)
-                {
-                    builder.Append("'").Append(obj).Append("'").Append(",");
-                }
-                if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
+                builder.Append("'").Append(obj).Append("'").Append(",");
             }
+            if (builder.Length != 0) builder.Remove(builder.Length - 1, 1);
             return builder.Length == 0 ? "null" : builder.ToString();
         }
 
@@ -299,12 +459,12 @@ namespace SiteServer.Utils
             return ToNameValueCollection(separateString, '&');
         }
 
-        public static NameValueCollection ToNameValueCollection(string separateString, char seperator)
+        public static NameValueCollection ToNameValueCollection(string separateString, char separator)
         {
             var attributes = new NameValueCollection();
             if (!string.IsNullOrEmpty(separateString))
             {
-                var pairs = separateString.Split(seperator);
+                var pairs = separateString.Split(separator);
                 foreach (var pair in pairs)
                 {
                     if (pair.IndexOf("=", StringComparison.Ordinal) != -1)
@@ -318,7 +478,7 @@ namespace SiteServer.Utils
             return attributes;
         }
 
-        public static string NameValueCollectionToString(NameValueCollection attributes, char seperator = '&')
+        public static string NameValueCollectionToString(NameValueCollection attributes, char separator = '&')
         {
             if (attributes == null || attributes.Count <= 0) return string.Empty;
 
@@ -326,13 +486,13 @@ namespace SiteServer.Utils
             foreach (string key in attributes.Keys)
             {
                 builder.Append(
-                    $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{seperator}");
+                    $@"{StringUtils.ValueToUrl(key)}={StringUtils.ValueToUrl(attributes[key])}{separator}");
             }
             builder.Length--;
             return builder.ToString();
         }
 
-        public static NameValueCollection DictionaryToNameValueCollection(Dictionary<string, object> attributes)
+        public static NameValueCollection DictionaryToNameValueCollection(IDictionary<string, object> attributes)
         {
             var nvc = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
             if (attributes != null && attributes.Count > 0)
@@ -351,9 +511,9 @@ namespace SiteServer.Utils
 
         public static bool DictGetValue(Dictionary<int, bool> dict, int key)
         {
-            if (dict.TryGetValue(key, out var retval))
+            if (dict.TryGetValue(key, out var retVal))
             {
-                return retval;
+                return retVal;
             }
 
             return false;
@@ -423,7 +583,7 @@ namespace SiteServer.Utils
 
         #region 汉字转拼音
 
-        private static readonly int[] Pyvalue =
+        private static readonly int[] PyValue =
         {
             -20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036, -20032,
             -20026, -20002, -19990, -19986, -19982, -19976, -19805, -19784, -19775, -19774, -19763, -19756, -19751,
@@ -540,9 +700,9 @@ namespace SiteServer.Utils
                 }
                 else
                 {
-                    for (var i = (Pyvalue.Length - 1); i >= 0; i--)
+                    for (var i = (PyValue.Length - 1); i >= 0; i--)
                     {
-                        if (Pyvalue[i] <= chrasc)
+                        if (PyValue[i] <= chrasc)
                         {
                             returnstr += Pystr[i];
                             break;
@@ -561,7 +721,8 @@ namespace SiteServer.Utils
             Converters = new List<JsonConverter>
             {
                 new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"}
-            }
+            },
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc
         };
 
         public static string JsonSerialize(object obj)
@@ -583,7 +744,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static T JsonDeserialize<T>(string json)
+        public static T JsonDeserialize<T>(string json, T defaultValue = default(T))
         {
             try
             {
@@ -595,13 +756,13 @@ namespace SiteServer.Utils
             }
             catch
             {
-                return default(T);
+                return defaultValue;
             }
         }
 
-        public static Dictionary<string, object> JsonGetDictionaryIgnorecase(JObject json)
+        public static Dictionary<string, object> JsonGetDictionaryIgnoreCase(JObject json)
         {
-            return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
+            return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.OrdinalIgnoreCase);
         }
 
         public const string EncryptStingIndicator = "0secret0";
@@ -613,19 +774,19 @@ namespace SiteServer.Utils
 
         public static string EncryptStringBySecretKey(string inputString, string secretKey)
         {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            if (string.IsNullOrEmpty(inputString) || string.IsNullOrEmpty(secretKey)) return string.Empty;
 
-            var encryptor = new DesEncryptor
+            var encrypt = new DesEncryptor
             {
                 InputString = inputString,
                 EncryptKey = secretKey
             };
-            encryptor.DesEncrypt();
+            encrypt.DesEncrypt();
 
-            var retval = encryptor.OutString;
-            retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+            var retVal = encrypt.OutString;
+            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
 
-            return retval + EncryptStingIndicator;
+            return retVal + EncryptStingIndicator;
         }
 
         public static string DecryptStringBySecretKey(string inputString)
@@ -635,18 +796,18 @@ namespace SiteServer.Utils
 
         private static string DecryptStringBySecretKey(string inputString, string secretKey)
         {
-            if (string.IsNullOrEmpty(inputString)) return string.Empty;
+            if (string.IsNullOrEmpty(inputString) || string.IsNullOrEmpty(secretKey)) return string.Empty;
 
             inputString = inputString.Replace(EncryptStingIndicator, string.Empty).Replace("0add0", "+").Replace("0equals0", "=").Replace("0and0", "&").Replace("0question0", "?").Replace("0quote0", "'").Replace("0slash0", "/");
 
-            var encryptor = new DesEncryptor
+            var encrypt = new DesEncryptor
             {
                 InputString = inputString,
                 DecryptKey = secretKey
             };
-            encryptor.DesDecrypt();
+            encrypt.DesDecrypt();
 
-            return encryptor.OutString;
+            return encrypt.OutString;
         }
 
         public static HorizontalAlign ToHorizontalAlign(string typeStr)
@@ -696,6 +857,20 @@ namespace SiteServer.Utils
             var comparer = StringComparer.OrdinalIgnoreCase;
             var caseInsensitiveDictionary = new NameValueCollection(comparer);
             return caseInsensitiveDictionary;
+        }
+
+        public static T ToObject<T>(IDictionary<string, object> dict)
+        {
+            var props = typeof(T).GetProperties();
+            var res = Activator.CreateInstance<T>();
+            foreach (var property in props)
+            {
+                if (property.CanWrite && dict.ContainsKey(property.Name))
+                {
+                    property.SetValue(res, dict[property.Name], null);
+                }
+            }
+            return res;
         }
     }
 }

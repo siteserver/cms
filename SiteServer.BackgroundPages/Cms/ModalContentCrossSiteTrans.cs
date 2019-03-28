@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -72,10 +74,10 @@ namespace SiteServer.BackgroundPages.Cms
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;
                                 
-                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
+                                contentInfo.Checked = targetSiteInfo.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                                DataProvider.ContentRepository.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
                             }
                         }
                     }

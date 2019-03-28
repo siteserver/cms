@@ -5,11 +5,10 @@ using System.Text;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -129,7 +128,9 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+            var request = new RequestImpl(Page.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -395,25 +396,23 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
+#pragma warning disable CS0612 // '“RequestImpl”已过时
         public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, RequestImpl request)
+#pragma warning restore CS0612 // '“RequestImpl”已过时
         {
             var list = new List<string>();
 
             var eLoadingType = ELoadingTypeUtils.GetEnumType(loadingType);
 
-            var channelIdList =
-                ChannelManager.GetChannelIdList(
-                    ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children,
-                    string.Empty, string.Empty, string.Empty);
-
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-
+            var parentChannelInfo = ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId);
+            var channelIdList =
+                ChannelManager.GetChannelIdList(parentChannelInfo, EScopeType.Children, string.Empty, string.Empty, string.Empty);
             var nameValueCollection = TranslateUtils.ToNameValueCollection(TranslateUtils.DecryptStringBySecretKey(additional));
 
             foreach (var channelId in channelIdList)
             {
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-
                 var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
                 if (!string.IsNullOrEmpty(contentModelPluginId) &&
                             !StringUtils.EqualsIgnoreCase(channelInfo.ContentModelPluginId, contentModelPluginId))

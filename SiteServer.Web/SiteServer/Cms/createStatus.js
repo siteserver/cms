@@ -1,13 +1,11 @@
-﻿var $siteId = parseInt(pageUtils.getQueryStringByName('siteId'));
+﻿var $url = '/pages/cms/createStatus';
+var $urlCancel = '/pages/cms/createStatus/actions/cancel';
 
-var $api = new apiUtils.Api(apiUrl + '/pages/cms/createStatus');
-var $apiCancel = new apiUtils.Api(apiUrl + '/pages/cms/createStatus/actions/cancel');
-
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: null,
-  siteId: $siteId,
+  siteId: parseInt(utils.getQueryString('siteId')),
   tasks: null,
   channelsCount: null,
   contentsCount: null,
@@ -16,63 +14,55 @@ var data = {
   timeoutId: null
 };
 
-var methods = {
+var $methods = {
   load: function () {
     var $this = this;
 
-    $api.get({
+    $api.get($url, {
+      params: {
         siteId: $this.siteId
-      },
-      function (err, res) {
-        $this.timeoutId = setTimeout(function () {
-          $this.load();
-        }, 3000);
-        if (err || !res || !res.value) return;
+      }
+    }).then(function (response) {
+      var res = response.data;
 
-        $this.tasks = res.value.tasks;
-        $this.channelsCount = res.value.channelsCount;
-        $this.contentsCount = res.value.contentsCount;
-        $this.filesCount = res.value.filesCount;
-        $this.specialsCount = res.value.specialsCount;
-        $this.pageLoad = true;
-      });
-  },
-
-  getRedirectUrl: function (task) {
-    var url = '../pageRedirect.aspx?siteId=' + task.siteId;
-    if (task.channelId) {
-      url += '&channelId=' + task.channelId;
-    }
-    if (task.contentId) {
-      url += '&contentId=' + task.contentId;
-    }
-    if (task.fileTemplateId) {
-      url += '&fileTemplateId=' + task.fileTemplateId;
-    }
-    if (task.specialId) {
-      url += '&specialId=' + task.specialId;
-    }
-    return url;
+      $this.tasks = res.value.tasks;
+      $this.channelsCount = res.value.channelsCount;
+      $this.contentsCount = res.value.contentsCount;
+      $this.filesCount = res.value.filesCount;
+      $this.specialsCount = res.value.specialsCount;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+      $this.timeoutId = setTimeout(function () {
+        $this.load();
+      }, 3000);
+    });
   },
 
   btnCancelClick: function () {
     var $this = this;
     clearTimeout(this.timeoutId);
 
-    $this.pageLoad = false;
-    $apiCancel.post({
-        siteId: $this.siteId
-      },
-      function (err, res) {
-        $this.load();
-      });
+    utils.loading(true);
+    $api.post($urlCancel, {
+      siteId: $this.siteId
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.load();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
   }
 };
 
 var $vue = new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.load();
   }

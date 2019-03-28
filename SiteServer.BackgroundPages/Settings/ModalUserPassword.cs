@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -45,8 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                string errorMessage;
-                if (DataProvider.UserDao.ChangePassword(_userName, TbPassword.Text, out errorMessage))
+                if (DataProvider.User.ChangePassword(_userName, TbPassword.Text, out var errorMessage))
                 {
                     SuccessMessage("重设密码成功！");
                 }

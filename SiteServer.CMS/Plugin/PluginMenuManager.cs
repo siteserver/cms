@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using SiteServer.CMS.Api;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -54,17 +54,18 @@ namespace SiteServer.CMS.Plugin
             return pageUrl;
         }
 
-        public static Dictionary<string, Menu> GetTopMenus()
+        public static List<PluginMenu> GetTopMenus()
         {
-            var menus = new Dictionary<string, Menu>();
+            var menus = new List<PluginMenu>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.SystemMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.SystemMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke();
@@ -73,35 +74,37 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    var i = 0;
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu, ++i);
+                        menus.Add(pluginMenu);
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, 0, 0, 0, metadataMenu, 0);
-                    menus.Add(service.PluginId, pluginMenu);
                 }
             }
 
             return menus;
         }
 
-        public static Dictionary<string, Menu> GetSiteMenus(int siteId)
+        public static List<PluginMenu> GetSiteMenus(int siteId)
         {
-            var menus = new Dictionary<string, Menu>();
+            var menus = new List<PluginMenu>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.SiteMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.SiteMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke(siteId);
@@ -110,27 +113,28 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    var i = 0;
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu, ++i);
+                        menus.Add(pluginMenu);
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, siteId, 0, 0, metadataMenu, 0);
-                    menus.Add(service.PluginId, pluginMenu);
                 }
             }
 
             return menus;
         }
 
-        public static List<Menu> GetContentMenus(List<string> pluginIds, ContentInfo contentInfo)
+        public static List<PluginMenu> GetContentMenus(List<string> pluginIds, ContentInfo contentInfo)
         {
-            var menus = new List<Menu>();
+            var menus = new List<PluginMenu>();
             if (pluginIds == null || pluginIds.Count == 0) return menus;
 
             foreach (var service in PluginManager.Services)
@@ -139,9 +143,10 @@ namespace SiteServer.CMS.Plugin
 
                 if (service.ContentMenuFuncs == null) continue;
 
-                var metadataMenus = new List<Menu>();
                 try
                 {
+                    var metadataMenus = new List<Menu>();
+
                     foreach (var menuFunc in service.ContentMenuFuncs)
                     {
                         var metadataMenu = menuFunc.Invoke(contentInfo);
@@ -150,18 +155,19 @@ namespace SiteServer.CMS.Plugin
                             metadataMenus.Add(metadataMenu);
                         }
                     }
+
+                    if (metadataMenus.Count == 0) continue;
+
+                    var i = 0;
+                    foreach (var metadataMenu in metadataMenus)
+                    {
+                        var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, ++i);
+                        menus.Add(pluginMenu);
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogUtils.AddErrorLog(service.PluginId, ex);
-                }
-
-                if (metadataMenus.Count == 0) continue;
-
-                foreach (var metadataMenu in metadataMenus)
-                {
-                    var pluginMenu = GetMenu(service.PluginId, contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, metadataMenu, 0);
-                    menus.Add(pluginMenu);
                 }
             }
 
@@ -234,15 +240,16 @@ namespace SiteServer.CMS.Plugin
         //    });
         //}
 
-        private static Menu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu, int i)
+        private static PluginMenu GetMenu(string pluginId, int siteId, int channelId, int contentId, Menu metadataMenu, int i)
         {
-            var menu = new Menu
+            var menu = new PluginMenu
             {
                 Id = metadataMenu.Id,
                 Text = metadataMenu.Text,
                 Href = metadataMenu.Href,
                 Target = metadataMenu.Target,
-                IconClass = metadataMenu.IconClass
+                IconClass = metadataMenu.IconClass,
+                PluginId = pluginId
             };
 
             if (string.IsNullOrEmpty(menu.Id))
@@ -261,10 +268,10 @@ namespace SiteServer.CMS.Plugin
             if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
             {
                 var chlildren = new List<Menu>();
-                var x = 1;
+                var j = i * 100;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
-                    var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu, x++);
+                    var child = GetMenu(pluginId, siteId, channelId, contentId, childMetadataMenu, ++j);
 
                     chlildren.Add(child);
                 }

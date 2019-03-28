@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -21,8 +21,8 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
             EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
-            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
-            TbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
+            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.Instance.IsTimeThreshold.ToString());
+            TbTime.Text = ConfigManager.Instance.TimeThreshold.ToString();
 
             PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
         }
@@ -34,13 +34,13 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
-            if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
+            ConfigManager.Instance.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
+            if (ConfigManager.Instance.IsTimeThreshold)
             {
-                ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
+                ConfigManager.Instance.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
             }
 
-            DataProvider.ConfigDao.Update(ConfigManager.Instance);
+            DataProvider.Config.Update(ConfigManager.Instance);
 
             AuthRequest.AddAdminLog("设置日志阈值参数");
             SuccessMessage("日志设置成功");

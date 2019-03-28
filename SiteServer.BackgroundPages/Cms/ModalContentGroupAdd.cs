@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				try
 				{
-                    DataProvider.ContentGroupDao.Update(contentGroupInfo);
+                    DataProvider.ContentGroup.Update(contentGroupInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改内容组", $"内容组:{contentGroupInfo.GroupName}");
 					isChanged = true;
 				}
@@ -82,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
 				{
 					try
 					{
-                        DataProvider.ContentGroupDao.Insert(contentGroupInfo);
+                        DataProvider.ContentGroup.Insert(contentGroupInfo);
                         AuthRequest.AddSiteLog(SiteId, "添加内容组",
                             $"内容组:{contentGroupInfo.GroupName}");
 						isChanged = true;

@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using SiteServer.CMS.DataCache;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.CMS.Core
 {
@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
             }
             if (sourceId <= 0) return string.Empty;
 
-            var sourceSiteId = DataProvider.ChannelDao.GetSiteId(sourceId);
+            var sourceSiteId = DataProvider.Channel.GetSiteId(sourceId);
             var siteInfo = SiteManager.GetSiteInfo(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 

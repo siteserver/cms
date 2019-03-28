@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -256,7 +257,7 @@ namespace SiteServer.CMS.Core
 
 	    public static List<KeyValuePair<InputType, string>> GetInputTypes(string tableName)
 	    {
-	        if (tableName == DataProvider.UserDao.TableName)
+	        if (tableName == DataProvider.User.TableName)
 	        {
 	            return new List<KeyValuePair<InputType, string>>
 	            {

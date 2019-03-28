@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -16,22 +16,22 @@ namespace SiteServer.Cli.Jobs
     {
         public const string CommandName = "restore";
 
-        private static bool _isHelp;
         private static string _directory;
+        private static string _configFile;
         private static List<string> _includes;
         private static List<string> _excludes;
-        private static string _webConfig;
         private static bool _dataOnly;
+        private static bool _isHelp;
 
         private static readonly OptionSet Options = new OptionSet {
             { "d|directory=", "从指定的文件夹中恢复数据",
                 v => _directory = v },
+            { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                v => _configFile = v },
             { "includes=", "指定需要还原的表，多个表用英文逗号隔开",
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
-            { "web-config=", "指定Web.config文件名",
-                v => _webConfig = v },
             { "data-only",  "仅恢复数据",
                 v => _dataOnly = v != null },
             { "h|help",  "命令说明",
@@ -76,20 +76,18 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            var webConfigName = string.IsNullOrEmpty(_webConfig) ? "web.config" : _webConfig;
-
-            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, webConfigName);
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigName);
+            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"{webConfigName} 中数据库连接字符串 connectionString 未设置");
+                await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
 
@@ -97,9 +95,9 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
             }
 
@@ -112,7 +110,7 @@ namespace SiteServer.Cli.Jobs
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                SystemManager.CreateSiteServerTables();
+                SystemManager.SyncSystemTables();
             }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -144,9 +142,9 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
                     {
-                        if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                        if (!DatabaseApi.Instance.CreateTable(tableName, tableInfo.Columns, string.Empty, false, out var ex, out var sqlString))
                         {
                             await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {
@@ -160,7 +158,7 @@ namespace SiteServer.Cli.Jobs
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
+                        DatabaseApi.Instance.AlterTable(tableName, tableInfo.Columns, string.Empty);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -179,7 +177,7 @@ namespace SiteServer.Cli.Jobs
 
                                 try
                                 {
-                                    DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                    DatabaseApi.Instance.InsertMultiple(tableName, objects, tableInfo.Columns);
                                 }
                                 catch (Exception ex)
                                 {
@@ -209,10 +207,10 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DataProvider.DatabaseDao.GetTableNameList();
+                var tableNameList = DatabaseApi.Instance.GetTableNameList();
                 foreach (var tableName in tableNameList)
                 {
-                    DataProvider.DatabaseDao.AlterOracleAutoIncresementIdToMaxValue(tableName);
+                    DatabaseApi.Instance.AlterOracleAutoIdToMaxValue(tableName);
                 }
             }
 

@@ -80,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
             _fileCharset = ECharset.utf_8;
             if (SiteInfo != null)
             {
-                _fileCharset = ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset);
+                _fileCharset = ECharsetUtils.GetEnumType(SiteInfo.Charset);
             }
 
             if (_isCreate == false)

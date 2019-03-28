@@ -14,7 +14,7 @@
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
-          <a class="nav-link" href="pageAdministrator.aspx">管理员管理</a>
+          <a class="nav-link" href="administrators.cshtml">管理员管理</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>

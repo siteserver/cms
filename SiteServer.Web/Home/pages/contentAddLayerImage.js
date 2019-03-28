@@ -63,7 +63,7 @@ var methods = {
         },
         add: function (task) {
           if (task.disabled) {
-            return alert({
+            return swal2({
               title: '文件错误！',
               text: '允许上传的文件格式为：' + this.ops.allows,
               type: 'error',
@@ -74,7 +74,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || !json.path || !json.url) {
-            return alert({
+            return swal2({
               title: "图片传失败！",
               type: 'error',
               showConfirmButton: false
@@ -123,7 +123,7 @@ var methods = {
     var $this = this;
     var filePaths = this.getFilePaths().join(',');
     if (!filePaths) {
-      return alert({
+      return swal2({
         title: "请选择需要上传的图片！",
         type: 'warning',
         showConfirmButton: false

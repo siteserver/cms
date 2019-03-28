@@ -1,9 +1,11 @@
 ﻿using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
@@ -11,7 +13,7 @@ namespace SiteServer.CMS.Core.Office
     public static class ExcelObject
     {
         public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
-            ChannelInfo channelInfo, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+            ChannelInfo channelInfo, IList<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -19,8 +21,7 @@ namespace SiteServer.CMS.Core.Office
 
             var head = new List<string>();
             var rows = new List<List<string>>();
-
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
@@ -33,7 +34,7 @@ namespace SiteServer.CMS.Core.Office
 
             if (contentIdList == null || contentIdList.Count == 0)
             {
-                contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelInfo.Id, isPeriods,
+                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelInfo.Id, isPeriods,
                     startDate, endDate, checkedState);
             }
 
@@ -48,7 +49,7 @@ namespace SiteServer.CMS.Core.Office
                     {
                         if (displayAttributes.Contains(styleInfo.AttributeName))
                         {
-                            var value = contentInfo.GetString(styleInfo.AttributeName);
+                            var value = contentInfo.Get<string>(styleInfo.AttributeName);
                             row.Add(StringUtils.StripTags(value));
                         }
                     }
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.Core.Office
                 {
                     if (StringUtils.ContainsIgnoreCase(columnNames, column.AttributeName))
                     {
-                        var value = contentInfo.GetString(column.AttributeName);
+                        var value = contentInfo.Get<string>(column.AttributeName);
                         row.Add(StringUtils.StripTags(value));
                     }
                 }
@@ -114,10 +115,10 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            List<int> userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False);
+            var userIdList = DataProvider.User.GetIdList(checkedState != ETriState.False);
             if (checkedState == ETriState.All)
             {
-                userIdList.AddRange(DataProvider.UserDao.GetIdList(false));
+                userIdList.AddRange(DataProvider.User.GetIdList(false));
             }
 
             foreach (var userId in userIdList)

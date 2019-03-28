@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Core
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Core
         {
             var checkedLevels = new List<KeyValuePair<int, string>>();
 
-            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+            var checkContentLevel = siteInfo.CheckContentLevel;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;
@@ -288,7 +288,7 @@ namespace SiteServer.CMS.Core
 
         public static void LoadContentLevelToEdit(ListControl listControl, SiteInfo siteInfo, ContentInfo contentInfo, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+	        var checkContentLevel = siteInfo.CheckContentLevel;
 	        if (isChecked)
 	        {
 	            checkedLevel = checkContentLevel;
@@ -299,7 +299,7 @@ namespace SiteServer.CMS.Core
 	        var isCheckable = false;
 	        if (contentInfo != null)
 	        {
-	            isCheckable = IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+	            isCheckable = IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isChecked, checkedLevel);
 	            if (isCheckable)
 	            {
 	                listItem = new ListItem(Level.NotChange, LevelInt.NotChange.ToString());
@@ -416,7 +416,7 @@ namespace SiteServer.CMS.Core
 
 	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+	        var checkContentLevel = siteInfo.CheckContentLevel;
 
 	        if (isChecked)
 	        {
@@ -604,7 +604,7 @@ namespace SiteServer.CMS.Core
 
 	    public static void LoadContentLevelToCheck(ListControl listControl, SiteInfo siteInfo, bool isChecked, int checkedLevel)
 	    {
-	        var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+	        var checkContentLevel = siteInfo.CheckContentLevel;
 	        if (isChecked)
 	        {
 	            checkedLevel = checkContentLevel;
@@ -814,7 +814,7 @@ namespace SiteServer.CMS.Core
 
 	    public static string GetCheckState(SiteInfo siteInfo, ContentInfo contentInfo)
 	    {
-	        if (contentInfo.IsChecked)
+	        if (contentInfo.Checked)
 	        {
 	            return Level.YiShenHe;
 	        }
@@ -831,7 +831,7 @@ namespace SiteServer.CMS.Core
 	        }
 	        else
 	        {
-	            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+	            var checkContentLevel = siteInfo.CheckContentLevel;
 
 	            if (checkContentLevel == 1)
 	            {
@@ -1027,12 +1027,12 @@ namespace SiteServer.CMS.Core
         {
             if (permissionsImpl.IsSystemAdministrator)
             {
-                return new KeyValuePair<bool, int>(true, siteInfo.Additional.CheckContentLevel);
+                return new KeyValuePair<bool, int>(true, siteInfo.CheckContentLevel);
             }
 
             var isChecked = false;
             var checkedLevel = 0;
-            if (siteInfo.Additional.IsCheckContentLevel == false)
+            if (siteInfo.IsCheckContentLevel == false)
             {
                 if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
                 {
@@ -1047,7 +1047,7 @@ namespace SiteServer.CMS.Core
                 }
                 else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
                 {
-                    if (siteInfo.Additional.CheckContentLevel <= 4)
+                    if (siteInfo.CheckContentLevel <= 4)
                     {
                         isChecked = true;
                     }
@@ -1058,7 +1058,7 @@ namespace SiteServer.CMS.Core
                 }
                 else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
                 {
-                    if (siteInfo.Additional.CheckContentLevel <= 3)
+                    if (siteInfo.CheckContentLevel <= 3)
                     {
                         isChecked = true;
                     }
@@ -1069,7 +1069,7 @@ namespace SiteServer.CMS.Core
                 }
                 else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
                 {
-                    if (siteInfo.Additional.CheckContentLevel <= 2)
+                    if (siteInfo.CheckContentLevel <= 2)
                     {
                         isChecked = true;
                     }
@@ -1080,7 +1080,7 @@ namespace SiteServer.CMS.Core
                 }
                 else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
                 {
-                    if (siteInfo.Additional.CheckContentLevel <= 1)
+                    if (siteInfo.CheckContentLevel <= 1)
                     {
                         isChecked = true;
                     }
@@ -1099,7 +1099,7 @@ namespace SiteServer.CMS.Core
 
         public static bool GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
         {
-            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+            var checkContentLevel = siteInfo.CheckContentLevel;
 
             var pair = GetUserCheckLevel(permissionsImpl, siteInfo, channelId);
             var isChecked = pair.Key;

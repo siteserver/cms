@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -86,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             InputTypeUtils.AddListItems(DdlInputType);
 
-            var relatedFieldInfoList = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(SiteId);
+            var relatedFieldInfoList = DataProvider.RelatedField.GetRelatedFieldInfoList(SiteId);
             foreach (var rfInfo in relatedFieldInfoList)
             {
                 var listItem = new ListItem(rfInfo.Title, rfInfo.Id.ToString());
@@ -100,18 +101,18 @@ namespace SiteServer.BackgroundPages.Cms
             TbAttributeName.Text = _styleInfo.AttributeName;
             TbDisplayName.Text = _styleInfo.DisplayName;
             TbHelpText.Text = _styleInfo.HelpText;
-            ControlUtils.SelectSingleItem(DdlInputType, _styleInfo.InputType.Value);
+            ControlUtils.SelectSingleItem(DdlInputType, _styleInfo.Type.Value);
             TbTaxis.Text = _styleInfo.Taxis.ToString();
-            ControlUtils.SelectSingleItem(DdlIsFormatString, _styleInfo.Additional.IsFormatString.ToString());
+            ControlUtils.SelectSingleItem(DdlIsFormatString, _styleInfo.FormatString.ToString());
             TbDefaultValue.Text = _styleInfo.DefaultValue;
-            DdlIsHorizontal.SelectedValue = _styleInfo.IsHorizontal.ToString();
-            TbColumns.Text = _styleInfo.Additional.Columns.ToString();
+            DdlIsHorizontal.SelectedValue = _styleInfo.Horizontal.ToString();
+            TbColumns.Text = _styleInfo.Columns.ToString();
 
-            ControlUtils.SelectSingleItem(DdlRelatedFieldId, _styleInfo.Additional.RelatedFieldId.ToString());
-            ControlUtils.SelectSingleItem(DdlRelatedFieldStyle, _styleInfo.Additional.RelatedFieldStyle);
+            ControlUtils.SelectSingleItem(DdlRelatedFieldId, _styleInfo.RelatedFieldId.ToString());
+            ControlUtils.SelectSingleItem(DdlRelatedFieldStyle, _styleInfo.RelatedFieldStyle);
 
-            TbHeight.Text = _styleInfo.Additional.Height == 0 ? string.Empty : _styleInfo.Additional.Height.ToString();
-            TbWidth.Text = _styleInfo.Additional.Width;
+            TbHeight.Text = _styleInfo.Height == 0 ? string.Empty : _styleInfo.Height.ToString();
+            TbWidth.Text = _styleInfo.Width;
 
             var styleItems = _styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
             TbItemCount.Text = styleItems.Count.ToString();
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var item in styleItems)
             {
                 list.Add(item.ItemValue);
-                if (item.IsSelected)
+                if (item.Selected)
                 {
                     isSelected = true;
                 }
@@ -138,8 +139,8 @@ namespace SiteServer.BackgroundPages.Cms
             DdlIsRapid.SelectedValue = (!isSelected && !isNotEquals).ToString();
             TbRapidValues.Text = string.Join(",", list);
 
-            TbCustomizeLeft.Text = _styleInfo.Additional.CustomizeLeft;
-            TbCustomizeRight.Text = _styleInfo.Additional.CustomizeRight;
+            TbCustomizeLeft.Text = _styleInfo.CustomizeLeft;
+            TbCustomizeRight.Text = _styleInfo.CustomizeRight;
 
             ReFresh(null, EventArgs.Empty);
         }
@@ -169,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlSeq.Text = (e.Item.ItemIndex + 1).ToString();
             tbTitle.Text = itemInfo.ItemTitle;
             tbValue.Text = itemInfo.ItemValue;
-            cbIsSelected.Checked = itemInfo.IsSelected;
+            cbIsSelected.Checked = itemInfo.Selected;
         }
 
         public void ReFresh(object sender, EventArgs e)
@@ -298,18 +299,18 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-            _styleInfo.InputType = inputType;
+            _styleInfo.Type = inputType;
             _styleInfo.DefaultValue = TbDefaultValue.Text;
-            _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
+            _styleInfo.Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
-            _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
-            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
-            _styleInfo.Additional.CustomizeLeft = TbCustomizeLeft.Text;
-            _styleInfo.Additional.CustomizeRight = TbCustomizeRight.Text;
+            _styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+            _styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+            _styleInfo.Width = TbWidth.Text;
+            _styleInfo.FormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
+            _styleInfo.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
+            _styleInfo.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.CustomizeLeft = TbCustomizeLeft.Text;
+            _styleInfo.CustomizeRight = TbCustomizeRight.Text;
 
             _styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
@@ -323,7 +324,13 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, _styleInfo.Id, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = _styleInfo.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -343,7 +350,13 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         if (cbIsSelected.Checked) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, _styleInfo.Id, tbTitle.Text, tbValue.Text, cbIsSelected.Checked);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = _styleInfo.Id,
+                            ItemTitle = tbTitle.Text,
+                            ItemValue = tbValue.Text,
+                            Selected = cbIsSelected.Checked
+                        };
                         _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -351,7 +364,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                DataProvider.TableStyleDao.Update(_styleInfo);
+                DataProvider.TableStyle.Update(_styleInfo);
 
                 if (SiteId > 0)
                 {
@@ -396,18 +409,18 @@ namespace SiteServer.BackgroundPages.Cms
             _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-            _styleInfo.InputType = inputType;
+            _styleInfo.Type = inputType;
             _styleInfo.DefaultValue = TbDefaultValue.Text;
-            _styleInfo.IsHorizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
+            _styleInfo.Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue);
 
-            _styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-            _styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-            _styleInfo.Additional.Width = TbWidth.Text;
-            _styleInfo.Additional.IsFormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
-            _styleInfo.Additional.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
-            _styleInfo.Additional.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
-            _styleInfo.Additional.CustomizeLeft = TbCustomizeLeft.Text;
-            _styleInfo.Additional.CustomizeRight = TbCustomizeRight.Text;
+            _styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+            _styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+            _styleInfo.Width = TbWidth.Text;
+            _styleInfo.FormatString = TranslateUtils.ToBool(DdlIsFormatString.SelectedValue);
+            _styleInfo.RelatedFieldId = TranslateUtils.ToInt(DdlRelatedFieldId.SelectedValue);
+            _styleInfo.RelatedFieldStyle = DdlRelatedFieldStyle.SelectedValue;
+            _styleInfo.CustomizeLeft = TbCustomizeLeft.Text;
+            _styleInfo.CustomizeRight = TbCustomizeRight.Text;
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
@@ -419,7 +432,13 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, _styleInfo.Id, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = _styleInfo.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -439,7 +458,12 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                         if (cbIsSelected.Checked) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, 0, tbTitle.Text, tbValue.Text, cbIsSelected.Checked);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            ItemTitle = tbTitle.Text,
+                            ItemValue = tbValue.Text,
+                            Selected = cbIsSelected.Checked
+                        };
                         _styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -447,7 +471,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             try
             {
-                DataProvider.TableStyleDao.Insert(_styleInfo);
+                DataProvider.TableStyle.Insert(_styleInfo);
 
                 if (SiteId > 0)
                 {

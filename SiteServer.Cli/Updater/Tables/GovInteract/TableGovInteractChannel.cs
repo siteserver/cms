@@ -74,14 +74,12 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             new TableColumn
             {
                 AttributeName = "DepartmentIdCollection",
-                DataType = DataType.VarChar,
-                DataLength = 255
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "Summary",
-                DataType = DataType.VarChar,
-                DataLength = 255
+                DataType = DataType.VarChar
             }
         };
 

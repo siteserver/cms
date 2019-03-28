@@ -1,13 +1,13 @@
 ﻿using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiteServer.CMS.Core.Enumerations;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -223,11 +223,11 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     if (contextType == EContextType.Content)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                        listInfo.OrderByString = StlDataUtility.GetContentOrderByString(value, ETaxisType.OrderByTaxisDesc);
                     }
                     else if (contextType == EContextType.Channel)
                     {
-                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxis);
+                        listInfo.OrderByString = StlDataUtility.GetChannelOrderByString(value, ETaxisType.OrderByTaxis);
                     }
                     //else if (contextType == EContextType.InputContent)
                     //{

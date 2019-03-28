@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -21,13 +21,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-			if (AuthRequest.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("DeleteById"))
 			{
 				var roleName = AuthRequest.GetQueryString("RoleName");
 				try
 				{
-                    DataProvider.PermissionsInRolesDao.Delete(roleName);
-                    DataProvider.RoleDao.DeleteRole(roleName);
+                    DataProvider.PermissionsInRoles.Delete(roleName);
+                    DataProvider.Role.DeleteRole(roleName);
 
                     AuthRequest.AddAdminLog("删除管理员角色", $"角色名称:{roleName}");
 
@@ -44,8 +44,8 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Admin);
 
             RptContents.DataSource = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator
-                ? DataProvider.RoleDao.GetRoleNameList()
-                : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
+                ? DataProvider.Role.GetRoleNameList()
+                : DataProvider.Role.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -65,9 +65,9 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlDelete = (Literal)e.Item.FindControl("ltlDelete");
 
             ltlRoleName.Text = roleName;
-            ltlDescription.Text = DataProvider.RoleDao.GetRoleDescription(roleName);
+            ltlDescription.Text = DataProvider.Role.GetRoleDescription(roleName);
             ltlEdit.Text = $@"<a href=""{PageAdminRoleAdd.GetRedirectUrl(roleName)}"">修改</a>";
-            ltlDelete.Text = $@"<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除角色", $"此操作将会删除角色“{roleName}”，确认吗？", $"{GetRedirectUrl()}?Delete={true}&RoleName={roleName}")}"">删除</a>";
+            ltlDelete.Text = $@"<a href=""javascript:;"" onClick=""{AlertUtils.ConfirmDelete("删除角色", $"此操作将会删除角色“{roleName}”，确认吗？", $"{GetRedirectUrl()}?DeleteById={true}&RoleName={roleName}")}"">删除</a>";
         }
 	}
 }

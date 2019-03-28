@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(SiteId, _templateId);
+            var logDictionary = DataProvider.TemplateLog.GetLogIdWithNameDictionary(_templateId);
             if (logDictionary.Count > 0)
             {
                 PhContent.Visible = true;
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     _logId = TranslateUtils.ToInt(DdlLogId.Items[0].Value);
                 }
-                TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(_logId);
+                TbContent.Text = DataProvider.TemplateLog.GetTemplateContent(_logId);
             }
             else
             {

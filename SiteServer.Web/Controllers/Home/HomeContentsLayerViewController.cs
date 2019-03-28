@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -16,14 +17,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetQueryInt("siteId");
-                var channelId = request.GetQueryInt("channelId");
-                var contentId = request.GetQueryInt("contentId");
+                var siteId = rest.GetQueryInt("siteId");
+                var channelId = rest.GetQueryInt("channelId");
+                var contentId = rest.GetQueryInt("contentId");
 
-                if (!request.IsUserLoggin ||
-                    !request.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                if (!rest.IsUserLoggin ||
+                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -38,11 +39,10 @@ namespace SiteServer.API.Controllers.Home
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                contentInfo.Load(new
+                var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
                 {
-                    CheckState =
-                        CheckManager.GetCheckState(siteInfo, contentInfo)
-                });
+                    {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                };
 
                 var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = contentInfo,
+                    Value = dict,
                     ChannelName = channelName,
                     Attributes = attributes
                 });

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Apis;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -14,22 +13,22 @@ namespace SiteServer.Cli.Jobs
     {
         public const string CommandName = "backup";
 
-        private static bool _isHelp;
         private static string _directory;
+        private static string _configFile;
         private static List<string> _includes;
         private static List<string> _excludes;
-        private static string _webConfig;
         private static int _maxRows;
+        private static bool _isHelp;
 
         private static readonly OptionSet Options = new OptionSet() {
             { "d|directory=", "指定保存备份文件的文件夹名称",
                 v => _directory = v },
-            { "includes=", "指定需要还原的表，多个表用英文逗号隔开",
+            { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                v => _configFile = v },
+            { "includes=", "指定需要备份的表，多个表用英文逗号隔开，默认备份所有表",
                 v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
             { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
                 v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
-            { "web-config=", "指定Web.config文件名",
-                v => _webConfig = v },
             { "max-rows=", "指定需要备份的表的最大行数",
                 v => _maxRows = v == null ? 0 : TranslateUtils.ToInt(v) },
             { "h|help",  "命令说明",
@@ -61,20 +60,18 @@ namespace SiteServer.Cli.Jobs
             var treeInfo = new TreeInfo(_directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var webConfigName = string.IsNullOrEmpty(_webConfig) ? "web.config" : _webConfig;
-
-            var webConfigPath = PathUtils.Combine(CliUtils.PhysicalApplicationPath, webConfigName);
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile);
             if (!FileUtils.IsFileExists(webConfigPath))
             {
                 await CliUtils.PrintErrorAsync($"系统配置文件不存在：{webConfigPath}！");
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigName);
+            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"{webConfigName} 中数据库连接字符串 connectionString 未设置");
+                await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
 
@@ -82,9 +79,9 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigName} 中设置的数据库");
+                await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
             }
 
@@ -98,7 +95,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = DataProvider.DatabaseDao.GetTableNameList();
+            var allTableNames = DatabaseApi.Instance.GetTableNameList();
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -109,7 +106,7 @@ namespace SiteServer.Cli.Jobs
                 tableNames.Add(tableName);
             }
 
-            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableNames));
+            await FileUtils.WriteTextAsync(treeInfo.TablesFilePath, TranslateUtils.JsonSerialize(tableNames));
 
             await CliUtils.PrintRowLineAsync();
             await CliUtils.PrintRowAsync("备份表名称", "总条数");
@@ -119,8 +116,8 @@ namespace SiteServer.Cli.Jobs
             {
                 var tableInfo = new TableInfo
                 {
-                    Columns = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
-                    TotalCount = DataProvider.DatabaseDao.GetCount(tableName),
+                    Columns = DatabaseApi.Instance.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
+                    TotalCount = DatabaseApi.Instance.GetCount(tableName),
                     RowFiles = new List<string>()
                 };
 
@@ -131,7 +128,7 @@ namespace SiteServer.Cli.Jobs
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = DataProvider.DatabaseDao.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
+                var identityColumnName = DatabaseApi.Instance.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {
@@ -151,9 +148,9 @@ namespace SiteServer.Cli.Jobs
                                 var offset = (current - 1) * CliUtils.PageSize;
                                 var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
 
-                                var rows = DataProvider.DatabaseDao.GetPageObjects(tableName, identityColumnName, offset, limit);
+                                var rows = DatabaseApi.Instance.GetPageObjects(tableName, identityColumnName, offset, limit);
 
-                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                                await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                             }
                         }
                     }
@@ -161,13 +158,13 @@ namespace SiteServer.Cli.Jobs
                     {
                         var fileName = $"{current}.json";
                         tableInfo.RowFiles.Add(fileName);
-                        var rows = DataProvider.DatabaseDao.GetObjects(tableName);
+                        var rows = DatabaseApi.Instance.GetObjects(tableName);
 
-                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
+                        await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                     }
                 }
 
-                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName), Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfo));
+                await FileUtils.WriteTextAsync(treeInfo.GetTableMetadataFilePath(tableName), TranslateUtils.JsonSerialize(tableInfo));
             }
 
             await CliUtils.PrintRowLineAsync();

@@ -6,8 +6,8 @@ using System.IO;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             //var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
-            var urlAdd = $"siteAdd.cshtml?type=create&createType=local&createTemplateId={dirInfo.Name}";
+            var urlAdd = $"{AdminPagesUtils.Settings.SiteAddUrl}?type=create&createType=local&createTemplateId={dirInfo.Name}";
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection

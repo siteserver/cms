@@ -4,6 +4,7 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace SiteServer.Utils
 {
@@ -13,6 +14,8 @@ namespace SiteServer.Utils
         {
             public const string ReturnAndNewline = "\r\n";//回车换行
             public const string Html5Empty = @"<html><head><meta charset=""utf-8""></head><body></body></html>";
+
+            public const string OracleEmptyValue = "_EMPTY_";
 
             public const string Ellipsis = "...";
 
@@ -46,6 +49,11 @@ namespace SiteServer.Utils
             const string formatDateTime = @"^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-)) (20|21|22|23|[0-1]?\d):[0-5]?\d:[0-5]?\d$";
 
             return Regex.IsMatch(val, formatDate) || Regex.IsMatch(val, formatDateTime);
+        }
+
+        public static bool IsGuid(string val)
+        {
+            return !string.IsNullOrWhiteSpace(val) && Guid.TryParse(val, out _);
         }
 
         public static bool In(string strCollection, int inInt)
@@ -87,6 +95,11 @@ namespace SiteServer.Utils
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
         }
 
+        public static string TrimAndToUpper(string text)
+        {
+            return string.IsNullOrEmpty(text) ? string.Empty : text.ToUpper().Trim();
+        }
+
         public static string Remove(string text, int startIndex)
         {
             if (string.IsNullOrEmpty(text)) return string.Empty;
@@ -101,15 +114,15 @@ namespace SiteServer.Utils
             return text.Substring(0, startIndex);
         }
 
-        public static string Guid()
+        public static string GetGuid()
         {
-            return System.Guid.NewGuid().ToString();
+            return Guid.NewGuid().ToString();
         }
 
         public static string GetShortGuid()
         {
             long i = 1;
-            foreach (var b in System.Guid.NewGuid().ToByteArray())
+            foreach (var b in Guid.NewGuid().ToByteArray())
             {
                 i *= b + 1;
             }
@@ -119,12 +132,12 @@ namespace SiteServer.Utils
         public static string GetShortGuid(bool isUppercase)
         {
             long i = 1;
-            foreach (var b in System.Guid.NewGuid().ToByteArray())
+            foreach (var b in Guid.NewGuid().ToByteArray())
             {
                 i *= b + 1;
             }
-            string retval = $"{i - DateTime.Now.Ticks:x}";
-            return isUppercase ? retval.ToUpper() : retval.ToLower();
+            string retVal = $"{i - DateTime.Now.Ticks:x}";
+            return isUppercase ? retVal.ToUpper() : retVal.ToLower();
         }
 
         public static bool EqualsIgnoreCase(string a, string b)
@@ -215,12 +228,16 @@ namespace SiteServer.Utils
 
         public static string HtmlDecode(string inputString)
         {
-            return HttpUtility.HtmlDecode(inputString);
+            if (string.IsNullOrWhiteSpace(inputString)) return string.Empty;
+
+            return WebUtility.HtmlDecode(inputString);
         }
 
         public static string HtmlEncode(string inputString)
         {
-            return HttpUtility.HtmlEncode(inputString);
+            if (string.IsNullOrWhiteSpace(inputString)) return string.Empty;
+
+            return WebUtility.HtmlEncode(inputString);
         }
 
         public static string ToXmlContent(string inputString)
@@ -235,25 +252,25 @@ namespace SiteServer.Utils
 
         public static string StripTags(string inputString)
         {
-            var retval = RegexUtils.Replace("<script[^>]*>.*?<\\/script>", inputString, string.Empty);
-            retval = RegexUtils.Replace("<[\\/]?[^>]*>|<[\\S]+", retval, string.Empty);
-            return retval;
+            var retVal = RegexUtils.Replace("<script[^>]*>.*?<\\/script>", inputString, string.Empty);
+            retVal = RegexUtils.Replace("<[\\/]?[^>]*>|<[\\S]+", retVal, string.Empty);
+            return retVal;
         }
 
         public static string StripTags(string inputString, params string[] tagNames)
         {
-            var retval = inputString;
+            var retVal = inputString;
             foreach (var tagName in tagNames)
             {
-                retval = RegexUtils.Replace($"<[\\/]?{tagName}[^>]*>|<{tagName}", retval, string.Empty);
+                retVal = RegexUtils.Replace($"<[\\/]?{tagName}[^>]*>|<{tagName}", retVal, string.Empty);
             }
-            return retval;
+            return retVal;
         }
 
         public static string StripEntities(string inputString)
         {
-            var retval = RegexUtils.Replace("&[^;]*;", inputString, string.Empty);
-            return retval;
+            var retVal = RegexUtils.Replace("&[^;]*;", inputString, string.Empty);
+            return retVal;
         }
 
         public static string ReplaceIgnoreCase(string original, string pattern, string replacement)
@@ -283,17 +300,17 @@ namespace SiteServer.Utils
 
         public static string Replace(string replace, string input, string to)
         {
-            var retval = RegexUtils.Replace(replace, input, to);
-            if (string.IsNullOrEmpty(replace)) return retval;
+            var retVal = RegexUtils.Replace(replace, input, to);
+            if (string.IsNullOrEmpty(replace)) return retVal;
             if (replace.StartsWith("/") && replace.EndsWith("/"))
             {
-                retval = RegexUtils.Replace(replace.Trim('/'), input, to);
+                retVal = RegexUtils.Replace(replace.Trim('/'), input, to);
             }
             else
             {
-                retval = input.Replace(replace, to);
+                retVal = input.Replace(replace, to);
             }
-            return retval;
+            return retVal;
         }
 
         public static void ReplaceHrefOrSrc(StringBuilder builder, string replace, string to)
@@ -325,22 +342,42 @@ namespace SiteServer.Utils
 
         public static string ReplaceStartsWith(string input, string replace, string to)
         {
-            var retval = input;
+            var retVal = input;
             if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.StartsWith(replace))
             {
-                retval = to + input.Substring(replace.Length);
+                retVal = to + input.Substring(replace.Length);
             }
-            return retval;
+            return retVal;
         }
 
         public static string ReplaceStartsWithIgnoreCase(string input, string replace, string to)
         {
-            var retval = input;
+            var retVal = input;
             if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.ToLower().StartsWith(replace.ToLower()))
             {
-                retval = to + input.Substring(replace.Length);
+                retVal = to + input.Substring(replace.Length);
             }
-            return retval;
+            return retVal;
+        }
+
+        public static string ReplaceEndsWith(string input, string replace, string to)
+        {
+            var retVal = input;
+            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.EndsWith(replace))
+            {
+                retVal = input.Substring(0, input.Length - replace.Length) + to;
+            }
+            return retVal;
+        }
+
+        public static string ReplaceEndsWithIgnoreCase(string input, string replace, string to)
+        {
+            var retVal = input;
+            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.ToLower().EndsWith(replace.ToLower()))
+            {
+                retVal = input.Substring(0, input.Length - replace.Length) + to;
+            }
+            return retVal;
         }
 
         public static string ReplaceNewlineToBr(string inputString)
@@ -389,13 +426,13 @@ namespace SiteServer.Utils
 
         public static string MaxLengthText(string inputString, int maxLength, string endString = Constants.Ellipsis)
         {
-            var retval = inputString;
+            var retVal = inputString;
             try
             {
                 if (maxLength > 0)
                 {
-                    var decodedInputString = HttpUtility.HtmlDecode(retval);
-                    retval = decodedInputString;
+                    var decodedInputString = HtmlDecode(retVal);
+                    retVal = decodedInputString;
 
                     var totalLength = maxLength * 2;
                     var length = 0;
@@ -404,9 +441,9 @@ namespace SiteServer.Utils
                     var isOneBytesChar = false;
                     var lastChar = ' ';
 
-                    if (!string.IsNullOrEmpty(retval))
+                    if (!string.IsNullOrEmpty(retVal))
                     {
-                        foreach (var singleChar in retval.ToCharArray())
+                        foreach (var singleChar in retVal.ToCharArray())
                         {
                             builder.Append(singleChar);
 
@@ -442,7 +479,7 @@ namespace SiteServer.Utils
                     {
                         builder.Length--;
                         var theStr = builder.ToString();
-                        retval = builder.ToString();
+                        retVal = builder.ToString();
                         if (char.IsLetter(lastChar))
                         {
                             for (var i = theStr.Length - 1; i > 0; i--)
@@ -450,31 +487,31 @@ namespace SiteServer.Utils
                                 var theChar = theStr[i];
                                 if (!IsTwoBytesChar(theChar) && char.IsLetter(theChar))
                                 {
-                                    retval = retval.Substring(0, i - 1);
+                                    retVal = retVal.Substring(0, i - 1);
                                 }
                                 else
                                 {
                                     break;
                                 }
                             }
-                            //int index = retval.LastIndexOfAny(new char[] { ' ', '\t', '\n', '\v', '\f', '\r', '\x0085' });
+                            //int index = retVal.LastIndexOfAny(new char[] { ' ', '\t', '\n', '\v', '\f', '\r', '\x0085' });
                             //if (index != -1)
                             //{
-                            //    retval = retval.Substring(0, index);
+                            //    retVal = retVal.Substring(0, index);
                             //}
                         }
                     }
                     else
                     {
-                        retval = builder.ToString();
+                        retVal = builder.ToString();
                     }
 
-                    var isCut = decodedInputString != retval;
-                    retval = HttpUtility.HtmlEncode(retval);
+                    var isCut = decodedInputString != retVal;
+                    retVal = HtmlEncode(retVal);
 
                     if (isCut && endString != null)
                     {
-                        retval += endString;
+                        retVal += endString;
                     }
                 }
             }
@@ -483,7 +520,7 @@ namespace SiteServer.Utils
                 // ignored
             }
 
-            return retval;
+            return retVal;
         }
 
         private static Encoding Gb2312 { get; } = Encoding.GetEncoding("gb2312");
@@ -575,45 +612,45 @@ namespace SiteServer.Utils
         public static int GetRandomInt(int minValue, int maxValue)
         {
             var ro = new Random(unchecked((int)DateTime.Now.Ticks));
-            var retval = ro.Next(minValue, maxValue);
-            retval += _randomSeq++;
-            if (retval >= maxValue)
+            var retVal = ro.Next(minValue, maxValue);
+            retVal += _randomSeq++;
+            if (retVal >= maxValue)
             {
                 _randomSeq = 0;
-                retval = minValue;
+                retVal = minValue;
             }
-            return retval;
+            return retVal;
         }
 
         public static string ValueToUrl(string value)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
                 //替换url中的换行符，update by sessionliang at 20151211
-                retval = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "").Replace("\n", "");
+                retVal = value.Replace("=", "_equals_").Replace("&", "_and_").Replace("?", "_question_").Replace("'", "_quote_").Replace("+", "_add_").Replace("\r", "").Replace("\n", "");
             }
-            return retval;
+            return retVal;
         }
 
         public static string ValueFromUrl(string value)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
-                retval = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+");
+                retVal = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+");
             }
-            return retval;
+            return retVal;
         }
 
         public static string ToJsString(string value)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(value))
             {
-                retval = value.Replace("'", @"\'").Replace("\r", "\\r").Replace("\n", "\\n");
+                retVal = value.Replace("'", @"\'").Replace("\r", "\\r").Replace("\n", "\\n");
             }
-            return retval;
+            return retVal;
         }
 
         public static string ParseReplace(string parsedContent, string replace, string to)
@@ -644,17 +681,17 @@ namespace SiteServer.Utils
                 }
             }
 
-            string retval;
+            string retVal;
             if (replace.StartsWith("/") && replace.EndsWith("/"))
             {
-                retval = RegexUtils.Replace(replace.Trim('/'), parsedContent, to);
+                retVal = RegexUtils.Replace(replace.Trim('/'), parsedContent, to);
             }
             else
             {
-                retval = parsedContent.Replace(replace, to);
+                retVal = parsedContent.Replace(replace, to);
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetTrueImageHtml(string isDefaultStr)
@@ -664,12 +701,12 @@ namespace SiteServer.Utils
 
         private static string GetTrueImageHtml(bool isDefault)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (isDefault)
             {
-                retval = "<img src='../pic/icon/right.gif' border='0'/>";
+                retVal = "<img src='../pic/icon/right.gif' border='0'/>";
             }
-            return retval;
+            return retVal;
         }
 
         public static string LowerFirst(string input)

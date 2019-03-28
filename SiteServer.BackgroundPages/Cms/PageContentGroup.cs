@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,13 +22,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			if (AuthRequest.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("DeleteById"))
 			{
                 var groupName = AuthRequest.GetQueryString("GroupName");
 			
 				try
 				{
-					DataProvider.ContentGroupDao.Delete(groupName, SiteId);
+					DataProvider.ContentGroup.Delete(SiteId, groupName);
                     AuthRequest.AddSiteLog(SiteId, "删除内容组", $"内容组:{groupName}");
 					SuccessDeleteMessage();
 				}
@@ -45,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
                 switch (direction.ToUpper())
                 {
                     case "UP":
-                        DataProvider.ContentGroupDao.UpdateTaxisToUp(SiteId, groupName);
+                        DataProvider.ContentGroup.UpdateTaxisToUp(SiteId, groupName);
                         break;
                     case "DOWN":
-                        DataProvider.ContentGroupDao.UpdateTaxisToDown(SiteId, groupName);
+                        DataProvider.ContentGroup.UpdateTaxisToDown(SiteId, groupName);
                         break;
                 }
                 SuccessMessage("排序成功！");
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
-                {"Delete", true.ToString()}
+                {"DeleteById", true.ToString()}
             })}"" onClick=""javascript:return confirm('此操作将删除内容组“{groupInfo.GroupName}”，确认吗？');"">删除</a>";
         }
 	}

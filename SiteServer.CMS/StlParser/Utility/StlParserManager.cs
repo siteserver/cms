@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -29,7 +29,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var templateInfo = new TemplateInfo
             {
-                TemplateType = templateType
+                Type = templateType
             };
             var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
@@ -70,7 +70,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
-                TemplateType = context.TemplateType
+                Type = context.TemplateType
             };
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);

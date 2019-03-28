@@ -1,40 +1,39 @@
-using System;
-using System.Web;
+using SiteServer.Utils.Enumerations;
+using System.Collections.Generic;
+using System.Linq;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.CMS.Core
 {
     public static class RoleManager
     {
-        public static void DeleteCookie()
+        public static List<KeyValuePair<string, string>> GetRestRoles(bool isSuperAdmin, string adminName)
         {
-            var current = HttpContext.Current;
-            if ((current != null) && current.Request.Browser.Cookies)
-            {
-                var text = string.Empty;
-                if (current.Request.Browser["supportsEmptyStringInCookieValue"] == "false")
-                {
-                    text = "NoCookie";
-                }
-                var cookie = new HttpCookie(CookieName, text)
-                {
-                    Path = "/",
-                    Domain = string.Empty,
-                    Expires = new DateTime(0x7cf, 10, 12),
-                    Secure = false
-                };
-                current.Response.Cookies.Remove(CookieName);
-                current.Response.Cookies.Add(cookie);
-            }
-        }
+            var list = new List<KeyValuePair<string, string>>();
 
-        public const string CookieName = "BAIRONG.ROLES";
-        public const int CookieTimeout = 90;
-        public const string CookiePath = "/";
-        public const bool CookieSlidingExpiration = true;
-        public const int MaxCachedResults = 1000;
-        public const string Domain = "";
-        public const bool CreatePersistentCookie = true;
-        public const bool CookieRequireSsl = false;
-        public const bool CacheRolesInCookie = true;
+            IList<string> roleNames;
+            if (isSuperAdmin)
+            {
+                foreach (var predefinedRuleName in EPredefinedRoleUtils.GetAllPredefinedRoleName())
+                {
+                    list.Add(new KeyValuePair<string, string>(predefinedRuleName, EPredefinedRoleUtils.GetText(EPredefinedRoleUtils.GetEnumType(predefinedRuleName))));
+                }
+
+                roleNames = DataProvider.Role.GetRoleNameList();
+            }
+            else
+            {
+                roleNames = DataProvider.Role.GetRoleNameListByCreatorUserName(adminName);
+            }
+
+            foreach (var roleName in roleNames)
+            {
+                if (list.Any(x=> x.Key == roleName)) continue;
+
+                list.Add(new KeyValuePair<string, string>(roleName, roleName));
+            }
+
+            return list;
+        }
     }
 }

@@ -146,7 +146,7 @@ namespace SiteServer.Utils.Enumerations
                         {
                             isDigit = true;
                         }
-                        else if (char.IsSymbol(c))
+                        else if (char.IsPunctuation(c) || char.IsSymbol(c))
                         {
                             isSymbol = true;
                         }

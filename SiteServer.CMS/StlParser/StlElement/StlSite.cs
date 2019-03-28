@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -206,27 +207,27 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.Additional.WebUrl;
+                parsedContent = pageInfo.SiteInfo.WebUrl;
             }
-            else if (pageInfo.SiteInfo.Additional.GetString(type) != null)
+            else if (pageInfo.SiteInfo.ContainsKey(type))
             {
-                parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
+                parsedContent = pageInfo.SiteInfo.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.Site.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
 
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
+                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
                         {
                             parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                         }
                         else
                         {
-                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
 
-                            inputType = styleInfo.InputType;
+                            inputType = styleInfo.Type;
 
                             //parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }

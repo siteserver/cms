@@ -7,9 +7,16 @@
       <meta charset="utf-8">
       <!--#include file="../inc/head.html"-->
       <script type="text/javascript">
-        $(document).ready(function () {
+        function resize() {
           $('body').height($(window).height());
           $('body').addClass('scroll');
+        }
+        $(document).ready(function() {
+          resize();
+
+          $(window).resize(function(){
+            resize();
+          });
         });
       </script>
     </head>

@@ -4,9 +4,9 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -32,12 +32,12 @@ namespace SiteServer.BackgroundPages.Cms
 
             _templateId = AuthRequest.GetQueryInt("templateID");
 
-            if (AuthRequest.IsQueryExists("Delete"))
+            if (AuthRequest.IsQueryExists("DeleteById"))
             {
                 var arraylist = TranslateUtils.StringCollectionToIntList(Request.QueryString["IDCollection"]);
                 try
                 {
-                    DataProvider.TemplateLogDao.Delete(arraylist);
+                    DataProvider.TemplateLog.Delete(arraylist);
                     SuccessDeleteMessage();
                 }
                 catch (Exception ex)
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
             SpContents.ControlToPaginate = RptContents;
             SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
 
-            SpContents.SelectCommand = DataProvider.TemplateLogDao.GetSelectCommend(SiteId, _templateId);
+            SpContents.SelectCommand = DataProvider.TemplateLog.GetSelectCommend(SiteId, _templateId);
 
             SpContents.SortField = nameof(TemplateLogInfo.Id);
             SpContents.SortMode = SortMode.DESC;
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
                         {"TemplateID", _templateId.ToString()},
-                        {"Delete", true.ToString()}
+                        {"DeleteById", true.ToString()}
                     }), "IDCollection", "IDCollection", "请选择需要删除的修订历史！", "此操作将删除所选修订历史，确认吗？"));
 
             SpContents.DataBind();

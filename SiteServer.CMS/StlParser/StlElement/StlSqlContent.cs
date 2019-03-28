@@ -1,6 +1,6 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -227,7 +227,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     connectionString = WebConfigUtils.ConnectionString;
                 }
 
-                //parsedContent = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                //parsedContent = DatabaseApi.Instance.GetString(connectionString, queryString);
                 parsedContent = StlDatabaseCache.GetString(connectionString, queryString);
             }
 

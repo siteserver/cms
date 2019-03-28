@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using SiteServer.CMS.Apis;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
@@ -97,7 +98,7 @@ namespace SiteServer.CMS.Plugin
 
                     var type = assembly.GetExportedTypes().FirstOrDefault(exportedType => typeof(PluginBase).IsAssignableFrom(exportedType));
 
-                    //var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
+                    //var type = assembly.GetTypes().GetObjectById(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
 
                     return ActiveAndAdd(metadata, type);
                 }
@@ -184,15 +185,14 @@ namespace SiteServer.CMS.Plugin
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
-            WebConfigUtils.Load(applicationPhysicalPath);
-            _pluginInfoListRunnable = PluginInfoListRunnable;
+            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
             Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
                 ContentApi = ContentApi.Instance,
-                DatabaseApi = DataProvider.DatabaseApi,
+                DatabaseApi = DatabaseApi.Instance,
                 ChannelApi = ChannelApi.Instance,
                 ParseApi = ParseApi.Instance,
                 PluginApi = PluginApi.Instance,
@@ -200,6 +200,8 @@ namespace SiteServer.CMS.Plugin
                 UserApi = UserApi.Instance,
                 UtilsApi = UtilsApi.Instance
             });
+
+            _pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
         public static void ClearCache()
@@ -622,7 +624,7 @@ namespace SiteServer.CMS.Plugin
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = isDisabled;
-                DataProvider.PluginDao.UpdateIsDisabled(pluginId, isDisabled);
+                DataProvider.Plugin.UpdateIsDisabled(pluginId, isDisabled);
                 ClearCache();
             }
         }
@@ -633,7 +635,7 @@ namespace SiteServer.CMS.Plugin
             if (pluginInfo != null)
             {
                 pluginInfo.Taxis = taxis;
-                DataProvider.PluginDao.UpdateTaxis(pluginId, taxis);
+                DataProvider.Plugin.UpdateTaxis(pluginId, taxis);
                 ClearCache();
             }
         }

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -21,7 +20,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-			//if (AuthRequest.IsQueryExists("Delete"))
+			//if (AuthRequest.IsQueryExists("DeleteById"))
 			//{
    //             var enName = AuthRequest.GetQueryString("ENName");//内容表
    //             var enNameArchive = enName + "_Archive";//内容表归档
@@ -58,7 +57,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var tableName = (string)e.Item.DataItem;
             //var isHighlight = !collectionInfo.IsCreatedInDb || collectionInfo.IsChangedAfterCreatedInDb;
-            var isTableUsed = DataProvider.SiteDao.IsTableUsed(tableName);
+            var isTableUsed = DataProvider.Site.IsTableUsed(tableName);
 
             //if (isHighlight) e.Item.Attributes.Add("style", "color: red");
 
@@ -80,7 +79,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (!isTableUsed)
             {
                 var script = AlertUtils.Warning("删除内容表", $"此操作将删除内容表“{tableName}”，如果内容表已在数据库中建立，将同时删除建立的内容表，确认吗？", "取 消",
-                    "确认删除", $"location.href = '{GetRedirectUrl()}?Delete=True&ENName={tableName}';");
+                    "确认删除", $"location.href = '{GetRedirectUrl()}?DeleteById=True&ENName={tableName}';");
                 ltlDelete.Text =
                 $@"<a href=""javascript:;"" onClick=""{script}"">删除</a>";
             }

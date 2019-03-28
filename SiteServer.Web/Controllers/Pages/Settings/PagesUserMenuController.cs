@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -18,9 +17,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -42,16 +41,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetPostInt("id");
+                var id = rest.GetQueryInt("id");
 
-                DataProvider.UserMenuDao.Delete(id);
+                DataProvider.UserMenu.Delete(id);
 
                 return Ok(new
                 {
@@ -69,24 +68,24 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 if (menuInfo.Id == 0)
                 {
-                    DataProvider.UserMenuDao.Insert(menuInfo);
+                    DataProvider.UserMenu.Insert(menuInfo);
 
-                    request.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Text}");
+                    rest.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
-                    DataProvider.UserMenuDao.Update(menuInfo);
+                    DataProvider.UserMenu.Update(menuInfo);
 
-                    request.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Text}");
+                    rest.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
 
                 return Ok(new
@@ -105,19 +104,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
                 foreach (var userMenuInfo in UserMenuManager.GetAllUserMenuInfoList())
                 {
-                    DataProvider.UserMenuDao.Delete(userMenuInfo.Id);
+                    DataProvider.UserMenu.Delete(userMenuInfo.Id);
                 }
 
-                request.AddAdminLog("重置用户菜单");
+                rest.AddAdminLog("重置用户菜单");
 
                 return Ok(new
                 {

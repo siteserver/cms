@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -19,9 +19,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {BackgroundContentAttribute.ImageUrl, "遍历内容的图片字段"},
-            {BackgroundContentAttribute.VideoUrl, "遍历内容的视频字段"},
-            {BackgroundContentAttribute.FileUrl, "遍历内容的附件字段"}
+            {ContentAttribute.ImageUrl, "遍历内容的图片字段"},
+            {ContentAttribute.VideoUrl, "遍历内容的视频字段"},
+            {ContentAttribute.FileUrl, "遍历内容的附件字段"}
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -38,7 +38,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var type = listInfo.Others.Get(Type);
             if (string.IsNullOrEmpty(type))
             {
-                type = BackgroundContentAttribute.ImageUrl;
+                type = ContentAttribute.ImageUrl;
             }
 
             var contextType = EContextType.Each;
@@ -48,13 +48,14 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 var eachList = new List<string>();
 
-                if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
+                var value = contentInfo.Get<string>(type);
+                if (!string.IsNullOrEmpty(value))
                 {
-                    eachList.Add(contentInfo.GetString(type));
+                    eachList.Add(value);
                 }
 
                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                var extendValues = contentInfo.GetString(extendAttributeName);
+                var extendValues = contentInfo.Get<string>(extendAttributeName);
                 if (!string.IsNullOrEmpty(extendValues))
                 {
                     foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))

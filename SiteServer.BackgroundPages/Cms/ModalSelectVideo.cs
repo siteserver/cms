@@ -5,7 +5,8 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
 		}
 
-        public string SiteUrl => SiteInfo.Additional.WebUrl;
+        public string SiteUrl => SiteInfo.WebUrl;
 
 	    public string RootUrl => PageUtils.ApplicationPath;
 
@@ -64,12 +65,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                if (string.IsNullOrEmpty(SiteInfo.ConfigSelectVideoCurrentUrl))
+                {
+                    _currentRootPath = "@/" + SiteInfo.VideoUploadDirectoryName;
+                }
+                else
+                {
+                    _currentRootPath = SiteInfo.ConfigSelectVideoCurrentUrl.TrimEnd('/');
+                }
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectVideoCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.Update(SiteInfo);
+                SiteInfo.ConfigSelectVideoCurrentUrl = _currentRootPath;
+                DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 

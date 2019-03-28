@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theAreaId in areaIdList)
                 {
                     var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode), theAreaId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -110,16 +110,15 @@ namespace SiteServer.BackgroundPages.Settings
                         ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue)
                     };
 
-                    DataProvider.AreaDao.Insert(areaInfo);
+                    DataProvider.Area.Insert(areaInfo);
                 }
                 else
                 {
                     var areaInfo = AreaManager.GetAreaInfo(_areaId);
 
                     areaInfo.AreaName = TbAreaName.Text;
-                    areaInfo.ParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
 
-                    DataProvider.AreaDao.Update(areaInfo);
+                    DataProvider.Area.Update(areaInfo);
                 }
 
                 AuthRequest.AddAdminLog("维护区域信息");

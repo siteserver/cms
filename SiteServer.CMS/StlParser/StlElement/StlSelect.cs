@@ -1,8 +1,10 @@
 ﻿using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -232,7 +234,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 scopeType = isChannel ? EScopeType.Children : EScopeType.Self;
             }
 
-            var orderByString = isChannel ? StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxis) : StlDataUtility.GetContentOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxisDesc);
+            var orderByString = isChannel
+                ? StlDataUtility.GetChannelOrderByString(order, ETaxisType.OrderByTaxis)
+                : StlDataUtility.GetContentOrderByString(order, ETaxisType.OrderByTaxisDesc);
 
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
 
@@ -266,7 +270,7 @@ selObj.selectedIndex=0;
             }
             if (!string.IsNullOrEmpty(displayTitle))
             {
-                var listitem = new ListItem(displayTitle, PageUtils.UnclickedUrl) {Selected = true};
+                var listitem = new ListItem(displayTitle, PageUtils.UnClickedUrl) {Selected = true};
                 selectControl.Items.Add(listitem);
             }
 

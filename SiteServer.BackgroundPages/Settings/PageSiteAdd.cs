@@ -7,11 +7,14 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Provider;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Repositories;
+using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -79,7 +82,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             //DataProvider.TableDao.CreateAllTableCollectionInfoIfNotExists();
 
-            var hqSiteId = DataProvider.SiteDao.GetIdByIsRoot();
+            var hqSiteId = DataProvider.Site.GetIdByIsRoot();
             if (hqSiteId == 0)
             {
                 ControlUtils.SelectSingleItem(RblIsRoot, true.ToString());
@@ -97,7 +100,7 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var siteId in siteIdArrayList)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo.IsRoot == false)
+                if (siteInfo.Root == false)
                 {
                     if (siteInfo.ParentId == 0)
                     {
@@ -180,9 +183,6 @@ namespace SiteServer.BackgroundPages.Settings
                 ControlUtils.SelectSingleItem(RblSource, ETriStateUtils.GetValue(ETriState.All));
                 BtnNext_Click(null, EventArgs.Empty);
             }
-
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
-            BtnSubmit.Attributes.Add("onclick", PageLoading());
         }
 
         private bool IsSiteTemplate => ETriStateUtils.GetEnumType(RblSource.SelectedValue) == ETriState.False;
@@ -301,7 +301,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
                 var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
                 PageUtils.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
-                    CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.Guid()));
+                    CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid()));
             }
             else
             {
@@ -429,7 +429,7 @@ namespace SiteServer.BackgroundPages.Settings
                     parentSiteId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
                     siteDir = TbSiteDir.Text;
 
-                    var list = DataProvider.SiteDao.GetLowerSiteDirList(parentSiteId);
+                    var list = DataProvider.Site.GetLowerSiteDirList(parentSiteId);
                     if (list.IndexOf(siteDir.ToLower()) != -1)
                     {
                         errorMessage = "已存在相同的发布路径！";
@@ -458,13 +458,13 @@ namespace SiteServer.BackgroundPages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = TbTableHandWrite.Text;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        DatabaseApi.Instance.AlterTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty);
                     }
                 }
 
@@ -474,24 +474,27 @@ namespace SiteServer.BackgroundPages.Settings
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentSiteId,
-                    IsRoot = isRoot
+                    Root = isRoot
                 };
 
-                siteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+                siteInfo.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
 
-                if (siteInfo.Additional.IsCheckContentLevel)
+                if (siteInfo.IsCheckContentLevel)
                 {
-                    siteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                    siteInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
                 }
-                siteInfo.Additional.Charset = DdlCharset.SelectedValue;
+                siteInfo.Charset = DdlCharset.SelectedValue;
 
-                var siteId = DataProvider.ChannelDao.InsertSiteInfo(nodeInfo, siteInfo, AuthRequest.AdminName);
+                var siteId = DataProvider.Channel.InsertSiteInfo(nodeInfo, siteInfo, AuthRequest.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = ContentDao.GetContentTableName(siteId);
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-                    DataProvider.SiteDao.UpdateTableName(siteId, tableName);
+                    tableName = ContentRepository.GetContentTableName(siteId);
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    {
+                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
+                    }
+                    DataProvider.Site.UpdateTableName(siteId, tableName);
                 }
 
                 if (AuthRequest.AdminPermissionsImpl.IsSystemAdministrator && !AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
@@ -499,7 +502,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
                     siteIdList.Add(siteId);
                     var adminInfo = AdminManager.GetAdminInfoByUserId(AuthRequest.AdminId);
-                    DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    DataProvider.Administrator.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
                 AuthRequest.AddAdminLog("创建新站点", $"站点名称：{AttackUtils.FilterXss(TbSiteName.Text)}");

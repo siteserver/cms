@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Http;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
@@ -22,9 +22,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -52,15 +52,15 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
                 PluginManager.Delete(pluginId);
-                request.AddAdminLog("删除插件", $"插件:{pluginId}");
+                rest.AddAdminLog("删除插件", $"插件:{pluginId}");
 
                 CacheUtils.ClearAll();
                 CacheDbUtils.Clear();
@@ -78,9 +78,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -101,9 +101,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -112,10 +112,10 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                 if (pluginInfo != null)
                 {
                     pluginInfo.IsDisabled = !pluginInfo.IsDisabled;
-                    DataProvider.PluginDao.UpdateIsDisabled(pluginId, pluginInfo.IsDisabled);
+                    DataProvider.Plugin.UpdateIsDisabled(pluginId, pluginInfo.IsDisabled);
                     PluginManager.ClearCache();
 
-                    request.AddAdminLog(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
+                    rest.AddAdminLog(!pluginInfo.IsDisabled ? "禁用插件" : "启用插件", $"插件:{pluginId}");
                 }
 
                 CacheUtils.ClearAll();

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
 
@@ -15,33 +14,33 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new RequestImpl();
+                var rest = new Rest(Request);
 
-                var siteId = request.GetPostInt("siteId");
-                var pageChannelId = request.GetPostInt("pageChannelId");
+                var siteId = rest.GetPostInt("siteId");
+                var pageChannelId = rest.GetPostInt("pageChannelId");
                 if (pageChannelId == 0)
                 {
                     pageChannelId = siteId;
                 }
-                var pageContentId = request.GetPostInt("pageContentId");
-                var pageTemplateId = request.GetPostInt("pageTemplateId");
-                var isPageRefresh = request.GetPostBool("isPageRefresh");
-                var templateContent = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("templateContent"));
-                var ajaxDivId = AttackUtils.FilterSqlAndXss(request.GetPostString("ajaxDivId"));
+                var pageContentId = rest.GetPostInt("pageContentId");
+                var pageTemplateId = rest.GetPostInt("pageTemplateId");
+                var isPageRefresh = rest.GetPostBool("isPageRefresh");
+                var templateContent = TranslateUtils.DecryptStringBySecretKey(rest.GetPostString("templateContent"));
+                var ajaxDivId = AttackUtils.FilterSqlAndXss(rest.GetPostString("ajaxDivId"));
 
-                var channelId = request.GetPostInt("channelId");
+                var channelId = rest.GetPostInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = pageChannelId;
                 }
-                var contentId = request.GetPostInt("contentId");
+                var contentId = rest.GetPostInt("contentId");
                 if (contentId == 0)
                 {
                     contentId = pageContentId;
                 }
 
-                var pageUrl = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("pageUrl"));
-                var pageIndex = request.GetPostInt("pageNum");
+                var pageUrl = TranslateUtils.DecryptStringBySecretKey(rest.GetPostString("pageUrl"));
+                var pageIndex = rest.GetPostInt("pageNum");
                 if (pageIndex > 0)
                 {
                     pageIndex--;
@@ -52,7 +51,7 @@ namespace SiteServer.API.Controllers.Sys
 
                 return Ok(new
                 {
-                    Html = StlDynamic.ParseDynamicContent(siteId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, request.UserInfo)
+                    Html = StlDynamic.ParseDynamicContent(siteId, channelId, contentId, pageTemplateId, isPageRefresh, templateContent, pageUrl, pageIndex, ajaxDivId, queryString, rest.UserInfo)
                 });
             }
             catch(Exception ex)

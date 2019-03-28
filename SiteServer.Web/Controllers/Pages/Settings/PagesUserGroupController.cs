@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -17,14 +16,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var adminNames = DataProvider.AdministratorDao.GetUserNameList();
+                var adminNames = DataProvider.Administrator.GetUserNameList();
                 adminNames.Insert(0, string.Empty);
 
                 return Ok(new
@@ -44,16 +43,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = request.GetPostInt("id");
+                var id = rest.GetQueryInt("id");
 
-                DataProvider.UserGroupDao.Delete(id);
+                DataProvider.UserGroup.Delete(id);
 
                 return Ok(new
                 {
@@ -67,59 +66,63 @@ namespace SiteServer.API.Controllers.Pages.Settings
         }
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Submit([FromBody] UserGroupInfo itemObj)
+        public IHttpActionResult Submit()
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                if (itemObj.Id == -1)
+                var id = rest.GetPostInt("id");
+                var groupName = rest.GetPostString("groupName");
+                var adminName = rest.GetPostString("adminName");
+
+                if (id == -1)
                 {
-                    if (UserGroupManager.IsExists(itemObj.GroupName))
+                    if (UserGroupManager.IsExists(groupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
 
                     var groupInfo = new UserGroupInfo
                     {
-                        GroupName = itemObj.GroupName,
-                        AdminName = itemObj.AdminName
+                        GroupName = groupName,
+                        AdminName = adminName
                     };
 
-                    DataProvider.UserGroupDao.Insert(groupInfo);
+                    DataProvider.UserGroup.Insert(groupInfo);
 
-                    request.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
+                    rest.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
-                else if (itemObj.Id == 0)
+                else if (id == 0)
                 {
-                    ConfigManager.SystemConfigInfo.UserDefaultGroupAdminName = itemObj.AdminName;
+                    ConfigManager.Instance.UserDefaultGroupAdminName = adminName;
 
-                    DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                    DataProvider.Config.Update(ConfigManager.Instance);
 
                     UserGroupManager.ClearCache();
 
-                    request.AddAdminLog("修改用户组", "用户组:默认用户组");
+                    rest.AddAdminLog("修改用户组", "用户组:默认用户组");
                 }
-                else if (itemObj.Id > 0)
+                else if (id > 0)
                 {
-                    var groupInfo = UserGroupManager.GetUserGroupInfo(itemObj.Id);
+                    var groupInfo = UserGroupManager.GetUserGroupInfo(id);
 
-                    if (groupInfo.GroupName != itemObj.GroupName && UserGroupManager.IsExists(itemObj.GroupName))
+                    if (groupInfo.GroupName != groupName && UserGroupManager.IsExists(groupName))
                     {
                         return BadRequest("保存失败，已存在相同名称的用户组！");
                     }
 
-                    groupInfo.GroupName = itemObj.GroupName;
-                    groupInfo.AdminName = itemObj.AdminName;
+                    groupInfo.GroupName = groupName;
+                    groupInfo.AdminName = adminName;
 
-                    DataProvider.UserGroupDao.Update(groupInfo);
+                    DataProvider.UserGroup.Update(groupInfo);
 
-                    request.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
+                    rest.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

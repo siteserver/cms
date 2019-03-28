@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -44,7 +45,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(attributeName, PreviousChannel);
-                    //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    //var siblingChannelId = DataProvider.Channel.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     var siblingChannelId = StlChannelCache.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
@@ -58,8 +59,8 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+                        var siblingContentId = StlContentCache.GetContentId(channelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
@@ -75,7 +76,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
             if (string.IsNullOrEmpty(parsedContent))
             {
-                parsedContent = PageUtils.UnclickedUrl;
+                parsedContent = PageUtils.UnClickedUrl;
             }
 
             return parsedContent;

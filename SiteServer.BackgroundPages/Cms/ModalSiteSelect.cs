@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
 using System.Collections.Generic;
+using SiteServer.CMS.Caches;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -11,11 +11,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
 
         private List<int> _siteIdList;
-
-        public static string GetOpenLayerString(int siteId)
-        {
-            return $@"pageUtils.openLayer({{title: '全部站点',url: '{PageUtils.GetCmsUrl(siteId, nameof(ModalSiteSelect), null)}',full: false,width: 0,height: 0}});return false;";
-        }
 
         public static string GetRedirectUrl(int siteId)
         {
@@ -50,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlDir = (Literal)e.Item.FindControl("ltlDir");
             var ltlWebUrl = (Literal)e.Item.FindControl("ltlWebUrl");
 
-            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
+            ltlName.Text = $@"<a href=""{PageUtils.GetLoadingUrl(PageUtils.GetMainUrl(siteInfo.Id, string.Empty))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.WebUrl}"" target=""_blank"">{siteInfo.WebUrl}</a>";
         }
     }
 }

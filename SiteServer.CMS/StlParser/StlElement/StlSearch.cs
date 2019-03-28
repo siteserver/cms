@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Attributes;
 using SiteServer.Utils;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -136,7 +136,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PageNum))
                 {
-                    pageNum = TranslateUtils.ToInt(value, 0);
+                    pageNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsHighlight))
                 {
@@ -144,10 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            string loading;
-            string yes;
-            string no;
-            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out var loading, out var yes, out var no);
 
             if (string.IsNullOrEmpty(loading))
             {

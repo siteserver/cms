@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -54,21 +55,21 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = PageTemplateAssets.NameInclude;
                 _ext = PageTemplateAssets.ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
                 PhCodeMirrorInclude.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
                 _name = PageTemplateAssets.NameJs;
                 _ext = PageTemplateAssets.ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
                 PhCodeMirrorJs.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
                 _name = PageTemplateAssets.NameCss;
                 _ext = PageTemplateAssets.ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
                 PhCodeMirrorCss.Visible = true;
             }
 
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
@@ -110,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Charset);
             }
         }
 
@@ -118,10 +119,10 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            SiteInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
-            DataProvider.SiteDao.Update(SiteInfo);
+            SiteInfo.ConfigTemplateIsCodeMirror = isCodeMirror;
+            DataProvider.Site.Update(SiteInfo);
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;

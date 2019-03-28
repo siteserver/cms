@@ -1,13 +1,12 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerImport');
-var $uploadUrl = apiUrl + '/pages/cms/contentsLayerImport';
+﻿var $url = '/pages/cms/contentsLayerImport';
+var $uploadUrl = $apiUrl + '/pages/cms/contentsLayerImport';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryString('siteId')),
-  channelId: parseInt(pageUtils.getQueryString('channelId')),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
   pageLoad: false,
   pageAlert: null,
   checkedLevels: null,
-
   importType: 'zip',
   file: null,
   files: [],
@@ -15,23 +14,26 @@ var data = {
   isOverride: false
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
-    $this.pageLoad = true;
 
-    $api.get({
+    $api.get($url, {
+      params: {
         siteId: $this.siteId,
         channelId: $this.channelId
-      },
-      function (err, res) {
-        if (err || !res || !res.value) return;
-
-        $this.checkedLevels = res.checkedLevels;
-        $this.checkedLevel = res.value;
-        $this.loadUploader();
       }
-    );
+    }).then(function (response) {
+      var res = response.data;
+
+      $this.checkedLevels = res.checkedLevels;
+      $this.checkedLevel = res.value;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      $this.pageLoad = true;
+      setTimeout($this.loadUploader, 100);
+    });
   },
 
   loadUploader: function () {
@@ -49,7 +51,7 @@ var methods = {
       on: {
         add: function (task) {
           if (task.ext != '.' + $this.importType) {
-            alert({
+            swal2({
               title: '文件错误！',
               text: '允许上传的文件格式为：.' + $this.importType,
               type: 'error',
@@ -61,7 +63,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return alert({
+            return swal2({
               title: "文件上传失败！",
               type: 'error',
               showConfirmButton: false
@@ -114,42 +116,37 @@ var methods = {
 
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return alert({
+      return swal2({
         title: "请选择需要导入的文件！",
         type: 'warning',
         showConfirmButton: false
       });
     }
 
-    parent.pageUtils.loading(true);
-    $api.post({
-        siteId: $this.siteId,
-        channelId: $this.channelId,
-        importType: $this.importType,
-        fileNames: $this.getFileNames(),
-        checkedLevel: $this.checkedLevel,
-        isOverride: $this.isOverride
-      },
-      function (err, res) {
-        parent.pageUtils.loading(false);
+    utils.loading(true);
+    $api.post($url, {
+      siteId: $this.siteId,
+      channelId: $this.channelId,
+      importType: $this.importType,
+      fileNames: $this.getFileNames(),
+      checkedLevel: $this.checkedLevel,
+      isOverride: $this.isOverride
+    }).then(function (response) {
+      var res = response.data;
 
-        if (err) {
-          return $this.pageAlert = {
-            type: 'danger',
-            html: res.message
-          };
-        }
-
-        parent.location.reload(true);
-      }
-    );
+      parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+    });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

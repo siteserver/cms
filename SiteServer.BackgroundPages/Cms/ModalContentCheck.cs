@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -74,11 +75,12 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                //var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
                     titles.Append(title + "<br />");
                 }
             }
@@ -116,9 +118,9 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
+            var checkedLevel = TranslateUtils.ToIntWithNegative(DdlCheckType.SelectedValue);
 
-            var isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+            var isChecked = checkedLevel >= SiteInfo.CheckContentLevel;
 
             var contentInfoListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
@@ -136,13 +138,13 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
-                        if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
                         }
 
-                        //DataProvider.ContentDao.Update(SiteInfo, channelInfo, contentInfo);
+                        //DataProvider.ContentRepository.UpdateObject(SiteInfo, channelInfo, contentInfo);
 
                         //CreateManager.CreateContent(SiteId, contentInfo.ChannelId, contentId);
                         //CreateManager.TriggerContentChangedEvent(SiteId, contentInfo.ChannelId);
@@ -164,9 +166,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                channelInfo.ContentRepository.UpdateIsChecked(channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
             }
 
             if (translateChannelId > 0)

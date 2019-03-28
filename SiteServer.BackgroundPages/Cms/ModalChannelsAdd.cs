@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -77,8 +77,8 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
+            DdlChannelTemplateId.DataSource = DataProvider.Template.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
+            DdlContentTemplateId.DataSource = DataProvider.Template.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
 
             DdlChannelTemplateId.DataBind();
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var insertedChannelIdHashtable = new Hashtable {[1] = parentChannelId}; //key为栏目的级别，1为第一级栏目
 
                 var nodeNameArray = TbNodeNames.Text.Split('\n');
-                List<string> nodeIndexNameList = null;
+                IList<string> nodeIndexNameList = null;
                 foreach (var item in nodeNameArray)
                 {
                     if (string.IsNullOrEmpty(item)) continue;
@@ -145,7 +145,7 @@ namespace SiteServer.BackgroundPages.Cms
                         {
                             if (nodeIndexNameList == null)
                             {
-                                nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
+                                nodeIndexNameList = DataProvider.Channel.GetIndexNameList(SiteId);
                             }
                             if (nodeIndexNameList.IndexOf(nodeIndex) != -1)
                             {
@@ -168,7 +168,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var channelTemplateId = TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue);
                         var contentTemplateId = TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue);
 
-                        var insertedChannelId = DataProvider.ChannelDao.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
+                        var insertedChannelId = DataProvider.Channel.Insert(SiteId, parentId, nodeName, nodeIndex, contentModelPluginId, ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds), channelTemplateId, contentTemplateId);
                         insertedChannelIdHashtable[count + 1] = insertedChannelId;
 
                         CreateManager.CreateChannel(SiteId, insertedChannelId);

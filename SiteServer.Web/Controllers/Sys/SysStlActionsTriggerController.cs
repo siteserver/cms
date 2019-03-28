@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -18,22 +18,22 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new RequestImpl();
+            var rest = new Rest(Request);
 
-            var siteId = request.GetQueryInt("siteId");
+            var siteId = rest.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             try
             {
-                var channelId = request.GetQueryInt("channelId");
+                var channelId = rest.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = siteId;
                 }
-                var contentId = request.GetQueryInt("contentId");
-                var fileTemplateId = request.GetQueryInt("fileTemplateId");
-                var specialId = request.GetQueryInt("specialId");
-                var isRedirect = TranslateUtils.ToBool(request.GetQueryString("isRedirect"));
+                var contentId = rest.GetQueryInt("contentId");
+                var fileTemplateId = rest.GetQueryInt("fileTemplateId");
+                var specialId = rest.GetQueryInt("specialId");
+                var isRedirect = TranslateUtils.ToBool(rest.GetQueryString("isRedirect"));
 
                 if (specialId != 0)
                 {
@@ -86,17 +86,10 @@ namespace SiteServer.API.Controllers.Sys
                     if (!string.IsNullOrEmpty(redirectUrl))
                     {
                         var parameters = new NameValueCollection();
-                        var returnUrl = request.GetQueryString("returnUrl");
-                        if (!string.IsNullOrEmpty(returnUrl))
+                        var returnUrl = rest.GetQueryString("returnUrl");
+                        if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("?"))
                         {
-                            if (returnUrl.StartsWith("?"))
-                            {
-                                parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
-                            }
-                            else
-                            {
-                                redirectUrl = returnUrl;
-                            }
+                            parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));
                         }
                         
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();

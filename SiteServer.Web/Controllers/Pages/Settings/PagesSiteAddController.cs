@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Provider;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Database.Repositories;
+using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -23,9 +25,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -43,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 foreach (var siteId in siteIdList)
                 {
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.IsRoot == false)
+                    if (siteInfo.Root == false)
                     {
                         if (siteInfo.ParentId == 0)
                         {
@@ -118,24 +120,24 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
 
-                var createType = request.GetPostString("createType");
-                var createTemplateId = request.GetPostString("createTemplateId");
-                var siteName = request.GetPostString("siteName");
-                var isRoot = request.GetPostBool("isRoot");
-                var parentId = request.GetPostInt("parentId");
-                var siteDir = request.GetPostString("siteDir");
-                var tableRule = ETableRuleUtils.GetEnumType(request.GetPostString("tableRule"));
-                var tableChoose = request.GetPostString("tableChoose");
-                var tableHandWrite = request.GetPostString("tableHandWrite");
-                var isImportContents = request.GetPostBool("isImportContents");
-                var isImportTableStyles = request.GetPostBool("isImportTableStyles");
+                var createType = rest.GetPostString("createType");
+                var createTemplateId = rest.GetPostString("createTemplateId");
+                var siteName = rest.GetPostString("siteName");
+                var isRoot = rest.GetPostBool("isRoot");
+                var parentId = rest.GetPostInt("parentId");
+                var siteDir = rest.GetPostString("siteDir");
+                var tableRule = ETableRuleUtils.GetEnumType(rest.GetPostString("tableRule"));
+                var tableChoose = rest.GetPostString("tableChoose");
+                var tableHandWrite = rest.GetPostString("tableHandWrite");
+                var isImportContents = rest.GetPostBool("isImportContents");
+                var isImportTableStyles = rest.GetPostBool("isImportTableStyles");
 
                 if (!isRoot)
                 {
@@ -147,7 +149,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         return BadRequest("文件夹名称不符合系统要求，请更改文件夹名称！");
                     }
-                    var list = DataProvider.SiteDao.GetLowerSiteDirList(parentId);
+                    var list = DataProvider.Site.GetLowerSiteDirList(parentId);
                     if (list.IndexOf(siteDir.ToLower()) != -1)
                     {
                         return BadRequest("已存在相同的发布路径，请更改文件夹名称！");
@@ -168,13 +170,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = tableHandWrite;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        DatabaseApi.Instance.AlterTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty);
                     }
                 }
 
@@ -184,27 +186,30 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    IsRoot = isRoot
+                    Root = isRoot
                 };
 
-                siteInfo.Additional.IsCheckContentLevel = false;
-                siteInfo.Additional.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
+                siteInfo.IsCheckContentLevel = false;
+                siteInfo.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
-                var siteId = DataProvider.ChannelDao.InsertSiteInfo(channelInfo, siteInfo, request.AdminName);
+                var siteId = DataProvider.Channel.InsertSiteInfo(channelInfo, siteInfo, rest.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = ContentDao.GetContentTableName(siteId);
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-                    DataProvider.SiteDao.UpdateTableName(siteId, tableName);
+                    tableName = ContentRepository.GetContentTableName(siteId);
+                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    {
+                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
+                    }
+                    DataProvider.Site.UpdateTableName(siteId, tableName);
                 }
 
-                if (request.AdminPermissionsImpl.IsSystemAdministrator && !request.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (rest.AdminPermissionsImpl.IsSystemAdministrator && !rest.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    var siteIdList = request.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
+                    var siteIdList = rest.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
                     siteIdList.Add(siteId);
-                    var adminInfo = AdminManager.GetAdminInfoByUserId(request.AdminId);
-                    DataProvider.AdministratorDao.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
+                    var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
+                    DataProvider.Administrator.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));
                 }
 
                 var siteTemplateDir = string.Empty;
@@ -219,7 +224,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
 
                 var redirectUrl = PageProgressBar.GetCreateSiteUrl(siteId,
-                    isImportContents, isImportTableStyles, siteTemplateDir, onlineTemplateName, StringUtils.Guid());
+                    isImportContents, isImportTableStyles, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid());
 
                 return Ok(new
                 {

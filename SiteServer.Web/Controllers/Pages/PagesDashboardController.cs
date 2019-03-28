@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,8 +22,8 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin)
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
@@ -33,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages
                     Value = new
                     {
                         Version = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version,
-                        LastActivityDate = DateUtils.GetDateString(request.AdminInfo.LastActivityDate, EDateFormatType.Chinese),
+                        LastActivityDate = DateUtils.GetDateString(rest.AdminInfo.LastActivityDate, EDateFormatType.Chinese),
                         UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
                     }
                 });
@@ -49,15 +49,15 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin)
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
 
                 var unCheckedList = new List<object>();
 
-                if (request.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (rest.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
                     foreach(var siteInfo in SiteManager.GetSiteInfoList())
                     {
@@ -73,9 +73,9 @@ namespace SiteServer.API.Controllers.Pages
                         }
                     }
                 }
-                else if (request.AdminPermissionsImpl.IsSystemAdministrator)
+                else if (rest.AdminPermissionsImpl.IsSystemAdministrator)
                 {
-                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(request.AdminInfo.SiteIdCollection))
+                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(rest.AdminInfo.SiteIdCollection))
                     {
                         var siteInfo = SiteManager.GetSiteInfo(siteId);
                         if (siteInfo == null) continue;

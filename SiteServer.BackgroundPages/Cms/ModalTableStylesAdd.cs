@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -76,13 +77,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.InputType.Value);
+                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.Type.Value);
                 TbDefaultValue.Text = styleInfo.DefaultValue;
-                DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
-                TbColumns.Text = styleInfo.Additional.Columns.ToString();
+                DdlIsHorizontal.SelectedValue = styleInfo.Horizontal.ToString();
+                TbColumns.Text = styleInfo.Columns.ToString();
 
-                TbHeight.Text = styleInfo.Additional.Height == 0 ? string.Empty : styleInfo.Additional.Height.ToString();
-                TbWidth.Text = styleInfo.Additional.Width;
+                TbHeight.Text = styleInfo.Height == 0 ? string.Empty : styleInfo.Height.ToString();
+                TbWidth.Text = styleInfo.Width;
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -178,10 +179,20 @@ namespace SiteServer.BackgroundPages.Cms
                     return false;
                 }
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, inputType, TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
-                styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-                styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-                styleInfo.Additional.Width = TbWidth.Text;
+                var styleInfo = new TableStyleInfo
+                {
+                    RelatedIdentity = relatedIdentity,
+                    TableName = _tableName,
+                    AttributeName = attributeName,
+                    DisplayName = displayName,
+                    VisibleInList = false,
+                    Type = inputType,
+                    DefaultValue = TbDefaultValue.Text,
+                    Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue)
+                };
+                styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+                styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+                styleInfo.Width = TbWidth.Text;
 
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
                 {
@@ -190,7 +201,13 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = styleInfo.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -204,7 +221,7 @@ namespace SiteServer.BackgroundPages.Cms
                 foreach (TableStyleInfo styleInfo in styleInfoArrayList)
                 {
                     attributeNames.Add(styleInfo.AttributeName);
-                    DataProvider.TableStyleDao.Insert(styleInfo);
+                    DataProvider.TableStyle.Insert(styleInfo);
                 }
                 
 

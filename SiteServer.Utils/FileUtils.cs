@@ -37,6 +37,11 @@ namespace SiteServer.Utils
 			return text;
 		}
 
+	    public static string ReadText(string filePath)
+	    {
+	        return ReadText(filePath, Encoding.UTF8);
+	    }
+
         public static string ReadText(string filePath, Encoding encoding)
         {
             var sr = new StreamReader(filePath, encoding);
@@ -53,11 +58,11 @@ namespace SiteServer.Utils
 	        return text;
 	    }
 
-        public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)
+        public static async Task WriteTextAsync(string filePath, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-            byte[] encodedText = encoding.GetBytes(content);
+            byte[] encodedText = Encoding.UTF8.GetBytes(content);
 
             using (FileStream sourceStream = new FileStream(filePath,
                 FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize: 4096, useAsync: true))
@@ -76,7 +81,7 @@ namespace SiteServer.Utils
 	        WriteText(filePath, Encoding.UTF8, content);
 	    }
 
-        public static void WriteText(string filePath, Encoding encoding, string content)
+	    public static void WriteText(string filePath, Encoding encoding, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
@@ -116,12 +121,12 @@ namespace SiteServer.Utils
 	        }
         }
 
-	    public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
+	    public static async Task AppendTextAsync(string filePath, string content)
 	    {
 	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
 	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-	        using (var writer = new StreamWriter(file, encoding))
+	        using (var writer = new StreamWriter(file, Encoding.UTF8))
 	        {
 	            await writer.WriteAsync(content);
 	            writer.Flush();

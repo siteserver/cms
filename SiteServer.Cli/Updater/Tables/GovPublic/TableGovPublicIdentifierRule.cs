@@ -71,14 +71,12 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "RuleName",
-                DataType = DataType.VarChar,
-                DataLength = 200
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "IdentifierType",
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
@@ -88,20 +86,17 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             new TableColumn
             {
                 AttributeName = "Suffix",
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "FormatString",
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.VarChar
             },
             new TableColumn
             {
                 AttributeName = "AttributeName",
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.VarChar
             },
             new TableColumn
             {

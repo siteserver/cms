@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -147,7 +147,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "Identifier",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Customize,
@@ -158,7 +157,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "DocumentNo",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -180,7 +178,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "Publisher",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -191,7 +188,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "Keywords",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Text,
@@ -226,7 +222,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "IsAbolition",
                 DataType = DataType.VarChar,
-                DataLength = 10,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Radio,
@@ -265,7 +260,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "Description",
                 DataType = DataType.VarChar,
-                DataLength = 2000,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.TextArea,
@@ -276,7 +270,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "ImageUrl",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.Image,
@@ -287,7 +280,6 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 200,
                 InputStyle = new InputStyle
                 {
                     InputType = InputType.File,
@@ -309,7 +301,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
             foreach (var tableColumnInfo in oldColumns)

@@ -1,55 +1,64 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerDelete');
+﻿var $url = '/pages/cms/contentsLayerDelete';
 
-var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+var $data = {
+  siteId: parseInt(utils.getQueryString('siteId')),
+  channelId: parseInt(utils.getQueryString('channelId')),
+  contentIds: utils.getQueryString('contentIds'),
   pageLoad: false,
   pageAlert: null,
   contents: null,
   isRetainFiles: false
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
 
-    $api.get({
-      siteId: $this.siteId,
-      channelId: $this.channelId,
-      contentIds: $this.contentIds
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url, {
+      params: {
+        siteId: $this.siteId,
+        channelId: $this.channelId,
+        contentIds: $this.contentIds
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.contents = res.value;
       $this.pageAlert = {
         type: 'danger',
         html: '此操作将把以下 <strong>' + $this.contents.length + '</strong> 篇内容放入回收站，确定吗？'
       };
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
   btnSubmitClick: function () {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.post({
+    utils.loading(true);
+    $api.post($url, {
       siteId: $this.siteId,
       channelId: $this.channelId,
       contentIds: $this.contentIds,
-      isRetainFiles: $this.isRetainFiles,
-    }, function (err, res) {
-      if (err || !res || !res.value) return;
+      isRetainFiles: $this.isRetainFiles
+    }).then(function (response) {
+      var res = response.data;
 
       parent.location.reload(true);
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

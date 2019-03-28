@@ -75,7 +75,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             }
             else if (entityType == EStlEntityType.Request)
             {
-                parsedContent = StlRequestEntities.Parse(stlEntity, pageInfo, contextInfo);
+                parsedContent = StlRequestEntities.Parse(stlEntity, pageInfo);
             }
             else if (entityType == EStlEntityType.Navigation)
             {

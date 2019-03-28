@@ -1,6 +1,6 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/adminAccessTokens');
+﻿var $url = '/pages/settings/adminAccessTokens';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: {
     type: 'warning',
@@ -14,20 +14,24 @@ var data = {
   item: null
 };
 
-var methods = {
+var $methods = {
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
       $this.adminNames = res.adminNames;
       $this.scopes = res.scopes;
       $this.adminName = res.adminName;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   getItemScopes: function (item) {
     if (!item.scopes) return '';
     var itemScopes = item.scopes.split(',');
@@ -40,34 +44,34 @@ var methods = {
 
     return retval.join(',');
   },
+
   delete: function (item) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.delete({
-      id: item.id
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.delete($url, {
+      params: {
+        id: item.id
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   submit: function (item) {
     var $this = this;
 
-    this.item.scopes = this.item.scopeList ? this.item.scopeList.join(',') : '';
+    $this.item.scopes = $this.item.scopeList ? $this.item.scopeList.join(',') : '';
 
-    pageUtils.loading(true);
-    $api.post(item, function (err, res) {
-      pageUtils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    utils.loading(true);
+    $api.post($url, $this.item).then(function (response) {
+      var res = response.data;
 
       $this.pageAlert = {
         type: 'success',
@@ -76,45 +80,61 @@ var methods = {
       $this.item = null;
       $this.items = res.value;
       $this.pageType = 'list';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   btnAddClick: function (item) {
     this.pageType = 'add';
     this.item = item;
     this.item.adminName = this.item.adminName ? this.item.adminName : this.adminName;
     this.item.scopeList = this.item.scopes ? this.item.scopes.split(',') : [];
   },
+
   btnSubmitClick: function () {
     this.submit(this.item);
   },
+
   btnCancelClick: function () {
     this.pageType = 'list';
   },
+
   btnViewClick: function (item) {
-    pageUtils.openLayer({
+    utils.openLayer({
       title: '获取密钥',
       url: 'adminAccessTokensViewLayer.cshtml?id=' + item.id,
       height: 410
     });
   },
+
   btnDeleteClick: function (item) {
     var $this = this;
 
-    pageUtils.alertDelete({
-      title: '删除API密钥',
-      text: '此操作将删除API密钥 ' + item.title + '，确定吗？',
-      callback: function () {
-        $this.delete(item);
-        this.pageType = 'list';
-      }
-    });
+    swal2({
+        title: '删除API密钥',
+        text: '此操作将删除API密钥 ' + item.title + '，确定吗？',
+        type: 'question',
+        confirmButtonText: '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          $this.delete(item);
+          $this.pageType = 'list';
+        }
+      });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getList();
   }

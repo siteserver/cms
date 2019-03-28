@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache.Stl;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 
@@ -117,7 +117,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         if (!isAdd)
                         {
-                            var tagInfo = new TagInfo(0, pageInfo.SiteId, contentId.ToString(), tagName, 1);
+                            var tagInfo = new TagInfo
+                            {
+                                SiteId = pageInfo.SiteId,
+                                ContentIdCollection = contentId.ToString(),
+                                Tag = tagName,
+                                UseNum = 1
+                            };
                             tagInfoList2.Add(tagInfo);
                         }
                     }

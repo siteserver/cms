@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -16,13 +15,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -43,25 +42,25 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var password = request.GetPostString("password");
+                var password = rest.GetPostString("password");
 
-                if (!DataProvider.AdministratorDao.ChangePassword(adminInfo, password, out var errorMessage))
+                if (!DataProvider.Administrator.ChangePassword(adminInfo, password, out var errorMessage))
                 {
                     return BadRequest($"更改密码失败：{errorMessage}");
                 }
 
-                request.AddAdminLog("重设管理员密码", $"管理员:{adminInfo.UserName}");
+                rest.AddAdminLog("重设管理员密码", $"管理员:{adminInfo.UserName}");
 
                 return Ok(new
                 {

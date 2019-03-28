@@ -2,7 +2,7 @@ using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 			if (!IsPostBack)
 			{
                 var templateLogId = AuthRequest.GetQueryInt("templateLogID");
-                TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
+                TbContent.Text = DataProvider.TemplateLog.GetTemplateContent(templateLogId);
 			}
 		}
 	}

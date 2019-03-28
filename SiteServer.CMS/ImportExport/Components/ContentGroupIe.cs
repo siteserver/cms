@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -32,8 +32,13 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Taxis)));
             var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Description));
-            DataProvider.ContentGroupDao.Insert(new ContentGroupInfo(groupName, siteId, taxis, description));
-
+            DataProvider.ContentGroup.Insert(new ContentGroupInfo
+            {
+                GroupName = groupName,
+                SiteId = siteId,
+                Taxis = taxis,
+                Description = description
+            });
             return true;
         }
     }

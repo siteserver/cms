@@ -2,7 +2,7 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: utils.getQueryString('pageType'),
@@ -16,7 +16,7 @@ var data = {
   files: []
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
@@ -26,7 +26,7 @@ var methods = {
       $this.adminInfo = res.value;
       $this.departments = res.departments;
       $this.areas = res.areas;
-      $this.uploadUrl = apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
+      $this.uploadUrl = $apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
@@ -49,7 +49,7 @@ var methods = {
   submit: function () {
     var $this = this;
 
-    pageUtils.loading(true);
+    utils.loading(true);
     $api.post($url + '?userId=' + $this.userId, _.assign({}, $this.adminInfo, {
       password: $this.password
     })).then(function (response) {
@@ -71,7 +71,7 @@ var methods = {
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
-      pageUtils.loading(false);
+      utils.loading(false);
     });
   },
 
@@ -90,17 +90,17 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'administrators.cshtml';
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
+  data: $data,
   components: {
     FileUpload: VueUploadComponent
   },
-  methods: methods,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

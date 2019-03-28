@@ -2,11 +2,9 @@
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -19,7 +17,9 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var request = new RequestImpl();
+#pragma warning disable CS0612 // '“RequestImpl”已过时
+            var request = new RequestImpl(Page.Request);
+#pragma warning restore CS0612 // '“RequestImpl”已过时
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
             var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];

@@ -1,7 +1,7 @@
 ﻿var $url = '/pages/plugins/addLayerUpload';
-var $urlUpload = apiUrl + '/pages/plugins/addLayerUpload/actions/upload';
+var $urlUpload = $apiUrl + '/pages/plugins/addLayerUpload/actions/upload';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   importType: 'nupkg',
@@ -9,19 +9,18 @@ var data = {
   files: []
 };
 
-var methods = {
+var $methods = {
   loadConfig: function () {
     var $this = this;
-    $this.pageLoad = true;
 
     $api.get($url).then(function (response) {
+      $this.pageLoad = true;
       setTimeout(function () {
         $this.loadUploader();
       }, 100);
     }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
-    }).then(function () {
       $this.pageLoad = true;
+      $this.pageAlert = utils.getPageAlert(error);
     });
   },
 
@@ -40,7 +39,7 @@ var methods = {
       on: {
         add: function (task) {
           if (task.ext != '.' + $this.importType) {
-            alert({
+            swal2({
               title: '文件错误！',
               text: '离线插件文件格式为：.' + $this.importType,
               type: 'error',
@@ -52,7 +51,7 @@ var methods = {
         complete: function (task) {
           var json = task.json;
           if (!json || json.ret != 1) {
-            return alert({
+            return swal2({
               title: "文件上传失败！",
               type: 'error',
               showConfirmButton: false
@@ -105,14 +104,14 @@ var methods = {
 
     var fileNames = this.getFileNames().join(',');
     if (!fileNames) {
-      return alert({
+      return swal2({
         title: "请上传插件安装包文件！",
         type: 'warning',
         showConfirmButton: false
       });
     }
 
-    parent.pageUtils.loading(true);
+    parent.utils.loading(true);
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
@@ -122,7 +121,7 @@ var methods = {
         isOverride: $this.isOverride
       },
       function (err, res) {
-        parent.pageUtils.loading(false);
+        parent.utils.loading(false);
 
         if (err) {
           return $this.pageAlert = {
@@ -139,8 +138,8 @@ var methods = {
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.loadConfig();
   }

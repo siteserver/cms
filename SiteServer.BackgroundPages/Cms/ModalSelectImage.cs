@@ -5,7 +5,8 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => SiteInfo.Additional.WebUrl;
+        public string SiteUrl => SiteInfo.WebUrl;
 
         public string RootUrl => PageUtils.ApplicationPath;
 
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},
-                    {"CurrentRootPath", siteInfo.Additional.ImageUploadDirectoryName},
+                    {"CurrentRootPath", siteInfo.ImageUploadDirectoryName},
                     {"TextBoxClientID", textBoxClientId}
                 }));
         }
@@ -61,12 +62,19 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                if (string.IsNullOrEmpty(SiteInfo.ConfigSelectImageCurrentUrl))
+                {
+                    _currentRootPath = "@/" + SiteInfo.ImageUploadDirectoryName;
+                }
+                else
+                {
+                    _currentRootPath = SiteInfo.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                }
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectImageCurrentUrl = _currentRootPath;
-                DataProvider.SiteDao.Update(SiteInfo);
+                SiteInfo.ConfigSelectImageCurrentUrl = _currentRootPath;
+                DataProvider.Site.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
 

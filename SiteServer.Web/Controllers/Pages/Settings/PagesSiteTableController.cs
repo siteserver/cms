@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -12,17 +12,17 @@ namespace SiteServer.API.Controllers.Pages.Settings
     public class PagesSiteTablesController : ApiController
     {
         private const string Route = "";
-        private const string RouteTable = "{tableName}";
-        private const string RouteTableActionsRemoveCache = "{tableName}/actions/removeCache";
+        private const string RouteActionsGetColumns = "actions/getColumns";
+        private const string RouteActionsRemoveCache = "actions/removeCache";
 
         [HttpGet, Route(Route)]
         public IHttpActionResult GetTables()
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -54,24 +54,26 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        [HttpGet, Route(RouteTable)]
-        public IHttpActionResult GetColumns(string tableName)
+        [HttpPost, Route(RouteActionsGetColumns)]
+        public IHttpActionResult GetColumns()
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
+
+                var tableName = rest.GetPostString("tableName");
 
                 var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DatabaseApi.Instance.GetCount(tableName)
                 });
             }
             catch (Exception ex)
@@ -80,17 +82,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
             }
         }
 
-        [HttpPost, Route(RouteTableActionsRemoveCache)]
-        public IHttpActionResult RemoveCache(string tableName)
+        [HttpPost, Route(RouteActionsRemoveCache)]
+        public IHttpActionResult RemoveCache()
         {
             try
             {
-                var request = new RequestImpl();
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                var rest = new Rest(Request);
+                if (!rest.IsAdminLoggin ||
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
+
+                var tableName = rest.GetPostString("tableName");
 
                 TableColumnManager.ClearCache();
 
@@ -99,7 +103,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DatabaseApi.Instance.GetCount(tableName)
                 });
             }
             catch (Exception ex)

@@ -1,0 +1,74 @@
+﻿@{ Layout = "./Shared/_Layout.cshtml"; } <template v-if="pageAlert">
+  <div class="alert" :class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+    <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+    <span v-html="pageAlert.html"></span>
+  </div>
+</template>
+<div class="card-box">
+  <h4 class="text-dark  header-title m-t-0"> SiteServer CMS 数据库升级向导 </h4>
+  <p class="text-muted m-b-25 font-13"> 欢迎来到SiteServer CMS 数据库升级向导！ </p>
+  <!-- step 1 place -->
+  <div v-if="step == 1">
+    <ul class="nav nav-rounded nav-pills nav-fill bg-muted m-b-20">
+      <li class="nav-item">
+        <a class="nav-link active" href="javascript:;">升级准备</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级数据库</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级完成</a>
+      </li>
+    </ul>
+    <div class="jumbotron">
+      <h4 class="display-5">欢迎来到SiteServer CMS 数据库升级向导！</h4>
+      <p class="lead"> 升级向导将逐一检查数据库字段、将数据库结构更新至最新版本。 </p>
+    </div>
+    <hr />
+    <div class="text-center">
+      <button v-on:click="btnUpdateClick" type="button" class="btn btn-primary">开始升级</button>
+    </div>
+  </div>
+  <!-- step 2 place -->
+  <div v-else-if="step == 2">
+    <ul class="nav nav-rounded nav-pills nav-fill bg-muted m-b-20">
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级准备</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="javascript:;">升级数据库</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级完成</a>
+      </li>
+    </ul>
+    <div class="jumbotron text-center">
+      <img src="assets/images/loading.gif" />
+      <br />
+      <br />
+      <p class="lead">正在升级数据库，请稍后...</p>
+    </div>
+  </div>
+  <!-- step 3 place -->
+  <div v-else-if="step == 3">
+    <ul class="nav nav-rounded nav-pills nav-fill bg-muted m-b-20">
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级准备</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="javascript:;">升级数据库</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="javascript:;">升级完成</a>
+      </li>
+    </ul>
+    <div class="alert alert-success" role="alert">
+      <h4 class="alert-heading">数据库升级完成！</h4>
+      <p> 恭喜，您已经完成了 SiteServer CMS 数据库的升级 <a class="btn btn-success m-l-5" href="main.cshtml">进入后台</a>
+      </p>
+      <hr>
+      <p class="mb-0"> 获取更多使用帮助请访问 <a href="https://www.siteserver.cn/docs" target="_blank">SiteServer CMS 文档中心</a>
+      </p>
+    </div>
+  </div>
+</div> @section Scripts{ <script src="update.js" type="text/javascript"></script> }

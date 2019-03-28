@@ -1,3 +1,5 @@
+using SiteServer.CMS.Database.Core;
+
 namespace SiteServer.CMS.Core
 {
     public static class CacheDbUtils
@@ -6,33 +8,33 @@ namespace SiteServer.CMS.Core
 		{
 			if (!string.IsNullOrEmpty(cacheKey))
 			{
-				DataProvider.DbCacheDao.RemoveAndInsert(cacheKey, cacheValue);
+				DataProvider.DbCache.RemoveAndInsert(cacheKey, cacheValue);
 			}
 		}
 
         public static void Clear()
         {
-            DataProvider.DbCacheDao.Clear();
+            DataProvider.DbCache.Clear();
         }
 
 		public static bool IsExists(string cacheKey)
 		{
-            return DataProvider.DbCacheDao.IsExists(cacheKey);
+            return DataProvider.DbCache.IsExists(cacheKey);
 		}
 
         public static string GetValue(string cacheKey)
         {
-            return DataProvider.DbCacheDao.GetValue(cacheKey);
+            return DataProvider.DbCache.GetValue(cacheKey);
         }
 
 		public static string GetValueAndRemove(string cacheKey)
 		{
-            return DataProvider.DbCacheDao.GetValueAndRemove(cacheKey);
+            return DataProvider.DbCache.GetValueAndRemove(cacheKey);
 		}
 
         public static int GetCount()
         {
-            return DataProvider.DbCacheDao.GetCount();
+            return DataProvider.DbCache.GetCount();
         }
 
 	}

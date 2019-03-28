@@ -73,7 +73,7 @@ namespace SiteServer.CMS.Plugin.Impl
             Metadata = metadata;
         }
 
-        public IService SetSystemDefaltPage(string pageUrl)
+        public IService SetSystemDefaultPage(string pageUrl)
         {
             SystemDefaultPageUrl = pageUrl;
             return this;

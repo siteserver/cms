@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
@@ -31,11 +32,11 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
+                if (!ConfigManager.Instance.IsLogError) return 0;
 
-                DataProvider.ErrorLogDao.DeleteIfThreshold();
+                DataProvider.ErrorLog.DeleteIfThreshold();
 
-                return DataProvider.ErrorLogDao.Insert(logInfo);
+                return DataProvider.ErrorLog.Insert(logInfo);
             }
             catch
             {
@@ -62,11 +63,28 @@ namespace SiteServer.CMS.Core
 
         public static int AddErrorLog(Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            //0, CategoryAdmin, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now
+            return AddErrorLog(new ErrorLogInfo
+            {
+                Category = CategoryAdmin,
+                PluginId = string.Empty,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            });
         }
-        public static int AddErrorLog(string pluginId, Exception ex, string summary = "")
+        public static void AddErrorLog(string pluginId, Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            AddErrorLog(new ErrorLogInfo
+            {
+                Category = CategoryAdmin,
+                PluginId = pluginId,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            });
         }
 
         public static string AddStlErrorLog(PageInfo pageInfo, string elementName, string stlContent, Exception ex)
@@ -75,13 +93,21 @@ namespace SiteServer.CMS.Core
             if (pageInfo != null)
             {
                 summary = $@"站点名称：{pageInfo.SiteInfo.SiteName}，
-模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}，
+模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.Type)}，
 模板名称：{pageInfo.TemplateInfo.TemplateName}
 <br />";
             }
 
             summary += $@"STL标签：{StringUtils.HtmlEncode(stlContent)}";
-            AddErrorLog(new ErrorLogInfo(0, CategoryStl, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            AddErrorLog(new ErrorLogInfo
+            {
+                Category = CategoryStl,
+                PluginId = string.Empty,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            });
 
             return $@"
 <!--
@@ -93,7 +119,7 @@ stl: {stlContent}
 
         public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogSite) return;
+            if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
@@ -103,7 +129,7 @@ stl: {stlContent}
             {
                 try
                 {
-                    DataProvider.SiteLogDao.DeleteIfThreshold();
+                    DataProvider.SiteLog.DeleteIfThreshold();
 
                     if (!string.IsNullOrEmpty(action))
                     {
@@ -117,9 +143,19 @@ stl: {stlContent}
                     {
                         channelId = -channelId;
                     }
-                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                    var siteLogInfo = new SiteLogInfo
+                    {
+                        SiteId = siteId,
+                        ChannelId = channelId,
+                        ContentId = contentId,
+                        UserName = adminName,
+                        IpAddress = PageUtils.GetIpAddress(),
+                        AddDate = DateTime.Now,
+                        Action = action,
+                        Summary = summary
+                    };
 
-                    DataProvider.SiteLogDao.Insert(siteLogInfo);
+                    DataProvider.SiteLog.Insert(siteLogInfo);
                 }
                 catch (Exception ex)
                 {
@@ -130,11 +166,11 @@ stl: {stlContent}
 
         public static void AddAdminLog(string adminName, string action, string summary = "")
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
+            if (!ConfigManager.Instance.IsLogAdmin) return;
 
             try
             {
-                DataProvider.LogDao.DeleteIfThreshold();
+                DataProvider.Log.DeleteIfThreshold();
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -144,9 +180,16 @@ stl: {stlContent}
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                var logInfo = new LogInfo(0, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                var logInfo = new LogInfo
+                {
+                    UserName = adminName,
+                    IpAddress = PageUtils.GetIpAddress(),
+                    AddDate = DateTime.Now,
+                    Action = action,
+                    Summary = summary
+                };
 
-                DataProvider.LogDao.Insert(logInfo);
+                DataProvider.Log.Insert(logInfo);
             }
             catch (Exception ex)
             {
@@ -161,21 +204,27 @@ stl: {stlContent}
 
         public static void AddUserLog(string userName, string actionType, string summary)
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogUser) return;
+            if (!ConfigManager.Instance.IsLogUser) return;
 
             try
             {
-                DataProvider.UserLogDao.DeleteIfThreshold();
+                DataProvider.UserLog.DeleteIfThreshold();
 
                 if (!string.IsNullOrEmpty(summary))
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
 
-                var userLogInfo = new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, actionType,
-                    summary);
+                var userLogInfo = new UserLogInfo
+                {
+                    UserName = userName,
+                    IpAddress = PageUtils.GetIpAddress(),
+                    AddDate = DateTime.Now,
+                    Action = actionType,
+                    Summary = summary
+                };
 
-                DataProvider.UserLogDao.Insert(userLogInfo);
+                DataProvider.UserLog.Insert(userLogInfo);
             }
             catch (Exception ex)
             {

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -37,7 +38,8 @@ namespace SiteServer.BackgroundPages.Cms
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
@@ -46,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo));
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
                 
                 var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
                 if (styleInfo.AttributeName == ContentAttribute.Title)
@@ -89,10 +91,11 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            channelInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
 
-            DataProvider.ChannelDao.Update(channelInfo);
+            var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
+            channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
+
+            DataProvider.Channel.Update(channelInfo);
 
             AuthRequest.AddSiteLog(SiteId, "设置内容显示项", $"显示项:{attributesOfDisplay}");
 

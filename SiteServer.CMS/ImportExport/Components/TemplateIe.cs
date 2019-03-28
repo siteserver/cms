@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Atom.Core;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -25,7 +26,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
 			var feed = AtomUtility.GetEmptyFeed();
 
-			var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(_siteId);
+			var templateInfoList = DataProvider.Template.GetTemplateInfoListBySiteId(_siteId);
 
 			foreach (var templateInfo in templateInfoList)
 			{
@@ -39,7 +40,7 @@ namespace SiteServer.CMS.ImportExport.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(_siteId);
+            var templateInfoList = DataProvider.Template.GetTemplateInfoListBySiteId(_siteId);
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -61,12 +62,11 @@ namespace SiteServer.CMS.ImportExport.Components
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateName), templateInfo.TemplateName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateType), templateInfo.TemplateType.Value);
+			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Type), templateInfo.Type.Value);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
 			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
-			AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Charset), ECharsetUtils.GetValue(templateInfo.Charset));
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.IsDefault), templateInfo.IsDefault.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Default), templateInfo.Default.ToString());
 
             var templateContent = TemplateManager.GetTemplateContent(siteInfo, templateInfo);
 			AtomUtility.AddDcElement(entry.AdditionalElements, "Content", AtomUtility.Encrypt(templateContent));
@@ -89,18 +89,17 @@ namespace SiteServer.CMS.ImportExport.Components
 			    {
                     SiteId = _siteId,
 			        TemplateName = templateName,
-			        TemplateType =
-			            TemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateType))),
+			        Type =
+			            TemplateTypeUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.Type))),
 			        RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
 			        CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
 			        CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
-			        Charset = ECharsetUtils.GetEnumType(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.Charset))),
-			        IsDefault = false
+			        Default = false
 			    };
 
 			    var templateContent = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Content"));
 					
-			    var srcTemplateInfo = TemplateManager.GetTemplateInfoByTemplateName(_siteId, templateInfo.TemplateType, templateInfo.TemplateName);
+			    var srcTemplateInfo = TemplateManager.GetTemplateInfoByTemplateName(_siteId, templateInfo.Type, templateInfo.TemplateName);
 
 			    int templateId;
 
@@ -109,25 +108,24 @@ namespace SiteServer.CMS.ImportExport.Components
 			        if (overwrite)
 			        {
 			            srcTemplateInfo.RelatedFileName = templateInfo.RelatedFileName;
-			            srcTemplateInfo.TemplateType = templateInfo.TemplateType;
+			            srcTemplateInfo.Type = templateInfo.Type;
 			            srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
 			            srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
-			            srcTemplateInfo.Charset = templateInfo.Charset;
-			            DataProvider.TemplateDao.Update(siteInfo, srcTemplateInfo, templateContent, administratorName);
+			            DataProvider.Template.Update(siteInfo, srcTemplateInfo, templateContent, administratorName);
 			            templateId = srcTemplateInfo.Id;
 			        }
 			        else
 			        {
-			            templateInfo.TemplateName = DataProvider.TemplateDao.GetImportTemplateName(_siteId, templateInfo.TemplateName);
-			            templateId = DataProvider.TemplateDao.Insert(templateInfo, templateContent, administratorName);
+			            templateInfo.TemplateName = DataProvider.Template.GetImportTemplateName(_siteId, templateInfo.TemplateName);
+			            templateId = DataProvider.Template.Insert(templateInfo, templateContent, administratorName);
 			        }
 			    }
 			    else
 			    {
-			        templateId = DataProvider.TemplateDao.Insert(templateInfo, templateContent, administratorName);
+			        templateId = DataProvider.Template.Insert(templateInfo, templateContent, administratorName);
 			    }
 
-			    if (templateInfo.TemplateType == TemplateType.FileTemplate)
+			    if (templateInfo.Type == TemplateType.FileTemplate)
 			    {
 			        CreateManager.CreateFile(_siteId, templateId);
 			    }

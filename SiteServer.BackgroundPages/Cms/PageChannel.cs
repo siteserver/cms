@@ -4,9 +4,9 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
                 if (SiteId != channelId)
                 {
                     var isSubtract = AuthRequest.IsQueryExists("Subtract");
-                    DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
+                    DataProvider.Channel.UpdateTaxis(SiteId, channelId, isSubtract);
 
                     AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");

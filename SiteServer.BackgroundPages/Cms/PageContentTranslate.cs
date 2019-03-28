@@ -5,9 +5,10 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Core.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
-                _returnUrl = CmsPages.GetContentsUrl(SiteId, AuthRequest.GetQueryInt("channelId"));
+                _returnUrl = AdminPagesUtils.Cms.GetContentsUrl(SiteId, AuthRequest.GetQueryInt("channelId"));
             }
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{
@@ -115,7 +116,7 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 foreach (var contentId in contentIdList)
                                 {
-                                    ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
+                                    ContentManager.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
                                     AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
                                 }

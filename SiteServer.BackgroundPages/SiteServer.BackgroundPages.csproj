@@ -40,12 +40,15 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.1.3\lib\net45\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -120,9 +123,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalConfigurationCreateChannel.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\ModalContentAttributes.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\ModalContentCheck.cs">
@@ -318,9 +318,6 @@
     <Compile Include="Cms\PageConfigurationWaterMark.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageContentAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -410,6 +407,9 @@
     </Compile>
     <Compile Include="Cms\ModalTextEditorInsertImageHandler.cs" />
     <Compile Include="Cms\ModalUploadWordHandler.cs" />
+    <Compile Include="Cms\PageTemplateReference.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Controls\Alerts.cs" />
     <Compile Include="Controls\AuxiliaryControl.cs" />
     <Compile Include="Controls\ChannelAuxiliaryControl.cs" />
@@ -418,7 +418,6 @@
     <Compile Include="Controls\Flash.cs" />
     <Compile Include="Controls\Help.cs" />
     <Compile Include="Controls\Message.cs" />
-    <Compile Include="Core\NavigationTree.cs" />
     <Compile Include="Controls\ChannelTree.cs" />
     <Compile Include="Controls\NoTagText.cs" />
     <Compile Include="Controls\Script.cs" />
@@ -435,8 +434,6 @@
     <Compile Include="Core\ChannelLoading.cs" />
     <Compile Include="Core\ControlUtility.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
-    <Compile Include="Core\NavigationTreeItem.cs" />
-    <Compile Include="Core\NodeNaviTreeItem.cs" />
     <Compile Include="Core\ChannelTreeItem.cs" />
     <Compile Include="Core\PagerStyle.cs" />
     <Compile Include="Core\SortMode.cs" />
@@ -444,34 +441,10 @@
     <Compile Include="Core\VCManager.cs" />
     <Compile Include="Core\VirtualRecordCount.cs" />
     <Compile Include="Core\WebUtils.cs" />
-    <Compile Include="PageSyncDatabase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageUpdateSystem.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageDefault.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageInstaller.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="PageLoading.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageLogout.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="PageRedirect.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="PageTest.cs" />
-    <Compile Include="PageValidateCode.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\ModalAdminAccessToken.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\ModalManualUpdateSystem.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -521,12 +494,6 @@
     <Compile Include="Settings\PageAdminDepartment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAdministrator.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageAdministratorAdd.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageAdminPermissionAdd.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -570,9 +537,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageLogUser.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Settings\PageRecord.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Settings\PageSite.cs">
@@ -650,6 +614,10 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{b50a541a-29dc-4084-bbfa-d60110d7ab0f}</Project>
+      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>

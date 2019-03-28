@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web;
 using System.Web.UI;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Editors;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -31,7 +29,7 @@ namespace SiteServer.BackgroundPages.Controls
                 $@"<script type=""text/javascript"">window.UEDITOR_HOME_URL = ""{editorUrl}/"";window.UEDITOR_CONTROLLER_URL = ""{controllerUrl}"";</script><script type=""text/javascript"" src=""{editorUrl}/editor_config.js""></script><script type=""text/javascript"" src=""{editorUrl}/ueditor_all_min.js""></script>");
 
             builder.Append($@"
-<textarea id=""{ClientID}"" name=""{ClientID}"" style=""display:none"">{HttpUtility.HtmlEncode(Text)}</textarea>
+<textarea id=""{ClientID}"" name=""{ClientID}"" style=""display:none"">{StringUtils.HtmlEncode(Text)}</textarea>
 <script type=""text/javascript"">
 $(function(){{
   UE.getEditor('{ClientID}', {UEditorUtils.ConfigValues});

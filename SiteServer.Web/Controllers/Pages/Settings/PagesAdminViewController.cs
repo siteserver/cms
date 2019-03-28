@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -17,13 +17,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new RequestImpl();
-                var userId = request.GetQueryInt("userId");
-                if (!request.IsAdminLoggin) return Unauthorized();
+                var rest = new Rest(Request);
+                var userId = rest.GetQueryInt("userId");
+                if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
-                if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                if (rest.AdminId != userId &&
+                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var departmentName = DepartmentManager.GetDepartmentName(adminInfo.DepartmentId);
                 var areaName = AreaManager.GetAreaName(adminInfo.AreaId);
 
-                var permissions = new PermissionsImpl(adminInfo.UserName);
+                var permissions = new PermissionsImpl(adminInfo);
                 var level = permissions.GetAdminLevel();
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
                 var siteNames = new List<string>();
@@ -47,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var roleNames = string.Empty;
                 if (isOrdinaryAdmin)
                 {
-                    roleNames = AdminManager.GetRolesHtml(adminInfo.UserName);
+                    roleNames = AdminManager.GetRoleNames(adminInfo.UserName);
                 }
                 
                 return Ok(new

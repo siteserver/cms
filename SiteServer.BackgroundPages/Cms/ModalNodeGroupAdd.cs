@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -50,28 +50,26 @@ namespace SiteServer.BackgroundPages.Cms
         {
 			var isChanged = false;
 
-            var nodeGroupInfo = new ChannelGroupInfo
-            {
-                GroupName = TbNodeGroupName.Text,
-                SiteId = SiteId,
-                Description = TbDescription.Text
-            };
-
             if (AuthRequest.IsQueryExists("GroupName"))
-			{
-				try
-				{
-                    DataProvider.ChannelGroupDao.Update(nodeGroupInfo);
-                    AuthRequest.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
-					isChanged = true;
-                }
-				catch(Exception ex)
-				{
-                    FailMessage(ex, "栏目组修改失败！");
-				}
-			}
+            {
+                var nodeGroupInfo = ChannelGroupManager.GetChannelGroupInfo(SiteId, AuthRequest.GetQueryString("GroupName"));
+
+                nodeGroupInfo.GroupName = TbNodeGroupName.Text;
+                nodeGroupInfo.Description = TbDescription.Text;
+
+                DataProvider.ChannelGroup.Update(nodeGroupInfo);
+			    AuthRequest.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
+			    isChanged = true;
+            }
 			else
 			{
+			    var nodeGroupInfo = new ChannelGroupInfo
+			    {
+			        GroupName = TbNodeGroupName.Text,
+			        SiteId = SiteId,
+			        Description = TbDescription.Text
+			    };
+
                 var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
 				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
 				{
@@ -79,17 +77,10 @@ namespace SiteServer.BackgroundPages.Cms
 				}
 				else
 				{
-					try
-					{
-						DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
-                        AuthRequest.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
-						isChanged = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        FailMessage(ex, "栏目组添加失败！");
-					}
-				}
+				    DataProvider.ChannelGroup.Insert(nodeGroupInfo);
+				    AuthRequest.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
+				    isChanged = true;
+                }
 			}
 
 			if (isChanged)

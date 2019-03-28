@@ -1,6 +1,6 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userStyle');
+﻿var $url = '/pages/settings/userStyle';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: null,
@@ -9,68 +9,87 @@ var data = {
   relatedIdentities: null
 };
 
-var methods = {
+var $methods = {
   getList: function () {
     var $this = this;
 
-    $api.get(null, function (err, res) {
-      if (err || !res || !res.value) return;
+    $api.get($url).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
       $this.tableName = res.tableName;
       $this.relatedIdentities = res.relatedIdentities;
-
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
       $this.pageLoad = true;
     });
   },
+
   delete: function (attributeName) {
     var $this = this;
 
-    pageUtils.loading(true);
-    $api.delete({
-      attributeName: attributeName
-    }, function (err, res) {
-      pageUtils.loading(false);
-      if (err || !res || !res.value) return;
+    utils.loading(true);
+    $api.delete($url, {
+      params: {
+        attributeName: attributeName
+      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.items = res.value;
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
+
   btnEditClick: function (attributeName) {
-    parent.pageUtils.openLayer({
+    utils.openLayer({
       title: '编辑字段',
-      url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: '../Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
+
   btnValidateClick: function (attributeName) {
-    parent.pageUtils.openLayer({
+    utils.openLayer({
       title: '设置验证规则',
-      url: 'Shared/tableValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
+      url: '../Shared/tableValidate.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities + '&attributeName=' + attributeName
     });
   },
+
   btnAddClick: function () {
-    parent.pageUtils.openLayer({
+    utils.openLayer({
       title: '新增字段',
-      url: 'Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
+      url: '../Shared/tableStyle.cshtml?tableName=' + this.tableName + '&relatedIdentities=' + this.relatedIdentities
     });
   },
+
   btnDeleteClick: function (attributeName) {
     var $this = this;
 
-    pageUtils.alertDelete({
-      title: '删除字段',
-      text: '此操作将删除字段 ' + attributeName + '，确定吗？',
-      callback: function () {
-        $this.delete(attributeName);
-      }
-    });
+    swal2({
+        title: '删除字段',
+        text: '此操作将删除字段 ' + attributeName + '，确定吗？',
+        type: 'question',
+        confirmButtonText: '删 除',
+        confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          $this.delete(attributeName);
+        }
+      });
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getList();
   }

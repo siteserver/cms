@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
 
@@ -33,21 +33,21 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorVideoIsAutoPlay.ToString()},
-                {StlPlayer.PlayBy, siteInfo.Additional.ConfigUEditorVideoPlayBy},
+                {StlPlayer.IsAutoPlay, siteInfo.ConfigUEditorVideoIsAutoPlay.ToString()},
+                {StlPlayer.PlayBy, siteInfo.ConfigUEditorVideoPlayBy},
                 {"style", "width: 333px; height: 333px;" }
             };
-            if (siteInfo.Additional.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
+            if (siteInfo.ConfigUEditorVideoIsImageUrl && !string.IsNullOrEmpty(imageUrl))
             {
                 dict.Add(StlPlayer.ImageUrl, imageUrl);
             }
-            if (siteInfo.Additional.ConfigUEditorVideoIsWidth)
+            if (siteInfo.ConfigUEditorVideoIsWidth)
             {
-                dict.Add(StlPlayer.Width, siteInfo.Additional.ConfigUEditorVideoWidth.ToString());
+                dict.Add(StlPlayer.Width, siteInfo.ConfigUEditorVideoWidth.ToString());
             }
-            if (siteInfo.Additional.ConfigUEditorVideoIsHeight)
+            if (siteInfo.ConfigUEditorVideoIsHeight)
             {
-                dict.Add(StlPlayer.Height, siteInfo.Additional.ConfigUEditorVideoHeight.ToString());
+                dict.Add(StlPlayer.Height, siteInfo.ConfigUEditorVideoHeight.ToString());
             }
 
             return GetInsertHtmlScript(attributeName,
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.Core
             var dict = new Dictionary<string, string>
             {
                 {StlPlayer.PlayUrl, playUrl},
-                {StlPlayer.IsAutoPlay, siteInfo.Additional.ConfigUEditorAudioIsAutoPlay.ToString()},
+                {StlPlayer.IsAutoPlay, siteInfo.ConfigUEditorAudioIsAutoPlay.ToString()},
                 {"style", "width: 400px; height: 40px;" }
             };
 
@@ -100,6 +100,8 @@ namespace SiteServer.CMS.Core
 
         public static string TranslateToHtml(string html)
         {
+            if (string.IsNullOrWhiteSpace(html)) return string.Empty;
+
             var retval = html;
             if (!string.IsNullOrEmpty(retval))
             {

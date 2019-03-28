@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using SiteServer.Utils;
-using SiteServer.CMS.Model;
 using System.Collections.Specialized;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public string GetItemHtml(ELoadingType loadingType, string returnUrl, NameValueCollection additional)
+        public string GetItemHtml(ELoadingType loadingType, string returnUrl, int? onlyAdminId, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
             var parentsCount = _channelInfo.ParentsCount;
@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_channelInfo.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageRedirect.GetRedirectUrlToChannel(_channelInfo.SiteId, _channelInfo.Id)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{PageUtils.GetLoadingUrl(_channelInfo.SiteId, _channelInfo.Id, 0)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (loadingType == ELoadingType.ContentTree)
                 {
-                    var linkUrl = CmsPages.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
+                    var linkUrl = AdminPagesUtils.Cms.GetContentsUrl(_channelInfo.SiteId, _channelInfo.Id);
                     if (!string.IsNullOrEmpty(additional?["linkUrl"]))
                     {
                         linkUrl = PageUtils.AddQueryStringIfNotExists(additional["linkUrl"], new NameValueCollection
@@ -141,9 +141,9 @@ namespace SiteServer.BackgroundPages.Core
             {
                 htmlBuilder.Append("&nbsp;");
 
-                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
+                htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_channelInfo));
 
-                var count = ContentManager.GetCount(_siteInfo, _channelInfo);
+                var count = ContentManager.GetCount(_siteInfo, _channelInfo, onlyAdminId);
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

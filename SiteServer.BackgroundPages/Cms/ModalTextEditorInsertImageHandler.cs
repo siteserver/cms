@@ -1,6 +1,6 @@
 ﻿using System.IO;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms

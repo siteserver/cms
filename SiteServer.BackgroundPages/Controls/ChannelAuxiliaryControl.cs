@@ -1,16 +1,17 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
 	public class ChannelAuxiliaryControl : Control
 	{
-        public IAttributes Attributes { get; set; }
+        public IDictionary<string, object> Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Controls
 
 		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (styleInfo.Type == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,12 +23,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			if (AuthRequest.IsQueryExists("Delete"))
+			if (AuthRequest.IsQueryExists("DeleteById"))
 			{
                 var relatedFieldId = AuthRequest.GetQueryInt("RelatedFieldID");
 
-                var relatedFieldName = DataProvider.RelatedFieldDao.GetTitle(relatedFieldId);
-                DataProvider.RelatedFieldDao.Delete(relatedFieldId);
+                var relatedFieldName = DataProvider.RelatedField.GetTitle(relatedFieldId);
+                DataProvider.RelatedField.Delete(relatedFieldId);
                 AuthRequest.AddSiteLog(SiteId, "删除联动字段", $"联动字段:{relatedFieldName}");
                 SuccessDeleteMessage();
             }
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            RptContents.DataSource = DataProvider.RelatedFieldDao.GetRelatedFieldInfoList(SiteId);
+            RptContents.DataSource = DataProvider.RelatedField.GetRelatedFieldInfoList(SiteId);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
 
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PageUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
                     {
                         {"RelatedFieldID", relatedFieldInfo.Id.ToString()},
-                        {"Delete", true.ToString()}
+                        {"DeleteById", true.ToString()}
                     }), "确认删除此联动字段吗？")}"">删除</a>";
         }
 	}

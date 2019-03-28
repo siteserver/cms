@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -75,14 +73,14 @@ namespace SiteServer.BackgroundPages.Cms
                 var oldDirectoryPath = string.Empty;
                 var newDirectoryPath = string.Empty;
 
-                if (_specialInfo.Title != title && DataProvider.SpecialDao.IsTitleExists(SiteId, title))
+                if (_specialInfo.Title != title && DataProvider.Special.IsTitleExists(SiteId, title))
                 {
                     FailMessage("专题修改失败，专题名称已存在！");
                     return;
                 }
                 if (_specialInfo.Url != url)
                 {
-                    if (DataProvider.SpecialDao.IsUrlExists(SiteId, url))
+                    if (DataProvider.Special.IsUrlExists(SiteId, url))
                     {
                         FailMessage("专题修改失败，专题访问地址已存在！");
                         return;
@@ -94,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 _specialInfo.Title = title;
                 _specialInfo.Url = url;
-                DataProvider.SpecialDao.Update(_specialInfo);
+                DataProvider.Special.Update(_specialInfo);
 
                 if (oldDirectoryPath != newDirectoryPath)
                 {
@@ -116,12 +114,12 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                if (DataProvider.SpecialDao.IsTitleExists(SiteId, title))
+                if (DataProvider.Special.IsTitleExists(SiteId, title))
                 {
                     FailMessage("专题添加失败，专题名称已存在！");
                     return;
                 }
-                if (DataProvider.SpecialDao.IsUrlExists(SiteId, url))
+                if (DataProvider.Special.IsUrlExists(SiteId, url))
                 {
                     FailMessage("专题添加失败，专题访问地址已存在！");
                     return;
@@ -151,7 +149,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AddDate = DateTime.Now
                 };
 
-                DataProvider.SpecialDao.Insert(specialInfo);
+                DataProvider.Special.Insert(specialInfo);
             }
 
             LayerUtils.Close(Page);

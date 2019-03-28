@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.CMS.Api;
-using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -143,7 +144,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
-            //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
+            //var theChannelIdList = DataProvider.Channel.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.All, groupChannel, groupChannelNot);
             var theChannelIdList = ChannelManager.GetChannelIdList(channel, EScopeType.All, groupChannel, groupChannelNot, string.Empty);
             var isLastNodeArray = new bool[theChannelIdList.Count];
             var channelIdList = new List<int>();
@@ -158,7 +159,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
-                var nodeInfo = new ChannelInfo(theChannelInfo);
+                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -259,9 +260,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_topChannelId == _nodeInfo.Id)
                     {
-                        _nodeInfo.IsLastNode = true;
+                        _nodeInfo.LastNode = true;
                     }
-                    if (_nodeInfo.IsLastNode == false)
+                    if (_nodeInfo.LastNode == false)
                     {
                         _isLastNodeArray[_level] = false;
                     }
@@ -288,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_isShowTreeLine)
                     {
-                        if (_nodeInfo.IsLastNode)
+                        if (_nodeInfo.LastNode)
                         {
                             if (_hasChildren)
                             {
@@ -338,7 +339,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_isShowTreeLine)
                     {
-                        if (_nodeInfo.IsLastNode)
+                        if (_nodeInfo.LastNode)
                         {
                             htmlBuilder.Append(
                                 _hasChildren
@@ -370,7 +371,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 htmlBuilder.Append("&nbsp;");
 
                 var nodeName = _nodeInfo.ChannelName;
-                if ((_pageInfo.TemplateInfo.TemplateType == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == TemplateType.ContentTemplate) && _pageInfo.PageChannelId == _nodeInfo.Id)
+                if ((_pageInfo.TemplateInfo.Type == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.Type == TemplateType.ContentTemplate) && _pageInfo.PageChannelId == _nodeInfo.Id)
                 {
                     nodeName = string.Format(_currentFormatString, nodeName);
                 }
@@ -390,7 +391,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_pageInfo.SiteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }
@@ -592,13 +593,13 @@ var stltree_isNodeTree = {isNodeTree};
 
             htmlBuilder.Append(@"<table border=""0"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">");
 
-            //var theChannelIdList = DataProvider.ChannelDao.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
+            //var theChannelIdList = DataProvider.Channel.GetIdListByScopeType(channel.ChannelId, channel.ChildrenCount, EScopeType.SelfAndChildren, groupChannel, groupChannelNot);
             var theChannelIdList = ChannelManager.GetChannelIdList(channel, EScopeType.SelfAndChildren, groupChannel, groupChannelNot, string.Empty);
 
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
-                var nodeInfo = new ChannelInfo(theChannelInfo);
+                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -720,7 +721,7 @@ var stltree_isNodeTree = {isNodeTree};
 
                 if (_isShowContentNum)
                 {
-                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo);
+                    var count = ContentManager.GetCount(_siteInfo, _nodeInfo, true);
                     htmlBuilder.Append("&nbsp;");
                     htmlBuilder.Append($"<span style=\"font-size:8pt;font-family:arial\">({count})</span>");
                 }

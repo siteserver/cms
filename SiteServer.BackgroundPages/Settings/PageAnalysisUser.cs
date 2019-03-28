@@ -4,8 +4,8 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Caches;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Settings
             DdlXType.SelectedValue = EStatictisXTypeUtils.GetValue(_xType);
 
             //用户添加量统计
-            var trackingDayDict = DataProvider.UserDao.GetTrackingDictionary( TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
+            var trackingDayDict = DataProvider.User.GetTrackingDictionary( TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateFrom")), TranslateUtils.ToDateTime(AuthRequest.GetQueryString("DateTo"), DateTime.Now), EStatictisXTypeUtils.GetValue(_xType));
 
             var now = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
             for (var i = 0; i < _count; i++)

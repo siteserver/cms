@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Model;
+using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
@@ -73,9 +73,9 @@ namespace SiteServer.Cli.Updater.Tables
             ConvertValueDict = ConvertValueDict
         };
 
-        private static readonly string NewTableName = DataProvider.SiteDao.TableName;
+        private static readonly string NewTableName = DataProvider.Site.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.SiteDao.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.Site.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
@@ -84,7 +84,7 @@ namespace SiteServer.Cli.Updater.Tables
                 {nameof(SiteInfo.SiteName), nameof(PublishmentSystemName)},
                 {nameof(SiteInfo.TableName), nameof(AuxiliaryTableForContent)},
                 {nameof(SiteInfo.SiteDir), nameof(PublishmentSystemDir)},
-                {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
+                {nameof(SiteInfo.Root), nameof(IsHeadquarters)},
                 {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };
 

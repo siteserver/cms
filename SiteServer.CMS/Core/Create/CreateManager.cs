@@ -1,7 +1,9 @@
-﻿using SiteServer.CMS.DataCache;
+﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core.Create
@@ -38,11 +40,12 @@ namespace SiteServer.CMS.Core.Create
             }
             else if (createType == ECreateType.Content)
             {
-                var tuple = DataProvider.ContentDao.GetValue(ChannelManager.GetTableName(
-                    SiteManager.GetSiteInfo(siteId), channelId), contentId, ContentAttribute.Title);
-                if (tuple != null)
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
+                var title = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.Title);
+                if (!string.IsNullOrEmpty(title))
                 {
-                    name = tuple.Item2;
+                    name = title;
                     pageCount = 1;
                 }
             }
@@ -95,27 +98,27 @@ namespace SiteServer.CMS.Core.Create
         {
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, templateId);
 
-            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
+            if (templateInfo.Type == TemplateType.IndexPageTemplate)
             {
                 CreateChannel(siteId, siteId);
             }
-            else if (templateInfo.TemplateType == TemplateType.ChannelTemplate)
+            else if (templateInfo.Type == TemplateType.ChannelTemplate)
             {
-                var channelIdList = DataProvider.ChannelDao.GetChannelIdList(templateInfo);
+                var channelIdList = DataProvider.Channel.GetChannelIdList(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     CreateChannel(siteId, channelId);
                 }
             }
-            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
+            else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                var channelIdList = DataProvider.ChannelDao.GetChannelIdList(templateInfo);
+                var channelIdList = DataProvider.Channel.GetChannelIdList(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     CreateAllContent(siteId, channelId);
                 }
             }
-            else if (templateInfo.TemplateType == TemplateType.FileTemplate)
+            else if (templateInfo.Type == TemplateType.FileTemplate)
             {
                 CreateFile(siteId, templateId);
             }
@@ -186,8 +189,9 @@ namespace SiteServer.CMS.Core.Create
             if (siteId <= 0 || channelId <= 0) return;
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.CreateChannelIdsIfContentChanged);
-            if (channelInfo.Additional.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
+
+            var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.CreateChannelIdsIfContentChanged);
+            if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
                 channelIdList.Add(channelId);
             }

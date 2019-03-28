@@ -1,6 +1,11 @@
-var $api = new utils.Api('/v1/users/actions/login');
-var $captchaGetUrl = utils.getApiUrl('/v1/captcha/LOGIN-CAPTCHA');
-var $captchaCheckApi = new utils.Api('/v1/captcha/LOGIN-CAPTCHA/actions/check');
+var $url = '/v1/users/actions/login';
+var $urlGetCaptcha = '/v1/captcha/LOGIN-CAPTCHA';
+var $urlCaptchaCheck = '/v1/captcha/LOGIN-CAPTCHA/actions/check';
+
+var $api = axios.create({
+  baseURL: utils.getApiUrl(),
+  withCredentials: true
+});
 
 if (window.top != self) {
   window.top.location = self.location;
@@ -20,33 +25,36 @@ var data = {
 var methods = {
   load: function (pageConfig) {
     this.pageConfig = pageConfig;
+    if (this.pageConfig.isHomeBackground && this.pageConfig.homeBackgroundUrl) {
+      $('body').css({
+        'background-image': 'url(' + this.pageConfig.homeBackgroundUrl + ')',
+        'background-size': 'cover'
+      });
+    }
     this.reload();
   },
 
   reload: function () {
     this.captcha = '';
     this.pageSubmit = false;
-    this.captchaUrl = $captchaGetUrl + '?r=' + new Date().getTime();
+    this.captchaUrl = utils.getApiUrl($urlGetCaptcha) + '?r=' + new Date().getTime();
   },
 
   checkCaptcha: function () {
     var $this = this;
 
     utils.loading(true);
-    $captchaCheckApi.post({
+    $api.post($urlCaptchaCheck, {
       captcha: $this.captcha
-    }, function (err, res) {
-      utils.loading(false);
-      $this.reload();
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    }).then(function (response) {
+      var res = response.data;
 
       $this.login();
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
+      $this.reload();
     });
   },
 
@@ -54,23 +62,19 @@ var methods = {
     var $this = this;
 
     utils.loading(true);
-    $api.post({
+    $api.post($url, {
       account: $this.account,
       password: md5($this.password),
       isAutoLogin: $this.isAutoLogin
-    }, function (err, res) {
-      utils.loading(false);
-      if (err) {
-        $this.pageAlert = {
-          type: 'danger',
-          html: err.message
-        };
-        return;
-      }
+    }).then(function (response) {
+      var res = response.data;
 
       utils.setToken(res.accessToken, res.expiresAt);
-
       location.href = utils.getQueryString('returnUrl') || '../index.html';
+    }).catch(function (error) {
+      $this.pageAlert = utils.getPageAlert(error);
+    }).then(function () {
+      utils.loading(false);
     });
   },
 

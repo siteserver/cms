@@ -8,28 +8,28 @@ namespace SiteServer.CMS.Core
 	{
 		public static TemplateType GetEnumType(string typeStr)
 		{
-			var retval = TemplateType.IndexPageTemplate;
+			var retVal = TemplateType.FileTemplate;
 
 			if (Equals(TemplateType.ChannelTemplate, typeStr))
 			{
-				retval = TemplateType.ChannelTemplate;
+				retVal = TemplateType.ChannelTemplate;
 			}
 			else if (Equals(TemplateType.IndexPageTemplate, typeStr))
 			{
-				retval = TemplateType.IndexPageTemplate;
+				retVal = TemplateType.IndexPageTemplate;
 			}
 			else if (Equals(TemplateType.ContentTemplate, typeStr))
 			{
-				retval = TemplateType.ContentTemplate;
+				retVal = TemplateType.ContentTemplate;
 			}
 			else if (Equals(TemplateType.FileTemplate, typeStr))
 			{
-				retval = TemplateType.FileTemplate;
+				retVal = TemplateType.FileTemplate;
 			}
-			return retval;
+			return retVal;
 		}
 
-		public static bool Equals(TemplateType type, string typeStr)
+	    private static bool Equals(TemplateType type, string typeStr)
 		{
 			if (string.IsNullOrEmpty(typeStr)) return false;
 			if (string.Equals(type.Value.ToLower(), typeStr.ToLower()))
