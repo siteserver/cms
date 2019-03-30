@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Datory;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Core;
+using SiteServer.Utils;
 using SqlKata;
 
 namespace SiteServer.CMS.Tests.Database.Mocks
 {
     public class TestTableRepository : GenericRepository<TestTableInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public override bool UseLegacyPagination => DatabaseApi.Instance.UseLegacyPagination;
+
         public new Query Q => base.Q;
 
         public int Insert(TestTableInfo dataInfo)

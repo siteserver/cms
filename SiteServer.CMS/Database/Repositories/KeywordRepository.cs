@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
-using SiteServer.CMS.Database.Core;
+using Datory;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
     public class KeywordRepository : GenericRepository<KeywordInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Keyword = nameof(KeywordInfo.Keyword);

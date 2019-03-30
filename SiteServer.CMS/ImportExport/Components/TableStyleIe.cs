@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Atom.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils.Atom.Atom.Core;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
@@ -23,7 +23,7 @@ namespace SiteServer.CMS.ImportExport.Components
 		{
             var allRelatedIdentities = ChannelManager.GetChannelIdList(siteId);
             allRelatedIdentities.Insert(0, 0);
-            var tableStyleInfoWithItemsDict = TableStyleManager.GetTableStyleInfoWithItemsDictinary(tableName, allRelatedIdentities);
+            var tableStyleInfoWithItemsDict = TableStyleManager.GetTableStyleInfoWithItemsDictionary(tableName, allRelatedIdentities);
 		    if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;
 
 		    var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
@@ -166,7 +166,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
                 var attributeName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.AttributeName));
-                var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)), 0);
+                var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)));
                 var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DisplayName));
                 var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.HelpText));
                 var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.VisibleInList)));
@@ -249,7 +249,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)), 0);
+                        var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.Taxis)));
                         var displayName = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.DisplayName));
                         var helpText = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.HelpText));
                         var isVisibleInList = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(TableStyleInfo.VisibleInList)));

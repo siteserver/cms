@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
-using SiteServer.CMS.Database.Core;
+using Datory;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SqlKata;
@@ -9,6 +10,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class TagRepository : GenericRepository<TagInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string SiteId = nameof(TagInfo.SiteId);
@@ -109,7 +113,7 @@ namespace SiteServer.CMS.Database.Repositories
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            return SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+            return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, "siteserver_Tag", new List<string>
             {
                 nameof(TagInfo.Id),
                 nameof(TagInfo.SiteId),
@@ -130,7 +134,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    orderString = "ORDER BY UseNum DESC";
             //}
 
-            //var sqlString = SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+            //var sqlString = DatorySql.GetSqlString("siteserver_Tag", new List<string>
             //{
             //    nameof(TagInfo.Id),
             //    nameof(TagInfo.SiteId),
@@ -162,7 +166,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public IList<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
-            //var sqlString = SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+            //var sqlString = DatorySql.GetSqlString("siteserver_Tag", new List<string>
             //    {
             //        nameof(TagInfo.Tag),
             //        nameof(TagInfo.UseNum)
@@ -518,7 +522,7 @@ namespace SiteServer.CMS.Database.Repositories
 //                orderString = "ORDER BY UseNum DESC";
 //            }
 
-//            return SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+//            return DatorySql.GetSqlString("siteserver_Tag", new List<string>
 //            {
 //                nameof(TagInfo.Id),
 //                nameof(TagInfo.SiteId),
@@ -539,7 +543,7 @@ namespace SiteServer.CMS.Database.Repositories
 //                orderString = "ORDER BY UseNum DESC";
 //            }
 
-//            var sqlString = SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+//            var sqlString = DatorySql.GetSqlString("siteserver_Tag", new List<string>
 //            {
 //                nameof(TagInfo.Id),
 //                nameof(TagInfo.SiteId),
@@ -563,7 +567,7 @@ namespace SiteServer.CMS.Database.Repositories
 
 //        public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
 //        {
-//            var sqlString = SqlDifferences.GetSqlString("siteserver_Tag", new List<string>
+//            var sqlString = DatorySql.GetSqlString("siteserver_Tag", new List<string>
 //                {
 //                    nameof(TagInfo.Tag),
 //                    nameof(TagInfo.UseNum)

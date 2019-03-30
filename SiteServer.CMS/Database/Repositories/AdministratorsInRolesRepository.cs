@@ -1,11 +1,16 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
     public class AdministratorsInRolesRepository : GenericRepository<AdministratorsInRolesInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         //public override string TableName => "siteserver_AdministratorsInRoles";
 
         //public override List<TableColumn> TableColumns => new List<TableColumn>

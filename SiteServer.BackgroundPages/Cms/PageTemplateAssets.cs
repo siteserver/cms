@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -34,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAssets), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateAssets), new NameValueCollection
             {
                 {"type", type}
             });
@@ -44,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "type");
+            FxUtils.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
             var tips = string.Empty;
 

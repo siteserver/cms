@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Core.LitJson;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
-using SiteServer.Utils.LitJson;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,13 +20,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入音频", FxUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
+        public string UploadUrl => FxUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
         {
             {"upload", true.ToString()}
         });

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,14 +17,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageSpecial), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageSpecial), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             var keyword = AuthRequest.GetQueryString("keyword");
@@ -50,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var specialInfo = SpecialManager.GetSpecialInfo(SiteId, specialId);
                     var directoryPath = SpecialManager.GetSpecialDirectoryPath(SiteInfo, specialInfo.Url);
                     var zipFilePath = SpecialManager.GetSpecialZipFilePath(directoryPath);
-                    PageUtils.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
+                    FxUtils.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
                     return;
                 }
             }

@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteUrlWebConfig), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageSiteUrlWebConfig), new NameValueCollection
             {
                 {
                     "SiteId", siteId.ToString()
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             LtlSiteName.Text = SiteInfo.SiteName;
 
-            EBooleanUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
+            FxUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
             ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.IsSeparatedWeb.ToString());
             PhSeparatedWeb.Visible = SiteInfo.IsSeparatedWeb;
             TbSeparatedWebUrl.Text = PageUtils.AddEndSlashToUrl(SiteInfo.SeparatedWebUrl);
@@ -64,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageSiteUrlWeb.GetRedirectUrl());
+            FxUtils.Redirect(PageSiteUrlWeb.GetRedirectUrl());
         }
     }
 }

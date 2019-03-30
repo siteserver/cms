@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
@@ -8,6 +9,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class SitePermissionsRepository : GenericRepository<SitePermissionsInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string RoleName = nameof(SitePermissionsInfo.RoleName);

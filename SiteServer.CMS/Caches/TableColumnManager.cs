@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -32,7 +34,7 @@ namespace SiteServer.CMS.Caches
                 //FileWatcher.UpdateCacheFile();
             }
 
-            private static void Update(Dictionary<string, List<TableColumn>> allDict, List<TableColumn> list,
+            private static void Update(Dictionary<string, List<DatoryColumn>> allDict, List<DatoryColumn> list,
                 string key)
             {
                 lock (LockObject)
@@ -41,37 +43,37 @@ namespace SiteServer.CMS.Caches
                 }
             }
 
-            private static Dictionary<string, List<TableColumn>> GetAllDictionary()
+            private static Dictionary<string, List<DatoryColumn>> GetAllDictionary()
             {
-                var allDict = DataCacheManager.Get<Dictionary<string, List<TableColumn>>>(CacheKey);
+                var allDict = DataCacheManager.Get<Dictionary<string, List<DatoryColumn>>>(CacheKey);
                 if (allDict != null) return allDict;
 
-                allDict = new Dictionary<string, List<TableColumn>>();
+                allDict = new Dictionary<string, List<DatoryColumn>>();
                 DataCacheManager.InsertHours(CacheKey, allDict, 24);
                 return allDict;
             }
 
-            public static List<TableColumn> GetTableColumnInfoList(string tableName)
+            public static List<DatoryColumn> GetTableColumnInfoList(string tableName)
             {
                 var allDict = GetAllDictionary();
 
-                List<TableColumn> list;
+                List<DatoryColumn> list;
                 allDict.TryGetValue(tableName, out list);
 
                 if (list != null) return list;
 
-                list = DatabaseApi.Instance.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
+                list = DatorySql.GetTableColumns(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
         }
 
-        public static List<TableColumn> GetTableColumnInfoList(string tableName)
+        public static List<DatoryColumn> GetTableColumnInfoList(string tableName)
         {
             return TableColumnManagerCache.GetTableColumnInfoList(tableName);
         }
 
-        public static List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList)
+        public static List<DatoryColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList)
         {
             var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
             if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
@@ -80,7 +82,7 @@ namespace SiteServer.CMS.Caches
                 !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
         }
 
-        public static List<TableColumn> GetTableColumnInfoList(string tableName, DataType excludeDataType)
+        public static List<DatoryColumn> GetTableColumnInfoList(string tableName, DataType excludeDataType)
         {
             var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
 
@@ -88,7 +90,7 @@ namespace SiteServer.CMS.Caches
                 tableColumnInfo.DataType != excludeDataType).ToList();
         }
 
-        public static TableColumn GetTableColumnInfo(string tableName, string attributeName)
+        public static DatoryColumn GetTableColumnInfo(string tableName, string attributeName)
         {
             var list = TableColumnManagerCache.GetTableColumnInfoList(tableName);
             return list.FirstOrDefault(tableColumnInfo =>

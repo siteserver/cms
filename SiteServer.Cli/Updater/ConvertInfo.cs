@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater
@@ -9,7 +10,7 @@ namespace SiteServer.Cli.Updater
 
         public string NewTableName { get; set; }
 
-        public List<TableColumn> NewColumns { get; set; }
+        public List<DatoryColumn> NewColumns { get; set; }
 
         public Dictionary<string, string> ConvertKeyDict { get; set; }
 

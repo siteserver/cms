@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 

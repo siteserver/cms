@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -57,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript(string.IsNullOrEmpty(attributeName) ? "新增字段" : "修改字段", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript(string.IsNullOrEmpty(attributeName) ? "新增字段" : "修改字段", FxUtils.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},

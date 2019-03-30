@@ -6,8 +6,6 @@ using SiteServer.CMS.Caches.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -23,21 +21,21 @@ namespace SiteServer.CMS.Caches
 
             public static List<KeyValuePair<string, TableStyleInfo>> GetAllTableStyles()
             {
-                var retval = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
-                    if (retval == null)
+                    retVal = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
+                    if (retVal == null)
                     {
-                        retval = DataProvider.TableStyle.GetAllTableStyles();
+                        retVal = DataProvider.TableStyle.GetAllTableStyles();
 
-                        DataCacheManager.Insert(CacheKey, retval);
+                        DataCacheManager.Insert(CacheKey, retVal);
                     }
                 }
 
-                return retval;
+                return retVal;
             }
 
             public static void Clear()
@@ -259,7 +257,7 @@ namespace SiteServer.CMS.Caches
             return entries.Any(x => x.Key == key);
         }
 
-        public static Dictionary<string, List<TableStyleInfo>> GetTableStyleInfoWithItemsDictinary(string tableName, List<int> allRelatedIdentities)
+        public static Dictionary<string, List<TableStyleInfo>> GetTableStyleInfoWithItemsDictionary(string tableName, List<int> allRelatedIdentities)
         {
             var dict = new Dictionary<string, List<TableStyleInfo>>();
 

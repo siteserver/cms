@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,12 +18,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToAdd(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加标签", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), null), 600, 360);
+            return LayerUtils.GetOpenScript("添加标签", FxUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), null), 600, 360);
         }
 
         public static string GetOpenWindowStringToEdit(int siteId, string tagName)
         {
-            return LayerUtils.GetOpenScript("修改标签", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改标签", FxUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"TagName", tagName}
             }), 600, 360);

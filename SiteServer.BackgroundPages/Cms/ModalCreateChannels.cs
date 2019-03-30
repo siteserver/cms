@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -16,14 +18,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", PageUtils.GetCmsUrl(siteId, nameof(ModalCreateChannels), null), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", FxUtils.GetCmsUrl(siteId, nameof(ModalCreateChannels), null), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
+            FxUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
             _channelIdCollection = AuthRequest.GetQueryString("ChannelIDCollection");
 		}

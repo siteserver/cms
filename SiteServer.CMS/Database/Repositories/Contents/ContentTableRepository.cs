@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Caches;
-using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories.Contents
 {
@@ -10,9 +10,12 @@ namespace SiteServer.CMS.Database.Repositories.Contents
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        public int SiteId { get; }
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
         public override string TableName { get; }
-        public override List<TableColumn> TableColumns { get; }
+        public override List<DatoryColumn> TableColumns { get; }
+
+        public int SiteId { get; }
 
         public static List<ContentTableRepository> GetContentRepositoryList(SiteInfo siteInfo)
         {

@@ -1,4 +1,6 @@
-﻿namespace SiteServer.Plugin
+﻿using Datory;
+
+namespace SiteServer.Plugin
 {
     /// <summary>
     /// 封装系统上下文相关信息

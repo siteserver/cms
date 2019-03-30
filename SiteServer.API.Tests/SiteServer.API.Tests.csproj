@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.API.Tests</RootNamespace>
     <AssemblyName>SiteServer.API.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -22,6 +22,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,12 +101,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Datory\Datory.csproj">
+      <Project>{06073655-ed0d-4b64-a3aa-c1e3eac4c4fa}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Project>{c22f9b9e-9501-476b-9905-6082b8f68b3a}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Web\SiteServer.API.csproj">

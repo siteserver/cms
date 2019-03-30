@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.V1;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -43,7 +44,7 @@ namespace SiteServer.API.Controllers.V1
                 }
                 var password = rest.GetPostString("password");
 
-                var userId = DataProvider.User.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
+                var userId = DataProvider.User.Insert(userInfo, password, FxUtils.GetIpAddress(), out var errorMessage);
                 if (userId == 0)
                 {
                     return BadRequest(errorMessage);
@@ -168,7 +169,7 @@ namespace SiteServer.API.Controllers.V1
             var userInfo = UserManager.GetUserInfoByUserId(id);
 
             var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : UserManager.DefaultAvatarUrl;
-            avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
+            avatarUrl = FxUtils.AddProtocolToUrl(avatarUrl);
 
             return Ok(new
             {

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -20,7 +22,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
-            return LayerUtils.GetOpenScript("添加区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加区域", FxUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), 460, 360);
@@ -28,7 +30,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToEdit(int areaId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("修改区域", PageUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改区域", FxUtils.GetSettingsUrl(nameof(ModalAreaAdd), new NameValueCollection
             {
                 {"AreaID", areaId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}

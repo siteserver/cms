@@ -5,6 +5,7 @@ using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Sys.Editors;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls

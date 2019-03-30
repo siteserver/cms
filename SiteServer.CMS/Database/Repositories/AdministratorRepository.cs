@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
@@ -16,6 +17,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class AdministratorRepository : GenericRepository<AdministratorInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(AdministratorInfo.Id);

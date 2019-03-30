@@ -1,8 +1,7 @@
 using System;
+using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.Database.Wrapper;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models
 {
@@ -48,7 +47,7 @@ namespace SiteServer.CMS.Database.Models
             set => IsLockedOut = value.ToString();
         }
 
-        [TableColumn]
+        [TableColumn(Text = true)]
         public string SiteIdCollection { get; set; }
 
         [TableColumn]
@@ -69,7 +68,7 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public string Email { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string AvatarUrl { get; set; }
     }
 }

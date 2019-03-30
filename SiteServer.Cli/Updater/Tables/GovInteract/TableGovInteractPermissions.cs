@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.Plugin;
 
@@ -33,26 +34,26 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
 
         private static readonly string NewTableName = "ss_govinteract_permissions";
 
-        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "UserName",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Permissions",
                 DataType = DataType.Text

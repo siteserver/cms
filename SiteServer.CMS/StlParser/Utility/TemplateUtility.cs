@@ -6,6 +6,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -344,19 +345,19 @@ namespace SiteServer.CMS.StlParser.Utility
 			myDataList.Width = listInfo.Width;
             if (!string.IsNullOrEmpty(listInfo.Align))
             {
-                myDataList.HorizontalAlign = TranslateUtils.ToHorizontalAlign(listInfo.Align);
+                myDataList.HorizontalAlign = FxUtils.ToHorizontalAlign(listInfo.Align);
             }
 			myDataList.ItemStyle.Height = listInfo.ItemHeight;
 			myDataList.ItemStyle.Width = listInfo.ItemWidth;
             myDataList.ItemStyle.HorizontalAlign = HorizontalAlign.Left;
             if (!string.IsNullOrEmpty(listInfo.ItemAlign))
             {
-                myDataList.ItemStyle.HorizontalAlign = TranslateUtils.ToHorizontalAlign(listInfo.ItemAlign);
+                myDataList.ItemStyle.HorizontalAlign = FxUtils.ToHorizontalAlign(listInfo.ItemAlign);
             }
             myDataList.ItemStyle.VerticalAlign = VerticalAlign.Top;
             if (!string.IsNullOrEmpty(listInfo.ItemVerticalAlign))
             {
-                myDataList.ItemStyle.VerticalAlign = TranslateUtils.ToVerticalAlign(listInfo.ItemVerticalAlign);
+                myDataList.ItemStyle.VerticalAlign = FxUtils.ToVerticalAlign(listInfo.ItemVerticalAlign);
             }
             if (!string.IsNullOrEmpty(listInfo.ItemClass))
             {

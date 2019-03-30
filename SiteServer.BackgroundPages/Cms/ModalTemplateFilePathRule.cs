@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("页面生成规则",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateFilePathRule), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalTemplateFilePathRule), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }));
@@ -40,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             if (IsPostBack) return;

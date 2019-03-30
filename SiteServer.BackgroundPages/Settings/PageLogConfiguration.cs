@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
-            EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
+            FxUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
             ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.Instance.IsTimeThreshold.ToString());
             TbTime.Text = ConfigManager.Instance.TimeThreshold.ToString();
 

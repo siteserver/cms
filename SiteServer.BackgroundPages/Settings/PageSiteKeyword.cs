@@ -9,6 +9,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -76,7 +77,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlEdit.Text =
                 $@"<a href='javascript:;' onclick=""{ModalKeywordAdd.GetOpenWindowStringToEdit(keywordId)}"">编辑</a>";
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteKeyword), new NameValueCollection
+            var urlDelete = FxUtils.GetSettingsUrl(nameof(PageSiteKeyword), new NameValueCollection
             {
                 {"DeleteById", "True"},
                 {"KeywordID", keywordId.ToString()}
@@ -106,7 +107,7 @@ namespace SiteServer.BackgroundPages.Settings
             var filePath = PathUtils.GetTemporaryFilesPath("敏感词.txt");
             FileUtils.DeleteFileIfExists(filePath);
             FileUtils.WriteText(filePath, ECharset.utf_8, sbContent.ToString());
-            PageUtils.Download(Page.Response, filePath);
+            FxUtils.Download(Page.Response, filePath);
         }
     }
 }

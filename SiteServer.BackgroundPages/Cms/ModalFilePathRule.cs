@@ -2,8 +2,10 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, bool isChannel, string textBoxclientId)
         {
-            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", FxUtils.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"IsChannel", isChannel.ToString()},

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.Plugin;
 
@@ -64,76 +65,76 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
 
         private static readonly string NewTableName = "ss_govpublic_category";
 
-        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ClassCode",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "CategoryName",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "CategoryCode",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ParentId",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ParentsPath",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ParentsCount",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ChildrenCount",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IsLastNode",
                 DataType = DataType.Boolean
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "AddDate",
                 DataType = DataType.DateTime
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Summary",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ContentNum",
                 DataType = DataType.Integer

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -23,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScript("设置显示项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置显示项", FxUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }));
@@ -33,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
 

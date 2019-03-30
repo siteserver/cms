@@ -11,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -138,7 +139,7 @@ namespace SiteServer.API.Controllers.Preview
                 {
                     if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
                     {
-                        PageUtils.Redirect(nodeInfo.LinkUrl);
+                        FxUtils.Redirect(nodeInfo.LinkUrl);
                         return null;
                     }
                 }
@@ -283,7 +284,7 @@ namespace SiteServer.API.Controllers.Preview
                 var linkUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.LinkUrl);
                 if (!string.IsNullOrEmpty(linkUrl))
                 {
-                    PageUtils.Redirect(linkUrl);
+                    FxUtils.Redirect(linkUrl);
                     return null;
                 }
 

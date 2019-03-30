@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Wrapper;
+using Datory;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models

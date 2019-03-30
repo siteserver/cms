@@ -3,6 +3,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Dispatcher;
 using System.Web.Routing;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.API

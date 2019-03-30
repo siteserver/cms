@@ -1,4 +1,5 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 		    if (!string.IsNullOrEmpty(Href))
 		    {
-                writer.Write($@"<link rel=""stylesheet"" href=""{(Href.StartsWith("~") ? PageUtils.ParseNavigationUrl(Href) : PageUtils.GetAdminUrl(Href))}"" type=""text/css"" />");
+                writer.Write($@"<link rel=""stylesheet"" href=""{(Href.StartsWith("~") ? FxUtils.ParseNavigationUrl(Href) : FxUtils.GetAdminUrl(Href))}"" type=""text/css"" />");
             }
 		}
 	}

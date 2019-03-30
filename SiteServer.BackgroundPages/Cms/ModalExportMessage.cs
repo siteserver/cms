@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
             string exportType, string contentIdCollection, string displayAttributes, bool isPeriods,
             string startDate, string endDate, ETriState checkedState)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                     {
                         {"channelId", channelId.ToString()},
                         {"ExportType", exportType},
@@ -46,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToChannel(int siteId, string checkBoxId, string alertString)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"ExportType", ExportTypeChannel}
                 }), checkBoxId, alertString, Width, Height);
@@ -55,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToSingleTableStyle(string tableName, int siteId, int relatedIdentity)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle},
@@ -66,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToRelatedField(int siteId, int relatedFieldId)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"RelatedFieldID", relatedFieldId.ToString()},
                     {"ExportType", ExportTypeRelatedField}
@@ -76,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToExport(int siteId, string exportType)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"ExportType", exportType}
                 }), Width, Height);

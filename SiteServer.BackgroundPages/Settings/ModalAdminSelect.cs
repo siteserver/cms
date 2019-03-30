@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetShowPopWinString(int departmentId, string scriptName)
         {
-            return LayerUtils.GetOpenScript("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("管理员选择", FxUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()},
                 {"scriptName", scriptName}
@@ -31,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
 		{
             _departmentId = AuthRequest.GetQueryInt("departmentID");
             _scriptName = AuthRequest.GetQueryString("ScriptName");
-		    var url = PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+		    var url = FxUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"scriptName", _scriptName}
             });
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var ltlUrl = e.Item.FindControl("ltlUrl") as Literal;
 
-            var url = PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            var url = FxUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"scriptName", _scriptName},
                 {"UserName", userName}

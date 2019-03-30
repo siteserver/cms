@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int relatedFieldId)
         {
-            return LayerUtils.GetOpenScript("修改联动字段", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改联动字段", FxUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString()}
             }), 550, 550);
@@ -38,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加联动字段", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), null), 550, 550);
+            return LayerUtils.GetOpenScript("添加联动字段", FxUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), null), 550, 550);
         }
 
 		public void Page_Load(object sender, EventArgs e)

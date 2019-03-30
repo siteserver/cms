@@ -7,6 +7,8 @@ using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using System.Collections.Generic;
 using SiteServer.CMS.Apis;
+using Datory;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -38,7 +40,7 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (Param.ControlToPaginate == null) return;
 
-            var sqlString = SqlDifferences.GetSqlString(Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
+            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
             var dataSource = DatabaseApi.Instance.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
 
             Param.ControlToPaginate.DataSource = dataSource;

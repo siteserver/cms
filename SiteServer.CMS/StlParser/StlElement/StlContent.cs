@@ -178,7 +178,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             parsedContent = innerBuilder.ToString();
 
-            parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.PageContent))
+            {
+                parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            }
 
             return parsedContent;
         }

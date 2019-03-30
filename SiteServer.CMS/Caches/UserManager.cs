@@ -4,6 +4,7 @@ using SiteServer.CMS.Caches.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -315,7 +316,7 @@ namespace SiteServer.CMS.Caches
         public static string GetHomeUploadPath(params string[] paths)
         {
             
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
+            var path = FxUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
@@ -333,7 +334,7 @@ namespace SiteServer.CMS.Caches
 
         public static string GetHomeUploadUrl(params string[] paths)
         {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
+            return FxUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
         }
 
         public static string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");

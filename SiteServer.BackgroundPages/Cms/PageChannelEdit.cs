@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -13,9 +12,8 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -53,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelEdit), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -64,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
@@ -73,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
-                    PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
+                    FxUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
             }
@@ -312,7 +310,7 @@ namespace SiteServer.BackgroundPages.Cms
             AuthRequest.AddSiteLog(SiteId, "修改栏目", $"栏目:{TbNodeName.Text}");
 
             SuccessMessage("栏目修改成功！");
-            PageUtils.Redirect(ReturnUrl);
+            FxUtils.Redirect(ReturnUrl);
         }
 
         public string ReturnUrl { get; private set; }

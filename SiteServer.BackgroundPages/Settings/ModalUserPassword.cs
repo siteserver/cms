@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -15,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return LayerUtils.GetOpenScript("重设密码", PageUtils.GetSettingsUrl(nameof(ModalUserPassword), new NameValueCollection
+            return LayerUtils.GetOpenScript("重设密码", FxUtils.GetSettingsUrl(nameof(ModalUserPassword), new NameValueCollection
             {
                 {"userName", userName}
             }), 450, 290);

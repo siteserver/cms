@@ -9,6 +9,7 @@ using SiteServer.CMS.Apis;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
@@ -33,7 +34,7 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    var pluginsPath = PathUtils.PluginsPath;
+                    var pluginsPath = FxUtils.PluginsPath;
                     if (!Directory.Exists(pluginsPath))
                     {
                         return dict;
@@ -72,7 +73,7 @@ namespace SiteServer.CMS.Plugin
                 {
                     metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out errorMessage);
 
-                    var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+                    var dllDirectoryPath = FxUtils.GetPluginDllDirectoryPath(directoryName);
                     if (string.IsNullOrEmpty(dllDirectoryPath))
                     {
                         throw new Exception($"插件可执行文件 {directoryName}.dll 不存在");
@@ -313,7 +314,7 @@ namespace SiteServer.CMS.Plugin
         {
             get
             {
-                var packagesPath = PathUtils.GetPackagesPath();
+                var packagesPath = FxUtils.GetPackagesPath();
                 DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
                 return DirectoryUtils.GetDirectoryNames(packagesPath).ToList();
             }
@@ -614,7 +615,7 @@ namespace SiteServer.CMS.Plugin
 
         public static void Delete(string pluginId)
         {
-            DirectoryUtils.DeleteDirectoryIfExists(PathUtils.GetPluginPath(pluginId));
+            DirectoryUtils.DeleteDirectoryIfExists(FxUtils.GetPluginPath(pluginId));
             ClearCache();
         }
 

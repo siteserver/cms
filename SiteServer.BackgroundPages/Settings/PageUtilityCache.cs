@@ -3,6 +3,7 @@ using System.Collections;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -70,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
-            PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageUtilityCache), null));
+            FxUtils.Redirect(FxUtils.GetSettingsUrl(nameof(PageUtilityCache), null));
         }
 
     }

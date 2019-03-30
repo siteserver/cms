@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -55,7 +56,7 @@ namespace SiteServer.CMS.Packaging
 
         public static void DownloadPackage(string packageId, string version)
         {
-            var packagesPath = PathUtils.GetPackagesPath();
+            var packagesPath = FxUtils.GetPackagesPath();
             var idWithVersion = $"{packageId}.{version}";
             var directoryPath = PathUtils.Combine(packagesPath, idWithVersion);
 
@@ -131,7 +132,7 @@ namespace SiteServer.CMS.Packaging
         {
             try
             {
-                var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+                var packagePath = FxUtils.GetPackagesPath(idWithVersion);
 
                 string nuspecPath;
                 string dllDirectoryPath;
@@ -166,7 +167,7 @@ namespace SiteServer.CMS.Packaging
                 }
                 else if (packageType == PackageType.Plugin)
                 {
-                    var pluginPath = PathUtils.GetPluginPath(metadata.Id);
+                    var pluginPath = FxUtils.GetPluginPath(metadata.Id);
                     DirectoryUtils.CreateDirectoryIfNotExists(pluginPath);
 
                     DirectoryUtils.Copy(PathUtils.Combine(packagePath, "content"), pluginPath, true);
@@ -217,7 +218,7 @@ namespace SiteServer.CMS.Packaging
         public static PackageMetadata GetPackageMetadataFromPlugins(string directoryName, out string errorMessage)
         {
             
-            var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
+            var nuspecPath = FxUtils.GetPluginNuspecPath(directoryName);
             if (!File.Exists(nuspecPath))
             {
                 errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
@@ -251,7 +252,7 @@ namespace SiteServer.CMS.Packaging
             dllDirectoryPath = string.Empty;
             errorMessage = string.Empty;
 
-            var directoryPath = PathUtils.GetPackagesPath(directoryName);
+            var directoryPath = FxUtils.GetPackagesPath(directoryName);
 
             foreach (var filePath in DirectoryUtils.GetFilePaths(directoryPath))
             {

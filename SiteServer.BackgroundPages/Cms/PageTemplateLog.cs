@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int templateId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()}
             });
@@ -61,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                    PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
+                    FxUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
                         {"TemplateID", _templateId.ToString()},
                         {"DeleteById", true.ToString()}

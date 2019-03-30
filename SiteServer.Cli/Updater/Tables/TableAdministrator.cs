@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
@@ -90,7 +91,7 @@ namespace SiteServer.Cli.Updater.Tables
 
         private static readonly string NewTableName = DataProvider.Administrator.TableName;
 
-        private static readonly List<TableColumn> NewColumns = DataProvider.Administrator.TableColumns;
+        private static readonly List<DatoryColumn> NewColumns = DataProvider.Administrator.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

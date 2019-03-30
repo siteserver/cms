@@ -2,9 +2,9 @@
 using System.Data;
 using System.IO;
 using System.Xml;
+using Datory;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Apis;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Core
@@ -228,15 +228,15 @@ namespace SiteServer.CMS.Database.Core
         {
             if (rowUpdatingHandler != null)
             {
-                this.MRowUpdating = rowUpdatingHandler;
-                ((OracleDataAdapter)dataAdapter).RowUpdating += new OracleRowUpdatingEventHandler(RowUpdating);
+                MRowUpdating = rowUpdatingHandler;
+                ((OracleDataAdapter)dataAdapter).RowUpdating += RowUpdating;
             }
 
 
             if (rowUpdatedHandler != null)
             {
-                this.MRowUpdated = rowUpdatedHandler;
-                ((OracleDataAdapter)dataAdapter).RowUpdated += new OracleRowUpdatedEventHandler(RowUpdated);
+                MRowUpdated = rowUpdatedHandler;
+                ((OracleDataAdapter)dataAdapter).RowUpdated += RowUpdated;
             }
         }
 

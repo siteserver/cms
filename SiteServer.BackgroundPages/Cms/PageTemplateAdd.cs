@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -33,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int templateId, TemplateType templateType)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()},
                 {"TemplateType", templateType.Value}
@@ -42,7 +43,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlToCopy(int siteId, int templateId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()},
                 {"IsCopy", true.ToString()}
@@ -51,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlToRestore(int siteId, int templateId, int templateLogId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateAdd), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()},
                 {"TemplateLogID", templateLogId.ToString()}
@@ -62,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             TemplateInfo templateInfo = null;
             if (AuthRequest.GetQueryInt("TemplateID") > 0)
@@ -101,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
-            EFileSystemTypeUtils.AddWebPageListItems(DdlCreatedFileExtName);
+            FxUtils.AddListItemsToEFileSystemType(DdlCreatedFileExtName);
 
             if (AuthRequest.GetQueryInt("TemplateID") > 0)
             {
@@ -285,7 +286,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageTemplate.GetRedirectUrl(SiteId, _templateType));
+            FxUtils.Redirect(PageTemplate.GetRedirectUrl(SiteId, _templateType));
         }
 
         private void CreatePages(TemplateInfo templateInfo)

@@ -14,7 +14,7 @@ using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -491,7 +491,7 @@ $(document).ready(function(){{
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(TranslateUtils.Get(attributes, styleInfo.AttributeName, string.Empty));
 
-            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Validate, styleInfo.DisplayName, styleInfo.Required, styleInfo.MinNum, styleInfo.MaxNum, styleInfo.ValidateType, styleInfo.RegExp, styleInfo.ErrorMessage);
+            FxUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Validate, styleInfo.DisplayName, styleInfo.Required, styleInfo.MinNum, styleInfo.MaxNum, styleInfo.ValidateType, styleInfo.RegExp, styleInfo.ErrorMessage);
 
             foreach (var styleItem in styleItems)
             {
@@ -554,7 +554,7 @@ $(document).ready(function(){{
 
             var selectedValue = TranslateUtils.Get(attributes, styleInfo.AttributeName, string.Empty);
 
-            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Validate, styleInfo.DisplayName, styleInfo.Required, styleInfo.MinNum, styleInfo.MaxNum, styleInfo.ValidateType, styleInfo.RegExp, styleInfo.ErrorMessage);
+            FxUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Validate, styleInfo.DisplayName, styleInfo.Required, styleInfo.MinNum, styleInfo.MaxNum, styleInfo.ValidateType, styleInfo.RegExp, styleInfo.ErrorMessage);
 
             var isTicked = false;
             foreach (var styleItem in styleItems)

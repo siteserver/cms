@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -13,8 +11,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
-using SiteServer.CMS.Database.Wrapper;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -51,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("快速修改栏目", PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("快速修改栏目", FxUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -60,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -71,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
@@ -82,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
-                    PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
+                    FxUtils.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
 

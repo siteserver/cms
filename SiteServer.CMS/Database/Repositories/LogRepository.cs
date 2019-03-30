@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
@@ -12,6 +13,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class LogRepository : GenericRepository<LogInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(LogInfo.Id);

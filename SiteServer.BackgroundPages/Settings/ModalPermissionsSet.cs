@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString(string userName)
         {
             return LayerUtils.GetOpenScript("权限设置",
-                PageUtils.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
                 {
                     {"UserName", userName}
                 }));
@@ -41,10 +43,10 @@ namespace SiteServer.BackgroundPages.Settings
             var roles = DataProvider.AdministratorsInRoles.GetRolesForUser(_userName);
             if (AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
             {
-                DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
-                DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.SystemAdministrator, false));
+                DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
+                DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.SystemAdministrator, false));
             }
-            DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.Administrator, false));
+            DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.Administrator, false));
 
             var type = EPredefinedRoleUtils.GetEnumTypeByRoles(roles);
             ControlUtils.SelectSingleItem(DdlPredefinedRole, EPredefinedRoleUtils.GetValue(type));

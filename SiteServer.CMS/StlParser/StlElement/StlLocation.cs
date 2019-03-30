@@ -3,6 +3,7 @@ using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement

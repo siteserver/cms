@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,21 +14,21 @@ namespace SiteServer.CMS.Database.Core
 
         public virtual string TableName => string.Empty;
 
-        public virtual List<TableColumn> TableColumns => null;
+        public virtual List<DatoryColumn> TableColumns => null;
 
         protected IDbConnection GetConnection()
         {
-            return SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, ConnectionString);
+            return DatorySql.GetConnection(WebConfigUtils.DatabaseType, ConnectionString);
         }
 
         protected IDbConnection GetConnection(string connectionString)
         {
-            return SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, connectionString);
+            return DatorySql.GetConnection(WebConfigUtils.DatabaseType, connectionString);
         }
 
         protected IDbConnection GetConnection(DatabaseType databaseType, string connectionString)
         {
-            return SqlDifferences.GetIDbConnection(databaseType, connectionString);
+            return DatorySql.GetConnection(databaseType, connectionString);
         }
 
         protected IDataParameter GetParameter(string name, object value)

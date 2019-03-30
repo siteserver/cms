@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
-using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
             //here, limit top path
             if (!DirectoryUtils.IsInDirectory(TopPath, path))
                 path = TopPath;
-            return PageUtils.GetCmsUrl(SiteId, nameof(ModalSelectFile), new NameValueCollection
+            return FxUtils.GetCmsUrl(SiteId, nameof(ModalSelectFile), new NameValueCollection
             {
                 {"RootPath", _rootPath},
                 {"CurrentRootPath", path},
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             //here, limit top path
             if (!DirectoryUtils.IsInDirectory(TopPath, path))
                 path = TopPath;
-            return PageUtils.GetCmsUrl(SiteId, nameof(ModalSelectFile), new NameValueCollection
+            return FxUtils.GetCmsUrl(SiteId, nameof(ModalSelectFile), new NameValueCollection
             {
                 {"RootPath", _rootPath},
                 {"CurrentRootPath", path},
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, string hiddenClientId, string currentRootPath)
         {
             return LayerUtils.GetOpenScript("选择文件",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalSelectFile), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalSelectFile), new NameValueCollection
                 {
                     {"RootPath", "@"},
                     {"CurrentRootPath", currentRootPath},
@@ -77,7 +78,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "HiddenClientID");
+            FxUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "HiddenClientID");
 			
 			_rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
 			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
@@ -105,7 +106,7 @@ namespace SiteServer.BackgroundPages.Cms
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
 			if (!DirectoryUtils.IsDirectoryExists(_directoryPath))
 			{
-                PageUtils.RedirectToErrorPage("文件夹不存在！");
+                FxUtils.RedirectToErrorPage("文件夹不存在！");
                 return;
 			}
 
@@ -200,13 +201,13 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				navigationUrl = GetRedirectUrl(_currentRootPath);
 			}
-			PageUtils.Redirect(navigationUrl);
+			FxUtils.Redirect(navigationUrl);
 		}
 
 		public void ddlListType_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			var navigationUrl = GetRedirectUrlWithType(_currentRootPath, DdlListType.SelectedValue);
-			PageUtils.Redirect(navigationUrl);
+			FxUtils.Redirect(navigationUrl);
 		}
 
 		#region Helper

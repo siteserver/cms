@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
@@ -120,334 +121,334 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
     {
         public const string NewTableName = "ss_govinteract_content";
 
-        private static List<TableColumn> NewColumns => new List<TableColumn>
+        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "RealName",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "姓名"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "姓名"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Organization",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "工作单位"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "工作单位"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "CardType",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.SelectOne,
-                    DisplayName = "证件名称",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "身份证",
-                            Value = "身份证",
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "学生证",
-                            Value = "学生证",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "军官证",
-                            Value = "军官证",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "工作证",
-                            Value = "工作证",
-                            Selected = false
-                        }
-                    }
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.SelectOne,
+                //    DisplayName = "证件名称",
+                //    IsRequired = true,
+                //    ListItems = new List<InputListItem>
+                //    {
+                //        new InputListItem
+                //        {
+                //            Text = "身份证",
+                //            Value = "身份证",
+                //            Selected = true
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "学生证",
+                //            Value = "学生证",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "军官证",
+                //            Value = "军官证",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "工作证",
+                //            Value = "工作证",
+                //            Selected = false
+                //        }
+                //    }
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "CardNo",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "证件号码"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "证件号码"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Phone",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "联系电话"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "联系电话"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "PostCode",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "邮政编码"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "邮政编码"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Address",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "联系地址"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "联系地址"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Email",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "电子邮件"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "电子邮件"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Fax",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "传真"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "传真"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "TypeId",
                 DataType = DataType.Integer,
 
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.SelectOne,
-                    DisplayName = "类型",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "求决",
-                            Value = "15",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "举报",
-                            Value = "16",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "投诉",
-                            Value = "17",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "咨询",
-                            Value = "18",
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "建议",
-                            Value = "19",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "感谢",
-                            Value = "20",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "其他",
-                            Value = "21",
-                            Selected = false
-                        }
-                    }
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.SelectOne,
+                //    DisplayName = "类型",
+                //    IsRequired = true,
+                //    ListItems = new List<InputListItem>
+                //    {
+                //        new InputListItem
+                //        {
+                //            Text = "求决",
+                //            Value = "15",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "举报",
+                //            Value = "16",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "投诉",
+                //            Value = "17",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "咨询",
+                //            Value = "18",
+                //            Selected = true
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "建议",
+                //            Value = "19",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "感谢",
+                //            Value = "20",
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "其他",
+                //            Value = "21",
+                //            Selected = false
+                //        }
+                //    }
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IsPublic",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Radio,
-                    DisplayName = "是否公开",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "公开",
-                            Value = true.ToString(),
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "不公开",
-                            Value = false.ToString(),
-                            Selected = false
-                        }
-                    }
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Radio,
+                //    DisplayName = "是否公开",
+                //    IsRequired = true,
+                //    ListItems = new List<InputListItem>
+                //    {
+                //        new InputListItem
+                //        {
+                //            Text = "公开",
+                //            Value = true.ToString(),
+                //            Selected = true
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "不公开",
+                //            Value = false.ToString(),
+                //            Selected = false
+                //        }
+                //    }
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Content",
                 DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "内容"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.TextEditor,
+                //    DisplayName = "内容"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.File,
-                    DisplayName = "附件"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.File,
+                //    DisplayName = "附件"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "DepartmentId",
                 DataType = DataType.Integer,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Customize,
-                    DisplayName = "提交部门"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Customize,
+                //    DisplayName = "提交部门"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "DepartmentName",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "提交部门"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "提交部门"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "QueryCode",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "查询码"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "查询码"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "State",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "状态"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "状态"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IpAddress",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "IP地址"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "IP地址"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ReplyContent",
                 DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复内容"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "回复内容"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ReplyFileUrl",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复附件"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "回复附件"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ReplyDepartmentName",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复部门"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "回复部门"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ReplyUserName",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复人"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "回复人"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ReplyAddDate",
                 DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复时间"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "回复时间"
+                //}
             }
         };
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
         {
-            var columns = new List<TableColumn>();
+            var columns = new List<DatoryColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -475,7 +476,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
         {
             return new ConvertInfo
             {

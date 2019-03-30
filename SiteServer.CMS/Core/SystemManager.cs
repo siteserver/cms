@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -63,7 +65,7 @@ namespace SiteServer.CMS.Core
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!DatabaseApi.Instance.IsTableExists(repository.TableName))
+                if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, repository.TableName))
                 {
                     DatabaseApi.Instance.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _, out _);
                 }
@@ -79,7 +81,7 @@ namespace SiteServer.CMS.Core
             var tableNameList = SiteManager.GetAllTableNameList();
             foreach (var tableName in tableNameList)
             {
-                if (!DatabaseApi.Instance.IsTableExists(tableName))
+                if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                 {
                     DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumns, string.Empty, true, out _, out _);
                 }

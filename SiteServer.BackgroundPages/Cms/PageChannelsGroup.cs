@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string nodeGroupName)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelsGroup), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelsGroup), new NameValueCollection
             {
                 {"nodeGroupName", nodeGroupName}
             });
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageNodeGroup.GetRedirectUrl(SiteId));
+            FxUtils.Redirect(PageNodeGroup.GetRedirectUrl(SiteId));
         }
     }
 }

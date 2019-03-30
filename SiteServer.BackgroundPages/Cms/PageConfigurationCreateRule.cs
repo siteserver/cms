@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int currentChannelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateRule), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateRule), new NameValueCollection
             {
                 {"CurrentChannelId", currentChannelId.ToString()}
             });
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _additional = new NameValueCollection();
 

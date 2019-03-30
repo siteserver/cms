@@ -4,6 +4,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToAdd(string returnUrl)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
             {
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl) }
             });
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToEdit(int userId, string returnUrl)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
             {
                 {"userID", userId.ToString() },
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl) }

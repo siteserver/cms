@@ -3,6 +3,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -63,7 +64,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(RootUrl, attributeName))//系统根目录地址
                 {
-                    parsedContent = PageUtils.ParseConfigRootUrl("~");
+                    parsedContent = FxUtils.ParseConfigRootUrl("~");
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         parsedContent = parsedContent.TrimEnd('/');
@@ -99,22 +100,22 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
-                    parsedContent = PageUtils.GetHomeUrl(string.Empty).TrimEnd('/');
+                    parsedContent = FxUtils.GetHomeUrl(string.Empty).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
                 {
                     var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = FxUtils.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
                 {
                     var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = FxUtils.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
                 {
                     var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = PageUtils.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = FxUtils.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
                 {

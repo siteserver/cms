@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils.IO;
 
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var title = siteInfo.Root ? "转移到子目录" : "转移到根目录";
             return LayerUtils.GetOpenScript(title,
-                PageUtils.GetSettingsUrl(nameof(ModalChangeSiteType),
+                FxUtils.GetSettingsUrl(nameof(ModalChangeSiteType),
                     new NameValueCollection
                     {
                         {"SiteId", siteId.ToString()}
@@ -41,7 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _isHeadquarters = SiteInfo.Root;
 

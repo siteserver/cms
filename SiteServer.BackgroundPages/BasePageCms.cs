@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
@@ -64,7 +65,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
+            FxUtils.Redirect(FxUtils.GetAdminUrl(string.Empty));
         }
 
         public void VerifyChannelPermissions(int channelId, params string[] channelPermissions)
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
+            FxUtils.Redirect(FxUtils.GetAdminUrl(string.Empty));
         }
 
         private NameValueCollection _attributes;

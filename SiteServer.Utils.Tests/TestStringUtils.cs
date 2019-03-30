@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using SiteServer.Utils;
 
 namespace SiteServer.Utils.Tests
 {

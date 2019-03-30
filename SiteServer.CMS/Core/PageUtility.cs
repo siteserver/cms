@@ -6,6 +6,7 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
@@ -84,7 +85,7 @@ namespace SiteServer.CMS.Core
 
         private static string GetLocalSiteUrl(SiteInfo siteInfo, string requestPath)
         {
-            var url = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var url = FxUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
 
             if (string.IsNullOrEmpty(url))
             {
@@ -472,14 +473,14 @@ namespace SiteServer.CMS.Core
                 {
                     return GetSiteUrl(siteInfo, url.Substring(1), isLocal);
                 }
-                return PageUtils.ParseNavigationUrl(url);
+                return FxUtils.ParseNavigationUrl(url);
             }
-            return PageUtils.ParseNavigationUrl(url);
+            return FxUtils.ParseNavigationUrl(url);
         }
 
         public static string GetVirtualUrl(SiteInfo siteInfo, string url)
         {
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var relatedSiteUrl = FxUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
             return StringUtils.ReplaceStartsWith(virtualUrl, "@//", "@/");
         }

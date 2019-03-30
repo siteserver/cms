@@ -6,6 +6,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUser), null);
+            return FxUtils.GetSettingsUrl(nameof(PageUser), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -265,7 +266,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            FxUtils.Redirect(PageUrl);
         }
 
         private string _pageUrl;

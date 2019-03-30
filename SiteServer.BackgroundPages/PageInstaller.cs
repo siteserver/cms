@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
-using SiteServer.Plugin;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages
@@ -59,7 +60,7 @@ namespace SiteServer.BackgroundPages
 
 	    public static string GetRedirectUrl()
 	    {
-	        return PageUtils.GetSiteServerUrl("installer/default", null);
+	        return FxUtils.GetSiteServerUrl("installer/default", null);
 	    }
 
 	    public void Page_Load(object sender, EventArgs e)
@@ -76,17 +77,17 @@ namespace SiteServer.BackgroundPages
             LtlVersionInfo.Text = SystemManager.Version;
             SetSetp(1);
 
-            DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
+            FxUtils.AddListItemsToDatabaseType(DdlSqlDatabaseType);
 
-            EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
+            FxUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefaultPort, true.ToString());
 
             PhSqlPort.Visible = false;
 
-            EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
+            FxUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsProtectData, false.ToString());
 
-            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminUrl(string.Empty)}"">进入后台</a>";
+            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{FxUtils.GetAdminUrl(string.Empty)}"">进入后台</a>";
         }
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
@@ -106,7 +107,7 @@ namespace SiteServer.BackgroundPages
             {
                 BtnStep2.Visible = true;
 
-                LtlDomain.Text = PageUtils.GetHost();
+                LtlDomain.Text = FxUtils.GetHost();
                 LtlVersion.Text = SystemManager.Version;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
                 LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;

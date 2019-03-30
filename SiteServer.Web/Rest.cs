@@ -6,6 +6,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -611,7 +612,7 @@ namespace SiteServer.API
             if (checkInstall && string.IsNullOrWhiteSpace(WebConfigUtils.ConnectionString))
             {
                 redirect = true;
-                redirectUrl = PageUtils.GetAdminUrl("installer/default.aspx");
+                redirectUrl = FxUtils.GetAdminUrl("installer/default.aspx");
             }
             else if (checkDatabaseVersion && ConfigManager.Instance.Initialized &&
                      ConfigManager.Instance.DatabaseVersion != SystemManager.Version)

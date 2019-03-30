@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -120,15 +119,7 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-		public static ListItem GetListItem(EPredefinedRole type, bool selected)
-		{
-			var item = new ListItem(GetText(type), GetValue(type));
-			if (selected)
-			{
-				item.Selected = true;
-			}
-			return item;
-		}
+		
 
 		public static bool IsConsoleAdministrator(IList<string> roles)
 		{

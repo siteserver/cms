@@ -8,6 +8,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -97,14 +98,14 @@ namespace SiteServer.BackgroundPages.Settings
                 TbDateTo.Text = AuthRequest.GetQueryString("dateTo");
             }
 
-            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(FxUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
             {
                 {"DeleteById", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
                 AlertUtils.ConfirmRedirect("删除所有日志", "此操作将删除所有日志信息，确定吗？", "删除全部",
-                    PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                    FxUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                     {
                         {"DeleteAll", "True"}
                     })));
@@ -114,7 +115,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "禁用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("禁用系统错误日志", "此操作将禁用系统错误日志记录功能，确定吗？", "禁 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        FxUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "启用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("启用系统错误日志", "此操作将启用系统错误日志记录功能，确定吗？", "启 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        FxUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -148,7 +149,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlId.Text = $@"<a href=""{PageUtils.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
+            ltlId.Text = $@"<a href=""{FxUtils.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(addDate);
             ltlMessage.Text = message;
             ltlSummary.Text = summary;
@@ -160,7 +161,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    public void Search_OnClick(object sender, EventArgs e)
 	    {
-	        PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+	        FxUtils.Redirect(FxUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
 	        {
 	            {"category", DdlCategory.SelectedValue},
 	            {"pluginId", DdlPluginId.SelectedValue},

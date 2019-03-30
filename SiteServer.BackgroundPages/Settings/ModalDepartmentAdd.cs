@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -23,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加部门",
-                PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }), 460, 400);
@@ -32,7 +34,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToEdit(int departmentId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("修改部门",
-                PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"DepartmentID", departmentId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}

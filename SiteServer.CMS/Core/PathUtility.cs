@@ -8,6 +8,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Caches.Stl;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -273,7 +274,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetCurrentSiteDir()
         {
-            return GetSiteDir(PathUtils.GetCurrentPagePath());
+            return GetSiteDir(FxUtils.GetCurrentPagePath());
         }
 
         public static int GetCurrentSiteId()
@@ -322,13 +323,13 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return FxUtils.MapPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtils.MapPath(resolvedPath);
+            return FxUtils.MapPath(resolvedPath);
         }
 
         public static string MapPath(SiteInfo siteInfo, string virtualPath, bool isCopyToSite)
@@ -344,13 +345,13 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return FxUtils.MapPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtils.MapPath(resolvedPath);
+            return FxUtils.MapPath(resolvedPath);
         }
 
         public static string MapPath(string directoryPath, string virtualPath)
@@ -375,7 +376,7 @@ namespace SiteServer.CMS.Core
                     return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
                 }
             }
-            return PathUtils.MapPath(resolvedPath);
+            return FxUtils.MapPath(resolvedPath);
         }
 
         //将编辑器中图片上传至本机
@@ -385,7 +386,7 @@ namespace SiteServer.CMS.Core
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, FxUtils.ApplicationPath) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, siteInfo.WebUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -14,6 +14,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class TemplateRepository : GenericRepository<TemplateInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(TemplateInfo.Id);

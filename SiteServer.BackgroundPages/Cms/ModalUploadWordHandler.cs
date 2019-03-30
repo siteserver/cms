@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -8,7 +9,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(ModalUploadWordHandler), null);
+            return FxUtils.GetCmsWebHandlerUrl(siteId, nameof(ModalUploadWordHandler), null);
         }
 
         protected override object Process()

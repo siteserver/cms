@@ -1,5 +1,4 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -81,25 +80,7 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(EUserPasswordRestriction type, bool selected)
-        {
-            var item = new ListItem(GetText(type), GetValue(type));
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
-
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(EUserPasswordRestriction.None, false));
-                listControl.Items.Add(GetListItem(EUserPasswordRestriction.LetterAndDigit, false));
-                listControl.Items.Add(GetListItem(EUserPasswordRestriction.LetterAndDigitAndSymbol, false));
-            }
-        }
+        
 
         public static bool IsValid(string password, string restrictionStr)
         {

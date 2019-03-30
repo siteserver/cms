@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -12,7 +14,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int templateLogId)
         {
-            return LayerUtils.GetOpenScript("查看修订内容", PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看修订内容", FxUtils.GetCmsUrl(siteId, nameof(ModalTemplateView), new NameValueCollection
             {
                 {"templateLogID", templateLogId.ToString()}
             }));
@@ -22,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
            
 			if (!IsPostBack)
 			{

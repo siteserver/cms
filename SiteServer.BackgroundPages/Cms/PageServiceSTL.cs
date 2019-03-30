@@ -6,6 +6,7 @@ using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageServiceStl), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageServiceStl), new NameValueCollection
             {
                 {"type", type}
             });

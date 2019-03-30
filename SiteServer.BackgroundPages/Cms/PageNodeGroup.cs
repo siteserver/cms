@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageNodeGroup), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageNodeGroup), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -82,13 +83,13 @@ namespace SiteServer.BackgroundPages.Cms
             ltlNodeGroupName.Text = groupInfo.GroupName;
             ltlDescription.Text = groupInfo.Description;
 
-            hlUp.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
+            hlUp.NavigateUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
                 {"Direction", "UP"}
             });
-            hlDown.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
+            hlDown.NavigateUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
@@ -102,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
                 $@"<a href=""javascript:;"" onClick=""{ModalNodeGroupAdd.GetOpenWindowString(SiteId,
                     groupInfo.GroupName)}"">修改</a>";
 
-            ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
+            ltlDelete.Text = $@"<a href=""{FxUtils.GetCmsUrl(SiteId, nameof(PageNodeGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"DeleteById", true.ToString()}

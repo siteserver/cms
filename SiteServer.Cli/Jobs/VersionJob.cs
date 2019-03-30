@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using NDesk.Options;
 using SiteServer.Cli.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 

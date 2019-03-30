@@ -6,6 +6,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -154,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             contentInfoList.Reverse();
                             if (exportObject.ExportContents(filePath, contentInfoList))
                             {
-                                downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                                downloadUrl = FxUtils.GetTemporaryFilesUrl(fileName);
                             }
                         }
                         else if (exportType == "excel")
@@ -162,7 +163,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             var fileName = $"{channelInfo.ChannelName}.csv";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                             ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
-                            downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                            downloadUrl = FxUtils.GetTemporaryFilesUrl(fileName);
                         }
                     }
                 }

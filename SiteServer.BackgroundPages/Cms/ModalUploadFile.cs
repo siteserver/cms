@@ -2,8 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -20,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, EUploadType uploadType, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传附件", FxUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"TextBoxClientID", textBoxClientId}
@@ -29,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int siteId, EUploadType uploadType, string realtedPath)
         {
-            return LayerUtils.GetOpenScript("上传附件", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传附件", FxUtils.GetCmsUrl(siteId, nameof(ModalUploadFile), new NameValueCollection
             {
                 {"uploadType", EUploadTypeUtils.GetValue(uploadType)},
                 {"realtedPath", realtedPath}
@@ -40,14 +42,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _uploadType = EUploadTypeUtils.GetEnumType(AuthRequest.GetQueryString("uploadType"));
             _realtedPath = AuthRequest.GetQueryString("realtedPath");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;
 
-            EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
+            FxUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.IsFileUploadChangeFileName.ToString());
         }
 

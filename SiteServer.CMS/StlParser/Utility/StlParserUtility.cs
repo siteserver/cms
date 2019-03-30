@@ -78,6 +78,28 @@ namespace SiteServer.CMS.StlParser.Utility
             return exists;
         }
 
+        public static bool IsStlChannelElementWithTypePageContent(List<string> list)
+        {
+            foreach (var label in list)
+            {
+                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                return true;
+            }
+            return false;
+        }
+
+        public static string GetStlChannelElementWithTypePageContent(List<string> labelList)
+        {
+            var stlPageChannelElement = string.Empty;
+            foreach (var label in labelList)
+            {
+                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                stlPageChannelElement = label;
+                break;
+            }
+            return stlPageChannelElement;
+        }
+
         public static bool IsStlContentElementWithTypePageContent(List<string> list)
         {
             foreach (var label in list)
@@ -86,6 +108,18 @@ namespace SiteServer.CMS.StlParser.Utility
                 return true;
             }
             return false;
+        }
+
+        public static string GetStlContentElementWithTypePageContent(List<string> labelList)
+        {
+            var stlPageContentElement = string.Empty;
+            foreach (var label in labelList)
+            {
+                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
+                stlPageContentElement = label;
+                break;
+            }
+            return stlPageContentElement;
         }
 
         public static string GetStlElement(string stlElementName, List<string> labelList)
@@ -101,18 +135,6 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
             return stlElement;
-        }
-
-        public static string GetStlContentElementWithTypePageContent(List<string> labelList)
-        {
-            var stlPageContentElement = string.Empty;
-            foreach (var label in labelList)
-            {
-                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
-                stlPageContentElement = label;
-                break;
-            }
-            return stlPageContentElement;
         }
 
         public static string GetNameFromEntity(string stlEntity)

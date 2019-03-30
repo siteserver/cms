@@ -1,7 +1,6 @@
 ﻿using System;
-using SiteServer.CMS.Database.Wrapper;
+using Datory;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Models
 {
@@ -17,7 +16,7 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public string ContentModelPluginId { get; set; }
 
-        [TableColumn]
+        [TableColumn(Text = true)]
         public string ContentRelatedPluginIds { get; set; }
 
         [TableColumn]
@@ -44,7 +43,7 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public string IndexName { get; set; }
 
-        [TableColumn]
+        [TableColumn(Text = true)]
         public string GroupNameCollection { get; set; }
 
         [TableColumn]
@@ -53,22 +52,22 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public DateTime? AddDate { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string ImageUrl { get; set; }
 
         [TableColumn(Text = true)]
         public string Content { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string FilePath { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string ChannelFilePathRule { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string ContentFilePathRule { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string LinkUrl { get; set; }
 
         [TableColumn]
@@ -80,10 +79,10 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public int ContentTemplateId { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 2000)]
         public string Keywords { get; set; }
 
-        [TableColumn]
+        [TableColumn(Length = 2000)]
         public string Description { get; set; }
 
         [TableColumn(Text = true, Extend = true)]

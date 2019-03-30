@@ -11,6 +11,7 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("批量导入Word文件",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalUploadWord), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalUploadWord), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
                     {"returnUrl", returnUrl}
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");

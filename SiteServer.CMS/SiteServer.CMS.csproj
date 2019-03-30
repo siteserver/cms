@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.CMS</RootNamespace>
     <AssemblyName>SiteServer.CMS</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -34,8 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.50.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.7\lib\net451\Dapper.dll</HintPath>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.60.5\lib\net451\Dapper.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
@@ -52,8 +52,8 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=4.0.4.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.4.0.4\lib\net451\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=4.0.5.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.0.5\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Common, Version=4.5.0.4, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\NuGet.Common.4.5.0\lib\net45\NuGet.Common.dll</HintPath>
@@ -74,12 +74,15 @@
       <HintPath>..\packages\NuGet.Versioning.4.5.0\lib\net45\NuGet.Versioning.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.18.3, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
-      <HintPath>..\packages\Oracle.ManagedDataAccess.18.3.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <HintPath>..\packages\Oracle.ManagedDataAccess.18.6.0\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -96,8 +99,15 @@
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -154,18 +164,7 @@
     <Compile Include="Database\Models\ConfigInfo.Extend.cs" />
     <Compile Include="Database\Models\SiteInfo.Extend.cs" />
     <Compile Include="Database\Models\TableStyleInfo.Extend.cs" />
-    <Compile Include="Database\Wrapper\DynamicEntity.cs" />
-    <Compile Include="Database\Core\GenericRepositoryAbstract.cs" />
-    <Compile Include="Database\Wrapper\DynamicWrapper.cs" />
-    <Compile Include="Database\Wrapper\IExtend.cs" />
-    <Compile Include="Database\Core\IRepository.cs" />
-    <Compile Include="Database\Core\QueryExtentions.cs" />
-    <Compile Include="Database\Core\ReflectionUtils.cs" />
-    <Compile Include="Database\Core\RepositoryHelper.cs" />
-    <Compile Include="Database\Core\SqlDifferences.cs" />
     <Compile Include="Database\Core\SqlUtils.cs" />
-    <Compile Include="Database\Wrapper\TableAttribute.cs" />
-    <Compile Include="Database\Wrapper\TableColumnAttribute.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
     <Compile Include="Caches\ContentTagManager.cs" />
     <Compile Include="Caches\UserMenuManager .cs" />
@@ -202,7 +201,6 @@
     <Compile Include="Core\PathUtility.cs" />
     <Compile Include="Core\RoleManager.cs" />
     <Compile Include="Caches\PermissionConfigManager.cs" />
-    <Compile Include="Database\Core\GenericRepository.cs" />
     <Compile Include="Database\Models\ContentTagInfo.cs" />
     <Compile Include="Database\Repositories\Contents\ContentTableRepository.Select.cs" />
     <Compile Include="Database\Repositories\Contents\ContentTableRepository.Delete.cs" />
@@ -210,6 +208,18 @@
     <Compile Include="Database\Repositories\Contents\ContentTableRepository.cs" />
     <Compile Include="Database\Repositories\Contents\ContentRepository.cs" />
     <Compile Include="Env.cs" />
+    <Compile Include="Fx\AdminPagesUtils.cs" />
+    <Compile Include="Fx\CacheUtils.cs" />
+    <Compile Include="Fx\ControlUtils.cs" />
+    <Compile Include="Fx\CookieUtils.cs" />
+    <Compile Include="Fx\DirectoryTreeItem.cs" />
+    <Compile Include="Fx\FileManager.cs" />
+    <Compile Include="Fx\FxUtils.cs" />
+    <Compile Include="Fx\ImageUtils.cs" />
+    <Compile Include="Fx\MessageUtils.cs" />
+    <Compile Include="Fx\SiteFilesAssets.cs" />
+    <Compile Include="Fx\SiteServerAssets.cs" />
+    <Compile Include="Fx\WebClientUtils.cs" />
     <Compile Include="Plugin\Impl\PermissionsImpl.cs" />
     <Compile Include="Caches\SiteManager.cs" />
     <Compile Include="Core\SiteTemplateManager.cs" />
@@ -440,7 +450,6 @@
     <Compile Include="StlParser\StlElement\StlPlayer.cs" />
     <Compile Include="StlParser\StlElement\StlPrinter.cs" />
     <Compile Include="StlParser\StlElement\StlQueryString.cs" />
-    <Compile Include="StlParser\StlElement\StlRss.cs" />
     <Compile Include="StlParser\StlElement\StlSearch.cs" />
     <Compile Include="StlParser\StlElement\StlSelect.cs" />
     <Compile Include="StlParser\StlElement\StlSite.cs" />
@@ -487,12 +496,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Datory\Datory.csproj">
+      <Project>{06073655-ed0d-4b64-a3aa-c1e3eac4c4fa}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
       <Project>{b50a541a-29dc-4084-bbfa-d60110d7ab0f}</Project>
       <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Project>{c22f9b9e-9501-476b-9905-6082b8f68b3a}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>

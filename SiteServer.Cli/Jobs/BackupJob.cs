@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -95,7 +97,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = DatabaseApi.Instance.GetTableNameList();
+            var allTableNames = DatorySql.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -116,7 +118,7 @@ namespace SiteServer.Cli.Jobs
             {
                 var tableInfo = new TableInfo
                 {
-                    Columns = DatabaseApi.Instance.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
+                    Columns = DatorySql.GetTableColumns(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName),
                     TotalCount = DatabaseApi.Instance.GetCount(tableName),
                     RowFiles = new List<string>()
                 };

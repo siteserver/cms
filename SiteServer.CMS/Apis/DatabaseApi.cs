@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using Dapper;
+using Datory;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -40,8 +41,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
-using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -87,18 +87,18 @@ namespace SiteServer.CMS.Apis
             set => _instance = value;
         }
 
-        private Compiler _compiler;
+        //private Compiler _compiler;
 
-        public Compiler SqlCompiler => _compiler ?? (_compiler = SqlDifferences.GetCompiler(WebConfigUtils.DatabaseType));
+        //public Compiler SqlCompiler => _compiler ?? (_compiler = DatorySql.GetCompiler(WebConfigUtils.DatabaseType, UseLegacyPagination));
 
         public IDbConnection GetConnection(DatabaseType databaseType, string connectionString)
         {
-            return SqlDifferences.GetIDbConnection(databaseType, connectionString);
+            return DatorySql.GetConnection(databaseType, connectionString);
         }
 
         public IDbConnection GetConnection()
         {
-            return SqlDifferences.GetIDbConnection(DatabaseType, ConnectionString);
+            return DatorySql.GetConnection(DatabaseType, ConnectionString);
         }
 
         private DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
@@ -115,7 +115,7 @@ namespace SiteServer.CMS.Apis
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+                var databaseName = DatorySql.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
 
                 const string sqlCheck = "SELECT SERVERPROPERTY('productversion')";
                 var versions = ExecuteScalar(ConnectionString, sqlCheck).ToString();
@@ -464,51 +464,51 @@ SELECT * FROM (
             return false;
         }
 
-        public bool IsTableExists(string tableName)
+        //public bool IsTableExists(string tableName)
+        //{
+        //    bool exists;
+
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+        //    {
+        //        tableName = tableName.ToUpper();
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.MySql || WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+        //    {
+        //        tableName = tableName.ToLower();
+        //    }
+
+        //    try
+        //    {
+        //        // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
+        //        if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
+        //        {
+        //            exists = (int)ExecuteScalar(ConnectionString, $"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
+        //        }
+        //        else
+        //        {
+        //            exists = GetIntResult($"SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = '{WebConfigUtils.ConnectionStringUserId.ToUpper()}' and OBJECT_NAME = '{tableName}'") == 1;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        try
+        //        {
+        //            // Other DB.  Graceful degradation
+        //            exists = true;
+        //            ExecuteNonQuery(ConnectionString, $"select 1 from {tableName} where 1 = 0");
+        //        }
+        //        catch
+        //        {
+        //            exists = false;
+        //        }
+        //    }
+
+        //    return exists;
+        //}
+
+        private IList<DatoryColumn> GetRealDatoryColumns(IEnumerable<DatoryColumn> tableColumns)
         {
-            bool exists;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                tableName = tableName.ToUpper();
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.MySql || WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                tableName = tableName.ToLower();
-            }
-
-            try
-            {
-                // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
-                if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
-                {
-                    exists = (int)ExecuteScalar(ConnectionString, $"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end") == 1;
-                }
-                else
-                {
-                    exists = GetIntResult($"SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = '{WebConfigUtils.ConnectionStringUserId.ToUpper()}' and OBJECT_NAME = '{tableName}'") == 1;
-                }
-            }
-            catch
-            {
-                try
-                {
-                    // Other DB.  Graceful degradation
-                    exists = true;
-                    ExecuteNonQuery(ConnectionString, $"select 1 from {tableName} where 1 = 0");
-                }
-                catch
-                {
-                    exists = false;
-                }
-            }
-
-            return exists;
-        }
-
-        private IEnumerable<TableColumn> GetRealTableColumns(IEnumerable<TableColumn> tableColumns)
-        {
-            var realTableColumns = new List<TableColumn>();
+            var realDatoryColumns = new List<DatoryColumn>();
             foreach (var tableColumn in tableColumns)
             {
                 if (string.IsNullOrEmpty(tableColumn.AttributeName) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.Id)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.Guid)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(DynamicEntity.LastModifiedDate)))
@@ -520,112 +520,159 @@ SELECT * FROM (
                 {
                     tableColumn.DataLength = 2000;
                 }
-                realTableColumns.Add(tableColumn);
+                realDatoryColumns.Add(tableColumn);
             }
 
-            realTableColumns.InsertRange(0, new List<TableColumn>
+            realDatoryColumns.InsertRange(0, new List<DatoryColumn>
             {
-                new TableColumn
+                new DatoryColumn
                 {
                     AttributeName = nameof(DynamicEntity.Id),
                     DataType = DataType.Integer,
                     IsIdentity = true,
                     IsPrimaryKey = true
                 },
-                new TableColumn
+                new DatoryColumn
                 {
                     AttributeName = nameof(DynamicEntity.Guid),
                     DataType = DataType.VarChar,
                     DataLength = 50
                 },
-                new TableColumn
+                new DatoryColumn
                 {
                     AttributeName = nameof(DynamicEntity.LastModifiedDate),
                     DataType = DataType.DateTime
                 }
             });
 
-            return realTableColumns;
+            return realDatoryColumns;
         }
 
-        public bool CreateTable(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex, out string sqlString)
+        //        public bool CreateTable(string tableName, List<DatoryColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex, out string sqlString)
+        //        {
+        //            ex = null;
+        //            sqlString = string.Empty;
+
+        //            var list = new List<string>();
+        //            var sqlBuilder = new StringBuilder();
+
+        //            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+        //            var primaryKeyColumns = new List<DatoryColumn>();
+        //            DatoryColumn identityColumn = null;
+        //            foreach (var tableColumn in GetRealDatoryColumns(tableColumns))
+        //            {
+        //                if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+
+        //                if (tableColumn.IsIdentity)
+        //                {
+        //                    identityColumn = tableColumn;
+        //                }
+
+        //                if (tableColumn.IsPrimaryKey)
+        //                {
+        //                    primaryKeyColumns.Add(tableColumn);
+        //                }
+
+        //                var columnSql = DatorySql.GetColumnSqlString(DatabaseType, tableColumn);
+        //                if (!string.IsNullOrEmpty(columnSql))
+        //                {
+        //                    sqlBuilder.Append(columnSql).Append(",");
+        //                }
+        //            }
+
+        //            if (identityColumn != null)
+        //            {
+        //                var primaryKeySql = DatorySql.GetPrimaryKeySqlString(DatabaseType, tableName, identityColumn.AttributeName);
+        //                if (!string.IsNullOrEmpty(primaryKeySql))
+        //                {
+        //                    sqlBuilder.Append(primaryKeySql).Append(",");
+        //                }
+        //            }
+        //            else if (primaryKeyColumns.Count > 0)
+        //            {
+        //                foreach (var tableColumn in primaryKeyColumns)
+        //                {
+        //                    var primaryKeySql = DatorySql.GetPrimaryKeySqlString(DatabaseType, tableName, tableColumn.AttributeName);
+        //                    if (!string.IsNullOrEmpty(primaryKeySql))
+        //                    {
+        //                        sqlBuilder.Append(primaryKeySql).Append(",");
+        //                    }
+        //                }
+        //            }
+
+        //            sqlBuilder.Length--;
+
+        //            sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
+        //                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+        //                : ")");
+
+        //            list.Add(sqlBuilder.ToString());
+        //            if (isContentTable)
+        //            {
+        //                list.Add($@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_General")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.IsTop)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Id)} DESC)");
+
+        //                list.Add($@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)");
+        //            }
+
+        //            sqlString = TranslateUtils.ObjectCollectionToString(list, @"
+        //GO
+        //");
+
+        //            if (list.Count <= 0) return false;
+
+        //            foreach (var sql in list)
+        //            {
+        //                try
+        //                {
+        //                    ExecuteNonQuery(ConnectionString, sql);
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    ex = e;
+        //                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
+        //                    return false;
+        //                }
+        //            }
+
+        //            TableColumnManager.ClearCache();
+        //            return true;
+        //        }
+
+        public bool CreateTable(string tableName, List<DatoryColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex, out string sqlString)
         {
             ex = null;
             sqlString = string.Empty;
 
-            var list = new List<string>();
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
-
-            var primaryKeyColumns = new List<TableColumn>();
-            TableColumn identityColumn = null;
-            foreach (var tableColumn in GetRealTableColumns(tableColumns))
+            if (!DatorySql.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName,
+                tableColumns, out ex, out sqlString))
             {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
-
-                if (tableColumn.IsIdentity)
-                {
-                    identityColumn = tableColumn;
-                }
-
-                if (tableColumn.IsPrimaryKey)
-                {
-                    primaryKeyColumns.Add(tableColumn);
-                }
-
-                var columnSql = SqlUtils.GetColumnSqlString(tableColumn);
-                if (!string.IsNullOrEmpty(columnSql))
-                {
-                    sqlBuilder.Append(columnSql).Append(",");
-                }
+                LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                return false;
             }
 
-            if (identityColumn != null)
-            {
-                var primaryKeySql = SqlUtils.GetPrimaryKeySqlString(tableName, identityColumn.AttributeName);
-                if (!string.IsNullOrEmpty(primaryKeySql))
-                {
-                    sqlBuilder.Append(primaryKeySql).Append(",");
-                }
-            }
-            else if (primaryKeyColumns.Count > 0)
-            {
-                foreach (var tableColumn in primaryKeyColumns)
-                {
-                    var primaryKeySql = SqlUtils.GetPrimaryKeySqlString(tableName, tableColumn.AttributeName);
-                    if (!string.IsNullOrEmpty(primaryKeySql))
-                    {
-                        sqlBuilder.Append(primaryKeySql).Append(",");
-                    }
-                }
-            }
-
-            sqlBuilder.Length--;
-
-            sqlBuilder.AppendLine().Append(WebConfigUtils.DatabaseType == DatabaseType.MySql
-                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-                : ")");
-
-            list.Add(sqlBuilder.ToString());
             if (isContentTable)
-            {
-                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_General")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(ContentAttribute.IsTop)} DESC, {SqlUtils.GetQuotedIdentifier(ContentAttribute.Taxis)} DESC, {SqlUtils.GetQuotedIdentifier(ContentAttribute.Id)} DESC)");
-
-                list.Add($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier($"IX_{tableName}_Taxis")} ON {SqlUtils.GetQuotedIdentifier(tableName)}({SqlUtils.GetQuotedIdentifier(ContentAttribute.Taxis)} DESC)");
-            }
-
-            sqlString = TranslateUtils.ObjectCollectionToString(list, @"
-GO
-");
-
-            if (list.Count <= 0) return false;
-
-            foreach (var sql in list)
             {
                 try
                 {
-                    ExecuteNonQuery(ConnectionString, sql);
+                    sqlString =
+                        $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_General")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.IsTop)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Id)} DESC)";
+
+                    ExecuteNonQuery(ConnectionString, sqlString);
+                }
+                catch (Exception e)
+                {
+                    ex = e;
+                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                    return false;
+                }
+
+                try
+                {
+                    sqlString =
+                        $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
+
+                    ExecuteNonQuery(ConnectionString, sqlString);
                 }
                 catch (Exception e)
                 {
@@ -639,70 +686,95 @@ GO
             return true;
         }
 
-        public void AlterTable(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
+        public void AlterTable(string tableName, List<DatoryColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
         {
-            var list = new List<string>();
-
-            var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
-            foreach (var tableColumn in GetRealTableColumns(tableColumns))
-            {
-                if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
-                {
-                    list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
-                }
-            }
-
-            if (dropColumnNames != null)
-            {
-                foreach (var columnName in columnNameList)
-                {
-                    if (StringUtils.ContainsIgnoreCase(dropColumnNames, columnName))
-                    {
-                        list.Add(SqlUtils.GetDropColumnsSqlString(tableName, columnName));
-                    }
-                }
-            }
-
-            if (list.Count <= 0) return;
-
-            var isAltered = false;
-            foreach (var sqlString in list)
-            {
-                try
-                {
-                    ExecuteSql(sqlString);
-                    isAltered = true;
-                }
-                catch (Exception ex)
-                {
-                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
-                }
-            }
-
-            if (isAltered)
+            if (DatorySql.AlterTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName,
+                GetRealDatoryColumns(tableColumns), dropColumnNames, out var ex))
             {
                 TableColumnManager.ClearCache();
+            }
+            else
+            {
+                LogUtils.AddErrorLog(pluginId, ex, string.Empty);
             }
         }
 
         public void DropTable(string tableName)
         {
-            var isAltered = false;
-            try
-            {
-                ExecuteNonQuery(ConnectionString, $"DROP TABLE {tableName}");
-                isAltered = true;
-            }
-            catch (Exception ex)
-            {
-                LogUtils.AddErrorLog(ex);
-            }
-
-            if (isAltered)
+            if (DatorySql.DropTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, out var ex))
             {
                 TableColumnManager.ClearCache();
             }
+            else
+            {
+                LogUtils.AddErrorLog(ex);
+            }
         }
+
+        //public void AlterTable(string tableName, List<DatoryColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
+        //{
+        //    var list = new List<string>();
+
+        //    var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
+        //    foreach (var tableColumn in GetRealDatoryColumns(tableColumns))
+        //    {
+        //        if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+        //        {
+        //            list.Add(DatorySql.GetAddColumnsSqlString(WebConfigUtils.DatabaseType, tableName, DatorySql.GetColumnSqlString(DatabaseType, tableColumn)));
+        //        }
+        //    }
+
+        //    if (dropColumnNames != null)
+        //    {
+        //        foreach (var columnName in columnNameList)
+        //        {
+        //            if (StringUtils.ContainsIgnoreCase(dropColumnNames, columnName))
+        //            {
+        //                list.Add(DatorySql.GetDropColumnsSqlString(WebConfigUtils.DatabaseType, tableName, columnName));
+        //            }
+        //        }
+        //    }
+
+        //    if (list.Count <= 0) return;
+
+        //    var isAltered = false;
+        //    foreach (var sqlString in list)
+        //    {
+        //        try
+        //        {
+        //            ExecuteSql(sqlString);
+        //            isAltered = true;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            LogUtils.AddErrorLog(pluginId, ex, sqlString);
+        //        }
+        //    }
+
+        //    if (isAltered)
+        //    {
+        //        TableColumnManager.ClearCache();
+        //    }
+        //}
+
+        //public void DropTable(string tableName)
+        //{
+        //    var isAltered = false;
+        //    try
+        //    {
+        //        ExecuteNonQuery(ConnectionString, $"DROP TABLE {tableName}");
+        //        isAltered = true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogUtils.AddErrorLog(ex);
+        //    }
+
+        //    if (isAltered)
+        //    {
+        //        TableColumnManager.ClearCache();
+        //    }
+        //}
 
         public void AlterOracleAutoIdToMaxValue(string tableName)
         {
@@ -832,36 +904,7 @@ GO
             return retVal;
         }
 
-        public List<TableColumn> GetTableColumnInfoList(string connectionString, string tableName)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString = ConnectionString;
-            }
-
-            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, connectionString);
-
-            List<TableColumn> list = null;
-
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                list = GetMySqlColumns(connectionString, databaseName, tableName);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                list = GetSqlServerColumns(connectionString, databaseName, tableName);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                list = GetPostgreSqlColumns(connectionString, databaseName, tableName);
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                list = GetOracleColumns(connectionString, tableName);
-            }
-
-            return list;
-        }
+        
 
         public string GetOracleSequence(string tableName, string idColumnName)
         {
@@ -901,250 +944,250 @@ GO
             return sequence;
         }
 
-        private List<TableColumn> GetOracleColumns(string connectionString, string tableName)
-        {
-            var owner = WebConfigUtils.GetConnectionStringUserId(connectionString).ToUpper();
-            tableName = tableName.ToUpper();
+//        private List<DatoryColumn> GetOracleColumns(string connectionString, string tableName)
+//        {
+//            var owner = WebConfigUtils.GetConnectionStringUserId(connectionString).ToUpper();
+//            tableName = tableName.ToUpper();
 
-            var list = new List<TableColumn>();
-            var sqlString =
-                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{owner}' and table_name = '{tableName}' and user_generated = 'YES' ORDER BY COLUMN_ID";
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToOracleDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
-                    var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
-                    var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
-                    var charLength = rdr.IsDBNull(4) ? 0 : rdr.GetInt32(4);
-                    var dataDefault = rdr.IsDBNull(5) ? string.Empty : rdr.GetString(5);
-                    if (dataType == DataType.Integer)
-                    {
-                        if (scale == 2)
-                        {
-                            dataType = DataType.Decimal;
-                        }
-                        else if (percision == 1)
-                        {
-                            dataType = DataType.Boolean;
-                        }
-                    }
-                    var isIdentity = dataDefault.Contains(".nextval");
+//            var list = new List<DatoryColumn>();
+//            var sqlString =
+//                $"SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_SCALE, CHAR_LENGTH, DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{owner}' and table_name = '{tableName}' and user_generated = 'YES' ORDER BY COLUMN_ID";
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    var dataType = SqlUtils.ToOracleDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+//                    var percision = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
+//                    var scale = rdr.IsDBNull(3) ? 0 : rdr.GetInt32(3);
+//                    var charLength = rdr.IsDBNull(4) ? 0 : rdr.GetInt32(4);
+//                    var dataDefault = rdr.IsDBNull(5) ? string.Empty : rdr.GetString(5);
+//                    if (dataType == DataType.Integer)
+//                    {
+//                        if (scale == 2)
+//                        {
+//                            dataType = DataType.Decimal;
+//                        }
+//                        else if (percision == 1)
+//                        {
+//                            dataType = DataType.Boolean;
+//                        }
+//                    }
+//                    var isIdentity = dataDefault.Contains(".nextval");
 
-                    var info = new TableColumn
-                    {
-                        AttributeName = columnName,
-                        DataType = dataType,
-                        DataLength = charLength,
-                        IsPrimaryKey = false,
-                        IsIdentity = isIdentity
-                    };
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
+//                    var info = new DatoryColumn
+//                    {
+//                        AttributeName = columnName,
+//                        DataType = dataType,
+//                        DataLength = charLength,
+//                        IsPrimaryKey = false,
+//                        IsIdentity = isIdentity
+//                    };
+//                    list.Add(info);
+//                }
+//                rdr.Close();
+//            }
 
-            sqlString =
-                $@"select distinct cu.column_name from all_cons_columns cu inner join all_constraints au 
-on cu.constraint_name = au.constraint_name
-and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tableName}'";
+//            sqlString =
+//                $@"select distinct cu.column_name from all_cons_columns cu inner join all_constraints au 
+//on cu.constraint_name = au.constraint_name
+//and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tableName}'";
 
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
 
-                    foreach (var tableColumnInfo in list)
-                    {
-                        if (columnName == tableColumnInfo.AttributeName)
-                        {
-                            tableColumnInfo.IsPrimaryKey = true;
-                            break;
-                        }
-                    }
-                }
-                rdr.Close();
-            }
+//                    foreach (var tableColumnInfo in list)
+//                    {
+//                        if (columnName == tableColumnInfo.AttributeName)
+//                        {
+//                            tableColumnInfo.IsPrimaryKey = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//                rdr.Close();
+//            }
 
-            return list;
-        }
+//            return list;
+//        }
 
-        private List<TableColumn> GetPostgreSqlColumns(string connectionString, string databaseName, string tableName)
-        {
-            var list = new List<TableColumn>();
-            var sqlString =
-                $"SELECT COLUMN_NAME, UDT_NAME, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM information_schema.columns WHERE table_catalog = '{databaseName}' AND table_name = '{tableName.ToLower()}' ORDER BY ordinal_position";
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToPostgreSqlDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
-                    var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
-                    var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
+//        private List<DatoryColumn> GetPostgreSqlColumns(string connectionString, string databaseName, string tableName)
+//        {
+//            var list = new List<DatoryColumn>();
+//            var sqlString =
+//                $"SELECT COLUMN_NAME, UDT_NAME, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT FROM information_schema.columns WHERE table_catalog = '{databaseName}' AND table_name = '{tableName.ToLower()}' ORDER BY ordinal_position";
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    var dataType = SqlUtils.ToPostgreSqlDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+//                    var length = rdr.IsDBNull(2) ? 0 : rdr.GetInt32(2);
+//                    var columnDefault = rdr.IsDBNull(3) ? string.Empty : rdr.GetString(3);
 
-                    var isIdentity = columnDefault.StartsWith("nextval(");
+//                    var isIdentity = columnDefault.StartsWith("nextval(");
 
-                    var info = new TableColumn
-                    {
-                        AttributeName = columnName,
-                        DataType = dataType,
-                        DataLength = length,
-                        IsPrimaryKey = false,
-                        IsIdentity = isIdentity
-                    };
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
+//                    var info = new DatoryColumn
+//                    {
+//                        AttributeName = columnName,
+//                        DataType = dataType,
+//                        DataLength = length,
+//                        IsPrimaryKey = false,
+//                        IsIdentity = isIdentity
+//                    };
+//                    list.Add(info);
+//                }
+//                rdr.Close();
+//            }
 
-            sqlString =
-                $"select column_name, constraint_name from information_schema.key_column_usage where table_catalog = '{databaseName}' and table_name = '{tableName.ToLower()}';";
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var constraintName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
+//            sqlString =
+//                $"select column_name, constraint_name from information_schema.key_column_usage where table_catalog = '{databaseName}' and table_name = '{tableName.ToLower()}';";
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    var constraintName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
 
-                    var isPrimary = constraintName.StartsWith("pk");
+//                    var isPrimary = constraintName.StartsWith("pk");
 
-                    if (isPrimary)
-                    {
-                        foreach (var tableColumnInfo in list)
-                        {
-                            if (columnName == tableColumnInfo.AttributeName)
-                            {
-                                tableColumnInfo.IsPrimaryKey = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                rdr.Close();
-            }
+//                    if (isPrimary)
+//                    {
+//                        foreach (var tableColumnInfo in list)
+//                        {
+//                            if (columnName == tableColumnInfo.AttributeName)
+//                            {
+//                                tableColumnInfo.IsPrimaryKey = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//                rdr.Close();
+//            }
 
-            return list;
-        }
+//            return list;
+//        }
 
-        private List<TableColumn> GetSqlServerColumns(string connectionString, string databaseName, string tableName)
-        {
-            var list = new List<TableColumn>();
+//        private List<DatoryColumn> GetSqlServerColumns(string connectionString, string databaseName, string tableName)
+//        {
+//            var list = new List<DatoryColumn>();
 
-            var isIdentityExist = false;
-            var tableId = string.Empty;
-            var sqlStringTableId =
-                $"select id from [{databaseName}]..sysobjects where type = 'U' and category<>2 and name='{tableName}'";
+//            var isIdentityExist = false;
+//            var tableId = string.Empty;
+//            var sqlStringTableId =
+//                $"select id from [{databaseName}]..sysobjects where type = 'U' and category<>2 and name='{tableName}'";
 
-            using (var rdr = ExecuteReader(connectionString, sqlStringTableId))
-            {
-                if (rdr.Read())
-                {
-                    tableId = GetString(rdr, 0);
-                }
-                rdr.Close();
-            }
+//            using (var rdr = ExecuteReader(connectionString, sqlStringTableId))
+//            {
+//                if (rdr.Read())
+//                {
+//                    tableId = GetString(rdr, 0);
+//                }
+//                rdr.Close();
+//            }
 
-            var sqlString =
-                $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}]..systypes T, [{databaseName}]..syscolumns C left join [{databaseName}]..syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
+//            var sqlString =
+//                $"select C.name, T.name, C.length, C.colstat, case when C.autoval is null then 0 else 1 end, SC.text, (select CForgin.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select O.name from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1), (select Sr.rkeyid from [{databaseName}]..sysreferences Sr,[{databaseName}]..sysobjects O,[{databaseName}]..syscolumns CForgin where Sr.fkeyid={tableId} and Sr.fkey1=C.colid and Sr.rkeyid=O.id and CForgin.id=O.id and CForgin.colid=Sr.rkey1) from [{databaseName}]..systypes T, [{databaseName}]..syscolumns C left join [{databaseName}]..syscomments SC on C.cdefault=SC.id where C.id={tableId} and C.xtype=T.xusertype order by C.colid";
 
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    if (columnName == "msrepl_tran_version")
-                    {
-                        continue;
-                    }
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    if (columnName == "msrepl_tran_version")
+//                    {
+//                        continue;
+//                    }
 
-                    var dataTypeName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
-                    var lengthName = rdr.GetValue(2).ToString();
-                    var dataType = SqlUtils.ToSqlServerDataType(dataTypeName, lengthName);
-                    var length = dataType == DataType.VarChar ? TranslateUtils.ToInt(lengthName) : 0;
-                    var isPrimaryKeyInt = Convert.ToInt32(rdr.GetValue(3));
-                    var isIdentityInt = Convert.ToInt32(rdr.GetValue(4));
+//                    var dataTypeName = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1);
+//                    var lengthName = rdr.GetValue(2).ToString();
+//                    var dataType = SqlUtils.ToSqlServerDataType(dataTypeName, lengthName);
+//                    var length = dataType == DataType.VarChar ? TranslateUtils.ToInt(lengthName) : 0;
+//                    var isPrimaryKeyInt = Convert.ToInt32(rdr.GetValue(3));
+//                    var isIdentityInt = Convert.ToInt32(rdr.GetValue(4));
 
-                    var isPrimaryKey = isPrimaryKeyInt == 1;
-                    //var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
-                    var isIdentity = isIdentityInt == 1;
-                    if (isIdentity)
-                    {
-                        isIdentityExist = true;
-                    }
+//                    var isPrimaryKey = isPrimaryKeyInt == 1;
+//                    //var isIdentity = isIdentityInt == 1 || StringUtils.EqualsIgnoreCase(columnName, "Id");
+//                    var isIdentity = isIdentityInt == 1;
+//                    if (isIdentity)
+//                    {
+//                        isIdentityExist = true;
+//                    }
 
-                    var info = new TableColumn
-                    {
-                        AttributeName = columnName,
-                        DataType = dataType,
-                        DataLength = length,
-                        IsPrimaryKey = isPrimaryKey,
-                        IsIdentity = isIdentity
-                    };
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
+//                    var info = new DatoryColumn
+//                    {
+//                        AttributeName = columnName,
+//                        DataType = dataType,
+//                        DataLength = length,
+//                        IsPrimaryKey = isPrimaryKey,
+//                        IsIdentity = isIdentity
+//                    };
+//                    list.Add(info);
+//                }
+//                rdr.Close();
+//            }
 
-            if (!isIdentityExist)
-            {
-                var sqlIdentity = "select name from syscolumns where id = object_id(N'" + tableName +
-                                  "') and COLUMNPROPERTY(id, name,'IsIdentity')= 1";
-                var clName = "";
-                using (var rdr = ExecuteReader(ConnectionString, sqlIdentity))
-                {
-                    if (rdr.Read())
-                    {
-                        clName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    }
-                    rdr.Close();
-                }
+//            if (!isIdentityExist)
+//            {
+//                var sqlIdentity = "select name from syscolumns where id = object_id(N'" + tableName +
+//                                  "') and COLUMNPROPERTY(id, name,'IsIdentity')= 1";
+//                var clName = "";
+//                using (var rdr = ExecuteReader(ConnectionString, sqlIdentity))
+//                {
+//                    if (rdr.Read())
+//                    {
+//                        clName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    }
+//                    rdr.Close();
+//                }
 
-                foreach (var info in list)
-                {
-                    if (clName == info.AttributeName)
-                    {
-                        info.IsIdentity = true;
-                    }
-                }
-            }
+//                foreach (var info in list)
+//                {
+//                    if (clName == info.AttributeName)
+//                    {
+//                        info.IsIdentity = true;
+//                    }
+//                }
+//            }
 
-            return list;
-        }
+//            return list;
+//        }
 
-        private List<TableColumn> GetMySqlColumns(string connectionString, string databaseName, string tableName)
-        {
-            var list = new List<TableColumn>();
+//        private List<DatoryColumn> GetMySqlColumns(string connectionString, string databaseName, string tableName)
+//        {
+//            var list = new List<DatoryColumn>();
 
-            var sqlString =
-                $"select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY, EXTRA from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
-            using (var rdr = ExecuteReader(connectionString, sqlString))
-            {
-                while (rdr.Read())
-                {
-                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                    var dataType = SqlUtils.ToMySqlDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
-                    var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
-                    var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
-                    var isIdentity = Convert.ToString(rdr.GetValue(4)) == "auto_increment";
+//            var sqlString =
+//                $"select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_KEY, EXTRA from information_schema.columns where table_schema = '{databaseName}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
+//            using (var rdr = ExecuteReader(connectionString, sqlString))
+//            {
+//                while (rdr.Read())
+//                {
+//                    var columnName = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
+//                    var dataType = SqlUtils.ToMySqlDataType(rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1));
+//                    var length = rdr.IsDBNull(2) || dataType == DataType.Text ? 0 : Convert.ToInt32(rdr.GetValue(2));
+//                    var isPrimaryKey = Convert.ToString(rdr.GetValue(3)) == "PRI";
+//                    var isIdentity = Convert.ToString(rdr.GetValue(4)) == "auto_increment";
 
-                    var info = new TableColumn
-                    {
-                        AttributeName = columnName,
-                        DataType = dataType,
-                        DataLength = length,
-                        IsPrimaryKey = isPrimaryKey,
-                        IsIdentity = isIdentity
-                    };
-                    list.Add(info);
-                }
-                rdr.Close();
-            }
+//                    var info = new DatoryColumn
+//                    {
+//                        AttributeName = columnName,
+//                        DataType = dataType,
+//                        DataLength = length,
+//                        IsPrimaryKey = isPrimaryKey,
+//                        IsIdentity = isIdentity
+//                    };
+//                    list.Add(info);
+//                }
+//                rdr.Close();
+//            }
 
-            return list;
-        }
+//            return list;
+//        }
 
         public string GetSelectSqlString(string tableName, string whereString)
         {
@@ -1177,7 +1220,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
                 whereString = joinString + " " + whereString;
             }
 
-            return SqlDifferences.GetSqlString(tableName, columns, whereString, orderByString, totalNum);
+            return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, connectionString, tableName, columns, whereString, orderByString, totalNum);
         }
 
         public string GetSelectSqlStringByQueryString(string connectionString, string queryString, int totalNum, string orderByString)
@@ -1319,85 +1362,85 @@ FROM (SELECT TOP {totalNum} *
             return retVal;
         }
 
-        public List<string> GetTableNameList()
-        {
-            var list = new List<string>();
+        //public List<string> GetTableNameList()
+        //{
+        //    var list = new List<string>();
 
-            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+        //    var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                var sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{databaseName}' ORDER BY table_name";
+        //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+        //    {
+        //        var sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{databaseName}' ORDER BY table_name";
 
-                using (var rdr = ExecuteReader(ConnectionString, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var name = GetString(rdr, 0);
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            list.Add(name);
-                        }
-                    }
-                    rdr.Close();
-                }
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                var sqlString =
-                    $"SELECT name FROM [{databaseName}]..sysobjects WHERE type = 'U' AND category<>2 ORDER BY Name";
+        //        using (var rdr = ExecuteReader(ConnectionString, sqlString))
+        //        {
+        //            while (rdr.Read())
+        //            {
+        //                var name = GetString(rdr, 0);
+        //                if (!string.IsNullOrEmpty(name))
+        //                {
+        //                    list.Add(name);
+        //                }
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+        //    {
+        //        var sqlString =
+        //            $"SELECT name FROM [{databaseName}]..sysobjects WHERE type = 'U' AND category<>2 ORDER BY Name";
 
-                using (var rdr = ExecuteReader(ConnectionString, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var name = GetString(rdr, 0);
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            list.Add(name);
-                        }
-                    }
-                    rdr.Close();
-                }
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                var sqlString =
-                    $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
+        //        using (var rdr = ExecuteReader(ConnectionString, sqlString))
+        //        {
+        //            while (rdr.Read())
+        //            {
+        //                var name = GetString(rdr, 0);
+        //                if (!string.IsNullOrEmpty(name))
+        //                {
+        //                    list.Add(name);
+        //                }
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+        //    {
+        //        var sqlString =
+        //            $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
 
-                using (var rdr = ExecuteReader(ConnectionString, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var name = GetString(rdr, 0);
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            list.Add(name);
-                        }
-                    }
-                    rdr.Close();
-                }
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                const string sqlString = "select TABLE_NAME from user_tables";
+        //        using (var rdr = ExecuteReader(ConnectionString, sqlString))
+        //        {
+        //            while (rdr.Read())
+        //            {
+        //                var name = GetString(rdr, 0);
+        //                if (!string.IsNullOrEmpty(name))
+        //                {
+        //                    list.Add(name);
+        //                }
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
+        //    else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+        //    {
+        //        const string sqlString = "select TABLE_NAME from user_tables";
 
-                using (var rdr = ExecuteReader(ConnectionString, sqlString))
-                {
-                    while (rdr.Read())
-                    {
-                        var name = GetString(rdr, 0);
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            list.Add(name);
-                        }
-                    }
-                    rdr.Close();
-                }
-            }
+        //        using (var rdr = ExecuteReader(ConnectionString, sqlString))
+        //        {
+        //            while (rdr.Read())
+        //            {
+        //                var name = GetString(rdr, 0);
+        //                if (!string.IsNullOrEmpty(name))
+        //                {
+        //                    list.Add(name);
+        //                }
+        //            }
+        //            rdr.Close();
+        //        }
+        //    }
 
-            return list;
-        }
+        //    return list;
+        //}
 
         public int GetCount(string tableName)
         {
@@ -1419,7 +1462,7 @@ FROM (SELECT TOP {totalNum} *
             return objects;
         }
 
-        public string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumn> columns)
+        public string AddIdentityColumnIdIfNotExists(string tableName, List<DatoryColumn> columns)
         {
             var identityColumnName = string.Empty;
             foreach (var column in columns)
@@ -1435,10 +1478,10 @@ FROM (SELECT TOP {totalNum} *
             {
                 identityColumnName = "Id";
                 var sqlString =
-                    SqlUtils.GetAddColumnsSqlString(tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType(true)}");
+                    DatorySql.GetAddColumnsSqlString(WebConfigUtils.DatabaseType, tableName, $"{identityColumnName} {DatorySql.GetAutoIncrementDataType(DatabaseType, true)}");
                 ExecuteSql(sqlString);
 
-                columns.Insert(0, new TableColumn
+                columns.Insert(0, new DatoryColumn
                 {
                     AttributeName = identityColumnName,
                     DataType = DataType.Integer,
@@ -1453,7 +1496,7 @@ FROM (SELECT TOP {totalNum} *
         public IEnumerable<dynamic> GetPageObjects(string tableName, string identityColumnName, int offset, int limit)
         {
             IEnumerable<dynamic> objects;
-            var sqlString = SqlDifferences.GetSqlString(tableName, orderSqlString: $"ORDER BY {identityColumnName} ASC", offset: offset, limit: limit);
+            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, orderSqlString: $"ORDER BY {identityColumnName} ASC", offset: offset, limit: limit);
 
             using (var connection = GetConnection())
             {
@@ -1465,7 +1508,7 @@ FROM (SELECT TOP {totalNum} *
             return objects;
         }
 
-        public void InsertMultiple(string tableName, IEnumerable<JObject> items, List<TableColumn> tableColumns)
+        public void InsertMultiple(string tableName, IEnumerable<JObject> items, List<DatoryColumn> tableColumns)
         {
             var columnNames = new StringBuilder();
             foreach (var tableColumn in tableColumns)
@@ -4199,18 +4242,18 @@ SET IDENTITY_INSERT {tableName} OFF
         public string GetPageSqlString(string tableName, string columnNames,
             string whereSqlString, string orderSqlString, int offset, int limit)
         {
-            return SqlDifferences.GetSqlString(tableName, TranslateUtils.StringCollectionToStringList(columnNames),
+            return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, TranslateUtils.StringCollectionToStringList(columnNames),
             whereSqlString, orderSqlString, offset, limit);
         }
 
         public string ToPlusSqlString(string fieldName, int plusNum)
         {
-            return $"{fieldName} = {SqlDifferences.ColumnIncrement(fieldName, plusNum)}";
+            return $"{fieldName} = {DatorySql.ColumnIncrement(WebConfigUtils.DatabaseType, fieldName, plusNum)}";
         }
 
         public string ToMinusSqlString(string fieldName, int minusNum)
         {
-            return $"{fieldName} = {SqlDifferences.ColumnDecrement(fieldName, minusNum)}";
+            return $"{fieldName} = {DatorySql.ColumnDecrement(WebConfigUtils.DatabaseType, fieldName, minusNum)}";
         }
 
         public string ToNowSqlString()

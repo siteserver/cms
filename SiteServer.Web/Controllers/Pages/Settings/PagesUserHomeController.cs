@@ -4,6 +4,7 @@ using System.Web.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -113,7 +114,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
+                    homeLogoUrl = FxUtils.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
                 }
 
                 return Ok(new

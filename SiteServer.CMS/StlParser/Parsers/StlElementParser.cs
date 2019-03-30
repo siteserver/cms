@@ -63,7 +63,6 @@ namespace SiteServer.CMS.StlParser.Parsers
             {StlNavigation.ElementName.ToLower(), StlNavigation.Parse},
             {StlPlayer.ElementName.ToLower(), StlPlayer.Parse},
             {StlPrinter.ElementName.ToLower(), StlPrinter.Parse},
-            {StlRss.ElementName.ToLower(), StlRss.Parse},
             {StlSearch.ElementName.ToLower(), StlSearch.Parse},
             {StlSearch.ElementName2.ToLower(), StlSearch.Parse},
             {StlSelect.ElementName.ToLower(), StlSelect.Parse},

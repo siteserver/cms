@@ -1,5 +1,4 @@
 using System;
-using System.Web.UI.WebControls;
 using SiteServer.Plugin;
 
 namespace SiteServer.Utils
@@ -130,33 +129,6 @@ namespace SiteServer.Utils
             return Equals(type, typeStr);
         }
 
-		public static ListItem GetListItem(ValidateType type, bool selected)
-		{
-			var item = new ListItem(GetText(type), type.Value);
-			if (selected)
-			{
-				item.Selected = true;
-			}
-			return item;
-		}
-
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(ValidateType.None, false));
-                listControl.Items.Add(GetListItem(ValidateType.Chinese, false));
-                listControl.Items.Add(GetListItem(ValidateType.English, false));
-                listControl.Items.Add(GetListItem(ValidateType.Email, false));
-                listControl.Items.Add(GetListItem(ValidateType.Url, false));
-                listControl.Items.Add(GetListItem(ValidateType.Phone, false));
-                listControl.Items.Add(GetListItem(ValidateType.Mobile, false));
-                listControl.Items.Add(GetListItem(ValidateType.Integer, false));
-                listControl.Items.Add(GetListItem(ValidateType.Currency, false));
-                listControl.Items.Add(GetListItem(ValidateType.Zip, false));
-                listControl.Items.Add(GetListItem(ValidateType.IdCard, false));
-                listControl.Items.Add(GetListItem(ValidateType.RegExp, false));
-            }
-        }
+		
 	}
 }

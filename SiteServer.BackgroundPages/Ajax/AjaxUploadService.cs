@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using SiteServer.Utils;
-using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Ajax
@@ -11,7 +11,7 @@ namespace SiteServer.BackgroundPages.Ajax
     {
         public static string GetContentPhotoUploadSingleUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
             {
                 {"siteID", siteId.ToString()},
                 {"isContentPhoto", true.ToString()}
@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetContentPhotoUploadMultipleUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
             {
                 {"siteID", siteId.ToString()},
                 {"isContentPhotoSwfUpload", true.ToString()}

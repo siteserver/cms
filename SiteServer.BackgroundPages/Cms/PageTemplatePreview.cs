@@ -4,7 +4,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 
@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnReturn_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
+            FxUtils.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
         }
     }
 }

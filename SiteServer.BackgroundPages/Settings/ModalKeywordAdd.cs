@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -18,13 +20,13 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd()
         {
-            return LayerUtils.GetOpenScript("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
+            return LayerUtils.GetOpenScript("添加敏感词", FxUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
         }
 
         public static string GetOpenWindowStringToEdit(int keywordId)
         {
             return LayerUtils.GetOpenScript("修改敏感词",
-                PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
                 {
                     {"KeywordID", keywordId.ToString()}
                 }), 460, 300);

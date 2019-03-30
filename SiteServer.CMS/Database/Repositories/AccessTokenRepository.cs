@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Caches;
-using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 
@@ -13,6 +13,9 @@ namespace SiteServer.CMS.Database.Repositories
         {
             public const string Title = nameof(AccessTokenInfo.Title);
         }
+
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
 
         public void Insert(AccessTokenInfo accessTokenInfo)
         {

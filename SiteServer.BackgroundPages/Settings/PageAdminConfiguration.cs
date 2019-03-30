@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -31,10 +32,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             TbLoginUserNameMinLength.Text = ConfigManager.Instance.AdminUserNameMinLength.ToString();
             TbLoginPasswordMinLength.Text = ConfigManager.Instance.AdminPasswordMinLength.ToString();
-            EUserPasswordRestrictionUtils.AddListItems(DdlLoginPasswordRestriction);
+            FxUtils.AddListItemsToEUserPasswordRestriction(DdlLoginPasswordRestriction);
             ControlUtils.SelectSingleItemIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.Instance.AdminPasswordRestriction);
 
-            EBooleanUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
+            FxUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsLoginFailToLock, ConfigManager.Instance.IsAdminLockLogin.ToString());
 
             PhFailToLock.Visible = ConfigManager.Instance.IsAdminLockLogin;
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
                 TbLoginLockingHours.Text = ConfigManager.Instance.AdminLockLoginHours.ToString();
             }
 
-            EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
+            FxUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.Instance.IsViewContentOnlySelf.ToString());
         }
 

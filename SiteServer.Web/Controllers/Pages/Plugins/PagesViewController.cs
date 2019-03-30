@@ -2,6 +2,7 @@
 using System.Web.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 

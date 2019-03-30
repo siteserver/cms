@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -21,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int relatedFieldId, int parentId, int level)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"ParentID", parentId.ToString() },
@@ -31,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int relatedFieldId, int level)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"Level", level.ToString() }

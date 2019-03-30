@@ -6,6 +6,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -22,12 +23,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (currentAreaId > 0)
             {
-                return PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                return FxUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"CurrentAreaID", currentAreaId.ToString()}
                 });
             }
-            return PageUtils.GetSettingsUrl(nameof(PageAdminArea), null);
+            return FxUtils.GetSettingsUrl(nameof(PageAdminArea), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -49,7 +50,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.Area.UpdateTaxis(areaId, isSubtract);
 
-                PageUtils.Redirect(GetRedirectUrl(areaId));
+                FxUtils.Redirect(GetRedirectUrl(areaId));
                 return;
             }
 
@@ -71,7 +72,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnAdd.Attributes.Add("onclick", ModalAreaAdd.GetOpenWindowStringToAdd(GetRedirectUrl(0)));
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+            var urlDelete = FxUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
             {
                 {"DeleteById", "True"}
             });
@@ -130,14 +131,14 @@ namespace SiteServer.BackgroundPages.Settings
                 string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalAreaAdd.GetOpenWindowStringToEdit(areaInfo.Id,
                     GetRedirectUrl(areaInfo.Id))}"">编辑</a>";
 
-                var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                var urlUp = FxUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Subtract", "True"},
                     {"AreaID", areaInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
-                var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                var urlDown = FxUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Add", "True"},
                     {"AreaID", areaInfo.Id.ToString()}

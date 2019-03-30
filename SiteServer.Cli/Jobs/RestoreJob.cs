@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Datory;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -142,7 +144,7 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
                         if (!DatabaseApi.Instance.CreateTable(tableName, tableInfo.Columns, string.Empty, false, out var ex, out var sqlString))
                         {
@@ -207,7 +209,7 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DatabaseApi.Instance.GetTableNameList();
+                var tableNameList = DatorySql.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
                 foreach (var tableName in tableNameList)
                 {
                     DatabaseApi.Instance.AlterOracleAutoIdToMaxValue(tableName);

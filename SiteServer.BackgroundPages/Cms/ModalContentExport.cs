@@ -3,9 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -25,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("导出内容",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalContentExport), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalContentExport), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }), "contentIdCollection", string.Empty);
@@ -125,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
             var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, AuthRequest.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
-            PageUtils.Redirect(redirectUrl);
+            FxUtils.Redirect(redirectUrl);
 		}
 	}
 }

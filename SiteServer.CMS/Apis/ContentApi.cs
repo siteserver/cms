@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
@@ -37,12 +38,12 @@ namespace SiteServer.CMS.Apis
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             var list = DataProvider.ContentRepository.GetContentInfoList(tableName, whereString, orderString, offset, limit);
-            var retval = new List<IContentInfo>();
+            var retVal = new List<IContentInfo>();
             foreach (var contentInfo in list)
             {
-                retval.Add(contentInfo);
+                retVal.Add(contentInfo);
             }
-            return retval;
+            return retVal;
         }
 
         public int GetCount(int siteId, int channelId, string whereString)

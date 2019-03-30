@@ -3,6 +3,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 

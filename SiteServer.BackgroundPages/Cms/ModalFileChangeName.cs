@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string rootPath, string fileName)
         {
-            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", FxUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
             {
                 {"RootPath", rootPath},
                 {"FileName", fileName}
@@ -25,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string rootPath, string fileName, string hiddenClientId)
         {
-            return LayerUtils.GetOpenScript("修改文件名", PageUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改文件名", FxUtils.GetCmsUrl(siteId, nameof(ModalFileChangeName), new NameValueCollection
             {
                 {"RootPath", rootPath},
                 {"FileName", fileName},
@@ -37,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "RootPath");
+            FxUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);

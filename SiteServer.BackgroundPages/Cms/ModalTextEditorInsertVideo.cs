@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Core.LitJson;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.StlElement;
-using SiteServer.Utils.LitJson;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,13 +28,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入视频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入视频", FxUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 520);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
+        public string UploadUrl => FxUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
         {
             {"upload", true.ToString()}
         });

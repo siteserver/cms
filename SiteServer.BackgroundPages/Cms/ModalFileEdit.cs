@@ -3,7 +3,9 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, string relatedPath, string fileName, bool isCreate)
         {
             var title = isCreate ? "新建文件" : "编辑文件";
-            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(siteId, nameof(ModalFileEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript(title, FxUtils.GetCmsUrl(siteId, nameof(ModalFileEdit), new NameValueCollection
             {
                 {"RelatedPath", relatedPath},
                 {"FileName", fileName},
@@ -40,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string relatedPath, string fileName, bool isCreate)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalFileEdit), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalFileEdit), new NameValueCollection
             {
                 {"RelatedPath", relatedPath},
                 {"FileName", fileName},
@@ -69,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "RelatedPath", "FileName", "IsCreate");
+            FxUtils.CheckRequestParameter("siteId", "RelatedPath", "FileName", "IsCreate");
             _relatedPath = AuthRequest.GetQueryString("RelatedPath").Trim('/');
             if (!_relatedPath.StartsWith("@"))
             {
@@ -87,11 +89,11 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var filePath = SiteInfo != null
                     ? PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, _theFileName))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                    : FxUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 if (!FileUtils.IsFileExists(filePath))
                 {
-                    PageUtils.RedirectToErrorPage("此文件不存在！");
+                    FxUtils.RedirectToErrorPage("此文件不存在！");
                     return;
                 }
             }
@@ -99,11 +101,11 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             DdlCharset.Items.Add(new ListItem("默认", string.Empty));
-            ECharsetUtils.AddListItems(DdlCharset);
+            FxUtils.AddListItemsToECharset(DdlCharset);
 
             if (_isCreate == false)
             {
-                var filePath = SiteInfo != null ? PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, _theFileName)) : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                var filePath = SiteInfo != null ? PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, _theFileName)) : FxUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
                 TbFileName.Text = _theFileName;
                 TbFileName.Enabled = false;
                 TbFileContent.Text = FileUtils.ReadText(filePath, _fileCharset);
@@ -120,7 +122,7 @@ namespace SiteServer.BackgroundPages.Cms
             else
             {
                 LtlOpen.Text =
-                    $@"<a class=""btn btn-default m-l-10"" href=""{PageUtils.ParseConfigRootUrl(PageUtils.Combine(_relatedPath, _theFileName))}"" target=""_blank"">浏 览</a>";
+                    $@"<a class=""btn btn-default m-l-10"" href=""{FxUtils.ParseConfigRootUrl(PageUtils.Combine(_relatedPath, _theFileName))}"" target=""_blank"">浏 览</a>";
             }
             LtlView.Text = $@"<a class=""btn btn-default m-l-10"" href=""{ModalFileView.GetRedirectUrl(SiteId, _relatedPath, _theFileName)}"">查 看</a>";
         }
@@ -163,7 +165,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var filePath = SiteInfo != null
                     ? PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, _theFileName))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
+                    : FxUtils.MapPath(PathUtils.Combine(_relatedPath, _theFileName));
 
                 try
                 {
@@ -201,7 +203,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 var filePath = SiteInfo != null
                     ? PathUtility.MapPath(SiteInfo, PathUtils.Combine(_relatedPath, TbFileName.Text))
-                    : PathUtils.MapPath(PathUtils.Combine(_relatedPath, TbFileName.Text));
+                    : FxUtils.MapPath(PathUtils.Combine(_relatedPath, TbFileName.Text));
 
                 if (FileUtils.IsFileExists(filePath))
                 {

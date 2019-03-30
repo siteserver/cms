@@ -3,11 +3,13 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,12 +24,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加专题", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), null), 500, 400);
+            return LayerUtils.GetOpenScript("添加专题", FxUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), null), 500, 400);
         }
 
         public static string GetOpenWindowString(int siteId, int specialId)
         {
-            return LayerUtils.GetOpenScript("编辑专题", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑专题", FxUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), new NameValueCollection
             {
                 {"specialId", specialId.ToString()}
             }), 500, 400);
@@ -37,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             if (specialId > 0)

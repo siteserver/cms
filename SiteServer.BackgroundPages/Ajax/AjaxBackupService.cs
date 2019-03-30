@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -21,7 +22,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetCountArrayUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeGetCountArray }
             });
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetBackupUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeBackup }
             });
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetRecoveryUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeRecovery }
             });

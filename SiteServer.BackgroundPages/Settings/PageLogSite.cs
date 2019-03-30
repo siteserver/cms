@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -95,14 +96,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                    PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+                    FxUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
                     {
                         {"DeleteById", "True"}
                     }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
                 AlertUtils.ConfirmRedirect("删除所有日志", "此操作将删除所有日志信息，确定吗？", "删除全部",
-                    PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+                    FxUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
                     {
                         {"DeleteAll", "True"}
                     })));
@@ -112,7 +113,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "禁用站点日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("禁用站点日志", "此操作将禁用站点日志记录功能，确定吗？", "禁 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+                        FxUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -123,7 +124,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "启用站点日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("启用站点日志", "此操作将启用站点日志记录功能，确定吗？", "启 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+                        FxUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -163,7 +164,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+            FxUtils.Redirect(FxUtils.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
             {
                 {"UserName", TbUserName.Text},
                 {"Keyword", TbKeyword.Text},

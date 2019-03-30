@@ -2,6 +2,7 @@
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -81,17 +82,17 @@ namespace SiteServer.CMS.Apis
 
         public string GetRootUrl(string relatedUrl = "")
         {
-            return PageUtils.GetRootUrl(relatedUrl);
+            return FxUtils.GetRootUrl(relatedUrl);
         }
 
         public string GetAdminUrl(string relatedUrl = "")
         {
-            return PageUtils.GetAdminUrl(relatedUrl);
+            return FxUtils.GetAdminUrl(relatedUrl);
         }
 
         public string GetHomeUrl(string relatedUrl = "")
         {
-            return PageUtils.GetHomeUrl(relatedUrl);
+            return FxUtils.GetHomeUrl(relatedUrl);
         }
 
         public string GetApiUrl(string relatedUrl = "")

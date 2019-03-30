@@ -7,6 +7,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Core
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Core
 
             if (_channelInfo.Id > 0)
             {
-                contentModelIconHtml = $@"<a href=""{PageUtils.GetLoadingUrl(_channelInfo.SiteId, _channelInfo.Id, 0)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
+                contentModelIconHtml = $@"<a href=""{FxUtils.GetLoadingUrl(_channelInfo.SiteId, _channelInfo.Id, 0)}"" target=""_blank"" title=""浏览页面"" onclick=""event.stopPropagation()"">{contentModelIconHtml}</a>";
             }
 
             htmlBuilder.Append(contentModelIconHtml);

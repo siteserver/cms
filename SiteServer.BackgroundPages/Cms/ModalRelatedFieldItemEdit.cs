@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int relatedFieldId, int parentId, int level, int id)
         {
-            return LayerUtils.GetOpenScript("编辑字段项", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldItemEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑字段项", FxUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldItemEdit), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"ParentID", parentId.ToString()},

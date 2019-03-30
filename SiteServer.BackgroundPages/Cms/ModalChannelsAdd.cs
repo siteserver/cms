@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加栏目",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -39,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalChannelsAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -50,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));

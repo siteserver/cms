@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 
@@ -16,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToSingleTableStyle(string tableName)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle}

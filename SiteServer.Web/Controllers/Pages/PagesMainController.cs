@@ -12,6 +12,7 @@ using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser;
@@ -43,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = $"{AdminPagesUtils.LoginUrl}?redirectUrl={PageUtils.UrlEncode(PageUtils.GetMainUrl(siteId, pageUrl))}"
+                        RedirectUrl = $"{AdminPagesUtils.LoginUrl}?redirectUrl={PageUtils.UrlEncode(FxUtils.GetMainUrl(siteId, pageUrl))}"
                     });
                 }
                 if (rest.AdminInfo.Locked)
@@ -67,7 +68,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(rest.AdminInfo.SiteId, pageUrl)
+                            RedirectUrl = FxUtils.GetMainUrl(rest.AdminInfo.SiteId, pageUrl)
                         });
                     }
 
@@ -76,7 +77,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(siteIdListWithPermissions[0], pageUrl)
+                            RedirectUrl = FxUtils.GetMainUrl(siteIdListWithPermissions[0], pageUrl)
                         });
                     }
 
@@ -203,7 +204,7 @@ namespace SiteServer.API.Controllers.Pages
 
                         siteMenus.Add(new Tab
                         {
-                            Href = PageUtils.GetMainUrl(site.Id, string.Empty),
+                            Href = FxUtils.GetMainUrl(site.Id, string.Empty),
                             Target = "_top",
                             Text = site.SiteName
                         });

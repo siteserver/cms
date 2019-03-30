@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Tests

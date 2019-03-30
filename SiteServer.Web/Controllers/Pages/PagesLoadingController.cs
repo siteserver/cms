@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
@@ -82,7 +83,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteId == 0)
                 {
-                    redirectUrl = PageUtils.ApplicationPath;
+                    redirectUrl = FxUtils.ApplicationPath;
                 }
                 else
                 {

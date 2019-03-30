@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
@@ -17,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(string tableName, int siteId, int relatedIdentity)
         {
             return LayerUtils.GetOpenScript("导入表样式",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleImport), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalTableStyleImport), new NameValueCollection
                 {
                     {"TableName", tableName},
                     {"RelatedIdentity", relatedIdentity.ToString()}

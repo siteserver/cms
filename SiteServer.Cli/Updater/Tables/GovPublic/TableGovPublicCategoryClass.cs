@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.Plugin;
 
@@ -48,51 +49,51 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
 
         private static readonly string NewTableName = "ss_govpublic_category_class";
 
-        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
+        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ClassCode",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ClassName",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IsSystem",
                 DataType = DataType.Boolean
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IsEnabled",
                 DataType = DataType.Boolean
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ContentAttributeName",
                 DataType = DataType.VarChar
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Description",
                 DataType = DataType.VarChar

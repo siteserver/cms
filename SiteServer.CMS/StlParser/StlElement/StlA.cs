@@ -3,6 +3,7 @@ using System.Text;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -224,7 +225,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (!string.IsNullOrEmpty(host))
                 {
-                    url = PageUtils.AddProtocolToUrl(url, host);
+                    url = FxUtils.AddProtocolToUrl(url, host);
                 }
 
                 if (!string.IsNullOrEmpty(queryString))

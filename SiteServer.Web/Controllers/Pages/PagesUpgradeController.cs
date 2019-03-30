@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 
@@ -66,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages
             var version = rest.GetPostString("version");
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = FxUtils.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
             if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -78,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages
                 WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), FxUtils.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);

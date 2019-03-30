@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -27,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateMatch), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplateMatch), null);
         }
 
         public string GetTitle(ChannelInfo nodeInfo)
@@ -93,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ChannelTemplate);
             _defaultChannelTemplateName = TemplateManager.GetTemplateName(SiteId, defaultChannelTemplateId);

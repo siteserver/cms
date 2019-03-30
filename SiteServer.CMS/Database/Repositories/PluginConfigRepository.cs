@@ -1,10 +1,14 @@
-using SiteServer.CMS.Database.Core;
+using Datory;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
     public class PluginConfigRepository : GenericRepository<PluginConfigInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string PluginId = nameof(PluginConfigInfo.PluginId);

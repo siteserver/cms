@@ -2,10 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
-using SiteServer.Utils.Images;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
             return LayerUtils.GetOpenScript("插入图片",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertImage), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertImage), new NameValueCollection
                 {
                     {"attributeName", attributeName}
                 }), 700, 550);
@@ -34,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "attributeName");
+            FxUtils.CheckRequestParameter("siteId", "attributeName");
             _attributeName = AuthRequest.GetQueryString("attributeName");
 
             if (IsPostBack) return;

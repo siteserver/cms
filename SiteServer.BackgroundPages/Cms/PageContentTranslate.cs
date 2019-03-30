@@ -5,10 +5,10 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectClickStringForMultiChannels(int siteId, string returnUrl)
         {
-            var redirectUrl = PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
+            var redirectUrl = FxUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectClickString(int siteId, int channelId, string returnUrl)
         {
-            var redirectUrl = PageUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
+            var redirectUrl = FxUtils.GetCmsUrl(siteId, nameof(PageContentTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId");
+			FxUtils.CheckRequestParameter("siteId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{
-            //    PageUtils.RedirectToErrorPage("您没有此栏目的内容转移权限！");
+            //    FxUtils.RedirectToErrorPage("您没有此栏目的内容转移权限！");
             //    return;
             //}
 
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(_returnUrl);
+            FxUtils.Redirect(_returnUrl);
         }
 	}
 }

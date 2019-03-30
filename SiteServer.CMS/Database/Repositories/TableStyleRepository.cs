@@ -1,13 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
     public class TableStyleRepository : GenericRepository<TableStyleInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(TableStyleInfo.Id);

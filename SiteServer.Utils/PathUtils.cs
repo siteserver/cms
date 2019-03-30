@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using System.Web;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SiteServer.Utils
 {
@@ -133,19 +132,9 @@ namespace SiteServer.Utils
             return string.Empty;
         }
 
-        public static string GetCurrentPagePath()
-        {
-            if (HttpContext.Current != null)
-            {
-                return HttpContext.Current.Request.PhysicalPath;
-            }
-            return string.Empty;
-        }
+        
 
-        public static string GetSiteFilesPath(params string[] paths)
-        {
-            return MapPath(Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, Combine(paths)));
-        }
+        
 
         public static string GetBinDirectoryPath(string relatedPath)
         {
@@ -165,42 +154,9 @@ namespace SiteServer.Utils
             return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
         }
 
-        public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
+        
 
-        public static string GetPluginPath(string pluginId, params string[] paths)
-        {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins, pluginId, Combine(paths));
-        }
-
-        public static string GetPluginNuspecPath(string pluginId)
-        {
-            return GetPluginPath(pluginId, pluginId + ".nuspec");
-        }
-
-        public static string GetPluginDllDirectoryPath(string pluginId)
-        {
-            var fileName = pluginId + ".dll";
-
-            if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", fileName)))
-            {
-                return GetPluginPath(pluginId, "Bin");
-            }
-            if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Debug", fileName)))
-            {
-                return GetPluginPath(pluginId, "Bin", "Debug");
-            }
-            if (FileUtils.IsFileExists(GetPluginPath(pluginId, "Bin", "Release", fileName)))
-            {
-                return GetPluginPath(pluginId, "Bin", "Release");
-            }
-            
-            return string.Empty;
-        }
-
-        public static string GetPackagesPath(params string[] paths)
-        {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, Combine(paths));
-        }
+        
 
         public static string RemovePathInvalidChar(string filePath)
         {
@@ -211,37 +167,7 @@ namespace SiteServer.Utils
             return Regex.Replace(filePath, invalidReStr, "");
         }
 
-        public static string MapPath(string virtualPath)
-        {
-            virtualPath = RemovePathInvalidChar(virtualPath);
-            string retVal;
-            if (!string.IsNullOrEmpty(virtualPath))
-            {
-                if (virtualPath.StartsWith("~"))
-                {
-                    virtualPath = virtualPath.Substring(1);
-                }
-                virtualPath = PageUtils.Combine("~", virtualPath);
-            }
-            else
-            {
-                virtualPath = "~/";
-            }
-            if (HttpContext.Current != null)
-            {
-                retVal = HttpContext.Current.Server.MapPath(virtualPath);
-            }
-            else
-            {
-                var rootPath = WebConfigUtils.PhysicalApplicationPath;
-
-                virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
-                retVal = Combine(rootPath, virtualPath);
-            }
-
-            if (retVal == null) retVal = string.Empty;
-            return retVal.Replace("/", "\\");
-        }
+        
 
         public static bool IsFileExtenstionAllowed(string sAllowedExt, string sExt)
         {
@@ -259,10 +185,7 @@ namespace SiteServer.Utils
             return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
-        public static string GetMenusPath(params string[] paths)
-        {
-            return Combine(SiteServerAssets.GetPath("menus"), Combine(paths));
-        }
+        
 
         public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
 

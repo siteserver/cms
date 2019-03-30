@@ -8,6 +8,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
             var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToEdit(SiteId, tag);
             ltlEditUrl.Text = $"<a href=\"javascript:;\" onClick=\"{showPopWinString}\">编辑</a>";
 
-            var urlDelete = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
+            var urlDelete = FxUtils.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
             {
                 {"TagName", tag},
                 {"DeleteById", true.ToString()}

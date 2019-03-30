@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Core;
-using SiteServer.CMS.Database.Wrapper;
 using SiteServer.CMS.Tests.Database.Mocks;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using SqlKata;
 using Xunit;
@@ -58,7 +57,7 @@ namespace SiteServer.CMS.Tests.Database.Core
             var lockedColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.Locked));
             Assert.Null(lockedColumn);
 
-            var isExists = DatabaseApi.Instance.IsTableExists(tableName);
+            var isExists = DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
             if (isExists)
             {
                 DatabaseApi.Instance.DropTable(_repository.TableName);

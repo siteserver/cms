@@ -7,6 +7,7 @@ using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -17,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public static string GetRedirectUrl(int siteId, int channelId, int contentId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(PageContentAddHandler), new NameValueCollection
+            return FxUtils.GetCmsWebHandlerUrl(siteId, nameof(PageContentAddHandler), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()}

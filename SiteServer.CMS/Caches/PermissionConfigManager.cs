@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using SiteServer.CMS.Caches.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
@@ -48,7 +49,7 @@ namespace SiteServer.CMS.Caches
 
 			    permissionManager = new PermissionConfigManager();
 
-			    var path = PathUtils.GetMenusPath("Permissions.config");
+			    var path = FxUtils.GetMenusPath("Permissions.config");
 			    if (FileUtils.IsFileExists(path))
 			    {
 			        var doc = new XmlDocument();

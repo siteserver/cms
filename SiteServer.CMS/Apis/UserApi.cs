@@ -4,6 +4,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -64,7 +65,7 @@ namespace SiteServer.CMS.Apis
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
-            var userId = DataProvider.User.Insert(userInfo as UserInfo, password, PageUtils.GetIpAddress(), out errorMessage);
+            var userId = DataProvider.User.Insert(userInfo as UserInfo, password, FxUtils.GetIpAddress(), out errorMessage);
             return userId > 0;
         }
 

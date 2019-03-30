@@ -6,7 +6,9 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport.Components;
+using SiteServer.Utils.Atom.Atom.Core;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -289,7 +291,7 @@ namespace SiteServer.CMS.ImportExport
             DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
             DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.FileUploadDirectoryName), fileUploadDirectoryPath);
 
-            Atom.Core.AtomFeed feed = AtomUtility.GetEmptyFeed();  
+            AtomFeed feed = AtomUtility.GetEmptyFeed();  
             var entry = AtomUtility.GetEmptyEntry();  
             AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", _siteInfo.ImageUploadDirectoryName);
             AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", _siteInfo.VideoUploadDirectoryName);

@@ -2,9 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
 
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("导入内容",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalContentImport), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalContentImport), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }), 0, 520);

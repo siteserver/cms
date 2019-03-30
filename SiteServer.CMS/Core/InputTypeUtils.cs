@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -77,70 +78,70 @@ namespace SiteServer.CMS.Core
 
 		public static InputType GetEnumType(string typeStr)
 		{
-			var retval = InputType.Text;
+			var retVal = InputType.Text;
 
 			if (Equals(InputType.CheckBox, typeStr))
             {
-                retval = InputType.CheckBox;
+                retVal = InputType.CheckBox;
             }
 			else if (Equals(InputType.Radio, typeStr))
 			{
-				retval = InputType.Radio;
+				retVal = InputType.Radio;
 			}
 			else if (Equals(InputType.SelectOne, typeStr))
 			{
-				retval = InputType.SelectOne;
+				retVal = InputType.SelectOne;
 			}
 			else if (Equals(InputType.SelectMultiple, typeStr))
 			{
-				retval = InputType.SelectMultiple;
+				retVal = InputType.SelectMultiple;
             }
             else if (Equals(InputType.SelectCascading, typeStr))
             {
-                retval = InputType.SelectCascading;
+                retVal = InputType.SelectCascading;
             }
             else if (Equals(InputType.Date, typeStr))
             {
-                retval = InputType.Date;
+                retVal = InputType.Date;
             }
             else if (Equals(InputType.DateTime, typeStr))
             {
-                retval = InputType.DateTime;
+                retVal = InputType.DateTime;
             }
             else if (Equals(InputType.Image, typeStr))
             {
-                retval = InputType.Image;
+                retVal = InputType.Image;
             }
             else if (Equals(InputType.Video, typeStr))
             {
-                retval = InputType.Video;
+                retVal = InputType.Video;
             }
             else if (Equals(InputType.File, typeStr))
             {
-                retval = InputType.File;
+                retVal = InputType.File;
             }
 			else if (Equals(InputType.Text, typeStr))
 			{
-				retval = InputType.Text;
+				retVal = InputType.Text;
 			}
 			else if (Equals(InputType.TextArea, typeStr))
 			{
-				retval = InputType.TextArea;
+				retVal = InputType.TextArea;
 			}
 			else if (Equals(InputType.TextEditor, typeStr))
 			{
-				retval = InputType.TextEditor;
+				retVal = InputType.TextEditor;
             }
             else if (Equals(InputType.Customize, typeStr))
             {
-                retval = InputType.Customize;
+                retVal = InputType.Customize;
             }
             else if (Equals(InputType.Hidden, typeStr))
             {
-                retval = InputType.Hidden;
+                retVal = InputType.Hidden;
             }
 
-            return retval;
+            return retVal;
 		}
 
 		public static bool Equals(InputType type, string typeStr)

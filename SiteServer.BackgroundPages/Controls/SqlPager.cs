@@ -2,12 +2,18 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Database.Core;
+using Datory;
+using MySql.Data.MySqlClient;
+using Npgsql;
+using Oracle.ManagedDataAccess.Client;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Controls
 {
@@ -16,6 +22,129 @@ namespace SiteServer.BackgroundPages.Controls
     [ToolboxData("<{0}:SqlPager runat=\"server\" />")]
     public class SqlPager : Table, INamingContainer
     {
+        public static IDbCommand GetIDbCommand()
+        {
+            IDbCommand command = null;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                command = new MySqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                command = new SqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                command = new NpgsqlCommand();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                command = new OracleCommand();
+            }
+
+            return command;
+        }
+
+        public static IDbDataAdapter GetIDbDataAdapter()
+        {
+            IDbDataAdapter adapter = null;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                adapter = new MySqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                adapter = new SqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                adapter = new NpgsqlDataAdapter();
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                adapter = new OracleDataAdapter();
+            }
+
+            return adapter;
+        }
+
+        public static void FillDataAdapterWithDataTable(IDbDataAdapter adapter, DataTable table)
+        {
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                ((MySqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                ((SqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                ((NpgsqlDataAdapter)adapter).Fill(table);
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                ((OracleDataAdapter)adapter).Fill(table);
+            }
+        }
+
+        public static string GetPageSqlString(string sqlString, string orderString, int itemsPerPage, int currentPageIndex, int pageCount, int recordsInLastPage)
+        {
+            var retVal = string.Empty;
+
+            var recsToRetrieve = itemsPerPage;
+            if (currentPageIndex == pageCount - 1)
+            {
+                recsToRetrieve = recordsInLastPage;
+            }
+
+            orderString = orderString.ToUpper();
+            var orderStringReverse = orderString.Replace(" DESC", " DESC2");
+            orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
+            orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retVal = $@"
+SELECT * FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retVal = $@"
+SELECT * FROM (
+    SELECT TOP {recsToRetrieve} * FROM (
+        SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
+    ) AS t1 {orderStringReverse}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retVal = $@"
+SELECT * FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retVal = $@"
+SELECT * FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {itemsPerPage * (currentPageIndex + 1)} ROWS ONLY
+    ) {orderStringReverse} FETCH FIRST {recsToRetrieve} ROWS ONLY
+) {orderString}";
+            }
+
+            return retVal;
+        }
+
         private PagedDataSource _dataSource;
         private const string ParmPage = "page";
         private bool _isSetTotalCount;
@@ -636,11 +765,11 @@ namespace SiteServer.BackgroundPages.Controls
                 return;
             }
             //SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-            var adapter = SqlUtils.GetIDbDataAdapter();
+            var adapter = GetIDbDataAdapter();
             adapter.SelectCommand = cmd;
             var data = new DataTable();
             //adapter.Fill(data);
-            SqlUtils.FillDataAdapterWithDataTable(adapter, data);
+            FillDataAdapterWithDataTable(adapter, data);
 
             // Configures the paged data source component
             if (_dataSource == null)
@@ -731,10 +860,10 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 orderString = $"ORDER BY {SortField} {SortMode}";
             }
-            var cmdText = SqlUtils.GetPageSqlString(SelectCommand, orderString, ItemsPerPage, CurrentPageIndex, countInfo.PageCount, countInfo.RecordsInLastPage);
+            var cmdText = GetPageSqlString(SelectCommand, orderString, ItemsPerPage, CurrentPageIndex, countInfo.PageCount, countInfo.RecordsInLastPage);
 
-            var conn = SqlDifferences.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
-            var cmd = SqlUtils.GetIDbCommand();
+            var conn = DatorySql.GetConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var cmd = GetIDbCommand();
             cmd.Connection = conn;
             cmd.CommandText = cmdText;
             return cmd;
@@ -747,7 +876,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var pageList = (DropDownList)sender;
             var pageIndex = Convert.ToInt32(pageList.SelectedValue);
-            PageUtils.Redirect(GetNavigationUrl(pageIndex + 1));
+            FxUtils.Redirect(GetNavigationUrl(pageIndex + 1));
         }
     }
 }

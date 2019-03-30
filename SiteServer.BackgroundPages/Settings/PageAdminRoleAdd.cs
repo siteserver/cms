@@ -7,6 +7,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -29,12 +30,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), null);
+            return FxUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), null);
         }
 
         public static string GetRedirectUrl(string roleName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), new NameValueCollection { { "RoleName", roleName } });
+            return FxUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), new NameValueCollection { { "RoleName", roleName } });
         }
 
         public static string GetReturnRedirectUrl(string roleName)
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 queryString.Add("RoleName", roleName);
             }
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), queryString);
+            return FxUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), queryString);
         }
 
         public string GetSitesHtml(List<int> allSiteIdList, List<int> managedSiteIdList)
@@ -156,7 +157,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                PageUtils.RedirectToErrorPage("页面超时，请重新进入。");
+                FxUtils.RedirectToErrorPage("页面超时，请重新进入。");
             }
 
             if (Request.QueryString["Return"] == null)
@@ -248,7 +249,7 @@ if (ss_role) {
         {
             if (AuthRequest.GetQueryString("Return") != null)
             {
-                PageUtils.Redirect(PageAdminRole.GetRedirectUrl());
+                FxUtils.Redirect(PageAdminRole.GetRedirectUrl());
             }
         }
     }

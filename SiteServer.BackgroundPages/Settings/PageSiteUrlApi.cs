@@ -2,6 +2,7 @@
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            EBooleanUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
+            FxUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
             ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.Instance.IsSeparatedApi.ToString());
             PhSeparatedApi.Visible = ConfigManager.Instance.IsSeparatedApi;
             TbSeparatedApiUrl.Text = ConfigManager.Instance.SeparatedApiUrl;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
 
@@ -36,7 +37,7 @@ namespace SiteServer.API.Controllers.Pages
         public IHttpActionResult Update()
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.Version}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = FxUtils.GetPackagesPath(idWithVersion);
             var homeDirectory = PathUtils.GetHomeDirectoryPath(string.Empty);
             if (!DirectoryUtils.IsDirectoryExists(homeDirectory) || !FileUtils.IsFileExists(PathUtils.Combine(homeDirectory, "config.js")))
             {

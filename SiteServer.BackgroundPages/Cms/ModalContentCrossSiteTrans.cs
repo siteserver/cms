@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -20,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", FxUtils.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }), "contentIdCollection", "请选择需要转发的内容！", 400, 410);
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));

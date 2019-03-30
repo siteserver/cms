@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Apis;
@@ -13,8 +14,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Repositories;
 using SiteServer.CMS.Database.Repositories.Contents;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -60,12 +61,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), null);
+            return FxUtils.GetSettingsUrl(nameof(PageSiteAdd), null);
         }
 
         public static string GetRedirectUrl(string siteTemplateDir, string onlineTemplateName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageSiteAdd), new NameValueCollection
             {
                 {"siteTemplateDir", siteTemplateDir},
                 {"onlineTemplateName", onlineTemplateName}
@@ -124,7 +125,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             ControlUtils.SelectSingleItem(DdlParentId, "0");
 
-            ECharsetUtils.AddListItems(DdlCharset);
+            FxUtils.AddListItemsToECharset(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
             var tableNameList = SiteManager.GetSiteTableNames();
@@ -300,7 +301,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
                 var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
-                PageUtils.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
+                FxUtils.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
                     CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid()));
             }
             else
@@ -357,7 +358,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(templateInfo.SiteTemplateName))
             {
-                ltlTemplateName.Text = !string.IsNullOrEmpty(templateInfo.WebSiteUrl) ? $@"<a href=""{PageUtils.ParseConfigRootUrl(templateInfo.WebSiteUrl)}"" target=""_blank"">{templateInfo.SiteTemplateName}</a>" : templateInfo.SiteTemplateName;
+                ltlTemplateName.Text = !string.IsNullOrEmpty(templateInfo.WebSiteUrl) ? $@"<a href=""{FxUtils.ParseConfigRootUrl(templateInfo.WebSiteUrl)}"" target=""_blank"">{templateInfo.SiteTemplateName}</a>" : templateInfo.SiteTemplateName;
             }
 
             ltlName.Text = directoryInfo.Name;
@@ -369,8 +370,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(templateInfo.PicFileName))
             {
-                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(directoryInfo.Name);
-                var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, templateInfo.PicFileName);
+                var siteTemplateUrl = FxUtils.GetSiteTemplatesUrl(directoryInfo.Name);
+                var picFileName = FxUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, templateInfo.PicFileName);
                 ltlSamplePic.Text = $@"<a href=""{picFileName}"" target=""_blank"">样图</a>";
             }
         }
@@ -458,7 +459,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = TbTableHandWrite.Text;
-                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
                         DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }
@@ -490,7 +491,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (string.IsNullOrEmpty(tableName))
                 {
                     tableName = ContentRepository.GetContentTableName(siteId);
-                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
                         DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }

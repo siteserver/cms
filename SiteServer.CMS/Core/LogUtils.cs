@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
@@ -53,11 +54,11 @@ namespace SiteServer.CMS.Core
             var logId = AddErrorLog(ex, summary);
             if (logId > 0)
             {
-                PageUtils.RedirectToErrorPage(logId);
+                FxUtils.RedirectToErrorPage(logId);
             }
             else
             {
-                PageUtils.RedirectToErrorPage(ex.Message);
+                FxUtils.RedirectToErrorPage(ex.Message);
             }
         }
 
@@ -149,7 +150,7 @@ stl: {stlContent}
                         ChannelId = channelId,
                         ContentId = contentId,
                         UserName = adminName,
-                        IpAddress = PageUtils.GetIpAddress(),
+                        IpAddress = FxUtils.GetIpAddress(),
                         AddDate = DateTime.Now,
                         Action = action,
                         Summary = summary
@@ -183,7 +184,7 @@ stl: {stlContent}
                 var logInfo = new LogInfo
                 {
                     UserName = adminName,
-                    IpAddress = PageUtils.GetIpAddress(),
+                    IpAddress = FxUtils.GetIpAddress(),
                     AddDate = DateTime.Now,
                     Action = action,
                     Summary = summary
@@ -218,7 +219,7 @@ stl: {stlContent}
                 var userLogInfo = new UserLogInfo
                 {
                     UserName = userName,
-                    IpAddress = PageUtils.GetIpAddress(),
+                    IpAddress = FxUtils.GetIpAddress(),
                     AddDate = DateTime.Now,
                     Action = actionType,
                     Summary = summary

@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -38,11 +40,11 @@ namespace SiteServer.CMS.Plugin
 
             var tableName = service.ContentTableName;
 
-            var tableColumns = new List<TableColumn>();
+            var tableColumns = new List<DatoryColumn>();
             tableColumns.AddRange(DataProvider.ContentRepository.TableColumns);
             tableColumns.AddRange(service.ContentTableColumns);
 
-            if (!DatabaseApi.Instance.IsTableExists(tableName))
+            if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
             {
                 DatabaseApi.Instance.CreateTable(tableName, tableColumns, service.PluginId, true, out _, out _);
             }

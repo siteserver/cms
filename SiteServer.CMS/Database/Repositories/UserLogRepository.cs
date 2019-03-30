@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Datory;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -12,6 +15,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class UserLogRepository : GenericRepository<UserLogInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(UserLogInfo.Id);
@@ -41,7 +47,7 @@ namespace SiteServer.CMS.Database.Repositories
         public UserLogInfo Insert(string userName, UserLogInfo logInfo)
         {
             logInfo.UserName = userName;
-            logInfo.IpAddress = PageUtils.GetIpAddress();
+            logInfo.IpAddress = FxUtils.GetIpAddress();
             logInfo.AddDate = DateTime.Now;
 
             //using (var connection = GetConnection())

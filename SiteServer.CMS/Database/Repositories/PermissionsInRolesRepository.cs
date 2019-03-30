@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
     public class PermissionsInRolesRepository : GenericRepository<PermissionsInRolesInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string RoleName = nameof(PermissionsInRolesInfo.RoleName);

@@ -1,5 +1,5 @@
-﻿using SiteServer.CMS.Core;
-using SiteServer.CMS.Database.Wrapper;
+﻿using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Database.Models

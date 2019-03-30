@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.CMS.Tests</RootNamespace>
     <AssemblyName>SiteServer.CMS.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -22,6 +22,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,11 +69,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
@@ -99,11 +100,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\Core\GenericRepositoryTest.cs" />
-    <Compile Include="Database\Core\ReflectionUtilsTest.cs" />
-    <Compile Include="Database\Mocks\Attr.cs" />
-    <Compile Include="Database\Mocks\TestTableInfo.cs" />
-    <Compile Include="Database\Mocks\TestTableRepository.cs" />
     <Compile Include="Database\Repositories\AdministratorRepositoryTest.cs" />
     <Compile Include="Database\Repositories\AccessTokenRepositoryTest.cs" />
     <Compile Include="Database\IntegrationTests.cs" />
@@ -120,6 +116,10 @@
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Datory\Datory.csproj">
+      <Project>{06073655-ed0d-4b64-a3aa-c1e3eac4c4fa}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
@@ -129,7 +129,7 @@
       <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Project>{c22f9b9e-9501-476b-9905-6082b8f68b3a}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>

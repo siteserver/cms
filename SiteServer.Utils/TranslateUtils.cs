@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Specialized;
-using System.Text;
-using System.Data;
-using System.Web.UI.WebControls;
-using System.Drawing;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
+using Datory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SiteServer.Plugin;
 using SiteServer.Utils.Auth;
 
 namespace SiteServer.Utils
@@ -329,19 +328,7 @@ namespace SiteServer.Utils
             return color;
         }
 
-        public static Unit ToUnit(string unitStr)
-        {
-            var type = Unit.Empty;
-            try
-            {
-                type = Unit.Parse(unitStr.Trim());
-            }
-            catch
-            {
-                // ignored
-            }
-            return type;
-        }
+        
 
         public static string ToTwoCharString(int i)
         {
@@ -810,30 +797,7 @@ namespace SiteServer.Utils
             return encrypt.OutString;
         }
 
-        public static HorizontalAlign ToHorizontalAlign(string typeStr)
-        {
-            return (HorizontalAlign)ToEnum(typeof(HorizontalAlign), typeStr, HorizontalAlign.Left);
-        }
-
-        public static VerticalAlign ToVerticalAlign(string typeStr)
-        {
-            return (VerticalAlign)ToEnum(typeof(VerticalAlign), typeStr, VerticalAlign.Middle);
-        }
-
-        public static GridLines ToGridLines(string typeStr)
-        {
-            return (GridLines)ToEnum(typeof(GridLines), typeStr, GridLines.None);
-        }
-
-        public static RepeatDirection ToRepeatDirection(string typeStr)
-        {
-            return (RepeatDirection)ToEnum(typeof(RepeatDirection), typeStr, RepeatDirection.Vertical);
-        }
-
-        public static RepeatLayout ToRepeatLayout(string typeStr)
-        {
-            return (RepeatLayout)ToEnum(typeof(RepeatLayout), typeStr, RepeatLayout.Table);
-        }
+        
 
         public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)
         {

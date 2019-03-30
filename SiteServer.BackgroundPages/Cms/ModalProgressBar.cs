@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core.Create;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringWithCreateContentsOneByOne(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("生成内容页",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
                     {"CreateContentsOneByOne", true.ToString()}
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringWithCreateByTemplate(int siteId, int templateId)
         {
             return LayerUtils.GetOpenScript("生成页面",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"templateId", templateId.ToString()},
                     {"CreateByTemplate", true.ToString()}
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetRedirectUrlStringWithCreateChannelsOneByOne(int siteId,
             string channelIdCollection, string isIncludeChildren, string isCreateContents)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"CreateChannelsOneByOne", true.ToString()},
                 {"ChannelIDCollection", channelIdCollection},
@@ -50,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetRedirectUrlStringWithCreateContentsOneByOne(int siteId, int channelId,
             string contentIdCollection)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"CreateContentsOneByOne", true.ToString()},
@@ -60,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlStringWithCreateByIDsCollection(int siteId, string idsCollection)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"CreateByIDsCollection", true.ToString()},
                 {"IDsCollection", idsCollection}
@@ -70,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringWithSiteTemplateDownload(int siteId, string downloadUrl)
         {
             return LayerUtils.GetOpenScript("下载在线模板",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateDownload", true.ToString()},
                     {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
@@ -79,7 +80,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlStringWithSiteTemplateDownload(int siteId, string downloadUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"SiteTemplateDownload", true.ToString()},
                 {"DownloadUrl", TranslateUtils.EncryptStringBySecretKey(downloadUrl)}
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringWithSiteTemplateZip(int siteId, string directoryName)
         {
             return LayerUtils.GetOpenScript("站点模板压缩",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateZip", true.ToString()},
                     {"DirectoryName", directoryName}
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringWithSiteTemplateUnZip(int siteId, string fileName)
         {
             return LayerUtils.GetOpenScript("站点模板解压",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
                 {
                     {"SiteTemplateUnZip", true.ToString()},
                     {"FileName", fileName}
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlStringWithPluginDownload(int siteId, string downloadUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(ModalProgressBar), new NameValueCollection
             {
                 {"PluginDownload", true.ToString()},
                 {"DownloadUrl", downloadUrl}
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
+                //FxUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
                      AuthRequest.IsQueryExists("contentIdCollection"))
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
+                //FxUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateId"))
             {
@@ -149,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateByTemplate(SiteId, templateId);
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                //FxUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateByIDsCollection") && AuthRequest.IsQueryExists("IDsCollection"))
             {
@@ -162,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                //FxUtils.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             //---------------------------------------------------------------------------------------//
             else if (AuthRequest.IsQueryExists("SiteTemplateDownload"))

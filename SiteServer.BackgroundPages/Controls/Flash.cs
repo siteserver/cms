@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     if (state.StartsWith("~"))
                     {
-                        return PageUtils.ParseNavigationUrl(state);
+                        return FxUtils.ParseNavigationUrl(state);
                     }
                     return ResolveUrl(state);
                 }

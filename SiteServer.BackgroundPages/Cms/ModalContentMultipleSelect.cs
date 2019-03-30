@@ -13,6 +13,7 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string jsMethod)
         {
-            return LayerUtils.GetOpenScript("选择内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentMultipleSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择内容", FxUtils.GetCmsUrl(siteId, nameof(ModalContentMultipleSelect), new NameValueCollection
             {
                 {"jsMethod", jsMethod}
             }));
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _jsMethod = AuthRequest.GetQueryString("jsMethod");
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             var channelId = AuthRequest.GetQueryInt("channelId");
             if (channelId == 0)
             {
@@ -135,7 +136,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, PageUrl));
+            FxUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -175,7 +176,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
+                    _pageUrl = FxUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
                         {"channelId", DdlChannelId.SelectedValue},
                         {"SearchType", DdlSearchType.SelectedValue},

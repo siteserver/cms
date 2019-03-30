@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
@@ -14,6 +15,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class SiteRepository : GenericRepository<SiteInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static class Attr
         {
             public const string Id = nameof(SiteInfo.Id);
@@ -361,7 +365,7 @@ namespace SiteServer.CMS.Database.Repositories
                 orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
                 //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-                var sqlSelect = SqlDifferences.GetSqlString(TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
+                var sqlSelect = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
 
                 ie = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelect);
             }
@@ -738,7 +742,7 @@ namespace SiteServer.CMS.Database.Repositories
 //                orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
 //                //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-//                var sqlSelect = SqlDifferences.GetSqlString(TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
+//                var sqlSelect = DatorySql.GetSqlString(TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
 
 //                ie = DatabaseApi.ExecuteReader(ConnectionString, sqlSelect);
 //            }

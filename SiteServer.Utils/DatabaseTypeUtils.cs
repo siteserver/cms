@@ -1,5 +1,4 @@
-﻿using System.Web.UI.WebControls;
-using SiteServer.Plugin;
+﻿using Datory;
 
 namespace SiteServer.Utils
 {
@@ -7,26 +6,26 @@ namespace SiteServer.Utils
     {
         public static DatabaseType GetEnumType(string typeStr)
         {
-            var retval = DatabaseType.SqlServer;
+            var retVal = DatabaseType.SqlServer;
 
             if (Equals(DatabaseType.MySql, typeStr))
             {
-                retval = DatabaseType.MySql;
+                retVal = DatabaseType.MySql;
             }
             else if (Equals(DatabaseType.SqlServer, typeStr))
             {
-                retval = DatabaseType.SqlServer;
+                retVal = DatabaseType.SqlServer;
             }
             else if (Equals(DatabaseType.PostgreSql, typeStr))
             {
-                retval = DatabaseType.PostgreSql;
+                retVal = DatabaseType.PostgreSql;
             }
             else if (Equals(DatabaseType.Oracle, typeStr))
             {
-                retval = DatabaseType.Oracle;
+                retVal = DatabaseType.Oracle;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(DatabaseType type, string typeStr)
@@ -44,23 +43,6 @@ namespace SiteServer.Utils
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(DatabaseType type, bool selected)
-        {
-            var item = new ListItem(type.Value, type.Value);
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
-
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl == null) return;
-            listControl.Items.Add(GetListItem(DatabaseType.MySql, false));
-            listControl.Items.Add(GetListItem(DatabaseType.SqlServer, false));
-            listControl.Items.Add(GetListItem(DatabaseType.PostgreSql, false));
-            listControl.Items.Add(GetListItem(DatabaseType.Oracle, false));
-        }
+        
     }
 }

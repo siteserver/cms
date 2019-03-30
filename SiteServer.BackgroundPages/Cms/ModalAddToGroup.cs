@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -21,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToContentForMultiChannels(int siteId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"isContent", "True"}
                 }), "IDsCollection", "请选择需要设置组别的内容！", 650, 550);
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToContent(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到内容组",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
                     {"isContent", "True"}
@@ -40,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToChannel(int siteId)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("添加到栏目组",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalAddToGroup), new NameValueCollection
                 {
                     {"isContent", "False"}
                 }), "ChannelIDCollection", "请选择需要设置组别的栏目！", 650, 550);
@@ -50,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (AuthRequest.IsQueryExists("isContent"))
             {

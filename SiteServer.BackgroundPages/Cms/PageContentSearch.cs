@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -15,6 +16,7 @@ using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Database.Repositories.Contents;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 
@@ -60,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlCheck(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentSearch), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageContentSearch), new NameValueCollection
             {
                 {"isCheckOnly", true.ToString() }
             });
@@ -70,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _channelId = AuthRequest.IsQueryExists("channelId") ? AuthRequest.GetQueryInt("channelId") : SiteId;
 
             _isCheckOnly = AuthRequest.GetQueryBool("isCheckOnly");
@@ -327,7 +329,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            FxUtils.Redirect(PageUrl);
         }
 
         private string _pageUrl;
@@ -337,7 +339,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentSearch), new NameValueCollection
+                    _pageUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageContentSearch), new NameValueCollection
                     {
                         {"channelId", DdlChannelId.SelectedValue},
                         {"state", DdlState.SelectedValue},

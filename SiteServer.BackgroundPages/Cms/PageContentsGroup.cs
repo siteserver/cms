@@ -11,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string contentGroupName)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentsGroup), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageContentsGroup), new NameValueCollection
             {
                 {"contentGroupName", contentGroupName}
             });
@@ -99,7 +100,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemEditUrl.Text =
                 $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _channelInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
 
-            var removeUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
+            var removeUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
             {
                 {"contentGroupName", _contentGroupName},
                 {"contentId", contentInfo.Id.ToString()},
@@ -117,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
+                    _pageUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
                     {
                         {"contentGroupName", _contentGroupName}
                     });
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageContentGroup.GetRedirectUrl(SiteId));
+            FxUtils.Redirect(PageContentGroup.GetRedirectUrl(SiteId));
         }
     }
 }

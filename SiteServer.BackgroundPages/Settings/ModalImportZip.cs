@@ -4,7 +4,9 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString(string type)
         {
             return LayerUtils.GetOpenScript(type == TypeSiteTemplate ? "导入站点模板" : "导入插件",
-                PageUtils.GetSettingsUrl(nameof(ModalImportZip), new NameValueCollection
+                FxUtils.GetSettingsUrl(nameof(ModalImportZip), new NameValueCollection
                 {
                     {"type", type}
                 }), 520, 240);
@@ -36,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
             _type = AuthRequest.GetQueryString("type");
             if (Page.IsPostBack) return;
 
-            EBooleanUtils.AddListItems(DdlImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");
+            FxUtils.AddListItems(DdlImportType, "上传压缩包并导入", "从指定地址下载压缩包并导入");
             ControlUtils.SelectSingleItemIgnoreCase(DdlImportType, true.ToString());
 
             PhUpload.Visible = true;
@@ -112,7 +114,7 @@ namespace SiteServer.BackgroundPages.Settings
 	                return;
 	            }
 	            
-	            PageUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(0, TbDownloadUrl.Text));
+	            FxUtils.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(0, TbDownloadUrl.Text));
 	        }
 	    }
     }

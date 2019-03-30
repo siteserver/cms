@@ -1,5 +1,4 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -11,7 +10,7 @@ namespace SiteServer.Utils.Enumerations
 
 	public class EBooleanUtils
 	{
-		private static string GetValue(EBoolean type)
+	    public static string GetValue(EBoolean type)
 		{
 		    if (type == EBoolean.True)
 			{
@@ -24,7 +23,7 @@ namespace SiteServer.Utils.Enumerations
 		    throw new Exception();
 		}
 
-        private static string GetText(EBoolean type)
+        public static string GetText(EBoolean type)
         {
             if (type == EBoolean.True)
 			{
@@ -68,35 +67,7 @@ namespace SiteServer.Utils.Enumerations
 			return Equals(type, typeStr);
 		}
 
-		public static ListItem GetListItem(EBoolean type, bool selected)
-		{
-			var item = new ListItem(GetText(type), GetValue(type));
-			if (selected)
-			{
-				item.Selected = true;
-			}
-			return item;
-		}
-
-		public static void AddListItems(ListControl listControl)
-		{
-			if (listControl != null)
-			{
-				listControl.Items.Add(GetListItem(EBoolean.True, false));
-				listControl.Items.Add(GetListItem(EBoolean.False, false));
-			}
-		}
-
-		public static void AddListItems(ListControl listControl, string trueText, string falseText)
-		{
-			if (listControl != null)
-			{
-				var item = new ListItem(trueText, GetValue(EBoolean.True));
-				listControl.Items.Add(item);
-				item = new ListItem(falseText, GetValue(EBoolean.False));
-				listControl.Items.Add(item);
-			}
-		}
+		
 
 	}
 }

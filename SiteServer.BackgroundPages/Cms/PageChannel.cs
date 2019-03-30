@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -23,19 +24,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (currentChannelId > 0 && currentChannelId != siteId)
             {
-                return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
+                return FxUtils.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
                 {
                     {"CurrentChannelId", currentChannelId.ToString()}
                 });
             }
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannel), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (AuthRequest.IsQueryExists("channelId") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
 
-                    PageUtils.Redirect(GetRedirectUrl(SiteId, channelId));
+                    FxUtils.Redirect(GetRedirectUrl(SiteId, channelId));
                     return;
                 }
             }

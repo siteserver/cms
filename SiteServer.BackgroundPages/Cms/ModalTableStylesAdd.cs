@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Plugin;
 
@@ -37,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, List<int> relatedIdentities, string tableName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("批量添加显示样式", FxUtils.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
             {
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},

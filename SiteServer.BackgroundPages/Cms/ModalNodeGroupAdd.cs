@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string groupName)
         {
-            return LayerUtils.GetOpenScript("修改栏目组", PageUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改栏目组", FxUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), new NameValueCollection
             {
                 {"GroupName", groupName}
             }), 600, 300);
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加栏目组", PageUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), null), 600, 300);
+            return LayerUtils.GetOpenScript("添加栏目组", FxUtils.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), null), 600, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)

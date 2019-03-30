@@ -8,6 +8,7 @@ using SiteServer.Utils.Enumerations;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -286,7 +287,7 @@ namespace SiteServer.CMS.StlParser.Model
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Direction))
                 {
                     listInfo.Layout = ELayout.Table;
-                    listInfo.Direction = TranslateUtils.ToRepeatDirection(value);
+                    listInfo.Direction = FxUtils.ToRepeatDirection(value);
                     isSetDirection = true;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Height))

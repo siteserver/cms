@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -12,7 +13,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int relatedFieldId, int totalLevel)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldMain), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldMain), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"TotalLevel", totalLevel.ToString()}

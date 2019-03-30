@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -27,7 +28,7 @@ namespace SiteServer.API.Controllers.Sys
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        PageUtils.Redirect(fileUrl);
+                        FxUtils.Redirect(fileUrl);
                         return;
                     }
 
@@ -38,13 +39,13 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            FxUtils.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        FxUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                         return;
                     }
                 }
@@ -56,14 +57,14 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            FxUtils.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-                        PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        var fileUrl = FxUtils.GetRootUrlByPhysicalPath(filePath);
+                        FxUtils.Redirect(FxUtils.ParseNavigationUrl(fileUrl));
                         return;
                     }
                 }
@@ -83,7 +84,7 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            PageUtils.Redirect(fileUrl);
+                            FxUtils.Redirect(fileUrl);
                             return;
                         }
 
@@ -93,13 +94,13 @@ namespace SiteServer.API.Controllers.Sys
                         {
                             if (FileUtils.IsFileExists(filePath))
                             {
-                                PageUtils.Download(HttpContext.Current.Response, filePath);
+                                FxUtils.Download(HttpContext.Current.Response, filePath);
                                 return;
                             }
                         }
                         else
                         {
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            FxUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                             return;
                         }
                     }

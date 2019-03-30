@@ -9,6 +9,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelDelete), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelDelete), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "ReturnUrl");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _deleteContents = AuthRequest.GetQueryBool("DeleteContents");
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,14 +18,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("栏目排序", PageUtils.GetCmsUrl(siteId, nameof(ModalChannelTaxis), null), "ChannelIDCollection", "请选择需要排序的栏目！", 400, 280);
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("栏目排序", FxUtils.GetCmsUrl(siteId, nameof(ModalChannelTaxis), null), "ChannelIDCollection", "请选择需要排序的栏目！", 400, 280);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
+            FxUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
             _channelIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("channelIDCollection"));
 

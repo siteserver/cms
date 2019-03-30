@@ -1,4 +1,5 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls

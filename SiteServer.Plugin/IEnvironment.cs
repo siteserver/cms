@@ -1,4 +1,6 @@
-﻿namespace SiteServer.Plugin
+﻿using Datory;
+
+namespace SiteServer.Plugin
 {
     /// <summary>
     /// 插件运行环境接口。

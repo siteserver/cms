@@ -3,9 +3,11 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int specialId)
         {
-            return LayerUtils.GetOpenScript("上传压缩包", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialUpload), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传压缩包", FxUtils.GetCmsUrl(siteId, nameof(ModalSpecialUpload), new NameValueCollection
             {
                 {"specialId", specialId.ToString()}
             }), 500, 320);
@@ -28,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             _specialInfo = SpecialManager.GetSpecialInfo(SiteId, specialId);

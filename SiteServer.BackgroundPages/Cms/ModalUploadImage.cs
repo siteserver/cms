@@ -2,10 +2,11 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
-using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -30,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", FxUtils.GetCmsUrl(siteId, nameof(ModalUploadImage), new NameValueCollection
             {
                 {"textBoxClientID", textBoxClientId}
             }), 600, 560);
@@ -40,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;

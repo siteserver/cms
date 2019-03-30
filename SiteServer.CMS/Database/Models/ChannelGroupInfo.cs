@@ -1,4 +1,4 @@
-using SiteServer.CMS.Database.Wrapper;
+using Datory;
 
 namespace SiteServer.CMS.Database.Models
 {
@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Database.Models
         [TableColumn]
         public int Taxis { get; set; }
 
-        [TableColumn(Text = true)]
+        [TableColumn(Length = 2000)]
         public string Description { get; set; }
     }
 }

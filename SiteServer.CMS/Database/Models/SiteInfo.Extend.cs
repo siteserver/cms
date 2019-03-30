@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Repositories.Contents;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -66,7 +67,7 @@ namespace SiteServer.CMS.Database.Models
 
         public string WebUrl => IsSeparatedWeb
             ? PageUtils.AddEndSlashToUrl(SeparatedWebUrl)
-            : PageUtils.ParseNavigationUrl($"~/{SiteDir}");
+            : FxUtils.ParseNavigationUrl($"~/{SiteDir}");
 
         public bool IsSeparatedAssets { get; set; }
 

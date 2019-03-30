@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1

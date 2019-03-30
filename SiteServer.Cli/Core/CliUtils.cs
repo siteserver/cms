@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NDesk.Options;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Core

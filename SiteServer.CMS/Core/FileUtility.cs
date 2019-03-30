@@ -3,8 +3,8 @@ using SiteServer.Utils;
 using System.Collections.Generic;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
-using SiteServer.Utils.Images;
 
 namespace SiteServer.CMS.Core
 {

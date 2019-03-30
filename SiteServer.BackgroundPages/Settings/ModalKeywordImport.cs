@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -15,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString()
         {
             return LayerUtils.GetOpenScript("导入敏感词",
-                PageUtils.GetSettingsUrl(nameof(ModalKeywordImport), null), 500, 530);
+                FxUtils.GetSettingsUrl(nameof(ModalKeywordImport), null), 500, 530);
         }
 
         public void Page_Load(object sender, EventArgs e)

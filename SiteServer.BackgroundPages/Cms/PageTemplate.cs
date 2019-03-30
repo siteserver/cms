@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -22,12 +24,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplate), null);
         }
 
         public static string GetRedirectUrl(int siteId, TemplateType templateType)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", templateType.Value}
             });
@@ -37,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _templateType = AuthRequest.GetQueryString("templateType");
             _keywords = AuthRequest.GetQueryString("keywords");
@@ -119,7 +121,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlTemplateType_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            FxUtils.Redirect(FxUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -128,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnSearch_Click(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            FxUtils.Redirect(FxUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -179,7 +181,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var defaultUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+                    var defaultUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                     {
                         {"TemplateID", templateId.ToString()},
                         {"SetDefault", true.ToString()},
@@ -202,7 +204,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!isDefault)
             {
-                var deleteUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+                var deleteUrl = FxUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                 {
                     {"TemplateID", templateId.ToString()},
                     {"DeleteById", true.ToString()},

@@ -1,4 +1,5 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Fx;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.StlParser.Utility
 {
@@ -56,7 +57,7 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (!string.IsNullOrEmpty(AjaxUrl))
             {
-                var ajaxUrl = PageUtils.ParseNavigationUrl(AjaxUrl);
+                var ajaxUrl = FxUtils.ParseNavigationUrl(AjaxUrl);
 
                 string updateScript = $"{ScriptName}();";
                 if (!string.IsNullOrEmpty(Updater) && !string.IsNullOrEmpty(Event))

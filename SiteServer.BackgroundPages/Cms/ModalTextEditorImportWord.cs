@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Core.LitJson;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
-using SiteServer.Utils.LitJson;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -22,13 +24,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+            return LayerUtils.GetOpenScript("导入Word", FxUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+        public string UploadUrl => FxUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorImportWord), new NameValueCollection
         {
             {"upload", true.ToString()}
         });

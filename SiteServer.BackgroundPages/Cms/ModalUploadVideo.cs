@@ -2,8 +2,10 @@
 using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -17,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", FxUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId}
             }), 520, 220);
@@ -25,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("上传视频", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传视频", FxUtils.GetCmsUrl(siteId, nameof(ModalUploadVideo), new NameValueCollection
             {
                 {"CurrentRootPath", currentRootPath}
             }), 520, 220);
@@ -35,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {

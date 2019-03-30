@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetLoadingDepartmentsUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
             {
                 {"type", TypeGetLoadingDepartments }
             });
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetLoadingAreasUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
             {
                 {"type", TypeGetLoadingAreas }
             });

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
@@ -120,69 +121,69 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
     {
         public static readonly string NewTableName = "ss_jobs";
 
-        private static List<TableColumn> NewColumns => new List<TableColumn>
+        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Department",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "所属部门",
-                    IsRequired = true
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "所属部门",
+                //    IsRequired = true
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Location",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "工作地点",
-                    IsRequired = true
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "工作地点",
+                //    IsRequired = true
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "NumberOfPeople",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "招聘人数",
-                    IsRequired = true,
-                    DefaultValue = "不限"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "招聘人数",
+                //    IsRequired = true,
+                //    DefaultValue = "不限"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Responsibility",
                 DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "工作职责",
-                    IsRequired = true
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.TextEditor,
+                //    DisplayName = "工作职责",
+                //    IsRequired = true
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Requirement",
                 DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "工作要求",
-                    IsRequired = true
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.TextEditor,
+                //    DisplayName = "工作要求",
+                //    IsRequired = true
+                //}
             }
         };
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
         {
-            var columns = new List<TableColumn>();
+            var columns = new List<DatoryColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -210,7 +211,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
         {
             return new ConvertInfo
             {

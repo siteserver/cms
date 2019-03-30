@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
@@ -14,9 +13,8 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -58,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString() },
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl) }
@@ -69,19 +67,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
             _channelId = AuthRequest.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(AttackUtils.FilterSqlAndXss(AuthRequest.GetQueryString("ReturnUrl")));
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ChannelAdd))
             //{
-            //    PageUtils.RedirectToErrorPage("您没有添加栏目的权限！");
+            //    FxUtils.RedirectToErrorPage("您没有添加栏目的权限！");
             //    return;
             //}
 
             var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             if (parentNodeInfo.IsChannelAddable == false)
             {
-                PageUtils.RedirectToErrorPage("此栏目不能添加子栏目！");
+                FxUtils.RedirectToErrorPage("此栏目不能添加子栏目！");
                 return;
             }
 
@@ -163,7 +161,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 theChannelId = _channelId;
             }
-            PageUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, AuthRequest.GetQueryString("ReturnUrl")));
+            FxUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, AuthRequest.GetQueryString("ReturnUrl")));
         }
 
         public string PreviewImageSrc

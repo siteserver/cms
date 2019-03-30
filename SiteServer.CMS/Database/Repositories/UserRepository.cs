@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
@@ -16,6 +17,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class UserRepository : GenericRepository<UserInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private bool InsertValidate(string userName, string email, string mobile, string password, string ipAddress, out string errorMessage)
         {
             errorMessage = string.Empty;

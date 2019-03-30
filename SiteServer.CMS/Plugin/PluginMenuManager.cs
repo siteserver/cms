@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -181,7 +182,7 @@ namespace SiteServer.CMS.Plugin
                 return href;
             }
 
-            var url = PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
+            var url = PageUtils.AddQueryStringIfNotExists(FxUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
                 {"apiUrl", ApiManager.InnerApiUrl}

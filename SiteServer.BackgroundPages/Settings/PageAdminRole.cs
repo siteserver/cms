@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -14,7 +16,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRole), null);
+            return FxUtils.GetSettingsUrl(nameof(PageAdminRole), null);
         }
 
         public void Page_Load(object sender, EventArgs e)

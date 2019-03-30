@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedField), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageRelatedField), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -70,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
                 $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(SiteId, relatedFieldInfo.Id)}"">导出</a>";
             ltlDeleteUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
-                    PageUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
+                    FxUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
                     {
                         {"RelatedFieldID", relatedFieldInfo.Id.ToString()},
                         {"DeleteById", true.ToString()}

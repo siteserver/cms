@@ -4,6 +4,7 @@ using System.Linq;
 using SiteServer.CMS.Caches.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -385,7 +386,7 @@ namespace SiteServer.CMS.Caches
 
         public static string GetUploadPath(params string[] paths)
         {
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
+            var path = FxUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
@@ -403,7 +404,7 @@ namespace SiteServer.CMS.Caches
 
         public static string GetUploadUrl(params string[] paths)
         {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
+            return FxUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
         }
 
         public static string GetUserUploadUrl(int userId, string relatedUrl)

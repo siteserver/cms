@@ -1,3 +1,4 @@
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Caches.Core

@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Core
             if (contentInfo.Checked && contentInfo.ChannelId > 0)
             {
                 url =
-                    $"<a href='{PageUtils.GetLoadingUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
+                    $"<a href='{FxUtils.GetLoadingUrl(siteInfo.Id, contentInfo.ChannelId, contentInfo.Id)}' target='blank'>{displayString}</a>";
             }
             else
             {

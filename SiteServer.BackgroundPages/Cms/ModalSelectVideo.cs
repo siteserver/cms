@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
 
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
             //here, limit top path
             if (!DirectoryUtils.IsInDirectory(TopPath, path))
                 path = TopPath;
-            return PageUtils.GetCmsUrl(SiteId, nameof(ModalSelectVideo), new NameValueCollection
+            return FxUtils.GetCmsUrl(SiteId, nameof(ModalSelectVideo), new NameValueCollection
             {
                 {"RootPath", _rootPath},
                 {"CurrentRootPath", path},
@@ -40,12 +42,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string SiteUrl => SiteInfo.WebUrl;
 
-	    public string RootUrl => PageUtils.ApplicationPath;
+	    public string RootUrl => FxUtils.ApplicationPath;
 
 	    public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
 	    {
 	        return LayerUtils.GetOpenScript("选择视频",
-	            PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectVideo), new NameValueCollection
+	            FxUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectVideo), new NameValueCollection
 	            {
 	                {"RootPath", "@"},
 	                {"CurrentRootPath", string.Empty},
@@ -57,7 +59,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
+            FxUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
 
 			_rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
@@ -168,7 +170,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
 				navigationUrl = GetRedirectUrl(_currentRootPath);
 			}
-			PageUtils.Redirect(navigationUrl);
+		    FxUtils.Redirect(navigationUrl);
 		}
 
 

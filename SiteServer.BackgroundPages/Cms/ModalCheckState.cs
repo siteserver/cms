@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -27,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, ContentInfo contentInfo, string returnUrl)
         {
             return LayerUtils.GetOpenScript("审核状态",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalCheckState), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalCheckState), new NameValueCollection
                 {
                     {"channelId", contentInfo.ChannelId.ToString()},
                     {"contentID", contentInfo.Id.ToString()},
@@ -39,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "contentID", "returnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
@@ -80,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var redirectUrl = ModalContentCheck.GetRedirectUrl(SiteId, _channelId, _contentId, _returnUrl);
-            PageUtils.Redirect(redirectUrl);
+            FxUtils.Redirect(redirectUrl);
         }
 
     }

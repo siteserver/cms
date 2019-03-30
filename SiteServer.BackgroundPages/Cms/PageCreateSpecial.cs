@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.Utils;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateSpecial(SiteId, specialId);
             }
 
-            PageUtils.Redirect(AdminPagesUtils.Cms.GetCreateStatusUrl(SiteId));
+            FxUtils.Redirect(AdminPagesUtils.Cms.GetCreateStatusUrl(SiteId));
         }
     }
 }

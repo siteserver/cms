@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SiteServer.CMS.Database.Wrapper;
+using Datory;
 
 namespace SiteServer.CMS.Database.Attributes
 {

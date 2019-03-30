@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using Datory;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
@@ -8,8 +9,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Repositories;
 using SiteServer.CMS.Database.Repositories.Contents;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -170,7 +171,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = tableHandWrite;
-                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
                         DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }
@@ -197,7 +198,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 if (string.IsNullOrEmpty(tableName))
                 {
                     tableName = ContentRepository.GetContentTableName(siteId);
-                    if (!DatabaseApi.Instance.IsTableExists(tableName))
+                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
                         DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
                     }

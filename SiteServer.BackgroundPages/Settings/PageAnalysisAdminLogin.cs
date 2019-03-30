@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -119,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
             LtlPageTitle1.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表（按日期统计）";
             LtlPageTitle2.Text = $"管理员登录最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表（按管理员统计）";
 
-            EStatictisXTypeUtils.AddListItems(DdlXType);
+            FxUtils.AddListItemsToEStatictisXType(DdlXType);
 
             _xType = EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType"));
 
@@ -198,7 +199,7 @@ yArray.push('{GetGraphicYUser(adminNumDictionaryName, key)}');
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            FxUtils.Redirect(PageUrl);
         }
 
         private string _pageUrl;
@@ -208,7 +209,7 @@ yArray.push('{GetGraphicYUser(adminNumDictionaryName, key)}');
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetSettingsUrl(nameof(PageAnalysisAdminLogin), new NameValueCollection
+                    _pageUrl = FxUtils.GetSettingsUrl(nameof(PageAnalysisAdminLogin), new NameValueCollection
                     {
                         {"DateFrom", TbDateFrom.Text },
                         {"DateTo", TbDateTo.Text },

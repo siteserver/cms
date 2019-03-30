@@ -9,6 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
             {
                 {"siteId", siteId.ToString()}
             });
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId, string startDate, string endDate)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageAnalysisSiteChannels), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"startDate", startDate},
@@ -147,7 +148,7 @@ yArrayUpdate.push('{yValueUpdate}');";
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtils.Redirect(siteId > 0
+            FxUtils.Redirect(siteId > 0
                 ? GetRedirectUrl(siteId, TbStartDate.Text, TbEndDate.Text)
                 : PageAnalysisSite.GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
         }

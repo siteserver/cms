@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using Npgsql;
 using SiteServer.CMS.Apis;
-using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Database.Core
 {

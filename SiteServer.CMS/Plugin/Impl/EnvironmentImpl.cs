@@ -1,4 +1,5 @@
-﻿using SiteServer.Plugin;
+﻿using Datory;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Impl
 {

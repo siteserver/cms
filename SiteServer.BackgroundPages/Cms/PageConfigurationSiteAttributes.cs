@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
@@ -10,8 +9,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -26,14 +24,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _styleInfoList = TableStyleManager.GetSiteStyleInfoList(SiteId);
 

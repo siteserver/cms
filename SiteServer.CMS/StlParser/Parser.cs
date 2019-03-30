@@ -3,6 +3,7 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -61,7 +62,7 @@ namespace SiteServer.CMS.StlParser
             {
                 if (isDynamic)
                 {
-                    var pageUrl = PageUtils.AddProtocolToUrl(PageUtils.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
+                    var pageUrl = FxUtils.AddProtocolToUrl(FxUtils.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
@@ -10,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -36,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteEdit), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageSiteEdit), new NameValueCollection
             {
                 {"siteId", siteId.ToString()}
             });
@@ -46,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -122,7 +124,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteInfo == null)
             {
-                PageUtils.RedirectToErrorPage("站点不存在，请确认后再试！");
+                FxUtils.RedirectToErrorPage("站点不存在，请确认后再试！");
                 return;
             }
             TbSiteName.Text = SiteInfo.SiteName;
@@ -219,7 +221,7 @@ namespace SiteServer.BackgroundPages.Settings
 		    else if (tableRule == ETableRule.HandWrite)
 		    {
 		        tableName = TbTableHandWrite.Text;
-		        if (!DatabaseApi.Instance.IsTableExists(tableName))
+		        if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
 		        {
 		            DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
 		        }
@@ -286,7 +288,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageSite.GetRedirectUrl());
+            FxUtils.Redirect(PageSite.GetRedirectUrl());
         }
     }
 }

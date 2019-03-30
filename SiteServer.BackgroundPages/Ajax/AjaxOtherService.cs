@@ -9,6 +9,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetCountArrayUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypeGetCountArray }
             });
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetSiteTemplateDownloadUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypeSiteTemplateDownload }
             });
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetPluginDownloadUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypePluginDownload }
             });
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetSiteTemplateZipUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypeSiteTemplateZip }
             });
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetSiteTemplateUnZipUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypeSiteTemplateUnZip }
             });
@@ -106,7 +107,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetGetLoadingChannelsUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
+            return FxUtils.GetAjaxUrl(nameof(AjaxOtherService), new NameValueCollection
             {
                 {"type", TypeGetLoadingChannels }
             });
@@ -290,14 +291,14 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "开始下载插件压缩包，可能需要几分钟，请耐心等待");
 
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
-                var filePath = PathUtils.GetPluginPath(fileName);
+                var filePath = FxUtils.GetPluginPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
                 WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
 
-                ZipUtils.ExtractZip(filePath, PathUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
+                ZipUtils.ExtractZip(filePath, FxUtils.GetPluginPath(fileName.Substring(0, fileName.IndexOf(".", StringComparison.Ordinal))));
 
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
@@ -344,7 +345,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
                 retval = AjaxManager.GetProgressTaskNameValueCollection(
-                    $"站点模板压缩成功，<a href='{PageUtils.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
+                    $"站点模板压缩成功，<a href='{FxUtils.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
@@ -141,166 +142,166 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
     {
         public static readonly string NewTableName = "ss_govpublic_content";
 
-        private static List<TableColumn> NewColumns => new List<TableColumn>
+        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
         {
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Identifier",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Customize,
-                    DisplayName = "索引号"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Customize,
+                //    DisplayName = "索引号"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "DocumentNo",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "文号",
-                    IsRequired = true
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "文号",
+                //    IsRequired = true
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "DepartmentId",
                 DataType = DataType.Integer,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "部门",
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Hidden,
+                //    DisplayName = "部门",
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Publisher",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "发布机构"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "发布机构"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Keywords",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "关键词"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Text,
+                //    DisplayName = "关键词"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "PublishDate",
                 DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "发文日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.DateTime,
+                //    DisplayName = "发文日期",
+                //    IsRequired = true,
+                //    DefaultValue = "{Current}"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "EffectDate",
                 DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "生效日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.DateTime,
+                //    DisplayName = "生效日期",
+                //    IsRequired = true,
+                //    DefaultValue = "{Current}"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "IsAbolition",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Radio,
-                    DisplayName = "是否废止",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "是",
-                            Value = true.ToString(),
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "否",
-                            Value = false.ToString(),
-                            Selected = true
-                        },
-                    }
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Radio,
+                //    DisplayName = "是否废止",
+                //    IsRequired = true,
+                //    ListItems = new List<InputListItem>
+                //    {
+                //        new InputListItem
+                //        {
+                //            Text = "是",
+                //            Value = true.ToString(),
+                //            Selected = false
+                //        },
+                //        new InputListItem
+                //        {
+                //            Text = "否",
+                //            Value = false.ToString(),
+                //            Selected = true
+                //        },
+                //    }
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "AbolitionDate",
                 DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "废止日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.DateTime,
+                //    DisplayName = "废止日期",
+                //    IsRequired = true,
+                //    DefaultValue = "{Current}"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Description",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextArea,
-                    DisplayName = "内容概述"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.TextArea,
+                //    DisplayName = "内容概述"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "ImageUrl",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Image,
-                    DisplayName = "图片"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.Image,
+                //    DisplayName = "图片"
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.File,
-                    DisplayName = "附件",
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.File,
+                //    DisplayName = "附件",
+                //}
             },
-            new TableColumn
+            new DatoryColumn
             {
                 AttributeName = "Content",
                 DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "内容"
-                }
+                //InputStyle = new InputStyle
+                //{
+                //    InputType = InputType.TextEditor,
+                //    DisplayName = "内容"
+                //}
             }
         };
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
         {
-            var columns = new List<TableColumn>();
+            var columns = new List<DatoryColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -328,7 +329,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
         {
             return new ConvertInfo
             {

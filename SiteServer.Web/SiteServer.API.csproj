@@ -13,7 +13,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiteServer.API</RootNamespace>
     <AssemblyName>SiteServer.API</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
@@ -83,9 +83,9 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -224,6 +224,10 @@
     <Compile Include="WebApiConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Datory\Datory.csproj">
+      <Project>{06073655-ed0d-4b64-a3aa-c1e3eac4c4fa}</Project>
+      <Name>Datory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.BackgroundPages\SiteServer.BackgroundPages.csproj">
       <Project>{6aa1713a-3b77-4b20-b8c7-fcb6de556f64}</Project>
       <Name>SiteServer.BackgroundPages</Name>
@@ -237,7 +241,7 @@
       <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
-      <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>
+      <Project>{c22f9b9e-9501-476b-9905-6082b8f68b3a}</Project>
       <Name>SiteServer.Utils</Name>
     </ProjectReference>
   </ItemGroup>

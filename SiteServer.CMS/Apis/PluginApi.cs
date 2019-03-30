@@ -1,5 +1,6 @@
 ﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -19,12 +20,12 @@ namespace SiteServer.CMS.Apis
 
             if (StringUtils.StartsWith(relatedUrl, "~/"))
             {
-                return PageUtils.GetRootUrl(relatedUrl.Substring(1));
+                return FxUtils.GetRootUrl(relatedUrl.Substring(1));
             }
 
             if (StringUtils.StartsWith(relatedUrl, "@/"))
             {
-                return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
+                return FxUtils.GetAdminUrl(relatedUrl.Substring(1));
             }
 
             return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
@@ -37,7 +38,7 @@ namespace SiteServer.CMS.Apis
 
         public string GetPluginPath(string pluginId, string relatedPath = "")
         {
-            var path = PathUtils.Combine(PathUtils.GetPluginPath(pluginId), relatedPath);
+            var path = PathUtils.Combine(FxUtils.GetPluginPath(pluginId), relatedPath);
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }

@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTableStyleChannel), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTableStyleChannel), new NameValueCollection
             {
                 {"SiteId", siteId.ToString()},
                 {"channelId", channelId.ToString()}
@@ -81,7 +82,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(SiteId, TranslateUtils.ToInt(DdlChannelId.SelectedValue)));
+            FxUtils.Redirect(GetRedirectUrl(SiteId, TranslateUtils.ToInt(DdlChannelId.SelectedValue)));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -116,7 +117,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (styleInfo.RelatedIdentity != _channelInfo.Id) return;
 
-            var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleChannel), new NameValueCollection
+            var urlStyle = FxUtils.GetCmsUrl(SiteId, nameof(PageTableStyleChannel), new NameValueCollection
             {
                 {"channelId", _channelInfo.Id.ToString()},
                 {"DeleteStyle", true.ToString()},

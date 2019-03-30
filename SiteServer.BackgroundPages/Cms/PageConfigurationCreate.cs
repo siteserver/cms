@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -30,44 +31,44 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Create);
 
-            EBooleanUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
+            FxUtils.AddListItems(DdlIsCreateContentIfContentChanged, "生成", "不生成");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateContentIfContentChanged, SiteInfo.IsCreateContentIfContentChanged.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
+            FxUtils.AddListItems(DdlIsCreateChannelIfChannelChanged, "生成", "不生成");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfChannelChanged, SiteInfo.IsCreateChannelIfChannelChanged.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
+            FxUtils.AddListItems(DdlIsCreateShowPageInfo, "显示", "不显示");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateShowPageInfo, SiteInfo.IsCreateShowPageInfo.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
+            FxUtils.AddListItems(DdlIsCreateIe8Compatible, "强制兼容", "不设置");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateIe8Compatible, SiteInfo.IsCreateIe8Compatible.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
+            FxUtils.AddListItems(DdlIsCreateBrowserNoCache, "强制清除缓存", "不设置");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateBrowserNoCache, SiteInfo.IsCreateBrowserNoCache.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
+            FxUtils.AddListItems(DdlIsCreateJsIgnoreError, "包含JS容错代码", "不设置");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateJsIgnoreError, SiteInfo.IsCreateJsIgnoreError.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
+            FxUtils.AddListItems(DdlIsCreateWithJQuery, "是", "否");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateWithJQuery, SiteInfo.IsCreateWithJQuery.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
+            FxUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.IsCreateDoubleClick.ToString());
 
             TbCreateStaticMaxPage.Text = SiteInfo.CreateStaticMaxPage.ToString();
 
-            EBooleanUtils.AddListItems(DdlIsCreateUseDefaultFileName, "启用", "不启用");
+            FxUtils.AddListItems(DdlIsCreateUseDefaultFileName, "启用", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateUseDefaultFileName, SiteInfo.IsCreateUseDefaultFileName.ToString());
             PhIsCreateUseDefaultFileName.Visible = SiteInfo.IsCreateUseDefaultFileName;
             TbCreateDefaultFileName.Text = SiteInfo.CreateDefaultFileName;
 
-            EBooleanUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
+            FxUtils.AddListItems(DdlIsCreateStaticContentByAddDate, "启用", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateStaticContentByAddDate, SiteInfo.IsCreateStaticContentByAddDate.ToString());
             PhIsCreateStaticContentByAddDate.Visible = SiteInfo.IsCreateStaticContentByAddDate;
             if (SiteInfo.CreateStaticContentAddDate.HasValue)

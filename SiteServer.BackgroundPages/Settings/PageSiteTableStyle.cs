@@ -8,6 +8,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(string tableName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
             {
                 {"tableName", tableName}
             });
@@ -74,7 +75,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(_tableName));
+            FxUtils.Redirect(GetRedirectUrl(_tableName));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -115,7 +116,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (styleInfo.Id == 0) return;
 
             ltlEditStyle.Text +=
-                $@"&nbsp;&nbsp;<a href=""{PageUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
+                $@"&nbsp;&nbsp;<a href=""{FxUtils.GetSettingsUrl(nameof(PageSiteTableStyle), new NameValueCollection
                 {
                     {"tableName", _tableName},
                     {"DeleteStyle", true.ToString()},
@@ -125,7 +126,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(string.Empty);
+            FxUtils.Redirect(string.Empty);
         }
     }
 }

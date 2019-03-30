@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -44,13 +45,13 @@ namespace SiteServer.BackgroundPages.Core
                     {
                         editUrl = $@"<a href=""{PageChannelEdit.GetRedirectUrl(channelInfo.SiteId, channelInfo.Id, PageChannel.GetRedirectUrl(channelInfo.SiteId, channelInfo.Id))}"" onclick=""event.stopPropagation()"">编辑</a>";
                         upLink =
-                            $@"<a href=""{PageUtils.GetCmsUrl(channelInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            $@"<a href=""{FxUtils.GetCmsUrl(channelInfo.SiteId, nameof(PageChannel), new NameValueCollection
                             {
                                 {"Subtract", true.ToString()},
                                 {"channelId", channelInfo.Id.ToString()}
                             })}"" onclick=""event.stopPropagation()""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
                         downLink =
-                            $@"<a href=""{PageUtils.GetCmsUrl(channelInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            $@"<a href=""{FxUtils.GetCmsUrl(channelInfo.SiteId, nameof(PageChannel), new NameValueCollection
                             {
                                 {"Add", true.ToString()},
                                 {"channelId", channelInfo.Id.ToString()}

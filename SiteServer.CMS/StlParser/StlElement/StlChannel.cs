@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Caches;
+﻿using System.Text;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Caches.Stl;
 using SiteServer.Utils;
@@ -200,7 +201,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return channel;
             }
 
-            return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+            var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+
+            var innerBuilder = new StringBuilder(parsedContent);
+            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            parsedContent = innerBuilder.ToString();
+
+            if (!StringUtils.EqualsIgnoreCase(type, ChannelAttribute.PageContent))
+            {
+                parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            }
+
+            return parsedContent;
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)

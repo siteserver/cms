@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("创建文件夹", PageUtils.GetCmsUrl(siteId, nameof(ModalCreateDirectory), new NameValueCollection
+            return LayerUtils.GetOpenScript("创建文件夹", FxUtils.GetCmsUrl(siteId, nameof(ModalCreateDirectory), new NameValueCollection
             {
                 {"CurrentRootPath", currentRootPath}
             }), 400, 250);
@@ -25,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
+            FxUtils.CheckRequestParameter("siteId", "CurrentRootPath");
 
 			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath").TrimEnd('/');
 			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);

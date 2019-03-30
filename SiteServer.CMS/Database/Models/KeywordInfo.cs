@@ -1,5 +1,5 @@
-﻿using SiteServer.CMS.Core.Enumerations;
-using SiteServer.CMS.Database.Wrapper;
+﻿using Datory;
+using SiteServer.CMS.Core.Enumerations;
 
 namespace SiteServer.CMS.Database.Models
 {

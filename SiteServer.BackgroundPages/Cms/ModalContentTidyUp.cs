@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
-using SiteServer.CMS.Database.Core;
-using SiteServer.CMS.Database.Repositories.Contents;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", FxUtils.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}

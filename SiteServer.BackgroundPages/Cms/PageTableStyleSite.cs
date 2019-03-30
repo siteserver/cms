@@ -7,6 +7,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int itemId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
             {
                 {"ItemID", itemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -126,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTaxis.Text = styleInfo.Taxis == 0 ? string.Empty : styleInfo.Taxis.ToString();
 
-            var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
+            var urlStyle = FxUtils.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
             {
                 {"TableName", _tableName},
                 {"RelatedIdentity", SiteId.ToString()},

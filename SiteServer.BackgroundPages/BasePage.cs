@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.UI;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin.Impl;
 
@@ -45,7 +47,7 @@ namespace SiteServer.BackgroundPages
                 if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
-                    PageUtils.RedirectToLoginPage();
+                    FxUtils.RedirectToLoginPage();
                     return;
                 }
             }
@@ -69,7 +71,7 @@ namespace SiteServer.BackgroundPages
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.cshtml"") == -1){{
-	window.top.location.href = ""{PageUtils.GetMainUrl(0, string.Empty)}"";
+	window.top.location.href = ""{FxUtils.GetMainUrl(0, string.Empty)}"";
 }}
 </script>");
             }
@@ -194,7 +196,7 @@ setTimeout(function() {{
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
+            FxUtils.Redirect(FxUtils.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)
@@ -231,7 +233,7 @@ setTimeout(function() {{
         public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{siteUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{FxUtils.ApplicationPath}', '{siteUrl}')";
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SiteServer.CMS.Caches;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.RestRoutes
@@ -9,7 +10,7 @@ namespace SiteServer.CMS.Core.RestRoutes
 
         public static string ApiUrl => ConfigManager.Instance.ApiUrl;
 
-        public static string RootUrl => PageUtils.ApplicationPath;
+        public static string RootUrl => FxUtils.ApplicationPath;
 
         public static string ApiPrefix => WebConfigUtils.ApiPrefix;
 
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Core.RestRoutes
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+                    _innerApiUrl = FxUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }

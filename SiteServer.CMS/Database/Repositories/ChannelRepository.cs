@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
@@ -17,6 +18,9 @@ namespace SiteServer.CMS.Database.Repositories
 {
     public class ChannelRepository : GenericRepository<ChannelInfo>
     {
+        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
+        public override string ConnectionString => WebConfigUtils.ConnectionString;
+
         private static readonly List<string> SqlColumns = new List<string>
         {
             ChannelAttribute.Id,
@@ -290,7 +294,7 @@ namespace SiteServer.CMS.Database.Repositories
             if (channelInfo.SiteId != 0)
             {
                 //var sqlString =
-                //    $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnIncrement("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
+                //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
                 //DatabaseApi.ExecuteNonQuery(trans, sqlString);
 
                 IncrementAll(Attr.Taxis, Q
@@ -302,7 +306,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
             {
-                //var sqlString = $"UPDATE siteserver_Channel SET ChildrenCount = {SqlDifferences.ColumnIncrement("ChildrenCount")} WHERE Id IN ({channelInfo.ParentsPath})";
+                //var sqlString = $"UPDATE siteserver_Channel SET ChildrenCount = {DatorySql.ColumnIncrement("ChildrenCount")} WHERE Id IN ({channelInfo.ParentsPath})";
 
                 //DatabaseApi.ExecuteNonQuery(trans, sqlString);
 
@@ -374,7 +378,7 @@ namespace SiteServer.CMS.Database.Repositories
             //int lowerChildrenCount;
             //string lowerParentsPath;
 
-            //var sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+            //var sqlString = DatorySql.GetSqlString(TableName, new List<string>
             //{
             //    nameof(ChannelInfo.Id),
             //    nameof(ChannelInfo.ChildrenCount),
@@ -435,7 +439,7 @@ namespace SiteServer.CMS.Database.Repositories
             //int higherChildrenCount;
             //string higherParentsPath;
 
-            //var sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+            //var sqlString = DatorySql.GetSqlString(TableName, new List<string>
             //{
             //    nameof(ChannelInfo.Id),
             //    nameof(ChannelInfo.ChildrenCount),
@@ -487,7 +491,7 @@ namespace SiteServer.CMS.Database.Repositories
         private void SetTaxisAdd(int channelId, string parentsPath, int addNum)
         {
             //var sqlString =
-            //    $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnIncrement("Taxis", addNum)} WHERE Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+            //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis", addNum)} WHERE Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
             IncrementAll(Attr.Taxis, Q
@@ -499,7 +503,7 @@ namespace SiteServer.CMS.Database.Repositories
         private void SetTaxisSubtract(int channelId, string parentsPath, int subtractNum)
         {
             //string sqlString =
-            //    $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnDecrement("Taxis", subtractNum)} WHERE  Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+            //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnDecrement("Taxis", subtractNum)} WHERE  Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
             DecrementAll(Attr.Taxis, Q
@@ -926,12 +930,12 @@ namespace SiteServer.CMS.Database.Repositories
 
             //var sqlString = isNextChannel ? $"SELECT TOP 1 Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND Taxis > {taxis}) ORDER BY Taxis" : $"SELECT TOP 1 Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND Taxis < {taxis}) ORDER BY Taxis DESC";
             //var sqlString = isNextChannel
-            //    ? SqlDifferences.GetSqlString(TableName, new List<string>
+            //    ? DatorySql.GetSqlString(TableName, new List<string>
             //        {
             //            Attr.Id
             //        },
             //        $"WHERE (ParentId = {parentId} AND Taxis > {taxis})", "ORDER BY Taxis", 1)
-            //    : SqlDifferences.GetSqlString(TableName, new List<string>
+            //    : DatorySql.GetSqlString(TableName, new List<string>
             //        {
             //            Attr.Id
             //        },
@@ -1216,7 +1220,7 @@ namespace SiteServer.CMS.Database.Repositories
                 //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
                 var where =
                     $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
-                sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+                sqlString = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, new List<string>
                     {
                         Attr.Id
                     },
@@ -1282,7 +1286,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
@@ -1301,7 +1305,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                 $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
@@ -1311,7 +1315,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
@@ -1762,14 +1766,14 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //            if (channelInfo.SiteId != 0)
 //            {
 //                string sqlString =
-//                    $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnIncrement("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
+//                    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
 //                DatabaseApi.ExecuteNonQuery(trans, sqlString);
 //            }
 //            channelInfo.Id = DatabaseApi.ExecuteNonQueryAndReturnId(TableName, nameof(ChannelInfo.Id), trans, sqlInsertNode, insertParams);
 
 //            if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
 //            {
-//                var sqlString = $"UPDATE siteserver_Channel SET ChildrenCount = {SqlDifferences.ColumnIncrement("ChildrenCount")} WHERE Id IN ({channelInfo.ParentsPath})";
+//                var sqlString = $"UPDATE siteserver_Channel SET ChildrenCount = {DatorySql.ColumnIncrement("ChildrenCount")} WHERE Id IN ({channelInfo.ParentsPath})";
 
 //                DatabaseApi.ExecuteNonQuery(trans, sqlString);
 //            }
@@ -1821,7 +1825,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //            int lowerChildrenCount;
 //            string lowerParentsPath;
 
-//            var sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+//            var sqlString = DatorySql.GetSqlString(TableName, new List<string>
 //            {
 //                nameof(ChannelInfo.Id),
 //                nameof(ChannelInfo.ChildrenCount),
@@ -1873,7 +1877,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //            int higherChildrenCount;
 //            string higherParentsPath;
 
-//            var sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+//            var sqlString = DatorySql.GetSqlString(TableName, new List<string>
 //            {
 //                nameof(ChannelInfo.Id),
 //                nameof(ChannelInfo.ChildrenCount),
@@ -1916,7 +1920,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //        private void SetTaxisAdd(int channelId, string parentsPath, int addNum)
 //        {
 //            string sqlString =
-//                $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnIncrement("Taxis", addNum)} WHERE Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+//                $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis", addNum)} WHERE Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
 //            DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 //        }
@@ -1924,7 +1928,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //        private void SetTaxisSubtract(int channelId, string parentsPath, int subtractNum)
 //        {
 //            string sqlString =
-//                $"UPDATE siteserver_Channel SET Taxis = {SqlDifferences.ColumnDecrement("Taxis", subtractNum)} WHERE  Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
+//                $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnDecrement("Taxis", subtractNum)} WHERE  Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
 //            DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 //        }
@@ -2337,12 +2341,12 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
 //            //var sqlString = isNextChannel ? $"SELECT TOP 1 Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND Taxis > {taxis}) ORDER BY Taxis" : $"SELECT TOP 1 Id FROM siteserver_Channel WHERE (ParentId = {parentId} AND Taxis < {taxis}) ORDER BY Taxis DESC";
 //            var sqlString = isNextChannel
-//                ? SqlDifferences.GetSqlString(TableName, new List<string>
+//                ? DatorySql.GetSqlString(TableName, new List<string>
 //                    {
 //                        nameof(ChannelInfo.Id)
 //                    },
 //                    $"WHERE (ParentId = {parentId} AND Taxis > {taxis})", "ORDER BY Taxis", 1)
-//                : SqlDifferences.GetSqlString(TableName, new List<string>
+//                : DatorySql.GetSqlString(TableName, new List<string>
 //                    {
 //                        nameof(ChannelInfo.Id)
 //                    },
@@ -2573,7 +2577,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
 //                var where =
 //                    $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
-//                sqlString = SqlDifferences.GetSqlString(TableName, new List<string>
+//                sqlString = DatorySql.GetSqlString(TableName, new List<string>
 //                    {
 //                        nameof(ChannelInfo.Id)
 //                    },
@@ -2633,7 +2637,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
 //            //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-//            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+//            var sqlSelect = DatorySql.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
 //            return DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
 //        }
@@ -2652,7 +2656,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
 
 //            //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-//            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+//            var sqlSelect = DatorySql.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
 //            return DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
 //        }
@@ -2662,7 +2666,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
 //            //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-//            var sqlSelect = SqlDifferences.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+//            var sqlSelect = DatorySql.GetSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
 //            return DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
 //        }

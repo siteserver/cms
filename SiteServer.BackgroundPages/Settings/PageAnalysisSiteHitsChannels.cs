@@ -11,6 +11,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteHitsChannels), new NameValueCollection
+            return FxUtils.GetSettingsUrl(nameof(PageAnalysisSiteHitsChannels), new NameValueCollection
             {
                 {"siteId", siteId.ToString()}
             });
@@ -49,7 +50,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
@@ -99,7 +100,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtils.Redirect(siteId > 0
+            FxUtils.Redirect(siteId > 0
                 ? GetRedirectUrl(siteId)
                 : PageAnalysisSiteHits.GetRedirectUrl());
         }

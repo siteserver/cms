@@ -1,5 +1,4 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -674,27 +673,7 @@ namespace SiteServer.Utils.Enumerations
 			return retval;
 		}
 
-        public static ListItem GetListItem(EFileSystemType type, bool selected)
-        {
-            var item = new ListItem(GetValue(type), GetValue(type));
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
-
-        public static void AddWebPageListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(EFileSystemType.Html, false));
-                listControl.Items.Add(GetListItem(EFileSystemType.Htm, false));
-                listControl.Items.Add(GetListItem(EFileSystemType.SHtml, false));
-                listControl.Items.Add(GetListItem(EFileSystemType.Xml, false));
-                listControl.Items.Add(GetListItem(EFileSystemType.Json, false));
-            }
-        }
+        
 
         public static string GetResponseContentType(EFileSystemType type)
         {

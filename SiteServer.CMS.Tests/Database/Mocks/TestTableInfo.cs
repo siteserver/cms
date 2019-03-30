@@ -1,7 +1,5 @@
 ﻿using System;
-using SiteServer.CMS.Database.Core;
-using SiteServer.CMS.Database.Wrapper;
-using SiteServer.Plugin;
+using Datory;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Tests.Database.Mocks

@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 

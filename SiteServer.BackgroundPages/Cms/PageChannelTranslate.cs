@@ -6,11 +6,11 @@ using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.Utils;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -29,12 +29,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), null);
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), null);
         }
 
         public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             });
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId");
+			FxUtils.CheckRequestParameter("siteId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
@@ -243,7 +243,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!string.IsNullOrEmpty(ReturnUrl))
             {
-                PageUtils.Redirect(ReturnUrl);
+                FxUtils.Redirect(ReturnUrl);
             }
         }
 

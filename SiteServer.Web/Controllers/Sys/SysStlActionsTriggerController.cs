@@ -7,6 +7,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -94,7 +95,7 @@ namespace SiteServer.API.Controllers.Sys
                         
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        PageUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
+                        FxUtils.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
                         return;
                     }
                 }
@@ -102,7 +103,7 @@ namespace SiteServer.API.Controllers.Sys
             catch
             {
                 var redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
-                PageUtils.Redirect(redirectUrl);
+                FxUtils.Redirect(redirectUrl);
                 return;
             }
 

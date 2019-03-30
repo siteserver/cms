@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             return LayerUtils.GetOpenScript($"{name}文件夹设置",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateAssetsConfig), new NameValueCollection
+                FxUtils.GetCmsUrl(siteId, nameof(ModalTemplateAssetsConfig), new NameValueCollection
                 {
                     {"type", type}
                 }), 500, 400);
@@ -40,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "type");
+            FxUtils.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
 
             _type = AuthRequest.GetQueryString("type");

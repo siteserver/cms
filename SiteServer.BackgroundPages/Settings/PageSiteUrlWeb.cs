@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
@@ -11,7 +12,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteUrlWeb), null);
+            return FxUtils.GetSettingsUrl(nameof(PageSiteUrlWeb), null);
         }
 
         public void Page_Load(object sender, EventArgs e)

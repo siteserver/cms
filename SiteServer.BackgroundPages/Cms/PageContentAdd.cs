@@ -15,9 +15,8 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Database.Wrapper;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -55,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlOfAdd(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -64,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlOfEdit(int siteId, int channelId, int id, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
+            return FxUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"id", id.ToString()},
@@ -76,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             var contentId = AuthRequest.GetQueryInt("id");
@@ -492,7 +491,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PageUtils.Redirect(redirectUrl);
+            FxUtils.Redirect(redirectUrl);
         }
 
         private bool IsPermissions(int contentId)
@@ -501,7 +500,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_channelInfo == null || _channelInfo.IsContentAddable == false)
                 {
-                    PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
+                    FxUtils.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;
                 }
 
@@ -509,11 +508,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtils.RedirectToLoginPage();
+                        FxUtils.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtils.RedirectToErrorPage("您无此栏目的添加内容权限！");
+                    FxUtils.RedirectToErrorPage("您无此栏目的添加内容权限！");
                     return false;
                 }
             }
@@ -523,11 +522,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtils.RedirectToLoginPage();
+                        FxUtils.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtils.RedirectToErrorPage("您无此栏目的修改内容权限！");
+                    FxUtils.RedirectToErrorPage("您无此栏目的修改内容权限！");
                     return false;
                 }
             }

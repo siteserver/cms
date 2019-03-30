@@ -1,7 +1,4 @@
-﻿using System.Web.UI.WebControls;
-using SiteServer.Plugin;
-
-namespace SiteServer.Utils
+﻿namespace SiteServer.Utils
 {
     public class InputParserUtils
     {
@@ -30,20 +27,7 @@ namespace SiteServer.Utils
             return string.Empty;
         }
 
-        public static void GetValidateAttributesForListItem(ListControl control, bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, string validateType, string regExp, string errorMessage)
-        {
-            if (!isValidate) return;
-
-            control.Attributes.Add("isValidate", true.ToString().ToLower());
-            control.Attributes.Add("displayName", displayName);
-            control.Attributes.Add("isRequire", isRequire.ToString().ToLower());
-            control.Attributes.Add("minNum", minNum.ToString());
-            control.Attributes.Add("maxNum", maxNum.ToString());
-            control.Attributes.Add("validateType", validateType);
-            control.Attributes.Add("regExp", regExp);
-            control.Attributes.Add("errorMessage", errorMessage);
-            control.Attributes.Add("isListItem", true.ToString().ToLower());
-        }
+       
 
         public static string GetValidateSubmitOnClickScript(string formId)
         {

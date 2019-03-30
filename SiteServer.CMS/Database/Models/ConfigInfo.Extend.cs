@@ -1,3 +1,4 @@
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -10,7 +11,7 @@ namespace SiteServer.CMS.Database.Models
         public string SeparatedApiUrl { get; set; }
 
         public string ApiUrl =>
-            IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+            IsSeparatedApi ? SeparatedApiUrl : FxUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
 
         public bool IsLogSite { get; set; } = true;
 

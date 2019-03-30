@@ -14,6 +14,7 @@ using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 
 namespace SiteServer.CMS.Core
 {
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.Core
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
 
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var relatedSiteUrl = FxUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");
