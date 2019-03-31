@@ -82,46 +82,41 @@ namespace SiteServer.CMS.StlParser
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
 
             var stlLabelList = StlParserUtility.GetStlLabelList(contentBuilder.ToString());
-            var stlPageContentElement = string.Empty;
-            foreach (var label in stlLabelList)
-            {
-                if (!StlParserUtility.IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
-                stlPageContentElement = label;
-                break;
-            }
 
             //如果标签中存在<stl:channel type="PageContent"></stl:channel>
-            if (!string.IsNullOrEmpty(stlPageContentElement)) //内容存在
+            if (StlParserUtility.IsStlChannelElementWithTypePageContent(stlLabelList)) //内容存在
             {
-                var innerBuilder = new StringBuilder(stlPageContentElement);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                var contentAttributeHtml = innerBuilder.ToString();
-                var pageCount =
-                    StringUtils.GetCount(ContentUtility.PagePlaceHolder, contentAttributeHtml) + 1; //一共需要的页数
+                var stlElement = StlParserUtility.GetStlChannelElementWithTypePageContent(stlLabelList);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                contentBuilder.Replace(stlElement, stlElementTranslated);
 
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                var innerBuilder = new StringBuilder(stlElement);
+                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                var pageContentHtml = innerBuilder.ToString();
+                var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
+
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
 
                 for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
                 {
                     var thePageInfo = pageInfo.Clone();
-                    var index = contentAttributeHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
-                    var length = index == -1 ? contentAttributeHtml.Length : index;
-                    var pagedContentAttributeHtml = contentAttributeHtml.Substring(0, length);
-                    var pagedBuilder = new StringBuilder(contentBuilder.ToString()
-                        .Replace(stlPageContentElement, pagedContentAttributeHtml));
+
+                    var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                    var length = index == -1 ? pageContentHtml.Length : index;
+
+                    var pageHtml = pageContentHtml.Substring(0, length);
+                    var pagedBuilder =
+                        new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
                     StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList,
                         thePageInfo.PageChannelId, currentPageIndex, pageCount, 0);
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-
                     await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
 
                     if (index != -1)
                     {
-                        contentAttributeHtml =
-                            contentAttributeHtml.Substring(length + ContentUtility.PagePlaceHolder.Length);
+                        pageContentHtml = pageContentHtml.Substring(length + ContentUtility.PagePlaceHolder.Length);
                     }
                 }
             }
@@ -260,6 +255,43 @@ namespace SiteServer.CMS.StlParser
             if (StlParserUtility.IsStlContentElementWithTypePageContent(stlLabelList)) //内容存在
             {
                 var stlElement = StlParserUtility.GetStlContentElementWithTypePageContent(stlLabelList);
+                var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
+                contentBuilder.Replace(stlElement, stlElementTranslated);
+
+                var innerBuilder = new StringBuilder(stlElement);
+                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                var pageContentHtml = innerBuilder.ToString();
+                var pageCount = StringUtils.GetCount(ContentUtility.PagePlaceHolder, pageContentHtml) + 1; //一共需要的页数
+
+                Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
+
+                for (var currentPageIndex = 0; currentPageIndex < pageCount; currentPageIndex++)
+                {
+                    var thePageInfo = pageInfo.Clone();
+
+                    var index = pageContentHtml.IndexOf(ContentUtility.PagePlaceHolder, StringComparison.Ordinal);
+                    var length = index == -1 ? pageContentHtml.Length : index;
+
+                    var pageHtml = pageContentHtml.Substring(0, length);
+                    var pagedBuilder =
+                        new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
+                    StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList,
+                        channelInfo.Id, contentId, currentPageIndex, pageCount);
+
+                    filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
+                        currentPageIndex);
+                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+
+                    if (index != -1)
+                    {
+                        pageContentHtml = pageContentHtml.Substring(length + ContentUtility.PagePlaceHolder.Length);
+                    }
+                }
+            }
+            //如果标签中存在<stl:channel type="PageContent"></stl:channel>
+            else if (StlParserUtility.IsStlChannelElementWithTypePageContent(stlLabelList)) //内容存在
+            {
+                var stlElement = StlParserUtility.GetStlChannelElementWithTypePageContent(stlLabelList);
                 var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
                 contentBuilder.Replace(stlElement, stlElementTranslated);
 

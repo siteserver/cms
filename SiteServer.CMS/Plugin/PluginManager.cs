@@ -184,8 +184,7 @@ namespace SiteServer.CMS.Plugin
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
-            WebConfigUtils.Load(applicationPhysicalPath);
-            _pluginInfoListRunnable = PluginInfoListRunnable;
+            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
             Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
             {
@@ -200,6 +199,8 @@ namespace SiteServer.CMS.Plugin
                 UserApi = UserApi.Instance,
                 UtilsApi = UtilsApi.Instance
             });
+
+            _pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
         public static void ClearCache()

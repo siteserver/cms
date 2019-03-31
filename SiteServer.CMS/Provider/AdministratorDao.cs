@@ -91,8 +91,7 @@ namespace SiteServer.CMS.Provider
             new TableColumn
             {
                 AttributeName = nameof(AdministratorInfoDatabase.SiteIdCollection),
-                DataType = DataType.VarChar,
-                DataLength = 50
+                DataType = DataType.Text
             },
             new TableColumn
             {

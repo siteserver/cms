@@ -321,10 +321,9 @@ namespace SiteServer.CMS.Core
 
         public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            var retVal = string.Empty;
-            if (siteInfo == null) return retVal;
-            if (string.IsNullOrEmpty(fileUrl)) return retVal;
+            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
+            string retVal;
             if (isStlEntity)
             {
                 retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId,
@@ -356,10 +355,9 @@ namespace SiteServer.CMS.Core
 
         public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
-            var retVal = string.Empty;
-            if (siteInfo == null) return retVal;
-            if (string.IsNullOrEmpty(fileUrl)) return retVal;
+            if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
+            string retVal;
             if (isStlEntity)
             {
                 retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);

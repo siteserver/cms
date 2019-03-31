@@ -44,6 +44,18 @@ namespace SiteServer.Utils
             return retval;
         }
 
+        public static bool IsFilePath(string val)
+        {
+            try
+            {
+                return FileUtils.IsFileExists(val);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static string GetExtension(string path)
         {
             var retval = string.Empty;

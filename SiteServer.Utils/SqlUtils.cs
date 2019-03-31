@@ -431,31 +431,46 @@ SELECT * FROM (
                 $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
         }
 
+        public static string GetQuotedIdentifier(string identifier)
+        {
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                return $"`{identifier}`";
+            }
+
+            return WebConfigUtils.DatabaseType == DatabaseType.SqlServer ? $"[{identifier}]" : identifier;
+        }
+
         public static string GetColumnSqlString(TableColumn tableColumn)
+        {
+            return $@"{GetQuotedIdentifier(tableColumn.AttributeName)} {GetColumnTypeString(tableColumn)}";
+        }
+
+        public static string GetColumnTypeString(TableColumn tableColumn)
         {
             if (tableColumn.IsIdentity)
             {
-                return $@"{tableColumn.AttributeName} {GetAutoIncrementDataType()}";
+                return GetAutoIncrementDataType();
             }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                return ToMySqlColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                return ToMySqlColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                return ToSqlServerColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                return ToSqlServerColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                return ToPostgreColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                return ToPostgreColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                return ToOracleColumnString(tableColumn.DataType, tableColumn.AttributeName, tableColumn.DataLength);
+                return ToOracleColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
             return string.Empty;
@@ -511,6 +526,30 @@ SELECT * FROM (
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
+            }
+
+            return retval;
+        }
+
+        public static string GetModifyColumnsSqlString(string tableName, string columnName, string columnTypeString)
+        {
+            var retval = string.Empty;
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                retval = $"ALTER TABLE `{tableName}` MODIFY {columnName} {columnTypeString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                retval = $"ALTER TABLE [{tableName}] ALTER COLUMN {columnName} {columnTypeString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                retval = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} TYPE {columnTypeString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                retval = $"ALTER TABLE {tableName} MODIFY {columnName} {columnTypeString}";
             }
 
             return retval;
@@ -815,104 +854,104 @@ SELECT * FROM (
             return OracleDbType.NVarchar2;
         }
 
-        private static string ToMySqlColumnString(DataType type, string attributeName, int length)
+        private static string ToMySqlColumnTypeString(DataType type, int length)
         {
             if (type == DataType.Boolean)
             {
-                return $"`{attributeName}` tinyint(1)";
+                return "tinyint(1)";
             }
             if (type == DataType.DateTime)
             {
-                return $"`{attributeName}` datetime";
+                return "datetime";
             }
             if (type == DataType.Decimal)
             {
-                return $"`{attributeName}` decimal(18, 2)";
+                return "decimal(18, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"`{attributeName}` int";
+                return "int";
             }
             if (type == DataType.Text)
             {
-                return $"`{attributeName}` longtext";
+                return "longtext";
             }
-            return $"`{attributeName}` varchar({length})";
+            return $"varchar({length})";
         }
 
-        private static string ToSqlServerColumnString(DataType type, string attributeName, int length)
+        private static string ToSqlServerColumnTypeString(DataType type, int length)
         {
             if (type == DataType.Boolean)
             {
-                return $"[{attributeName}] [bit]";
+                return "[bit]";
             }
             if (type == DataType.DateTime)
             {
-                return $"[{attributeName}] [datetime]";
+                return "[datetime]";
             }
             if (type == DataType.Decimal)
             {
-                return $"[{attributeName}] [decimal] (18, 2)";
+                return "[decimal] (18, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"[{attributeName}] [int]";
+                return "[int]";
             }
             if (type == DataType.Text)
             {
-                return $"[{attributeName}] [ntext]";
+                return "[ntext]";
             }
-            return $"[{attributeName}] [nvarchar] ({length})";
+            return $"[nvarchar] ({length})";
         }
 
-        private static string ToPostgreColumnString(DataType type, string attributeName, int length)
+        private static string ToPostgreColumnTypeString(DataType type, int length)
         {
             if (type == DataType.Boolean)
             {
-                return $"{attributeName} bool";
+                return "bool";
             }
             if (type == DataType.DateTime)
             {
-                return $"{attributeName} timestamptz";
+                return "timestamptz";
             }
             if (type == DataType.Decimal)
             {
-                return $"{attributeName} numeric(18, 2)";
+                return "numeric(18, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"{attributeName} int4";
+                return "int4";
             }
             if (type == DataType.Text)
             {
-                return $"{attributeName} text";
+                return "text";
             }
-            return $"{attributeName} varchar({length})";
+            return $"varchar({length})";
         }
 
-        private static string ToOracleColumnString(DataType type, string attributeName, int length)
+        private static string ToOracleColumnTypeString(DataType type, int length)
         {
             if (type == DataType.Boolean)
             {
-                return $"{attributeName} number(1)";
+                return "number(1)";
             }
             if (type == DataType.DateTime)
             {
-                return $"{attributeName} timestamp(6) with time zone";
+                return "timestamp(6) with time zone";
             }
             if (type == DataType.Decimal)
             {
-                return $"{attributeName} number(38, 2)";
+                return "number(38, 2)";
             }
             if (type == DataType.Integer)
             {
-                return $"{attributeName} number";
+                return "number";
             }
             if (type == DataType.Text)
             {
-                return $"{attributeName} nclob";
+                return "nclob";
             }
-            return $"{attributeName} nvarchar2({length})";
+            return $"nvarchar2({length})";
         }
 
         public static string GetDateDiffLessThanYears(string fieldName, string years)

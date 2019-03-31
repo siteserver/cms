@@ -655,19 +655,43 @@ SELECT * FROM (
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
-
-                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
-                var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
-
-                try
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
                 {
-                    DataProvider.DatabaseDao.ExecuteSql(sqlString);
-                    isAltered = true;
+                    var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
+                    if (databaseColumn != null && !tableColumn.IsIdentity)
+                    {
+                        if (databaseColumn.DataType != tableColumn.DataType ||
+                            (databaseColumn.DataType == DataType.VarChar && tableColumn.DataType == DataType.VarChar && databaseColumn.DataLength != tableColumn.DataLength))
+                        {
+                            var sqlString = SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName,
+                                SqlUtils.GetColumnTypeString(tableColumn));
+
+                            try
+                            {
+                                DataProvider.DatabaseDao.ExecuteSql(sqlString);
+                                isAltered = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                            }
+                        }
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                    var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
+                    var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
+
+                    try
+                    {
+                        DataProvider.DatabaseDao.ExecuteSql(sqlString);
+                        isAltered = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                    }
                 }
             }
 
@@ -831,7 +855,19 @@ SELECT * FROM (
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
+                    if (databaseColumn != null && !tableColumn.IsIdentity)
+                    {
+                        if (tableColumn.DataType != databaseColumn.DataType ||
+                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
+                        {
+                            list.Add(SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName, SqlUtils.GetColumnTypeString(tableColumn)));
+                        }
+                    }
+                }
+                else
                 {
                     list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
                 }

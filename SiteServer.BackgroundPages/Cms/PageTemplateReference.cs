@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
     </a>
   </td>
   <td>{stlAttribute.Title}</td>
-  <td><a href=""https://docs.siteserver.cn/stl#/{tagName}/"" target=""_blank"" class=""{(elementName == _elementName ? "text-white" : string.Empty)}"">https://docs.siteserver.cn/stl#/{tagName}/</a></td>
+  <td><a href=""https://www.siteserver.cn/docs/stl/{tagName}/"" target=""_blank"" class=""{(elementName == _elementName ? "text-white" : string.Empty)}"">https://www.siteserver.cn/docs/stl/{tagName}/</a></td>
 </tr>");
             }
 
@@ -96,16 +96,18 @@ namespace SiteServer.BackgroundPages.Cms
 
                         if (attr != null)
                         {
+                            var attrUrl =
+                                $"https://www.siteserver.cn/docs/stl/{tagName}/#{fieldName.ToLower()}-{attr.Title.ToLower()}";
                             attrBuilder.Append($@"
 <tr>
   <td>{fieldName}</td>
   <td>{attr.Title}</td>
-  <td><a href=""https://docs.siteserver.cn/stl#/{tagName}/attributes?id={fieldName}"" target=""_blank"">https://docs.siteserver.cn/stl#/{tagName}/attributes?id={fieldName}</a></td>
+  <td><a href=""{attrUrl}"" target=""_blank"">{attrUrl}</a></td>
 </tr>");
                         }
                     }
 
-                    var helpUrl = $"https://docs.siteserver.cn/stl#/{tagName}/";
+                    var helpUrl = $"https://www.siteserver.cn/docs/stl/{tagName}/";
 
                     var stlAttribute = (StlElementAttribute)Attribute.GetCustomAttribute(elementType, typeof(StlElementAttribute));
 

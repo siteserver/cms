@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
@@ -60,6 +61,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isUpper = false;
             var leftText = string.Empty;
             var rightText = string.Empty;
+            var attributes = new NameValueCollection();
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -109,12 +111,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     rightText = value;
                 }
+                else
+                {
+                    attributes[name] = value;
+                }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText);
+            return ParseImpl(pageInfo, contextInfo, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
         {
             if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
@@ -212,20 +218,12 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else
             {
-                var innerHtml = string.Empty;
-                if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
-                {
-                    var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                    innerHtml = innerBuilder.ToString();
-                }
-
                 parsedContent = contextInfo.ContentInfo != null
                     ? InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId,
-                        contextInfo.ContentInfo.Id, fileUrl, contextInfo.Attributes, innerHtml,
+                        contextInfo.ContentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
                         contextInfo.IsStlEntity, isLower, isUpper)
-                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, contextInfo.Attributes,
-                        innerHtml, contextInfo.IsStlEntity, isLower, isUpper);
+                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, attributes,
+                        contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))
