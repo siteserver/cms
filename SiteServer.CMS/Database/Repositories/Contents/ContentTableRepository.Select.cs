@@ -15,7 +15,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         public IList<(int, int)> GetContentIdListByTrash(int siteId)
         {
 
-            var list = GetValueList<ContentInfo>(Q
+            var list = GetAll<ContentInfo>(Q
                 .Select(Attr.Id, Attr.ChannelId)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, "<", 0));
@@ -40,7 +40,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
             //return list;
 
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, ">", 0)
                 .WhereIn(Attr.ReferenceId, contentIdList)
@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //}
             //return list;
 
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
             );
@@ -88,7 +88,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                 query.Limit(totalNum);
             }
 
-            return GetValueList<int>(query);
+            return GetAll<int>(query);
 
             //string sqlString;
 
@@ -133,7 +133,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             {
                 query.Limit(totalNum);
             }
-            return GetValueList<int>(query);
+            return GetAll<int>(query);
 
             //string sqlString;
 
@@ -171,7 +171,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             //return DatabaseApi.GetIntResult($"SELECT SUM(Hits) FROM {tableName} WHERE IsChecked='{true}' AND SiteId = {siteId} AND Hits > 0");
 
-            return Sum(Attr.Hits, Q
+            return Sum(Q
+                .Select(Attr.Hits)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.IsChecked, true.ToString())
                 .Where(Attr.Hits, ">", 0)
@@ -183,7 +184,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //var sqlString = $"SELECT Id FROM {tableName} WHERE ChannelId = {channelId} ORDER BY Taxis DESC, Id DESC";
             //return DatabaseApi.GetIntResult(sqlString);
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
@@ -193,7 +194,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
         private int GetTaxis(int contentId)
         {
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.Id, contentId)
             );
@@ -227,7 +228,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             {
                 maxTaxis = TaxisIsTopStartValue;
 
-                var max = Max(Attr.Taxis, Q
+                var max = Max(Q
+                    .Select(Attr.Taxis)
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, ">=", TaxisIsTopStartValue)
                 );
@@ -244,7 +246,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             }
             else
             {
-                var max = Max(Attr.Taxis, Q
+                var max = Max(Q
+                    .Select(Attr.Taxis)
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, "<", TaxisIsTopStartValue)
                 );
@@ -263,7 +266,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             channelId = 0;
             value = default(T);
 
-            var tuple = GetValue<(int ChannelId, T Result)?>(Q
+            var tuple = Get<(int ChannelId, T Result)?>(Q
                 .Select(Attr.ChannelId, name)
                 .Where(Attr.Id, contentId)
             );
@@ -306,7 +309,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
         public T GetValue<T>(int contentId, string name)
         {
-            return GetValue<T>(Q
+            return Get<T>(Q
                 .Select(name)
                 .Where(Attr.Id, contentId)
             );
@@ -336,12 +339,12 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                 query.Where(Attr.IsChecked, ETriStateUtils.GetValue(checkedState));
             }
 
-            return GetValueList<int>(query);
+            return GetAll<int>(query);
         }
 
         public IList<int> GetContentIdListCheckedByChannelId(int siteId, int channelId)
         {
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
@@ -353,7 +356,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             if (isNextContent)
             {
-                return GetValue<int>(Q
+                return Get<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, "<", taxis)
@@ -361,7 +364,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                     .OrderByDesc(Attr.Taxis));
             }
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, ">", taxis)
@@ -383,7 +386,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
         public IList<int> GetIdListBySameTitle(int channelId, string title)
         {
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Title, title)

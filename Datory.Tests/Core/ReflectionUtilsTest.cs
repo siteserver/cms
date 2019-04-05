@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using Datory.Utils;
+using Xunit;
 
 namespace Datory.Tests.Core
 {

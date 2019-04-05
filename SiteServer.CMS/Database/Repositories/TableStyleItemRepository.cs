@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class TableStyleItemRepository : GenericRepository<TableStyleItemInfo>
+    public class TableStyleItemRepository : Repository<TableStyleItemInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public TableStyleItemRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -35,7 +36,7 @@ namespace SiteServer.CMS.Database.Repositories
 
                 //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
                 itemInfo.TableStyleId = tableStyleId;
-                base.InsertObject(itemInfo);
+                base.Insert(itemInfo);
             }
 
             TableStyleManager.ClearCache();
@@ -51,7 +52,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
 
-            DeleteAll(Q.Where(Attr.TableStyleId, tableStyleId));
+            Delete(Q.Where(Attr.TableStyleId, tableStyleId));
 
             if (styleItems == null || styleItems.Count == 0) return;
 
@@ -70,7 +71,7 @@ namespace SiteServer.CMS.Database.Repositories
 
                // DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
 
-                base.InsertObject(itemInfo);
+                base.Insert(itemInfo);
             }
 
             TableStyleManager.ClearCache();
@@ -80,7 +81,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             var allDict = new Dictionary<int, List<TableStyleItemInfo>>();
 
-            var itemInfoList = GetObjectList();
+            var itemInfoList = GetAll();
             foreach (var itemInfo in itemInfoList)
             {
                 allDict.TryGetValue(itemInfo.TableStyleId, out var list);

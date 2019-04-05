@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class RelatedFieldRepository : GenericRepository<RelatedFieldInfo>
+    public class RelatedFieldRepository : Repository<RelatedFieldInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public RelatedFieldRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,73 +19,73 @@ namespace SiteServer.CMS.Database.Repositories
             public const string SiteId = nameof(RelatedFieldInfo.SiteId);
         }
 
-        public int Insert(RelatedFieldInfo relatedFieldInfo)
-        {
-            //const string sqlString = "INSERT INTO siteserver_RelatedField (Title, SiteId, TotalLevel, Prefixes, Suffixes) VALUES (@Title, @SiteId, @TotalLevel, @Prefixes, @Suffixes)";
+        //public int Insert(RelatedFieldInfo relatedFieldInfo)
+        //{
+        //    //const string sqlString = "INSERT INTO siteserver_RelatedField (Title, SiteId, TotalLevel, Prefixes, Suffixes) VALUES (@Title, @SiteId, @TotalLevel, @Prefixes, @Suffixes)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamTitle, relatedFieldInfo.Title),
-            //    GetParameter(ParamSiteId, relatedFieldInfo.SiteId),
-            //    GetParameter(ParamTotalLevel, relatedFieldInfo.TotalLevel),
-            //    GetParameter(ParamPrefixes, relatedFieldInfo.Prefixes),
-            //    GetParameter(ParamSuffixes, relatedFieldInfo.Suffixes),
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamTitle, relatedFieldInfo.Title),
+        //    //    GetParameter(ParamSiteId, relatedFieldInfo.SiteId),
+        //    //    GetParameter(ParamTotalLevel, relatedFieldInfo.TotalLevel),
+        //    //    GetParameter(ParamPrefixes, relatedFieldInfo.Prefixes),
+        //    //    GetParameter(ParamSuffixes, relatedFieldInfo.Suffixes),
+        //    //};
 
-            //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(RelatedFieldInfo.Id), sqlString, parameters);
+        //    //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(RelatedFieldInfo.Id), sqlString, parameters);
 
-            return InsertObject(relatedFieldInfo);
-        }
+        //    return InsertObject(relatedFieldInfo);
+        //}
 
-        public void Update(RelatedFieldInfo relatedFieldInfo)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamTitle, relatedFieldInfo.Title),
-            //    GetParameter(ParamTotalLevel, relatedFieldInfo.TotalLevel),
-            //    GetParameter(ParamPrefixes, relatedFieldInfo.Prefixes),
-            //    GetParameter(ParamSuffixes, relatedFieldInfo.Suffixes),
-            //    GetParameter(ParamId, relatedFieldInfo.Id)
-            //};
-            //string SqlUpdate = "UPDATE siteserver_RelatedField SET Title = @Title, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE Id = @Id";
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
+        //public void Update(RelatedFieldInfo relatedFieldInfo)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamTitle, relatedFieldInfo.Title),
+        //    //    GetParameter(ParamTotalLevel, relatedFieldInfo.TotalLevel),
+        //    //    GetParameter(ParamPrefixes, relatedFieldInfo.Prefixes),
+        //    //    GetParameter(ParamSuffixes, relatedFieldInfo.Suffixes),
+        //    //    GetParameter(ParamId, relatedFieldInfo.Id)
+        //    //};
+        //    //string SqlUpdate = "UPDATE siteserver_RelatedField SET Title = @Title, TotalLevel = @TotalLevel, Prefixes = @Prefixes, Suffixes = @Suffixes WHERE Id = @Id";
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(relatedFieldInfo);
-        }
+        //    UpdateObject(relatedFieldInfo);
+        //}
         
-        public void Delete(int id)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, id)
-            //};
-            //string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE Id = @Id";
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
+        //public void Delete(int id)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamId, id)
+        //    //};
+        //    //string SqlDelete = "DELETE FROM siteserver_RelatedField WHERE Id = @Id";
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            DeleteById(id);
-        }
+        //    DeleteById(id);
+        //}
 
-        public RelatedFieldInfo Get(int id)
-        {
-            return id <= 0 ? null : GetObjectById(id);
+        //public RelatedFieldInfo Get(int id)
+        //{
+        //    return id <= 0 ? null : Get(id);
 
-            //RelatedFieldInfo relatedFieldInfo = null;
+        //    //RelatedFieldInfo relatedFieldInfo = null;
 
-            //var sqlString =
-            //    $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE Id = {id}";
+        //    //var sqlString =
+        //    //    $"SELECT Id, Title, SiteId, TotalLevel, Prefixes, Suffixes FROM siteserver_RelatedField WHERE Id = {id}";
 
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        var i = 0;
-            //        relatedFieldInfo = new RelatedFieldInfo(DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i));
-            //    }
-            //    rdr.Close();
-            //}
+        //    //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+        //    //{
+        //    //    if (rdr.Read())
+        //    //    {
+        //    //        var i = 0;
+        //    //        relatedFieldInfo = new RelatedFieldInfo(DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i));
+        //    //    }
+        //    //    rdr.Close();
+        //    //}
 
-            //return relatedFieldInfo;
-        }
+        //    //return relatedFieldInfo;
+        //}
 
         public RelatedFieldInfo GetRelatedFieldInfo(int siteId, string title)
         {
@@ -109,7 +110,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             //return relatedFieldInfo;
-            return GetObject(Q
+            return Get(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Title, title));
         }
@@ -132,7 +133,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return relatedFieldName;
 
-            return GetValue<string>(Q
+            return Get<string>(Q
                 .Select(Attr.Title)
                 .Where(Attr.Id, id));
         }
@@ -155,7 +156,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .OrderBy(Attr.Id));
         }
@@ -177,7 +178,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.Title)
                 .Where(Attr.SiteId, siteId)
                 .OrderBy(Attr.Id));

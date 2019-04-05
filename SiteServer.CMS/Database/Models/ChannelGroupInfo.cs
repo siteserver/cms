@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ChannelGroup")]
-    public class ChannelGroupInfo : DynamicEntity
+    public class ChannelGroupInfo : Entity
     {
         [TableColumn]
         public string GroupName { get; set; }

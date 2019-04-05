@@ -1,279 +1,450 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using Dapper;
+using Datory.Utils;
+using MySql.Data.MySqlClient;
+using Npgsql;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Datory
 {
     public static class DatoryUtils
     {
-        // ------------------- transateutis ----------------------------
+        public const int VarCharDefaultLength = 500;
 
-        public static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        public static DatabaseType GetDatabaseType()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Converters = new List<JsonConverter>
-            {
-                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"}
-            },
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
+            var databaseType = ConfigurationManager.AppSettings["DatabaseType"];
 
-        public static string JsonSerialize(object obj)
-        {
-            try
-            {
-                //var settings = new JsonSerializerSettings
-                //{
-                //    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                //};
-                //var timeFormat = new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"};
-                //settings.Converters.Add(timeFormat);
+            var retVal = DatabaseType.SqlServer;
 
-                return JsonConvert.SerializeObject(obj, JsonSettings);
+            if (ConvertUtils.EqualsIgnoreCase(databaseType, DatabaseType.MySql.Value))
+            {
+                retVal = DatabaseType.MySql;
             }
-            catch
+            else if (ConvertUtils.EqualsIgnoreCase(databaseType, DatabaseType.SqlServer.Value))
             {
-                return string.Empty;
+                retVal = DatabaseType.SqlServer;
             }
-        }
-
-        public static T JsonDeserialize<T>(string json, T defaultValue = default(T))
-        {
-            try
+            else if (ConvertUtils.EqualsIgnoreCase(databaseType, DatabaseType.PostgreSql.Value))
             {
-                //var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-                //var timeFormat = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-                //settings.Converters.Add(timeFormat);
-
-                return JsonConvert.DeserializeObject<T>(json, JsonSettings);
+                retVal = DatabaseType.PostgreSql;
             }
-            catch
+            else if (ConvertUtils.EqualsIgnoreCase(databaseType, DatabaseType.Oracle.Value))
             {
-                return defaultValue;
-            }
-        }
-
-        public static object Get(IDictionary<string, object> dict, string name)
-        {
-            if (string.IsNullOrEmpty(name)) return null;
-
-            return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
-        }
-
-        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue)
-        {
-            return Get(Get(dict, name), defaultValue);
-        }
-
-        public static T Get<T>(object value, T defaultValue = default(T))
-        {
-            switch (value)
-            {
-                case null:
-                    return defaultValue;
-                case T variable:
-                    return variable;
-                default:
-                    try
-                    {
-                        return (T)Convert.ChangeType(value, typeof(T));
-                    }
-                    catch (InvalidCastException)
-                    {
-                        return defaultValue;
-                    }
-            }
-        }
-
-        public static Dictionary<string, object> ToDictionary(string json)
-        {
-            var dict = new Dictionary<string, object>();
-
-            if (string.IsNullOrEmpty(json)) return dict;
-
-            if (json.StartsWith("{") && json.EndsWith("}"))
-            {
-                dict = JsonDeserialize<Dictionary<string, object>>(json);
-                return dict;
+                retVal = DatabaseType.Oracle;
             }
 
-            json = json.Replace("/u0026", "&");
+            return retVal;
+        }
 
-            var pairs = json.Split('&');
-            foreach (var pair in pairs)
+        public static string GetConnectionString()
+        {
+            return ConfigurationManager.AppSettings["ConnectionString"];
+        }
+
+        private static readonly ConcurrentDictionary<DatabaseType, bool> UseLegacyPagination = new ConcurrentDictionary<DatabaseType, bool>();
+
+        public static bool IsUseLegacyPagination(DatabaseType databaseType, string connectionString)
+        {
+            if (UseLegacyPagination.TryGetValue(databaseType, out var useLegacyPagination)) return useLegacyPagination;
+            useLegacyPagination = false;
+
+            if (databaseType == DatabaseType.SqlServer)
             {
-                if (pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
-                var name = pair.Split('=')[0];
-                if (string.IsNullOrEmpty(name)) continue;
+                const string sqlString = "select left(cast(serverproperty('productversion') as varchar), 4)";
 
-                name = name.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
-                var value = pair.Split('=')[1];
-                if (!string.IsNullOrEmpty(value))
-                {
-                    value = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
-                }
-
-                dict[name] = value;
-            }
-
-            return dict;
-        }
-
-        public static List<string> StringCollectionToStringList(string collection, char split = ',')
-        {
-            var list = new List<string>();
-            if (string.IsNullOrEmpty(collection)) return list;
-
-            var array = collection.Split(split);
-            list.AddRange(array);
-            return list;
-        }
-
-        public static bool ToBool(string boolStr)
-        {
-            if (!bool.TryParse(boolStr?.Trim(), out var boolean))
-            {
-                boolean = false;
-            }
-            return boolean;
-        }
-
-        public static int ToInt(string intStr, int defaultValue = 0)
-        {
-            if (!int.TryParse(intStr?.Trim().TrimStart('0'), out var i))
-            {
-                i = defaultValue;
-            }
-            if (i < 0)
-            {
-                i = defaultValue;
-            }
-            return i;
-        }
-
-        public static decimal ToDecimal(string intStr, decimal defaultValue = 0)
-        {
-            if (!decimal.TryParse(intStr?.Trim(), out var i))
-            {
-                i = defaultValue;
-            }
-            if (i < 0)
-            {
-                i = defaultValue;
-            }
-            return i;
-        }
-
-        // ------------------- transateutis ----------------------------
-
-        // ------------------- stringutis ----------------------------
-
-        public static bool IsGuid(string val)
-        {
-            return !string.IsNullOrWhiteSpace(val) && Guid.TryParse(val, out _);
-        }
-
-        public static string GetGuid()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        public static bool EqualsIgnoreCase(string a, string b)
-        {
-            if (a == b) return true;
-            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return false;
-
-            return a.Equals(b, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool ContainsIgnoreCase(string text, string inner)
-        {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(inner)) return false;
-            return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
-        }
-
-        public static string TrimAndToUpper(string text)
-        {
-            return string.IsNullOrEmpty(text) ? string.Empty : text.ToUpper().Trim();
-        }
-
-        public static string TrimAndToLower(string text)
-        {
-            return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
-        }
-
-        public static bool ContainsIgnoreCase(IList<string> list, string target)
-        {
-            if (list == null || list.Count == 0) return false;
-
-            return list.Any(element => EqualsIgnoreCase(element, target));
-        }
-
-        // ------------------- stringutis ----------------------------
-
-        /// <summary>
-        /// 获取文件的文件夹路径，如果path为文件夹，返回自身。
-        /// </summary>
-        /// <param name="path">文件路径</param>
-        /// <returns></returns>
-        public static string GetDirectoryPath(string path)
-        {
-            var ext = Path.GetExtension(path);
-            var directoryPath = !string.IsNullOrEmpty(ext) ? Path.GetDirectoryName(path) : path;
-            return directoryPath;
-        }
-
-        public static bool IsDirectoryExists(string directoryPath)
-        {
-            return Directory.Exists(directoryPath);
-        }
-
-        public static void CreateDirectoryIfNotExists(string path)
-        {
-            var directoryPath = GetDirectoryPath(path);
-
-            if (!IsDirectoryExists(directoryPath))
-            {
                 try
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    using (var conn = GetConnection(databaseType, connectionString))
+                    {
+                        var version = conn.ExecuteScalar<string>(sqlString);
+
+                        useLegacyPagination = ConvertUtils.ToDecimal(version) < 11;
+                    }
                 }
                 catch
                 {
-                    //Scripting.FileSystemObject fso = new Scripting.FileSystemObjectClass();
-                    //string[] directoryNames = directoryPath.Split('\\');
-                    //string thePath = directoryNames[0];
-                    //for (int i = 1; i < directoryNames.Length; i++)
-                    //{
-                    //    thePath = thePath + "\\" + directoryNames[i];
-                    //    if (StringUtils.Contains(thePath.ToLower(), ConfigUtils.Instance.PhysicalApplicationPath.ToLower()) && !IsDirectoryExists(thePath))
-                    //    {
-                    //        fso.CreateFolder(thePath);
-                    //    }
-                    //}                    
+                    // ignored
+                }
+            }
+
+            UseLegacyPagination[databaseType] = useLegacyPagination;
+
+            return useLegacyPagination;
+        }
+
+        public static IDbConnection GetConnection(DatabaseType databaseType, string connectionString)
+        {
+            IDbConnection conn = null;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                conn = new MySqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                conn = new SqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                conn = new NpgsqlConnection(connectionString);
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                conn = new OracleConnection(connectionString);
+            }
+
+            return conn;
+        }
+
+        public static bool IsTableExists(DatabaseType databaseType, string connectionString, string tableName)
+        {
+            bool exists;
+
+            if (databaseType == DatabaseType.Oracle)
+            {
+                tableName = tableName.ToUpper();
+            }
+            else if (databaseType == DatabaseType.MySql || databaseType == DatabaseType.PostgreSql)
+            {
+                tableName = tableName.ToLower();
+            }
+
+            try
+            {
+                // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
+                if (databaseType != DatabaseType.Oracle)
+                {
+                    using (var conn = GetConnection(databaseType, connectionString))
+                    {
+                        var sql = $"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end";
+
+                        exists = conn.ExecuteScalar<int>(sql) == 1;
+                    }
+                }
+                else
+                {
+                    using (var conn = GetConnection(databaseType, connectionString))
+                    {
+                        var sql = $"SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = '{SqlUtils.GetConnectionStringUserId(connectionString).ToUpper()}' and OBJECT_NAME = '{tableName}'";
+
+                        exists = conn.ExecuteScalar<int>(sql) == 1;
+                    }
+                }
+            }
+            catch
+            {
+                try
+                {
+                    // Other DB.  Graceful degradation
+                    using (var conn = GetConnection(databaseType, connectionString))
+                    {
+                        var sql = $"select 1 from {tableName} where 1 = 0";
+
+                        exists = conn.ExecuteScalar<int>(sql) == 1;
+                    }
+                }
+                catch
+                {
+                    exists = false;
+                }
+            }
+
+            return exists;
+        }
+
+        public static string AddIdentityColumnIdIfNotExists(DatabaseType databaseType, string connectionString, string tableName, List<TableColumn> columns)
+        {
+            var identityColumnName = string.Empty;
+            foreach (var column in columns)
+            {
+                if (column.IsIdentity || ConvertUtils.EqualsIgnoreCase(column.AttributeName, "id"))
+                {
+                    identityColumnName = column.AttributeName;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(identityColumnName))
+            {
+                identityColumnName = nameof(Entity.Id);
+                var sqlString =
+                    SqlUtils.GetAddColumnsSqlString(databaseType, tableName, $"{identityColumnName} {SqlUtils.GetAutoIncrementDataType(databaseType, true)}");
+
+                using (var conn = GetConnection(databaseType, connectionString))
+                {
+                    conn.Execute(sqlString);
+                }
+
+                columns.Insert(0, new TableColumn
+                {
+                    AttributeName = identityColumnName,
+                    DataType = DataType.Integer,
+                    IsPrimaryKey = false,
+                    IsIdentity = true
+                });
+            }
+
+            return identityColumnName;
+        }
+
+        public static void AlterTable(DatabaseType databaseType, string connectionString, string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames)
+        {
+            var list = new List<string>();
+
+            var columnNameList = GetColumnNames(databaseType, connectionString, tableName);
+            foreach (var tableColumn in tableColumns)
+            {
+                if (!ConvertUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    list.Add(SqlUtils.GetAddColumnsSqlString(databaseType, tableName, SqlUtils.GetColumnSqlString(databaseType, tableColumn)));
+                }
+            }
+
+            if (dropColumnNames != null)
+            {
+                foreach (var columnName in columnNameList)
+                {
+                    if (ConvertUtils.ContainsIgnoreCase(dropColumnNames, columnName))
+                    {
+                        list.Add(SqlUtils.GetDropColumnsSqlString(databaseType, tableName, columnName));
+                    }
+                }
+            }
+
+            if (list.Count <= 0) return;
+
+            using (var conn = GetConnection(databaseType, connectionString))
+            {
+                foreach (var sqlString in list)
+                {
+                    conn.Execute(sqlString);
                 }
             }
         }
 
-        public static async Task AppendTextAsync(string filePath, string content)
+        public static void CreateTable(DatabaseType databaseType, string connectionString, string tableName, List<TableColumn> tableColumns)
         {
-            CreateDirectoryIfNotExists(filePath);
+            var sqlBuilder = new StringBuilder();
 
-            var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-            using (var writer = new StreamWriter(file, Encoding.UTF8))
+            sqlBuilder.Append($@"CREATE TABLE {tableName} (").AppendLine();
+
+            var primaryKeyColumns = new List<TableColumn>();
+            TableColumn identityColumn = null;
+
+            foreach (var tableColumn in tableColumns)
             {
-                await writer.WriteAsync(content);
-                writer.Flush();
-                writer.Close();
+                if (ConvertUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)))
+                {
+                    tableColumn.DataType = DataType.Integer;
+                    tableColumn.IsIdentity = true;
+                    tableColumn.IsPrimaryKey = true;
+                }
+                else if (ConvertUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)))
+                {
+                    tableColumn.DataType = DataType.VarChar;
+                    tableColumn.DataLength = 50;
+                }
+                else if (ConvertUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
+                {
+                    tableColumn.DataType = DataType.DateTime;
+                }
+            }
 
-                file.Close();
+            foreach (var tableColumn in tableColumns)
+            {
+                if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
+
+                if (tableColumn.IsIdentity)
+                {
+                    identityColumn = tableColumn;
+                }
+
+                if (tableColumn.IsPrimaryKey)
+                {
+                    primaryKeyColumns.Add(tableColumn);
+                }
+
+                if (tableColumn.DataType == DataType.VarChar && tableColumn.DataLength == 0)
+                {
+                    tableColumn.DataLength = VarCharDefaultLength;
+                }
+
+                var columnSql = SqlUtils.GetColumnSqlString(databaseType, tableColumn);
+                if (!string.IsNullOrEmpty(columnSql))
+                {
+                    sqlBuilder.Append(columnSql).Append(",");
+                }
+            }
+
+            if (identityColumn != null)
+            {
+                var primaryKeySql = SqlUtils.GetPrimaryKeySqlString(databaseType, tableName, identityColumn.AttributeName);
+                if (!string.IsNullOrEmpty(primaryKeySql))
+                {
+                    sqlBuilder.Append(primaryKeySql).Append(",");
+                }
+            }
+            else if (primaryKeyColumns.Count > 0)
+            {
+                foreach (var tableColumn in primaryKeyColumns)
+                {
+                    var primaryKeySql = SqlUtils.GetPrimaryKeySqlString(databaseType, tableName, tableColumn.AttributeName);
+                    if (!string.IsNullOrEmpty(primaryKeySql))
+                    {
+                        sqlBuilder.Append(primaryKeySql).Append(",");
+                    }
+                }
+            }
+
+            sqlBuilder.Length--;
+
+            sqlBuilder.AppendLine().Append(databaseType == DatabaseType.MySql
+                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                : ")");
+            
+            using (var conn = GetConnection(databaseType, connectionString))
+            {
+                conn.Execute(sqlBuilder.ToString());
             }
         }
+
+        public static void CreateIndex(DatabaseType databaseType, string connectionString, string tableName, string indexName, params string[] columns)
+        {
+            var sqlString = new StringBuilder($@"CREATE INDEX {SqlUtils.GetQuotedIdentifier(databaseType, indexName)} ON {SqlUtils.GetQuotedIdentifier(databaseType, tableName)}(");
+
+            foreach (var column in columns)
+            {
+                var columnName = column;
+                var columnOrder = "ASC";
+                var i = column.IndexOf(" ", StringComparison.Ordinal);
+                if (i != -1)
+                {
+                    columnName = column.Substring(0, i);
+                    columnOrder = column.Substring(i + 1);
+                }
+                sqlString.Append($"{SqlUtils.GetQuotedIdentifier(databaseType, columnName)} {columnOrder}, ");
+            }
+
+            sqlString.Length--;
+            sqlString.Append(")");
+
+            using (var conn = GetConnection(databaseType, connectionString))
+            {
+                conn.Execute(sqlString.ToString());
+            }
+        }
+
+        public static List<string> GetColumnNames(DatabaseType databaseType, string connectionString, string tableName)
+        {
+            var allTableColumnInfoList = GetTableColumns(databaseType, connectionString, tableName);
+            return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
+        }
+
+        public static List<TableColumn> GetTableColumns<T>() where T : Entity
+        {
+            return ReflectionUtils.GetTableColumns(typeof(T));
+        }
+
+        public static List<TableColumn> GetTableColumns(DatabaseType databaseType, string connectionString, string tableName)
+        {
+            var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(databaseType, connectionString);
+
+            List<TableColumn> list = null;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                list = SqlUtils.GetMySqlColumns(databaseType, connectionString, databaseName, tableName);
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                list = SqlUtils.GetSqlServerColumns(databaseType, connectionString, databaseName, tableName);
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                list = SqlUtils.GetPostgreSqlColumns(databaseType, connectionString, databaseName, tableName);
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                list = SqlUtils.GetOracleColumns(databaseType, connectionString, tableName);
+            }
+
+            return list;
+        }
+
+        public static List<string> GetTableNames(DatabaseType databaseType, string connectionString)
+        {
+            var sqlString = string.Empty;
+
+            if (databaseType == DatabaseType.MySql)
+            {
+                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(databaseType, connectionString);
+                sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{databaseName}' ORDER BY table_name";
+            }
+            else if (databaseType == DatabaseType.SqlServer)
+            {
+                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(databaseType, connectionString);
+                sqlString =
+                    $"SELECT name FROM [{databaseName}]..sysobjects WHERE type = 'U' AND category<>2 ORDER BY Name";
+            }
+            else if (databaseType == DatabaseType.PostgreSql)
+            {
+                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(databaseType, connectionString);
+                sqlString =
+                    $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{databaseName}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
+            }
+            else if (databaseType == DatabaseType.Oracle)
+            {
+                sqlString = "select TABLE_NAME from user_tables";
+            }
+
+            if (string.IsNullOrEmpty(sqlString)) return new List<string>();
+
+            IEnumerable<string> tableNames;
+            using (var conn = GetConnection(databaseType, connectionString))
+            {
+                tableNames = conn.Query<string>(sqlString);
+            }
+            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+        }
+
+        public static void DropTable(DatabaseType databaseType, string connectionString, string tableName)
+        {
+            using (var conn = GetConnection(databaseType, connectionString))
+            {
+                var sql = $"DROP TABLE {tableName}";
+
+                conn.Execute(sql);
+            }
+        }
+
+        //public static bool DropTable(DatabaseType databaseType, string connectionString, string tableName, out Exception ex)
+        //{
+        //    ex = null;
+        //    var isAltered = false;
+
+        //    try
+        //    {
+        //        using (var conn = GetConnection(databaseType, connectionString))
+        //        {
+        //            conn.Execute($"DROP TABLE {tableName}");
+        //        }
+
+        //        isAltered = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ex = e;
+        //    }
+
+        //    return isAltered;
+        //}
     }
 }

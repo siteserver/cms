@@ -5,10 +5,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ContentCheckRepository : GenericRepository<ContentCheckInfo>
+    public class ContentCheckRepository : Repository<ContentCheckInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ContentCheckRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -17,7 +18,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ChannelId = nameof(ContentCheckInfo.ChannelId);
         }
 
-        public void Insert(ContentCheckInfo checkInfo)
+        public override int Insert(ContentCheckInfo checkInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_ContentCheck (TableName, SiteId, ChannelId, ContentId, UserName, IsChecked, CheckedLevel, CheckDate, Reasons) VALUES (@TableName, @SiteId, @ChannelId, @ContentId, @UserName, @IsChecked, @CheckedLevel, @CheckDate, @Reasons)";
 
@@ -35,7 +36,8 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            InsertObject(checkInfo);
+            checkInfo.Id = base.Insert(checkInfo);
+            return checkInfo.Id;
         }
 
         //public void Delete(int checkId)
@@ -71,7 +73,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.TableName, tableName)
                 .Where(Attr.ChannelId, contentId)
                 .OrderByDesc(Attr.Id));

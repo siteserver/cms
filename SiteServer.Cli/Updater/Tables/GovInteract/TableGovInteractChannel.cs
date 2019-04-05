@@ -2,6 +2,7 @@
 using Datory;
 using Newtonsoft.Json;
 using SiteServer.Plugin;
+using TableColumn = Datory.TableColumn;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract
 {
@@ -43,41 +44,41 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
 
         private static readonly string NewTableName = "ss_govinteract_channel";
 
-        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ApplyStyleId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "QueryStyleId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DepartmentIdCollection",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Summary",
                 DataType = DataType.VarChar

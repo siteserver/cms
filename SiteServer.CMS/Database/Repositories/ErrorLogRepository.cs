@@ -9,10 +9,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ErrorLogRepository : GenericRepository<ErrorLogInfo>
+    public class ErrorLogRepository : Repository<ErrorLogInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ErrorLogRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -20,7 +21,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string AddDate = nameof(ErrorLogInfo.AddDate);
         }
 
-        public int Insert(ErrorLogInfo logInfo)
+        public override int Insert(ErrorLogInfo logInfo)
         {
             //var sqlString = $"INSERT INTO {TableName} (Category, PluginId, Message, Stacktrace, Summary, AddDate) VALUES (@Category, @PluginId, @Message, @Stacktrace, @Summary, @AddDate)";
 
@@ -36,7 +37,9 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(ErrorLogInfo.Id), sqlString, parameters);
 
-            return InsertObject(logInfo);
+            logInfo.Id = base.Insert(logInfo);
+
+            return logInfo.Id;
         }
 
         public void Delete(List<int> idList)
@@ -48,8 +51,9 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DeleteAll(Q
-                .WhereIn(Attr.Id, idList));
+            Delete(Q
+                .WhereIn(Attr.Id, idList)
+            );
         }
 
         public void DeleteIfThreshold()
@@ -61,7 +65,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM {TableName} WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
@@ -96,7 +100,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return logInfo;
 
-            return GetObjectById(logId);
+            return Get(logId);
         }
 
         public string GetSelectCommend(string category, string pluginId, string keyword, string dateFrom, string dateTo)
@@ -149,7 +153,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public void DeleteAll()
         {
-            base.DeleteAll();
+            base.Delete();
         }
     }
 }

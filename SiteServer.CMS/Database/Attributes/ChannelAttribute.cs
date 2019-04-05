@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Database.Models;
+﻿using Datory;
+using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.Database.Attributes
@@ -6,7 +7,7 @@ namespace SiteServer.CMS.Database.Attributes
     public static class ChannelAttribute
     {
         [StlAttribute(Title = "栏目Id")]
-        public const string Id = nameof(ChannelInfo.Id);
+        public const string Id = nameof(Entity.Id);
 
         [StlAttribute(Title = "站点Id")]
         public const string SiteId = nameof(ChannelInfo.SiteId);

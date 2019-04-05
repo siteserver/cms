@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Channel")]
-    public partial class ChannelInfo : DynamicEntity, IChannelInfo, ICloneable
+    public partial class ChannelInfo : Entity, IChannelInfo, ICloneable
     {
         [TableColumn]
         public string ChannelName { get; set; }

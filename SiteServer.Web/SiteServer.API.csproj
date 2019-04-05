@@ -131,6 +131,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CentralizedPrefixProvider.cs" />
+    <Compile Include="Controllers\Backend\AdminUtils.cs" />
+    <Compile Include="Controllers\Backend\Create\CreateStatusController.cs" />
+    <Compile Include="Controllers\Backend\LoginController.cs" />
+    <Compile Include="Controllers\Backend\MainController.cs" />
+    <Compile Include="Controllers\Backend\IndexController.cs" />
     <Compile Include="Controllers\Home\HomeContentAddLayerImageController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerCopyController.cs" />
     <Compile Include="Controllers\Home\HomeContentsLayerCutController.cs" />

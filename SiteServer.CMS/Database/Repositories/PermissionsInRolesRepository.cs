@@ -6,28 +6,29 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class PermissionsInRolesRepository : GenericRepository<PermissionsInRolesInfo>
+    public class PermissionsInRolesRepository : Repository<PermissionsInRolesInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public PermissionsInRolesRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
             public const string RoleName = nameof(PermissionsInRolesInfo.RoleName);
         }
 
-        public void Insert(PermissionsInRolesInfo info)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamRoleRoleName, info.RoleName),
-            //    GetParameter(ParamGeneralPermissions,info.GeneralPermissions)
-            //};
-            //string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
-            //DatabaseApi.ExecuteNonQuery(trans, SqlInsert, parameters);
+        //public override void Insert(PermissionsInRolesInfo info)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamRoleRoleName, info.RoleName),
+        //    //    GetParameter(ParamGeneralPermissions,info.GeneralPermissions)
+        //    //};
+        //    //string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
+        //    //DatabaseApi.ExecuteNonQuery(trans, SqlInsert, parameters);
 
-            InsertObject(info);
-        }
+        //    InsertObject(info);
+        //}
 
         public void Delete(string roleName)
         {
@@ -38,7 +39,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.RoleName, roleName));
         }
 
@@ -78,7 +79,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return info;
 
-            return GetObject(Q.Where(Attr.RoleName, roleName));
+            return Get(Q.Where(Attr.RoleName, roleName));
         }
 
         public List<string> GetGeneralPermissionList(IEnumerable<string> roles)

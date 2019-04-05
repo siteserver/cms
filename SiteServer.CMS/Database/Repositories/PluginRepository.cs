@@ -4,10 +4,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class PluginRepository : GenericRepository<PluginInfo>
+    public class PluginRepository : Repository<PluginInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public PluginRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsDisabled, isDisabled.ToString())
                 .Where(Attr.PluginId, pluginId)
             );
@@ -60,7 +61,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.PluginId, pluginId)
             );
@@ -105,7 +106,7 @@ namespace SiteServer.CMS.Database.Repositories
 
                 //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-                InsertObject(new PluginInfo
+                base.Insert(new PluginInfo
                 {
                     PluginId = pluginId,
                     Disabled = false,
@@ -130,7 +131,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var result = GetValue<(string IsDisabled, int Taxis)?> (Q
+            var result = Get<(string IsDisabled, int Taxis)?> (Q
                 .Select(Attr.IsDisabled, Attr.Taxis)
                 .Where(Attr.PluginId, pluginId));
 

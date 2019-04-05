@@ -16,10 +16,11 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ChannelRepository : GenericRepository<ChannelInfo>
+    public class ChannelRepository : Repository<ChannelInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ChannelRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static readonly List<string> SqlColumns = new List<string>
         {
@@ -297,12 +298,14 @@ namespace SiteServer.CMS.Database.Repositories
                 //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis")} WHERE (Taxis >= {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
                 //DatabaseApi.ExecuteNonQuery(trans, sqlString);
 
-                IncrementAll(Attr.Taxis, Q
+                Increment(Q
+                    .Select(Attr.Taxis)
                     .Where(Attr.Taxis, ">=", channelInfo.Taxis)
-                    .Where(Attr.SiteId, channelInfo.SiteId));
+                    .Where(Attr.SiteId, channelInfo.SiteId)
+                );
             }
             //channelInfo.Id = DatabaseApi.ExecuteNonQueryAndReturnId(TableName, nameof(ChannelInfo.Id), trans, sqlInsertNode, insertParams);
-            InsertObject(channelInfo);
+            Insert(channelInfo);
 
             if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
             {
@@ -310,9 +313,11 @@ namespace SiteServer.CMS.Database.Repositories
 
                 //DatabaseApi.ExecuteNonQuery(trans, sqlString);
 
-                IncrementAll(Attr.ChildrenCount, Q
+                Increment(Q
+                    .Select(Attr.ChildrenCount)
                     .WhereIn(Attr.ParentsPath,
-                        TranslateUtils.StringCollectionToIntList(channelInfo.ParentsPath)));
+                        TranslateUtils.StringCollectionToIntList(channelInfo.ParentsPath))
+                );
             }
 
             //var sqlUpdateIsLastNode = "UPDATE siteserver_Channel SET IsLastNode = @IsLastNode WHERE ParentId = @ParentId";
@@ -323,7 +328,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //DatabaseApi.ExecuteNonQuery(trans, sqlUpdateIsLastNode, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, channelInfo.ParentId)
             );
@@ -331,14 +336,14 @@ namespace SiteServer.CMS.Database.Repositories
             //sqlUpdateIsLastNode =
             //    $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString(TableName, new List<string>{ nameof(ChannelInfo.Id) }, $"WHERE ParentId = {channelInfo.ParentId}", "ORDER BY Taxis DESC", 1)}))";
             //DatabaseApi.ExecuteNonQuery(trans, sqlUpdateIsLastNode);
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, channelInfo.ParentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(nameof(Attr.Id), topId)
                 );
@@ -360,8 +365,9 @@ namespace SiteServer.CMS.Database.Repositories
 
             //var sqlString = string.Concat("UPDATE siteserver_Channel SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id in (", parentsPath, ")");
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            DecrementAll(Attr.ChildrenCount, Q
-                    .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)),
+            Decrement(Q
+                    .Select(Attr.ChildrenCount)
+                    .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)), 
                 subtractNum);
         }
 
@@ -405,7 +411,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //    rdr.Close();
             //}
-            var dataInfo = GetObject(Q
+            var dataInfo = Get(Q
                 .Where(Attr.ParentId, channelInfo.ParentId)
                 .WhereNot(Attr.Id, channelInfo.Id)
                 .Where(Attr.Taxis, "<", channelInfo.Taxis)
@@ -466,7 +472,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //    rdr.Close();
             //}
-            var dataInfo = GetObject(Q
+            var dataInfo = Get(Q
                 .Where(Attr.ParentId, channelInfo.ParentId)
                 .WhereNot(Attr.Id, channelInfo.Id)
                 .Where(Attr.Taxis, ">", channelInfo.Taxis)
@@ -494,10 +500,12 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnIncrement("Taxis", addNum)} WHERE Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            IncrementAll(Attr.Taxis, Q
+            Increment(Q
+                .Select(Attr.Taxis)
                 .Where(Attr.Id, channelId)
                 .OrWhere(Attr.ParentsPath, parentsPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), addNum);
+                .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), addNum
+                );
         }
 
         private void SetTaxisSubtract(int channelId, string parentsPath, int subtractNum)
@@ -506,7 +514,8 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Channel SET Taxis = {DatorySql.ColumnDecrement("Taxis", subtractNum)} WHERE  Id = {channelId} OR ParentsPath = '{parentsPath}' OR ParentsPath like '{parentsPath},%'";
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            DecrementAll(Attr.Taxis, Q
+            Decrement(Q
+                .Select(Attr.Taxis)
                 .Where(Attr.Id, channelId)
                 .OrWhere(Attr.ParentsPath, parentsPath)
                 .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), subtractNum);
@@ -524,7 +533,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, parentId)
             );
@@ -532,14 +541,14 @@ namespace SiteServer.CMS.Database.Repositories
             //sqlString =
             //    $"UPDATE siteserver_Channel SET IsLastNode = '{true}' WHERE (Id IN ({SqlUtils.ToInTopSqlString(TableName, new List<string> { Attr.Id }, $"WHERE ParentId = {parentId}", "ORDER BY Taxis DESC", 1)}))";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(Attr.Id, topId)
                 );
@@ -559,9 +568,11 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
             //return maxTaxis;
-            return Max(Attr.Taxis, Q
-                .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")) ?? 0;
+            return Max(Q
+                       .Select(Attr.Taxis)
+                       .Where(Attr.ParentsPath, parentPath)
+                       .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")
+                   ) ?? 0;
         }
 
         private int GetParentId(int channelId)
@@ -584,7 +595,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return parentId;
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.ParentId)
                 .Where(Attr.Id, channelId));
         }
@@ -609,7 +620,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return channelId;
 
-            var idList = GetValueList<int>(Q
+            var idList = GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderBy(Attr.Taxis));
@@ -682,7 +693,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Channel SET SiteId = {channelInfo.Id} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.SiteId, channelInfo.Id)
                 .Where(Attr.Id, channelInfo.Id)
             );
@@ -691,7 +702,7 @@ namespace SiteServer.CMS.Database.Repositories
             return channelInfo.Id;
         }
 
-        public void Update(ChannelInfo channelInfo)
+        public override bool Update(ChannelInfo channelInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -720,9 +731,11 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
-            UpdateObject(channelInfo);
+            var updated = base.Update(channelInfo);
 
             ChannelManager.UpdateCache(channelInfo.SiteId, channelInfo);
+
+            return updated;
 
             //ChannelManager.RemoveCache(channelInfo.ParentId == 0
             //    ? channelInfo.Id
@@ -735,7 +748,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Channel SET ChannelTemplateId = {channelInfo.ChannelTemplateId} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.ChannelTemplateId, channelInfo.ChannelTemplateId)
                 .Where(Attr.Id, channelInfo.Id)
             );
@@ -749,7 +762,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Channel SET ContentTemplateId = {channelInfo.ContentTemplateId} WHERE Id = {channelInfo.Id}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.ContentTemplateId, channelInfo.ContentTemplateId)
                 .Where(Attr.Id, channelInfo.Id)
             );
@@ -767,7 +780,7 @@ namespace SiteServer.CMS.Database.Repositories
             //"UPDATE siteserver_Channel SET ExtendValues = @ExtendValues WHERE Id = @Id"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateExtendValues, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.ExtendValues, channelInfo.ExtendValues)
                 .Where(Attr.Id, channelInfo.Id)
             );
@@ -812,12 +825,17 @@ namespace SiteServer.CMS.Database.Repositories
             //"UPDATE siteserver_Channel SET GroupNameCollection = @GroupNameCollection WHERE Id = @Id"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateGroupNameCollection, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.GroupNameCollection, channelInfo.GroupNameCollection)
                 .Where(Attr.Id, channelId)
             );
 
             ChannelManager.UpdateCache(siteId, channelInfo);
+        }
+
+        public void DeleteAll(int siteId)
+        {
+            base.Delete(Q.Where(Attr.SiteId, siteId).OrWhere(Attr.Id, siteId));
         }
 
         public void Delete(int siteId, int channelId)
@@ -845,7 +863,7 @@ namespace SiteServer.CMS.Database.Repositories
             //var deleteCmd =
             //    $"DELETE FROM siteserver_Channel WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
             //deletedNum = DatabaseApi.ExecuteNonQuery(trans, deleteCmd);
-            var deletedNum = DeleteAll(Q
+            var deletedNum = Delete(Q
                 .WhereIn(Attr.Id, idList));
 
             if (channelInfo.ParentId != 0)
@@ -853,9 +871,11 @@ namespace SiteServer.CMS.Database.Repositories
                 //var taxisCmd =
                 //    $"UPDATE siteserver_Channel SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {channelInfo.Taxis}) AND (SiteId = {channelInfo.SiteId})";
                 //DatabaseApi.ExecuteNonQuery(trans, taxisCmd);
-                DecrementAll(Attr.Taxis, Q
-                    .Where(Attr.SiteId, channelInfo.SiteId)
-                    .Where(Attr.Taxis, ">", channelInfo.Taxis), deletedNum);
+                Decrement(Q
+                        .Select(Attr.Taxis)
+                        .Where(Attr.SiteId, channelInfo.SiteId)
+                        .Where(Attr.Taxis, ">", channelInfo.Taxis), deletedNum
+                );
             }
 
             UpdateIsLastNode(channelInfo.ParentId);
@@ -892,7 +912,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
             //return channelInfo;
-            return GetObject(Q
+            return Get(Q
                 .Where(Attr.ParentId, channelId)
                 .OrderByDesc(Attr.AddDate));
         }
@@ -919,7 +939,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return channelInfo;
 
-            return GetObject(Q
+            return Get(Q
                 .Where(Attr.ParentId, channelId)
                 .OrderBy(Attr.Taxis));
         }
@@ -954,7 +974,7 @@ namespace SiteServer.CMS.Database.Repositories
             int channelId;
             if (isNextChannel)
             {
-                channelId = GetValue<int>(Q
+                channelId = Get<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ParentId, parentId)
                     .Where(Attr.Taxis, ">", taxis)
@@ -962,7 +982,7 @@ namespace SiteServer.CMS.Database.Repositories
             }
             else
             {
-                channelId = GetValue<int>(Q
+                channelId = Get<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ParentId, parentId)
                     .Where(Attr.Taxis, "<", taxis)
@@ -1011,7 +1031,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return siteId;
 
-            var siteId = GetValue<int>(Q
+            var siteId = Get<int>(Q
                 .Select(Attr.SiteId)
                 .Where(Attr.Id, channelId));
 
@@ -1057,7 +1077,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //    rdr.Close();
             //}
-            var idList = GetValueList<int>(Q
+            var idList = GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderBy(Attr.Taxis));
@@ -1085,7 +1105,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.IndexName)
                 .Where(Attr.SiteId, siteId)
                 .Distinct());
@@ -1192,7 +1212,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.Instance.GetIntResult(sqlString) + 1;
 
-            var taxis = GetValue<int>(Q
+            var taxis = Get<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.Id, channelId));
             return Count(Q
@@ -1220,7 +1240,7 @@ namespace SiteServer.CMS.Database.Repositories
                 //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
                 var where =
                     $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
-                sqlString = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, new List<string>
+                sqlString = DataProvider.DatabaseApi.GetSqlString(DatabaseType, ConnectionString, TableName, new List<string>
                     {
                         Attr.Id
                     },
@@ -1242,11 +1262,11 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
             var list = new List<int>();
 
-            using (var rdr = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    list.Add(DatabaseApi.Instance.GetInt(rdr, 0));
+                    list.Add(DataProvider.DatabaseApi.GetInt(rdr, 0));
                 }
                 rdr.Close();
             }
@@ -1271,7 +1291,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 //                rdr.Close();
 //            }
 
-            var channelInfoList = GetObjectList(Q
+            var channelInfoList = GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(q => q
                     .Where(Attr.Id, siteId)
@@ -1286,9 +1306,9 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DataProvider.DatabaseApi.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
+            return DataProvider.DatabaseApi.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
 
         public DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
@@ -1305,9 +1325,9 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                 $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DataProvider.DatabaseApi.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
+            return DataProvider.DatabaseApi.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
 
         public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
@@ -1315,9 +1335,9 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
             //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DatorySql.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlSelect = DataProvider.DatabaseApi.GetSqlString(DatabaseType, ConnectionString, TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return DatabaseApi.Instance.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
+            return DataProvider.DatabaseApi.ExecuteDataset(WebConfigUtils.ConnectionString, sqlSelect);
         }
 
         public IList<string> GetContentModelPluginIdList()
@@ -1336,7 +1356,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             //}
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.ContentModelPluginId)
                 .Distinct());
         }
@@ -1358,7 +1378,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
             //}
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.FilePath)
                 .Where(Attr.SiteId, siteId)
                 .WhereNotNull(Attr.FilePath)
@@ -1440,7 +1460,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
                 if (templateInfo.Default)
                 {
-                    return GetValueList<int>(Q
+                    return GetAll<int>(Q
                         .Select(Attr.Id)
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ChannelTemplateId, templateInfo.Id)
@@ -1448,7 +1468,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                         .OrWhereNull(Attr.ChannelTemplateId));
                 }
 
-                return GetValueList<int>(Q
+                return GetAll<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
                     .Where(Attr.ChannelTemplateId, templateInfo.Id));
@@ -1462,7 +1482,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
 
                 if (templateInfo.Default)
                 {
-                    return GetValueList<int>(Q
+                    return GetAll<int>(Q
                         .Select(Attr.Id)
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ContentTemplateId, templateInfo.Id)
@@ -1470,7 +1490,7 @@ WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByS
                         .OrWhereNull(Attr.ContentTemplateId));
                 }
 
-                return GetValueList<int>(Q
+                return GetAll<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
                     .Where(Attr.ContentTemplateId, templateInfo.Id));

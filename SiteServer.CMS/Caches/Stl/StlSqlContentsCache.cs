@@ -1,5 +1,6 @@
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches.Core;
+using SiteServer.CMS.Database.Core;
 
 namespace SiteServer.CMS.Caches.Stl
 {
@@ -21,7 +22,7 @@ namespace SiteServer.CMS.Caches.Stl
                 retval = StlCacheManager.Get<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DatabaseApi.Instance.GetSelectSqlStringByQueryString(connectionString,
+                    retval = DataProvider.DatabaseApi.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
                     StlCacheManager.Set(cacheKey, retval);
                 }

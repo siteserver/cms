@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Datory.Tests.Mocks;
+using Datory.Utils;
 using SqlKata;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,13 +14,13 @@ namespace Datory.Tests.Core
     {
         public EnvironmentFixture Fixture { get; }
         private readonly ITestOutputHelper _output;
-        private readonly TestTableRepository _repository;
+        private readonly Repository<TestTableInfo> _repository;
 
         public GenericRepositoryTest(EnvironmentFixture fixture, ITestOutputHelper output)
         {
             Fixture = fixture;
             _output = output;
-            _repository = new TestTableRepository();
+            _repository = new Repository<TestTableInfo>(EnvUtils.DatabaseType, EnvUtils.ConnectionString);
         }
 
         [SkippableFact, TestPriority(0)]
@@ -53,15 +55,13 @@ namespace Datory.Tests.Core
             var lockedColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.Locked));
             Assert.Null(lockedColumn);
 
-            var isExists = DatorySql.IsTableExists(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
+            var isExists = DatoryUtils.IsTableExists(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
             if (isExists)
             {
-                DatorySql.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
+                DatoryUtils.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
             }
 
-            var created = DatorySql.CreateTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName, tableColumns, out _, out var sqlString);
-            _output.WriteLine(sqlString);
-            Assert.True(created);
+            DatoryUtils.CreateTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName, tableColumns);
         }
 
         [SkippableFact, TestPriority(1)]
@@ -75,7 +75,7 @@ namespace Datory.Tests.Core
             var dataInfo = new TestTableInfo();
             _repository.Insert(dataInfo);
             Assert.Equal(1, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Null(dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -96,7 +96,7 @@ namespace Datory.Tests.Core
             };
             _repository.Insert(dataInfo);
             Assert.Equal(2, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -115,10 +115,10 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var dataInfo = _repository.First(1);
+            var dataInfo = _repository.Get(1);
             Assert.NotNull(dataInfo);
             Assert.Equal(1, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Null(dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -131,10 +131,10 @@ namespace Datory.Tests.Core
             _output.WriteLine(dataInfo.Guid);
             _output.WriteLine(dataInfo.LastModifiedDate.ToString());
 
-            dataInfo = _repository.First(2);
+            dataInfo = _repository.Get(2);
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -149,10 +149,10 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var dataInfo = _repository.First(new Query().Where(Attr.VarChar100, "string"));
+            var dataInfo = _repository.Get(new Query().Where(Attr.VarChar100, "string"));
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -161,10 +161,10 @@ namespace Datory.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.First(dataInfo.Guid);
+            dataInfo = _repository.Get(dataInfo.Guid);
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -173,10 +173,10 @@ namespace Datory.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.First(dataInfo.Guid);
+            dataInfo = _repository.Get(dataInfo.Guid);
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -185,10 +185,10 @@ namespace Datory.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.First(new Query().Where(Attr.VarChar100, "not exists"));
+            dataInfo = _repository.Get(new Query().Where(Attr.VarChar100, "not exists"));
             Assert.Null(dataInfo);
 
-            dataInfo = _repository.First(new Query());
+            dataInfo = _repository.Get(new Query());
             Assert.NotNull(dataInfo);
         }
 
@@ -225,19 +225,19 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var guid = _repository.GetValue<string>(new Query()
-                .Select(nameof(DynamicEntity.Guid)).Where("Id", 1));
-            Assert.True(DatoryUtils.IsGuid(guid));
+            var guid = _repository.Get<string>(new Query()
+                .Select(nameof(Entity.Guid)).Where("Id", 1));
+            Assert.True(ConvertUtils.IsGuid(guid));
 
-            var date = _repository.GetValue<DateTime?>(new Query()
+            var date = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date)).Where("Guid", guid));
             Assert.False(date.HasValue);
 
-            var lastModifiedDate = _repository.GetValue<DateTime?>(new Query()
+            var lastModifiedDate = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.LastModifiedDate))
                 .Where("Guid", guid));
             Assert.True(lastModifiedDate.HasValue);
-            _output.WriteLine(lastModifiedDate.Value.ToString());
+            _output.WriteLine(lastModifiedDate.Value.ToString(CultureInfo.InvariantCulture));
         }
 
         [SkippableFact, TestPriority(2)]
@@ -245,19 +245,19 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var guidList = _repository.GetValueList<string>(new Query()
+            var guidList = _repository.GetAll<string>(new Query()
                 .Select(nameof(TestTableInfo.Guid))
                 .Where("Id", 1)).ToList();
 
             Assert.NotNull(guidList);
-            Assert.True(DatoryUtils.IsGuid(guidList.First()));
+            Assert.True(ConvertUtils.IsGuid(guidList.First()));
 
-            var dateList = _repository.GetValueList<DateTime?>(new Query()
+            var dateList = _repository.GetAll<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date))
                 .Where("Guid", guidList.First())).ToList();
             Assert.False(dateList.First().HasValue);
 
-            var lastModifiedDateList = _repository.GetValueList<DateTime?>(new Query()
+            var lastModifiedDateList = _repository.GetAll<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.LastModifiedDate))
                 .Where("Id", 1)).ToList();
             Assert.True(lastModifiedDateList.First().HasValue);
@@ -282,18 +282,18 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var dataInfo = _repository.First(1);
+            var dataInfo = _repository.Get(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified = dataInfo.LastModifiedDate.Value.Ticks;
 
             dataInfo.Content = "new content";
             dataInfo.LastModifiedDate = DateTime.Now.AddDays(-1);
 
-            var updated = _repository.UpdateObject(dataInfo);
+            var updated = _repository.Update(dataInfo);
             Assert.True(updated);
 
             Assert.Equal(1, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Null(dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -308,7 +308,7 @@ namespace Datory.Tests.Core
             _output.WriteLine(lastModified2.ToString());
             Assert.True(lastModified2 > lastModified);
 
-            updated = _repository.UpdateObject(null);
+            updated = _repository.Update((TestTableInfo)null);
             Assert.False(updated);
         }
 
@@ -317,22 +317,22 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var lastModified = _repository.GetValue<DateTime?>(new Query()
-                .Select(nameof(DynamicEntity.LastModifiedDate)).Where("Id", 1));
+            var lastModified = _repository.Get<DateTime?>(new Query()
+                .Select(nameof(Entity.LastModifiedDate)).Where("Id", 1));
             Assert.True(lastModified.HasValue);
 
-            var updated = _repository.UpdateAll(new Query()
+            var updated = _repository.Update(new Query()
                 .Set("Content", "new content2")
                 .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
                 .Where(nameof(Attr.Id), 1));
             Assert.True(updated == 1);
 
-            var dataInfo = _repository.First(1);
+            var dataInfo = _repository.Get(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified2 = dataInfo.LastModifiedDate.Value.Ticks;
 
             Assert.Equal(1, dataInfo.Id);
-            Assert.True(DatoryUtils.IsGuid(dataInfo.Guid));
+            Assert.True(ConvertUtils.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Null(dataInfo.VarChar100);
             Assert.Null(dataInfo.VarCharDefault);
@@ -344,7 +344,7 @@ namespace Datory.Tests.Core
             
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
-            updated = _repository.UpdateAll(new Query());
+            updated = _repository.Update(new Query());
             Assert.True(updated == 2);
         }
 
@@ -353,32 +353,29 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var lastModified = _repository.GetValue<DateTime?>(new Query()
-                .Select(nameof(DynamicEntity.LastModifiedDate))
+            var lastModified = _repository.Get<DateTime?>(new Query()
+                .Select(nameof(Entity.LastModifiedDate))
                 .Where("Id", 1));
             Assert.True(lastModified.HasValue);
 
-            var updatedCount = _repository.UpdateAll(new Query()
+            var updatedCount = _repository.Update(new Query()
                 .Set("Content", "new content2")
                 .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
                 .Where("Id", 1));
 
             Assert.True(updatedCount == 1);
 
-            updatedCount = _repository.UpdateAll(new Query()
+            updatedCount = _repository.Update(new Query()
                 .Set("Content", "new content3")
                 .Where("Content", "new content2"));
 
             Assert.True(updatedCount == 1);
 
-            var dataInfo = _repository.First(1);
+            var dataInfo = _repository.Get(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified2 = dataInfo.LastModifiedDate.Value.Ticks;
 
             Assert.True(lastModified2 > lastModified.Value.Ticks);
-
-            updatedCount = _repository.UpdateAll(null);
-            Assert.True(updatedCount == 2);
         }
 
         [SkippableFact, TestPriority(3)]
@@ -386,19 +383,19 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            var dataInfo = _repository.First(1);
+            var dataInfo = _repository.Get(1);
             Assert.Equal(0, dataInfo.Num);
 
-            var affected = _repository.IncrementAll(Attr.Num, new Query().Where(Attr.Id, 1));
+            var affected = _repository.Increment(new Query().Select(Attr.Num).Where(Attr.Id, 1));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.First(1);
+            dataInfo = _repository.Get(1);
             Assert.Equal(1, dataInfo.Num);
 
-            affected = _repository.DecrementAll(Attr.Num, new Query().Where(Attr.Id, 1));
+            affected = _repository.Decrement(new Query().Select(Attr.Num).Where(Attr.Id, 1));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.First(1);
+            dataInfo = _repository.Get(1);
             Assert.Equal(0, dataInfo.Num);
         }
 
@@ -419,7 +416,7 @@ namespace Datory.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            DatorySql.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, _repository.TableName);
+            DatoryUtils.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, _repository.TableName);
         }
     }
 }

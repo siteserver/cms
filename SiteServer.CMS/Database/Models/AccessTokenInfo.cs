@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_AccessToken")]
-    public class AccessTokenInfo : DynamicEntity
+    public class AccessTokenInfo : Entity
     {
         [TableColumn]
         public string Title { get; set; }

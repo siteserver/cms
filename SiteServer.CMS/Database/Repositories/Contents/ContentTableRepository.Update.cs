@@ -67,7 +67,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
             foreach (var contentId in contentIdList)
             {
-                var settingsXml = GetValue<string>(Q
+                var settingsXml = Get<string>(Q
                     .Select(Attr.SettingsXml)
                     .Where(Attr.Id, contentId));
 
@@ -81,7 +81,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
                 if (translateChannelId > 0)
                 {
-                    UpdateAll(Q
+                    Update(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
                         .Set(Attr.SettingsXml, settingsXml)
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                 }
                 else
                 {
-                    UpdateAll(Q
+                    Update(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
                         .Set(Attr.SettingsXml, settingsXml)
@@ -155,12 +155,12 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                 query.OrderByDesc(attributeName);
             }
 
-            var idList = GetValueList<int>(query);
+            var idList = GetAll<int>(query);
 
             var taxis = 1;
             foreach (var contentId in idList)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.Taxis, taxis++)
                     .Where(Attr.Id, contentId)
                 );
@@ -194,7 +194,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //    rdr.Close();
             //}
 
-            var resultList = GetValueList<(int Id, int ChannelId, string Content)>(Q.Where(Attr.SiteId, SiteId));
+            var resultList = GetAll<(int Id, int ChannelId, string Content)>(Q.Where(Attr.SiteId, SiteId));
 
             foreach (var result in resultList)
             {
@@ -235,7 +235,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
             //ContentManager.RemoveCache(tableName, channelId);
 
-            var updateNum = UpdateAll(Q
+            var updateNum = Update(Q
                 .Set(name, value)
                 .Where(Attr.Id, contentId)
             );
@@ -262,7 +262,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
                 //    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
                 //updateNum = DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-                updateNum = UpdateAll(Q
+                updateNum = Update(Q
                     .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                     .Set(Attr.LastEditDate, DateTime.Now)
                     .Where(Attr.SiteId, siteId)
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId = {siteId}";
             //updateNum = DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            var updateNum = UpdateAll(Q
+            var updateNum = Update(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                 .Set(Attr.LastEditDate, DateTime.Now)
                 .Where(Attr.SiteId, siteId)
@@ -307,7 +307,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             //    $"UPDATE {tableName} SET ChannelId = -ChannelId, LastEditDate = {SqlUtils.GetComparableNow()} WHERE SiteId = {siteId} AND ChannelId < 0";
             //var updateNum = DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            var updateNum = UpdateAll(Q
+            var updateNum = Update(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                 .Set(Attr.LastEditDate, DateTime.Now)
                 .Where(Attr.SiteId, siteId)
@@ -321,14 +321,16 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
         public void AddDownloads(int channelId, int contentId)
         {
-            IncrementAll(Attr.Downloads, Q.Where(Attr.Id, contentId));
+            Increment(Q
+                .Select(Attr.Downloads)
+                .Where(Attr.Id, contentId));
 
             ContentManager.RemoveCache(TableName, channelId);
         }
 
         private void UpdateTaxis(int channelId, int contentId, int taxis)
         {
-            var updateNum = UpdateAll(Q
+            var updateNum = Update(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.Id, contentId)
             );
@@ -347,7 +349,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             var taxis = GetTaxis(contentId);
 
-            var result = GetValue<(int HigherId, int HigherTaxis)?>(Q
+            var result = Get<(int HigherId, int HigherTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, ">", taxis)
@@ -374,7 +376,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             var taxis = GetTaxis(contentId);
 
-            var result = GetValue<(int LowerId, int LowerTaxis)?>(Q
+            var result = Get<(int LowerId, int LowerTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, "<", taxis)

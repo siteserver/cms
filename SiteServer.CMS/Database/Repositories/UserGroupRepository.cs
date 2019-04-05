@@ -6,17 +6,18 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class UserGroupRepository : GenericRepository<UserGroupInfo>
+    public class UserGroupRepository : Repository<UserGroupInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public UserGroupRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
             public const string Id = nameof(UserGroupInfo.Id);
         }
 
-        public void Insert(UserGroupInfo groupInfo)
+        public override int Insert(UserGroupInfo groupInfo)
         {
 //            var sqlString =
 //                $@"
@@ -36,12 +37,14 @@ namespace SiteServer.CMS.Database.Repositories
 
 //            var groupId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserGroupInfo.Id), sqlString, parameters);
 
-            InsertObject(groupInfo);
+            groupInfo.Id = base.Insert(groupInfo);
 
             UserGroupManager.ClearCache();
+
+            return groupInfo.Id;
         }
 
-        public void Update(UserGroupInfo groupInfo)
+        public override bool Update(UserGroupInfo groupInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(UserGroupInfo.GroupName)} = @{nameof(UserGroupInfo.GroupName)},  
@@ -57,12 +60,14 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(groupInfo);
+            var updated = base.Update(groupInfo);
 
             UserGroupManager.ClearCache();
+
+            return updated;
         }
 
-        public void Delete(int groupId)
+        public override bool Delete(int groupId)
         {
             //var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
 
@@ -73,9 +78,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            DeleteById(groupId);
+            var deleted = base.Delete(groupId);
 
             UserGroupManager.ClearCache();
+
+            return deleted;
         }
 
         public IList<UserGroupInfo> GetUserGroupInfoList()
@@ -88,7 +95,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    list = connection.Query<UserGroupInfo>(sqlString).ToList();
             //}
 
-            return GetObjectList(Q.OrderBy(Attr.Id));
+            return GetAll(Q.OrderBy(Attr.Id));
         }
     }
 }

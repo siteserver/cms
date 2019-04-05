@@ -140,6 +140,7 @@
     <Compile Include="Caches\Content\ContentManager.ContentCache.cs" />
     <Compile Include="Caches\Content\ContentManager.CountCache.cs" />
     <Compile Include="Caches\Content\ContentManager.cs" />
+    <Compile Include="Database\Core\DatabaseApi.cs" />
     <Compile Include="Core\RestRoutes\V1\ApiContentsParameters.cs" />
     <Compile Include="Core\RestRoutes\V1\StlRequest.cs" />
     <Compile Include="Core\RestRoutes\ApiRoutePlugin.cs" />
@@ -164,7 +165,7 @@
     <Compile Include="Database\Models\ConfigInfo.Extend.cs" />
     <Compile Include="Database\Models\SiteInfo.Extend.cs" />
     <Compile Include="Database\Models\TableStyleInfo.Extend.cs" />
-    <Compile Include="Database\Core\SqlUtils.cs" />
+    <Compile Include="Database\SqlUtils.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
     <Compile Include="Caches\ContentTagManager.cs" />
     <Compile Include="Caches\UserMenuManager .cs" />
@@ -185,7 +186,7 @@
     <Compile Include="Core\Create\DeleteManager.cs" />
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
-    <Compile Include="Database\Core\DataProvider.cs" />
+    <Compile Include="Database\DataProvider.cs" />
     <Compile Include="Caches\DepartmentManager.cs" />
     <Compile Include="Core\DirectoryUtility.cs" />
     <Compile Include="Core\FileUtility.cs" />
@@ -238,12 +239,6 @@
     <Compile Include="Core\VisualInfo.cs" />
     <Compile Include="Core\WordSpliter.cs" />
     <Compile Include="Caches\UserManager.cs" />
-    <Compile Include="Database\Core\DataProviderBase.cs" />
-    <Compile Include="Apis\DatabaseApi.cs" />
-    <Compile Include="Database\Core\MySql.cs" />
-    <Compile Include="Database\Core\Oracle.cs" />
-    <Compile Include="Database\Core\PostgreSql.cs" />
-    <Compile Include="Database\Core\SqlServer.cs" />
     <Compile Include="ImportExport\AtomUtility.cs" />
     <Compile Include="ImportExport\BackupUtility.cs" />
     <Compile Include="ImportExport\Components\ChannelGroupIe.cs" />

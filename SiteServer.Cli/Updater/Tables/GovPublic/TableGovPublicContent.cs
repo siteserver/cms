@@ -4,7 +4,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables.GovPublic
@@ -142,9 +141,9 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
     {
         public static readonly string NewTableName = "ss_govpublic_content";
 
-        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
+        private static List<TableColumn> NewColumns => new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Identifier",
                 DataType = DataType.VarChar,
@@ -154,7 +153,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "索引号"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DocumentNo",
                 DataType = DataType.VarChar,
@@ -165,7 +164,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    IsRequired = true
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DepartmentId",
                 DataType = DataType.Integer,
@@ -175,7 +174,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "部门",
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Publisher",
                 DataType = DataType.VarChar,
@@ -185,7 +184,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "发布机构"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Keywords",
                 DataType = DataType.VarChar,
@@ -195,7 +194,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "关键词"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "PublishDate",
                 DataType = DataType.DateTime,
@@ -207,7 +206,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DefaultValue = "{Current}"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "EffectDate",
                 DataType = DataType.DateTime,
@@ -219,7 +218,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DefaultValue = "{Current}"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IsAbolition",
                 DataType = DataType.VarChar,
@@ -245,7 +244,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    }
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "AbolitionDate",
                 DataType = DataType.DateTime,
@@ -257,7 +256,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DefaultValue = "{Current}"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Description",
                 DataType = DataType.VarChar,
@@ -267,7 +266,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "内容概述"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ImageUrl",
                 DataType = DataType.VarChar,
@@ -277,7 +276,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "图片"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
@@ -287,7 +286,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
                 //    DisplayName = "附件",
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Content",
                 DataType = DataType.Text,
@@ -299,9 +298,9 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             }
         };
 
-        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<DatoryColumn>();
+            var columns = new List<TableColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -329,7 +328,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {

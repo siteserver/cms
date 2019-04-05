@@ -4,7 +4,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater
@@ -129,7 +128,7 @@ namespace SiteServer.Cli.Updater
             };
         }
 
-        public static ConvertInfo GetConverter(string oldTableName, List<DatoryColumn> oldColumns)
+        public static ConvertInfo GetConverter(string oldTableName, List<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {
@@ -140,9 +139,9 @@ namespace SiteServer.Cli.Updater
             };
         }
 
-        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<DatoryColumn>();
+            var columns = new List<TableColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
 
             if (oldColumns != null && oldColumns.Count > 0)

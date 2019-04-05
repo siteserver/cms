@@ -6,9 +6,9 @@ namespace SiteServer.CMS.Database.Attributes
 {
     public static class ContentAttribute
     {
-        public const string Id = nameof(DynamicEntity.Id);
-        public const string Guid = nameof(DynamicEntity.Guid);
-        public const string LastModifiedDate = nameof(DynamicEntity.LastModifiedDate);
+        public const string Id = nameof(Entity.Id);
+        public const string Guid = nameof(Entity.Guid);
+        public const string LastModifiedDate = nameof(Entity.LastModifiedDate);
         public const string ChannelId = nameof(ChannelId);
         public const string SiteId = nameof(SiteId);
         public const string AddUserName = nameof(AddUserName);

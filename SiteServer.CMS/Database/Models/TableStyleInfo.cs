@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_TableStyle")]
-    public partial class TableStyleInfo : DynamicEntity
+    public partial class TableStyleInfo : Entity
     {
         [TableColumn]
         public int RelatedIdentity { get; set; }

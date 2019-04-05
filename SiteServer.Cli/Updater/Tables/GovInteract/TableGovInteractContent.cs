@@ -4,7 +4,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract
@@ -121,9 +120,9 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
     {
         public const string NewTableName = "ss_govinteract_content";
 
-        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
+        private static List<TableColumn> NewColumns => new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "RealName",
                 DataType = DataType.VarChar,
@@ -133,7 +132,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "姓名"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Organization",
                 DataType = DataType.VarChar,
@@ -143,7 +142,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "工作单位"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "CardType",
                 DataType = DataType.VarChar,
@@ -181,7 +180,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    }
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "CardNo",
                 DataType = DataType.VarChar,
@@ -191,7 +190,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "证件号码"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Phone",
                 DataType = DataType.VarChar,
@@ -201,7 +200,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "联系电话"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "PostCode",
                 DataType = DataType.VarChar,
@@ -211,7 +210,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "邮政编码"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Address",
                 DataType = DataType.VarChar,
@@ -221,7 +220,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "联系地址"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Email",
                 DataType = DataType.VarChar,
@@ -231,7 +230,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "电子邮件"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Fax",
                 DataType = DataType.VarChar,
@@ -241,7 +240,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "传真"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "TypeId",
                 DataType = DataType.Integer,
@@ -298,7 +297,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    }
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IsPublic",
                 DataType = DataType.VarChar,
@@ -324,7 +323,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    }
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Content",
                 DataType = DataType.Text,
@@ -334,7 +333,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "内容"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
@@ -344,7 +343,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "附件"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DepartmentId",
                 DataType = DataType.Integer,
@@ -354,7 +353,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "提交部门"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DepartmentName",
                 DataType = DataType.VarChar,
@@ -364,7 +363,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "提交部门"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "QueryCode",
                 DataType = DataType.VarChar,
@@ -374,7 +373,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "查询码"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "State",
                 DataType = DataType.VarChar,
@@ -384,7 +383,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "状态"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IpAddress",
                 DataType = DataType.VarChar,
@@ -394,7 +393,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "IP地址"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ReplyContent",
                 DataType = DataType.Text,
@@ -404,7 +403,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "回复内容"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ReplyFileUrl",
                 DataType = DataType.VarChar,
@@ -414,7 +413,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "回复附件"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ReplyDepartmentName",
                 DataType = DataType.VarChar,
@@ -424,7 +423,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "回复部门"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ReplyUserName",
                 DataType = DataType.VarChar,
@@ -434,7 +433,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
                 //    DisplayName = "回复人"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ReplyAddDate",
                 DataType = DataType.DateTime,
@@ -446,9 +445,9 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             }
         };
 
-        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<DatoryColumn>();
+            var columns = new List<TableColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -476,7 +475,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {

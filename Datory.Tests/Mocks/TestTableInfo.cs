@@ -1,9 +1,10 @@
 ﻿using System;
+using Datory.Utils;
 
 namespace Datory.Tests.Mocks
 {
     [Table("TestTable")]
-    public class TestTableInfo : DynamicEntity
+    public class TestTableInfo : Entity
     {
         [TableColumn(Length = 100)]
         public string VarChar100 { get; set; }
@@ -28,7 +29,7 @@ namespace Datory.Tests.Mocks
 
         public bool Locked
         {
-            get => DatoryUtils.ToBool(IsLockedOut);
+            get => ConvertUtils.ToBool(IsLockedOut);
             set => IsLockedOut = value.ToString();
         }
     }

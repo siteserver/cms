@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ContentGroup")]
-    public class ContentGroupInfo : DynamicEntity
+    public class ContentGroupInfo : Entity
     {
         [TableColumn]
         public string GroupName { get; set; }

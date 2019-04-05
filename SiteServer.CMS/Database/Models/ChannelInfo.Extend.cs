@@ -8,7 +8,7 @@ namespace SiteServer.CMS.Database.Models
     public partial class ChannelInfo
     {
         [JsonIgnore]
-        public ContentTableRepository ContentRepository => ContentTableRepository.GetContentRepository(SiteId,
+        public ContentTableRepository ContentRepository => new ContentTableRepository(SiteId,
             ChannelManager.GetTableName(SiteManager.GetSiteInfo(SiteId), this));
 
         //是否可以添加栏目

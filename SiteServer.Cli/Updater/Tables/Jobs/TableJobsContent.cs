@@ -4,7 +4,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables.Jobs
@@ -121,9 +120,9 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
     {
         public static readonly string NewTableName = "ss_jobs";
 
-        private static List<DatoryColumn> NewColumns => new List<DatoryColumn>
+        private static List<TableColumn> NewColumns => new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Department",
                 DataType = DataType.VarChar,
@@ -134,7 +133,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
                 //    IsRequired = true
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Location",
                 DataType = DataType.VarChar,
@@ -145,7 +144,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
                 //    IsRequired = true
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "NumberOfPeople",
                 DataType = DataType.VarChar,
@@ -157,7 +156,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
                 //    DefaultValue = "不限"
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Responsibility",
                 DataType = DataType.Text,
@@ -168,7 +167,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
                 //    IsRequired = true
                 //}
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Requirement",
                 DataType = DataType.Text,
@@ -181,9 +180,9 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
             }
         };
 
-        private static List<DatoryColumn> GetNewColumns(List<DatoryColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
-            var columns = new List<DatoryColumn>();
+            var columns = new List<TableColumn>();
             columns.AddRange(DataProvider.ContentRepository.TableColumns);
             columns.AddRange(NewColumns);
 
@@ -211,7 +210,7 @@ namespace SiteServer.Cli.Updater.Tables.Jobs
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<DatoryColumn> oldColumns)
+        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {

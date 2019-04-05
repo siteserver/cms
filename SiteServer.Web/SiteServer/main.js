@@ -87,6 +87,12 @@ var $methods = {
       } else {
         location.href = res.redirectUrl;
       }
+    }).catch(function (error) {
+      if (error.response.status === 401) {
+        location.href = 'login.cshtml';
+      } else if (error.response.status === 500) {
+        $this.pageAlert = utils.getPageAlert(error);
+      }
     });
   },
 

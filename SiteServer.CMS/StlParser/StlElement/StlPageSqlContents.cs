@@ -132,7 +132,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
                     var pageSqlString = StlDatabaseCache.GetStlPageSqlString(_sqlString, _listInfo.OrderByString, totalNum, _listInfo.PageNum, currentPageIndex);
 
-                    var dataSource = DatabaseApi.Instance.GetDataSource(pageSqlString);
+                    var dataSource = DataProvider.DatabaseApi.GetDataSource(pageSqlString);
 
                     if (_listInfo.Layout == ELayout.None)
                     {

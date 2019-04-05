@@ -801,7 +801,7 @@ SELECT * FROM (
 
         private int GetQueryVirtualCount()
         {
-            var recCount = DatabaseApi.Instance.GetPageTotalCount(SelectCommand);
+            var recCount = DataProvider.DatabaseApi.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(DataProvider.ADOType, ConnectionString);
@@ -862,7 +862,7 @@ SELECT * FROM (
             }
             var cmdText = GetPageSqlString(SelectCommand, orderString, ItemsPerPage, CurrentPageIndex, countInfo.PageCount, countInfo.RecordsInLastPage);
 
-            var conn = DatorySql.GetConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var conn = DatoryUtils.GetConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
             var cmd = GetIDbCommand();
             cmd.Connection = conn;
             cmd.CommandText = cmdText;

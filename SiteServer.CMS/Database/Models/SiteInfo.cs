@@ -4,7 +4,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Site")]
-    public partial class SiteInfo: DynamicEntity, ISiteInfo
+    public partial class SiteInfo: Entity, ISiteInfo
     {
         [TableColumn]
         public string SiteDir { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using Datory.Utils;
 
 namespace Datory.Tests
 {
@@ -54,7 +55,7 @@ namespace Datory.Tests
                             var attrKey = setting.Attributes?["key"];
                             if (attrKey != null)
                             {
-                                if (DatoryUtils.EqualsIgnoreCase(attrKey.Value, nameof(DatabaseType)))
+                                if (ConvertUtils.EqualsIgnoreCase(attrKey.Value, nameof(DatabaseType)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
@@ -62,7 +63,7 @@ namespace Datory.Tests
                                         databaseType = attrValue.Value;
                                     }
                                 }
-                                else if (DatoryUtils.EqualsIgnoreCase(attrKey.Value, nameof(ConnectionString)))
+                                else if (ConvertUtils.EqualsIgnoreCase(attrKey.Value, nameof(ConnectionString)))
                                 {
                                     var attrValue = setting.Attributes["value"];
                                     if (attrValue != null)
@@ -133,7 +134,7 @@ namespace Datory.Tests
                         var attrKey = setting.Attributes?["key"];
                         if (attrKey == null) continue;
 
-                        if (!DatoryUtils.EqualsIgnoreCase(attrKey.Value, name)) continue;
+                        if (!ConvertUtils.EqualsIgnoreCase(attrKey.Value, name)) continue;
 
                         var attrValue = setting.Attributes["value"];
                         if (attrValue != null)
@@ -213,11 +214,11 @@ namespace Datory.Tests
             if (databaseType == DatabaseType.MySql)
             {
                 connectionString = connectionString.TrimEnd(';');
-                if (!DatoryUtils.ContainsIgnoreCase(connectionString, "SslMode="))
+                if (!ConvertUtils.ContainsIgnoreCase(connectionString, "SslMode="))
                 {
                     connectionString += ";SslMode=Preferred;";
                 }
-                if (!DatoryUtils.ContainsIgnoreCase(connectionString, "CharSet="))
+                if (!ConvertUtils.ContainsIgnoreCase(connectionString, "CharSet="))
                 {
                     connectionString += ";CharSet=utf8;";
                 }
@@ -225,7 +226,7 @@ namespace Datory.Tests
             else if (databaseType == DatabaseType.Oracle)
             {
                 connectionString = connectionString.TrimEnd(';');
-                if (!DatoryUtils.ContainsIgnoreCase(connectionString, "pooling="))
+                if (!ConvertUtils.ContainsIgnoreCase(connectionString, "pooling="))
                 {
                     connectionString += ";pooling=false;";
                 }
@@ -238,15 +239,15 @@ namespace Datory.Tests
         {
             var userId = string.Empty;
 
-            foreach (var pair in DatoryUtils.StringCollectionToStringList(connectionString, ';'))
+            foreach (var pair in ConvertUtils.StringCollectionToStringList(connectionString, ';'))
             {
                 if (!string.IsNullOrEmpty(pair) && pair.IndexOf("=", StringComparison.Ordinal) != -1)
                 {
                     var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
                     var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
-                    if (DatoryUtils.EqualsIgnoreCase(key, "Uid") ||
-                        DatoryUtils.EqualsIgnoreCase(key, "Username") ||
-                        DatoryUtils.EqualsIgnoreCase(key, "User ID"))
+                    if (ConvertUtils.EqualsIgnoreCase(key, "Uid") ||
+                        ConvertUtils.EqualsIgnoreCase(key, "Username") ||
+                        ConvertUtils.EqualsIgnoreCase(key, "User ID"))
                     {
                         return value;
                     }

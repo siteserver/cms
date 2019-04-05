@@ -40,8 +40,8 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (Param.ControlToPaginate == null) return;
 
-            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
-            var dataSource = DatabaseApi.Instance.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
+            var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
+            var dataSource = DataProvider.DatabaseApi.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
 
             Param.ControlToPaginate.DataSource = dataSource;
             Param.ControlToPaginate.DataBind();

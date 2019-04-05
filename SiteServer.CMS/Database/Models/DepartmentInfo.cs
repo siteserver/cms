@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Department")]
-    public class DepartmentInfo : DynamicEntity
+    public class DepartmentInfo : Entity
     {
         [TableColumn]
         public string DepartmentName { get; set; }

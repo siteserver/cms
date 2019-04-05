@@ -6,9 +6,9 @@ using Datory;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
-using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Fx;
+using SiteServer.CMS.Database.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -97,7 +97,7 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DataProvider.DatabaseApi.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
@@ -144,14 +144,14 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                    if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
-                        if (!DatabaseApi.Instance.CreateTable(tableName, tableInfo.Columns, string.Empty, false, out var ex, out var sqlString))
+                        if (!TableColumnManager.CreateTable(tableName, tableInfo.Columns, string.Empty, false, out var ex))
                         {
                             await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {
                                 DateTime = DateTime.Now,
-                                Detail = $"创建表 {tableName}: {sqlString}",
+                                Detail = $"创建表 {tableName}",
                                 Exception = ex
                             });
 
@@ -160,7 +160,7 @@ namespace SiteServer.Cli.Jobs
                     }
                     else
                     {
-                        DatabaseApi.Instance.AlterTable(tableName, tableInfo.Columns, string.Empty);
+                        TableColumnManager.AlterTable(tableName, tableInfo.Columns, string.Empty);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -179,7 +179,7 @@ namespace SiteServer.Cli.Jobs
 
                                 try
                                 {
-                                    DatabaseApi.Instance.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                    DataProvider.DatabaseApi.InsertMultiple(tableName, objects, tableInfo.Columns);
                                 }
                                 catch (Exception ex)
                                 {
@@ -209,10 +209,20 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DatorySql.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+                var tableNameList = DatoryUtils.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+
                 foreach (var tableName in tableNameList)
                 {
-                    DatabaseApi.Instance.AlterOracleAutoIdToMaxValue(tableName);
+                    try
+                    {
+                        var sqlString =
+                            $"ALTER TABLE {tableName} MODIFY Id GENERATED ALWAYS AS IDENTITY(START WITH LIMIT VALUE)";
+                        DataProvider.DatabaseApi.Execute(sqlString);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
 

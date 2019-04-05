@@ -171,13 +171,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = tableHandWrite;
-                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                    if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
-                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
+                        TableColumnManager.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _);
                     }
                     else
                     {
-                        DatabaseApi.Instance.AlterTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty);
+                        TableColumnManager.AlterTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty);
                     }
                 }
 
@@ -198,9 +198,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 if (string.IsNullOrEmpty(tableName))
                 {
                     tableName = ContentRepository.GetContentTableName(siteId);
-                    if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                    if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                     {
-                        DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _, out _);
+                        TableColumnManager.CreateTable(tableName, DataProvider.ContentRepository.TableColumnsDefault, string.Empty, true, out _);
                     }
                     DataProvider.Site.UpdateTableName(siteId, tableName);
                 }

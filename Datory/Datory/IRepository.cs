@@ -10,6 +10,6 @@ namespace Datory
 
         string TableName { get; }
 
-        List<DatoryColumn> TableColumns { get; }
+        List<TableColumn> TableColumns { get; }
     }
 }

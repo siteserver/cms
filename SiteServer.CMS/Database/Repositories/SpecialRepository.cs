@@ -7,10 +7,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class SpecialRepository : GenericRepository<SpecialInfo>
+    public class SpecialRepository : Repository<SpecialInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public SpecialRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -20,35 +21,37 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Url = nameof(SpecialInfo.Url);
         }
 
-        public void Insert(SpecialInfo specialInfo)
+        public override int Insert(SpecialInfo specialInfo)
         {
-     //       var sqlString = $@"INSERT INTO {TableName}
-     //      ({nameof(SpecialInfo.SiteId)}, 
-     //       {nameof(SpecialInfo.Title)}, 
-     //       {nameof(SpecialInfo.Url)},
-     //       {nameof(SpecialInfo.AddDate)})
-     //VALUES
-     //      (@{nameof(SpecialInfo.SiteId)}, 
-     //       @{nameof(SpecialInfo.Title)}, 
-     //       @{nameof(SpecialInfo.Url)}, 
-     //       @{nameof(SpecialInfo.AddDate)})";
+            //       var sqlString = $@"INSERT INTO {TableName}
+            //      ({nameof(SpecialInfo.SiteId)}, 
+            //       {nameof(SpecialInfo.Title)}, 
+            //       {nameof(SpecialInfo.Url)},
+            //       {nameof(SpecialInfo.AddDate)})
+            //VALUES
+            //      (@{nameof(SpecialInfo.SiteId)}, 
+            //       @{nameof(SpecialInfo.Title)}, 
+            //       @{nameof(SpecialInfo.Url)}, 
+            //       @{nameof(SpecialInfo.AddDate)})";
 
-     //       IDataParameter[] parameters =
-     //       {
-     //           GetParameter(nameof(specialInfo.SiteId), specialInfo.SiteId),
-     //           GetParameter(nameof(specialInfo.Title), specialInfo.Title),
-     //           GetParameter(nameof(specialInfo.Url), specialInfo.Url),
-     //           GetParameter(nameof(specialInfo.AddDate),specialInfo.AddDate)
-     //       };
+            //       IDataParameter[] parameters =
+            //       {
+            //           GetParameter(nameof(specialInfo.SiteId), specialInfo.SiteId),
+            //           GetParameter(nameof(specialInfo.Title), specialInfo.Title),
+            //           GetParameter(nameof(specialInfo.Url), specialInfo.Url),
+            //           GetParameter(nameof(specialInfo.AddDate),specialInfo.AddDate)
+            //       };
 
-     //       DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+            //       DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(specialInfo);
+            specialInfo.Id = Insert(specialInfo);
 
             SpecialManager.RemoveCache(specialInfo.SiteId);
+
+            return specialInfo.Id;
         }
 
-        public void Update(SpecialInfo specialInfo)
+        public override bool Update(SpecialInfo specialInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(SpecialInfo.SiteId)} = @{nameof(SpecialInfo.SiteId)},  
@@ -68,9 +71,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(specialInfo);
+            var updated = base.Update(specialInfo);
 
             SpecialManager.RemoveCache(specialInfo.SiteId);
+
+            return updated;
         }
 
         public void Delete(int siteId, int specialId)
@@ -80,7 +85,7 @@ namespace SiteServer.CMS.Database.Repositories
             //var sqlString = $"DELETE FROM {TableName} WHERE {nameof(SpecialInfo.Id)} = {specialId}";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DeleteById(specialId);
+            Delete(specialId);
 
             SpecialManager.RemoveCache(siteId);
         }
@@ -161,7 +166,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q.Where(Attr.SiteId, siteId).OrderByDesc(Attr.Id));
+            return GetAll(Q.Where(Attr.SiteId, siteId).OrderByDesc(Attr.Id));
         }
 
         public IList<SpecialInfo> GetSpecialInfoList(int siteId, string keyword)
@@ -188,7 +193,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .OrWhereContains(Attr.Title, keyword)
                 .OrWhereContains(Attr.Url, keyword)

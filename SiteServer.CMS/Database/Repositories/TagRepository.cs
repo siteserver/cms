@@ -2,16 +2,18 @@ using System.Collections.Generic;
 using System.Text;
 using Datory;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Utils;
 using SqlKata;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class TagRepository : GenericRepository<TagInfo>
+    public class TagRepository : Repository<TagInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public TagRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -21,38 +23,38 @@ namespace SiteServer.CMS.Database.Repositories
             public const string UseNum = nameof(TagInfo.UseNum);
         }
 
-        public void Insert(TagInfo tagInfo)
-        {
-            //const string sqlString = "INSERT INTO siteserver_Tag (SiteId, ContentIdCollection, Tag, UseNum) VALUES (@SiteId, @ContentIdCollection, @Tag, @UseNum)";
+        //public void Insert(TagInfo tagInfo)
+        //{
+        //    //const string sqlString = "INSERT INTO siteserver_Tag (SiteId, ContentIdCollection, Tag, UseNum) VALUES (@SiteId, @ContentIdCollection, @Tag, @UseNum)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamSiteId, tagInfo.SiteId),
-            //    GetParameter(ParamContentIdCollection, tagInfo.ContentIdCollection),
-            //    GetParameter(ParamTag, tagInfo.Tag),
-            //    GetParameter(ParamUseNum, tagInfo.UseNum)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamSiteId, tagInfo.SiteId),
+        //    //    GetParameter(ParamContentIdCollection, tagInfo.ContentIdCollection),
+        //    //    GetParameter(ParamTag, tagInfo.Tag),
+        //    //    GetParameter(ParamUseNum, tagInfo.UseNum)
+        //    //};
 
-            //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(TagInfo.Id), sqlString, parameters);
+        //    //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(TagInfo.Id), sqlString, parameters);
 
-            InsertObject(tagInfo);
-        }
+        //    InsertO(tagInfo);
+        //}
 
-        public void Update(TagInfo tagInfo)
-        {
-            //const string sqlString = "UPDATE siteserver_Tag SET ContentIdCollection = @ContentIdCollection, UseNum = @UseNum WHERE Id = @Id";
+        //public void Update(TagInfo tagInfo)
+        //{
+        //    //const string sqlString = "UPDATE siteserver_Tag SET ContentIdCollection = @ContentIdCollection, UseNum = @UseNum WHERE Id = @Id";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamContentIdCollection, tagInfo.ContentIdCollection),
-            //    GetParameter(ParamUseNum, tagInfo.UseNum),
-            //    GetParameter(ParamId, tagInfo.Id)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamContentIdCollection, tagInfo.ContentIdCollection),
+        //    //    GetParameter(ParamUseNum, tagInfo.UseNum),
+        //    //    GetParameter(ParamId, tagInfo.Id)
+        //    //};
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(tagInfo);
-        }
+        //    UpdateObject(tagInfo);
+        //}
 
         public TagInfo GetTagInfo(int siteId, string tag)
         {
@@ -77,7 +79,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return tagInfo;
 
-            return GetObject(Q.Where(Attr.SiteId, siteId).Where(Attr.Tag, tag));
+            return Get(Q.Where(Attr.SiteId, siteId).Where(Attr.Tag, tag));
         }
 
         public IList<TagInfo> GetTagInfoList(int siteId, int contentId)
@@ -101,7 +103,7 @@ namespace SiteServer.CMS.Database.Repositories
             //return list;
 
             var query = GetQuery(null, siteId, contentId);
-            return GetObjectList(query);
+            return GetAll(query);
         }
 
         public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
@@ -113,7 +115,7 @@ namespace SiteServer.CMS.Database.Repositories
                 orderString = "ORDER BY UseNum DESC";
             }
 
-            return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, "siteserver_Tag", new List<string>
+            return DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, "siteserver_Tag", new List<string>
             {
                 nameof(TagInfo.Id),
                 nameof(TagInfo.SiteId),
@@ -161,7 +163,7 @@ namespace SiteServer.CMS.Database.Repositories
                 query.OrderByDesc(Attr.UseNum);
             }
 
-            return GetObjectList(query);
+            return GetAll(query);
         }
 
         public IList<string> GetTagListByStartString(int siteId, string startString, int totalNum)
@@ -175,7 +177,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    "ORDER BY UseNum DESC", 0, totalNum, true);
             //return DatabaseApi.GetStringList(sqlString);
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.Tag)
                 .Where(Attr.SiteId, siteId)
                 .WhereContains(Attr.Tag, startString)
@@ -190,7 +192,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"SELECT Tag FROM siteserver_Tag WHERE SiteId = {siteId} ORDER BY UseNum DESC";
             //return DatabaseApi.GetStringList(sqlString);
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.Tag)
                 .Where(Attr.SiteId, siteId)
                 .Distinct()
@@ -204,7 +206,7 @@ namespace SiteServer.CMS.Database.Repositories
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
             var query = GetQuery(null, siteId, 0);
-            DeleteAll(query);
+            Delete(query);
         }
 
         public void DeleteTag(string tag, int siteId)
@@ -214,7 +216,7 @@ namespace SiteServer.CMS.Database.Repositories
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
             var query = GetQuery(tag, siteId, 0);
-            DeleteAll(query);
+            Delete(query);
         }
 
         public int GetTagCount(string tag, int siteId)
@@ -289,7 +291,7 @@ namespace SiteServer.CMS.Database.Repositories
             if (string.IsNullOrEmpty(tag)) return idList;
 
             var query = GetQuery(tag, siteId, 0);
-            var contentIdCollectionList = GetValueList<string>(query.Select(Attr.ContentIdCollection));
+            var contentIdCollectionList = GetAll<string>(query.Select(Attr.ContentIdCollection));
             foreach (var contentIdCollection in contentIdCollectionList)
             {
                 var contentIdList = TranslateUtils.StringCollectionToIntList(contentIdCollection);
@@ -336,7 +338,7 @@ namespace SiteServer.CMS.Database.Repositories
             var contentIdList = new List<int>();
             if (tagCollection.Count <= 0) return contentIdList;
 
-            var contentIdCollectionList = GetValueList<string>(Q
+            var contentIdCollectionList = GetAll<string>(Q
                 .Select(Attr.ContentIdCollection)
                 .Where(Attr.SiteId, siteId)
                 .WhereIn(Attr.Tag, tagCollection));

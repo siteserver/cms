@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract
 {
@@ -50,51 +49,51 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
 
         private static readonly string NewTableName = "ss_govinteract_remark";
 
-        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ChannelId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "ContentId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "RemarkType",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Remark",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "DepartmentId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "UserName",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "AddDate",
                 DataType = DataType.DateTime

@@ -7,10 +7,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class SitePermissionsRepository : GenericRepository<SitePermissionsInfo>
+    public class SitePermissionsRepository : Repository<SitePermissionsInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public SitePermissionsRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string SiteId = nameof(SitePermissionsInfo.SiteId);
         }
 
-        private void Insert(SitePermissionsInfo permissionsInfo)
+        public override int Insert(SitePermissionsInfo permissionsInfo)
         {
             if (IsExists(permissionsInfo.RoleName, permissionsInfo.SiteId))
             {
@@ -36,11 +37,11 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlInsert = "INSERT INTO siteserver_SitePermissions (RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions) VALUES (@RoleName, @SiteId, @ChannelIdCollection, @ChannelPermissions, @WebsitePermissions)";
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, SqlInsert, parameters);
 
-            InsertObject(permissionsInfo);
+            return base.Insert(permissionsInfo);
         }
 
 
-        private void Delete(string roleName)
+        public override bool Delete(string roleName)
         {
             //IDataParameter[] parameters =
             //{
@@ -49,7 +50,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDelete = "DELETE FROM siteserver_SitePermissions WHERE RoleName = @RoleName";
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, SqlDelete, parameters);
 
-            DeleteAll(Q.Where(Attr.RoleName, roleName));
+            return Delete(Q.Where(Attr.RoleName, roleName)) == 1;
         }
 
         private void Delete(string roleName, int siteId)
@@ -64,7 +65,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
 
-            DeleteAll(Q.Where(Attr.RoleName, roleName).Where(Attr.SiteId, siteId));
+            Delete(Q.Where(Attr.RoleName, roleName).Where(Attr.SiteId, siteId));
         }
 
         private bool IsExists(string roleName, int siteId)
@@ -115,7 +116,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q.Where(Attr.RoleName, roleName).OrderByDesc(Attr.SiteId));
+            return GetAll(Q.Where(Attr.RoleName, roleName).OrderByDesc(Attr.SiteId));
         }
 
         public Dictionary<int, List<string>> GetWebsitePermissionSortedList(IEnumerable<string> roles)

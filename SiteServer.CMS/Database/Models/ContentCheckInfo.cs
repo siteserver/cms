@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ContentCheck")]
-    public class ContentCheckInfo : DynamicEntity
+    public class ContentCheckInfo : Entity
     {
         [TableColumn]
         public string TableName { get; set; }

@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Area")]
-    public class AreaInfo : DynamicEntity
+    public class AreaInfo : Entity
     {
         [TableColumn]
         public string AreaName { get; set; }

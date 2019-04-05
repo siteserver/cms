@@ -3,7 +3,6 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
-using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -54,7 +53,7 @@ namespace SiteServer.Cli.Updater.Tables
 
         private static readonly string NewTableName = DataProvider.Area.TableName;
 
-        private static readonly List<DatoryColumn> NewColumns = DataProvider.Area.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.Area.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>

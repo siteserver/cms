@@ -15,10 +15,11 @@ using SqlKata;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class AdministratorRepository : GenericRepository<AdministratorInfo>
+    public class AdministratorRepository : Repository<AdministratorInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public AdministratorRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -44,11 +45,6 @@ namespace SiteServer.CMS.Database.Repositories
             return Count();
         }
 
-        public IList<AdministratorInfo> GetAll(Query query)
-        {
-            return GetObjectList(query);
-        }
-
         public int Insert(AdministratorInfo adminInfo, out string errorMessage)
         {
             if (!InsertValidate(adminInfo.UserName, adminInfo.Password, adminInfo.Email, adminInfo.Mobile, out errorMessage)) return 0;
@@ -60,7 +56,7 @@ namespace SiteServer.CMS.Database.Repositories
                 adminInfo.Password = EncodePassword(adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), out var passwordSalt);
                 adminInfo.PasswordSalt = passwordSalt;
 
-                var identity = InsertObject(adminInfo);
+                var identity = Insert(adminInfo);
 
                 //IDataParameter[] parameters =
                 //{
@@ -115,7 +111,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (!UpdateValidate(administratorInfo, adminInfo.UserName, adminInfo.Email, adminInfo.Mobile, out errorMessage)) return false;
 
-            var updated = UpdateObject(administratorInfo);
+            var updated = Update(administratorInfo);
 
             //IDataParameter[] parameters =
             //{
@@ -273,7 +269,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    {Attr.PasswordSalt, adminInfo.PasswordSalt}
             //}, Q.Where(nameof(Attr.Id), adminInfo.Id));
 
-            UpdateObject(adminInfo, Attr.Password, Attr.PasswordFormat, Attr.PasswordSalt);
+            Update(adminInfo, Attr.Password, Attr.PasswordFormat, Attr.PasswordSalt);
 
             //var sqlString =
             //    $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE Id = @Id";
@@ -295,7 +291,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             if (adminInfo == null) return false;
 
-            var deleted = DeleteById(adminInfo.Id);
+            var deleted = Delete(adminInfo.Id);
 
             //var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
 
@@ -330,7 +326,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    {Attr.IsLockedOut, true.ToString()}
             //}, Q.WhereIn(Attr.Id, userIdList));
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLockedOut, true.ToString())
                 .WhereIn(Attr.Id, userIdList)
             );
@@ -350,7 +346,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    {Attr.IsLockedOut, false.ToString()}
             //}, Q.WhereIn(Attr.Id, userIdList));
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLockedOut, false.ToString())
                 .WhereIn(Attr.Id, userIdList)
             );
@@ -370,7 +366,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public AdministratorInfo GetByUserId(int userId)
         {
-            return GetObjectById(userId);
+            return Get(userId);
             //if (userId <= 0) return null;
 
             //AdministratorInfo info = null;
@@ -399,7 +395,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public AdministratorInfo GetByUserName(string userName)
         {
-            return GetObject(Q.Where(Attr.UserName, userName));
+            return Get(Q.Where(Attr.UserName, userName));
 
             //AdministratorInfo info = null;
 
@@ -427,7 +423,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public AdministratorInfo GetByMobile(string mobile)
         {
-            return GetObject(Q.Where(Attr.Mobile, mobile));
+            return Get(Q.Where(Attr.Mobile, mobile));
 
             //if (string.IsNullOrEmpty(mobile)) return null;
 
@@ -457,7 +453,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public AdministratorInfo GetByEmail(string email)
         {
-            return GetObject(Q.Where(Attr.Email, email));
+            return Get(Q.Where(Attr.Email, email));
             //if (string.IsNullOrEmpty(email)) return null;
 
             //AdministratorInfo info = null;
@@ -588,7 +584,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public IList<string> GetUserNameList()
         {
-            return GetValueList<string>(Q.Select(Attr.UserName));
+            return GetAll<string>(Q.Select(Attr.UserName));
             //var list = new List<string>();
             //var sqlSelect = $"SELECT UserName FROM {TableName}";
 
@@ -605,7 +601,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public IList<string> GetUserNameList(int departmentId)
         {
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.UserName)
                 .Where(Attr.DepartmentId, departmentId));
 

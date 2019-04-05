@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_DbCache")]
-    public class DbCacheInfo : DynamicEntity
+    public class DbCacheInfo : Entity
     {
         [TableColumn]
         public string CacheKey { get; set; }

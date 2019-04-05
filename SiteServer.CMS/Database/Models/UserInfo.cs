@@ -6,7 +6,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_User")]
-    public class UserInfo : DynamicEntity, IUserInfo
+    public class UserInfo : Entity, IUserInfo
     {
         /// <summary>
         /// 用户名。

@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Log")]
-    public class LogInfo : DynamicEntity, ILogInfo
+    public class LogInfo : Entity, ILogInfo
     {
         public const string AdminLogin = "后台管理员登录";
 

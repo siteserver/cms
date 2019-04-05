@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Database.Models
     public partial class SiteInfo
     {
         [JsonIgnore]
-        public ContentTableRepository ContentRepository => ContentTableRepository.GetContentRepository(Id, ChannelManager.GetTableName(this, Id));
+        public ContentTableRepository ContentRepository => new ContentTableRepository(Id, ChannelManager.GetTableName(this, Id));
 
         /****************’æµ„…Ë÷√********************/
 

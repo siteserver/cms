@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Datory;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
@@ -19,15 +20,15 @@ namespace SiteServer.CMS.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                var datoryColumns = tableColumns.Select(x => (DatoryColumn) x).ToList();
+                var datoryColumns = tableColumns.Select(x => (TableColumn) x).ToList();
 
-                if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                 {
-                    DatabaseApi.Instance.CreateTable(tableName, datoryColumns, service.PluginId, false, out _, out _);
+                    TableColumnManager.CreateTable(tableName, datoryColumns, service.PluginId, false, out _);
                 }
                 else
                 {
-                    DatabaseApi.Instance.AlterTable(tableName, datoryColumns, service.PluginId);
+                    TableColumnManager.AlterTable(tableName, datoryColumns, service.PluginId);
                 }
             }
         }

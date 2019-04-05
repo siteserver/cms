@@ -344,7 +344,7 @@ namespace SiteServer.Utils
                 {
                     connectionString += $"Database={database};";
                 }
-                connectionString += "SslMode=Preferred;CharSet=utf8;";
+                connectionString += "SslMode=Preferred;CharSet=utf8mb4;";
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
@@ -395,7 +395,7 @@ namespace SiteServer.Utils
                 }
                 if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
                 {
-                    connectionString += ";CharSet=utf8;";
+                    connectionString += ";CharSet=utf8mb4;";
                 }
             }
             else if (databaseType == DatabaseType.Oracle)
@@ -410,7 +410,7 @@ namespace SiteServer.Utils
             return connectionString;
         }
 
-        public static string GetConnectionStringUserId(string connectionString)
+        private static string GetConnectionStringUserId(string connectionString)
         {
             var userId = string.Empty;
 
@@ -430,6 +430,38 @@ namespace SiteServer.Utils
             }
 
             return userId;
+        }
+
+        private static string GetValueFromConnectionString(string connectionString, string attribute)
+        {
+            var retVal = string.Empty;
+            if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(attribute))
+            {
+                var pairs = connectionString.Split(';');
+                foreach (var pair in pairs)
+                {
+                    if (pair.IndexOf("=", StringComparison.Ordinal) != -1)
+                    {
+                        if (StringUtils.EqualsIgnoreCase(attribute, pair.Trim().Split('=')[0]))
+                        {
+                            retVal = pair.Trim().Split('=')[1];
+                            break;
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public static string GetDatabaseNameFormConnectionString(DatabaseType databaseType, string connectionString)
+        {
+            if (databaseType == DatabaseType.Oracle)
+            {
+                var index1 = connectionString.IndexOf("SERVICE_NAME=", StringComparison.Ordinal);
+                var index2 = connectionString.IndexOf(")));", StringComparison.Ordinal);
+                return connectionString.Substring(index1 + 13, index2 - index1 - 13);
+            }
+            return GetValueFromConnectionString(connectionString, "Database");
         }
     }
 }

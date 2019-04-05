@@ -20,10 +20,10 @@
         /// </summary>
         IContentApi ContentApi { get; }
 
-        /// <summary>
-        /// 数据库操作Api接口。
-        /// </summary>
-        IDatabaseApi DatabaseApi { get; }
+        ///// <summary>
+        ///// 数据库操作Api接口。
+        ///// </summary>
+        //IDatabaseApi DatabaseApi { get; }
 
         /// <summary>
         /// 栏目Api接口。

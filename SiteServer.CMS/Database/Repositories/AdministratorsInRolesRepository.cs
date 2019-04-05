@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class AdministratorsInRolesRepository : GenericRepository<AdministratorsInRolesInfo>
+    public class AdministratorsInRolesRepository : Repository<AdministratorsInRolesInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public AdministratorsInRolesRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         //public override string TableName => "siteserver_AdministratorsInRoles";
 
@@ -45,7 +46,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public IEnumerable<string> GetUserNameListByRoleName(string roleName)
         {
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.UserName)
                 .Where(Attr.RoleName, roleName)
                 .Distinct());
@@ -72,7 +73,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public IList<string> GetRolesForUser(string userName)
         {
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.RoleName)
                 .Where(Attr.UserName, userName)
                 .Distinct());
@@ -104,7 +105,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public void RemoveUser(string userName)
         {
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.UserName, userName));
             //const string sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName";
             //IDataParameter[] parameters =
@@ -136,7 +137,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public void RemoveUserFromRole(string userName, string roleName)
         {
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.UserName, userName)
                 .Where(Attr.RoleName, roleName));
 
@@ -184,7 +185,7 @@ namespace SiteServer.CMS.Database.Repositories
             if (!DataProvider.Administrator.IsUserNameExists(userName)) return 0;
             if (!IsUserInRole(userName, roleName))
             {
-                return InsertObject(new AdministratorsInRolesInfo
+                return Insert(new AdministratorsInRolesInfo
                 {
                     UserName = userName,
                     RoleName = roleName

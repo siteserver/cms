@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Datory;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
@@ -7,36 +6,47 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class AccessTokenRepository : GenericRepository<AccessTokenInfo>
+    public class AccessTokenRepository : Repository<AccessTokenInfo>
     {
+        public AccessTokenRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
+
         private static class Attr
         {
             public const string Title = nameof(AccessTokenInfo.Title);
         }
 
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
-
-        public void Insert(AccessTokenInfo accessTokenInfo)
+        public override int Insert(AccessTokenInfo accessTokenInfo)
         {
             accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid());
             accessTokenInfo.AddDate = DateTime.Now;
 
-            InsertObject(accessTokenInfo);
-            AccessTokenManager.ClearCache();
+            accessTokenInfo.Id = base.Insert(accessTokenInfo);
+            if (accessTokenInfo.Id > 0)
+            {
+                AccessTokenManager.ClearCache();
+            }
+            return accessTokenInfo.Id;
         }
 
-        public bool Update(AccessTokenInfo accessTokenInfo)
+        public override bool Update(AccessTokenInfo accessTokenInfo)
         {
-            var updated = UpdateObject(accessTokenInfo);
-            AccessTokenManager.ClearCache();
+            var updated = base.Update(accessTokenInfo);
+            if (updated)
+            {
+                AccessTokenManager.ClearCache();
+            }
             return updated;
         }
 
-        public bool Delete(int id)
+        public override bool Delete(int id)
         {
-            var deleted = DeleteById(id);
-            AccessTokenManager.ClearCache();
+            var deleted = base.Delete(id);
+            if (deleted)
+            {
+                AccessTokenManager.ClearCache();
+            }
             return deleted;
         }
 
@@ -47,16 +57,6 @@ namespace SiteServer.CMS.Database.Repositories
             Update(accessTokenInfo);
 
             return accessTokenInfo.Token;
-        }
-
-        public AccessTokenInfo Get(int id)
-        {
-            return GetObjectById(id);
-        }
-
-        public IList<AccessTokenInfo> GetAll()
-        {
-            return GetObjectList();
         }
 
         public bool IsTitleExists(string title)
@@ -74,6 +74,8 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return exists;
         }
+
+        
     }
 
 }

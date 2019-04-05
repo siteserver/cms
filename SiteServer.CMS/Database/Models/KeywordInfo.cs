@@ -4,7 +4,7 @@ using SiteServer.CMS.Core.Enumerations;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ErrorLog")]
-    public class KeywordInfo : DynamicEntity
+    public class KeywordInfo : Entity
     {
         [TableColumn]
         public string Keyword { get; set; }

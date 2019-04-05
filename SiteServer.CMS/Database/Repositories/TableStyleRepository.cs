@@ -8,10 +8,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class TableStyleRepository : GenericRepository<TableStyleInfo>
+    public class TableStyleRepository : Repository<TableStyleInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public TableStyleRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -22,7 +23,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(TableStyleInfo.Taxis);
         }
 
-        public int Insert(TableStyleInfo styleInfo)
+        public override int Insert(TableStyleInfo styleInfo)
         {
             //int id;
 
@@ -63,7 +64,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            var id = InsertObject(styleInfo);
+            var id = base.Insert(styleInfo);
             DataProvider.TableStyleItem.Insert(id, styleInfo.StyleItems);
 
             TableStyleManager.ClearCache();
@@ -112,7 +113,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            UpdateObject(info);
+            Update(info);
             if (deleteAndInsertStyleItems)
             {
                 DataProvider.TableStyleItem.DeleteAndInsertStyleItems(info.Id, info.StyleItems);
@@ -132,7 +133,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDeleteTableStyle = "DELETE FROM siteserver_TableStyle WHERE RelatedIdentity = @RelatedIdentity AND TableName = @TableName AND AttributeName = @AttributeName";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDeleteTableStyle, parameters);
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.RelatedIdentity, relatedIdentity)
                 .Where(Attr.TableName, tableName)
                 .Where(Attr.AttributeName, attributeName));
@@ -148,7 +149,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"DELETE FROM siteserver_TableStyle WHERE RelatedIdentity IN ({TranslateUtils.ToSqlInStringWithoutQuote(relatedIdentities)}) AND TableName = '{AttackUtils.FilterSql(tableName)}'";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DeleteAll(Q
+            Delete(Q
                 .WhereIn(Attr.RelatedIdentity, relatedIdentities)
                 .Where(Attr.TableName, tableName));
 
@@ -182,7 +183,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             var allItemsDict = DataProvider.TableStyleItem.GetAllTableStyleItems();
 
-            var styleInfoList = GetObjectList(Q.OrderByDesc(Attr.Taxis, Attr.Id));
+            var styleInfoList = GetAll(Q.OrderByDesc(Attr.Taxis, Attr.Id));
             foreach (var styleInfo in styleInfoList)
             {
                 allItemsDict.TryGetValue(styleInfo.Id, out var items);

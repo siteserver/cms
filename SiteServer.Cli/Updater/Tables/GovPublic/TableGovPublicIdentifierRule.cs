@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
 using Newtonsoft.Json;
-using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables.GovPublic
 {
@@ -55,71 +54,71 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
 
         private static readonly string NewTableName = "ss_govpublic_identifier_rule";
 
-        private static readonly List<DatoryColumn> NewColumns = new List<DatoryColumn>
+        private static readonly List<TableColumn> NewColumns = new List<TableColumn>
         {
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Id",
                 DataType = DataType.Integer,
                 IsPrimaryKey = true,
                 IsIdentity = true
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "SiteId",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "RuleName",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IdentifierType",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "MinLength",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Suffix",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "FormatString",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "AttributeName",
                 DataType = DataType.VarChar
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Sequence",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "Taxis",
                 DataType = DataType.Integer
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IsSequenceChannelZero",
                 DataType = DataType.Boolean
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IsSequenceDepartmentZero",
                 DataType = DataType.Boolean
             },
-            new DatoryColumn
+            new TableColumn
             {
                 AttributeName = "IsSequenceYearZero",
                 DataType = DataType.Boolean

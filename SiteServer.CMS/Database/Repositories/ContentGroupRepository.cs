@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ContentGroupRepository : GenericRepository<ContentGroupInfo>
+    public class ContentGroupRepository : Repository<ContentGroupInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ContentGroupRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(ContentGroupInfo.Taxis);
         }
 
-        public void Insert(ContentGroupInfo groupInfo)
+        public override int Insert(ContentGroupInfo groupInfo)
         {
             var maxTaxis = GetMaxTaxis(groupInfo.SiteId);
             groupInfo.Taxis = maxTaxis + 1;
@@ -33,12 +34,17 @@ namespace SiteServer.CMS.Database.Repositories
             //"INSERT INTO siteserver_ContentGroup (GroupName, SiteId, Taxis, Description) VALUES (@GroupName, @SiteId, @Taxis, @Description)"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlInsert, parameters);
 
-            InsertObject(groupInfo);
+            groupInfo.Id = base.Insert(groupInfo);
 
-            ContentGroupManager.ClearCache();
+            if (groupInfo.Id > 0)
+            {
+                ContentGroupManager.ClearCache();
+            }
+
+            return groupInfo.Id;
         }
 
-        public void Update(ContentGroupInfo groupInfo)
+        public override bool Update(ContentGroupInfo groupInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -49,9 +55,14 @@ namespace SiteServer.CMS.Database.Repositories
             //"UPDATE siteserver_ContentGroup SET Description = @Description WHERE GroupName = @GroupName AND SiteId = @SiteId"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(groupInfo);
+            var success = base.Update(groupInfo);
 
-            ContentGroupManager.ClearCache();
+            if (success)
+            {
+                ContentGroupManager.ClearCache();
+            }
+
+            return success;
         }
 
         public void Delete(int siteId, string groupName)
@@ -64,7 +75,7 @@ namespace SiteServer.CMS.Database.Repositories
             //"DELETE FROM siteserver_ContentGroup WHERE GroupName = @GroupName AND SiteId = @SiteId"
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.GroupName, groupName));
 
@@ -83,7 +94,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.Instance.GetIntResult(sqlString, parameters);
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.GroupName, groupName));
@@ -100,7 +111,7 @@ namespace SiteServer.CMS.Database.Repositories
             //};
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.GroupName, groupName)
@@ -125,7 +136,10 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q.Where(Attr.SiteId, siteId)) ?? 0;
+            return Max(Q
+                       .Select(Attr.Taxis)
+                       .Where(Attr.SiteId, siteId)
+                   ) ?? 0;
         }
 
         public void UpdateTaxisToUp(int siteId, string groupName)
@@ -156,7 +170,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             var taxis = GetTaxis(siteId, groupName);
-            var result = GetValue<(string GroupName, int Taxis)?> (Q
+            var result = Get<(string GroupName, int Taxis)?> (Q
                 .Select(Attr.GroupName, Attr.Taxis)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Taxis, ">", taxis)
@@ -212,7 +226,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             var taxis = GetTaxis(siteId, groupName);
-            var result = GetValue<(string GroupName, int Taxis)?>(Q
+            var result = Get<(string GroupName, int Taxis)?>(Q
                 .Select(Attr.GroupName, Attr.Taxis)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Taxis, "<", taxis)
@@ -269,7 +283,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var groupList = GetObjectList(Q
+            var groupList = GetAll(Q
                 .OrderByDesc(Attr.Taxis)
                 .OrderBy(Attr.GroupName));
 

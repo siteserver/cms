@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_RelatedFieldItem")]
-    public class RelatedFieldItemInfo : DynamicEntity
+    public class RelatedFieldItemInfo : Entity
     {
         [TableColumn]
         public int RelatedFieldId { get; set; }

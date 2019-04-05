@@ -193,7 +193,6 @@ namespace SiteServer.CMS.Plugin
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
                 ContentApi = ContentApi.Instance,
-                DatabaseApi = DatabaseApi.Instance,
                 ChannelApi = ChannelApi.Instance,
                 ParseApi = ParseApi.Instance,
                 PluginApi = PluginApi.Instance,

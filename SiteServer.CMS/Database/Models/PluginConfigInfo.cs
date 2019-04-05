@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_PluginConfig")]
-    public class PluginConfigInfo : DynamicEntity
+    public class PluginConfigInfo : Entity
     {
         [TableColumn]
         public string PluginId { get; set; }

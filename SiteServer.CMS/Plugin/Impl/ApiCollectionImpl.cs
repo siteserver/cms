@@ -10,7 +10,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public IContentApi ContentApi { get; set; }
 
-        public IDatabaseApi DatabaseApi { get; set; }
+        //public IDatabaseApi DatabaseApi { get; set; }
 
         public IChannelApi ChannelApi { get; set; }
 

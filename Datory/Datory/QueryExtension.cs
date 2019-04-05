@@ -1,4 +1,5 @@
-﻿using SqlKata;
+﻿using Datory.Utils;
+using SqlKata;
 
 namespace Datory
 {
@@ -6,8 +7,8 @@ namespace Datory
     {
         public static Query Set(this Query query, string column, object value)
         {
-            if (DatoryUtils.EqualsIgnoreCase(column, nameof(DynamicEntity.Id)) ||
-                DatoryUtils.EqualsIgnoreCase(column, nameof(DynamicEntity.LastModifiedDate))) return query;
+            if (ConvertUtils.EqualsIgnoreCase(column, nameof(Entity.Id)) ||
+                ConvertUtils.EqualsIgnoreCase(column, nameof(Entity.LastModifiedDate))) return query;
 
             query.AddComponent("update", new BasicCondition
             {

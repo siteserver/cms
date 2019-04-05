@@ -3,7 +3,7 @@
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_UserMenu")]
-    public class UserMenuInfo : DynamicEntity
+    public class UserMenuInfo : Entity
     {
         [TableColumn]
         public string SystemId { get; set; }

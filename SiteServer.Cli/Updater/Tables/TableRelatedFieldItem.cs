@@ -2,7 +2,6 @@
 using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Database.Core;
-using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -45,7 +44,7 @@ namespace SiteServer.Cli.Updater.Tables
 
         private static readonly string NewTableName = DataProvider.RelatedFieldItem.TableName;
 
-        private static readonly List<DatoryColumn> NewColumns = DataProvider.RelatedFieldItem.TableColumns;
+        private static readonly List<TableColumn> NewColumns = DataProvider.RelatedFieldItem.TableColumns;
 
         private static readonly Dictionary<string, string> ConvertKeyDict = null;
 

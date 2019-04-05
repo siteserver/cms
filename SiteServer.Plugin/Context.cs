@@ -58,10 +58,10 @@ namespace SiteServer.Plugin
         /// </summary>
         public static IContentApi ContentApi => _apiCollection.ContentApi;
 
-        /// <summary>
-        /// 数据库操作Api接口。
-        /// </summary>
-        public static IDatabaseApi DatabaseApi => _apiCollection.DatabaseApi;
+        ///// <summary>
+        ///// 数据库操作Api接口。
+        ///// </summary>
+        //public static IDatabaseApi DatabaseApi => _apiCollection.DatabaseApi;
 
         /// <summary>
         /// 栏目Api接口。

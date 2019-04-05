@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Template")]
-    public class TemplateInfo : DynamicEntity
+    public class TemplateInfo : Entity
     {
         [TableColumn]
         public int SiteId { get; set; }

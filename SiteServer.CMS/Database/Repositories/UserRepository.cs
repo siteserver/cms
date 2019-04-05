@@ -15,10 +15,11 @@ using Attr = SiteServer.CMS.Database.Attributes.UserAttribute;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class UserRepository : GenericRepository<UserInfo>
+    public class UserRepository : Repository<UserInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public UserRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private bool InsertValidate(string userName, string email, string mobile, string password, string ipAddress, out string errorMessage)
         {
@@ -228,7 +229,7 @@ namespace SiteServer.CMS.Database.Repositories
             userInfo.LastActivityDate = DateTime.Now;
             userInfo.LastResetPasswordDate = DateTime.Now;
 
-            return InsertObject(userInfo);
+            return Insert(userInfo);
         }
 
         public bool IsPasswordCorrect(string password, out string errorMessage)
@@ -267,7 +268,7 @@ namespace SiteServer.CMS.Database.Repositories
             return userInfo;
         }
 
-        public void Update(UserInfo userInfo)
+        public override bool Update(UserInfo userInfo)
         {
             //if (userInfo == null) return;
 
@@ -311,9 +312,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(userInfo);
+            var updated = base.Update(userInfo);
 
             UserManager.UpdateCache(userInfo);
+
+            return updated;
         }
 
         private void UpdateLastActivityDateAndCountOfFailedLogin(UserInfo userInfo)
@@ -334,7 +337,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(userInfo, Attr.LastActivityDate, Attr.CountOfFailedLogin);
+            Update(userInfo, Attr.LastActivityDate, Attr.CountOfFailedLogin);
 
             UserManager.UpdateCache(userInfo);
         }
@@ -359,7 +362,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(userInfo, Attr.LastActivityDate, Attr.CountOfLogin, Attr.CountOfFailedLogin);
+            Update(userInfo, Attr.LastActivityDate, Attr.CountOfLogin, Attr.CountOfFailedLogin);
 
             UserManager.UpdateCache(userInfo);
         }
@@ -476,7 +479,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(userInfo, Attr.PasswordFormat, Attr.Password, Attr.PasswordSalt, Attr.LastResetPasswordDate);
+            Update(userInfo, Attr.PasswordFormat, Attr.Password, Attr.PasswordSalt, Attr.LastResetPasswordDate);
 
             LogUtils.AddUserLog(userName, "修改密码", string.Empty);
 
@@ -490,7 +493,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsChecked, true.ToString())
                 .WhereIn(Attr.Id, idList)
             );
@@ -505,7 +508,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLockedOut, true.ToString())
                 .WhereIn(Attr.Id, idList)
             );
@@ -520,7 +523,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLockedOut, false.ToString())
                 .WhereIn(Attr.Id, idList)
             );
@@ -559,7 +562,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var userInfo = GetObject(Q.Where(Attr.UserName, userName));
+            var userInfo = Get(Q.Where(Attr.UserName, userName));
 
             UserManager.UpdateCache(userInfo);
 
@@ -587,7 +590,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var userInfo = GetObject(Q.Where(Attr.Email, email));
+            var userInfo = Get(Q.Where(Attr.Email, email));
 
             UserManager.UpdateCache(userInfo);
 
@@ -615,7 +618,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var userInfo = GetObject(Q.Where(Attr.Mobile, mobile));
+            var userInfo = Get(Q.Where(Attr.Mobile, mobile));
 
             UserManager.UpdateCache(userInfo);
 
@@ -643,7 +646,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var userInfo = GetObjectById(id);
+            var userInfo = Get(id);
 
             UserManager.UpdateCache(userInfo);
 
@@ -758,7 +761,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return idList;
 
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.IsChecked, isChecked.ToString())
                 .OrderByDesc(Attr.Id));
@@ -766,7 +769,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public string GetSelectCommand()
         {
-            return DatabaseApi.Instance.GetSelectSqlString(TableName, string.Empty);
+            return DataProvider.DatabaseApi.GetSelectSqlString(TableName, string.Empty);
         }
 
         public string GetSelectCommand(int groupId, string searchWord, int dayOfCreate, int dayOfLastActivity, int loginCount, string searchType)
@@ -819,7 +822,7 @@ namespace SiteServer.CMS.Database.Repositories
                 whereString = $"WHERE {whereBuilder}";
             }
 
-            return DatabaseApi.Instance.GetSelectSqlString(TableName, whereString);
+            return DataProvider.DatabaseApi.GetSelectSqlString(TableName, whereString);
         }
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
@@ -949,30 +952,30 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var rdr = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var accessNum = DatabaseApi.Instance.GetInt(rdr, 0);
+                    var accessNum = DataProvider.DatabaseApi.GetInt(rdr, 0);
                     if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Day))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
-                        var month = DatabaseApi.Instance.GetString(rdr, 2);
-                        var day = DatabaseApi.Instance.GetString(rdr, 3);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
+                        var month = DataProvider.DatabaseApi.GetString(rdr, 2);
+                        var day = DataProvider.DatabaseApi.GetString(rdr, 3);
                         var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-{day}");
                         dict.Add(dateTime, accessNum);
                     }
                     else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Month))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
-                        var month = DatabaseApi.Instance.GetString(rdr, 2);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
+                        var month = DataProvider.DatabaseApi.GetString(rdr, 2);
 
                         var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-1");
                         dict.Add(dateTime, accessNum);
                     }
                     else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Year))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
                         var dateTime = TranslateUtils.ToDateTime($"{year}-1-1");
                         dict.Add(dateTime, accessNum);
                     }
@@ -1014,7 +1017,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Offset(offset)
                 .Limit(limit)
                 .OrderBy(Attr.Id));
@@ -1043,7 +1046,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            DeleteById(userInfo.Id);
+            Delete(userInfo.Id);
 
             UserManager.RemoveCache(userInfo);
         }
@@ -1921,7 +1924,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //        public string GetSelectCommand()
 //        {
-//            return DatabaseApi.Instance.GetSelectSqlString(TableName, string.Empty);
+//            return DataProvider.DatabaseApi.GetSelectSqlString(TableName, string.Empty);
 //        }
 
 //        public string GetSelectCommand(int groupId, string searchWord, int dayOfCreate, int dayOfLastActivity, int loginCount, string searchType)
@@ -1974,7 +1977,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 //                whereString = $"WHERE {whereBuilder}";
 //            }
 
-//            return DatabaseApi.Instance.GetSelectSqlString(TableName, whereString);
+//            return DataProvider.DatabaseApi.GetSelectSqlString(TableName, whereString);
 //        }
 
 //        public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
@@ -2136,7 +2139,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //        public int GetCount()
 //        {
-//            return DatabaseApi.Instance.GetCount(TableName);
+//            return DataProvider.DatabaseApi.GetCount(TableName);
 //        }
 
 //        public List<UserInfo> GetUsers(int offset, int limit)

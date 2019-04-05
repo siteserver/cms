@@ -1,11 +1,9 @@
-﻿using Datory;
-
-namespace SiteServer.Plugin
+﻿namespace SiteServer.Plugin
 {
     /// <summary>
     /// 数据库表字段信息。
     /// </summary>
-    public class TableColumn : DatoryColumn
+    public class TableColumn : Datory.TableColumn
     {
         /// <summary>
         /// 字段提交表单样式。

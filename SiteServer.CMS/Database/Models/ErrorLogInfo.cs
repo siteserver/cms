@@ -5,7 +5,7 @@ namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_ErrorLog")]
     [Serializable]
-    public class ErrorLogInfo : DynamicEntity
+    public class ErrorLogInfo : Entity
     {
         [TableColumn]
         public string Category { get; set; }

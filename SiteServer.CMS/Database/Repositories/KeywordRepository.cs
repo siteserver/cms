@@ -5,17 +5,18 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class KeywordRepository : GenericRepository<KeywordInfo>
+    public class KeywordRepository : Repository<KeywordInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public KeywordRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
             public const string Keyword = nameof(KeywordInfo.Keyword);
         }
 
-        public void Insert(KeywordInfo keywordInfo)
+        public override int Insert(KeywordInfo keywordInfo)
         {
             //const string sqlString = "INSERT INTO siteserver_Keyword(Keyword, Alternative, Grade) VALUES(@Keyword, @Alternative, @Grade)";
 
@@ -28,7 +29,8 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(keywordInfo);
+            keywordInfo.Id = base.Insert(keywordInfo);
+            return keywordInfo.Id;
         }
 
         public int GetCount()
@@ -39,7 +41,7 @@ namespace SiteServer.CMS.Database.Repositories
             return Count();
         }
 
-        public void Update(KeywordInfo keywordInfo)
+        public override bool Update(KeywordInfo keywordInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -51,43 +53,44 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_Keyword SET Keyword = @Keyword, Alternative = @Alternative, Grade = @Grade WHERE Id=@Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(keywordInfo);
+            var updated = base.Update(keywordInfo);
+            return updated;
         }
 
-        public KeywordInfo Get(int id)
-        {
-            //var keywordInfo = new KeywordInfo();
+        //public KeywordInfo Get(int id)
+        //{
+        //    //var keywordInfo = new KeywordInfo();
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, id)
-            //};
-            //string SqlSelect = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Id=@Id";
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, SqlSelect, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        var i = 0;
-            //        keywordInfo = new KeywordInfo(DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i++), EKeywordGradeUtils.GetEnumType(DatabaseApi.GetString(rdr, i)));
-            //    }
-            //    rdr.Close();
-            //}
-            //return keywordInfo;
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamId, id)
+        //    //};
+        //    //string SqlSelect = "SELECT Id, Keyword, Alternative, Grade FROM siteserver_Keyword WHERE Id=@Id";
+        //    //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, SqlSelect, parameters))
+        //    //{
+        //    //    if (rdr.Read())
+        //    //    {
+        //    //        var i = 0;
+        //    //        keywordInfo = new KeywordInfo(DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i++), EKeywordGradeUtils.GetEnumType(DatabaseApi.GetString(rdr, i)));
+        //    //    }
+        //    //    rdr.Close();
+        //    //}
+        //    //return keywordInfo;
 
-            return GetObjectById(id);
-        }
+        //    return GetObjectById(id);
+        //}
 
-        public void Delete(int id)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, id)
-            //};
-            //string SqlDelete = "DELETE FROM siteserver_Keyword WHERE Id = @Id";
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
+        //public void Delete(int id)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamId, id)
+        //    //};
+        //    //string SqlDelete = "DELETE FROM siteserver_Keyword WHERE Id = @Id";
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            DeleteById(id);
-        }
+        //    DeleteById(id);
+        //}
 
         public string GetSelectCommand()
         {
@@ -133,7 +136,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList();
+            return GetAll();
         }
 
         public IList<KeywordInfo> GetKeywordInfoList(IList<string> keywords)
@@ -155,7 +158,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .WhereIn(Attr.Keyword, keywords));
         }
 
@@ -165,7 +168,7 @@ namespace SiteServer.CMS.Database.Repositories
             //var sqlString = $"SELECT Keyword FROM siteserver_Keyword WHERE {SqlUtils.GetInStrReverse(AttackUtils.FilterSql(content), nameof(KeywordInfo.Keyword))}";
             //return DatabaseApi.Instance.GetStringList(sqlString);
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.Keyword)
                 .WhereContains(Attr.Keyword, content));
         }

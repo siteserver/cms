@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Role")]
-    public class RoleInfo : DynamicEntity
+    public class RoleInfo : Entity
     {
         [TableColumn]
         public string RoleName { get; set; }

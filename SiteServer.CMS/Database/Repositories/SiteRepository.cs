@@ -13,10 +13,11 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class SiteRepository : GenericRepository<SiteInfo>
+    public class SiteRepository : Repository<SiteInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public SiteRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -28,7 +29,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(SiteInfo.Taxis);
         }
 
-        public void Insert(SiteInfo siteInfo)
+        public override int Insert(SiteInfo siteInfo)
         {
             //var sqlString = $"INSERT INTO {TableName} (Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML) VALUES (@Id, @SiteName, @SiteDir, @TableName, @IsRoot, @ParentId, @Taxis, @SettingsXML)";
 
@@ -49,12 +50,14 @@ namespace SiteServer.CMS.Database.Repositories
             //DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString, parameters);
 
             siteInfo.Taxis = GetMaxTaxis() + 1;
-            InsertObject(siteInfo);
+            siteInfo.Id = Insert(siteInfo);
 
             SiteManager.ClearCache();
+
+            return siteInfo.Id;
         }
 
-        public void Delete(int siteId)
+        public override bool Delete(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var list = ChannelManager.GetChannelIdList(siteId);
@@ -62,20 +65,22 @@ namespace SiteServer.CMS.Database.Repositories
 
             DataProvider.Tag.DeleteTags(siteId);
 
-            DataProvider.Channel.Delete(siteId, siteId);
+            DataProvider.Channel.DeleteAll(siteId);
 
             UpdateParentIdToZero(siteId);
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $"DELETE FROM siteserver_Site WHERE Id  = {siteId}");
 
-            DeleteById(siteId);
+            base.Delete(siteId);
 
             SiteManager.ClearCache();
             ChannelManager.RemoveCacheBySiteId(siteId);
             PermissionsImpl.ClearAllCache();
+
+            return true;
         }
 
-        public void Update(SiteInfo siteInfo)
+        public override bool Update(SiteInfo siteInfo)
         {
             //var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
 
@@ -98,9 +103,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(siteInfo);
+            var updated = base.Update(siteInfo);
 
             SiteManager.ClearCache();
+
+            return updated;
         }
 
         public void UpdateTableName(int siteId, string tableName)
@@ -115,7 +122,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.TableName, tableName)
                 .Where(Attr.Id, siteId)
             );
@@ -129,7 +136,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.ParentId, 0)
                 .Where(Attr.ParentId, parentId)
             );
@@ -158,7 +165,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            var list = GetValueList<string>(Q
+            var list = GetAll<string>(Q
                 .Select(Attr.SiteDir)
                 .WhereNot(Attr.IsRoot, true.ToString()));
 
@@ -176,7 +183,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsRoot, false.ToString())
             );
 
@@ -215,7 +222,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q.OrderBy(Attr.Taxis, Attr.Id));
+            return GetAll(Q.OrderBy(Attr.Taxis, Attr.Id));
         }
 
         public bool IsTableUsed(string tableName)
@@ -266,7 +273,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return siteId;
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.IsRoot, true.ToString()));
         }
@@ -292,7 +299,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return siteId;
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteDir, siteDir));
         }
@@ -316,7 +323,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                     .Select(Attr.SiteDir)
                     .Where(Attr.ParentId, parentId))
                 .Select(x => x.ToLower())
@@ -365,9 +372,9 @@ namespace SiteServer.CMS.Database.Repositories
                 orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
 
                 //var sqlSelect = DatabaseApi.Instance.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-                var sqlSelect = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
+                var sqlSelect = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, TableName, null, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-                ie = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelect);
+                ie = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelect);
             }
 
             return ie;
@@ -377,7 +384,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             //const string sqlString = "SELECT MAX(Taxis) FROM siteserver_Site";
             //return DatabaseApi.GetIntResult(sqlString);
-            return Max(Attr.Taxis) ?? 0;
+            return Max(Q.Select(Attr.Taxis)) ?? 0;
         }
     }
 }

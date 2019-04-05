@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_TableStyleItem")]
-    public class TableStyleItemInfo : DynamicEntity
+    public class TableStyleItemInfo : Entity
     {
         [TableColumn]
         public int TableStyleId { get; set; }

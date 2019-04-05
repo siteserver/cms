@@ -5,10 +5,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ConfigRepository : GenericRepository<ConfigInfo>
+    public class ConfigRepository : Repository<ConfigInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ConfigRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -16,7 +17,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string IsInitialized = "IsInitialized";
         }
 
-        public void Insert(ConfigInfo configInfo)
+        public override int Insert(ConfigInfo configInfo)
         {
             //var sqlString =
             //    $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
@@ -30,12 +31,16 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            InsertObject(configInfo);
+            configInfo.Id = base.Insert(configInfo);
+            if (configInfo.Id > 0)
+            {
+                ConfigManager.IsChanged = true;
+            }
 
-            ConfigManager.IsChanged = true;
+            return configInfo.Id;
         }
 
-        public void Update(ConfigInfo configInfo)
+        public override bool Update(ConfigInfo configInfo)
         {
             //var sqlString =
             //    $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
@@ -50,9 +55,13 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-            UpdateObject(configInfo);
+            var updated = base.Update(configInfo);
+            if (updated)
+            {
+                ConfigManager.IsChanged = true;
+            }
 
-            ConfigManager.IsChanged = true;
+            return updated;
         }
 
         public bool IsInitialized()
@@ -68,7 +77,7 @@ namespace SiteServer.CMS.Database.Repositories
                 //    rdr.Close();
                 //}
 
-                var isInitialized = GetValue<string>(Q
+                var isInitialized = Get<string>(Q
                     .Select(Attr.IsInitialized)
                     .OrderBy(Attr.Id));
 
@@ -122,7 +131,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return info;
 
-            return GetObject(Q.OrderBy(Attr.Id));
+            return Get(Q.OrderBy(Attr.Id));
 
             //return Get(new GenericQuery().OrderBy(Attr.Id));
         }

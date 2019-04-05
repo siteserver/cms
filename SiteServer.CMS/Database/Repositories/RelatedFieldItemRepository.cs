@@ -5,10 +5,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class RelatedFieldItemRepository : GenericRepository<RelatedFieldItemInfo>
+    public class RelatedFieldItemRepository : Repository<RelatedFieldItemInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public RelatedFieldItemRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Taxis = nameof(RelatedFieldItemInfo.Taxis);
         }
 
-        public int Insert(RelatedFieldItemInfo info)
+        public override int Insert(RelatedFieldItemInfo info)
         {
             info.Taxis = GetMaxTaxis(info.ParentId) + 1;
 
@@ -35,39 +36,40 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(RelatedFieldItemInfo.Id), sqlString, parameters);
 
-            return InsertObject(info);
+            info.Id = base.Insert(info);
+            return info.Id;
 
             //RelatedFieldManager.ClearCache();
         }
 
-        public void Update(RelatedFieldItemInfo info)
-        {
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamItemName, info.ItemName),
-            //    GetParameter(ParamItemValue, info.ItemValue),
-            //    GetParameter(ParamId, info.Id)
-            //};
-            //string SqlUpdate = "UPDATE siteserver_RelatedFieldItem SET ItemName = @ItemName, ItemValue = @ItemValue WHERE ID = @ID";
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
+        //public override bool Update(RelatedFieldItemInfo info)
+        //{
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamItemName, info.ItemName),
+        //    //    GetParameter(ParamItemValue, info.ItemValue),
+        //    //    GetParameter(ParamId, info.Id)
+        //    //};
+        //    //string SqlUpdate = "UPDATE siteserver_RelatedFieldItem SET ItemName = @ItemName, ItemValue = @ItemValue WHERE ID = @ID";
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(info);
+        //    UpdateObject(info);
 
-            //RelatedFieldManager.ClearCache();
-        }
+        //    //RelatedFieldManager.ClearCache();
+        //}
 
-        public void Delete(int id)
-        {
-            //if (id > 0)
-            //{
-            //    string sqlString = $"DELETE FROM siteserver_RelatedFieldItem WHERE ID = {id} OR ParentID = {id}";
-            //    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-            //}
+        //public void Delete(int id)
+        //{
+        //    //if (id > 0)
+        //    //{
+        //    //    string sqlString = $"DELETE FROM siteserver_RelatedFieldItem WHERE ID = {id} OR ParentID = {id}";
+        //    //    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
+        //    //}
 
-            DeleteById(id);
+        //    DeleteById(id);
 
-            //RelatedFieldManager.ClearCache();
-        }
+        //    //RelatedFieldManager.ClearCache();
+        //}
 
         public IList<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId)
         {
@@ -89,7 +91,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.RelatedFieldId, relatedFieldId)
                 .Where(Attr.ParentId, parentId)
                 .OrderBy(Attr.Taxis));
@@ -120,7 +122,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             var selectedTaxis = GetTaxis(id);
-            var result = GetValue<(int Id, int Taxis)?>(Q
+            var result = Get<(int Id, int Taxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.Taxis, ">", selectedTaxis)
                 .Where(Attr.ParentId, parentId)
@@ -170,7 +172,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             var selectedTaxis = GetTaxis(id);
-            var result = GetValue<(int Id, int Taxis)?> (Q
+            var result = Get<(int Id, int Taxis)?> (Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.Taxis, "<", selectedTaxis)
                 .Where(Attr.ParentId, parentId)
@@ -207,7 +209,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return taxis;
 
-            return GetValue<int>(Q
+            return Get<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.Id, id));
         }
@@ -218,7 +220,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, cmd);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.Id, id)
             );
@@ -237,7 +239,9 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q.Where(Attr.ParentId, parentId)) ?? 0;
+            return Max(Q
+                       .Select(Attr.Taxis)
+                       .Where(Attr.ParentId, parentId)) ?? 0;
         }
 
         public RelatedFieldItemInfo GetRelatedFieldItemInfo(int id)
@@ -258,7 +262,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             //return info;
-            return GetObjectById(id);
+            return Get(id);
         }
     }
 }

@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Config")]
-    public partial class ConfigInfo : DynamicEntity
+    public partial class ConfigInfo : Entity
     {
         [TableColumn]
         private string IsInitialized { get; set; }

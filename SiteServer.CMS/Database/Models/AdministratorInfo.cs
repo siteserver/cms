@@ -6,7 +6,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Administrator")]
-    public class AdministratorInfo : DynamicEntity, IAdministratorInfo
+    public class AdministratorInfo : Entity, IAdministratorInfo
     {
         [TableColumn]
         public string UserName { get; set; }

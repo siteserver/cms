@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_Tag")]
-    public class TagInfo : DynamicEntity
+    public class TagInfo : Entity
     {
         [TableColumn]
         public int SiteId { get; set; }

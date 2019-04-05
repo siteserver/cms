@@ -3,7 +3,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_SitePermissions")]
-    public class SitePermissionsInfo : DynamicEntity
+    public class SitePermissionsInfo : Entity
     {
         [TableColumn]
         public string RoleName { get; set; }

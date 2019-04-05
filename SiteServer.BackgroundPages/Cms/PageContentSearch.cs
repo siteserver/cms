@@ -132,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
                 ReturnColumnNames = allAttributeNameList,
                 WhereSqlString = whereString,
-                TotalCount = DatabaseApi.Instance.GetPageTotalCount(tableName, whereString)
+                TotalCount = DataProvider.DatabaseApi.GetPageTotalCount(tableName, whereString)
             };
 
             if (IsPostBack) return;

@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class TemplateLogRepository : GenericRepository<TemplateLogInfo>
+    public class TemplateLogRepository : Repository<TemplateLogInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public TemplateLogRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -21,24 +22,24 @@ namespace SiteServer.CMS.Database.Repositories
             public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
         }
 
-        public void Insert(TemplateLogInfo logInfo)
-        {
-            //var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateId, @SiteId, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
+        //public void Insert(TemplateLogInfo logInfo)
+        //{
+        //    //var sqlString = "INSERT INTO siteserver_TemplateLog(TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent) VALUES (@TemplateId, @SiteId, @AddDate, @AddUserName, @ContentLength, @TemplateContent)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamTemplateId, logInfo.TemplateId),
-            //    GetParameter(ParamSiteId, logInfo.SiteId),
-            //    GetParameter(ParamAddDate,logInfo.AddDate),
-            //    GetParameter(ParamAddUserName, logInfo.AddUserName),
-            //    GetParameter(ParamContentLength, logInfo.ContentLength),
-            //    GetParameter(ParamTemplateContent,logInfo.TemplateContent)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamTemplateId, logInfo.TemplateId),
+        //    //    GetParameter(ParamSiteId, logInfo.SiteId),
+        //    //    GetParameter(ParamAddDate,logInfo.AddDate),
+        //    //    GetParameter(ParamAddUserName, logInfo.AddUserName),
+        //    //    GetParameter(ParamContentLength, logInfo.ContentLength),
+        //    //    GetParameter(ParamTemplateContent,logInfo.TemplateContent)
+        //    //};
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(logInfo);
-        }
+        //    InsertObject(logInfo);
+        //}
 
         public string GetSelectCommend(int siteId, int templateId)
         {
@@ -63,7 +64,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return templateContent;
 
-            return GetValue<string>(Q
+            return Get<string>(Q
                 .Select(Attr.TemplateContent)
                 .Where(Attr.Id, logId));
         }
@@ -72,7 +73,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             var dictionary = new Dictionary<int, string>();
 
-            var dataList = GetValueList<(int Id, DateTime? AddDate, string AddUserName, int ContentLength)>(Q
+            var dataList = GetAll<(int Id, DateTime? AddDate, string AddUserName, int ContentLength)>(Q
                 .Select(Attr.Id, Attr.AddDate, Attr.AddUserName, Attr.ContentLength)
                 .Where(Attr.TemplateId, templateId));
 
@@ -121,7 +122,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (idList != null && idList.Count > 0)
             {
-                DeleteAll(Q.WhereIn(Attr.Id, idList));
+                Delete(Q.WhereIn(Attr.Id, idList));
             }
         }
     }

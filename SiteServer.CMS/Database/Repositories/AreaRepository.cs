@@ -8,10 +8,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class AreaRepository : GenericRepository<AreaInfo>
+    public class AreaRepository : Repository<AreaInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public AreaRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -49,7 +50,7 @@ namespace SiteServer.CMS.Database.Repositories
             areaInfo.LastNode = true;
 
             //DatabaseApi.Instance.ExecuteNonQuery(trans, $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("Taxis")} WHERE (Taxis >= {areaInfo.Taxis})");
-            IncrementAll(Attr.Taxis, Q
+            Increment(Q.Select(Attr.Taxis)
                     .Where(Attr.Taxis, ">=", areaInfo.Taxis));
 
             //IDataParameter[] parameters = {
@@ -64,12 +65,12 @@ namespace SiteServer.CMS.Database.Repositories
             //};
 
             //areaInfo.Id = _db.ExecuteNonQueryAndReturnId(TableName, nameof(AreaInfo.Id), trans, "INSERT INTO siteserver_Area (AreaName, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, CountOfAdmin) VALUES (@AreaName, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @CountOfAdmin)", parameters);
-            InsertObject(areaInfo);
+            Insert(areaInfo);
 
             if (!string.IsNullOrEmpty(areaInfo.ParentsPath) && areaInfo.ParentsPath != "0")
             {
                 //_db.ExecuteNonQuery(trans, $"UPDATE siteserver_Area SET {SqlUtils.ToPlusSqlString("ChildrenCount")} WHERE Id IN ({AttackUtils.FilterSql(areaInfo.ParentsPath)})");
-                IncrementAll(Attr.ChildrenCount, Q
+                Increment(Q.Select(Attr.ChildrenCount)
                     .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(areaInfo.ParentsPath)));
             }
 
@@ -78,7 +79,7 @@ namespace SiteServer.CMS.Database.Repositories
             //{
             //    {Attr.IsLastNode, false.ToString()}
             //}, Q.Where(Attr.ParentId, areaInfo.ParentId));
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, areaInfo.ParentId)
             );
@@ -86,14 +87,14 @@ namespace SiteServer.CMS.Database.Repositories
             //sqlString =
             //    $"UPDATE siteserver_Area SET IsLastNode = 'True' WHERE (Id IN (SELECT TOP 1 Id FROM siteserver_Area WHERE ParentID = {areaInfo.ParentId} ORDER BY Taxis DESC))";
 
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, areaInfo.ParentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(nameof(Attr.Id), topId)
                 );
@@ -110,7 +111,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //var sqlString = string.Concat("UPDATE siteserver_Area SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", AttackUtils.FilterSql(parentsPath), ")");
             //_db.ExecuteNonQuery(_connectionString, sqlString);
-            DecrementAll(Attr.ChildrenCount, Q
+            Decrement(Q.Select(Attr.ChildrenCount)
                 .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)), subtractNum);
 
             AreaManager.ClearCache();
@@ -118,7 +119,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         private void TaxisSubtract(int selectedId)
         {
-            var areaInfo = GetObjectById(selectedId);
+            var areaInfo = Get(selectedId);
             if (areaInfo == null) return;
             //Get Lower Taxis and Id
    //         int lowerId;
@@ -155,7 +156,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    .Less(Attr.Taxis, areaInfo.Taxis)
             //    .OrderByDescending(Attr.Taxis));
 
-            var dataInfo = GetObject(Q
+            var dataInfo = Get(Q
                 .Where(Attr.ParentId, areaInfo.ParentId)
                 .WhereNot(Attr.Id, areaInfo.Id)
                 .Where(Attr.Taxis, "<", areaInfo.Taxis)
@@ -178,7 +179,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         private void TaxisAdd(int selectedId)
         {
-            var areaInfo = GetObjectById(selectedId);
+            var areaInfo = Get(selectedId);
             if (areaInfo == null) return;
             //Get Higher Taxis and Id
             //         int higherId;
@@ -221,7 +222,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    .Greater(Attr.Taxis, areaInfo.Taxis)
             //    .OrderBy(Attr.Taxis));
 
-            var dataInfo = GetObject(Q
+            var dataInfo = Get(Q
                 .Where(Attr.ParentId, areaInfo.ParentId)
                 .WhereNot(Attr.Id, areaInfo.Id)
                 .Where(Attr.Taxis, ">", areaInfo.Taxis)
@@ -249,7 +250,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Area SET Taxis = Taxis + {addNum} WHERE Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             //_db.ExecuteNonQuery(_connectionString, sqlString);
-            IncrementAll(Attr.Taxis, Q
+            Increment(Q.Select(Attr.Taxis)
                 .Where(Attr.Id, areaId)
                 .OrWhere(Attr.ParentsPath, parentsPath)
                 .OrWhereStarts(Attr.ParentsPath, parentsPath + ","), addNum);
@@ -264,7 +265,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Area SET Taxis = Taxis - {subtractNum} WHERE  Id = {areaId} OR ParentsPath = '{path}' OR ParentsPath LIKE '{path},%'";
 
             //_db.ExecuteNonQuery(_connectionString, sqlString);
-            DecrementAll(Attr.Taxis, Q
+            Decrement(Q.Select(Attr.Taxis)
                 .Where(Attr.Id, areaId)
                 .OrWhere(Attr.ParentsPath, parentsPath)
                 .OrWhereStarts(Attr.ParentsPath, parentsPath + ","), subtractNum);
@@ -285,7 +286,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //_db.ExecuteNonQuery(_connectionString, sqlString, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, parentId)
             );
@@ -295,14 +296,14 @@ namespace SiteServer.CMS.Database.Repositories
 
             //_db.ExecuteNonQuery(_connectionString, sqlString);
 
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(nameof(Attr.Id), topId)
                 );
@@ -311,7 +312,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         private int GetMaxTaxisByParentPath(string parentPath)
         {
-            return Max(Attr.Taxis, Q
+            return Max(Q.Select(Attr.Taxis)
                 .Where(Attr.ParentsPath, parentPath)
                 .OrWhereStarts(Attr.ParentsPath, parentPath + ",")) ?? 0;
 
@@ -352,7 +353,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
             
-            var parentAreaInfo = GetObjectById(areaInfo.ParentId);
+            var parentAreaInfo = Get(areaInfo.ParentId);
 
             Insert(parentAreaInfo, areaInfo);
 
@@ -362,7 +363,7 @@ namespace SiteServer.CMS.Database.Repositories
             AreaManager.ClearCache();
         }
 
-        public void Update(AreaInfo areaInfo)
+        public override bool Update(AreaInfo areaInfo)
         {
    //         IDataParameter[] updateParams = {
    //             _db.GetParameter(ParamName, areaInfo.AreaName),
@@ -375,11 +376,14 @@ namespace SiteServer.CMS.Database.Repositories
 			//};
 
    //         var i = _db.ExecuteNonQuery(_connectionString, SqlUpdate, updateParams);
-   
-            if (UpdateObject(areaInfo))
+
+            var updated = base.Update(areaInfo);
+            if (updated)
             {
                 AreaManager.ClearCache();
             }
+
+            return updated;
         }
 
         public void UpdateTaxis(int selectedId, bool isSubtract)
@@ -403,7 +407,7 @@ namespace SiteServer.CMS.Database.Repositories
                 //var sqlString = $"UPDATE {TableName} SET CountOfAdmin = {count} WHERE Id = {areaId}";
                 //_db.ExecuteNonQuery(_connectionString, sqlString);
 
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.CountOfAdmin, count)
                     .Where(nameof(Attr.Id), areaId)
                 );
@@ -411,9 +415,9 @@ namespace SiteServer.CMS.Database.Repositories
             AreaManager.ClearCache();
         }
 
-        public void Delete(int areaId)
+        public override bool Delete(int areaId)
         {
-            var areaInfo = GetObjectById(areaId);
+            var areaInfo = Get(areaId);
             if (areaInfo != null)
             {
                 IList<int> areaIdList = new List<int>();
@@ -453,12 +457,12 @@ namespace SiteServer.CMS.Database.Repositories
                 //        }
                 //    }
                 //}
-                var deletedNum = DeleteAll(Q
+                var deletedNum = Delete(Q
                     .WhereIn(Attr.Id, areaIdList));
 
                 if (deletedNum > 0)
                 {
-                    DecrementAll(Attr.Taxis, Q
+                    Decrement(Q.Select(Attr.Taxis)
                         .Where(Attr.Taxis, ">", areaInfo.Taxis), deletedNum);
                 }
 
@@ -467,6 +471,8 @@ namespace SiteServer.CMS.Database.Repositories
             }
 
             AreaManager.ClearCache();
+
+            return true;
         }
 
         //private AreaInfo GetAreaInfo(int areaId)
@@ -503,7 +509,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
             //return list;
-            return GetObjectList(Q
+            return GetAll(Q
                 .OrderBy(Attr.Taxis));
         }
 
@@ -522,7 +528,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
 
             //return list;
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderBy(Attr.Taxis));
@@ -550,7 +556,7 @@ namespace SiteServer.CMS.Database.Repositories
 //            }
 
 //            return list;
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .WhereStarts(Attr.ParentsPath, $"{areaId},")
                 .OrWhereContains(Attr.ParentsPath, $",{areaId},")

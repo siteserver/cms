@@ -4,10 +4,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class PluginConfigRepository : GenericRepository<PluginConfigInfo>
+    public class PluginConfigRepository : Repository<PluginConfigInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public PluginConfigRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -17,22 +18,22 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ConfigValue = nameof(PluginConfigInfo.ConfigValue);
         }
 
-        public void Insert(PluginConfigInfo configInfo)
-        {
-            //const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, SiteId, ConfigName, ConfigValue) VALUES (@PluginId, @SiteId, @ConfigName, @ConfigValue)";
+        //public void Insert(PluginConfigInfo configInfo)
+        //{
+        //    //const string sqlString = "INSERT INTO siteserver_PluginConfig(PluginId, SiteId, ConfigName, ConfigValue) VALUES (@PluginId, @SiteId, @ConfigName, @ConfigValue)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamPluginId, configInfo.PluginId),
-            //    GetParameter(ParamSiteId, configInfo.SiteId),
-            //    GetParameter(ParamConfigName, configInfo.ConfigName),
-            //    GetParameter(ParamConfigValue,configInfo.ConfigValue)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamPluginId, configInfo.PluginId),
+        //    //    GetParameter(ParamSiteId, configInfo.SiteId),
+        //    //    GetParameter(ParamConfigName, configInfo.ConfigName),
+        //    //    GetParameter(ParamConfigValue,configInfo.ConfigValue)
+        //    //};
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(configInfo);
-        }
+        //    InsertObject(configInfo);
+        //}
 
         public void Delete(string pluginId, int siteId, string configName)
         {
@@ -47,27 +48,27 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.PluginId, pluginId)
                 .Where(Attr.ConfigName, configName));
         }
 
-        public void Update(PluginConfigInfo configInfo)
-        {
-            //const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
+        //public void Update(PluginConfigInfo configInfo)
+        //{
+        //    //const string sqlString = "UPDATE siteserver_PluginConfig SET ConfigValue = @ConfigValue WHERE PluginId = @PluginId AND SiteId = @SiteId AND ConfigName = @ConfigName";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamConfigValue,configInfo.ConfigValue),
-            //    GetParameter(ParamPluginId, configInfo.PluginId),
-            //    GetParameter(ParamSiteId, configInfo.SiteId),
-            //    GetParameter(ParamConfigName, configInfo.ConfigName)
-            //};
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamConfigValue,configInfo.ConfigValue),
+        //    //    GetParameter(ParamPluginId, configInfo.PluginId),
+        //    //    GetParameter(ParamSiteId, configInfo.SiteId),
+        //    //    GetParameter(ParamConfigName, configInfo.ConfigName)
+        //    //};
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(configInfo);
-        }
+        //    UpdateObject(configInfo);
+        //}
 
         public string GetValue(string pluginId, int siteId, string configName)
         {
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return value;
 
-            return GetValue<string>(Q
+            return Get<string>(Q
                 .Select(Attr.ConfigValue)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.PluginId, pluginId)

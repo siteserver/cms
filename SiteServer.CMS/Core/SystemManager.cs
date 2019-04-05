@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Datory;
-using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
@@ -65,13 +64,13 @@ namespace SiteServer.CMS.Core
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, repository.TableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, repository.TableName))
                 {
-                    DatabaseApi.Instance.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _, out _);
+                    TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
                 }
                 else
                 {
-                    DatabaseApi.Instance.AlterTable(repository.TableName, repository.TableColumns, string.Empty);
+                    TableColumnManager.AlterTable(repository.TableName, repository.TableColumns, string.Empty);
                 }
             }
         }
@@ -81,13 +80,13 @@ namespace SiteServer.CMS.Core
             var tableNameList = SiteManager.GetAllTableNameList();
             foreach (var tableName in tableNameList)
             {
-                if (!DatorySql.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                 {
-                    DatabaseApi.Instance.CreateTable(tableName, DataProvider.ContentRepository.TableColumns, string.Empty, true, out _, out _);
+                    TableColumnManager.CreateTable(tableName, DataProvider.ContentRepository.TableColumns, string.Empty, true, out _);
                 }
                 else
                 {
-                    DatabaseApi.Instance.AlterTable(tableName, DataProvider.ContentRepository.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
+                    TableColumnManager.AlterTable(tableName, DataProvider.ContentRepository.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
                 }
             }
         }

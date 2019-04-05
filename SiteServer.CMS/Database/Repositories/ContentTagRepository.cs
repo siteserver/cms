@@ -6,10 +6,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class ContentTagRepository : GenericRepository<ContentTagInfo>
+    public class ContentTagRepository : Repository<ContentTagInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public ContentTagRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string UseNum = nameof(ContentTagInfo.UseNum);
         }
 
-        public void Insert(ContentTagInfo tagInfo)
+        public override int Insert(ContentTagInfo tagInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -30,12 +31,16 @@ namespace SiteServer.CMS.Database.Repositories
             //    "INSERT INTO siteserver_ContentTag (TagName, SiteId, UseNum) VALUES (@TagName, @SiteId, @UseNum)";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlInsert, parameters);
 
-            InsertObject(tagInfo);
+            tagInfo.Id = Insert(tagInfo);
+            if (tagInfo.Id > 0)
+            {
+                ContentTagManager.ClearCache();
+            }
 
-            ContentTagManager.ClearCache();
+            return tagInfo.Id;
         }
 
-        public void Update(ContentTagInfo tagInfo)
+        public override bool Update(ContentTagInfo tagInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -46,9 +51,13 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_ContentTag SET UseNum = @UseNum WHERE TagName = @TagName AND SiteId = @SiteId";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(tagInfo);
+            var updated = base.Update(tagInfo);
+            if (updated)
+            {
+                ContentTagManager.ClearCache();
+            }
 
-            ContentTagManager.ClearCache();
+            return updated;
         }
 
         public void Delete(int siteId, string tagName)
@@ -61,7 +70,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDelete = "DELETE FROM siteserver_ContentTag WHERE TagName = @TagName AND SiteId = @SiteId";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDelete, parameters);
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TagName, tagName));
 
@@ -96,7 +105,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var tagList = GetObjectList(Q
+            var tagList = GetAll(Q
                 .OrderByDesc(Attr.UseNum)
                 .OrderBy(Attr.TagName));
 

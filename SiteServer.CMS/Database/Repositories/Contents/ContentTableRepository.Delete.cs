@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             if (siteId <= 0 || contentId <= 0) return;
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Id, contentId)
             );
@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
 
                 //deleteNum = ExecuteNonQuery(sqlString);
 
-                deleteNum = DeleteAll(Q
+                deleteNum = Delete(Q
                     .Where(Attr.SiteId, siteId)
                     .Where(Attr.ReferenceId, ">", 0)
                     .WhereIn(Attr.Id, contentIdList));

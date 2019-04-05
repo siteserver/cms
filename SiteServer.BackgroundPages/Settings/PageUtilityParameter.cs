@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web.UI.WebControls;
 using Datory;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
                 new KeyValuePair<string, string>("SiteServer.Plugin 版本", SystemManager.PluginVersion),
                 new KeyValuePair<string, string>("最近升级时间", DateUtils.GetDateAndTimeString(ConfigManager.Instance.UpdateDate)),
                 new KeyValuePair<string, string>("数据库类型", WebConfigUtils.DatabaseType.Value),
-                new KeyValuePair<string, string>("数据库名称", DatorySql.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                new KeyValuePair<string, string>("数据库名称", WebConfigUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             };
 
             RptContents.DataSource = parameterList;

@@ -5,7 +5,7 @@ using SiteServer.Utils;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_PermissionsInRoles")]
-    public class PermissionsInRolesInfo : DynamicEntity
+    public class PermissionsInRolesInfo : Entity
     {
         [TableColumn]
         public string RoleName { get; set; }

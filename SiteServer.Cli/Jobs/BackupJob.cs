@@ -5,6 +5,7 @@ using Datory;
 using NDesk.Options;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Apis;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Fx;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -81,7 +82,7 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DatabaseApi.Instance.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DataProvider.DatabaseApi.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
@@ -97,7 +98,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = DatorySql.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var allTableNames = DatoryUtils.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -118,8 +119,8 @@ namespace SiteServer.Cli.Jobs
             {
                 var tableInfo = new TableInfo
                 {
-                    Columns = DatorySql.GetTableColumns(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName),
-                    TotalCount = DatabaseApi.Instance.GetCount(tableName),
+                    Columns = DatoryUtils.GetTableColumns(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName),
+                    TotalCount = DataProvider.DatabaseApi.GetCount(tableName),
                     RowFiles = new List<string>()
                 };
 
@@ -130,7 +131,7 @@ namespace SiteServer.Cli.Jobs
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = DatabaseApi.Instance.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
+                var identityColumnName = DatoryUtils.AddIdentityColumnIdIfNotExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {
@@ -150,7 +151,7 @@ namespace SiteServer.Cli.Jobs
                                 var offset = (current - 1) * CliUtils.PageSize;
                                 var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
 
-                                var rows = DatabaseApi.Instance.GetPageObjects(tableName, identityColumnName, offset, limit);
+                                var rows = DataProvider.DatabaseApi.GetPageObjects(tableName, identityColumnName, offset, limit);
 
                                 await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                             }
@@ -160,7 +161,7 @@ namespace SiteServer.Cli.Jobs
                     {
                         var fileName = $"{current}.json";
                         tableInfo.RowFiles.Add(fileName);
-                        var rows = DatabaseApi.Instance.GetObjects(tableName);
+                        var rows = DataProvider.DatabaseApi.GetObjects(tableName);
 
                         await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), TranslateUtils.JsonSerialize(rows));
                     }

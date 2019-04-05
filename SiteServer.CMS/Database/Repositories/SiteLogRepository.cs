@@ -9,10 +9,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class SiteLogRepository : GenericRepository<SiteLogInfo>
+    public class SiteLogRepository : Repository<SiteLogInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public SiteLogRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -20,26 +21,26 @@ namespace SiteServer.CMS.Database.Repositories
             public const string AddDate = nameof(SiteLogInfo.AddDate);
         }
 
-        public void Insert(SiteLogInfo logInfo)
-        {
-            //const string sqlString = "INSERT INTO siteserver_SiteLog(SiteId, ChannelId, ContentId, UserName, IpAddress, AddDate, Action, Summary) VALUES (@SiteId, @ChannelId, @ContentId, @UserName, @IpAddress, @AddDate, @Action, @Summary)";
+        //public void Insert(SiteLogInfo logInfo)
+        //{
+        //    //const string sqlString = "INSERT INTO siteserver_SiteLog(SiteId, ChannelId, ContentId, UserName, IpAddress, AddDate, Action, Summary) VALUES (@SiteId, @ChannelId, @ContentId, @UserName, @IpAddress, @AddDate, @Action, @Summary)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamSiteId, logInfo.SiteId),
-            //    GetParameter(ParamChannelId, logInfo.ChannelId),
-            //    GetParameter(ParamContentId, logInfo.ContentId),
-            //    GetParameter(ParamUserName, logInfo.UserName),
-            //    GetParameter(ParamIpAddress, logInfo.IpAddress),
-            //    GetParameter(ParamAddDate,logInfo.AddDate),
-            //    GetParameter(ParamAction, logInfo.Action),
-            //    GetParameter(ParamSummary, logInfo.Summary)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamSiteId, logInfo.SiteId),
+        //    //    GetParameter(ParamChannelId, logInfo.ChannelId),
+        //    //    GetParameter(ParamContentId, logInfo.ContentId),
+        //    //    GetParameter(ParamUserName, logInfo.UserName),
+        //    //    GetParameter(ParamIpAddress, logInfo.IpAddress),
+        //    //    GetParameter(ParamAddDate,logInfo.AddDate),
+        //    //    GetParameter(ParamAction, logInfo.Action),
+        //    //    GetParameter(ParamSummary, logInfo.Summary)
+        //    //};
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(logInfo);
-        }
+        //    InsertObject(logInfo);
+        //}
 
         public void DeleteIfThreshold()
         {
@@ -50,7 +51,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_SiteLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
 
-            DeleteAll(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+            Delete(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)
@@ -62,7 +63,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DeleteAll(Q.WhereIn(Attr.Id, idList));
+            Delete(Q.WhereIn(Attr.Id, idList));
         }
 
         public void DeleteAll()
@@ -71,7 +72,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteAll();
+            base.Delete();
         }
 
         public string GetSelectCommend()

@@ -13,10 +13,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class UserLogRepository : GenericRepository<UserLogInfo>
+    public class UserLogRepository : Repository<UserLogInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public UserLogRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -26,23 +27,23 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Action = nameof(UserLogInfo.Action);
         }
 
-        public void Insert(UserLogInfo logInfo)
-        {
-            //const string sqlString = "INSERT INTO siteserver_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
+        //public void Insert(UserLogInfo logInfo)
+        //{
+        //    //const string sqlString = "INSERT INTO siteserver_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
 
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamUserName, logInfo.UserName),
-            //    GetParameter(ParamIpAddress, logInfo.IpAddress),
-            //    GetParameter(ParamAddDate,logInfo.AddDate),
-            //    GetParameter(ParamAction, logInfo.Action),
-            //    GetParameter(ParamSummary, logInfo.Summary)
-            //};
+        //    //IDataParameter[] parameters =
+        //    //{
+        //    //    GetParameter(ParamUserName, logInfo.UserName),
+        //    //    GetParameter(ParamIpAddress, logInfo.IpAddress),
+        //    //    GetParameter(ParamAddDate,logInfo.AddDate),
+        //    //    GetParameter(ParamAction, logInfo.Action),
+        //    //    GetParameter(ParamSummary, logInfo.Summary)
+        //    //};
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(logInfo);
-        }
+        //    InsertObject(logInfo);
+        //}
 
         public UserLogInfo Insert(string userName, UserLogInfo logInfo)
         {
@@ -59,7 +60,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    }
             //}
 
-            InsertObject(logInfo);
+            logInfo.Id = Insert(logInfo);
 
             return logInfo;
         }
@@ -73,7 +74,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_UserLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
 
-            base.DeleteAll(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+            base.Delete(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)
@@ -85,7 +86,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteAll(Q.WhereIn(Attr.Id, idList));
+            base.Delete(Q.WhereIn(Attr.Id, idList));
         }
 
         public void DeleteAll()
@@ -94,7 +95,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteAll();
+            base.Delete();
         }
 
         public int GetCount()
@@ -210,7 +211,7 @@ namespace SiteServer.CMS.Database.Repositories
             query.Limit(totalNum);
             query.OrderByDesc(Attr.Id);
 
-            return GetObjectList(query).Select(x => (ILogInfo)x).ToList();
+            return GetAll(query).Select(x => (ILogInfo)x).ToList();
         }
 
         public IList<UserLogInfo> ApiGetLogs(string userName, int offset, int limit)
@@ -223,7 +224,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    return connection.Query<UserLogInfo>(sqlString, new { UserName = userName }).ToList();
             //}
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.UserName, userName)
                 .Offset(offset)
                 .Limit(limit)

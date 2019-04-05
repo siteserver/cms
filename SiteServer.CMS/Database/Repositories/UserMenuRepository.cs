@@ -7,10 +7,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class UserMenuRepository : GenericRepository<UserMenuInfo>
+    public class UserMenuRepository : Repository<UserMenuInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public UserMenuRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -18,55 +19,55 @@ namespace SiteServer.CMS.Database.Repositories
             public const string ParentId = nameof(UserMenuInfo.ParentId);
         }
 
-        public int Insert(UserMenuInfo menuInfo)
+        public override int Insert(UserMenuInfo menuInfo)
         {
-//            var sqlString =
-//                $@"
-//INSERT INTO {TableName} (
-//    {nameof(UserMenuInfo.SystemId)}, 
-//    {nameof(UserMenuInfo.GroupIdCollection)}, 
-//    {nameof(UserMenuInfo.IsDisabled)}, 
-//    {nameof(UserMenuInfo.ParentId)}, 
-//    {nameof(UserMenuInfo.Taxis)}, 
-//    {nameof(UserMenuInfo.Text)}, 
-//    {nameof(UserMenuInfo.IconClass)}, 
-//    {nameof(UserMenuInfo.Href)}, 
-//    {nameof(UserMenuInfo.Target)}
-//) VALUES (
-//    @{nameof(UserMenuInfo.SystemId)}, 
-//    @{nameof(UserMenuInfo.GroupIdCollection)}, 
-//    @{nameof(UserMenuInfo.IsDisabled)}, 
-//    @{nameof(UserMenuInfo.ParentId)}, 
-//    @{nameof(UserMenuInfo.Taxis)}, 
-//    @{nameof(UserMenuInfo.Text)}, 
-//    @{nameof(UserMenuInfo.IconClass)}, 
-//    @{nameof(UserMenuInfo.Href)}, 
-//    @{nameof(UserMenuInfo.Target)}
-//)";
+            //            var sqlString =
+            //                $@"
+            //INSERT INTO {TableName} (
+            //    {nameof(UserMenuInfo.SystemId)}, 
+            //    {nameof(UserMenuInfo.GroupIdCollection)}, 
+            //    {nameof(UserMenuInfo.IsDisabled)}, 
+            //    {nameof(UserMenuInfo.ParentId)}, 
+            //    {nameof(UserMenuInfo.Taxis)}, 
+            //    {nameof(UserMenuInfo.Text)}, 
+            //    {nameof(UserMenuInfo.IconClass)}, 
+            //    {nameof(UserMenuInfo.Href)}, 
+            //    {nameof(UserMenuInfo.Target)}
+            //) VALUES (
+            //    @{nameof(UserMenuInfo.SystemId)}, 
+            //    @{nameof(UserMenuInfo.GroupIdCollection)}, 
+            //    @{nameof(UserMenuInfo.IsDisabled)}, 
+            //    @{nameof(UserMenuInfo.ParentId)}, 
+            //    @{nameof(UserMenuInfo.Taxis)}, 
+            //    @{nameof(UserMenuInfo.Text)}, 
+            //    @{nameof(UserMenuInfo.IconClass)}, 
+            //    @{nameof(UserMenuInfo.Href)}, 
+            //    @{nameof(UserMenuInfo.Target)}
+            //)";
 
-//            IDataParameter[] parameters =
-//            {
-//                GetParameter($"@{nameof(UserMenuInfo.SystemId)}", menuInfo.SystemId),
-//                GetParameter($"@{nameof(UserMenuInfo.GroupIdCollection)}", menuInfo.GroupIdCollection),
-//                GetParameter($"@{nameof(UserMenuInfo.IsDisabled)}", menuInfo.IsDisabled),
-//                GetParameter($"@{nameof(UserMenuInfo.ParentId)}", menuInfo.ParentId),
-//                GetParameter($"@{nameof(UserMenuInfo.Taxis)}", menuInfo.Taxis),
-//                GetParameter($"@{nameof(UserMenuInfo.Text)}", menuInfo.Text),
-//                GetParameter($"@{nameof(UserMenuInfo.IconClass)}", menuInfo.IconClass),
-//                GetParameter($"@{nameof(UserMenuInfo.Href)}", menuInfo.Href),
-//                GetParameter($"@{nameof(UserMenuInfo.Target)}", menuInfo.Target)
-//            };
+            //            IDataParameter[] parameters =
+            //            {
+            //                GetParameter($"@{nameof(UserMenuInfo.SystemId)}", menuInfo.SystemId),
+            //                GetParameter($"@{nameof(UserMenuInfo.GroupIdCollection)}", menuInfo.GroupIdCollection),
+            //                GetParameter($"@{nameof(UserMenuInfo.IsDisabled)}", menuInfo.IsDisabled),
+            //                GetParameter($"@{nameof(UserMenuInfo.ParentId)}", menuInfo.ParentId),
+            //                GetParameter($"@{nameof(UserMenuInfo.Taxis)}", menuInfo.Taxis),
+            //                GetParameter($"@{nameof(UserMenuInfo.Text)}", menuInfo.Text),
+            //                GetParameter($"@{nameof(UserMenuInfo.IconClass)}", menuInfo.IconClass),
+            //                GetParameter($"@{nameof(UserMenuInfo.Href)}", menuInfo.Href),
+            //                GetParameter($"@{nameof(UserMenuInfo.Target)}", menuInfo.Target)
+            //            };
 
-//            var menuId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserMenuInfo.Id), sqlString, parameters);
+            //            var menuId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserMenuInfo.Id), sqlString, parameters);
 
-            var menuId = InsertObject(menuInfo);
+            menuInfo.Id = base.Insert(menuInfo);
 
             UserMenuManager.ClearCache();
 
-            return menuId;
+            return menuInfo.Id;
         }
 
-        public void Update(UserMenuInfo menuInfo)
+        public override bool Update(UserMenuInfo menuInfo)
         {
             //var sqlString = $@"UPDATE {TableName} SET
             //    {nameof(UserMenuInfo.SystemId)} = @{nameof(UserMenuInfo.SystemId)}, 
@@ -96,12 +97,14 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateObject(menuInfo);
+            var updated = base.Update(menuInfo);
 
             UserMenuManager.ClearCache();
+
+            return updated;
         }
 
-        public void Delete(int menuId)
+        public override bool Delete(int menuId)
         {
             //var sqlString = $"DELETE FROM {TableName} WHERE {nameof(UserMenuInfo.Id)} = @{nameof(UserMenuInfo.Id)} OR {nameof(UserMenuInfo.ParentId)} = @{nameof(UserMenuInfo.ParentId)}";
 
@@ -113,9 +116,11 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            DeleteAll(Q.Where(Attr.Id, menuId).OrWhere(Attr.ParentId, menuId));
+            Delete(Q.Where(Attr.Id, menuId).OrWhere(Attr.ParentId, menuId));
 
             UserMenuManager.ClearCache();
+
+            return true;
         }
 
         public List<UserMenuInfo> GetUserMenuInfoList()
@@ -128,7 +133,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    list = connection.Query<UserMenuInfo>(sqlString).ToList();
             //}
 
-            var list = GetObjectList();
+            var list = GetAll();
 
             var systemMenus = UserMenuManager.SystemMenus.Value;
             foreach (var kvp in systemMenus)

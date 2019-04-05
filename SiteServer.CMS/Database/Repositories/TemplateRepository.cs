@@ -6,16 +6,18 @@ using Datory;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class TemplateRepository : GenericRepository<TemplateInfo>
+    public class TemplateRepository : Repository<TemplateInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public TemplateRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -50,7 +52,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //var id = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(TemplateInfo.Id), sqlInsertTemplate, parameters);
 
-            var id = InsertObject(templateInfo);
+            var id = base.Insert(templateInfo);
 
             var siteInfo = SiteManager.GetSiteInfo(templateInfo.SiteId);
             TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
@@ -81,7 +83,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdateTemplate = "UPDATE siteserver_Template SET TemplateName = @TemplateName, TemplateType = @TemplateType, RelatedFileName = @RelatedFileName, CreatedFileFullName = @CreatedFileFullName, CreatedFileExtName = @CreatedFileExtName, Charset = @Charset, IsDefault = @IsDefault WHERE  Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlUpdateTemplate, parameters);
 
-            UpdateObject(templateInfo);
+            Update(templateInfo);
 
             TemplateManager.WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
 
@@ -101,7 +103,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsDefault, false.ToString())
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value)
@@ -123,7 +125,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsDefault, true.ToString())
                 .Where(Attr.Id, id)
             );
@@ -144,7 +146,7 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlDeleteTemplate = "DELETE FROM siteserver_Template WHERE Id = @Id";
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDeleteTemplate, parameters);
 
-            DeleteById(id);
+            Delete(id);
 
             FileUtils.DeleteFileIfExists(filePath);
 
@@ -220,7 +222,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var dataList = GetValueList<(string TemplateType, int Count)>(Q
+            var dataList = GetAll<(string TemplateType, int Count)>(Q
                 .Select(Attr.TemplateType)
                 .SelectRaw("COUNT(*) as Count")
                 .Where(Attr.SiteId, siteId)
@@ -248,11 +250,11 @@ namespace SiteServer.CMS.Database.Repositories
         {
             IDataParameter[] parameters =
             {
-                DatabaseApi.Instance.GetParameter("@SiteId", siteId),
-                DatabaseApi.Instance.GetParameter("@TemplateType", type.Value)
+                DataProvider.DatabaseApi.GetParameter("@SiteId", siteId),
+                DataProvider.DatabaseApi.GetParameter("@TemplateType", type.Value)
             };
             var sqlString = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId AND TemplateType = @TemplateType ORDER BY RelatedFileName";
-            return DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlString, parameters);
+            return DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlString, parameters);
         }
 
         public IDataReader GetDataSource(int siteId, string searchText, string templateTypeString)
@@ -261,10 +263,10 @@ namespace SiteServer.CMS.Database.Repositories
             {
                 IDataParameter[] parameters =
                 {
-                    DatabaseApi.Instance.GetParameter("@SiteId", siteId)
+                    DataProvider.DatabaseApi.GetParameter("@SiteId", siteId)
                 };
                 string SqlSelectAllTemplateBySiteId = "SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = @SiteId ORDER BY TemplateType, RelatedFileName";
-                var enumerable = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, SqlSelectAllTemplateBySiteId, parameters);
+                var enumerable = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, SqlSelectAllTemplateBySiteId, parameters);
                 return enumerable;
             }
             if (!string.IsNullOrEmpty(searchText))
@@ -277,7 +279,7 @@ namespace SiteServer.CMS.Database.Repositories
                 var sqlString =
                     $"SELECT Id, SiteId, TemplateName, TemplateType, RelatedFileName, CreatedFileFullName, CreatedFileExtName, Charset, IsDefault FROM siteserver_Template WHERE SiteId = {siteId} {whereString} ORDER BY TemplateType, RelatedFileName";
 
-                var enumerable = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlString);
+                var enumerable = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlString);
                 return enumerable;
             }
 
@@ -306,7 +308,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, type.Value)
                 .OrderBy(Attr.RelatedFileName));
@@ -331,7 +333,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, TemplateType.FileTemplate.Value)
                 .OrderBy(Attr.RelatedFileName));
@@ -358,7 +360,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .OrderBy(Attr.TemplateType, Attr.RelatedFileName));
         }
@@ -384,7 +386,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.TemplateName)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value));
@@ -411,7 +413,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.RelatedFileName)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value));
@@ -483,7 +485,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var templateInfoList = GetObjectList(Q
+            var templateInfoList = GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .OrderBy(Attr.TemplateType, Attr.RelatedFileName));
 

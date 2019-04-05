@@ -25,6 +25,9 @@
     <Compile Remove="DataEventArgs.cs" />
     <Compile Remove="DataType.cs" />
     <Compile Remove="FileEventArgs.cs" />
+    <Compile Remove="IDatabaseApi.cs" />
+    <Compile Remove="InputStyle.cs" />
+    <Compile Remove="TableColumn.cs" />
   </ItemGroup>
 
   <ItemGroup>

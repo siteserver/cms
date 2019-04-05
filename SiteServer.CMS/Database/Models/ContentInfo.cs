@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Database.Models
 {
-    public class ContentInfo : DynamicEntity, IContentInfo
+    public class ContentInfo : Entity, IContentInfo
     {
         public ContentInfo() { }
 

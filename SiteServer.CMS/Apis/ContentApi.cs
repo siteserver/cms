@@ -8,8 +8,6 @@ using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.Plugin;
-using SiteServer.Utils;
-using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Apis
 {
@@ -77,14 +75,7 @@ namespace SiteServer.CMS.Apis
                 new TableColumn
                 {
                     AttributeName = ContentAttribute.Title,
-                    DataType = DataType.VarChar,
-                    InputStyle = new InputStyle
-                    {
-                        InputType = InputType.Text,
-                        DisplayName = "标题",
-                        IsRequired = true,
-                        ValidateType = ValidateType.None
-                    }
+                    DataType = DataType.VarChar
                 }
             };
 
@@ -93,71 +84,34 @@ namespace SiteServer.CMS.Apis
                 tableColumnList.Add(new TableColumn
                 {
                     AttributeName = styleInfo.AttributeName,
-                    DataType = DataType.VarChar,
-                    InputStyle = new InputStyle
-                    {
-                        InputType = styleInfo.Type,
-                        DisplayName = styleInfo.DisplayName,
-                        DefaultValue = styleInfo.DefaultValue,
-                        IsRequired = styleInfo.Required,
-                        ValidateType = ValidateTypeUtils.GetEnumType(styleInfo.ValidateType),
-                        MinNum = styleInfo.MinNum,
-                        MaxNum = styleInfo.MaxNum,
-                        RegExp = styleInfo.RegExp,
-                        Width = styleInfo.Width,
-                    }
+                    DataType = DataType.VarChar
                 });
             }
 
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsTop,
-                DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "置顶"
-                }
+                DataType = DataType.VarChar
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsRecommend,
-                DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "推荐"
-                }
+                DataType = DataType.VarChar
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsHot,
-                DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "热点"
-                }
+                DataType = DataType.VarChar
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsColor,
-                DataType = DataType.VarChar,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "醒目"
-                }
+                DataType = DataType.VarChar
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.AddDate,
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "添加时间"
-                }
+                DataType = DataType.DateTime
             });
 
             return tableColumnList;

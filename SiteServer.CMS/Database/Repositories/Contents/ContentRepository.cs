@@ -20,8 +20,20 @@ using Attr = SiteServer.CMS.Database.Attributes.ContentAttribute;
 
 namespace SiteServer.CMS.Database.Repositories.Contents
 {
-    public class ContentRepository : DataProviderBase
+    public class ContentRepository
     {
+        protected virtual string ConnectionString => WebConfigUtils.ConnectionString;
+
+        protected IDbConnection GetConnection()
+        {
+            return DatoryUtils.GetConnection(WebConfigUtils.DatabaseType, ConnectionString);
+        }
+
+        protected IDataParameter GetParameter(string name, object value)
+        {
+            return DataProvider.DatabaseApi.GetParameter(name, value);
+        }
+
         private const int TaxisIsTopStartValue = 2000000000;
 
         private static readonly List<string> MinListColumns = new List<string>
@@ -43,50 +55,50 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             return $"siteserver_Content_{siteId}";
         }
 
-        public override List<DatoryColumn> TableColumns => ReflectionUtils.GetTableColumns(typeof(ContentInfo));
+        public List<TableColumn> TableColumns => DatoryUtils.GetTableColumns<ContentInfo>();
 
-        public List<DatoryColumn> TableColumnsDefault
+        public List<TableColumn> TableColumnsDefault
         {
             get
             {
-                var tableColumns = new List<DatoryColumn>();
+                var tableColumns = new List<TableColumn>();
                 tableColumns.AddRange(TableColumns);
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.SubTitle,
                     DataType = DataType.VarChar
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.ImageUrl,
                     DataType = DataType.VarChar
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.VideoUrl,
                     DataType = DataType.VarChar
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.FileUrl,
                     DataType = DataType.VarChar
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.Content,
                     DataType = DataType.Text
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.Summary,
                     DataType = DataType.Text
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.Author,
                     DataType = DataType.VarChar
                 });
-                tableColumns.Add(new DatoryColumn
+                tableColumns.Add(new TableColumn
                 {
                     AttributeName = Attr.Source,
                     DataType = DataType.VarChar
@@ -99,16 +111,16 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         public int GetContentId(string tableName, int channelId, string orderByString)
         {
             var contentId = 0;
-            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, new List<string>
+            var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, new List<string>
             {
                 Attr.Id
             }, $"WHERE (ChannelId = {channelId})", orderByString, 1);
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 if (rdr.Read())
                 {
-                    contentId = DatabaseApi.GetInt(rdr, 0);
+                    contentId = DataProvider.DatabaseApi.GetInt(rdr, 0);
                 }
                 rdr.Close();
             }
@@ -118,8 +130,8 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
         {
             var inStr = SqlUtils.GetInStr(name, startString);
-            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString,  tableName, new List<string> { name }, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, 0, totalNum, true);
-            return DatabaseApi.GetStringList(sqlString);
+            var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString,  tableName, new List<string> { name }, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, 0, totalNum, true);
+            return DataProvider.DatabaseApi.GetStringList(sqlString);
         }
 
         public int GetChannelId(string tableName, int contentId)
@@ -127,11 +139,11 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             var channelId = 0;
             var sqlString = $"SELECT {Attr.ChannelId} FROM {tableName} WHERE (Id = {contentId})";
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 if (rdr.Read())
                 {
-                    channelId = DatabaseApi.GetInt(rdr, 0);
+                    channelId = DataProvider.DatabaseApi.GetInt(rdr, 0);
                 }
                 rdr.Close();
             }
@@ -145,11 +157,11 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             var sqlString =
                 $"SELECT DISTINCT ChannelId FROM {tableName} WHERE (SiteId = {siteId}) AND (IsChecked = '{true}') AND (LastEditDate BETWEEN {SqlUtils.GetComparableDateTime(DateTime.Now.AddHours(-hour))} AND {SqlUtils.GetComparableNow()})";
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var channelId = DatabaseApi.GetInt(rdr, 0);
+                    var channelId = DataProvider.DatabaseApi.GetInt(rdr, 0);
                     list.Add(channelId);
                 }
                 rdr.Close();
@@ -157,146 +169,146 @@ namespace SiteServer.CMS.Database.Repositories.Contents
             return list;
         }
 
-        //public override List<DatoryColumn> DatoryColumns => new List<DatoryColumn>
+        //public override List<TableColumn> TableColumns => new List<TableColumn>
         //{
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.Id),
         //        DataType = DataType.Integer,
         //        IsIdentity = true,
         //        IsPrimaryKey = true
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.ChannelId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.SiteId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.AddUserName),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.LastEditUserName),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.LastEditDate),
         //        DataType = DataType.DateTime
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.AdminId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.UserId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.Taxis),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.GroupNameCollection),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.Tags),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.SourceId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.ReferenceId),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.IsChecked),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.CheckedLevel),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.Hits),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.HitsByDay),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.HitsByWeek),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.HitsByMonth),
         //        DataType = DataType.Integer
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.LastHitsDate),
         //        DataType = DataType.DateTime
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.SettingsXml),
         //        DataType = DataType.Text
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.Title),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.IsTop),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.IsRecommend),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.IsHot),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.IsColor),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.LinkUrl),
         //        DataType = DataType.VarChar
         //    },
-        //    new DatoryColumn
+        //    new TableColumn
         //    {
         //        AttributeName = Attr.AddDate),
         //        DataType = DataType.DateTime
@@ -932,7 +944,7 @@ namespace SiteServer.CMS.Database.Repositories.Contents
         {
             var sqlString = GetSqlStringOfAdminExcludeRecycle(tableName, siteId, begin, end);
 
-            return DatabaseApi.ExecuteDataset(ConnectionString, sqlString);
+            return DataProvider.DatabaseApi.ExecuteDataset(ConnectionString, sqlString);
         }
 
         public int Insert(string tableName, SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
@@ -1110,7 +1122,7 @@ INSERT INTO {tableName} (
             };
             parameters.AddRange(paras);
 
-            contentInfo.Id = DatabaseApi.ExecuteNonQueryAndReturnId(tableName, Attr.Id, ConnectionString, sqlString, parameters.ToArray());
+            contentInfo.Id = DataProvider.DatabaseApi.ExecuteNonQueryAndReturnId(tableName, Attr.Id, ConnectionString, sqlString, parameters.ToArray());
 
             ContentManager.InsertCache(siteInfo, channelInfo, contentInfo);
 
@@ -1258,7 +1270,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             parameters.AddRange(paras);
             parameters.Add(GetParameter(Attr.Id, contentInfo.Id));
 
-            DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters.ToArray());
+            DataProvider.DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters.ToArray());
 
             ContentManager.UpdateCache(siteInfo, channelInfo, contentInfo);
         }
@@ -1300,7 +1312,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
                     : $"SELECT COUNT(Id) AS Num FROM {tableName} WHERE SiteId = {siteId} AND ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND (LastEditDate BETWEEN {SqlUtils.GetComparableDate(begin)} AND {SqlUtils.GetComparableDate(end.AddDays(1))}) AND (LastEditDate <> AddDate) AND (AddUserName = '{userName}')";
             }
 
-            return DatabaseApi.GetIntResult(sqlString);
+            return DataProvider.DatabaseApi.GetIntResult(sqlString);
         }
 
         public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
@@ -1320,7 +1332,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
 
             var sqlString = $"SELECT COUNT(*) FROM {tableName} {whereString}";
 
-            return DatabaseApi.GetIntResult(sqlString);
+            return DataProvider.DatabaseApi.GetIntResult(sqlString);
         }
 
         public List<ContentCountInfo> GetContentCountInfoList(string tableName)
@@ -1474,8 +1486,8 @@ WHERE {Attr.Id} = @{Attr.Id}";
             DataSet dataSet = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = DatabaseApi.GetSelectSqlString(tableName, totalNum, MinListColumns, whereString, orderByString);
-                dataSet = DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
+                var sqlSelect = DataProvider.DatabaseApi.GetSelectSqlString(tableName, totalNum, MinListColumns, whereString, orderByString);
+                dataSet = DataProvider.DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
             }
             return dataSet;
         }
@@ -1485,8 +1497,8 @@ WHERE {Attr.Id} = @{Attr.Id}";
             DataSet dataSet = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderByString, startNum - 1, totalNum);
-                dataSet = DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
+                var sqlSelect = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderByString, startNum - 1, totalNum);
+                dataSet = DataProvider.DatabaseApi.ExecuteDataset(ConnectionString, sqlSelect);
             }
             return dataSet;
         }
@@ -1512,7 +1524,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
                 sqlString += $" AND {Attr.IsChecked} = '{ETriStateUtils.GetValue(checkedState)}'";
             }
 
-            return DatabaseApi.GetIntResult(sqlString);
+            return DataProvider.DatabaseApi.GetIntResult(sqlString);
         }
 
         private List<int> GetContentIdListChecked(string tableName, int channelId, int totalNum, string orderByFormatString, string whereString)
@@ -1537,7 +1549,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
 
             if (totalNum > 0)
             {
-                sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, new List<string>
+                sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, new List<string>
                     {
                         Attr.Id
                     },
@@ -1553,11 +1565,11 @@ WHERE {Attr.Id} = @{Attr.Id}";
                     : $"SELECT Id FROM {tableName} WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString}) {orderString}";
             }
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var contentId = DatabaseApi.GetInt(rdr, 0);
+                    var contentId = DataProvider.DatabaseApi.GetInt(rdr, 0);
                     list.Add(contentId);
                 }
                 rdr.Close();
@@ -1631,10 +1643,10 @@ WHERE {Attr.Id} = @{Attr.Id}";
                 }
             }
 
-            totalCount = DatabaseApi.GetPageTotalCount(tableName, whereString, dbArgs);
+            totalCount = DataProvider.DatabaseApi.GetPageTotalCount(tableName, whereString, dbArgs);
             if (totalCount > 0 && parameters.Skip < totalCount)
             {
-                var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
+                var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
 
                 using (var connection = GetConnection())
                 {
@@ -1687,10 +1699,10 @@ WHERE {Attr.Id} = @{Attr.Id}";
                 }
             }
 
-            totalCount = DatabaseApi.GetPageTotalCount(tableName, whereString, dbArgs);
+            totalCount = DataProvider.DatabaseApi.GetPageTotalCount(tableName, whereString, dbArgs);
             if (totalCount > 0 && skip < totalCount)
             {
-                var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, skip, top);
+                var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, skip, top);
 
                 using (var connection = GetConnection())
                 {
@@ -1711,7 +1723,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             whereString.Append($"AND IsChecked = '{true}' AND SiteId = {siteId} AND Hits > 0");
             whereString.Append(orderByString);
 
-            return DatabaseApi.GetSelectSqlString(tableName, whereString.ToString());
+            return DataProvider.DatabaseApi.GetSelectSqlString(tableName, whereString.ToString());
         }
 
         public string GetSqlStringOfAdminExcludeRecycle(string tableName, int siteId, DateTime begin, DateTime end)
@@ -1997,7 +2009,7 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(tableName))
             {
                 //return DatabaseApi.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, sqlWhereString, orderByString);
-                return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+                return DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }
@@ -2010,7 +2022,7 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(tableName))
             {
                 //return DatabaseApi.GetSelectSqlString(tableName, startNum, totalNum, TranslateUtils.ObjectCollectionToString(Attr.AllAttributes.Value), sqlWhereString, orderByString);
-                return DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, Attr.AllAttributes.Value, sqlWhereString, orderByString, startNum - 1, totalNum);
+                return DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, Attr.AllAttributes.Value, sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }
@@ -2299,7 +2311,7 @@ group by tmp.userName";
 
             whereString.Append(" ").Append(orderByString);
 
-            return DatabaseApi.GetSelectSqlString(tableName, whereString.ToString());
+            return DataProvider.DatabaseApi.GetSelectSqlString(tableName, whereString.ToString());
         }
 
         public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, int? onlyAdminId, PermissionsImpl adminPermissions, List<string> allAttributeNameList)
@@ -2471,9 +2483,9 @@ group by tmp.userName";
         {
             var list = new List<ContentInfo>();
 
-            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, null, whereString, orderString, offset, limit);
+            var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, null, whereString, orderString, offset, limit);
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
@@ -2496,13 +2508,13 @@ group by tmp.userName";
         {
             var list = new List<int>();
 
-            var sqlString = DatorySql.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, offset, limit);
+            var sqlString = DataProvider.DatabaseApi.GetSqlString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, MinListColumns, whereString, orderString, offset, limit);
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlString))
             {
                 while (rdr.Read())
                 {
-                    var contentId = DatabaseApi.GetInt(rdr, 0);
+                    var contentId = DataProvider.DatabaseApi.GetInt(rdr, 0);
 
                     list.Add(contentId);
                 }
@@ -2519,9 +2531,9 @@ group by tmp.userName";
             ContentInfo contentInfo = null;
 
             var sqlWhere = $"WHERE {Attr.ChannelId} = {channelId} AND {Attr.Id} = {contentId}";
-            var sqlSelect = DatabaseApi.GetSelectSqlString(tableName, sqlWhere);
+            var sqlSelect = DataProvider.DatabaseApi.GetSelectSqlString(tableName, sqlWhere);
 
-            using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlSelect))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(ConnectionString, sqlSelect))
             {
                 if (rdr.Read())
                 {

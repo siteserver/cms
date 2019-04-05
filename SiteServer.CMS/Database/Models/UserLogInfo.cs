@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_UserLog")]
-    public class UserLogInfo : DynamicEntity, ILogInfo
+    public class UserLogInfo : Entity, ILogInfo
     {
         [TableColumn]
         public string UserName { get; set; }

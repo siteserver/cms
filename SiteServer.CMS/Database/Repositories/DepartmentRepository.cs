@@ -7,10 +7,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class DepartmentRepository : GenericRepository<DepartmentInfo>
+    public class DepartmentRepository : Repository<DepartmentInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public DepartmentRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string CountOfAdmin = nameof(DepartmentInfo.CountOfAdmin);
         }
 
-        private void Insert(DepartmentInfo parentInfo, DepartmentInfo departmentInfo)
+        private int Insert(DepartmentInfo parentInfo, DepartmentInfo departmentInfo)
         {
             if (parentInfo != null)
             {
@@ -52,7 +53,8 @@ namespace SiteServer.CMS.Database.Repositories
             //    $"UPDATE siteserver_Department SET Taxis = {SqlDifferences.ColumnIncrement("Taxis")} WHERE (Taxis >= {departmentInfo.Taxis})";
             //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
 
-            IncrementAll(Attr.Taxis, Q
+            Increment(Q
+                .Select(Attr.Taxis)
                 .Where(Attr.Taxis, ">=", departmentInfo.Taxis));
 
             //var sqlInsert = "INSERT INTO siteserver_Department (DepartmentName, Code, ParentID, ParentsPath, ParentsCount, ChildrenCount, IsLastNode, Taxis, AddDate, Summary, CountOfAdmin) VALUES (@DepartmentName, @Code, @ParentID, @ParentsPath, @ParentsCount, @ChildrenCount, @IsLastNode, @Taxis, @AddDate, @Summary, @CountOfAdmin)";
@@ -74,7 +76,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //departmentInfo.Id = DatabaseApi.Instance.ExecuteNonQueryAndReturnId(TableName, nameof(DepartmentInfo.Id), trans, sqlInsert, parameters);
 
-            departmentInfo.Id = InsertObject(departmentInfo);
+            departmentInfo.Id = base.Insert(departmentInfo);
 
             if (!string.IsNullOrEmpty(departmentInfo.ParentsPath))
             {
@@ -82,7 +84,8 @@ namespace SiteServer.CMS.Database.Repositories
 
                 //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
 
-                IncrementAll(Attr.ChildrenCount, Q
+                Increment(Q
+                    .Select(Attr.ChildrenCount)
                     .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(departmentInfo.ParentsPath)));
             }
 
@@ -90,7 +93,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, departmentInfo.ParentId)
             );
@@ -103,20 +106,22 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
 
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, departmentInfo.ParentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(Attr.Id, topId)
                 );
             }
 
             DepartmentManager.ClearCache();
+
+            return departmentInfo.Id;
         }
 
         private void UpdateSubtractChildrenCount(string parentsPath, int subtractNum)
@@ -126,7 +131,8 @@ namespace SiteServer.CMS.Database.Repositories
                 //var sqlString = string.Concat("UPDATE siteserver_Department SET ChildrenCount = ChildrenCount - ", subtractNum, " WHERE Id IN (", AttackUtils.FilterSql(parentsPath), ")");
                 //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
 
-                DecrementAll(Attr.ChildrenCount, Q
+                Decrement(Q
+                    .Select(Attr.ChildrenCount)
                     .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)), subtractNum);
 
                 DepartmentManager.ClearCache();
@@ -174,7 +180,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var result = GetValue<(int Id, int ChildrenCount, string ParentsPath)?>(Q
+            var result = Get<(int Id, int ChildrenCount, string ParentsPath)?>(Q
                 .Select(
                     Attr.Id,
                     Attr.ChildrenCount,
@@ -239,7 +245,7 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
 
-            var dataInfo = GetObject(Q
+            var dataInfo = Get(Q
                 .Select(Attr.Id, Attr.ChildrenCount, Attr.ParentsPath)
                 .Where(Attr.ParentId, departmentInfo.ParentId)
                 .WhereNot(Attr.Id, departmentInfo.Id)
@@ -269,7 +275,8 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
 
-            IncrementAll(Attr.Taxis, Q
+            Increment(Q
+                .Select(Attr.Taxis)
                 .Where(Attr.Id, id)
                 .OrWhere(Attr.ParentsPath, parentsPath)
                 .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), addNum);
@@ -285,7 +292,8 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DecrementAll(Attr.Taxis, Q
+            Decrement(Q
+                .Select(Attr.Taxis)
                 .Where(Attr.Id, id)
                 .OrWhere(Attr.ParentsPath, parentsPath)
                 .OrWhereStarts(Attr.ParentsPath, $"{parentsPath},"), subtractNum);
@@ -307,7 +315,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.IsLastNode, false.ToString())
                 .Where(Attr.ParentId, parentId)
             );
@@ -317,14 +325,14 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
 
-            var topId = GetValue<int>(Q
+            var topId = Get<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(Attr.Id, topId)
                 );
@@ -347,21 +355,25 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return maxTaxis;
 
-            return Max(Attr.Taxis, Q
-                .Where(Attr.ParentsPath, parentPath)
-                .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")) ?? 0;
+            return Max(Q
+                       .Select(Attr.Taxis)
+                       .Where(Attr.ParentsPath, parentPath)
+                       .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")
+                   ) ?? 0;
         }
 
-        public void Insert(DepartmentInfo departmentInfo)
+        public override int Insert(DepartmentInfo departmentInfo)
         {
             var parentDepartmentInfo = GetDepartmentInfo(departmentInfo.ParentId);
 
-            Insert(parentDepartmentInfo, departmentInfo);
+            departmentInfo.Id = Insert(parentDepartmentInfo, departmentInfo);
 
             DepartmentManager.ClearCache();
+
+            return departmentInfo.Id;
         }
 
-        public void Update(DepartmentInfo departmentInfo)
+        public override bool Update(DepartmentInfo departmentInfo)
         {
             //IDataParameter[] parameters =
             //{
@@ -379,9 +391,13 @@ namespace SiteServer.CMS.Database.Repositories
             //string SqlUpdate = "UPDATE siteserver_Department SET DepartmentName = @DepartmentName, Code = @Code, ParentsPath = @ParentsPath, ParentsCount = @ParentsCount, ChildrenCount = @ChildrenCount, IsLastNode = @IsLastNode, Summary = @Summary, CountOfAdmin = @CountOfAdmin WHERE Id = @Id";
             //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, SqlUpdate, parameters);
 
-            UpdateObject(departmentInfo);
+            var updated= base.Update(departmentInfo);
+            if (updated)
+            {
+                DepartmentManager.ClearCache();
+            }
 
-            DepartmentManager.ClearCache();
+            return updated;
         }
 
         public void UpdateTaxis(int selectedId, bool isSubtract)
@@ -405,7 +421,7 @@ namespace SiteServer.CMS.Database.Repositories
                 //string sqlString = $"UPDATE {TableName} SET CountOfAdmin = {count} WHERE Id = {departmentId}";
                 //DatabaseApi.Instance.ExecuteNonQuery(ConnectionString, sqlString);
                 
-                UpdateAll(Q
+                Update(Q
                     .Set(Attr.CountOfAdmin, count)
                     .Where(Attr.Id, departmentId)
                 );
@@ -413,41 +429,43 @@ namespace SiteServer.CMS.Database.Repositories
             DepartmentManager.ClearCache();
         }
 
-        public void Delete(int id)
+        public override bool Delete(int id)
         {
             var departmentInfo = GetDepartmentInfo(id);
-            if (departmentInfo != null)
+            if (departmentInfo == null) return false;
+
+            IList<int> idList = new List<int>();
+            if (departmentInfo.ChildrenCount > 0)
             {
-                IList<int> idList = new List<int>();
-                if (departmentInfo.ChildrenCount > 0)
-                {
-                    idList = GetIdListForDescendant(id);
-                }
-                idList.Add(id);
+                idList = GetIdListForDescendant(id);
+            }
+            idList.Add(id);
 
-                //string sqlString =
-                //    $"DELETE FROM siteserver_Department WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+            //string sqlString =
+            //    $"DELETE FROM siteserver_Department WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
 
-                //deletedNum = DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
+            //deletedNum = DatabaseApi.Instance.ExecuteNonQuery(trans, sqlString);
 
-                var deletedNum = DeleteAll(Q
-                    .WhereIn(Attr.Id, idList));
+            var deletedNum = Delete(Q
+                .WhereIn(Attr.Id, idList));
 
-                if (deletedNum > 0)
-                {
-                    //string sqlStringTaxis =
-                    //    $"UPDATE siteserver_Department SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {departmentInfo.Taxis})";
-                    //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlStringTaxis);
+            if (deletedNum > 0)
+            {
+                //string sqlStringTaxis =
+                //    $"UPDATE siteserver_Department SET Taxis = Taxis - {deletedNum} WHERE (Taxis > {departmentInfo.Taxis})";
+                //DatabaseApi.Instance.ExecuteNonQuery(trans, sqlStringTaxis);
 
-                    DecrementAll(Attr.Taxis, Q
-                        .Where(Attr.Taxis, ">", departmentInfo.Taxis), deletedNum);
-                }
-
-                UpdateIsLastNode(departmentInfo.ParentId);
-                UpdateSubtractChildrenCount(departmentInfo.ParentsPath, deletedNum);
+                Decrement(Q
+                    .Select(Attr.Taxis)
+                    .Where(Attr.Taxis, ">", departmentInfo.Taxis), deletedNum);
             }
 
+            UpdateIsLastNode(departmentInfo.ParentId);
+            UpdateSubtractChildrenCount(departmentInfo.ParentsPath, deletedNum);
+
             DepartmentManager.ClearCache();
+
+            return true;
         }
 
         private DepartmentInfo GetDepartmentInfo(int id)
@@ -471,7 +489,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return departmentInfo;
 
-            return GetObjectById(id);
+            return Get(id);
         }
 
         private IList<DepartmentInfo> GetDepartmentInfoList()
@@ -491,7 +509,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return list;
 
-            return GetObjectList(Q
+            return GetAll(Q
                 .OrderBy(Attr.Taxis));
         }
 
@@ -513,7 +531,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
                 .OrderBy(Attr.Taxis));
@@ -542,7 +560,7 @@ namespace SiteServer.CMS.Database.Repositories
 
 //            return list;
 
-            return GetValueList<int>(Q
+            return GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, id)
                 .OrWhereStarts(Attr.ParentsPath, $"{id},")

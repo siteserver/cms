@@ -73,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DatabaseApi.Instance.GetCount(tableName)
+                    Count = DataProvider.DatabaseApi.GetCount(tableName)
                 });
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DatabaseApi.Instance.GetCount(tableName)
+                    Count = DataProvider.DatabaseApi.GetCount(tableName)
                 });
             }
             catch (Exception ex)

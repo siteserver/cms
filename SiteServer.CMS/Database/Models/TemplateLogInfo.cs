@@ -4,7 +4,7 @@ using Datory;
 namespace SiteServer.CMS.Database.Models
 {
     [Table("siteserver_TemplateLog")]
-    public class TemplateLogInfo : DynamicEntity
+    public class TemplateLogInfo : Entity
     {
         [TableColumn]
         public int TemplateId { get; set; }

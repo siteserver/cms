@@ -11,10 +11,11 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class LogRepository : GenericRepository<LogInfo>
+    public class LogRepository : Repository<LogInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public LogRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Database.Repositories
             public const string Action = nameof(LogInfo.Action);
         }
 
-        public void Insert(LogInfo log)
+        public override int Insert(LogInfo log)
         {
             //const string sqlString = "INSERT INTO siteserver_Log(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
 
@@ -38,7 +39,8 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(log);
+            log.Id = base.Insert(log);
+            return log.Id;
         }
 
         public void Delete(List<int> idList)
@@ -50,7 +52,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            DeleteAll(Q
+            Delete(Q
                 .WhereIn(Attr.Id, idList));
         }
 
@@ -63,7 +65,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_Log WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
@@ -73,7 +75,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
 
-            base.DeleteAll();
+            base.Delete();
         }
 
         public int GetCount()
@@ -172,7 +174,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return retVal;
 
-            var addDate = GetValue<DateTime?>(Q
+            var addDate = Get<DateTime?>(Q
                 .Select(Attr.AddDate)
                 .Where(Attr.Action, "清空数据库日志")
                 .OrderByDesc(Attr.Id));
@@ -233,30 +235,30 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var rdr = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelectTrackingDay))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelectTrackingDay))
             {
                 while (rdr.Read())
                 {
-                    var accessNum = DatabaseApi.Instance.GetInt(rdr, 0);
+                    var accessNum = DataProvider.DatabaseApi.GetInt(rdr, 0);
                     if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Day))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
-                        var month = DatabaseApi.Instance.GetString(rdr, 2);
-                        var day = DatabaseApi.Instance.GetString(rdr, 3);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
+                        var month = DataProvider.DatabaseApi.GetString(rdr, 2);
+                        var day = DataProvider.DatabaseApi.GetString(rdr, 3);
                         var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-{day}");
                         dict.Add(dateTime, accessNum);
                     }
                     else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Month))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
-                        var month = DatabaseApi.Instance.GetString(rdr, 2);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
+                        var month = DataProvider.DatabaseApi.GetString(rdr, 2);
 
                         var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-1");
                         dict.Add(dateTime, accessNum);
                     }
                     else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Year))
                     {
-                        var year = DatabaseApi.Instance.GetString(rdr, 1);
+                        var year = DataProvider.DatabaseApi.GetString(rdr, 1);
                         var dateTime = TranslateUtils.ToDateTime($"{year}-1-1");
                         dict.Add(dateTime, accessNum);
                     }
@@ -291,12 +293,12 @@ SELECT COUNT(*) AS AddNum, UserName FROM (
 ) DERIVEDTBL GROUP BY UserName ORDER BY AddNum DESC";//添加日统计
 
 
-            using (var rdr = DatabaseApi.Instance.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelectTrackingDay))
+            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlSelectTrackingDay))
             {
                 while (rdr.Read())
                 {
-                    var accessNum = DatabaseApi.Instance.GetInt(rdr, 0);
-                    var userName = DatabaseApi.Instance.GetString(rdr, 1);
+                    var accessNum = DataProvider.DatabaseApi.GetInt(rdr, 0);
+                    var userName = DataProvider.DatabaseApi.GetString(rdr, 1);
                     dict.Add(userName, accessNum);
                 }
                 rdr.Close();

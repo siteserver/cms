@@ -134,21 +134,21 @@ namespace SiteServer.Plugin
         string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString,
             int offset, int limit);
 
-        /// <summary>
-        /// 获取当前数据库类型的加操作符SQL语句。
-        /// </summary>
-        /// <param name="columnName">需要增加的字段的名称。</param>
-        /// <param name="plusNum">需要增加的值。</param>
-        /// <returns>当前数据库类型的加操作符SQL语句。</returns>
-        string ToPlusSqlString(string columnName, int plusNum);
+        ///// <summary>
+        ///// 获取当前数据库类型的加操作符SQL语句。
+        ///// </summary>
+        ///// <param name="columnName">需要增加的字段的名称。</param>
+        ///// <param name="plusNum">需要增加的值。</param>
+        ///// <returns>当前数据库类型的加操作符SQL语句。</returns>
+        //string ToPlusSqlString(string columnName, int plusNum);
 
-        /// <summary>
-        /// 获取当前数据库类型的减操作符SQL语句。
-        /// </summary>
-        /// <param name="columnName">需要减少的字段的名称。</param>
-        /// <param name="minusNum">需要减少的值。</param>
-        /// <returns>当前数据库类型的减操作符SQL语句。</returns>
-        string ToMinusSqlString(string columnName, int minusNum);
+        ///// <summary>
+        ///// 获取当前数据库类型的减操作符SQL语句。
+        ///// </summary>
+        ///// <param name="columnName">需要减少的字段的名称。</param>
+        ///// <param name="minusNum">需要减少的值。</param>
+        ///// <returns>当前数据库类型的减操作符SQL语句。</returns>
+        //string ToMinusSqlString(string columnName, int minusNum);
 
         /// <summary>
         /// 获取当前数据库类型代表当前时间的SQL语句。

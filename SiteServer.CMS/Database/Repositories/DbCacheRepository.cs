@@ -5,10 +5,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class DbCacheRepository : GenericRepository<DbCacheInfo>
+    public class DbCacheRepository : Repository<DbCacheInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public DbCacheRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -23,10 +24,10 @@ namespace SiteServer.CMS.Database.Repositories
 
             DeleteExcess90Days();
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.CacheKey, cacheKey));
 
-            InsertObject(new DbCacheInfo
+            Insert(new DbCacheInfo
             {
                 CacheKey = cacheKey,
                 CacheValue = cacheValue,
@@ -69,7 +70,7 @@ namespace SiteServer.CMS.Database.Repositories
 
         public void Clear()
         {
-            DeleteAll();
+            Delete();
             //DatabaseApi.ExecuteNonQuery(ConnectionString, SqlDeleteAll);
         }
 
@@ -112,18 +113,18 @@ namespace SiteServer.CMS.Database.Repositories
             //    rdr.Close();
             //}
             //return retVal;
-            return base.GetValue<string>(Q
+            return base.Get<string>(Q
                 .Select(Attr.CacheValue)
                 .Where(Attr.CacheKey, cacheKey));
         }
 
         public string GetValueAndRemove(string cacheKey)
         {
-            var retVal = base.GetValue<string>(Q
+            var retVal = base.Get<string>(Q
                 .Select(Attr.CacheValue)
                 .Where(Attr.CacheKey, cacheKey));
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.CacheKey, cacheKey));
 
             return retVal;
@@ -149,7 +150,7 @@ namespace SiteServer.CMS.Database.Repositories
         {
             //DatabaseApi.ExecuteNonQuery(ConnectionString, "DELETE FROM siteserver_DbCache WHERE " + SqlUtils.GetDateDiffGreatThanDays("AddDate", 90.ToString()));
 
-            DeleteAll(Q
+            Delete(Q
                 .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-90)));
         }
     }

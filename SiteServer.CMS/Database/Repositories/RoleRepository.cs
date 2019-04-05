@@ -6,10 +6,11 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Database.Repositories
 {
-    public class RoleRepository : GenericRepository<RoleInfo>
+    public class RoleRepository : Repository<RoleInfo>
     {
-        public override DatabaseType DatabaseType => WebConfigUtils.DatabaseType;
-        public override string ConnectionString => WebConfigUtils.ConnectionString;
+        public RoleRepository() : base(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)
+        {
+        }
 
         private static class Attr
         {
@@ -37,7 +38,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return roleDescription;
 
-            return GetValue<string>(Q
+            return Get<string>(Q
                 .Select(Attr.Description)
                 .Where(Attr.RoleName, roleName));
         }
@@ -58,7 +59,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //return list;
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.RoleName)
                 .OrderBy(Attr.RoleName));
         }
@@ -87,7 +88,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             if (string.IsNullOrEmpty(creatorUserName)) return new List<string>();
 
-            return GetValueList<string>(Q
+            return GetAll<string>(Q
                 .Select(Attr.RoleName)
                 .Where(Attr.CreatorUserName, creatorUserName)
                 .OrderBy(Attr.RoleName));
@@ -108,7 +109,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
-            InsertObject(roleInfo);
+            Insert(roleInfo);
         }
 
         public void UpdateRole(string roleName, string description)
@@ -123,7 +124,7 @@ namespace SiteServer.CMS.Database.Repositories
 
             //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             
-            UpdateAll(Q
+            Update(Q
                 .Set(Attr.Description, description)
                 .Where(Attr.RoleName, roleName)
             );
@@ -151,7 +152,7 @@ namespace SiteServer.CMS.Database.Repositories
             //}
             //return isSuccess;
 
-            DeleteAll(Q.Where(Attr.RoleName, roleName));
+            Delete(Q.Where(Attr.RoleName, roleName));
         }
 
         public bool IsRoleExists(string roleName)
