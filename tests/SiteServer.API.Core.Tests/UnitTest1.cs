@@ -1,7 +1,6 @@
-using System;
 using Xunit;
 
-namespace SiteServer.APICore.Tests
+namespace SiteServer.API.Core.Tests
 {
     public class UnitTest1
     {

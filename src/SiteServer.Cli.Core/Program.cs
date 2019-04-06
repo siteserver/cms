@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiteServer.CliCore
+namespace SiteServer.Cli.Core
 {
     class Program
     {
