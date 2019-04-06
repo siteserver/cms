@@ -34,6 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Dapper.1.60.6\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Datory, Version=0.1.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Datory.0.1.6\lib\net452\Datory.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.5.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Google.Protobuf.3.5.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -55,10 +61,14 @@
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
+    <Reference Include="SiteServer.Plugin, Version=2.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SiteServer.Plugin.2.1.9-beta\lib\net452\SiteServer.Plugin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Concurrent" />
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -659,14 +669,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Datory\Datory.csproj">
-      <Project>{3933fee0-bbbc-4bf8-93e9-ddda97f2fe96}</Project>
-      <Name>Datory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\SiteServer.Plugin\SiteServer.Plugin.csproj">
-      <Project>{7960385c-6aa7-4114-8ffe-7103c61b8188}</Project>
-      <Name>SiteServer.Plugin</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{059e3927-37e1-4f6f-b525-fef40c54906b}</Project>
       <Name>SiteServer.Utils</Name>
