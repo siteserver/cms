@@ -5,6 +5,9 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -18,14 +21,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
-                var contentId = rest.GetQueryInt("contentId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
+                var contentId = Request.GetQueryInt("contentId");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();

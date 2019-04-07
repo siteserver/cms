@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -16,13 +19,13 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
 
-                var logId = rest.GetQueryInt("logId");
+                var logId = Request.GetQueryInt("logId");
                 var logInfo = DataProvider.ErrorLog.GetErrorLogInfo(logId);
                 if (logInfo == null) return NotFound();
                 var retVal = logInfo.ToDictionary();

@@ -242,7 +242,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             public string GetTrHtml()
             {
-                var displayHtml = (_isDisplay) ? StringUtils.Constants.ShowElementStyle : StringUtils.Constants.HideElementStyle;
+                var displayHtml = (_isDisplay) ? Constants.ShowElementStyle : Constants.HideElementStyle;
                 string trElementHtml = $@"
 <tr style='{displayHtml}' treeItemLevel='{_level + 1}'>
 	<td nowrap>

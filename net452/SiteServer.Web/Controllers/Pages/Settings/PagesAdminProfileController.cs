@@ -6,6 +6,8 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,11 +24,11 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
-                var userId = rest.GetQueryInt("userId");
+                var rest = Request.GetAuthenticatedRequest();
+                var userId = Request.GetQueryInt("userId");
                 if (!rest.IsAdminLoggin) return Unauthorized();
                 if (rest.AdminId != userId &&
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -74,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     Value = adminInfo,
                     Departments = departments,
                     Areas = areas,
-                    rest.AdminToken
+                    AdminToken = Request.GetAdminToken()
                 });
             }
             catch (Exception ex)
@@ -128,13 +130,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
-                var userId = rest.GetQueryInt("userId");
+                var rest = Request.GetAuthenticatedRequest();
+                var userId = Request.GetQueryInt("userId");
                 if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
                 if (rest.AdminId != userId &&
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -180,11 +182,11 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
-                var userId = rest.GetQueryInt("userId");
+                var rest = Request.GetAuthenticatedRequest();
+                var userId = Request.GetQueryInt("userId");
                 if (!rest.IsAdminLoggin) return Unauthorized();
                 if (rest.AdminId != userId &&
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -200,14 +202,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     adminInfo = new AdministratorInfo();
                 }
 
-                var userName = rest.GetPostString("userName");
-                var password = rest.GetPostString("password");
-                var displayName = rest.GetPostString("displayName");
-                var avatarUrl = rest.GetPostString("avatarUrl");
-                var mobile = rest.GetPostString("mobile");
-                var email = rest.GetPostString("email");
-                var departmentId = rest.GetPostInt("departmentId");
-                var areaId = rest.GetPostInt("areaId");
+                var userName = Request.GetPostString("userName");
+                var password = Request.GetPostString("password");
+                var displayName = Request.GetPostString("displayName");
+                var avatarUrl = Request.GetPostString("avatarUrl");
+                var mobile = Request.GetPostString("mobile");
+                var email = Request.GetPostString("email");
+                var departmentId = Request.GetPostInt("departmentId");
+                var areaId = Request.GetPostInt("areaId");
 
                 if (adminInfo.Id == 0)
                 {
@@ -242,7 +244,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         return BadRequest(errorMessage);
                     }
-                    rest.AddAdminLog("添加管理员", $"管理员:{adminInfo.UserName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "添加管理员", $"管理员:{adminInfo.UserName}");
                 }
                 else
                 {
@@ -250,7 +252,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         return BadRequest(errorMessage);
                     }
-                    rest.AddAdminLog("修改管理员属性", $"管理员:{adminInfo.UserName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改管理员属性", $"管理员:{adminInfo.UserName}");
                 }
 
                 return Ok(new

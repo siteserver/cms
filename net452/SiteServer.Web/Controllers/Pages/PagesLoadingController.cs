@@ -6,6 +6,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Preview;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
@@ -18,15 +20,15 @@ namespace SiteServer.API.Controllers.Pages
         [HttpGet, Route(Route)]
         public void Redirect()
         {
-            var rest = new Rest(Request);
+            var rest = Request.GetAuthenticatedRequest();
 
-            var redirectUrl = rest.GetQueryString("redirectUrl");
-            var encryptedUrl = rest.GetQueryString("encryptedUrl");
-            var siteId = rest.GetQueryInt("siteId");
-            var channelId = rest.GetQueryInt("channelId");
-            var contentId = rest.GetQueryInt("contentId");
-            var fileTemplateId = rest.GetQueryInt("fileTemplateId");
-            var specialId = rest.GetQueryInt("specialId");
+            var redirectUrl = Request.GetQueryString("redirectUrl");
+            var encryptedUrl = Request.GetQueryString("encryptedUrl");
+            var siteId = Request.GetQueryInt("siteId");
+            var channelId = Request.GetQueryInt("channelId");
+            var contentId = Request.GetQueryInt("contentId");
+            var fileTemplateId = Request.GetQueryInt("fileTemplateId");
+            var specialId = Request.GetQueryInt("specialId");
 
             var url = GetUrl(redirectUrl, encryptedUrl, siteId, channelId, contentId, fileTemplateId,
                 specialId);
@@ -102,15 +104,15 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var redirectUrl = rest.GetPostString("redirectUrl");
-                var encryptedUrl = rest.GetPostString("encryptedUrl");
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentId = rest.GetPostInt("contentId");
-                var fileTemplateId = rest.GetPostInt("fileTemplateId");
-                var specialId = rest.GetPostInt("specialId");
+                var redirectUrl = Request.GetPostString("redirectUrl");
+                var encryptedUrl = Request.GetPostString("encryptedUrl");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentId = Request.GetPostInt("contentId");
+                var fileTemplateId = Request.GetPostInt("fileTemplateId");
+                var specialId = Request.GetPostInt("specialId");
 
                 var url = GetUrl(redirectUrl, encryptedUrl, siteId, channelId, contentId, fileTemplateId,
                     specialId);

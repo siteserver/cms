@@ -565,14 +565,14 @@ namespace SiteServer.CMS.Caches
             return false;
         }
 
-        public static List<KeyValuePair<int, string>> GetChannels(int siteId, PermissionsImpl permissionsImpl, params string[] channelPermissions)
+        public static List<KeyValuePair<int, string>> GetChannels(int siteId, IPermissions permissions, params string[] channelPermissions)
         {
             var options = new List<KeyValuePair<int, string>>();
 
             var list = GetChannelIdList(siteId);
             foreach (var channelId in list)
             {
-                var enabled = permissionsImpl.HasChannelPermissions(siteId, channelId, channelPermissions);
+                var enabled = permissions.HasChannelPermissions(siteId, channelId, channelPermissions);
 
                 var channelInfo = GetChannelInfo(siteId, channelId);
 

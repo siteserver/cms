@@ -115,7 +115,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ItemsPerPage = Constants.PageSize;
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 

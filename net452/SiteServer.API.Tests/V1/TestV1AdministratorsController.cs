@@ -4,6 +4,8 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using SiteServer.API.Controllers.V1;
 using SiteServer.API.Tests.Utils;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using Xunit;
 using Xunit.Abstractions;
@@ -63,7 +65,7 @@ namespace SiteServer.API.Tests.V1
             var controller = new V1AdministratorsController();
             var controllerContext = new HttpControllerContext();
             var request = new HttpRequestMessage();
-            request.Headers.Add(Rest.AuthKeyAdminHeader, accessToken);
+            request.Headers.Add(Constants.AuthKeyAdminHeader, accessToken);
 
             // Don't forget these lines, if you do then the request will be null.
             controllerContext.Request = request;

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Pages.Cloud
 {
@@ -13,8 +16,8 @@ namespace SiteServer.API.Controllers.Pages.Cloud
         {
             try
             {
-                var rest = new Rest(Request);
-                if (!rest.IsAdminLoggin || !rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                var rest = Request.GetAuthenticatedRequest();
+                if (!rest.IsAdminLoggin || !rest.AdminPermissions.IsSuperAdmin())
                 {
                     return Unauthorized();
                 }

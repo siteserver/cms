@@ -6,6 +6,8 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using SqlKata;
@@ -25,22 +27,22 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                const int pageSize = StringUtils.Constants.PageSize;
-                var page = rest.GetQueryInt("page", 1);
+                const int pageSize = Constants.PageSize;
+                var page = Request.GetQueryInt("page", 1);
 
-                var keyword = rest.GetQueryString("keyword");
-                var roleName = rest.GetQueryString("roleName");
-                var order = rest.GetQueryString("order");
-                var departmentId = rest.GetQueryInt("departmentId");
-                var areaId = rest.GetQueryInt("areaId");
+                var keyword = Request.GetQueryString("keyword");
+                var roleName = Request.GetQueryString("roleName");
+                var order = Request.GetQueryString("order");
+                var departmentId = Request.GetQueryInt("departmentId");
+                var areaId = Request.GetQueryInt("areaId");
 
                 var query = new Query();
 
@@ -54,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     );
                 }
 
-                if (!rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (!rest.AdminPermissions.IsSuperAdmin())
                 {
                     query.Where(nameof(AdministratorInfo.CreatorUserName), rest.AdminName);
                 }
@@ -112,7 +114,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     administratorInfoList = DataProvider.Administrator.GetAll(query).ToList();
                 }
 
-                var roles = RoleManager.GetRestRoles(rest.AdminPermissionsImpl.IsConsoleAdministrator, rest.AdminName);
+                var roles = RoleManager.GetRestRoles(rest.AdminPermissions.IsSuperAdmin(), rest.AdminName);
 
                 var departments = DepartmentManager.GetRestDepartments();
                 var areas = AreaManager.GetRestAreas();
@@ -190,15 +192,15 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var adminIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("adminIds"));
+                var adminIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("adminIds"));
                 adminIdList.Remove(rest.AdminId);
 
                 foreach (var adminId in adminIdList)
@@ -206,7 +208,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     var adminInfo = AdminManager.GetAdminInfoByUserId(adminId);
                     DataProvider.Administrator.Delete(adminInfo);
 
-                    rest.AddAdminLog("删除管理员", $"管理员:{adminInfo.UserName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "删除管理员", $"管理员:{adminInfo.UserName}");
                 }
 
                 return Ok(new
@@ -226,19 +228,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var adminIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("adminIds"));
+                var adminIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("adminIds"));
                 adminIdList.Remove(rest.AdminId);
 
                 DataProvider.Administrator.Lock(adminIdList);
-                rest.AddAdminLog("锁定管理员");
+                LogUtils.AddAdminLog(rest.AdminName, "锁定管理员");
 
                 return Ok(new
                 {
@@ -257,19 +259,19 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var adminIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("adminIds"));
+                var adminIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("adminIds"));
                 adminIdList.Remove(rest.AdminId);
 
                 DataProvider.Administrator.UnLock(adminIdList);
-                rest.AddAdminLog("解锁管理员");
+                LogUtils.AddAdminLog(rest.AdminName, "解锁管理员");
 
                 return Ok(new
                 {

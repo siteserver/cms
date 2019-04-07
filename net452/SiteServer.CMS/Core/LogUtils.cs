@@ -103,6 +103,21 @@ stl: {stlContent}
 -->";
         }
 
+        public static void AddSiteLog(int siteId, string adminName, string action)
+        {
+            AddSiteLog(siteId, 0, 0, adminName, action, string.Empty);
+        }
+
+        public static void AddSiteLog(int siteId, string adminName, string action, string summary)
+        {
+            AddSiteLog(siteId, 0, 0, adminName, action, summary);
+        }
+
+        public static void AddSiteLog(int siteId, int channelId, string adminName, string action, string summary)
+        {
+            AddSiteLog(siteId, channelId, 0, adminName, action, summary);
+        }
+
         public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
         {
             if (!ConfigManager.Instance.IsLogSite) return;

@@ -9,6 +9,8 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -23,14 +25,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("contentIds"));
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetQueryString("contentIds"));
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
@@ -56,11 +58,11 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     retVal.Add(dict);
                 }
 
-                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissions, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 var allChannels =
-                    ChannelManager.GetChannels(siteId, rest.AdminPermissionsImpl, ConfigManager.ChannelPermissions.ContentAdd);
+                    ChannelManager.GetChannels(siteId, rest.AdminPermissions, ConfigManager.ChannelPermissions.ContentAdd);
 
                 return Ok(new
                 {
@@ -82,18 +84,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var checkedLevel = rest.GetPostInt("checkedLevel");
-                var isTranslate = rest.GetPostBool("isTranslate");
-                var translateChannelId = rest.GetPostInt("translateChannelId");
-                var reasons = rest.GetPostString("reasons");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var checkedLevel = Request.GetPostInt("checkedLevel");
+                var isTranslate = Request.GetPostBool("isTranslate");
+                var translateChannelId = Request.GetPostInt("translateChannelId");
+                var reasons = Request.GetPostString("reasons");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     return Unauthorized();
@@ -161,7 +163,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     ContentManager.RemoveCache(translateTableName, translateChannelId);
                 }
 
-                rest.AddSiteLog(siteId, "批量审核内容");
+                LogUtils.AddSiteLog(siteId, rest.AdminName, "批量审核内容");
 
                 foreach (var contentInfo in contentInfoList)
                 {

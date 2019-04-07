@@ -3,6 +3,9 @@ using System.Web.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -16,13 +19,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -53,14 +56,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var attributeNames = rest.GetPostString("attributeNames");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var attributeNames = Request.GetPostString("attributeNames");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -76,7 +79,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 DataProvider.Channel.Update(channelInfo);
 
-                rest.AddSiteLog(siteId, "设置内容显示项", $"显示项:{attributeNames}");
+                LogUtils.AddSiteLog(siteId, rest.AdminName, "设置内容显示项", $"显示项:{attributeNames}");
 
                 return Ok(new
                 {

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -16,9 +20,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -43,14 +47,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetQueryInt("id");
+                var id = Request.GetQueryInt("id");
 
                 DataProvider.UserGroup.Delete(id);
 
@@ -70,16 +74,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetPostInt("id");
-                var groupName = rest.GetPostString("groupName");
-                var adminName = rest.GetPostString("adminName");
+                var id = Request.GetPostInt("id");
+                var groupName = Request.GetPostString("groupName");
+                var adminName = Request.GetPostString("adminName");
 
                 if (id == -1)
                 {
@@ -96,7 +100,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.UserGroup.Insert(groupInfo);
 
-                    rest.AddAdminLog("新增用户组", $"用户组:{groupInfo.GroupName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "新增用户组", $"用户组:{groupInfo.GroupName}");
                 }
                 else if (id == 0)
                 {
@@ -106,7 +110,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     UserGroupManager.ClearCache();
 
-                    rest.AddAdminLog("修改用户组", "用户组:默认用户组");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改用户组", "用户组:默认用户组");
                 }
                 else if (id > 0)
                 {
@@ -122,7 +126,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.UserGroup.Update(groupInfo);
 
-                    rest.AddAdminLog("修改用户组", $"用户组:{groupInfo.GroupName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改用户组", $"用户组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

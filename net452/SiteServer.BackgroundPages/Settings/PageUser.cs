@@ -114,7 +114,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                SpContents.ItemsPerPage = AuthRequest.GetQueryInt("PageNum") == 0 ? StringUtils.Constants.PageSize : AuthRequest.GetQueryInt("PageNum");
+                SpContents.ItemsPerPage = AuthRequest.GetQueryInt("PageNum") == 0 ? Constants.PageSize : AuthRequest.GetQueryInt("PageNum");
 
                 SpContents.SelectCommand = DataProvider.User.GetSelectCommand(AuthRequest.GetQueryInt("groupId"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryInt("creationDate"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.GetQueryInt("loginCount"), AuthRequest.GetQueryString("searchType"));
             }

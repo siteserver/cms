@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ItemsPerPage = Constants.PageSize;
 
             SpContents.SelectCommand = !AuthRequest.IsQueryExists("LogType")
                 ? DataProvider.SiteLog.GetSelectCommend()

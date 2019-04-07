@@ -9,7 +9,9 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Enumerations;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
@@ -20,22 +22,22 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var rest = new Rest(Request);
+            var rest = Request.GetAuthenticatedRequest();
 
-            var siteId = rest.GetQueryInt("siteId");
+            var siteId = Request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             try
             {
-                var channelId = rest.GetQueryInt("channelId");
+                var channelId = Request.GetQueryInt("channelId");
                 if (channelId == 0)
                 {
                     channelId = siteId;
                 }
-                var contentId = rest.GetQueryInt("contentId");
-                var fileTemplateId = rest.GetQueryInt("fileTemplateId");
-                var specialId = rest.GetQueryInt("specialId");
-                var isRedirect = TranslateUtils.ToBool(rest.GetQueryString("isRedirect"));
+                var contentId = Request.GetQueryInt("contentId");
+                var fileTemplateId = Request.GetQueryInt("fileTemplateId");
+                var specialId = Request.GetQueryInt("specialId");
+                var isRedirect = TranslateUtils.ToBool(Request.GetQueryString("isRedirect"));
 
                 if (specialId != 0)
                 {
@@ -88,7 +90,7 @@ namespace SiteServer.API.Controllers.Sys
                     if (!string.IsNullOrEmpty(redirectUrl))
                     {
                         var parameters = new NameValueCollection();
-                        var returnUrl = rest.GetQueryString("returnUrl");
+                        var returnUrl = Request.GetQueryString("returnUrl");
                         if (!string.IsNullOrEmpty(returnUrl) && returnUrl.StartsWith("?"))
                         {
                             parameters = TranslateUtils.ToNameValueCollection(returnUrl.Substring(1));

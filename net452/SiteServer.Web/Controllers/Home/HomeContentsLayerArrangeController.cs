@@ -2,6 +2,8 @@
 using System.Web.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
@@ -15,15 +17,15 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var attributeName = rest.GetPostString("attributeName");
-                var isDesc = rest.GetPostBool("isDesc");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var attributeName = Request.GetPostString("attributeName");
+                var isDesc = Request.GetPostBool("isDesc");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -37,7 +39,7 @@ namespace SiteServer.API.Controllers.Home
 
                 channelInfo.ContentRepository.UpdateArrangeTaxis(channelId, attributeName, isDesc);
 
-                rest.AddSiteLog(siteId, "批量整理", string.Empty);
+                LogUtils.AddSiteLog(siteId, rest.AdminName, "批量整理", string.Empty);
 
                 return Ok(new
                 {

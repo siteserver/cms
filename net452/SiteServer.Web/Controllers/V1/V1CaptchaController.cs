@@ -7,6 +7,8 @@ using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
@@ -88,8 +90,8 @@ namespace SiteServer.API.Controllers.V1
         [HttpPost, Route(ApiRouteActionsCheck)]
         public IHttpActionResult Check(string name)
         {
-            var rest = new Rest(Request);
-            var captcha = rest.GetPostString("captcha");
+            var rest = Request.GetAuthenticatedRequest();
+            var captcha = Request.GetPostString("captcha");
 
             try
             {

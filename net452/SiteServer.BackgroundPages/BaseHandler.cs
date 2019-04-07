@@ -1,4 +1,6 @@
 ﻿using System.Web;
+using SiteServer.BackgroundPages.Utils;
+using SiteServer.CMS.Fx;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin.Impl;
 

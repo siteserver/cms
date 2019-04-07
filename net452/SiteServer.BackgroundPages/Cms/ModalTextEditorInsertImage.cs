@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (CbIsSmallImage.Checked)
                     {
-                        var localSmallFileName = StringUtils.Constants.SmallImageAppendix + fileName;
+                        var localSmallFileName = Constants.SmallImageAppendix + fileName;
                         var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
                         var smallImageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localSmallFilePath, true);

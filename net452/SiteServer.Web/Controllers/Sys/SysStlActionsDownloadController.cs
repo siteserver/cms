@@ -7,6 +7,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -20,12 +22,12 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                if (!string.IsNullOrEmpty(rest.GetQueryString("siteId")) && !string.IsNullOrEmpty(rest.GetQueryString("fileUrl")) && string.IsNullOrEmpty(rest.GetQueryString("contentId")))
+                if (!string.IsNullOrEmpty(Request.GetQueryString("siteId")) && !string.IsNullOrEmpty(Request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(Request.GetQueryString("contentId")))
                 {
-                    var siteId = rest.GetQueryInt("siteId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(rest.GetQueryString("fileUrl"));
+                    var siteId = Request.GetQueryInt("siteId");
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(Request.GetQueryString("fileUrl"));
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
@@ -50,9 +52,9 @@ namespace SiteServer.API.Controllers.Sys
                         return;
                     }
                 }
-                else if (!string.IsNullOrEmpty(rest.GetQueryString("filePath")))
+                else if (!string.IsNullOrEmpty(Request.GetQueryString("filePath")))
                 {
-                    var filePath = TranslateUtils.DecryptStringBySecretKey(rest.GetQueryString("filePath"));
+                    var filePath = TranslateUtils.DecryptStringBySecretKey(Request.GetQueryString("filePath"));
                     var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
                     if (EFileSystemTypeUtils.IsDownload(fileType))
                     {
@@ -69,12 +71,12 @@ namespace SiteServer.API.Controllers.Sys
                         return;
                     }
                 }
-                else if (!string.IsNullOrEmpty(rest.GetQueryString("siteId")) && !string.IsNullOrEmpty(rest.GetQueryString("channelId")) && !string.IsNullOrEmpty(rest.GetQueryString("contentId")) && !string.IsNullOrEmpty(rest.GetQueryString("fileUrl")))
+                else if (!string.IsNullOrEmpty(Request.GetQueryString("siteId")) && !string.IsNullOrEmpty(Request.GetQueryString("channelId")) && !string.IsNullOrEmpty(Request.GetQueryString("contentId")) && !string.IsNullOrEmpty(Request.GetQueryString("fileUrl")))
                 {
-                    var siteId = rest.GetQueryInt("siteId");
-                    var channelId = rest.GetQueryInt("channelId");
-                    var contentId = rest.GetQueryInt("contentId");
-                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(rest.GetQueryString("fileUrl"));
+                    var siteId = Request.GetQueryInt("siteId");
+                    var channelId = Request.GetQueryInt("channelId");
+                    var contentId = Request.GetQueryInt("contentId");
+                    var fileUrl = TranslateUtils.DecryptStringBySecretKey(Request.GetQueryString("fileUrl"));
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);

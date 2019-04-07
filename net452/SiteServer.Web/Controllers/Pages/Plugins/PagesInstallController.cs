@@ -5,6 +5,8 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
@@ -22,9 +24,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -47,15 +49,15 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var packageId = rest.GetPostString("packageId");
-                var version = rest.GetPostString("version");
+                var packageId = Request.GetPostString("packageId");
+                var version = Request.GetPostString("version");
 
                 if (!StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSiteServerPlugin))
                 {
@@ -82,16 +84,16 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var packageId = rest.GetPostString("packageId");
-                var version = rest.GetPostString("version");
-                var packageType = rest.GetPostString("packageType");
+                var packageId = Request.GetPostString("packageId");
+                var version = Request.GetPostString("version");
+                var packageType = Request.GetPostString("packageType");
 
                 if (!StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSiteServerPlugin))
                 {
@@ -117,9 +119,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }

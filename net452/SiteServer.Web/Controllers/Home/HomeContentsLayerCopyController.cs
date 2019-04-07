@@ -6,6 +6,7 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -21,14 +22,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("contentIds"));
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetQueryString("contentIds"));
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     return Unauthorized();
@@ -56,7 +57,7 @@ namespace SiteServer.API.Controllers.Home
                 var sites = new List<object>();
                 var channels = new List<object>();
 
-                var siteIdList = rest.UserPermissionsImpl.GetSiteIdList();
+                var siteIdList = rest.UserPermissions.GetSiteIdList();
                 foreach (var permissionSiteId in siteIdList)
                 {
                     var permissionSiteInfo = SiteManager.GetSiteInfo(permissionSiteId);
@@ -67,7 +68,7 @@ namespace SiteServer.API.Controllers.Home
                     });
                 }
 
-                var channelIdList = rest.UserPermissionsImpl.GetChannelIdList(siteInfo.Id,
+                var channelIdList = rest.UserPermissions.GetChannelIdList(siteInfo.Id,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
@@ -99,12 +100,12 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
+                var siteId = Request.GetQueryInt("siteId");
 
                 var channels = new List<object>();
-                var channelIdList = rest.UserPermissionsImpl.GetChannelIdList(siteId,
+                var channelIdList = rest.UserPermissions.GetChannelIdList(siteId,
                     ConfigManager.ChannelPermissions.ContentAdd);
                 foreach (var permissionChannelId in channelIdList)
                 {
@@ -133,17 +134,17 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var targetSiteId = rest.GetPostInt("targetSiteId");
-                var targetChannelId = rest.GetPostInt("targetChannelId");
-                var copyType = rest.GetPostString("copyType");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var targetSiteId = Request.GetPostInt("targetSiteId");
+                var targetChannelId = Request.GetPostInt("targetChannelId");
+                var copyType = Request.GetPostString("copyType");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentTranslate))
                 {
                     return Unauthorized();
@@ -160,7 +161,7 @@ namespace SiteServer.API.Controllers.Home
                     ContentManager.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentTypeUtils.GetEnumType(copyType));
                 }
 
-                rest.AddSiteLog(siteId, channelId, "复制内容", string.Empty);
+                LogUtils.AddSiteLog(siteId, channelId, rest.AdminName, "复制内容", string.Empty);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

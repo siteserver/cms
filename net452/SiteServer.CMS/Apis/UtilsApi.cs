@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes;
@@ -108,6 +109,18 @@ namespace SiteServer.CMS.Apis
         public void ExtractZip(string zipFilePath, string directoryPath)
         {
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
+        }
+
+        public IAuthenticatedRequest GetAuthenticatedRequest(HttpRequestMessage request)
+        {
+            if (request.Properties.ContainsKey("AuthenticatedRequest"))
+            {
+                return request.Properties["AuthenticatedRequest"] as IAuthenticatedRequest;
+            }
+
+            var authenticatedRequest = new AuthenticatedRequest(request);
+            request.Properties["AuthenticatedRequest"] = authenticatedRequest;
+            return authenticatedRequest;
         }
     }
 }

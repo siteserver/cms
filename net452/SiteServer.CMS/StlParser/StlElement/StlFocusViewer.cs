@@ -281,13 +281,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""FlashVars"", ""bcastr_file=""+files_uniqueID+""&bcastr_link=""+links_uniqueID+""&bcastr_title=""+texts_uniqueID+""&AutoPlayTime=5&TitleBgPosition={isTopText}&TitleBgColor={bgColor}&BtnDefaultColor={bgColor}"");").Append(Constants.ReturnAndNewline);
 
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>
@@ -345,13 +345,13 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
                     var paramBuilder = new StringBuilder();
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowFullScreen"", ""true"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowScriptAccess"", ""always"");").Append(StringUtils.Constants.ReturnAndNewline);
-                    paramBuilder.Append($@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(StringUtils.Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowFullScreen"", ""true"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""allowScriptAccess"", ""always"");").Append(Constants.ReturnAndNewline);
+                    paramBuilder.Append($@"so_{uniqueId}.addParam(""menu"", ""false"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append(
-                        $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(StringUtils.Constants.ReturnAndNewline);
+                        $@"so_{uniqueId}.addParam(""flashvars"", ""pw={imageWidth}&ph={imageHeight}&Times=4000&sizes=14&umcolor=16777215&btnbg=12189697&txtcolor=16777215&urls=""+urls_uniqueID+""&imgs=""+imgs_uniqueID+""&titles=""+titles_uniqueID);").Append(Constants.ReturnAndNewline);
 
                     string scriptHtml = $@"
 <div id=""flashcontent_{uniqueId}""></div>

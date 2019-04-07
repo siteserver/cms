@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Shared
@@ -16,12 +19,12 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin) return Unauthorized();
 
-                var tableName = rest.GetQueryString("tableName");
-                var attributeName = rest.GetQueryString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("relatedIdentities"));
+                var tableName = Request.GetQueryString("tableName");
+                var attributeName = Request.GetQueryString("attributeName");
+                var relatedIdentities = TranslateUtils.StringCollectionToIntList(Request.GetQueryString("relatedIdentities"));
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
 
@@ -47,13 +50,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin) return Unauthorized();
 
-                var tableName = rest.GetPostString("tableName");
-                var attributeName = rest.GetPostString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(rest.GetPostString("relatedIdentities"));
-                var value = rest.GetPostString("value");
+                var tableName = Request.GetPostString("tableName");
+                var attributeName = Request.GetPostString("attributeName");
+                var relatedIdentities = TranslateUtils.StringCollectionToIntList(Request.GetPostString("relatedIdentities"));
+                var value = Request.GetPostString("value");
 
                 var styleInfo =
                     TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
@@ -63,13 +66,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 if (styleInfo.Id == 0 && styleInfo.RelatedIdentity == 0 || styleInfo.RelatedIdentity != relatedIdentities[0])
                 {
                     DataProvider.TableStyle.Insert(styleInfo);
-                    rest.AddAdminLog("添加表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "添加表单显示样式", $"字段名:{styleInfo.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
                     DataProvider.TableStyle.Update(styleInfo, false);
-                    rest.AddAdminLog("修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
                 }
 
                 return Ok(new{});

@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.API.Controllers.Backend;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Pages
 {
@@ -13,8 +17,8 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
-                var redirect = rest.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
+                var rest = Request.GetAuthenticatedRequest();
+                var redirect = LoginController.AdminRedirectCheck(rest, checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
                 return Ok(new

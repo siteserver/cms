@@ -6,6 +6,8 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Attributes;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -20,14 +22,14 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("contentIds"));
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetQueryString("contentIds"));
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -69,15 +71,15 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var isRetainFiles = rest.GetPostBool("isRetainFiles");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var isRetainFiles = Request.GetPostBool("isRetainFiles");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -103,13 +105,13 @@ namespace SiteServer.API.Controllers.Home
                     if (channelInfo.ContentRepository.GetChanelIdAndValue<string>(contentId, ContentAttribute.Title,
                         out var contentChannelId, out var contentTitle))
                     {
-                        rest.AddSiteLog(siteId, contentChannelId, contentId, "删除内容",
+                        LogUtils.AddSiteLog(siteId, contentChannelId, contentId, rest.AdminName, "删除内容",
                             $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentChannelId)},内容标题:{contentTitle}");
                     }
                 }
                 else
                 {
-                    rest.AddSiteLog(siteId, "批量删除内容",
+                    LogUtils.AddSiteLog(siteId, rest.AdminName, "批量删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 

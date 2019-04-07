@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
 using Datory;
-using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
 using SiteServer.Utils;
@@ -41,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var databaseName = WebConfigUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
 
-                var versions = repository.Get<string>(repository.Q.SelectRaw("SERVERPROPERTY('productversion')"));
+                var versions = repository.Get<string>(Q.SelectRaw("SERVERPROPERTY('productversion')"));
 
                 var version = 8;
                 var arr = versions.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);

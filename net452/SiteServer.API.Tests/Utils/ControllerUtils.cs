@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Tests.Utils
 {
@@ -21,7 +22,7 @@ namespace SiteServer.API.Tests.Utils
             var controller = new T();
             var controllerContext = new HttpControllerContext();
             var request = new HttpRequestMessage();
-            request.Headers.Add(Rest.AuthKeyAdminHeader, accessToken);
+            request.Headers.Add(Constants.AuthKeyAdminHeader, accessToken);
 
             // Don't forget these lines, if you do then the request will be null.
             controllerContext.Request = request;

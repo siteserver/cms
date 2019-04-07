@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Utils;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
@@ -21,9 +24,9 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
@@ -108,14 +111,14 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
                 
-                var fileNames = rest.GetPostObject<List<string>>("fileNames");
+                var fileNames = Request.GetPostObject<List<string>>("fileNames");
 
                 foreach (var fileName in fileNames)
                 {
@@ -125,7 +128,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
                     //importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, rest.AdminId, 0, SourceManager.Default);
                 }
 
-                rest.AddAdminLog("安装离线插件", string.Empty);
+                LogUtils.AddAdminLog(rest.AdminName, "安装离线插件", string.Empty);
 
                 return Ok(new
                 {

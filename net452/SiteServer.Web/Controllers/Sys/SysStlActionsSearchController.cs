@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.Sys.Stl;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -20,10 +21,10 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(Rest rest)
+        public NameValueCollection GetPostCollection()
         {
             var formCollection = new NameValueCollection();
-            foreach (var item in rest.PostDict)
+            foreach (var item in Request.GetPostDictionary())
             {
                 formCollection[item.Key] = item.Value.ToString();
             }
@@ -38,28 +39,28 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var rest = new Rest(Request);
-                var form = GetPostCollection(rest);
+                var rest = Request.GetAuthenticatedRequest();
+                var form = GetPostCollection();
 
-                var isAllSites = rest.GetPostBool(StlSearch.IsAllSites.ToLower());
-                var siteName = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.SiteName.ToLower()));
-                var siteDir = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.SiteDir.ToLower()));
-                var siteIds = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.SiteIds.ToLower()));
-                var channelIndex = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.ChannelIndex.ToLower()));
-                var channelName = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.ChannelName.ToLower()));
-                var channelIds = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.ChannelIds.ToLower()));
-                var type = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.Type.ToLower()));
-                var word = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.Word.ToLower()));
-                var dateAttribute = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.DateAttribute.ToLower()));
-                var dateFrom = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.DateFrom.ToLower()));
-                var dateTo = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.DateTo.ToLower()));
-                var since = AttackUtils.FilterSqlAndXss(rest.GetPostString(StlSearch.Since.ToLower()));
-                var pageNum = rest.GetPostInt(StlSearch.PageNum.ToLower());
-                var isHighlight = rest.GetPostBool(StlSearch.IsHighlight.ToLower());
-                var siteId = rest.GetPostInt("siteid");
-                var ajaxDivId = AttackUtils.FilterSqlAndXss(rest.GetPostString("ajaxdivid"));
-                template = TranslateUtils.DecryptStringBySecretKey(rest.GetPostString("template"));
-                var pageIndex = rest.GetPostInt("page", 1) - 1;
+                var isAllSites = Request.GetPostBool(StlSearch.IsAllSites.ToLower());
+                var siteName = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.SiteName.ToLower()));
+                var siteDir = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.SiteDir.ToLower()));
+                var siteIds = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.SiteIds.ToLower()));
+                var channelIndex = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.ChannelIndex.ToLower()));
+                var channelName = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.ChannelName.ToLower()));
+                var channelIds = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.ChannelIds.ToLower()));
+                var type = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.Type.ToLower()));
+                var word = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.Word.ToLower()));
+                var dateAttribute = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.DateAttribute.ToLower()));
+                var dateFrom = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.DateFrom.ToLower()));
+                var dateTo = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.DateTo.ToLower()));
+                var since = AttackUtils.FilterSqlAndXss(Request.GetPostString(StlSearch.Since.ToLower()));
+                var pageNum = Request.GetPostInt(StlSearch.PageNum.ToLower());
+                var isHighlight = Request.GetPostBool(StlSearch.IsHighlight.ToLower());
+                var siteId = Request.GetPostInt("siteid");
+                var ajaxDivId = AttackUtils.FilterSqlAndXss(Request.GetPostString("ajaxdivid"));
+                template = TranslateUtils.DecryptStringBySecretKey(Request.GetPostString("template"));
+                var pageIndex = Request.GetPostInt("page", 1) - 1;
 
                 var templateInfo = new TemplateInfo
                 {
@@ -72,9 +73,12 @@ namespace SiteServer.API.Controllers.Sys
                     Default = false
                 };
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
+
+                var userInfo = UserManager.GetUserInfoByUserId(rest.UserId);
+
                 pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
-                    UserInfo = rest.UserInfo
+                    UserInfo = userInfo
                 };
                 var contextInfo = new ContextInfo(pageInfo);
                 var contentBuilder = new StringBuilder(StlRequestEntities.ParseRequestEntities(form, template));

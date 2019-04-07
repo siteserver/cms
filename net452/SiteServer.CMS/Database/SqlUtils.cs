@@ -522,7 +522,7 @@ namespace SiteServer.CMS.Database.Core
             // Oracle internally changes empty string to NULL values. Oracle simply won't let insert an empty string. So we replace string.Empty value to placeholder _EMPTY_
             if ((dataType == DataType.Text || dataType == DataType.VarChar) && value != null && value.ToString() == string.Empty)
             {
-                return StringUtils.Constants.OracleEmptyValue;
+                return Constants.OracleEmptyValue;
             }
             return value;
         }
@@ -810,7 +810,7 @@ namespace SiteServer.CMS.Database.Core
             {
                 value = AttackUtils.UnFilterSql(value);
             }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == StringUtils.Constants.OracleEmptyValue)
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == Constants.OracleEmptyValue)
             {
                 value = string.Empty;
             }

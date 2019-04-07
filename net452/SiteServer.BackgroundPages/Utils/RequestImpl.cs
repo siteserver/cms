@@ -3,32 +3,21 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Auth;
 
-namespace SiteServer.CMS.Plugin.Impl
+namespace SiteServer.BackgroundPages.Utils
 {
     [Obsolete]
-    public class RequestImpl : IRequest
+    public class RequestImpl
     {
-        private const string AuthKeyUserHeader = "X-SS-USER-TOKEN";
-        private const string AuthKeyUserCookie = "SS-USER-TOKEN";
-        private const string AuthKeyUserQuery = "userToken";
-        private const string AuthKeyAdminHeader = "X-SS-ADMIN-TOKEN";
-        private const string AuthKeyAdminCookie = "SS-ADMIN-TOKEN";
-        private const string AuthKeyAdminQuery = "adminToken";
-        private const string AuthKeyApiHeader = "X-SS-API-KEY";
-        private const string AuthKeyApiCookie = "SS-API-KEY";
-        private const string AuthKeyApiQuery = "apiKey";
-
-        public const int AccessTokenExpireDays = 7;
-
         public RequestImpl(HttpRequest request)
         {
             try
@@ -58,7 +47,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 var userToken = UserToken;
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    var tokenImpl = ParseAccessToken(userToken);
+                    var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
@@ -73,7 +62,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 var adminToken = AdminToken;
                 if (!string.IsNullOrEmpty(adminToken))
                 {
-                    var tokenImpl = ParseAccessToken(adminToken);
+                    var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
@@ -102,17 +91,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyApiHeader)))
+                if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyApiHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyApiHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyApiHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyApiQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyApiQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyApiQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyApiQuery];
                 }
-                else if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyApiCookie)))
+                else if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyApiCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyApiCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyApiCookie);
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -129,17 +118,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyUserCookie)))
+                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyUserCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyUserCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyUserCookie);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyUserHeader)))
+                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyUserHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyUserHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyUserHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyUserQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyUserQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyUserQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyUserQuery];
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -156,17 +145,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyAdminCookie)))
+                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyAdminCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyAdminCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyAdminCookie);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyAdminHeader)))
+                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyAdminHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyAdminHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyAdminHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyAdminQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyAdminQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyAdminQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyAdminQuery];
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -451,18 +440,18 @@ namespace SiteServer.CMS.Plugin.Impl
             AdminInfo = adminInfo;
             IsAdminLoggin = true;
 
-            var expiresAt = TimeSpan.FromDays(AccessTokenExpireDays);
-            var accessToken = GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
+            var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
+            var accessToken = AdminApi.Instance.GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
 
             LogUtils.AddAdminLog(adminInfo.UserName, "管理员登录");
 
             if (isAutoLogin)
             {
-                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken, expiresAt);
+                CookieUtils.SetCookie(Constants.AuthKeyAdminCookie, accessToken, expiresAt);
             }
             else
             {
-                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken);
+                CookieUtils.SetCookie(Constants.AuthKeyAdminCookie, accessToken);
             }
 
             return accessToken;
@@ -470,7 +459,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public void AdminLogout()
         {
-            CookieUtils.Erase(AuthKeyAdminCookie);
+            CookieUtils.Erase(Constants.AuthKeyAdminCookie);
         }
 
         #endregion
@@ -492,19 +481,19 @@ namespace SiteServer.CMS.Plugin.Impl
 
             UserInfo = userInfo;
 
-            var expiresAt = TimeSpan.FromDays(AccessTokenExpireDays);
-            var accessToken = GetAccessToken(UserId, UserName, expiresAt);
+            var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
+            var accessToken = UserApi.Instance.GetAccessToken(UserId, UserName, expiresAt);
 
             DataProvider.User.UpdateLastActivityDateAndCountOfLogin(UserInfo);
             LogUtils.AddUserLoginLog(userName);
 
             if (isAutoLogin)
             {
-                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken, expiresAt);
+                CookieUtils.SetCookie(Constants.AuthKeyUserCookie, accessToken, expiresAt);
             }
             else
             {
-                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken);
+                CookieUtils.SetCookie(Constants.AuthKeyUserCookie, accessToken);
             }
 
             return accessToken;
@@ -513,46 +502,7 @@ namespace SiteServer.CMS.Plugin.Impl
         public void UserLogout()
         {
             UserInfo = null;
-            CookieUtils.Erase(AuthKeyUserCookie);
-        }
-
-        #endregion
-
-        #region Utils
-
-        public static string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
-        {
-            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
-
-            var userToken = new AccessTokenImpl
-            {
-                UserId = userId,
-                UserName = userName,
-                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
-            };
-
-            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
-        }
-
-        public static AccessTokenImpl ParseAccessToken(string accessToken)
-        {
-            if (string.IsNullOrEmpty(accessToken)) return new AccessTokenImpl();
-
-            try
-            {
-                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, WebConfigUtils.SecretKey);
-
-                if (tokenObj?.ExpiresAt.AddDays(AccessTokenExpireDays) > DateTime.Now)
-                {
-                    return tokenObj;
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new AccessTokenImpl();
+            CookieUtils.Erase(Constants.AuthKeyUserCookie);
         }
 
         #endregion

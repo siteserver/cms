@@ -1617,7 +1617,7 @@ WHERE {Attr.Id} = @{Attr.Id}";
             {
                 var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
 
-                foreach (var attributeName in parameters.QueryString.AllKeys)
+                foreach (var attributeName in parameters.QueryString.Keys)
                 {
                     if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
 

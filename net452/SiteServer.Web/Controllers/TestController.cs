@@ -1,6 +1,10 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers
 {
@@ -14,10 +18,10 @@ namespace SiteServer.API.Controllers
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

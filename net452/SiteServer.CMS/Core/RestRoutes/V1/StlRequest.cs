@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -10,9 +10,7 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
 {
     public class StlRequest
     {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-        private RequestImpl Request { get; }
-#pragma warning restore CS0612 // '“RequestImpl”已过时
+        private HttpRequestMessage Request { get; }
 
         public bool IsApiAuthorized { get; }
 
@@ -21,13 +19,14 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
         public PageInfo PageInfo { get; }
 
         public ContextInfo ContextInfo { get; }
-
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-        public StlRequest(RequestImpl request)
-#pragma warning restore CS0612 // '“RequestImpl”已过时
+        
+        public StlRequest(HttpRequestMessage request)
         {
             Request = request;
-            IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
+
+            var rest = request.GetAuthenticatedRequest();
+
+            IsApiAuthorized = AccessTokenManager.IsScope(request.GetApiToken(), AccessTokenManager.ScopeStl);
 
             if (!IsApiAuthorized) return;
 
@@ -76,10 +75,12 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
                 Default = true
             };
 
+            var userInfo = UserManager.GetUserInfoByUserId(rest.UserId);
+
             PageInfo = new PageInfo(channelId, contentId, SiteInfo, templateInfo, new Dictionary<string, object>())
             {
                 UniqueId = 1000,
-                UserInfo = Request.UserInfo
+                UserInfo = userInfo
             };
 
             var attributes = TranslateUtils.NewIgnoreCaseNameValueCollection();
@@ -87,10 +88,15 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
             //{
             //    attributes[key] = Request.QueryDict[key];
             //}
-            foreach (var key in Request.QueryString.AllKeys)
+            var dict = request.GetQueryDirectory();
+            if (dict != null && dict.Count > 0)
             {
-                attributes[key] = Request.QueryString[key];
+                foreach (var key in dict.Keys)
+                {
+                    attributes[key] = dict[key];
+                }
             }
+            
 
             ContextInfo = new ContextInfo(PageInfo)
             {

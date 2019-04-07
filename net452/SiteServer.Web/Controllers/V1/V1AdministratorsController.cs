@@ -5,6 +5,9 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.V1;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 using SqlKata;
 
 namespace SiteServer.API.Controllers.V1
@@ -24,25 +27,25 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var rest = Request.GetAuthenticatedRequest();
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var adminInfo = new AdministratorInfo
                 {
-                    UserName = rest.GetPostString(nameof(AdministratorInfo.UserName)),
-                    Password = rest.GetPostString(nameof(AdministratorInfo.Password)),
+                    UserName = Request.GetPostString(nameof(AdministratorInfo.UserName)),
+                    Password = Request.GetPostString(nameof(AdministratorInfo.Password)),
                     CreationDate = DateTime.Now,
                     CreatorUserName = rest.UserName,
-                    Locked = rest.GetPostBool(nameof(AdministratorInfo.Locked)),
-                    SiteIdCollection = rest.GetPostString(nameof(AdministratorInfo.SiteIdCollection)),
-                    SiteId = rest.GetPostInt(nameof(AdministratorInfo.SiteId)),
-                    DepartmentId = rest.GetPostInt(nameof(AdministratorInfo.DepartmentId)),
-                    AreaId = rest.GetPostInt(nameof(AdministratorInfo.AreaId)),
-                    DisplayName = rest.GetPostString(nameof(AdministratorInfo.DisplayName)),
-                    Mobile = rest.GetPostString(nameof(AdministratorInfo.Mobile)),
-                    Email = rest.GetPostString(nameof(AdministratorInfo.Email)),
-                    AvatarUrl = rest.GetPostString(nameof(AdministratorInfo.AvatarUrl))
+                    Locked = Request.GetPostBool(nameof(AdministratorInfo.Locked)),
+                    SiteIdCollection = Request.GetPostString(nameof(AdministratorInfo.SiteIdCollection)),
+                    SiteId = Request.GetPostInt(nameof(AdministratorInfo.SiteId)),
+                    DepartmentId = Request.GetPostInt(nameof(AdministratorInfo.DepartmentId)),
+                    AreaId = Request.GetPostInt(nameof(AdministratorInfo.AreaId)),
+                    DisplayName = Request.GetPostString(nameof(AdministratorInfo.DisplayName)),
+                    Mobile = Request.GetPostString(nameof(AdministratorInfo.Mobile)),
+                    Email = Request.GetPostString(nameof(AdministratorInfo.Email)),
+                    AvatarUrl = Request.GetPostString(nameof(AdministratorInfo.AvatarUrl))
                 };
 
                 var id = DataProvider.Administrator.Insert(adminInfo, out var errorMessage);
@@ -68,53 +71,53 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var rest = Request.GetAuthenticatedRequest();
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var adminInfo = AdminManager.GetAdminInfoByUserId(id);
 
                 if (adminInfo == null) return NotFound();
 
-                if (rest.IsPostExists(nameof(AdministratorInfo.UserName)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.UserName)))
                 {
-                    adminInfo.UserName = rest.GetPostString(nameof(AdministratorInfo.UserName));
+                    adminInfo.UserName = Request.GetPostString(nameof(AdministratorInfo.UserName));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.Locked)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.Locked)))
                 {
-                    adminInfo.Locked = rest.GetPostBool(nameof(AdministratorInfo.Locked));
+                    adminInfo.Locked = Request.GetPostBool(nameof(AdministratorInfo.Locked));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.SiteIdCollection)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.SiteIdCollection)))
                 {
-                    adminInfo.SiteIdCollection = rest.GetPostString(nameof(AdministratorInfo.SiteIdCollection));
+                    adminInfo.SiteIdCollection = Request.GetPostString(nameof(AdministratorInfo.SiteIdCollection));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.SiteId)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.SiteId)))
                 {
-                    adminInfo.SiteId = rest.GetPostInt(nameof(AdministratorInfo.SiteId));
+                    adminInfo.SiteId = Request.GetPostInt(nameof(AdministratorInfo.SiteId));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.DepartmentId)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.DepartmentId)))
                 {
-                    adminInfo.DepartmentId = rest.GetPostInt(nameof(AdministratorInfo.DepartmentId));
+                    adminInfo.DepartmentId = Request.GetPostInt(nameof(AdministratorInfo.DepartmentId));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.AreaId)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.AreaId)))
                 {
-                    adminInfo.AreaId = rest.GetPostInt(nameof(AdministratorInfo.AreaId));
+                    adminInfo.AreaId = Request.GetPostInt(nameof(AdministratorInfo.AreaId));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.DisplayName)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.DisplayName)))
                 {
-                    adminInfo.DisplayName = rest.GetPostString(nameof(AdministratorInfo.DisplayName));
+                    adminInfo.DisplayName = Request.GetPostString(nameof(AdministratorInfo.DisplayName));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.Mobile)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.Mobile)))
                 {
-                    adminInfo.Mobile = rest.GetPostString(nameof(AdministratorInfo.Mobile));
+                    adminInfo.Mobile = Request.GetPostString(nameof(AdministratorInfo.Mobile));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.Email)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.Email)))
                 {
-                    adminInfo.Email = rest.GetPostString(nameof(AdministratorInfo.Email));
+                    adminInfo.Email = Request.GetPostString(nameof(AdministratorInfo.Email));
                 }
-                if (rest.IsPostExists(nameof(AdministratorInfo.AvatarUrl)))
+                if (Request.IsPostExists(nameof(AdministratorInfo.AvatarUrl)))
                 {
-                    adminInfo.AvatarUrl = rest.GetPostString(nameof(AdministratorInfo.AvatarUrl));
+                    adminInfo.AvatarUrl = Request.GetPostString(nameof(AdministratorInfo.AvatarUrl));
                 }
 
                 var updated = DataProvider.Administrator.Update(adminInfo, out var errorMessage);
@@ -140,8 +143,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var rest = Request.GetAuthenticatedRequest();
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var adminInfo = AdminManager.GetAdminInfoByUserId(id);
@@ -166,8 +169,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var rest = Request.GetAuthenticatedRequest();
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var adminInfo = AdminManager.GetAdminInfoByUserId(id);
@@ -191,13 +194,15 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 if (!rest.IsAdminLoggin) return Unauthorized();
 
+                var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
+
                 return Ok(new
                 {
-                    Value = rest.AdminInfo
+                    Value = adminInfo
                 });
             }
             catch (Exception ex)
@@ -212,13 +217,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                var top = rest.GetQueryInt("top", 20);
-                var skip = rest.GetQueryInt("skip");
+                var top = Request.GetQueryInt("top", 20);
+                var skip = Request.GetQueryInt("skip");
 
                 var query = new Query().Limit(top).Offset(skip);
                 var administrators = DataProvider.Administrator.GetAll(query);
@@ -238,11 +243,11 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var account = rest.GetPostString("account");
-                var password = rest.GetPostString("password");
-                var isAutoLogin = rest.GetPostBool("isAutoLogin");
+                var account = Request.GetPostString("account");
+                var password = Request.GetPostString("password");
+                var isAutoLogin = Request.GetPostBool("isAutoLogin");
 
                 AdministratorInfo adminInfo;
 
@@ -259,7 +264,7 @@ namespace SiteServer.API.Controllers.V1
                 adminInfo = AdminManager.GetAdminInfoByUserName(userName);
                 DataProvider.Administrator.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
                 var accessToken = rest.AdminLogin(adminInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(Rest.AccessTokenExpireDays);
+                var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
                 {
@@ -280,9 +285,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var adminInfo = rest.IsAdminLoggin ? rest.AdminInfo : null;
-                rest.AdminLogout();
+                var rest = Request.GetAuthenticatedRequest();
+
+                var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
 
                 return Ok(new
                 {
@@ -301,13 +306,13 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var rest = new Rest(Request);
-                var isApiAuthorized = rest.IsApiAuthenticated && AccessTokenManager.IsScope(rest.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var rest = Request.GetAuthenticatedRequest();
+                var isApiAuthorized = AccessTokenManager.IsScope(Request.GetApiToken(), AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                var account = rest.GetPostString("account");
-                var password = rest.GetPostString("password");
-                var newPassword = rest.GetPostString("newPassword");
+                var account = Request.GetPostString("account");
+                var password = Request.GetPostString("password");
+                var newPassword = Request.GetPostString("newPassword");
 
                 if (!DataProvider.Administrator.Validate(account, password, true, out var userName, out var errorMessage))
                 {

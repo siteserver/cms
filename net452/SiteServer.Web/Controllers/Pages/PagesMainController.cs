@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web.Http;
+using SiteServer.API.Controllers.Backend;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Caches;
@@ -15,7 +16,9 @@ using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
@@ -32,14 +35,14 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
-                var redirect = rest.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
+                var rest = Request.GetAuthenticatedRequest();
+                var redirect = LoginController.AdminRedirectCheck(rest, checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
-                var siteId = rest.GetPostInt("siteId");
-                var pageUrl = rest.GetPostString("pageUrl");
+                var siteId = Request.GetPostInt("siteId");
+                var pageUrl = Request.GetPostString("pageUrl");
 
-                if (!rest.IsAdminLoggin || rest.AdminInfo == null)
+                if (!rest.IsAdminLoggin)
                 {
                     return Ok(new
                     {
@@ -47,7 +50,10 @@ namespace SiteServer.API.Controllers.Pages
                         RedirectUrl = $"{AdminPagesUtils.LoginUrl}?redirectUrl={PageUtils.UrlEncode(FxUtils.GetMainUrl(siteId, pageUrl))}"
                     });
                 }
-                if (rest.AdminInfo.Locked)
+
+                var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
+
+                if (adminInfo.Locked)
                 {
                     return Ok(new
                     {
@@ -57,18 +63,18 @@ namespace SiteServer.API.Controllers.Pages
                 }
                 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var permissions = rest.AdminPermissionsImpl;
-                var isSuperAdmin = permissions.IsConsoleAdministrator;
+                var permissions = (PermissionsImpl)rest.AdminPermissions;
+                var isSuperAdmin = permissions.IsSuperAdmin();
                 var siteIdListWithPermissions = permissions.GetSiteIdList();
 
                 if (siteInfo == null || !siteIdListWithPermissions.Contains(siteInfo.Id))
                 {
-                    if (siteIdListWithPermissions.Contains(rest.AdminInfo.SiteId))
+                    if (siteIdListWithPermissions.Contains(adminInfo.SiteId))
                     {
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = FxUtils.GetMainUrl(rest.AdminInfo.SiteId, pageUrl)
+                            RedirectUrl = FxUtils.GetMainUrl(adminInfo.SiteId, pageUrl)
                         });
                     }
 
@@ -114,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages
                     });
                 }
 
-                var siteIdListLatestAccessed = DataProvider.Administrator.UpdateSiteId(rest.AdminInfo, siteInfo.Id);
+                var siteIdListLatestAccessed = DataProvider.Administrator.UpdateSiteId(adminInfo, siteInfo.Id);
 
                 var permissionList = new List<string>(permissions.PermissionList);
                 if (permissions.HasSitePermissions(siteInfo.Id))
@@ -138,9 +144,9 @@ namespace SiteServer.API.Controllers.Pages
 
                 var adminInfoToReturn = new
                 {
-                    rest.AdminInfo.Id,
-                    rest.AdminInfo.UserName,
-                    rest.AdminInfo.AvatarUrl,
+                    adminInfo.Id,
+                    adminInfo.UserName,
+                    adminInfo.AvatarUrl,
                     Level = permissions.GetAdminLevel()
                 };
 
@@ -309,7 +315,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -353,15 +359,15 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var rest = new Rest(Request);
+            var rest = Request.GetAuthenticatedRequest();
 
             if (!rest.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
-            var packageId = rest.GetPostString("packageId");
-            var version = rest.GetPostString("version");
+            var packageId = Request.GetPostString("packageId");
+            var version = Request.GetPostString("version");
 
             try
             {

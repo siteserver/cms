@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Utils;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -23,13 +26,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -41,7 +44,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissions, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -127,17 +130,17 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var importType = rest.GetPostString("importType");
-                var checkedLevel = rest.GetPostInt("checkedLevel");
-                var isOverride = rest.GetPostBool("isOverride");
-                var fileNames = rest.GetPostObject<List<string>>("fileNames");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var importType = Request.GetPostString("importType");
+                var checkedLevel = Request.GetPostInt("checkedLevel");
+                var isOverride = Request.GetPostBool("isOverride");
+                var fileNames = Request.GetPostObject<List<string>>("fileNames");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -191,7 +194,7 @@ namespace SiteServer.API.Controllers.Home
                     }
                 }
 
-                rest.AddSiteLog(siteId, channelId, 0, "导入内容", string.Empty);
+                LogUtils.AddSiteLog(siteId, channelId, rest.AdminName, "导入内容", string.Empty);
 
                 return Ok(new
                 {

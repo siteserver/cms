@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -21,15 +25,16 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
+                var siteId = Request.GetQueryInt("siteId");
+
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSitePermissions(rest.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !rest.AdminPermissions.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
-
-                var siteId = rest.SiteId;
-                var parentId = rest.GetQueryInt("parentId");
+                
+                var parentId = Request.GetQueryInt("parentId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var parent = ChannelManager.GetChannelInfo(siteId, parentId);
                 var countDict = new Dictionary<int, int>
@@ -42,13 +47,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelIdList =
                     ChannelManager.GetChannelIdList(parent, EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
+                var adminPermissions = (PermissionsImpl) rest.AdminPermissions;
+
                 foreach (var channelId in channelIdList)
                 {
-                    var enabled = rest.AdminPermissionsImpl.IsOwningChannelId(channelId);
+                    var enabled = adminPermissions.IsOwningChannelId(channelId);
                     
                     if (!enabled)
                     {
-                        if (!rest.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
+                        if (!adminPermissions.IsDescendantOwningChannelId(siteId, channelId)) continue;
                     }
 
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
@@ -85,9 +92,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !rest.AdminPermissions.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }
@@ -193,9 +200,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
+                    !rest.AdminPermissions.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
                     return Unauthorized();
                 }

@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -19,16 +23,16 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
                 var adminNames = new List<string>();
 
-                if (rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (rest.AdminPermissions.IsSuperAdmin())
                 {
                     adminNames = DataProvider.Administrator.GetUserNameList().ToList();
                 }
@@ -66,14 +70,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetQueryInt("id");
+                var id = Request.GetQueryInt("id");
                 DataProvider.AccessToken.Delete(id);
 
                 return Ok(new
@@ -92,9 +96,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -114,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.AccessToken.Update(tokenInfo);
 
-                    rest.AddAdminLog("修改API密钥", $"Access Token:{tokenInfo.Title}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改API密钥", $"Access Token:{tokenInfo.Title}");
                 }
                 else
                 {
@@ -132,7 +136,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     DataProvider.AccessToken.Insert(tokenInfo);
 
-                    rest.AddAdminLog("新增API密钥", $"Access Token:{tokenInfo.Title}");
+                    LogUtils.AddAdminLog(rest.AdminName, "新增API密钥", $"Access Token:{tokenInfo.Title}");
                 }
 
                 return Ok(new

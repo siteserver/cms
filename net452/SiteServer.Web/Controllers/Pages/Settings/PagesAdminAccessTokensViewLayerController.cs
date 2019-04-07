@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -16,14 +19,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetQueryInt("id");
+                var id = Request.GetQueryInt("id");
 
                 var tokenInfo = DataProvider.AccessToken.Get(id);
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
@@ -45,14 +48,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetPostInt("id");
+                var id = Request.GetPostInt("id");
                 var accessTokenInfo = DataProvider.AccessToken.Get(id);
 
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessToken.Regenerate(accessTokenInfo));

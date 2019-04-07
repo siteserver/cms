@@ -2,6 +2,7 @@
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
@@ -495,9 +496,9 @@ namespace SiteServer.CMS.Core
 	        return false;
 	    }
 
-	    public static KeyValuePair<bool, int> GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId)
+	    public static KeyValuePair<bool, int> GetUserCheckLevel(IPermissions permissionsImpl, SiteInfo siteInfo, int channelId)
         {
-            if (permissionsImpl.IsSystemAdministrator)
+            if (permissionsImpl.IsSuperAdmin())
             {
                 return new KeyValuePair<bool, int>(true, siteInfo.CheckContentLevel);
             }
@@ -569,7 +570,7 @@ namespace SiteServer.CMS.Core
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
+        public static bool GetUserCheckLevel(IPermissions permissionsImpl, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
         {
             var checkContentLevel = siteInfo.CheckContentLevel;
 

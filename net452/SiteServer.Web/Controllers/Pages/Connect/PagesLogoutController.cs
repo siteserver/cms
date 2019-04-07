@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.Pages.Cloud
 {
@@ -13,9 +16,9 @@ namespace SiteServer.API.Controllers.Pages.Cloud
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                    !rest.AdminPermissions.IsSuperAdmin())
                 {
                     return Unauthorized();
                 }
@@ -26,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Cloud
 
                 //DataProvider.ConfigDao.UpdateObject(ConfigManager.Instance);
 
-                rest.AddAdminLog("云服务账号登出");
+                LogUtils.AddAdminLog(rest.AdminName, "云服务账号登出");
 
                 return Ok(new
                 {

@@ -5,6 +5,8 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -19,13 +21,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentDelete))
                 {
                     return Unauthorized();
@@ -56,18 +58,18 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var pageType = rest.GetPostString("pageType");
-                var groupNames = TranslateUtils.StringCollectionToStringList(rest.GetPostString("groupNames"));
-                var groupName = rest.GetPostString("groupName");
-                var description = rest.GetPostString("description");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var pageType = Request.GetPostString("pageType");
+                var groupNames = TranslateUtils.StringCollectionToStringList(Request.GetPostString("groupNames"));
+                var groupName = Request.GetPostString("groupName");
+                var description = Request.GetPostString("description");
 
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.AdminPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -96,7 +98,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    rest.AddSiteLog(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    LogUtils.AddSiteLog(siteId, rest.AdminName, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
                 }
                 else if(pageType == "cancelGroup")
                 {
@@ -115,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    rest.AddSiteLog(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
+                    LogUtils.AddSiteLog(siteId, rest.AdminName, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
                 }
                 else if (pageType == "addGroup")
                 {
@@ -129,12 +131,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     if (ContentGroupManager.IsExists(siteId, groupInfo.GroupName))
                     {
                         DataProvider.ContentGroup.Update(groupInfo);
-                        rest.AddSiteLog(siteId, "修改内容组", $"内容组:{groupInfo.GroupName}");
+                        LogUtils.AddSiteLog(siteId, rest.AdminName, "修改内容组", $"内容组:{groupInfo.GroupName}");
                     }
                     else
                     {
                         DataProvider.ContentGroup.Insert(groupInfo);
-                        rest.AddSiteLog(siteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
+                        LogUtils.AddSiteLog(siteId, rest.AdminName, "添加内容组", $"内容组:{groupInfo.GroupName}");
                     }
 
                     foreach (var contentId in contentIdList)
@@ -149,7 +151,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    rest.AddSiteLog(siteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
+                    LogUtils.AddSiteLog(siteId, rest.AdminName, "批量设置内容组", $"内容组:{groupInfo.GroupName}");
                 }
 
                 return Ok(new

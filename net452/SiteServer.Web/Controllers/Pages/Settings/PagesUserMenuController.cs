@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -17,9 +21,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -41,14 +45,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
 
-                var id = rest.GetQueryInt("id");
+                var id = Request.GetQueryInt("id");
 
                 DataProvider.UserMenu.Delete(id);
 
@@ -68,9 +72,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -79,13 +83,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     DataProvider.UserMenu.Insert(menuInfo);
 
-                    rest.AddAdminLog("新增用户菜单", $"用户菜单:{menuInfo.Text}");
+                    LogUtils.AddAdminLog(rest.AdminName, "新增用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
                 else if (menuInfo.Id > 0)
                 {
                     DataProvider.UserMenu.Update(menuInfo);
 
-                    rest.AddAdminLog("修改用户菜单", $"用户菜单:{menuInfo.Text}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改用户菜单", $"用户菜单:{menuInfo.Text}");
                 }
 
                 return Ok(new
@@ -104,9 +108,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
                     return Unauthorized();
                 }
@@ -116,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     DataProvider.UserMenu.Delete(userMenuInfo.Id);
                 }
 
-                rest.AddAdminLog("重置用户菜单");
+                LogUtils.AddAdminLog(rest.AdminName, "重置用户菜单");
 
                 return Ok(new
                 {

@@ -5,6 +5,7 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -20,12 +21,12 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin) return Unauthorized();
 
-                var tableName = rest.GetQueryString("tableName");
-                var attributeName = rest.GetQueryString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(rest.GetQueryString("relatedIdentities"));
+                var tableName = Request.GetQueryString("tableName");
+                var attributeName = Request.GetQueryString("attributeName");
+                var relatedIdentities = TranslateUtils.StringCollectionToIntList(Request.GetQueryString("relatedIdentities"));
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities) ?? new TableStyleInfo
                 {
@@ -88,15 +89,15 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin) return Unauthorized();
 
-                var tableName = rest.GetPostString("tableName");
-                var attributeName = rest.GetPostString("attributeName");
-                var relatedIdentities = TranslateUtils.StringCollectionToIntList(rest.GetPostString("relatedIdentities"));
-                var isRapid = rest.GetPostBool("isRapid");
-                var rapidValues = TranslateUtils.StringCollectionToStringList(rest.GetPostString("rapidValues"));
-                var body = rest.GetPostObject<TableStyleInfo>("styleInfo");
+                var tableName = Request.GetPostString("tableName");
+                var attributeName = Request.GetPostString("attributeName");
+                var relatedIdentities = TranslateUtils.StringCollectionToIntList(Request.GetPostString("relatedIdentities"));
+                var isRapid = Request.GetPostBool("isRapid");
+                var rapidValues = TranslateUtils.StringCollectionToStringList(Request.GetPostString("rapidValues"));
+                var body = Request.GetPostObject<TableStyleInfo>("styleInfo");
 
                 var styleInfoDatabase =
                     TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities) ??
@@ -109,13 +110,13 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 if (styleInfoDatabase.Id == 0 && styleInfoDatabase.RelatedIdentity == 0 || styleInfoDatabase.RelatedIdentity != relatedIdentities[0])
                 {
                     isSuccess = InsertTableStyleInfo(tableName, relatedIdentities, body, isRapid, rapidValues, out errorMessage);
-                    rest.AddAdminLog("添加表单显示样式", $"字段名:{body.AttributeName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "添加表单显示样式", $"字段名:{body.AttributeName}");
                 }
                 //数据库中有此项的表样式
                 else
                 {
                     isSuccess = UpdateTableStyleInfo(styleInfoDatabase, body, isRapid, rapidValues, out errorMessage);
-                    rest.AddAdminLog("修改表单显示样式", $"字段名:{body.AttributeName}");
+                    LogUtils.AddAdminLog(rest.AdminName, "修改表单显示样式", $"字段名:{body.AttributeName}");
                 }
 
                 if (!isSuccess)

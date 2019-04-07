@@ -147,7 +147,7 @@ namespace SiteServer.CMS.StlParser
                             index = contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal);
                         }
                         index = contentBuilder.ToString().IndexOf(">", index, StringComparison.Ordinal);
-                        contentBuilder.Insert(index + 1, StringUtils.Constants.ReturnAndNewline + bodyCodesHtml + StringUtils.Constants.ReturnAndNewline);
+                        contentBuilder.Insert(index + 1, Constants.ReturnAndNewline + bodyCodesHtml + Constants.ReturnAndNewline);
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace SiteServer.CMS.StlParser
                 var footCodesHtml = pageInfo.FootCodesHtml;
                 if (!string.IsNullOrEmpty(footCodesHtml))
                 {
-                    contentBuilder.Append(footCodesHtml + StringUtils.Constants.ReturnAndNewline);
+                    contentBuilder.Append(footCodesHtml + Constants.ReturnAndNewline);
                 }
             }
         }

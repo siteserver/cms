@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ItemsPerPage = Constants.PageSize;
 
             SpContents.SelectCommand = DataProvider.TemplateLog.GetSelectCommend(SiteId, _templateId);
 

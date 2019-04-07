@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Utils;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -23,13 +25,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -124,22 +126,22 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var isFix = rest.GetPostBool("isFix");
-                var fixWidth = rest.GetPostString("fixWidth");
-                var fixHeight = rest.GetPostString("fixHeight");
-                var isEditor = rest.GetPostBool("isEditor");
-                var editorIsFix = rest.GetPostBool("editorIsFix");
-                var editorFixWidth = rest.GetPostString("editorFixWidth");
-                var editorFixHeight = rest.GetPostString("editorFixHeight");
-                var editorIsLinkToOriginal = rest.GetPostBool("editorIsLinkToOriginal");
-                var filePaths = TranslateUtils.StringCollectionToStringList(rest.GetPostString("filePaths"));
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var isFix = Request.GetPostBool("isFix");
+                var fixWidth = Request.GetPostString("fixWidth");
+                var fixHeight = Request.GetPostString("fixHeight");
+                var isEditor = Request.GetPostBool("isEditor");
+                var editorIsFix = Request.GetPostBool("editorIsFix");
+                var editorFixWidth = Request.GetPostString("editorFixWidth");
+                var editorFixHeight = Request.GetPostString("editorFixHeight");
+                var editorIsLinkToOriginal = Request.GetPostBool("editorIsLinkToOriginal");
+                var filePaths = TranslateUtils.StringCollectionToStringList(Request.GetPostString("filePaths"));
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -162,8 +164,8 @@ namespace SiteServer.API.Controllers.Home
                     var fileName = PathUtility.GetUploadFileName(siteInfo, filePath);
 
                     var directoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtName);
-                    var fixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.TitleImageAppendix + fileName);
-                    var editorFixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.SmallImageAppendix + fileName);
+                    var fixFilePath = PathUtils.Combine(directoryPath, Constants.TitleImageAppendix + fileName);
+                    var editorFixFilePath = PathUtils.Combine(directoryPath, Constants.SmallImageAppendix + fileName);
 
                     var isImage = EFileSystemTypeUtils.IsImage(fileExtName);
 

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
@@ -17,13 +19,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
-                var userId = rest.GetQueryInt("userId");
+                var rest = Request.GetAuthenticatedRequest();
+                var userId = Request.GetQueryInt("userId");
                 if (!rest.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
                 if (rest.AdminId != userId &&
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }

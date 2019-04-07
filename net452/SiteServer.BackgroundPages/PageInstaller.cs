@@ -133,7 +133,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, StringUtils.Constants.Html5Empty);
+                    FileUtils.WriteText(filePath, ECharset.utf_8, Constants.Html5Empty);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
                     ioPermission.Demand();

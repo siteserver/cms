@@ -4,6 +4,8 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -18,20 +20,20 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var pageType = rest.GetPostString("pageType");
-                var isRecommend = rest.GetPostBool("isRecommend");
-                var isHot = rest.GetPostBool("isHot");
-                var isColor = rest.GetPostBool("isColor");
-                var isTop = rest.GetPostBool("isTop");
-                var hits = rest.GetPostInt("hits");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var pageType = Request.GetPostString("pageType");
+                var isRecommend = Request.GetPostBool("isRecommend");
+                var isHot = Request.GetPostBool("isHot");
+                var isColor = Request.GetPostBool("isColor");
+                var isTop = Request.GetPostBool("isTop");
+                var hits = Request.GetPostInt("hits");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -71,7 +73,7 @@ namespace SiteServer.API.Controllers.Home
                             DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                         }
 
-                        rest.AddSiteLog(siteId, "设置内容属性");
+                        LogUtils.AddSiteLog(siteId, rest.AdminName, "设置内容属性");
                     }
                 }
                 else if(pageType == "cancelAttributes")
@@ -102,7 +104,7 @@ namespace SiteServer.API.Controllers.Home
                             DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                         }
 
-                        rest.AddSiteLog(siteId, "取消内容属性");
+                        LogUtils.AddSiteLog(siteId, rest.AdminName, "取消内容属性");
                     }
                 }
                 else if (pageType == "setHits")
@@ -116,7 +118,7 @@ namespace SiteServer.API.Controllers.Home
                         DataProvider.ContentRepository.Update(siteInfo, channelInfo, contentInfo);
                     }
 
-                    rest.AddSiteLog(siteId, "设置内容点击量");
+                    LogUtils.AddSiteLog(siteId, rest.AdminName, "设置内容点击量");
                 }
 
                 return Ok(new

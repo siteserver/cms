@@ -24,7 +24,7 @@ namespace SiteServer.Utils
             return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
         }
 
-        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue)
+        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default(T))
         {
             return Get(Get(dict, name), defaultValue);
         }
@@ -59,7 +59,7 @@ namespace SiteServer.Utils
                 var name = reader.GetName(i);
                 var value = reader.GetValue(i);
 
-                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == StringUtils.Constants.OracleEmptyValue)
+                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -100,7 +100,7 @@ namespace SiteServer.Utils
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
 
-                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == StringUtils.Constants.OracleEmptyValue)
+                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }

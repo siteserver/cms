@@ -11,6 +11,8 @@ using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Database.Repositories.Contents;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -26,9 +28,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
@@ -121,24 +123,24 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
                     return Unauthorized();
                 }
 
-                var createType = rest.GetPostString("createType");
-                var createTemplateId = rest.GetPostString("createTemplateId");
-                var siteName = rest.GetPostString("siteName");
-                var isRoot = rest.GetPostBool("isRoot");
-                var parentId = rest.GetPostInt("parentId");
-                var siteDir = rest.GetPostString("siteDir");
-                var tableRule = ETableRuleUtils.GetEnumType(rest.GetPostString("tableRule"));
-                var tableChoose = rest.GetPostString("tableChoose");
-                var tableHandWrite = rest.GetPostString("tableHandWrite");
-                var isImportContents = rest.GetPostBool("isImportContents");
-                var isImportTableStyles = rest.GetPostBool("isImportTableStyles");
+                var createType = Request.GetPostString("createType");
+                var createTemplateId = Request.GetPostString("createTemplateId");
+                var siteName = Request.GetPostString("siteName");
+                var isRoot = Request.GetPostBool("isRoot");
+                var parentId = Request.GetPostInt("parentId");
+                var siteDir = Request.GetPostString("siteDir");
+                var tableRule = ETableRuleUtils.GetEnumType(Request.GetPostString("tableRule"));
+                var tableChoose = Request.GetPostString("tableChoose");
+                var tableHandWrite = Request.GetPostString("tableHandWrite");
+                var isImportContents = Request.GetPostBool("isImportContents");
+                var isImportTableStyles = Request.GetPostBool("isImportTableStyles");
 
                 if (!isRoot)
                 {
@@ -205,9 +207,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     DataProvider.Site.UpdateTableName(siteId, tableName);
                 }
 
-                if (rest.AdminPermissionsImpl.IsSystemAdministrator && !rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                if (!rest.AdminPermissions.IsSuperAdmin())
                 {
-                    var siteIdList = rest.AdminPermissionsImpl.GetSiteIdList() ?? new List<int>();
+                    var siteIdList = rest.AdminPermissions.GetSiteIdList() ?? new List<int>();
                     siteIdList.Add(siteId);
                     var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
                     DataProvider.Administrator.UpdateSiteIdCollection(adminInfo, TranslateUtils.ObjectCollectionToString(siteIdList));

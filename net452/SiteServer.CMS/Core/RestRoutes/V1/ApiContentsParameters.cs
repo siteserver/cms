@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Net.Http;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -7,9 +9,7 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
 {
     public class ApiContentsParameters
     {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-        public ApiContentsParameters(RequestImpl request)
-#pragma warning restore CS0612 // '“RequestImpl”已过时
+        public ApiContentsParameters(HttpRequestMessage request)
         {
             ChannelIds = TranslateUtils.StringCollectionToIntList(request.GetQueryString("channelIds"));
             ChannelGroup = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("channelGroup")));
@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
 
             //var queryDict = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             //queryDict.AddRange(request.QueryDict);
-            QueryString = new NameValueCollection(request.QueryString);
+            QueryString = request.GetQueryDirectory();
 
             QueryString.Remove("siteId");
             QueryString.Remove("channelIds");
@@ -51,6 +51,6 @@ namespace SiteServer.CMS.Core.RestRoutes.V1
 
         public string OrderBy { get; set; }
 
-        public NameValueCollection QueryString { get; set; }
+        public IDictionary<string, string> QueryString { get; set; }
     }
 }

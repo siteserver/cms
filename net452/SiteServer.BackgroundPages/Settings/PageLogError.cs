@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ItemsPerPage = Constants.PageSize;
 
             SpContents.SelectCommand = DataProvider.ErrorLog.GetSelectCommend(AuthRequest.GetQueryString("category"), AuthRequest.GetQueryString("pluginId"), AuthRequest.GetQueryString("keyword"),
                     AuthRequest.GetQueryString("dateFrom"), AuthRequest.GetQueryString("dateTo"));

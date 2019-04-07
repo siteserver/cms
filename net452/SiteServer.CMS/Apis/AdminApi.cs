@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
+using SiteServer.Utils;
+using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.Apis
 {
@@ -67,16 +70,37 @@ namespace SiteServer.CMS.Apis
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-            return RequestImpl.GetAccessToken(userId, userName, expiresAt);
-#pragma warning restore CS0612 // '“RequestImpl”已过时
+            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
+
+            var userToken = new AccessTokenImpl
+            {
+                UserId = userId,
+                UserName = userName,
+                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
+            };
+
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public IAccessToken ParseAccessToken(string accessToken)
         {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-            return RequestImpl.ParseAccessToken(accessToken);
-#pragma warning restore CS0612 // '“RequestImpl”已过时
+            if (string.IsNullOrEmpty(accessToken)) return new AccessTokenImpl();
+
+            try
+            {
+                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, WebConfigUtils.SecretKey);
+
+                if (tokenObj?.ExpiresAt.AddDays(Constants.AccessTokenExpireDays) > DateTime.Now)
+                {
+                    return tokenObj;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return new AccessTokenImpl();
         }
     }
 }

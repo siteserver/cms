@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -20,9 +24,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
@@ -59,14 +63,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
-                var tableName = rest.GetPostString("tableName");
+                var tableName = Request.GetPostString("tableName");
 
                 var columns = TableColumnManager.GetTableColumnInfoList(tableName, ContentAttribute.MetadataAttributes.Value);
 
@@ -87,14 +91,14 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
+                    !rest.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
                     return Unauthorized();
                 }
 
-                var tableName = rest.GetPostString("tableName");
+                var tableName = Request.GetPostString("tableName");
 
                 TableColumnManager.ClearCache();
 

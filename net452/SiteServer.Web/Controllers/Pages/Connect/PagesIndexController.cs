@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Apis;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Fx;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Connect
@@ -20,10 +23,10 @@ namespace SiteServer.API.Controllers.Pages.Connect
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var account = rest.GetPostString("account");
-                var password = rest.GetPostString("password");
+                var account = Request.GetPostString("account");
+                var password = Request.GetPostString("password");
 
                 AdministratorInfo adminInfo;
 
@@ -54,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Connect
                 var pluginVersion = SystemManager.PluginVersion;
                 var apiVersion = SystemManager.ApiVersion;
                 var adminName = adminInfo.UserName;
-                var adminToken = Rest.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(3650));
+                var adminToken = AdminApi.Instance.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(3650));
 
                 return Ok(new
                 {
@@ -82,11 +85,11 @@ namespace SiteServer.API.Controllers.Pages.Connect
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var repositoryOwner = rest.GetPostString("repositoryOwner");
-                var repositoryName = rest.GetPostString("repositoryName");
-                var repositoryToken = rest.GetPostString("repositoryToken");
+                var repositoryOwner = Request.GetPostString("repositoryOwner");
+                var repositoryName = Request.GetPostString("repositoryName");
+                var repositoryToken = Request.GetPostString("repositoryToken");
 
                 ConfigManager.Instance.RepositoryOwner = repositoryOwner;
                 ConfigManager.Instance.RepositoryName = repositoryName;

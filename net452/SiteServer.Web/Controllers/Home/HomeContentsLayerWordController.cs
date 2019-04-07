@@ -4,6 +4,7 @@ using System.IO;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Utils;
 using SiteServer.CMS.Caches;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -11,7 +12,9 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.Database.Attributes;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -27,13 +30,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();
@@ -45,7 +48,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissions, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, false);
 
                 return Ok(new
@@ -133,22 +136,22 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var isFirstLineTitle = rest.GetPostBool("isFirstLineTitle");
-                var isFirstLineRemove = rest.GetPostBool("isFirstLineRemove");
-                var isClearFormat = rest.GetPostBool("isClearFormat");
-                var isFirstLineIndent = rest.GetPostBool("isFirstLineIndent");
-                var isClearFontSize = rest.GetPostBool("isClearFontSize");
-                var isClearFontFamily = rest.GetPostBool("isClearFontFamily");
-                var isClearImages = rest.GetPostBool("isClearImages");
-                var checkedLevel = rest.GetPostInt("checkedLevel");
-                var fileNames = TranslateUtils.StringCollectionToStringList(rest.GetPostString("fileNames"));
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var isFirstLineTitle = Request.GetPostBool("isFirstLineTitle");
+                var isFirstLineRemove = Request.GetPostBool("isFirstLineRemove");
+                var isClearFormat = Request.GetPostBool("isClearFormat");
+                var isFirstLineIndent = Request.GetPostBool("isFirstLineIndent");
+                var isClearFontSize = Request.GetPostBool("isClearFontSize");
+                var isClearFontFamily = Request.GetPostBool("isClearFontFamily");
+                var isClearImages = Request.GetPostBool("isClearImages");
+                var checkedLevel = Request.GetPostInt("checkedLevel");
+                var fileNames = TranslateUtils.StringCollectionToStringList(Request.GetPostString("fileNames"));
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentAdd))
                 {
                     return Unauthorized();

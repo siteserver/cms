@@ -5,6 +5,8 @@ using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -19,16 +21,16 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(rest.GetPostString("contentIds"));
-                var isUp = rest.GetPostBool("isUp");
-                var taxis = rest.GetPostInt("taxis");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var contentIdList = TranslateUtils.StringCollectionToIntList(Request.GetPostString("contentIds"));
+                var isUp = Request.GetPostBool("isUp");
+                var taxis = Request.GetPostInt("taxis");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentEdit))
                 {
                     return Unauthorized();
@@ -77,7 +79,7 @@ namespace SiteServer.API.Controllers.Home
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 
-                rest.AddSiteLog(siteId, channelId, 0, "对内容排序", string.Empty);
+                LogUtils.AddSiteLog(siteId, channelId, rest.AdminName, "对内容排序", string.Empty);
 
                 return Ok(new
                 {

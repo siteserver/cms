@@ -10,6 +10,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
 using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Fx;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Backend
@@ -22,13 +23,48 @@ namespace SiteServer.API.Controllers.Backend
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
+        public static object AdminRedirectCheck(IAuthenticatedRequest request, bool checkInstall = false, bool checkDatabaseVersion = false,
+            bool checkLogin = false)
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
+
+            if (checkInstall && string.IsNullOrWhiteSpace(WebConfigUtils.ConnectionString))
+            {
+                redirect = true;
+                redirectUrl = FxUtils.GetAdminUrl("installer/default.aspx");
+            }
+            else if (checkDatabaseVersion && ConfigManager.Instance.Initialized &&
+                     ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+            {
+                redirect = true;
+                redirectUrl = AdminPagesUtils.UpdateUrl;
+            }
+            else if (checkLogin && !request.IsAdminLoggin)
+            {
+                redirect = true;
+                redirectUrl = AdminPagesUtils.LoginUrl;
+            }
+
+            if (redirect)
+            {
+                return new
+                {
+                    Value = false,
+                    RedirectUrl = redirectUrl
+                };
+            }
+
+            return null;
+        }
+
         [HttpGet, Route(Route)]
         public IHttpActionResult GetStatus()
         {
             try
             {
-                var rest = new Rest(Request);
-                var redirect = rest.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
+                var rest = Request.GetAuthenticatedRequest();
+                var redirect = AdminRedirectCheck(rest, checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
                 return Ok(new
@@ -113,12 +149,12 @@ namespace SiteServer.API.Controllers.Backend
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var account = rest.GetPostString("account");
-                var password = rest.GetPostString("password");
-                var captcha = rest.GetPostString("captcha");
-                var isAutoLogin = rest.GetPostBool("isAutoLogin");
+                var account = Request.GetPostString("account");
+                var password = Request.GetPostString("password");
+                var captcha = Request.GetPostString("captcha");
+                var isAutoLogin = Request.GetPostBool("isAutoLogin");
 
                 var code = CookieUtils.GetCookie("SS-" + nameof(LoginController));
 
@@ -150,7 +186,7 @@ namespace SiteServer.API.Controllers.Backend
                 adminInfo = AdminManager.GetAdminInfoByUserName(userName);
                 DataProvider.Administrator.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
                 var accessToken = rest.AdminLogin(adminInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(Rest.AccessTokenExpireDays);
+                var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
                 {

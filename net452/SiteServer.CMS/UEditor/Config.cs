@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Web;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.UEditor
@@ -14,12 +15,7 @@ namespace SiteServer.CMS.UEditor
         private static bool noCache = true;
         private static JObject BuildItems()
         {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-            var request = new RequestImpl(HttpContext.Current.Request);
-#pragma warning restore CS0612 // '“RequestImpl”已过时
-            if (!request.IsAdminLoggin) return new JObject();
-
-                var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */
+            var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */
 {
     /* 上传图片配置项 */
     ""imageActionName"": ""uploadimage"", /* 执行上传图片的action名称 */

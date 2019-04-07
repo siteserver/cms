@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Caches;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Database.Core;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cloud
 {
@@ -15,16 +19,16 @@ namespace SiteServer.API.Controllers.Pages.Cloud
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin ||
-                    !rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                    !rest.AdminPermissions.IsSuperAdmin())
                 {
                     return Unauthorized();
                 }
 
-                var userName = rest.GetPostString("userName");
-                var accessToken = rest.GetPostString("accessToken");
-                var expiresAt = rest.GetPostDateTime("expiresAt", DateTime.Now);
+                var userName = Request.GetPostString("userName");
+                var accessToken = Request.GetPostString("accessToken");
+                var expiresAt = Request.GetPostDateTime("expiresAt", DateTime.Now);
 
                 //ConfigManager.SystemConfigInfo.IsCloudLoggin = true; ConfigManager.SystemConfigInfo.CloudUserName = userName;
                 //ConfigManager.SystemConfigInfo.CloudAccessToken = accessToken;
@@ -32,7 +36,7 @@ namespace SiteServer.API.Controllers.Pages.Cloud
 
                 DataProvider.Config.Update(ConfigManager.Instance);
 
-                rest.AddAdminLog("云服务账号登录", $"UserName:{userName}");
+                LogUtils.AddAdminLog(rest.AdminName, "云服务账号登录", $"UserName:{userName}");
 
                 return Ok(new
                 {

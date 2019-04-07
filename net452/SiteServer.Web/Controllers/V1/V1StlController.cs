@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.RestRoutes.V1;
+using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
+using SiteServer.Plugin;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -19,11 +22,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-#pragma warning disable CS0612 // '“RequestImpl”已过时
-                var request = new RequestImpl(HttpContext.Current.Request);
-#pragma warning restore CS0612 // '“RequestImpl”已过时
-
-                var stlRequest = new StlRequest(request);
+                var stlRequest = new StlRequest(Request);
 
                 if (!stlRequest.IsApiAuthorized)
                 {

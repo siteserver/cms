@@ -131,8 +131,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
                 var localDirectoryPath = PathUtility.GetUploadDirectoryPath(SiteInfo, fileExtName);
                 var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
-                var localTitleFileName = StringUtils.Constants.TitleImageAppendix + localFileName;
-                var localSmallFileName = StringUtils.Constants.SmallImageAppendix + localFileName;
+                var localTitleFileName = Constants.TitleImageAppendix + localFileName;
+                var localSmallFileName = Constants.SmallImageAppendix + localFileName;
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
                 var localTitleFilePath = PathUtils.Combine(localDirectoryPath, localTitleFileName);
                 var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);

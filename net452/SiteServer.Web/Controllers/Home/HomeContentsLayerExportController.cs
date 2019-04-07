@@ -9,6 +9,8 @@ using SiteServer.CMS.Database.Models;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
@@ -23,13 +25,13 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
-                var siteId = rest.GetQueryInt("siteId");
-                var channelId = rest.GetQueryInt("channelId");
+                var siteId = Request.GetQueryInt("siteId");
+                var channelId = Request.GetQueryInt("channelId");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ContentView))
                 {
                     return Unauthorized();
@@ -43,7 +45,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
 
-                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(rest.AdminPermissions, siteInfo, siteId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 return Ok(new
@@ -65,22 +67,22 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
 
                 var downloadUrl = string.Empty;
 
-                var siteId = rest.GetPostInt("siteId");
-                var channelId = rest.GetPostInt("channelId");
-                var exportType = rest.GetPostString("exportType");
-                var isAllCheckedLevel = rest.GetPostBool("isAllCheckedLevel");
-                var checkedLevelKeys = rest.GetPostObject<List<int>>("checkedLevelKeys");
-                var isAllDate = rest.GetPostBool("isAllDate");
-                var startDate = rest.GetPostDateTime("startDate", DateTime.Now);
-                var endDate = rest.GetPostDateTime("endDate", DateTime.Now);
-                var columnNames = rest.GetPostObject<List<string>>("columnNames");
+                var siteId = Request.GetPostInt("siteId");
+                var channelId = Request.GetPostInt("channelId");
+                var exportType = Request.GetPostString("exportType");
+                var isAllCheckedLevel = Request.GetPostBool("isAllCheckedLevel");
+                var checkedLevelKeys = Request.GetPostObject<List<int>>("checkedLevelKeys");
+                var isAllDate = Request.GetPostBool("isAllDate");
+                var startDate = Request.GetPostDateTime("startDate", DateTime.Now);
+                var endDate = Request.GetPostDateTime("endDate", DateTime.Now);
+                var columnNames = Request.GetPostObject<List<string>>("columnNames");
 
                 if (!rest.IsUserLoggin ||
-                    !rest.UserPermissionsImpl.HasChannelPermissions(siteId, channelId,
+                    !rest.UserPermissions.HasChannelPermissions(siteId, channelId,
                         ConfigManager.ChannelPermissions.ChannelEdit))
                 {
                     return Unauthorized();
@@ -92,7 +94,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var onlyAdminId = rest.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+                var onlyAdminId = ((PermissionsImpl)rest.AdminPermissions).GetOnlyAdminId(siteId, channelId);
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);

@@ -3,6 +3,8 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Packaging;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
@@ -17,8 +19,8 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
-                if (!rest.IsAdminLoggin || !rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                var rest = Request.GetAuthenticatedRequest();
+                if (!rest.IsAdminLoggin || !rest.AdminPermissions.IsSuperAdmin())
                 {
                     return Unauthorized();
                 }
@@ -55,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(Route)]
         public IHttpActionResult Upgrade()
         {
-            var rest = new Rest(Request);
+            var rest = Request.GetAuthenticatedRequest();
 
             var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 
@@ -64,7 +66,7 @@ namespace SiteServer.API.Controllers.Pages
                 return Unauthorized();
             }
 
-            var version = rest.GetPostString("version");
+            var version = Request.GetPostString("version");
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
             var packagePath = FxUtils.GetPackagesPath(idWithVersion);

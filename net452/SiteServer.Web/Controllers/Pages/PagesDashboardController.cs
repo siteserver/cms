@@ -6,6 +6,8 @@ using SiteServer.CMS.Caches;
 using SiteServer.CMS.Caches.Content;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
+using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -22,18 +24,20 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
+
+                var adminInfo = AdminManager.GetAdminInfoByUserId(rest.AdminId);
 
                 return Ok(new
                 {
                     Value = new
                     {
                         Version = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version,
-                        LastActivityDate = DateUtils.GetDateString(rest.AdminInfo.LastActivityDate, EDateFormatType.Chinese),
+                        LastActivityDate = DateUtils.GetDateString(adminInfo.LastActivityDate, EDateFormatType.Chinese),
                         UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
                     }
                 });
@@ -49,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var rest = new Rest(Request);
+                var rest = Request.GetAuthenticatedRequest();
                 if (!rest.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -57,39 +61,19 @@ namespace SiteServer.API.Controllers.Pages
 
                 var unCheckedList = new List<object>();
 
-                if (rest.AdminPermissionsImpl.IsConsoleAdministrator)
+                foreach (var siteInfo in SiteManager.GetSiteInfoList())
                 {
-                    foreach(var siteInfo in SiteManager.GetSiteInfoList())
-                    {
-                        var count = ContentManager.GetCount(siteInfo, false);
-                        if (count > 0)
-                        {
-                            unCheckedList.Add(new
-                            {
-                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
-                                siteInfo.SiteName,
-                                Count = count
-                            });
-                        }
-                    }
-                }
-                else if (rest.AdminPermissionsImpl.IsSystemAdministrator)
-                {
-                    foreach (var siteId in TranslateUtils.StringCollectionToIntList(rest.AdminInfo.SiteIdCollection))
-                    {
-                        var siteInfo = SiteManager.GetSiteInfo(siteId);
-                        if (siteInfo == null) continue;
+                    if (!rest.AdminPermissions.IsSiteAdmin(siteInfo.Id)) continue;
 
-                        var count = ContentManager.GetCount(siteInfo, false);
-                        if (count > 0)
+                    var count = ContentManager.GetCount(siteInfo, false);
+                    if (count > 0)
+                    {
+                        unCheckedList.Add(new
                         {
-                            unCheckedList.Add(new
-                            {
-                                Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
-                                siteInfo.SiteName,
-                                Count = count
-                            });
-                        }
+                            Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
+                            siteInfo.SiteName,
+                            Count = count
+                        });
                     }
                 }
 
