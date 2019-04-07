@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.Pages.Cloud
 
                 var userName = Request.GetPostString("userName");
                 var accessToken = Request.GetPostString("accessToken");
-                var expiresAt = Request.GetPostDateTime("expiresAt", DateTime.Now);
+                var expiresAt = TranslateUtils.ToDateTime(Request.GetPostString("expiresAt"), DateTime.Now);
 
                 //ConfigManager.SystemConfigInfo.IsCloudLoggin = true; ConfigManager.SystemConfigInfo.CloudUserName = userName;
                 //ConfigManager.SystemConfigInfo.CloudAccessToken = accessToken;

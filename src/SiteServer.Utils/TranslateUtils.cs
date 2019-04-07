@@ -17,6 +17,11 @@ namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
+        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default(T))
+        {
+            return To(Get(dict, name), defaultValue);
+        }
+
         public static object Get(IDictionary<string, object> dict, string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
@@ -24,12 +29,7 @@ namespace SiteServer.Utils
             return dict.TryGetValue(name, out var extendValue) ? extendValue : null;
         }
 
-        public static T Get<T>(IDictionary<string, object> dict, string name, T defaultValue = default(T))
-        {
-            return Get(Get(dict, name), defaultValue);
-        }
-
-        public static T Get<T>(object value, T defaultValue = default(T))
+        public static T To<T>(object value, T defaultValue = default(T))
         {
             switch (value)
             {

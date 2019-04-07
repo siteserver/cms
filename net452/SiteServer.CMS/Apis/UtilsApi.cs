@@ -111,6 +111,16 @@ namespace SiteServer.CMS.Apis
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
         }
 
+        public string JsonSerialize(object obj)
+        {
+            return TranslateUtils.JsonSerialize(obj);
+        }
+
+        public T JsonDeserialize<T>(string json, T defaultValue = default(T))
+        {
+            return TranslateUtils.JsonDeserialize(json, defaultValue);
+        }
+
         public IAuthenticatedRequest GetAuthenticatedRequest(HttpRequestMessage request)
         {
             if (request.Properties.ContainsKey("AuthenticatedRequest"))

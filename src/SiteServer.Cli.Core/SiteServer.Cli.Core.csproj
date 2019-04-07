@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SiteServer.Plugin" Version="2.2.14-beta" />
+  </ItemGroup>
+
 </Project>

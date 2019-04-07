@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Net.Http;
 using SiteServer.CMS.Fx;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core.RestRoutes.V1
