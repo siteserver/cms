@@ -17,13 +17,13 @@
     - Release
 
   environment:
-    nodejs_version: "6"
     TreatWarningsAsErrors: false
 
   install:
     - ps: Install-Product node $env:nodejs_version
     - npm install gulp -g
     - npm install
+    - nuget update -self
 
   skip_tags: true
 
@@ -94,7 +94,6 @@
     - Release
 
   environment:
-    nodejs_version: "6"
     TreatWarningsAsErrors: false
     DOCKER_USER:
       secure: plV6NmiOZal0f3H/xNFuoA==
@@ -106,6 +105,7 @@
     - npm install gulp -g
     - npm install
     - docker version
+    - nuget update -self
 
   skip_tags: true
 
