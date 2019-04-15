@@ -17,6 +17,7 @@
     - Release
 
   environment:
+    nodejs_version: "6"
     TreatWarningsAsErrors: false
 
   install:
@@ -94,6 +95,7 @@
     - Release
 
   environment:
+    nodejs_version: "6"
     TreatWarningsAsErrors: false
     DOCKER_USER:
       secure: plV6NmiOZal0f3H/xNFuoA==
