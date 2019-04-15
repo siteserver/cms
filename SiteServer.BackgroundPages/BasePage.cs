@@ -3,8 +3,6 @@ using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
@@ -49,7 +47,7 @@ namespace SiteServer.BackgroundPages
                 }
 
                 #if !DEBUG
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
                     PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
