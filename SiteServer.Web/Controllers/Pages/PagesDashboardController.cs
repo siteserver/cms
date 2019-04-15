@@ -23,18 +23,20 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
 
+                var lastActivityDate = request.AdminInfo.LastActivityDate ?? DateUtils.SqlMinValue;
+
                 return Ok(new
                 {
                     Value = new
                     {
-                        Version = SystemManager.Version == PackageUtils.VersionDev ? "dev" : SystemManager.Version,
-                        LastActivityDate = DateUtils.GetDateString(request.AdminInfo.LastActivityDate, EDateFormatType.Chinese),
+                        Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
+                        LastActivityDate = DateUtils.GetDateString(lastActivityDate, EDateFormatType.Chinese),
                         UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
                     }
                 });
@@ -50,7 +52,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();

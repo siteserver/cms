@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -330,15 +331,14 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (isRelatedContents && contentId > 0)
             {
-                var isTags = false;
                 var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), siteInfo.Id);
+                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteInfo.Id);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
-                        isTags = true;
+                        
                         if (string.IsNullOrEmpty(where))
                         {
                             where =
@@ -351,8 +351,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         }
                     }
                 }
-
-                if (!isTags)
+                else
                 {
                     if (string.IsNullOrEmpty(where))
                     {

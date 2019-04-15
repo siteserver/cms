@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
@@ -182,7 +182,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             return parsedContent;
         }
 
-        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, AttributesImpl attributes, bool isAddAndNotPostBack, string defaultValue)
         {
             var value = attributes.Get(attributeName);
             if (isAddAndNotPostBack && value == null)

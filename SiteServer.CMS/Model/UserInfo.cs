@@ -105,7 +105,7 @@ namespace SiteServer.CMS.Model
         /// <summary>
         /// 创建时间。
         /// </summary>
-        public DateTime CreateDate
+        public DateTime? CreateDate
         {
             get => GetDateTime(UserAttribute.CreateDate, DateUtils.SqlMinValue);
             set => Set(UserAttribute.CreateDate, value);
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.Model
         /// <summary>
         /// 最后一次重设密码时间。
         /// </summary>
-        public DateTime LastResetPasswordDate
+        public DateTime? LastResetPasswordDate
         {
             get => GetDateTime(UserAttribute.LastResetPasswordDate, DateUtils.SqlMinValue);
             set => Set(UserAttribute.LastResetPasswordDate, value);
@@ -123,7 +123,7 @@ namespace SiteServer.CMS.Model
         /// <summary>
         /// 最后活动时间。
         /// </summary>
-        public DateTime LastActivityDate
+        public DateTime? LastActivityDate
         {
             get => GetDateTime(UserAttribute.LastActivityDate, DateUtils.SqlMinValue);
             set => Set(UserAttribute.LastActivityDate, value);
@@ -165,6 +165,12 @@ namespace SiteServer.CMS.Model
             set => Set(UserAttribute.IsChecked, value);
         }
 
+        public bool Checked
+        {
+            get => IsChecked;
+            set => IsChecked = value;
+        }
+
         /// <summary>
         /// 是否被锁定。
         /// </summary>
@@ -172,6 +178,12 @@ namespace SiteServer.CMS.Model
         {
             get => GetBool(UserAttribute.IsLockedOut);
             set => Set(UserAttribute.IsLockedOut, value);
+        }
+
+        public bool Locked
+        {
+            get => IsLockedOut;
+            set => IsLockedOut = value;
         }
 
         /// <summary>
@@ -311,12 +323,12 @@ namespace SiteServer.CMS.Model
         {
             public override bool CanConvert(Type objectType)
             {
-                return objectType == typeof(IAttributes);
+                return objectType == typeof(AttributesImpl);
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                var attributes = value as IAttributes;
+                var attributes = value as AttributesImpl;
                 serializer.Serialize(writer, attributes?.ToDictionary());
             }
 

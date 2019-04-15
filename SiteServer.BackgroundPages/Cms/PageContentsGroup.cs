@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                 AuthRequest.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =
-                $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _channelInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
+                $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _channelInfo.Id, contentInfo.Id, PageUrl)}"">编辑</a>";
 
             var removeUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
             {

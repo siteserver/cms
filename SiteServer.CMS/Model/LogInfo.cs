@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Model
 
         public string IpAddress { get; set; }
 
-        public DateTime AddDate { get; set; }
+        public DateTime? AddDate { get; set; }
 
         public string Action { get; set; }
 

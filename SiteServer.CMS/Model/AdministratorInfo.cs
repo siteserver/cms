@@ -70,15 +70,16 @@ namespace SiteServer.CMS.Model
 
         public string PasswordSalt { get; set; }
 
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
-        public DateTime LastActivityDate { get; set; }
+        public DateTime? LastActivityDate { get; set; }
 
         public int CountOfLogin { get; set; }
 
         public int CountOfFailedLogin { get; set; }
 
         public string CreatorUserName { get; set; }
+        public bool Locked { get; set; }
 
         public bool IsLockedOut { get; set; }
 
@@ -198,9 +199,9 @@ namespace SiteServer.CMS.Model
 
         public string PasswordSalt { get; set; }
 
-        public DateTime CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
-        public DateTime LastActivityDate { get; set; }
+        public DateTime? LastActivityDate { get; set; }
 
         public int CountOfLogin { get; set; }
 

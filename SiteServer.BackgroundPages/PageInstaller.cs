@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
@@ -73,7 +74,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
 
-            LtlVersionInfo.Text = SystemManager.Version;
+            LtlVersionInfo.Text = SystemManager.ProductVersion;
             SetSetp(1);
 
             DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
@@ -107,7 +108,7 @@ namespace SiteServer.BackgroundPages
                 BtnStep2.Visible = true;
 
                 LtlDomain.Text = PageUtils.GetHost();
-                LtlVersion.Text = SystemManager.Version;
+                LtlVersion.Text = SystemManager.ProductVersion;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
                 LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;
 
@@ -115,7 +116,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.Version);
+                    FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.ProductVersion);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
                     ioPermission.Demand();
@@ -131,7 +132,7 @@ namespace SiteServer.BackgroundPages
                 try
                 {
                     var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
-                    FileUtils.WriteText(filePath, ECharset.utf_8, StringUtils.Constants.Html5Empty);
+                    FileUtils.WriteText(filePath, ECharset.utf_8, Constants.Html5Empty);
 
                     var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
                     ioPermission.Demand();

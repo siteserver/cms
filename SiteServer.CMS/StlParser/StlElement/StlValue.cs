@@ -73,7 +73,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
-            var ellipsis = StringUtils.Constants.Ellipsis;
+            var ellipsis = Constants.Ellipsis;
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;

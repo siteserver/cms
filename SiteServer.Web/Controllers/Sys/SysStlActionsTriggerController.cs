@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             var siteId = request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);

@@ -92,8 +92,13 @@
     <tr v-for="content in pageContents" v-on:click="toggleChecked(content)" :class="{'table-warning': content.isSelected}">
       <td v-for="column in columns">
 
-        <template v-if="column.attributeName === 'Title' && content.isChecked">
-          <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
+        <template v-if="column.attributeName === 'Title'">
+          <template v-if="content.isChecked">
+            <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
+          </template>
+          <template v-else>
+            <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', contentId: content.id, full: true}, $event)"></a>
+          </template>
           <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
           <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
           <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
@@ -103,20 +108,9 @@
           <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
               class="text-primary fa fa-file-video-o"></i></a>
           <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-file-archive-o"></i></a>
-          <a v-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-external-link"></i></a>
-        </template>
-        <template v-else-if="column.attributeName === 'Title' && !content.isChecked">
-          <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', contentId: content.id, full: true}, $event)"></a>
-          <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
-          <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
-          <i v-if="content.isHot" class="text-primary fa fa-fire" title="热点"></i>
-          <i v-if="content.isColor" class="text-primary fa fa-eye" title="醒目"></i>
-          <a v-if="content.imageUrl" :href="content.imageUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-photo-o"></i></a>
-          <a v-if="content.videoUrl" :href="content.videoUrl" target="_blank" v-on:click.stop><i
-              class="text-primary fa fa-file-video-o"></i></a>
-          <a v-if="content.fileUrl" :href="content.fileUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-file-archive-o"></i></a>
-          <a v-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop><i class="text-primary fa fa-external-link"></i></a>
+          <i v-if="content.sourceId && content.referenceId && content.translateContentType === 'Reference'" class="text-primary fa fa-external-link" title="引用地址"></i>
+          <i v-else-if="content.sourceId && content.referenceId && content.translateContentType === 'ReferenceContent'" class="text-primary fa fa-external-link-square" title="引用内容"></i>
+          <a v-else-if="content.linkUrl" :href="content.linkUrl" target="_blank" v-on:click.stop title="外部链接"><i class="text-primary fa fa-external-link"></i></a>
         </template>
         <template v-else-if="column.inputType === 'Image'">
           <a v-if="content.getProp(column.attributeName)" :href="content.getProp(column.attributeName)" target="_blank"

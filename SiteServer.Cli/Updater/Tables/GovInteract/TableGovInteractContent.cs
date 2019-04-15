@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables.GovInteract
@@ -126,340 +126,134 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
             {
                 AttributeName = "RealName",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "姓名"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "Organization",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "工作单位"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "CardType",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.SelectOne,
-                    DisplayName = "证件名称",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "身份证",
-                            Value = "身份证",
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "学生证",
-                            Value = "学生证",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "军官证",
-                            Value = "军官证",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "工作证",
-                            Value = "工作证",
-                            Selected = false
-                        }
-                    }
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "CardNo",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "证件号码"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "Phone",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "联系电话"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "PostCode",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "邮政编码"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "Address",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "联系地址"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "Email",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "电子邮件"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "Fax",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "传真"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "TypeId",
-                DataType = DataType.Integer,
-
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.SelectOne,
-                    DisplayName = "类型",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "求决",
-                            Value = "15",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "举报",
-                            Value = "16",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "投诉",
-                            Value = "17",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "咨询",
-                            Value = "18",
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "建议",
-                            Value = "19",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "感谢",
-                            Value = "20",
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "其他",
-                            Value = "21",
-                            Selected = false
-                        }
-                    }
-                }
+                DataType = DataType.Integer
             },
             new TableColumn
             {
                 AttributeName = "IsPublic",
                 DataType = DataType.VarChar,
-                DataLength = 18,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Radio,
-                    DisplayName = "是否公开",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "公开",
-                            Value = true.ToString(),
-                            Selected = true
-                        },
-                        new InputListItem
-                        {
-                            Text = "不公开",
-                            Value = false.ToString(),
-                            Selected = false
-                        }
-                    }
-                }
+                DataLength = 18
             },
             new TableColumn
             {
                 AttributeName = "Content",
-                DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "内容"
-                }
+                DataType = DataType.Text
             },
             new TableColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.File,
-                    DisplayName = "附件"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "DepartmentId",
-                DataType = DataType.Integer,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Customize,
-                    DisplayName = "提交部门"
-                }
+                DataType = DataType.Integer
             },
             new TableColumn
             {
                 AttributeName = "DepartmentName",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "提交部门"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "QueryCode",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "查询码"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "State",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "状态"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "IpAddress",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "IP地址"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "ReplyContent",
-                DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复内容"
-                }
+                DataType = DataType.Text
             },
             new TableColumn
             {
                 AttributeName = "ReplyFileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 255,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复附件"
-                }
+                DataLength = 255
             },
             new TableColumn
             {
                 AttributeName = "ReplyDepartmentName",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复部门"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "ReplyUserName",
                 DataType = DataType.VarChar,
-                DataLength = 50,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复人"
-                }
+                DataLength = 50
             },
             new TableColumn
             {
                 AttributeName = "ReplyAddDate",
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "回复时间"
-                }
+                DataType = DataType.DateTime
             }
         };
 

@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
             var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];

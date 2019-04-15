@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 
 namespace SiteServer.CMS.Model.Attributes
 {
     public static class ContentAttribute
     {
         public const string Id = nameof(ContentInfo.Id);
+        public const string Guid = nameof(Entity.Guid);
+        public const string LastModifiedDate = nameof(Entity.LastModifiedDate);
         public const string ChannelId = nameof(ContentInfo.ChannelId);
         public const string SiteId = nameof(ContentInfo.SiteId);
         public const string AddUserName = nameof(ContentInfo.AddUserName);
@@ -60,6 +63,8 @@ namespace SiteServer.CMS.Model.Attributes
         public static readonly Lazy<List<string>> AllAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
+            Guid,
+            LastModifiedDate,
             ChannelId,
             SiteId,
             AddUserName,
@@ -93,6 +98,8 @@ namespace SiteServer.CMS.Model.Attributes
         public static readonly Lazy<List<string>> MetadataAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
+            Guid,
+            LastModifiedDate,
             ChannelId,
             SiteId,
             AddUserName,

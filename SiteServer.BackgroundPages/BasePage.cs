@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public RequestImpl AuthRequest { get; private set; }
+        public AuthenticatedRequest AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new RequestImpl(Request);
+            AuthRequest = new AuthenticatedRequest(Request);
 
             if (!IsInstallerPage)
             {

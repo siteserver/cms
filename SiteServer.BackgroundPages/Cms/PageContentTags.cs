@@ -18,7 +18,12 @@ namespace SiteServer.BackgroundPages.Cms
 
 		public Button BtnAddTag;
 
-		public void Page_Load(object sender, EventArgs e)
+        public static string GetRedirectUrl(int siteId)
+        {
+            return PageUtils.GetCmsUrl(siteId, nameof(PageContentTags), null);
+        }
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -81,6 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var ltlTagName = (Literal)e.Item.FindControl("ltlTagName");
             var ltlCount = (Literal)e.Item.FindControl("ltlCount");
+            var ltlContents = (Literal)e.Item.FindControl("ltlContents");
             var ltlEditUrl = (Literal)e.Item.FindControl("ltlEditUrl");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
@@ -96,6 +102,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTagName.Text = $@"<span class=""{cssClass}"">{tag}</span>";
             ltlCount.Text = useNum.ToString();
+
+            ltlContents.Text = $@"<a href=""{PageContentsTag.GetRedirectUrl(SiteId, tag)}"">查看内容</a>";
 
             var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToEdit(SiteId, tag);
             ltlEditUrl.Text = $"<a href=\"javascript:;\" onClick=\"{showPopWinString}\">编辑</a>";

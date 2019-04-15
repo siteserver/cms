@@ -405,9 +405,9 @@ namespace SiteServer.CMS.DataCache
         {
             var retval = DateTime.MinValue;
             var nodeInfo = GetChannelInfo(siteId, channelId);
-            if (nodeInfo != null)
+            if (nodeInfo != null && nodeInfo.AddDate.HasValue)
             {
-                retval = nodeInfo.AddDate;
+                retval = nodeInfo.AddDate.Value;
             }
             return retval;
         }

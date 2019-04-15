@@ -209,6 +209,19 @@ namespace SiteServer.Utils
             return list;
         }
 
+        public static IDictionary<string, object> ToDictionary(NameValueCollection collection)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (collection == null) return dict;
+
+            foreach (var key in collection.AllKeys)
+            {
+                dict[key] = collection[key];
+            }
+
+            return dict;
+        }
+
         public static StringCollection StringCollectionToStringCollection(string collection, char separator = ',')
         {
             var arraylist = new StringCollection();
@@ -583,7 +596,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static T JsonDeserialize<T>(string json)
+        public static T JsonDeserialize<T>(string json, T defaultValue = default(T))
         {
             try
             {
@@ -595,7 +608,7 @@ namespace SiteServer.Utils
             }
             catch
             {
-                return default(T);
+                return defaultValue;
             }
         }
 

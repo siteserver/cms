@@ -184,6 +184,7 @@ namespace SiteServer.CMS.Plugin
             var url = PageUtils.AddQueryStringIfNotExists(PageUtils.ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
+                {"pluginId", pluginId},
                 {"apiUrl", ApiManager.InnerApiUrl}
             });
             if (siteId > 0)

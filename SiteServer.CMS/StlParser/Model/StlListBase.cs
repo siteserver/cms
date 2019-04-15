@@ -65,9 +65,6 @@
         [StlAttribute(Title = "仅显示附件内容")]
         public const string IsFile = nameof(IsFile);
 
-        [StlAttribute(Title = "显示相关内容列表")]
-        public const string IsRelatedContents = nameof(IsRelatedContents);
-
         [StlAttribute(Title = "条件判断")]
         public const string Where = nameof(Where);
 

@@ -1,4 +1,5 @@
 ﻿using System.Web;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -7,11 +8,11 @@ namespace SiteServer.BackgroundPages
 {
     public abstract class BaseHandler : IHttpHandler
     {
-        protected RequestImpl AuthRequest { get; private set; }
+        protected AuthenticatedRequest AuthRequest { get; private set; }
 
         public void ProcessRequest(HttpContext context)
         {
-            AuthRequest = new RequestImpl(context.Request);
+            AuthRequest = new AuthenticatedRequest(context.Request);
 
             if (!AuthRequest.IsAdminLoggin) return;
 

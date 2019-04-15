@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
-using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin.Apis
 {
@@ -75,14 +75,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 {
                     AttributeName = ContentAttribute.Title,
                     DataType = DataType.VarChar,
-                    DataLength = 255,
-                    InputStyle = new InputStyle
-                    {
-                        InputType = InputType.Text,
-                        DisplayName = "标题",
-                        IsRequired = true,
-                        ValidateType = ValidateType.None
-                    }
+                    DataLength = 255
                 }
             };
 
@@ -92,19 +85,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 {
                     AttributeName = styleInfo.AttributeName,
                     DataType = DataType.VarChar,
-                    DataLength = 50,
-                    InputStyle = new InputStyle
-                    {
-                        InputType = styleInfo.InputType,
-                        DisplayName = styleInfo.DisplayName,
-                        DefaultValue = styleInfo.DefaultValue,
-                        IsRequired = styleInfo.Additional.IsRequired,
-                        ValidateType = styleInfo.Additional.ValidateType,
-                        MinNum = styleInfo.Additional.MinNum,
-                        MaxNum = styleInfo.Additional.MaxNum,
-                        RegExp = styleInfo.Additional.RegExp,
-                        Width = styleInfo.Additional.Width,
-                    }
+                    DataLength = 50
                 });
             }
 
@@ -112,55 +93,30 @@ namespace SiteServer.CMS.Plugin.Apis
             {
                 AttributeName = ContentAttribute.IsTop,
                 DataType = DataType.VarChar,
-                DataLength = 18,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "置顶"
-                }
+                DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsRecommend,
                 DataType = DataType.VarChar,
-                DataLength = 18,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "推荐"
-                }
+                DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsHot,
                 DataType = DataType.VarChar,
-                DataLength = 18,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "热点"
-                }
+                DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.IsColor,
                 DataType = DataType.VarChar,
-                DataLength = 18,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.CheckBox,
-                    DisplayName = "醒目"
-                }
+                DataLength = 18
             });
             tableColumnList.Add(new TableColumn
             {
                 AttributeName = ContentAttribute.AddDate,
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "添加时间"
-                }
+                DataType = DataType.DateTime
             });
 
             return tableColumnList;
@@ -229,7 +185,7 @@ namespace SiteServer.CMS.Plugin.Apis
             DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
         }
 
-        public List<int> GetContentIdList(int siteId, int channelId)
+        public IList<int> GetContentIdList(int siteId, int channelId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);

@@ -13,7 +13,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");

@@ -13,11 +13,13 @@ var data = {
   pageAlert: null,
   defaultPageUrl: null,
   isNightly: null,
-  version: null,
+  pluginVersion: null,
+  productVersion: null,
+  targetFramework: null,
+  environmentVersion: null,
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
-  currentVersion: null,
   topMenus: null,
   siteMenus: null,
   activeParentMenu: null,
@@ -46,11 +48,13 @@ var methods = {
       if (res.value) {
         $this.defaultPageUrl = res.defaultPageUrl;
         $this.isNightly = res.isNightly;
-        $this.version = res.version;
+        $this.pluginVersion = res.pluginVersion;
+        $this.productVersion = res.productVersion;
+        $this.targetFramework = res.targetFramework;
+        $this.environmentVersion = res.environmentVersion;
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
-        $this.currentVersion = res.currentVersion;
         $this.topMenus = res.topMenus;
         $this.siteMenus = res.siteMenus;
         $this.pluginMenus = res.pluginMenus;
@@ -58,6 +62,12 @@ var methods = {
         $this.activeParentMenu = $this.siteMenus[0];
       } else {
         location.href = res.redirectUrl;
+      }
+    }).catch(function (error) {
+      if (error.response.status === 401) {
+        location.href = 'pageLogin.cshtml';
+      } else if (error.response.status === 500) {
+        $this.pageAlert = utils.getPageAlert(error);
       }
     }).then(function () {
       $this.pageLoad = true;
@@ -99,7 +109,9 @@ var methods = {
     $apiCloud.get('updates', {
       params: {
         isNightly: $this.isNightly,
-        pluginVersion: $this.version,
+        pluginVersion: $this.pluginVersion,
+        targetFramework: $this.targetFramework,
+        environmentVersion: $this.environmentVersion,
         packageIds: $this.packageIds.join(',')
       }
     }).then(function (response) {
@@ -125,8 +137,6 @@ var methods = {
           }
         }
       }
-    }).catch(function (error) {
-      $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
       $this.pageLoad = true;
     });
@@ -134,7 +144,7 @@ var methods = {
 
   downloadSsCms: function (releaseInfo) {
     var $this = this;
-    if (compareversion($this.currentVersion, releaseInfo.version) != -1) return;
+    if (compareversion($this.productVersion, releaseInfo.version) != -1) return;
     var major = releaseInfo.version.split('.')[0];
     var minor = releaseInfo.version.split('.')[1];
 

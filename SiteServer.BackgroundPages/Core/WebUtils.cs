@@ -86,14 +86,14 @@ namespace SiteServer.BackgroundPages.Core
                 $"{PageContentAdd.GetRedirectUrlOfAdd(siteId, nodeInfo.Id, returnUrl)}&isUploadWord=True&isFirstLineTitle={isFirstLineTitle}&isFirstLineRemove={isFirstLineRemove}&isClearFormat={isClearFormat}&isFirstLineIndent={isFirstLineIndent}&isClearFontSize={isClearFontSize}&isClearFontFamily={isClearFontFamily}&isClearImages={isClearImages}&contentLevel={contentLevel}&fileName={fileName}";
         }
 
-        public static string GetContentAddAddUrl(int siteId, ChannelInfo nodeInfo, string returnUrl)
+        public static string GetContentAddAddUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageContentAdd.GetRedirectUrlOfAdd(siteId, nodeInfo.Id, returnUrl);
+            return PageContentAdd.GetRedirectUrlOfAdd(siteId, channelId, returnUrl);
         }
 
-        public static string GetContentAddEditUrl(int siteId, ChannelInfo nodeInfo, int id, string returnUrl)
+        public static string GetContentAddEditUrl(int siteId, int channelId, int id, string returnUrl)
         {
-            return PageContentAdd.GetRedirectUrlOfEdit(siteId, nodeInfo.Id, id, returnUrl);
+            return PageContentAdd.GetRedirectUrlOfEdit(siteId, channelId, id, returnUrl);
         }
 
         public static string GetContentCommands(PermissionsImpl permissionsImpl, SiteInfo siteInfo, ChannelInfo channelInfo, string pageUrl)
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Core
             if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable)
             {
                 builder.Append($@"
-<a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo, pageUrl)}"" class=""btn btn-light text-secondary"">
+<a href=""{GetContentAddAddUrl(siteInfo.Id, channelInfo.Id, pageUrl)}"" class=""btn btn-light text-secondary"">
     <i class=""ion-plus""></i>
     添加
 </a>");

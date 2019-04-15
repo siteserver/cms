@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Xml;
-using SiteServer.Plugin;
+using Datory;
 
 namespace SiteServer.Utils
 {

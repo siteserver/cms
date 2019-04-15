@@ -216,12 +216,28 @@ namespace SiteServer.CMS.Packaging
 
         public static PackageMetadata GetPackageMetadataFromPlugins(string directoryName, out string errorMessage)
         {
-            
             var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
-            if (!File.Exists(nuspecPath))
+
+            if (!FileUtils.IsFileExists(nuspecPath))
             {
-                errorMessage = $"插件配置文件 {directoryName}.nuspec 不存在";
-                return null;
+                FileUtils.WriteText(nuspecPath, $@"<?xml version=""1.0""?>
+<package >
+  <metadata>
+    <id>{directoryName}</id>
+    <version>$version$</version>
+    <title>{directoryName}</title>
+    <authors></authors>
+    <owners></owners>
+    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <iconUrl>https://www.siteserver.cn/assets/images/favicon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description></description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright {DateTime.Now.Year}</copyright>
+    <tags>Tag1 Tag2</tags>
+  </metadata>
+</package>");
             }
 
             PackageMetadata metadata;
@@ -327,15 +343,14 @@ namespace SiteServer.CMS.Packaging
             return dllDirectoryPath;
         }
 
-        private static PackageMetadata GetPackageMetadata(string nuspecPath)
+        private static PackageMetadata GetPackageMetadata(string configPath)
         {
-            var nuspecReader = new NuspecReader(nuspecPath);
+            var nuspecReader = new NuspecReader(configPath);
 
             var rawMetadata = nuspecReader.GetMetadata();
             if (rawMetadata == null || !rawMetadata.Any()) return null;
 
-            var metadata = PackageMetadata.FromNuspecReader(nuspecReader);
-            return metadata;
+            return PackageMetadata.FromNuspecReader(nuspecReader);
         }
 
         //**********************************test********************************

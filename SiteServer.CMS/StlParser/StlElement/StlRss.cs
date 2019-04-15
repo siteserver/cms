@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -222,7 +223,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
                     }
                     item.Description = StringUtils.Replace("&", item.Description, "&amp;");
-                    item.PubDate = contentInfo.AddDate;
+                    item.PubDate = contentInfo.AddDate.Value;
                     item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
 
                     channel.Items.Add(item);

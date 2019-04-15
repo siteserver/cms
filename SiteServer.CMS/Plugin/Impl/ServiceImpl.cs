@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using SiteServer.Plugin;
 using Menu = SiteServer.Plugin.Menu;
 
@@ -73,7 +74,7 @@ namespace SiteServer.CMS.Plugin.Impl
             Metadata = metadata;
         }
 
-        public IService SetSystemDefaltPage(string pageUrl)
+        public IService SetSystemDefaultPage(string pageUrl)
         {
             SystemDefaultPageUrl = pageUrl;
             return this;
@@ -188,31 +189,6 @@ namespace SiteServer.CMS.Plugin.Impl
             IsApiAuthorization = true;
 
             return this;
-        }
-
-        public event RestApiEventHandler RestApiGet;
-        public event RestApiEventHandler RestApiPost;
-        public event RestApiEventHandler RestApiPut;
-        public event RestApiEventHandler RestApiDelete;
-
-        public object OnRestApiGet(RestApiEventArgs e)
-        {
-            return RestApiGet?.Invoke(this, e);
-        }
-
-        public object OnRestApiPost(RestApiEventArgs e)
-        {
-            return RestApiPost?.Invoke(this, e);
-        }
-
-        public object OnRestApiPut(RestApiEventArgs e)
-        {
-            return RestApiPut?.Invoke(this, e);
-        }
-
-        public object OnRestApiDelete(RestApiEventArgs e)
-        {
-            return RestApiDelete?.Invoke(this, e);
         }
 
         public event EventHandler<ParseEventArgs> BeforeStlParse;

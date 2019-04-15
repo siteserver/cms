@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model
@@ -121,8 +122,9 @@ namespace SiteServer.CMS.Model
 	    public int ParentsCount { get; set; }
 
 	    public int ChildrenCount { get; set; }
+        public bool LastNode { get; set; }
 
-	    public bool IsLastNode { get; set; }
+        public bool IsLastNode { get; set; }
 
 	    public string IndexName { get; set; }
 
@@ -130,7 +132,7 @@ namespace SiteServer.CMS.Model
 
 	    public int Taxis { get; set; }
 
-	    public DateTime AddDate { get; set; }
+        public DateTime? AddDate { get; set; }
 
 	    public string ImageUrl { get; set; }
 
@@ -165,7 +167,7 @@ namespace SiteServer.CMS.Model
         public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
 
         [JsonIgnore]
-        public IAttributes Attributes => Additional;
+        public AttributesImpl Attributes => Additional;
 
         public Dictionary<string, object> ToDictionary()
         {

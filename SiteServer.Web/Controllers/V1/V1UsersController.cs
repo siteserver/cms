@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
                 if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
                 {
@@ -59,7 +59,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -98,7 +98,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -130,7 +130,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -174,7 +174,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -228,7 +228,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
@@ -255,7 +255,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -268,7 +268,7 @@ namespace SiteServer.API.Controllers.V1
                 }
 
                 var accessToken = request.UserLogin(userInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(RequestImpl.AccessTokenExpireDays);
+                var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
                 {
@@ -289,7 +289,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var userInfo = request.IsUserLoggin ? request.UserInfo : null;
                 request.UserLogout();
 
@@ -310,7 +310,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -341,7 +341,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
@@ -372,7 +372,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isAuth = request.IsApiAuthenticated &&
                              AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&

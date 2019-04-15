@@ -1,15 +1,19 @@
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Provider;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class DataProvider
     {
-        private static IDatabaseApi _databaseApi;
-        public static IDatabaseApi DatabaseApi
+        private static Database _database;
+        public static Database Database => _database ?? (_database = new Database(WebConfigUtils.DatabaseType, SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)));
+
+        private static DatabaseApi _databaseApi;
+        public static DatabaseApi DatabaseApi
         {
             get
             {
@@ -66,8 +70,8 @@ namespace SiteServer.CMS.Core
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
-        private static ContentTagDao _contentTagDao;
-        public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
+        //private static ContentTagDao _contentTagDao;
+        //public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
 
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
@@ -149,6 +153,7 @@ namespace SiteServer.CMS.Core
 
         public static void Reset()
         {
+            _database = null;
             _databaseApi = null;
 
             _accessTokenDao = null;
@@ -161,7 +166,7 @@ namespace SiteServer.CMS.Core
             _contentCheckDao = null;
             _contentDao = null;
             _contentGroupDao = null;
-            _contentTagDao = null;
+            //_contentTagDao = null;
             _databaseDao = null;
             _dbCacheDao = null;
             _departmentDao = null;
@@ -202,7 +207,7 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
-            ContentTagDao,
+            //ContentTagDao,
             DatabaseDao,
             DbCacheDao,
             DepartmentDao,

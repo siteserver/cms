@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(RequestImpl request)
+        public NameValueCollection GetPostCollection(AuthenticatedRequest request)
         {
             var formCollection = new NameValueCollection();
             foreach (var item in request.PostData)
@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());

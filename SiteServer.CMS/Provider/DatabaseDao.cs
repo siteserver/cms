@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Dapper;
+using Datory;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -14,7 +15,6 @@ using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -660,8 +660,8 @@ SELECT * FROM (
                     var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
                     if (databaseColumn != null && !tableColumn.IsIdentity)
                     {
-                        if (databaseColumn.DataType != tableColumn.DataType ||
-                            (databaseColumn.DataType == DataType.VarChar && tableColumn.DataType == DataType.VarChar && databaseColumn.DataLength != tableColumn.DataLength))
+                        if (tableColumn.DataType != databaseColumn.DataType ||
+                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
                         {
                             var sqlString = SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName,
                                 SqlUtils.GetColumnTypeString(tableColumn));

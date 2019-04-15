@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -147,162 +148,74 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
             {
                 AttributeName = "Identifier",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Customize,
-                    DisplayName = "索引号"
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "DocumentNo",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "文号",
-                    IsRequired = true
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "DepartmentId",
-                DataType = DataType.Integer,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Hidden,
-                    DisplayName = "部门",
-                }
+                DataType = DataType.Integer
             },
             new TableColumn
             {
                 AttributeName = "Publisher",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "发布机构"
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "Keywords",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Text,
-                    DisplayName = "关键词"
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "PublishDate",
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "发文日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                DataType = DataType.DateTime
             },
             new TableColumn
             {
                 AttributeName = "EffectDate",
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "生效日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                DataType = DataType.DateTime
             },
             new TableColumn
             {
                 AttributeName = "IsAbolition",
                 DataType = DataType.VarChar,
-                DataLength = 10,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Radio,
-                    DisplayName = "是否废止",
-                    IsRequired = true,
-                    ListItems = new List<InputListItem>
-                    {
-                        new InputListItem
-                        {
-                            Text = "是",
-                            Value = true.ToString(),
-                            Selected = false
-                        },
-                        new InputListItem
-                        {
-                            Text = "否",
-                            Value = false.ToString(),
-                            Selected = true
-                        },
-                    }
-                }
+                DataLength = 10
             },
             new TableColumn
             {
                 AttributeName = "AbolitionDate",
-                DataType = DataType.DateTime,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.DateTime,
-                    DisplayName = "废止日期",
-                    IsRequired = true,
-                    DefaultValue = "{Current}"
-                }
+                DataType = DataType.DateTime
             },
             new TableColumn
             {
                 AttributeName = "Description",
                 DataType = DataType.VarChar,
-                DataLength = 2000,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextArea,
-                    DisplayName = "内容概述"
-                }
+                DataLength = 2000
             },
             new TableColumn
             {
                 AttributeName = "ImageUrl",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.Image,
-                    DisplayName = "图片"
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "FileUrl",
                 DataType = DataType.VarChar,
-                DataLength = 200,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.File,
-                    DisplayName = "附件",
-                }
+                DataLength = 200
             },
             new TableColumn
             {
                 AttributeName = "Content",
-                DataType = DataType.Text,
-                InputStyle = new InputStyle
-                {
-                    InputType = InputType.TextEditor,
-                    DisplayName = "内容"
-                }
+                DataType = DataType.Text
             }
         };
 

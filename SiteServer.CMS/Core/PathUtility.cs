@@ -553,32 +553,50 @@ namespace SiteServer.CMS.Core
                     else if (StringUtils.EqualsIgnoreCase(element, Year))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Year.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Year.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Month))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Month.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Month.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Day))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Day.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Day.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Hour))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Hour.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Hour.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Minute))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Minute.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Minute.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Second))
                     {
                         if (nodeInfo == null) nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                        value = nodeInfo.AddDate.Second.ToString();
+                        if (nodeInfo.AddDate.HasValue)
+                        {
+                            value = nodeInfo.AddDate.Value.Second.ToString();
+                        }
                     }
                     else if (StringUtils.EqualsIgnoreCase(element, Sequence))
                     {
@@ -707,14 +725,14 @@ namespace SiteServer.CMS.Core
                 return filePath;
             }
 
-            public static string Parse(SiteInfo siteInfo, int channelId, IContentInfo contentInfo)
+            public static string Parse(SiteInfo siteInfo, int channelId, ContentInfo contentInfo)
             {
                 var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
                 var filePath = ParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
                 return filePath;
             }
 
-            private static string ParseContentPath(SiteInfo siteInfo, int channelId, IContentInfo contentInfo, string contentFilePathRule)
+            private static string ParseContentPath(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, string contentFilePathRule)
             {
                 var filePath = contentFilePathRule.Trim();
                 var regex = "(?<element>{@[^}]+})";
@@ -784,29 +802,49 @@ namespace SiteServer.CMS.Core
                     {
                         if (StringUtils.EqualsIgnoreCase(element, Year))
                         {
-                            value = addDate.Year.ToString();
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Year.ToString();
+                            }
                         }
                         else if (StringUtils.EqualsIgnoreCase(element, Month))
                         {
-                            value = addDate.Month.ToString("D2");
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Month.ToString("D2");
+                            }
+
                             //value = addDate.ToString("MM");
                         }
                         else if (StringUtils.EqualsIgnoreCase(element, Day))
                         {
-                            value = addDate.Day.ToString("D2");
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Day.ToString("D2");
+                            }
+
                             //value = addDate.ToString("dd");
                         }
                         else if (StringUtils.EqualsIgnoreCase(element, Hour))
                         {
-                            value = addDate.Hour.ToString();
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Hour.ToString();
+                            }
                         }
                         else if (StringUtils.EqualsIgnoreCase(element, Minute))
                         {
-                            value = addDate.Minute.ToString();
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Minute.ToString();
+                            }
                         }
                         else if (StringUtils.EqualsIgnoreCase(element, Second))
                         {
-                            value = addDate.Second.ToString();
+                            if (addDate.HasValue)
+                            {
+                                value = addDate.Value.Second.ToString();
+                            }
                         }
                     }
                     else

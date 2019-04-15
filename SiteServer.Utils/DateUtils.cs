@@ -9,6 +9,11 @@ namespace SiteServer.Utils
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
 
+	    public static DateTime GetExpiresAt(TimeSpan expiresAt)
+	    {
+	        return DateTime.UtcNow.Add(expiresAt);
+	    }
+
         public static string GetRelatedDateTimeString(DateTime datetime)
         {
             string retval;
@@ -68,6 +73,16 @@ namespace SiteServer.Utils
             if (datetime == SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
             return GetDateString(datetime, EDateFormatType.Day);
         }
+
+	    public static string GetDateString(DateTimeOffset? offset)
+	    {
+	        return offset.HasValue ? GetDateString(offset.Value.DateTime) : string.Empty;
+	    }
+
+        public static string GetDateAndTimeString(DateTimeOffset? offset)
+	    {
+	        return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
+	    }
 
         public static string GetDateString(DateTime datetime, EDateFormatType dateFormat)
         {
@@ -187,6 +202,11 @@ namespace SiteServer.Utils
             }
             return false;
         }
+
+	    public static string Format(DateTimeOffset? offset, string formatString)
+	    {
+	        return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
+	    }
 
         public static string Format(DateTime datetime, string formatString)
         {

@@ -17,6 +17,9 @@ namespace SiteServer.CMS.StlParser.StlElement
     {
         public const string ElementName = "stl:contents";
 
+        [StlAttribute(Title = "显示相关内容列表")]
+        public const string IsRelatedContents = nameof(IsRelatedContents);
+
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);

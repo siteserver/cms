@@ -69,12 +69,16 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out errorMessage);
-
                     var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
                     if (string.IsNullOrEmpty(dllDirectoryPath))
                     {
                         throw new Exception($"插件可执行文件 {directoryName}.dll 不存在");
+                    }
+
+                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out errorMessage);
+                    if (metadata == null)
+                    {
+                        throw new Exception(errorMessage);
                     }
 
                     //foreach (var filePath in DirectoryUtils.GetFilePaths(DirectoryUtils.GetDirectoryPath(metadata.ExecuteFilePath)))
@@ -186,12 +190,11 @@ namespace SiteServer.CMS.Plugin
         {
             WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(DataProvider.Database, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
                 ContentApi = ContentApi.Instance,
-                DatabaseApi = DataProvider.DatabaseApi,
                 ChannelApi = ChannelApi.Instance,
                 ParseApi = ParseApi.Instance,
                 PluginApi = PluginApi.Instance,

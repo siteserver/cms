@@ -44,22 +44,22 @@ namespace SiteServer.CMS.DataCache
 	        ContentTagManagerCache.Clear();
 	    }
 
-	    public static bool IsExists(int siteId, string groupName)
+	    public static bool IsExists(int siteId, string tag)
 	    {
 	        var list = GetContentTagInfoList(siteId);
-	        return list.Any(group => group.TagName == groupName);
+	        return list.Any(tagInfo => tagInfo.TagName == tag);
 	    }
 
-	    public static ContentTagInfo GetContentTagInfo(int siteId, string groupName)
+	    public static ContentTagInfo GetContentTagInfo(int siteId, string tag)
 	    {
 	        var list = GetContentTagInfoList(siteId);
-	        return list.FirstOrDefault(group => group.TagName == groupName);
+	        return list.FirstOrDefault(tagInfo => tagInfo.TagName == tag);
 	    }
 
 	    public static List<string> GetTagNameList(int siteId)
 	    {
 	        var list = GetContentTagInfoList(siteId);
-	        return list.Select(group => group.TagName).ToList();
+	        return list.Select(tagInfo => tagInfo.TagName).ToList();
 	    }
 
         public static List<ContentTagInfo> GetContentTagInfoList(int siteId)

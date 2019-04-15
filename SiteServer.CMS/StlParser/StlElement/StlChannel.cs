@@ -6,6 +6,7 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
-            var ellipsis = StringUtils.Constants.Ellipsis;
+            var ellipsis = Constants.Ellipsis;
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
@@ -452,7 +453,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return leftText + parsedContent + rightText;
         }
 
-        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, AttributesImpl attributes, bool isAddAndNotPostBack, string defaultValue)
         {
             var value = attributes.Get(attributeName);
             if (isAddAndNotPostBack && value == null)

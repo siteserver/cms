@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteSyncDatabase.Route)]
         public IHttpActionResult Main()
         {
-            var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.Version}";
+            var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.ProductVersion}";
             var packagePath = PathUtils.GetPackagesPath(idWithVersion);
             var homeDirectory = PathUtils.GetHomeDirectoryPath(string.Empty);
             if (!DirectoryUtils.IsDirectoryExists(homeDirectory) || !FileUtils.IsFileExists(PathUtils.Combine(homeDirectory, "config.js")))
@@ -23,7 +23,7 @@ namespace SiteServer.API.Controllers.Sys
 
             return Ok(new
             {
-                SystemManager.Version
+                Version = SystemManager.ProductVersion
             });
         }
     }

@@ -13,6 +13,7 @@ using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
@@ -23,7 +24,7 @@ namespace SiteServer.BackgroundPages.Core
         public const string Current = "{Current}";
         public const string Value = "{Value}";
 
-        public static string Parse(SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, IAttributes attributes, NameValueCollection pageScripts, out string extraHtml)
+        public static string Parse(SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, AttributesImpl attributes, NameValueCollection pageScripts, out string extraHtml)
         {
             var retval = string.Empty;
             var extraBuilder = new StringBuilder();
@@ -100,7 +101,7 @@ namespace SiteServer.BackgroundPages.Core
             return retval;
         }
 
-        public static string ParseText(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseText(AttributesImpl attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var validateAttributes = InputParserUtils.GetValidateAttributes(styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
@@ -241,7 +242,7 @@ $('#Title').keyup(function (e) {
                 $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" {validateAttributes} />";
         }
 
-        public static string ParseTextArea(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        public static string ParseTextArea(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -264,7 +265,7 @@ $('#Title').keyup(function (e) {
                 $@"<textarea id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" class=""form-control"" {style} {validateAttributes}>{value}</textarea>";
         }
 
-        public static string ParseTextEditor(IAttributes attributes, string attributeName, SiteInfo siteInfo, NameValueCollection pageScripts, StringBuilder extraBuilder)
+        public static string ParseTextEditor(AttributesImpl attributes, string attributeName, SiteInfo siteInfo, NameValueCollection pageScripts, StringBuilder extraBuilder)
         {
             var value = attributes.GetString(attributeName);
 
@@ -293,7 +294,7 @@ $(function(){{
             return $@"<textarea id=""{attributeName}"" name=""{attributeName}"" style=""display:none"">{value}</textarea>";
         }
 
-        private static string ParseSelectOne(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectOne(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -326,7 +327,7 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectMultiple(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectMultiple(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -352,7 +353,7 @@ $(function(){{
             return builder.ToString();
         }
 
-        private static string ParseSelectCascading(IAttributes attributes, SiteInfo siteInfo, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseSelectCascading(AttributesImpl attributes, SiteInfo siteInfo, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
             var fieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(styleInfo.Additional.RelatedFieldId);
@@ -462,7 +463,7 @@ $(document).ready(function(){{
             return builder.ToString();
         }
 
-        private static string ParseCheckBox(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseCheckBox(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -510,7 +511,7 @@ $(document).ready(function(){{
             return builder.ToString();
         }
 
-        private static string ParseRadio(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseRadio(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -570,7 +571,7 @@ $(document).ready(function(){{
             return builder.ToString();
         }
 
-        private static string ParseDate(IAttributes attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseDate(AttributesImpl attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -597,7 +598,7 @@ $(document).ready(function(){{
                 $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocusDateOnly}"" style=""width: 180px"" />";
         }
 
-        private static string ParseDateTime(IAttributes attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseDateTime(AttributesImpl attributes, NameValueCollection pageScripts, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {
@@ -623,7 +624,7 @@ $(document).ready(function(){{
             return $@"<input id=""{styleInfo.AttributeName}"" name=""{styleInfo.AttributeName}"" type=""text"" class=""form-control"" value=""{value}"" onfocus=""{SiteServerAssets.DatePicker.OnFocus}"" style=""width: 180px"" />";
         }
 
-        private static string ParseImage(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseImage(AttributesImpl attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var btnAddHtml = string.Empty;
 
@@ -713,7 +714,7 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseVideo(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBulder)
+        private static string ParseVideo(AttributesImpl attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBulder)
         {
             var attributeName = styleInfo.AttributeName;
 
@@ -794,7 +795,7 @@ function add_{attributeName}(val,foucs){{
             return $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{attributes.GetString(attributeName)}"" />";
         }
 
-        private static string ParseFile(IAttributes attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseFile(AttributesImpl attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             var attributeName = styleInfo.AttributeName;
             var value = attributes.GetString(attributeName);
@@ -889,7 +890,7 @@ function add_{attributeName}(val,foucs){{
                 $@"<input id=""{attributeName}"" name=""{attributeName}"" type=""text"" class=""form-control"" value=""{value}"" />";
         }
 
-        private static string ParseCustomize(IAttributes attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
+        private static string ParseCustomize(AttributesImpl attributes, TableStyleInfo styleInfo, StringBuilder extraBuilder)
         {
             if (styleInfo.Additional.IsValidate)
             {

@@ -22,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -192,7 +192,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {

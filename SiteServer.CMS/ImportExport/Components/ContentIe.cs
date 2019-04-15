@@ -180,11 +180,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
-                        if (!string.IsNullOrEmpty(tags))
-                        {
-                            var tagCollection = TagUtils.ParseTagsString(tags);
-                            TagUtils.AddTags(tagCollection, _siteInfo.Id, contentId);
-                        }
+                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
 
                     if (isTop)
@@ -302,11 +298,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
-                        if (!string.IsNullOrEmpty(tags))
-                        {
-                            var tagCollection = TagUtils.ParseTagsString(tags);
-                            TagUtils.AddTags(tagCollection, _siteInfo.Id, contentId);
-                        }
+                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
 
                     if (isTop)
@@ -405,7 +397,10 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.SiteId, "PublishmentSystemId" }, contentInfo.SiteId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddUserName, contentInfo.AddUserName);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditUserName, contentInfo.LastEditUserName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditDate, contentInfo.LastEditDate.ToString(CultureInfo.InvariantCulture));
+            if (contentInfo.LastEditDate.HasValue)
+            {
+                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditDate, contentInfo.LastEditDate.Value.ToString(CultureInfo.InvariantCulture));
+            }
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Taxis, contentInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string>{ ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" }, contentInfo.GroupNameCollection);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(contentInfo.Tags));
@@ -417,7 +412,12 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByDay, contentInfo.HitsByDay.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByWeek, contentInfo.HitsByWeek.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByMonth, contentInfo.HitsByMonth.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastHitsDate, contentInfo.LastHitsDate.ToString(CultureInfo.InvariantCulture));
+            if (contentInfo.LastHitsDate.HasValue)
+            {
+                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastHitsDate,
+                    contentInfo.LastHitsDate.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, contentInfo.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(contentInfo.Title));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, contentInfo.IsTop.ToString());
@@ -425,7 +425,11 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsHot, contentInfo.IsHot.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsColor, contentInfo.IsColor.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LinkUrl, AtomUtility.Encrypt(contentInfo.LinkUrl));
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddDate, contentInfo.AddDate.ToString(CultureInfo.InvariantCulture));
+            if (contentInfo.AddDate.HasValue)
+            {
+                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddDate,
+                    contentInfo.AddDate.Value.ToString(CultureInfo.InvariantCulture));
+            }
 
             foreach (var attributeName in contentInfo.ToDictionary().Keys)
             {

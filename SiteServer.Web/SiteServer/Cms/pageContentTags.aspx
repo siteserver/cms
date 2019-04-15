@@ -61,6 +61,7 @@
                 <tr>
                   <th>标签 </th>
                   <th width="100">使用次数 </th>
+                  <th width="120"></th>
                   <th width="60"></th>
                   <th width="60"></th>
                 </tr>
@@ -74,6 +75,9 @@
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlCount" runat="server"></asp:Literal>
+                      </td>
+                      <td class="text-center">
+                        <asp:Literal ID="ltlContents" runat="server"></asp:Literal>
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlEditUrl" runat="server"></asp:Literal>

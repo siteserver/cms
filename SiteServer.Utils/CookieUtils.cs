@@ -5,6 +5,16 @@ namespace SiteServer.Utils
 {
     public static class CookieUtils
     {
+        public static void SetCookie(string name, string value, TimeSpan expiresAt, bool isEncrypt = true)
+        {
+            SetCookie(new HttpCookie(name)
+            {
+                Value = value,
+                Expires = DateUtils.GetExpiresAt(expiresAt),
+                Domain = PageUtils.HttpContextRootDomain
+            }, isEncrypt);
+        }
+
         public static void SetCookie(string name, string value, DateTime expires, bool isEncrypt = true)
         {
             SetCookie(new HttpCookie(name)

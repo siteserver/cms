@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var siteInfo = SiteManager.GetSiteInfo(siteId);

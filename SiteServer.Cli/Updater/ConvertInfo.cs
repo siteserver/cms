@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SiteServer.Plugin;
+using Datory;
 
 namespace SiteServer.Cli.Updater
 {

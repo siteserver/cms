@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Xml;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;

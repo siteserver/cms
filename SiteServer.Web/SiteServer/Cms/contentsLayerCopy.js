@@ -72,7 +72,8 @@ var methods = {
         channelId: $this.channelId,
         contentIds: $this.contentIds,
         targetSiteId: $this.site.id,
-        targetChannelId: $this.channel.id
+        targetChannelId: $this.channel.id,
+        copyType: $this.copyType
       },
       function (err, res) {
         if (err || !res || !res.value) return;

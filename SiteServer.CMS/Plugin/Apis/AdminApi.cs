@@ -64,14 +64,19 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.AdministratorDao.IsMobileExists(mobile);
         }
 
+        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
+        {
+            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+        }
+
         public string GetAccessToken(int userId, string userName, DateTime expiresAt)
         {
-            return RequestImpl.GetAccessToken(userId, userName, expiresAt);
+            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
         }
 
         public IAccessToken ParseAccessToken(string accessToken)
         {
-            return RequestImpl.ParseAccessToken(accessToken);
+            return AuthenticatedRequest.ParseAccessToken(accessToken);
         }
     }
 }

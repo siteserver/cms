@@ -31,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var redirect = request.AdminRedirectCheck(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
                 if (redirect != null) return Ok(redirect);
 
@@ -122,11 +122,13 @@ namespace SiteServer.API.Controllers.Pages
                     Value = true,
                     DefaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId) ?? "dashboard.cshtml",
                     IsNightly = WebConfigUtils.IsNightlyUpdate,
-                    Version = SystemManager.PluginVersion,
+                    SystemManager.ProductVersion,
+                    SystemManager.PluginVersion,
+                    SystemManager.TargetFramework,
+                    SystemManager.EnvironmentVersion,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,
-                    CurrentVersion = SystemManager.Version,
                     TopMenus = topMenus,
                     SiteMenus = siteMenus,
                     PluginMenus = pluginMenus,
@@ -275,7 +277,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -319,7 +321,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {

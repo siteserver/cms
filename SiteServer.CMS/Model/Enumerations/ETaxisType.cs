@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
-namespace SiteServer.Utils.Enumerations
+namespace SiteServer.CMS.Model.Enumerations
 {
 	public enum ETaxisType
 	{
@@ -190,43 +192,43 @@ namespace SiteServer.Utils.Enumerations
 
             if (taxisType == ETaxisType.OrderById)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Id)} ASC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.Id)} ASC";
             }
             else if (taxisType == ETaxisType.OrderByIdDesc)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByChannelId)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} ASC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByChannelIdDesc)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} DESC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.ChannelId)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByAddDate)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.AddDate)} ASC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.AddDate)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByAddDateDesc)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.AddDate)} DESC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.AddDate)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDate)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} ASC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByLastEditDateDesc)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} DESC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.LastEditDate)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByTaxis)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Taxis)} ASC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.Taxis)} ASC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByTaxisDesc)
             {
-                retval = $"ORDER BY {nameof(IContentInfo.IsTop)} DESC, {nameof(IContentInfo.Taxis)} DESC, {nameof(IContentInfo.Id)} DESC";
+                retval = $"ORDER BY {nameof(ContentAttribute.IsTop)} DESC, {nameof(IContentInfo.Taxis)} DESC, {nameof(IContentInfo.Id)} DESC";
             }
             else if (taxisType == ETaxisType.OrderByHits)
             {

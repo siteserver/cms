@@ -5,11 +5,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Dapper;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Auth;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
@@ -994,9 +994,9 @@ namespace SiteServer.CMS.Provider
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
                         return null;
                     }
-                    if (lockType == EUserLockType.Hours)
+                    if (lockType == EUserLockType.Hours && userInfo.LastActivityDate.HasValue)
                     {
-                        var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Ticks);
+                        var ts = new TimeSpan(DateTime.Now.Ticks - userInfo.LastActivityDate.Value.Ticks);
                         var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {

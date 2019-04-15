@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -217,7 +218,7 @@ namespace SiteServer.CMS.Provider
         private const string ParmDescription = "@Description";
         private const string ParmExtendValues = "@ExtendValues";
 
-        private void InsertChannelInfoWithTrans(IChannelInfo parentChannelInfo, IChannelInfo channelInfo, IDbTransaction trans)
+        private void InsertChannelInfoWithTrans(ChannelInfo parentChannelInfo, ChannelInfo channelInfo, IDbTransaction trans)
         {
             if (parentChannelInfo != null)
             {
@@ -272,7 +273,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmContentTemplateId, DataType.Integer, channelInfo.ContentTemplateId),
                 GetParameter(ParmKeywords, DataType.VarChar, 255, channelInfo.Keywords),
                 GetParameter(ParmDescription, DataType.VarChar, 255, channelInfo.Description),
-                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Attributes.ToString())
+                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Additional.ToString())
             };
 
             if (channelInfo.SiteId != 0)
@@ -624,7 +625,7 @@ namespace SiteServer.CMS.Provider
 
         }
 
-        public int Insert(IChannelInfo channelInfo)
+        public int Insert(ChannelInfo channelInfo)
         {
             if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
 
@@ -864,6 +865,11 @@ namespace SiteServer.CMS.Provider
             {
                 ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             }
+        }
+
+        public void DeleteAll(int siteId)
+        {
+            ExecuteNonQuery($"DELETE FROM siteserver_Channel WHERE {ChannelAttribute.SiteId} = {siteId} OR {ChannelAttribute.Id} = {siteId}");
         }
 
         /// <summary>

@@ -3,12 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Core.Create;
-using SiteServer.CMS.Core.Office;
-using SiteServer.CMS.Model;
-using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.Images;
 
 namespace SiteServer.BackgroundPages.Cms
@@ -115,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     if (CbIsSmallImage.Checked)
                     {
-                        var localSmallFileName = StringUtils.Constants.SmallImageAppendix + fileName;
+                        var localSmallFileName = Constants.SmallImageAppendix + fileName;
                         var localSmallFilePath = PathUtils.Combine(localDirectoryPath, localSmallFileName);
 
                         var smallImageUrl = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, localSmallFilePath, true);

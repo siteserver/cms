@@ -213,7 +213,11 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     ControlUtils.SelectMultiItems(CblContentAttributes, list);
                     TbLinkUrl.Text = contentInfo.LinkUrl;
-                    TbAddDate.DateTime = contentInfo.AddDate;
+                    if (contentInfo.AddDate.HasValue)
+                    {
+                        TbAddDate.DateTime = contentInfo.AddDate.Value;
+                    }
+                    
                     ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection));
 
                     AcAttributes.Attributes = contentInfo;
@@ -237,7 +241,6 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
                     var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
 
                     var contentInfo = new ContentInfo(dict)
@@ -267,21 +270,17 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
-                    if (contentInfo.AddDate.Year <= DateUtils.SqlMinValue.Year)
-                    {
-                        contentInfo.AddDate = DateTime.Now;
-                    }
 
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
-                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
+                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
                     foreach (var service in PluginManager.Services)
                     {
                         try
                         {
                             service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
-                                contentInfo.Id, new AttributesImpl(Request.Form), contentInfo));
+                                contentInfo.Id, TranslateUtils.ToDictionary(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
@@ -307,7 +306,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                     contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
 
-                    TagUtils.AddTags(tagCollection, SiteId, contentInfo.Id);
+                    TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentInfo.Id);
 
                     CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
@@ -331,8 +330,6 @@ namespace SiteServer.BackgroundPages.Cms
                 var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                 try
                 {
-                    var tagsLast = contentInfo.Tags;
-
                     contentInfo.LastEditUserName = AuthRequest.AdminName;
                     contentInfo.LastEditDate = DateTime.Now;
 
@@ -340,7 +337,6 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.Load(dict);
 
                     contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
-                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
 
                     contentInfo.Title = TbTitle.Text;
                     var formatString = TranslateUtils.ToBool(Request.Form[ContentAttribute.Title + "_formatStrong"]);
@@ -364,14 +360,16 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                         contentInfo.CheckedLevel = checkedLevel;
                     }
-                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
+
+                    TagUtils.UpdateTags(contentInfo.Tags, TbTags.Text, SiteId, contentId);
+                    contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
                     foreach (var service in PluginManager.Services)
                     {
                         try
                         {
                             service.OnContentFormSubmit(new ContentFormSubmitEventArgs(SiteId, _channelInfo.Id,
-                                contentInfo.Id, new AttributesImpl(Request.Form), contentInfo));
+                                contentInfo.Id, TranslateUtils.ToDictionary(Request.Form), contentInfo));
                         }
                         catch (Exception ex)
                         {
@@ -380,8 +378,6 @@ namespace SiteServer.BackgroundPages.Cms
                     }
 
                     DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
-
-                    TagUtils.UpdateTags(tagsLast, contentInfo.Tags, tagCollection, SiteId, contentId);
 
                     ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 

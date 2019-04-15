@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteUpdateSsCms.Route)]
         public IHttpActionResult Main()
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 

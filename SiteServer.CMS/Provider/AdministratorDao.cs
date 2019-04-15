@@ -6,12 +6,12 @@ using System.Security.Cryptography;
 using System.Text;
 using Dapper;
 using Dapper.Contrib.Extensions;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Auth;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -1008,9 +1008,9 @@ namespace SiteServer.CMS.Provider
                         errorMessage = "此账号错误登录次数过多，已被永久锁定";
                         return false;
                     }
-                    if (lockType == EUserLockType.Hours)
+                    if (lockType == EUserLockType.Hours && adminInfo.LastActivityDate.HasValue)
                     {
-                        var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastActivityDate.Ticks);
+                        var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastActivityDate.Value.Ticks);
                         var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.AdminLockLoginHours - ts.TotalHours);
                         if (hours > 0)
                         {

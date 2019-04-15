@@ -27,7 +27,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -97,7 +97,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -131,7 +131,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -197,7 +197,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -231,7 +231,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -286,7 +286,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -335,7 +335,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -390,7 +390,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)

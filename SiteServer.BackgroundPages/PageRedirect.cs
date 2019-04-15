@@ -65,9 +65,9 @@ namespace SiteServer.BackgroundPages
             var contentId = TranslateUtils.ToInt(Request.QueryString["contentId"]);
             var fileTemplateId = TranslateUtils.ToInt(Request.QueryString["fileTemplateId"]);
             var specialId = TranslateUtils.ToInt(Request.QueryString["specialId"]);
+            var isLocal = TranslateUtils.ToBool(Request.QueryString["isLocal"]);
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var url = string.Empty;
-            var isLocal = siteInfo.Additional.IsSeparatedWeb || siteInfo.Additional.IsSeparatedAssets;
 
             if (siteId > 0 && channelId > 0 && contentId > 0)
             {

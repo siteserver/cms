@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages
@@ -14,7 +15,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 

@@ -3,6 +3,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Content

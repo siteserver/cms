@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
@@ -62,7 +63,8 @@ namespace SiteServer.Cli.Updater.Tables
         {
             NewTableName = NewTableName,
             NewColumns = NewColumns,
-            ConvertKeyDict = ConvertKeyDict
+            ConvertKeyDict = ConvertKeyDict,
+            ConvertValueDict = ConvertValueDict
         };
 
         private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
@@ -75,5 +77,10 @@ namespace SiteServer.Cli.Updater.Tables
                 {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
                 {nameof(TableStyleInfo.TableName), nameof(TableName)}
             };
+
+        private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
+        {
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName}
+        };
     }
 }

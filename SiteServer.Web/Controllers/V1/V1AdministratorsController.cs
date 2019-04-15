@@ -5,6 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -22,7 +23,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -80,7 +81,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -105,7 +106,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -130,7 +131,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -154,7 +155,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -175,7 +176,7 @@ namespace SiteServer.API.Controllers.V1
                 adminInfo = AdminManager.GetAdminInfoByUserName(userName);
                 DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
                 var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
-                var expiresAt = DateTime.Now.AddDays(RequestImpl.AccessTokenExpireDays);
+                var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
                 return Ok(new
                 {
@@ -196,7 +197,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var adminInfo = request.IsAdminLoggin ? request.AdminInfo : null;
                 request.AdminLogout();
 
@@ -217,7 +218,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 

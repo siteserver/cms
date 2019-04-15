@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using SiteServer.Plugin;
+using Datory;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
     [Serializable]
-    public class AttributesImpl : IAttributes
+    public class AttributesImpl
     {
         private const string SettingsXml = nameof(SettingsXml);
         private const string ExtendedValues = nameof(ExtendedValues);

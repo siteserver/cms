@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo, AuthRequest.GetQueryString("ReturnUrl")));
+                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
                 return;
             }
 

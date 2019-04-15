@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages
 
         public string PackageId => PackageUtils.PackageIdSsCms;
 
-        public string InstalledVersion => SystemManager.Version;
+        public string InstalledVersion => SystemManager.ProductVersion;
 
         public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
@@ -7,7 +8,7 @@ namespace SiteServer.CMS.Api.V1
 {
     public class ApiContentsParameters
     {
-        public ApiContentsParameters(RequestImpl request)
+        public ApiContentsParameters(AuthenticatedRequest request)
         {
             ChannelIds = TranslateUtils.StringCollectionToIntList(request.GetQueryString("channelIds"));
             ChannelGroup = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("channelGroup")));

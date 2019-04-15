@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Packaging;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -11,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteUpdate.Route)]
         public IHttpActionResult Main()
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {

@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Core;
+﻿using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.CMS.Plugin
@@ -14,13 +15,13 @@ namespace SiteServer.CMS.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                if (!DatoryUtils.IsTableExists(DataProvider.Database, tableName))
                 {
-                    DataProvider.DatabaseDao.CreatePluginTable(service.PluginId, tableName, tableColumns);
+                    DatoryUtils.CreateTable(DataProvider.Database, tableName, tableColumns);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterPluginTable(service.PluginId, tableName, tableColumns);
+                    DatoryUtils.AlterTable(DataProvider.Database, tableName, tableColumns, null);
                 }
             }
         }

@@ -16,6 +16,9 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
+using Datory;
+using SiteServer.CMS.Plugin.Apis;
 
 namespace SiteServer.CMS.Provider
 {
@@ -1558,8 +1561,8 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
         public void AddDownloads(string tableName, int channelId, int contentId)
         {
             var sqlString =
-                $"UPDATE {tableName} SET {Context.DatabaseApi.ToPlusSqlString(ContentAttribute.Downloads, 1)} WHERE Id = {contentId}";
-            Context.DatabaseApi.ExecuteNonQuery(Context.ConnectionString, sqlString);
+                $"UPDATE {tableName} SET {DataProvider.DatabaseApi.ToPlusSqlString(ContentAttribute.Downloads, 1)} WHERE Id = {contentId}";
+            DataProvider.DatabaseApi.ExecuteNonQuery(WebConfigUtils.ConnectionString, sqlString);
 
             ContentManager.RemoveCache(tableName, channelId);
         }
@@ -1895,8 +1898,8 @@ group by tmp.userName";
 
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdList = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, siteId);
+                var tagList = TagUtils.ParseTagsString(tags);
+                var contentIdList = DataProvider.TagDao.GetContentIdListByTagCollection(tagList, siteId);
                 if (contentIdList.Count > 0)
                 {
                     var inString = TranslateUtils.ToSqlInStringWithoutQuote(contentIdList);
@@ -2081,6 +2084,15 @@ group by tmp.userName";
             contentGroupName = AttackUtils.FilterSql(contentGroupName);
             var sqlString =
                 $"SELECT * FROM {tableName} WHERE SiteId = {siteId} AND ChannelId > 0 AND (GroupNameCollection LIKE '{contentGroupName},%' OR GroupNameCollection LIKE '%,{contentGroupName}' OR GroupNameCollection  LIKE '%,{contentGroupName},%'  OR GroupNameCollection='{contentGroupName}')";
+            return sqlString;
+        }
+
+        public string GetSqlStringByContentTag(string tableName, string tag, int siteId)
+        {
+            tag = AttackUtils.FilterSql(tag);
+
+            var sqlString =
+                $"SELECT * FROM {tableName} WHERE SiteId = {siteId} AND ChannelId > 0 AND (Tags LIKE '{tag} %' OR Tags LIKE '% {tag}' OR Tags  LIKE '% {tag} %'  OR Tags='{tag}')";
             return sqlString;
         }
 

@@ -19,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {

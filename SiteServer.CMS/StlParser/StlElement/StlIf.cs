@@ -803,12 +803,18 @@ function {functionName}(pageNum)
 
             if (contextInfo.ContextType == EContextType.Content)
             {
-                addDate = contextInfo.ContentInfo.AddDate;
+                if (contextInfo.ContentInfo.AddDate.HasValue)
+                {
+                    addDate = contextInfo.ContentInfo.AddDate.Value;
+                }
             }
             else if (contextInfo.ContextType == EContextType.Channel)
             {
                 var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
-                addDate = channel.AddDate;
+                if (channel.AddDate.HasValue)
+                {
+                    addDate = channel.AddDate.Value;
+                }
             }
             else
             {
@@ -833,12 +839,18 @@ function {functionName}(pageNum)
                 }
                 else if (contextInfo.ContentId != 0)//获取内容
                 {
-                    addDate = contextInfo.ContentInfo.AddDate;
+                    if (contextInfo.ContentInfo.AddDate.HasValue)
+                    {
+                        addDate = contextInfo.ContentInfo.AddDate.Value;
+                    }
                 }
                 else if (contextInfo.ChannelId != 0)//获取栏目
                 {
                     var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
-                    addDate = channel.AddDate;
+                    if (channel.AddDate.HasValue)
+                    {
+                        addDate = channel.AddDate.Value;
+                    }
                 }
             }
 
@@ -851,7 +863,10 @@ function {functionName}(pageNum)
 
             if (contextInfo.ContextType == EContextType.Content)
             {
-                lastEditDate = contextInfo.ContentInfo.LastEditDate;
+                if (contextInfo.ContentInfo.LastEditDate.HasValue)
+                {
+                    lastEditDate = contextInfo.ContentInfo.LastEditDate.Value;
+                }
             }
 
             return lastEditDate;
