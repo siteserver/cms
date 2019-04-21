@@ -214,47 +214,27 @@ namespace SiteServer.CMS.Packaging
             return true;
         }
 
-        public static PackageMetadata GetPackageMetadataFromPlugins(string directoryName, out string errorMessage)
+        public static PackageMetadata GetPackageMetadataFromPluginDirectory(string directoryName, out string errorMessage)
         {
+            PackageMetadata metadata = null;
+
             var nuspecPath = PathUtils.GetPluginNuspecPath(directoryName);
-
-            if (!FileUtils.IsFileExists(nuspecPath))
+            if (FileUtils.IsFileExists(nuspecPath))
             {
-                FileUtils.WriteText(nuspecPath, $@"<?xml version=""1.0""?>
-<package >
-  <metadata>
-    <id>{directoryName}</id>
-    <version>$version$</version>
-    <title>{directoryName}</title>
-    <authors></authors>
-    <owners></owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>https://www.siteserver.cn/assets/images/favicon.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description></description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright {DateTime.Now.Year}</copyright>
-    <tags>Tag1 Tag2</tags>
-  </metadata>
-</package>");
-            }
-
-            PackageMetadata metadata;
-            try
-            {
-                metadata = GetPackageMetadata(nuspecPath);
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                return null;
+                try
+                {
+                    metadata = GetPackageMetadata(nuspecPath);
+                }
+                catch (Exception ex)
+                {
+                    errorMessage = ex.Message;
+                    return null;
+                }
             }
 
             if (string.IsNullOrEmpty(metadata?.Id))
             {
-                errorMessage = "插件配置文件不正确";
-                return null;
+                metadata = new PackageMetadata(directoryName);
             }
 
             errorMessage = string.Empty;

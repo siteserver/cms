@@ -76,26 +76,6 @@
                   <img style="height: 36px;width: 36px;" :src="local.avatarUrl ? local.avatarUrl : 'assets/images/default_avatar.png'"
                     class="rounded-circle">
                 </a>
-                <!-- <ul v-if="isSuperAdmin" class="submenu megamenu" style="left: -150px;">
-                  <li>
-                    <ul>
-                      <li><a :href="'settings/adminView.cshtml?pageType=user&userId=' + local.userId" target="right">{{local.level}}：{{local.userName}}</a></li>
-                      <li><a :href="'settings/adminProfile.cshtml?pageType=user&userId=' + local.userId" target="right">修改资料</a></li>
-                      <li><a :href="'settings/adminPassword.cshtml?pageType=user&userId=' + local.userId" target="right">更改密码</a></li>
-                      <li><a href="pageLogout.cshtml">退出系统</a></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <ul>
-                      <li><a href="cloud/dashboard.cshtml" target="right">云服务账号：siteserver</a></li>
-                      <li><a href="account/pageProfile.aspx" target="right">提交工单</a></li>
-                      <li><a href="account/pagePassword.aspx" target="right">用户中心</a></li>
-                      <li><a href="account/pagePassword.aspx" target="right">用户中心</a></li>
-                      <li><a href="account/pagePassword.aspx" target="right">用户中心</a></li>
-                      <li><a href="pageLogout.cshtml">退出云服务</a></li>
-                    </ul>
-                  </li>
-                </ul> -->
                 <ul class="submenu">
                   <li><a :href="'settings/adminView.cshtml?pageType=user&userId=' + local.userId" target="right">{{local.level}}：{{local.userName}}</a></li>
                   <li><a :href="'settings/adminProfile.cshtml?pageType=user&userId=' + local.userId" target="right">修改资料</a></li>

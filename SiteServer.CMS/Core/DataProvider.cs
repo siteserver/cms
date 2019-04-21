@@ -9,9 +9,6 @@ namespace SiteServer.CMS.Core
 {
     public static class DataProvider
     {
-        private static Database _database;
-        public static Database Database => _database ?? (_database = new Database(WebConfigUtils.DatabaseType, SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString)));
-
         private static DatabaseApi _databaseApi;
         public static DatabaseApi DatabaseApi
         {
@@ -153,7 +150,6 @@ namespace SiteServer.CMS.Core
 
         public static void Reset()
         {
-            _database = null;
             _databaseApi = null;
 
             _accessTokenDao = null;

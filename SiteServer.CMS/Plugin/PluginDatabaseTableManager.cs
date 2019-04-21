@@ -1,6 +1,6 @@
 ﻿using Datory;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -15,13 +15,13 @@ namespace SiteServer.CMS.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DatoryUtils.IsTableExists(DataProvider.Database, tableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                 {
-                    DatoryUtils.CreateTable(DataProvider.Database, tableName, tableColumns);
+                    DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
                 }
                 else
                 {
-                    DatoryUtils.AlterTable(DataProvider.Database, tableName, tableColumns, null);
+                    DatoryUtils.AlterTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns, null);
                 }
             }
         }

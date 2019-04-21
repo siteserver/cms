@@ -25,6 +25,9 @@ namespace SiteServer.CMS.Plugin.Impl
         public bool IsApiAuthorization { get; private set; }
 
         public List<TableColumn> ContentTableColumns { get; private set; }
+
+        public List<InputStyle> ContentInputStyles { get; private set; }
+
         public Dictionary<string, List<TableColumn>> DatabaseTables { get; private set; }
 
         public event EventHandler<ContentEventArgs> ContentAddCompleted;
@@ -128,10 +131,11 @@ namespace SiteServer.CMS.Plugin.Impl
             return this;
         }
 
-        public IService AddContentModel(string tableName, List<TableColumn> tableColumns)
+        public IService AddContentModel(string tableName, List<TableColumn> tableColumns, List<InputStyle> inputStyles)
         {
             ContentTableName = tableName;
             ContentTableColumns = tableColumns;
+            ContentInputStyles = inputStyles;
 
             return this;
         }

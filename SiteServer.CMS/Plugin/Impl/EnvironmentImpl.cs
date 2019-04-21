@@ -1,25 +1,30 @@
-﻿using System.Web;
-using Datory;
+﻿using Datory;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
     public class EnvironmentImpl: IEnvironment
     {
-        public EnvironmentImpl(Database database, string homeDirectory, string adminDirectory, string physicalApplicationPath)
+        public EnvironmentImpl(DatabaseType databaseType, string connectionString, string homeDirectory, string adminDirectory, string physicalApplicationPath, string apiUrl)
         {
-            Database = database;
+            DatabaseType = databaseType;
+            ConnectionString = connectionString;
             HomeDirectory = homeDirectory;
             AdminDirectory = adminDirectory;
             PhysicalApplicationPath = physicalApplicationPath;
+            ApiUrl = apiUrl;
         }
 
-        public Database Database { get; }
+        public DatabaseType DatabaseType { get; }
+
+        public string ConnectionString { get; }
 
         public string HomeDirectory { get; }
 
         public string AdminDirectory { get; }
 
         public string PhysicalApplicationPath { get; }
+
+        public string ApiUrl { get; }
     }
 }
