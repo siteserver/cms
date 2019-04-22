@@ -67,6 +67,11 @@ namespace SiteServer.Utils
             return string.IsNullOrEmpty(text) ? string.Empty : text.Trim();
         }
 
+        public static string TrimSlash(string text)
+        {
+            return string.IsNullOrEmpty(text) ? string.Empty : text.Trim().Trim('/');
+        }
+
         public static string TrimAndToLower(string text)
         {
             return string.IsNullOrEmpty(text) ? string.Empty : text.ToLower().Trim();
