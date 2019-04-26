@@ -34,9 +34,6 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Text;
-using Atom.Utils;
-using SiteServer.Utils;
 
 namespace Atom.AdditionalElements
 {
@@ -120,12 +117,19 @@ namespace Atom.AdditionalElements
 			List.Remove(element);
 		}
 
+        private static bool EqualsIgnoreCase(string a, string b)
+        {
+            if (a == b) return true;
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return false;
 
-		public ScopedElement FindScopedElementByLocalName(string localName)
+            return a.Equals(b, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public ScopedElement FindScopedElementByLocalName(string localName)
 		{
 			foreach (ScopedElement element in List)
 			{
-				if (StringUtils.EqualsIgnoreCase(element.LocalName, localName))
+				if (EqualsIgnoreCase(element.LocalName, localName))
 				{
 					return element;
 				}

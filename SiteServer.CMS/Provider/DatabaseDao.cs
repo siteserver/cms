@@ -1994,9 +1994,11 @@ SET IDENTITY_INSERT {tableName} OFF
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = limit == 0
-                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
-                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                if (limit == 0)
+                {
+                    limit = int.MaxValue;
+                }
+                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {

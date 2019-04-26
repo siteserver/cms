@@ -82,9 +82,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                // ignored
+                LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageContentsElement, ex);
             }
             return pageCount;
         }

@@ -94,14 +94,6 @@ var methods = {
         $this.create();
       }
     }, 60000);
-
-    $('#sidebar').slimScroll({
-      height: 'auto',
-      position: 'right',
-      size: "5px",
-      color: '#495057',
-      wheelStep: 5
-    });
   },
 
   getUpdates: function () {
