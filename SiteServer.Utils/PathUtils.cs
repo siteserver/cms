@@ -224,7 +224,9 @@ namespace SiteServer.Utils
 
         public static string GetPackagesPath(params string[] paths)
         {
-            return GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, Combine(paths));
+            var packagesPath = GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, Combine(paths));
+            DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
+            return packagesPath;
         }
 
         public static string RemovePathInvalidChar(string filePath)
