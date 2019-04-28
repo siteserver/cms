@@ -67,6 +67,15 @@ namespace SiteServer.CMS.Packaging
                 }
             }
 
+            var directoryNames = DirectoryUtils.GetDirectoryNames(directoryPath);
+            foreach (var directoryName in directoryNames)
+            {
+                if (StringUtils.StartsWithIgnoreCase(directoryName, $"{packageId}."))
+                {
+                    DirectoryUtils.DeleteDirectoryIfExists(PathUtils.Combine(directoryPath, directoryName));
+                }
+            }
+
             if (StringUtils.EqualsIgnoreCase(packageId, PackageIdSsCms))
             {
                 if (!Directory.Exists(directoryPath))

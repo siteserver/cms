@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin.Impl
@@ -144,42 +145,54 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public void Load(string json)
         {
-            if (string.IsNullOrEmpty(json)) return;
-
-            if (json.StartsWith("{") && json.EndsWith("}"))
+            try
             {
-                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(json);
-                foreach (var key in dict.Keys)
+                if (string.IsNullOrEmpty(json)) return;
+
+                if (json.StartsWith("{") && json.EndsWith("}"))
                 {
-                    _dataDict[key] = dict[key];
+                    var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(json);
+                    foreach (var key in dict.Keys)
+                    {
+                        _dataDict[key] = dict[key];
+                    }
+                }
+                else
+                {
+                    json = json.Replace("/u0026", "&");
+
+                    var attributes = new NameValueCollection();
+
+                    var pairs = json.Split('&');
+                    foreach (var pair in pairs)
+                    {
+                        if (pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
+                        var name = pair.Split('=')[0];
+                        if (string.IsNullOrEmpty(name)) continue;
+
+                        name = name.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?")
+                            .Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r")
+                            .Replace("_newline_", "\n");
+                        var value = pair.Split('=')[1];
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            value = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?")
+                                .Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r")
+                                .Replace("_newline_", "\n");
+                        }
+
+                        attributes.Add(name.ToLower(), value);
+                    }
+
+                    foreach (string key in attributes.Keys)
+                    {
+                        Set(key, attributes[key]);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                json = json.Replace("/u0026", "&");
-
-                var attributes = new NameValueCollection();
-
-                var pairs = json.Split('&');
-                foreach (var pair in pairs)
-                {
-                    if (pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
-                    var name = pair.Split('=')[0];
-                    if (string.IsNullOrEmpty(name)) continue;
-
-                    name = name.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
-                    var value = pair.Split('=')[1];
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        value = value.Replace("_equals_", "=").Replace("_and_", "&").Replace("_question_", "?").Replace("_quote_", "'").Replace("_add_", "+").Replace("_return_", "\r").Replace("_newline_", "\n");
-                    }
-                    attributes.Add(name.ToLower(), value);
-                }
-
-                foreach (string key in attributes.Keys)
-                {
-                    Set(key, attributes[key]);
-                }
+                LogUtils.AddErrorLog(ex, string.Empty);
             }
         }
 
