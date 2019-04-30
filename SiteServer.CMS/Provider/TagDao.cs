@@ -167,10 +167,19 @@ namespace SiteServer.CMS.Provider
 
         public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
+            var sqlWithParameter = SqlUtils.GetInStrWithParameter("Tag", AttackUtils.FilterSql(startString));
+
             var sqlString = SqlUtils.GetDistinctTopSqlString("siteserver_Tag", "Tag, UseNum",
-                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", AttackUtils.FilterSql(startString))}",
+                $"WHERE SiteId = @SiteId AND {sqlWithParameter.Key}",
                 "ORDER BY UseNum DESC", totalNum);
-            return DataProvider.DatabaseDao.GetStringList(sqlString);
+
+            IDataParameter[] parameters =
+            {
+                GetParameter("@SiteId", DataType.Integer, siteId),
+                sqlWithParameter.Value
+            };
+
+            return DataProvider.DatabaseDao.GetStringList(sqlString, parameters);
         }
 
         public List<string> GetTagList(int siteId)

@@ -21,7 +21,8 @@ namespace SiteServer.API.Controllers.Pages
 
                 return Ok(new
                 {
-                    Value = true
+                    Value = true,
+                    SystemManager.ProductVersion
                 });
             }
             catch (Exception ex)

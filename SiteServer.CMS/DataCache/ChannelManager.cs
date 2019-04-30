@@ -93,6 +93,7 @@ namespace SiteServer.CMS.DataCache
         {
             ChannelInfo channelInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            if (channelId == 0) channelId = siteId;
             dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
             return channelInfo;
         }

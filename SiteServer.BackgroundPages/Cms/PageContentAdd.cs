@@ -95,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
-            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat, AjaxCmsService.GetTitlesUrl(SiteId, _channelInfo.Id));
+            LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat);
 
             AcAttributes.SiteInfo = SiteInfo;
             AcAttributes.ChannelId = _channelInfo.Id;

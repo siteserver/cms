@@ -83,7 +83,7 @@ var methods = {
         }
 
         if ($this.listPackageIds.indexOf(releaseInfo.pluginId) === -1) {
-          $this.listPackageIds.push(reference.id);
+          $this.listPackageIds.push(releaseInfo.pluginId);
           $this.listPackages.push({
             id: releaseInfo.pluginId,
             version: releaseInfo.version,

@@ -1051,8 +1051,6 @@ namespace SiteServer.CMS.Provider
                     foreach (var theGroup in groupArr)
                     {
                         var trimGroup = theGroup.Trim();
-                        //whereStringBuilder.Append(
-                        //    $" (siteserver_Channel.GroupNameCollection = '{trimGroup}' OR CHARINDEX('{trimGroup},',siteserver_Channel.GroupNameCollection) > 0 OR CHARINDEX(',{trimGroup},', siteserver_Channel.GroupNameCollection) > 0 OR CHARINDEX(',{trimGroup}', siteserver_Channel.GroupNameCollection) > 0) OR ");
 
                         whereStringBuilder.Append(
                                 $" (siteserver_Channel.GroupNameCollection = '{trimGroup}' OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", "," + trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", "," + trimGroup)}) OR ");
@@ -1074,7 +1072,7 @@ namespace SiteServer.CMS.Provider
                     whereStringBuilder.Append(" AND (");
                     foreach (var theGroupNot in groupNotArr)
                     {
-                        var trimGroupNot = theGroupNot.Trim();
+                        var trimGroupNot = AttackUtils.FilterSql(theGroupNot.Trim());
                         //whereStringBuilder.Append(
                         //    $" (siteserver_Channel.GroupNameCollection <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNameCollection) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNameCollection) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNameCollection) = 0) AND ");
 
@@ -1150,12 +1148,6 @@ namespace SiteServer.CMS.Provider
             string sqlString;
             if (totalNum > 0)
             {
-                //                sqlString = $@"SELECT TOP {totalNum} Id
-                //FROM siteserver_Channel 
-                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-                //";
-                //var where =
-                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
                 var where =
                     $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
                 sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
@@ -1165,10 +1157,6 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                //                sqlString = $@"SELECT Id
-                //FROM siteserver_Channel 
-                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-                //";
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
 WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}

@@ -215,7 +215,7 @@
 <hr />
 
 <div class="row">
-  <div class="col-9">
+  <div class="col-11">
     <ul class="pagination pagination-sm float-left">
       <li class="page-item" :class="{disabled : page === 1}">
         <a class="page-link" v-on:click="loadFirstPage" :class="{'bg-light' : page === 1}" href="javascript:;">首 页</a>
@@ -232,14 +232,8 @@
       </li>
     </ul>
   </div>
-  <div class="col-3">
-    <multiselect v-on:select="onPageSelect" v-model="page" placeholder="Select one" :options="pageOptions" :searchable="false"
-      :show-labels="false">
-      <template slot="singleLabel" slot-scope="{ option }">第 {{ option }} 页（共 {{ pages }} 页）</template>
-      <template slot="option" slot-scope="props">
-        第 {{ props.option }} 页
-      </template>
-    </multiselect>
+  <div class="col-1">
+    <multiselect v-on:select="onPageSelect" v-model="page" placeholder="选择翻页" :options="pageOptions" :searchable="false" :show-labels="false"></multiselect>
   </div>
 </div>
 

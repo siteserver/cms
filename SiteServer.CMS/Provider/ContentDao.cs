@@ -868,9 +868,12 @@ namespace SiteServer.CMS.Provider
 
         public List<string> GetValueListByStartString(string tableName, int channelId, string name, string startString, int totalNum)
         {
-            var inStr = SqlUtils.GetInStr(name, startString);
-            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE ChannelId = {channelId} AND {inStr}", string.Empty, totalNum);
-            return DataProvider.DatabaseDao.GetStringList(sqlString);
+            var sqlWithParameter = SqlUtils.GetInStrWithParameter(name, startString);
+            var sqlString = SqlUtils.GetDistinctTopSqlString(tableName, name, $"WHERE ChannelId = {channelId} AND {sqlWithParameter.Key}", string.Empty, totalNum);
+            return DataProvider.DatabaseDao.GetStringList(sqlString, new IDataParameter[]
+            {
+                sqlWithParameter.Value
+            });
         }
 
         public int GetChannelId(string tableName, int contentId)
@@ -1689,11 +1692,13 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             }
             if (!string.IsNullOrEmpty(parameters.ContentGroup))
             {
-                whereString += $" AND ({ContentAttribute.GroupNameCollection} = '{parameters.ContentGroup}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, parameters.ContentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + parameters.ContentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + parameters.ContentGroup)})";
+                var contentGroup = parameters.ContentGroup;
+                whereString += $" AND ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(contentGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + contentGroup)})";
             }
             if (!string.IsNullOrEmpty(parameters.Tag))
             {
-                whereString += $" AND ({ContentAttribute.Tags} = '{parameters.Tag}' OR {SqlUtils.GetInStr(ContentAttribute.Tags, parameters.Tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + parameters.Tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + parameters.Tag)})";
+                var tag = parameters.Tag;
+                whereString += $" AND ({ContentAttribute.Tags} = '{AttackUtils.FilterSql(tag)}' OR {SqlUtils.GetInStr(ContentAttribute.Tags, tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag + ",")} OR {SqlUtils.GetInStr(ContentAttribute.Tags, "," + tag)})";
             }
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
@@ -1859,11 +1864,10 @@ group by tmp.userName";
                     whereStringBuilder.Append(" AND (");
                     foreach (var theGroup in groupArr)
                     {
-                        //whereStringBuilder.Append(
-                        //    $" ({ContentAttribute.GroupNameCollection} = '{theGroup.Trim()}' OR CHARINDEX('{theGroup.Trim()},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{theGroup.Trim()},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{theGroup.Trim()}',{ContentAttribute.GroupNameCollection}) > 0) OR ");
+                        var trimGroup = theGroup.Trim();
 
                         whereStringBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{theGroup.Trim()}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, theGroup.Trim() + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + theGroup.Trim() + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + theGroup.Trim())}) OR ");
+                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -2191,11 +2195,9 @@ group by tmp.userName";
                     foreach (var theGroup in groupArr)
                     {
                         var trimGroup = theGroup.Trim();
-                        //whereBuilder.Append(
-                        //    $" ({ContentAttribute.GroupNameCollection} = '{trimGroup}' OR CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) > 0) OR ");
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{trimGroup}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
+                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {
@@ -2303,11 +2305,9 @@ group by tmp.userName";
                     foreach (var theGroup in groupArr)
                     {
                         var trimGroup = theGroup.Trim();
-                        //whereBuilder.Append(
-                        //    $" ({ContentAttribute.GroupNameCollection} = '{trimGroup}' OR CHARINDEX('{trimGroup},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup},',{ContentAttribute.GroupNameCollection}) > 0 OR CHARINDEX(',{trimGroup}',{ContentAttribute.GroupNameCollection}) > 0) OR ");
 
                         whereBuilder.Append(
-                                $" ({ContentAttribute.GroupNameCollection} = '{trimGroup}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
+                                $" ({ContentAttribute.GroupNameCollection} = '{AttackUtils.FilterSql(trimGroup)}' OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup + ",")} OR {SqlUtils.GetInStr(ContentAttribute.GroupNameCollection, "," + trimGroup)}) OR ");
                     }
                     if (groupArr.Length > 0)
                     {

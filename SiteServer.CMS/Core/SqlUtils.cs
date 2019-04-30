@@ -209,6 +209,7 @@ namespace SiteServer.Utils
         public static string GetInStr(string columnName, string inStr)
         {
             var retval = string.Empty;
+            inStr = AttackUtils.FilterSql(inStr);
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
@@ -230,9 +231,37 @@ namespace SiteServer.Utils
             return retval;
         }
 
+        public static KeyValuePair<string, IDataParameter> GetInStrWithParameter(string columnName, string inStr)
+        {
+            
+            var parameterName = $"P{StringUtils.GetShortGuid()}";
+            var sqlString = string.Empty;
+            var parameter = GetIDbDataParameter(parameterName, DataType.VarChar, 0, inStr);
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                sqlString = $"INSTR({columnName}, @{parameterName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                sqlString = $"CHARINDEX(@{parameterName}, {columnName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                sqlString = $"POSITION(@{parameterName} IN {columnName}) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                sqlString = $"INSTR({columnName}, @{parameterName}) > 0";
+            }
+
+            return new KeyValuePair<string, IDataParameter>(sqlString, parameter);
+        }
+
         public static string GetInStrReverse(string inStr, string columnName)
         {
             var retval = string.Empty;
+            inStr = AttackUtils.FilterSql(inStr);
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {

@@ -339,6 +339,25 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
+        public List<string> GetStringList(string sqlString, IDataParameter[] parameters)
+        {
+            var list = new List<string>();
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var rdr = ExecuteReader(conn, sqlString, parameters))
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(GetString(rdr, 0));
+                    }
+                    rdr.Close();
+                }
+            }
+            return list;
+        }
+
         public DateTime GetDateTime(string sqlString)
         {
             var datetime = DateTime.MinValue;

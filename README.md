@@ -6,7 +6,7 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 ## 版本
 
-项目发布的正式版本存放在 `master` 分支，当前的开发版本存放在 `dev` 分支
+项目发布的正式版本存放在 `master` 分支，最新版本存放在 `staging` 分支
 
 | 版本   | 编译状态                                                                                                                                                              | 版本号                                                         | 发布日期                                                                                     |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -14,6 +14,10 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 | 开发版 | [![Build status](https://ci.appveyor.com/api/projects/status/plx37i94y9gsqkru/branch/staging?svg=true)](https://ci.appveyor.com/project/starlying/cms/branch/staging) | ![Nuget version](https://img.shields.io/nuget/vpre/SS.CMS.svg) | ![staging last commit](https://img.shields.io/github/last-commit/siteserver/cms/staging.svg) |
 
 ## 迭代计划
+
+[2019 年 5 月/6 月迭代计划](https://github.com/siteserver/cms/issues/1879)
+
+[2019 年 3 月/4 月迭代计划](https://github.com/siteserver/cms/issues/1790)
 
 [2019 年 1 月/2 月迭代计划](https://github.com/siteserver/cms/issues/1683)
 
@@ -35,19 +39,17 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 [2018 年 2 月迭代计划](https://github.com/siteserver/cms/issues/239)
 
-[SiteServer CMS 路线图 2018](https://github.com/siteserver/cms/issues/718)
-
 ## 开发文档
 
-[《STL 语言参考手册》](https://docs.siteserver.cn/stl/)
+[《STL 语言参考手册》](https://www.siteserver.cn/docs/stl/)
 
-[《插件开发参考手册》](https://docs.siteserver.cn/plugins/)
+[《插件开发参考手册》](https://www.siteserver.cn/docs/plugins/)
 
-[《CLI 命令行参考手册》](https://docs.siteserver.cn/cli/)
+[《CLI 命令行参考手册》](https://www.siteserver.cn/docs/cli/)
 
-[《REST API 参考手册》](https://docs.siteserver.cn/api/)
+[《REST API 参考手册》](https://www.siteserver.cn/docs/api/)
 
-[《数据结构参考手册》](https://docs.siteserver.cn/model/)
+[《数据结构参考手册》](https://www.siteserver.cn/docs/model/)
 
 系统使用文档请点击 [SiteServer CMS 文档中心](https://www.siteserver.cn/docs/)
 
@@ -96,7 +98,7 @@ SiteServer CMS 基于.NET 平台，能够以最低的成本、最少的人力投
 
 ## 系统更新
 
-SiteServer CMS 产品将在每个月底发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进。
+SiteServer CMS 产品将每隔两月发布新的正式版本，我们将在每次迭代中对核心功能、文档支持、功能插件以及网站模板四个方面进行持续改进。
 
 ## 问题与建议
 

@@ -676,7 +676,7 @@ namespace SiteServer.CMS.Core
             return dic;
         }
 
-        public static string GetTitleHtml(string titleFormat, string titleAjaxUrl)
+        public static string GetTitleHtml(string titleFormat)
         {
             var builder = new StringBuilder();
             var formatStrong = false;
@@ -749,46 +749,6 @@ $('#{ContentAttribute.Title}_colorContainer').hide();
 <input id=""{ContentAttribute.Title}_formatEM"" name=""{ContentAttribute.Title}_formatEM"" type=""hidden"" value=""{formatEm.ToString().ToLower()}"" />
 <input id=""{ContentAttribute.Title}_formatU"" name=""{ContentAttribute.Title}_formatU"" type=""hidden"" value=""{formatU.ToString().ToLower()}"" />
 ");
-
-            builder.Append(@"
-<script type=""text/javascript"">
-function getTitles(title){
-	$.get('[url]&title=' + encodeURIComponent(title) + '&channelID=' + $('#channelID').val() + '&r=' + Math.random(), function(data) {
-		if(data !=''){
-			var arr = data.split('|');
-			var temp='';
-			for(i=0;i<arr.length;i++)
-			{
-				temp += '<li><a>'+arr[i].replace(title,'<b>' + title + '</b>') + '</a></li>';
-			}
-			var myli='<ul>'+temp+'</ul>';
-			$('#titleTips').html(myli);
-			$('#titleTips').show();
-		}else{
-            $('#titleTips').hide();
-        }
-		$('#titleTips li').click(function () {
-			$('#Title').val($(this).text());
-			$('#titleTips').hide();
-		})
-	});	
-}
-$(document).ready(function () {
-$('#Title').keyup(function (e) {
-    if (e.keyCode != 40 && e.keyCode != 38) {
-        var title = $('#Title').val();
-        if (title != ''){
-            window.setTimeout(""getTitles('"" + title + ""');"", 200);
-        }else{
-            $('#titleTips').hide();
-        }
-    }
-}).blur(function () {
-	window.setTimeout(""$('#titleTips').hide();"", 200);
-})});
-</script>
-<div id=""titleTips"" class=""inputTips""></div>");
-            builder.Replace("[url]", titleAjaxUrl);
 
             return builder.ToString();
         }
