@@ -23,19 +23,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (currentChannelId > 0 && currentChannelId != siteId)
             {
-                return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
+                return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannel), new NameValueCollection
                 {
                     {"CurrentChannelId", currentChannelId.ToString()}
                 });
             }
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannel), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannel), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (AuthRequest.IsQueryExists("channelId") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
 
-                    PageUtils.Redirect(GetRedirectUrl(SiteId, channelId));
+                    PageUtilsEx.Redirect(GetRedirectUrl(SiteId, channelId));
                     return;
                 }
             }

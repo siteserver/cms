@@ -154,7 +154,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             contentInfoList.Reverse();
                             if (exportObject.ExportContents(filePath, contentInfoList))
                             {
-                                downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                                downloadUrl = PageUtilsEx.GetTemporaryFilesUrl(fileName);
                             }
                         }
                         else if (exportType == "excel")
@@ -162,7 +162,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             var fileName = $"{channelInfo.ChannelName}.csv";
                             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
                             ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
-                            downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                            downloadUrl = PageUtilsEx.GetTemporaryFilesUrl(fileName);
                         }
                     }
                 }

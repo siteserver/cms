@@ -1,5 +1,4 @@
-﻿using System.Web.UI.WebControls;
-using Datory;
+﻿using Datory;
 
 namespace SiteServer.Utils
 {
@@ -52,22 +51,22 @@ namespace SiteServer.Utils
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(DataType type, string text)
-		{
-            return new ListItem(text, type.Value);
-		}
+  //      public static ListItem GetListItem(DataType type, string text)
+		//{
+  //          return new ListItem(text, type.Value);
+		//}
 
-		public static void AddListItems(ListControl listControl)
-		{
-		    if (listControl == null) return;
+		//public static void AddListItems(ListControl listControl)
+		//{
+		//    if (listControl == null) return;
 
-		    listControl.Items.Add(GetListItem(DataType.VarChar, "文本"));
-		    listControl.Items.Add(GetListItem(DataType.Text, "备注"));
-		    listControl.Items.Add(GetListItem(DataType.Integer, "整数"));
-		    listControl.Items.Add(GetListItem(DataType.DateTime, "日期"));
-            listControl.Items.Add(GetListItem(DataType.Decimal, "小数"));
-            listControl.Items.Add(GetListItem(DataType.Boolean, "布尔值"));
-        }
+		//    listControl.Items.Add(GetListItem(DataType.VarChar, "文本"));
+		//    listControl.Items.Add(GetListItem(DataType.Text, "备注"));
+		//    listControl.Items.Add(GetListItem(DataType.Integer, "整数"));
+		//    listControl.Items.Add(GetListItem(DataType.DateTime, "日期"));
+  //          listControl.Items.Add(GetListItem(DataType.Decimal, "小数"));
+  //          listControl.Items.Add(GetListItem(DataType.Boolean, "布尔值"));
+  //      }
 
         public static string GetText(DataType dataType)
         {

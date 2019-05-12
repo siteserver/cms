@@ -8,7 +8,7 @@ namespace SiteServer.BackgroundPages.Settings
 {
 	public class ModalAdminAccessToken : BasePage
 	{
-	    public static readonly string PageUrl = PageUtils.GetSettingsUrl(nameof(ModalAdminAccessToken));
+	    public static readonly string PageUrl = PageUtilsEx.GetSettingsUrl(nameof(ModalAdminAccessToken));
 
         public Literal LtlTitle;
 		public Literal LtlToken;
@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(int id)
         {
-            return LayerUtils.GetOpenScript("获取密钥", PageUtils.GetSettingsUrl(nameof(ModalAdminAccessToken), new NameValueCollection
+            return LayerUtils.GetOpenScript("获取密钥", PageUtilsEx.GetSettingsUrl(nameof(ModalAdminAccessToken), new NameValueCollection
             {
                 {"id", id.ToString()}
             }), 0, 420);
@@ -33,12 +33,12 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(_id);
+            var tokenInfo = DataProvider.AccessTokenDao.Get(_id);
 
             LtlTitle.Text = tokenInfo.Title;
             LtlToken.Text = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
             LtlAddDate.Text = DateUtils.GetDateAndTimeString(tokenInfo.AddDate);
-            LtlUpdatedDate.Text = DateUtils.GetDateAndTimeString(tokenInfo.UpdatedDate);
+            LtlUpdatedDate.Text = DateUtils.GetDateAndTimeString(tokenInfo.LastModifiedDate);
         }
 
         public void Regenerate_OnClick(object sender, EventArgs e)
@@ -47,7 +47,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             try
             {
-                LtlToken.Text = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(_id));
+                var accessTokenInfo = DataProvider.AccessTokenDao.Get(_id);
+                LtlToken.Text = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(accessTokenInfo));
                 LtlUpdatedDate.Text = DateUtils.GetDateAndTimeString(DateTime.Now);
 
                 AuthRequest.AddAdminLog("重设API密钥");

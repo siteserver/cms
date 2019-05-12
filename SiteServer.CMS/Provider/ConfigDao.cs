@@ -1,146 +1,311 @@
 using System.Collections.Generic;
-using System.Data;
+using Dapper;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Apis;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class ConfigDao : DataProviderBase
-	{
-        public override string TableName => "siteserver_Config";
-
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+    public class ConfigDao : IDatabaseDao
+    {
+        private readonly Repository<ConfigInfo> _repository;
+        public ConfigDao()
         {
-            new TableColumn
+            _repository = new Repository<ConfigInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+        }
+
+        public string TableName => _repository.TableName;
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        private static class Attr
+        {
+            public const string Id = nameof(ConfigInfo.Id);
+            public const string IsInitialized = "IsInitialized";
+            public const string DatabaseVersion = nameof(ConfigInfo.DatabaseVersion);
+            public const string UpdateDate = nameof(ConfigInfo.UpdateDate);
+            public const string SystemConfig = "SystemConfig";
+        }
+
+        public int Insert(ConfigInfo configInfo)
+        {
+            //var sqlString =
+            //    $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
+
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
+            //    GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
+            //    GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
+            //    GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString())
+            //};
+
+            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+            configInfo.Id = _repository.Insert(configInfo);
+            if (configInfo.Id > 0)
             {
-                AttributeName = nameof(ConfigInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.IsInitialized),
-                DataType = DataType.VarChar,
-                DataLength = 18
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.DatabaseVersion),
-                DataType = DataType.VarChar,
-                DataLength = 50
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.UpdateDate),
-                DataType = DataType.DateTime
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(ConfigInfo.SystemConfig),
-                DataType = DataType.Text
+                ConfigManager.IsChanged = true;
             }
-        };
 
-        public void Insert(ConfigInfo info)
+            return configInfo.Id;
+        }
+
+        public bool Update(ConfigInfo configInfo)
         {
-            var sqlString =
-                $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
+            //var sqlString =
+            //    $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
 
-            var insertParms = new IDataParameter[]
-			{
-				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
-                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString())
-            };
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
+            //    GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
+            //    GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
+            //    GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString()),
+            //    GetParameter($"@{nameof(ConfigInfo.Id)}", info.Id)
+            //};
 
-            ExecuteNonQuery(sqlString, insertParms);
-            ConfigManager.IsChanged = true;
-		}
+            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+            var updated = _repository.Update(configInfo);
+            if (updated)
+            {
+                ConfigManager.IsChanged = true;
+            }
 
-		public void Update(ConfigInfo info)
-		{
-		    var sqlString =
-                $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
+            return updated;
+        }
 
-            var updateParms = new IDataParameter[]
-			{
-				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", DataType.VarChar, 18, info.IsInitialized.ToString()),
-				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", DataType.VarChar, 50, info.DatabaseVersion),
-                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}", DataType.DateTime, info.UpdateDate),
-                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}", DataType.Text, info.SystemConfigInfo.ToString()),
-			    GetParameter($"@{nameof(ConfigInfo.Id)}", DataType.Integer, info.Id)
-            };
+        public bool IsInitialized()
+        {
+            try
+            {
+                //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+                //{
+                //    if (rdr.Read())
+                //    {
+                //        isInitialized = TranslateUtils.ToBool(DatabaseApi.GetString(rdr, 0));
+                //    }
+                //    rdr.Close();
+                //}
 
-            ExecuteNonQuery(sqlString, updateParms);
-            ConfigManager.IsChanged = true;
-		}
+                var isInitialized = _repository.Get<string>(Q
+                    .Select(Attr.IsInitialized)
+                    .OrderBy(Attr.Id));
 
-		public bool IsInitialized()
-		{
-            var isInitialized = false;
+                return TranslateUtils.ToBool(isInitialized);
+            }
+            catch
+            {
+                // ignored
+            }
 
-			try
-			{
-                using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
-				{
-					if (rdr.Read()) 
-					{
-                        isInitialized = GetBool(rdr, 0);
-					}
-					rdr.Close();
-				}
-			}
-		    catch
-		    {
-		        // ignored
-		    }
+            return false;
+        }
 
-		    return isInitialized;
-		}
+        //public string GetDatabaseVersion()
+        //{
+        //    try
+        //    {
+        //        //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+        //        //{
+        //        //    if (rdr.Read())
+        //        //    {
+        //        //        databaseVersion = DatabaseApi.GetString(rdr, 0);
+        //        //    }
+        //        //    rdr.Close();
+        //        //}
+        //        return GetValue<string>(Q
+        //            .Select(Attr.DatabaseVersion)
+        //            .OrderBy(Attr.Id));
+        //    }
+        //    catch
+        //    {
+        //        // ignored
+        //    }
 
-		public string GetDatabaseVersion()
-		{
-			var databaseVersion = string.Empty;
+        //    return string.Empty;
+        //}
 
-			try
-			{
-				using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
-				{
-					if (rdr.Read()) 
-					{
-                        databaseVersion = GetString(rdr, 0);
-					}
-					rdr.Close();
-				}
-			}
-		    catch
-		    {
-		        // ignored
-		    }
+        public ConfigInfo GetConfigInfo()
+        {
+            //ConfigInfo info = null;
 
-		    return databaseVersion;
-		}
+            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+            //{
+            //    if (rdr.Read())
+            //    {
+            //        var i = 0;
+            //        info = new ConfigInfo(DatabaseApi.GetInt(rdr, i++), TranslateUtils.ToBool(DatabaseApi.GetString(rdr, i++)), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetDateTime(rdr, i++), DatabaseApi.GetString(rdr, i));
+            //    }
+            //    rdr.Close();
+            //}
 
-		public ConfigInfo GetConfigInfo()
-		{
+            //return info;
+
             ConfigInfo info = null;
 
-		    using (var rdr = ExecuteReader($"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+            try
             {
-                if (rdr.Read())
-                {
-                    var i = 0;
-                    info = new ConfigInfo(GetInt(rdr, i++), GetBool(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetString(rdr, i));
-                }
-                rdr.Close();
+                info = _repository.Get(Q.OrderBy(Attr.Id));
+            }
+            catch
+            {
+                SystemManager.SyncSystemTables();
+
+                info = _repository.Get(Q.OrderBy(Attr.Id));
             }
 
-			return info;
-		}
+            return info;
+
+            //return Get(new GenericQuery().OrderBy(Attr.Id));
+        }
     }
 }
+
+
+//using System.Collections.Generic;
+//using System.Data;
+//using SiteServer.CMS.Database.Caches;
+//using SiteServer.CMS.Database.Core;
+//using SiteServer.CMS.Database.Models;
+//using SiteServer.Plugin;
+//using SiteServer.Utils;
+
+//namespace SiteServer.CMS.Database.Repositories
+//{
+//    public class ConfigDao : DataProviderBase
+//	{
+//        public override string TableName => "siteserver_Config";
+
+//        public override List<TableColumn> TableColumns => new List<TableColumn>
+//        {
+//            new TableColumn
+//            {
+//                AttributeName = nameof(ConfigInfo.Id),
+//                DataType = DataType.Integer,
+//                IsIdentity = true,
+//                IsPrimaryKey = true
+//            },
+//            new TableColumn
+//            {
+//                AttributeName = nameof(ConfigInfo.IsInitialized),
+//                DataType = DataType.VarChar
+//            },
+//            new TableColumn
+//            {
+//                AttributeName = nameof(ConfigInfo.DatabaseVersion),
+//                DataType = DataType.VarChar
+//            },
+//            new TableColumn
+//            {
+//                AttributeName = nameof(ConfigInfo.UpdateDate),
+//                DataType = DataType.DateTime
+//            },
+//            new TableColumn
+//            {
+//                AttributeName = nameof(ConfigInfo.SystemConfig),
+//                DataType = DataType.Text
+//            }
+//        };
+
+//        public void InsertObject(ConfigInfo info)
+//        {
+//            var sqlString =
+//                $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
+
+//            IDataParameter[] parameters =
+//			{
+//				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
+//				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
+//                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
+//                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString())
+//            };
+
+//            DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+//            ConfigManager.IsChanged = true;
+//		}
+
+//		public void UpdateObject(ConfigInfo info)
+//		{
+//		    var sqlString =
+//                $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
+
+//            IDataParameter[] parameters =
+//			{
+//				GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
+//				GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
+//                GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
+//                GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString()),
+//			    GetParameter($"@{nameof(ConfigInfo.Id)}", info.Id)
+//            };
+
+//		    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+//            ConfigManager.IsChanged = true;
+//		}
+
+//		public bool IsInitialized()
+//		{
+//            var isInitialized = false;
+
+//			try
+//			{
+//                using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
+//				{
+//					if (rdr.Read()) 
+//					{
+//                        isInitialized = TranslateUtils.ToBool(DatabaseApi.GetString(rdr, 0));
+//					}
+//					rdr.Close();
+//				}
+//			}
+//		    catch
+//		    {
+//		        // ignored
+//		    }
+
+//		    return isInitialized;
+//		}
+
+//		public string GetDatabaseVersion()
+//		{
+//			var databaseVersion = string.Empty;
+
+//			try
+//			{
+//				using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}")) 
+//				{
+//					if (rdr.Read()) 
+//					{
+//                        databaseVersion = DatabaseApi.GetString(rdr, 0);
+//					}
+//					rdr.Close();
+//				}
+//			}
+//		    catch
+//		    {
+//		        // ignored
+//		    }
+
+//		    return databaseVersion;
+//		}
+
+//		public ConfigInfo GetConfigInfo()
+//		{
+//            ConfigInfo info = null;
+
+//		    using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
+//            {
+//                if (rdr.Read())
+//                {
+//                    var i = 0;
+//                    info = new ConfigInfo(DatabaseApi.GetInt(rdr, i++), TranslateUtils.ToBool(DatabaseApi.GetString(rdr, i++)), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetDateTime(rdr, i++), DatabaseApi.GetString(rdr, i));
+//                }
+//                rdr.Close();
+//            }
+
+//			return info;
+//		}
+//    }
+//}

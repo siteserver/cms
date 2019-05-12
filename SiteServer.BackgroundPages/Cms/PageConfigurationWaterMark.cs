@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -35,13 +36,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId");
+			PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            EBooleanUtils.AddListItems(DdlIsWaterMark);
+            FxUtils.AddListItems(DdlIsWaterMark);
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsWaterMark, SiteInfo.Additional.IsWaterMark.ToString());
 
             LoadWaterMarkPosition(SiteInfo.Additional.WaterMarkPosition);
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbWaterMarkMinWidth.Text = SiteInfo.Additional.WaterMarkMinWidth.ToString();
             TbWaterMarkMinHeight.Text = SiteInfo.Additional.WaterMarkMinHeight.ToString();
 
-            EBooleanUtils.AddListItems(DdlIsImageWaterMark, "图片型", "文字型");
+            FxUtils.AddListItems(DdlIsImageWaterMark, "图片型", "文字型");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsImageWaterMark, SiteInfo.Additional.IsImageWaterMark.ToString());
 
             TbWaterMarkFormatString.Text = SiteInfo.Additional.WaterMarkFormatString;

@@ -238,7 +238,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 if (adminInfo.Id == 0)
                 {
-                    if (!DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage))
+                    if (DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage) == 0)
                     {
                         return BadRequest($"管理员添加失败：{errorMessage}");
                     }
@@ -246,7 +246,10 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
                 else
                 {
-                    DataProvider.AdministratorDao.Update(adminInfo);
+                    if (!DataProvider.AdministratorDao.Update(adminInfo, out var errorMessage))
+                    {
+                        return BadRequest(errorMessage);
+                    }
                     request.AddAdminLog("修改管理员属性", $"管理员:{adminInfo.UserName}");
                 }
 

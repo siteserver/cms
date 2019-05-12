@@ -4,6 +4,7 @@ using System.Security.Permissions;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Datory;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
@@ -60,7 +61,7 @@ namespace SiteServer.BackgroundPages
 
 	    public static string GetRedirectUrl()
 	    {
-	        return PageUtils.GetSiteServerUrl("installer/default", null);
+	        return PageUtilsEx.GetSiteServerUrl("installer/default", null);
 	    }
 
 	    public void Page_Load(object sender, EventArgs e)
@@ -77,17 +78,17 @@ namespace SiteServer.BackgroundPages
             LtlVersionInfo.Text = SystemManager.ProductVersion;
             SetSetp(1);
 
-            DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
+            FxUtils.AddListItemsToDatabaseType(DdlSqlDatabaseType);
 
-            EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
+            FxUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefaultPort, true.ToString());
 
             PhSqlPort.Visible = false;
 
-            EBooleanUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
+            FxUtils.AddListItems(DdlIsProtectData, "加密", "不加密");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsProtectData, false.ToString());
 
-            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtils.GetAdminUrl(string.Empty)}"">进入后台</a>";
+            LtlGo.Text = $@"<a class=""btn btn-success m-l-5"" href=""{PageUtilsEx.GetAdminUrl(string.Empty)}"">进入后台</a>";
         }
 
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
@@ -107,7 +108,7 @@ namespace SiteServer.BackgroundPages
             {
                 BtnStep2.Visible = true;
 
-                LtlDomain.Text = PageUtils.GetHost();
+                LtlDomain.Text = PageUtilsEx.GetHost();
                 LtlVersion.Text = SystemManager.ProductVersion;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
                 LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;

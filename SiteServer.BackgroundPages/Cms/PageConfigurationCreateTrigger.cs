@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCreateTrigger), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationCreateTrigger), new NameValueCollection
             {
                 {"CurrentChannelId", channelId.ToString()}
             });
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
 			if (!IsPostBack)
 			{

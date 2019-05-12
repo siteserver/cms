@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteEdit), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteEdit), new NameValueCollection
             {
                 {"siteId", siteId.ToString()}
             });
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -120,7 +120,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteInfo == null)
             {
-                PageUtils.RedirectToErrorPage("站点不存在，请确认后再试！");
+                PageUtilsEx.RedirectToErrorPage("站点不存在，请确认后再试！");
                 return;
             }
             TbSiteName.Text = SiteInfo.SiteName;
@@ -286,7 +286,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageSite.GetRedirectUrl());
+            PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
         }
     }
 }

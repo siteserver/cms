@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateMatch), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateMatch), null);
         }
 
         public string GetTitle(ChannelInfo nodeInfo)
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ChannelTemplate);
             _defaultChannelTemplateName = TemplateManager.GetTemplateName(SiteId, defaultChannelTemplateId);

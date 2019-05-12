@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -19,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("栏目生成设置",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalConfigurationCreateChannel), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalConfigurationCreateChannel), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }), 550, 500);
@@ -29,14 +30,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
             _channelId = AuthRequest.GetQueryInt("channelId");
 
 			if (!IsPostBack)
 			{
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
-                EBooleanUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
+                FxUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
                 ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.SiteInfo, false);

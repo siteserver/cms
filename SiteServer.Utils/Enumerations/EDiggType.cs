@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -78,25 +77,25 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(EDiggType type, bool selected)
-        {
-            var item = new ListItem(GetText(type), GetValue(type));
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
+        //public static ListItem GetListItem(EDiggType type, bool selected)
+        //{
+        //    var item = new ListItem(GetText(type), GetValue(type));
+        //    if (selected)
+        //    {
+        //        item.Selected = true;
+        //    }
+        //    return item;
+        //}
 
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(EDiggType.All, false));
-                listControl.Items.Add(GetListItem(EDiggType.Good, false));
-                listControl.Items.Add(GetListItem(EDiggType.Bad, false));
-            }
-        }
+        //public static void AddListItems(ListControl listControl)
+        //{
+        //    if (listControl != null)
+        //    {
+        //        listControl.Items.Add(GetListItem(EDiggType.All, false));
+        //        listControl.Items.Add(GetListItem(EDiggType.Good, false));
+        //        listControl.Items.Add(GetListItem(EDiggType.Bad, false));
+        //    }
+        //}
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {

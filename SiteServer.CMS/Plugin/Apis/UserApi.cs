@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
-            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, PageUtils.GetIpAddress(), out errorMessage);
+            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, PageUtilsEx.GetIpAddress(), out errorMessage);
             return userId > 0;
         }
 

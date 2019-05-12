@@ -224,7 +224,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (!string.IsNullOrEmpty(host))
                 {
-                    url = PageUtils.AddProtocolToUrl(url, host);
+                    url = PageUtilsEx.AddProtocolToUrl(url, host);
                 }
 
                 if (!string.IsNullOrEmpty(queryString))
@@ -246,12 +246,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             // 如果是实体标签，则只返回url
-            if (contextInfo.IsStlEntity)
-            {
-                return url;
-            }
-
-            return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
+            return contextInfo.IsStlEntity
+                ? url
+                : $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
     }
 }

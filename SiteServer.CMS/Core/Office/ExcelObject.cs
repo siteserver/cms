@@ -3,6 +3,7 @@ using SiteServer.CMS.Model;
 using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils.Enumerations;
@@ -115,7 +116,7 @@ namespace SiteServer.CMS.Core.Office
             };
             var rows = new List<List<string>>();
 
-            List<int> userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False);
+            var userIdList = DataProvider.UserDao.GetIdList(checkedState != ETriState.False).ToList();
             if (checkedState == ETriState.All)
             {
                 userIdList.AddRange(DataProvider.UserDao.GetIdList(false));

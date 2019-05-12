@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentTags), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentTags), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
             var showPopWinString = ModalContentTagAdd.GetOpenWindowStringToEdit(SiteId, tag);
             ltlEditUrl.Text = $"<a href=\"javascript:;\" onClick=\"{showPopWinString}\">编辑</a>";
 
-            var urlDelete = PageUtils.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
+            var urlDelete = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentTags), new NameValueCollection
             {
                 {"TagName", tag},
                 {"Delete", true.ToString()}

@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public static string GetRedirectUrl(int siteId, int channelId, int contentId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(PageContentAddHandler), new NameValueCollection
+            return PageUtilsEx.GetCmsWebHandlerUrl(siteId, nameof(PageContentAddHandler), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"contentId", contentId.ToString()}

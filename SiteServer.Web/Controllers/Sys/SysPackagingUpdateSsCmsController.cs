@@ -24,7 +24,7 @@ namespace SiteServer.API.Controllers.Sys
             var version = request.GetPostString("version");
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = PathUtilsEx.GetPackagesPath(idWithVersion);
             var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
 
             if (!FileUtils.IsFileExists(packageWebConfigPath))
@@ -36,7 +36,7 @@ namespace SiteServer.API.Controllers.Sys
                 WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
                 WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
 
-            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtils.GetSiteFilesPath(string.Empty), true);
+            DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtilsEx.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);

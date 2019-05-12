@@ -16,12 +16,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToAdd(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加标签", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), null), 600, 360);
+            return LayerUtils.GetOpenScript("添加标签", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentTagAdd), null), 600, 360);
         }
 
         public static string GetOpenWindowStringToEdit(int siteId, string tagName)
         {
-            return LayerUtils.GetOpenScript("修改标签", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTagAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改标签", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentTagAdd), new NameValueCollection
             {
                 {"TagName", tagName}
             }), 600, 360);

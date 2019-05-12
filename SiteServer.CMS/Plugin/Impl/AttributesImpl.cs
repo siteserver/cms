@@ -218,6 +218,21 @@ namespace SiteServer.CMS.Plugin.Impl
             return _dataDict.TryGetValue(key, out var value) ? value : null;
         }
 
+        public T Get<T>(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return default(T);
+
+            if (_dataDict.TryGetValue(key, out var value))
+            {
+                if (value is T value1)
+                {
+                    return value1;
+                }
+            }
+
+            return  default;
+        }
+
         public string GetString(string key, string defaultValue = "")
         {
             var value = Get(key);

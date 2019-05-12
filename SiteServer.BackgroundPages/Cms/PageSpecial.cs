@@ -15,14 +15,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageSpecial), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageSpecial), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             var keyword = AuthRequest.GetQueryString("keyword");
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var specialInfo = SpecialManager.GetSpecialInfo(SiteId, specialId);
                     var directoryPath = SpecialManager.GetSpecialDirectoryPath(SiteInfo, specialInfo.Url);
                     var zipFilePath = SpecialManager.GetSpecialZipFilePath(directoryPath);
-                    PageUtils.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
+                    PageUtilsEx.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
                     return;
                 }
             }

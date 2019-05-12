@@ -8,36 +8,43 @@ namespace SiteServer.CMS.DataCache
 {
 	public static class AccessTokenManager
 	{
-	    private static class AccessTokenManagerCache
-	    {
-	        private static readonly object LockObject = new object();
+        private static class AccessTokenManagerCache
+        {
+            private static readonly object LockObject = new object();
 
-	        private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(AccessTokenManager));
+            private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(AccessTokenManager));
 
-	        public static void Clear()
-	        {
-	            DataCacheManager.Remove(CacheKey);
-	        }
+            public static void Clear()
+            {
+                DataCacheManager.Remove(CacheKey);
+            }
 
-	        public static Dictionary<string, AccessTokenInfo> GetAccessTokenDictionary()
-	        {
-	            var retval = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
-	            if (retval != null) return retval;
+            public static Dictionary<string, AccessTokenInfo> GetAccessTokenDictionary()
+            {
+                var retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+                if (retVal != null) return retVal;
 
-	            lock (LockObject)
-	            {
-	                retval = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
-	                if (retval == null)
-	                {
-	                    retval = DataProvider.AccessTokenDao.GetAccessTokenInfoDictionary();
+                lock (LockObject)
+                {
+                    retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+                    if (retVal != null) return retVal;
 
-	                    DataCacheManager.Insert(CacheKey, retval);
-	                }
-	            }
+                    retVal = new Dictionary<string, AccessTokenInfo>();
+                    foreach (var accessTokenInfo in DataProvider.AccessTokenDao.GetAll())
+                    {
+                        var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token);
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            retVal[token] = accessTokenInfo;
+                        }
+                    }
 
-	            return retval;
-	        }
-	    }
+                    DataCacheManager.Insert(CacheKey, retVal);
+                }
+
+                return retVal;
+            }
+        }
 
         public const string ScopeContents = "Contents";
         public const string ScopeAdministrators = "Administrators";

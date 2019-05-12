@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -24,7 +26,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString(string userName)
         {
             return LayerUtils.GetOpenScript("权限设置",
-                PageUtils.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
+                PageUtilsEx.GetSettingsUrl(nameof(ModalPermissionsSet), new NameValueCollection
                 {
                     {"UserName", userName}
                 }));
@@ -41,10 +43,10 @@ namespace SiteServer.BackgroundPages.Settings
             var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
             if (AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator)
             {
-                DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
-                DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.SystemAdministrator, false));
+                DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.ConsoleAdministrator, false));
+                DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.SystemAdministrator, false));
             }
-            DdlPredefinedRole.Items.Add(EPredefinedRoleUtils.GetListItem(EPredefinedRole.Administrator, false));
+            DdlPredefinedRole.Items.Add(FxUtils.GetListItem(EPredefinedRole.Administrator, false));
 
             var type = EPredefinedRoleUtils.GetEnumTypeByRoles(roles);
             ControlUtils.SelectSingleItem(DdlPredefinedRole, EPredefinedRoleUtils.GetValue(type));
@@ -84,7 +86,7 @@ namespace SiteServer.BackgroundPages.Settings
             LbAssignedRoles.Items.Clear();
             var allRoles = AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator ? DataProvider.RoleDao.GetRoleNameList() : DataProvider.RoleDao.GetRoleNameListByCreatorUserName(AuthRequest.AdminName);
             var userRoles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_userName);
-            var userRoleNameArrayList = new ArrayList(userRoles);
+            var userRoleNameArrayList = new List<string>(userRoles);
             foreach (var roleName in allRoles)
             {
                 if (!EPredefinedRoleUtils.IsPredefinedRole(roleName) && !userRoleNameArrayList.Contains(roleName))
@@ -112,7 +114,10 @@ namespace SiteServer.BackgroundPages.Settings
                     var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAvailableRoles);
                     if (selectedRoles.Length > 0)
                     {
-                        DataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, selectedRoles);
+                        foreach (var selectedRole in selectedRoles)
+                        {
+                            DataProvider.AdministratorsInRolesDao.AddUserToRole(_userName, selectedRole);
+                        }
                     }
                 }
                 ListBoxDataBind();
@@ -132,7 +137,10 @@ namespace SiteServer.BackgroundPages.Settings
                 var roles = ControlUtils.GetListControlValues(LbAvailableRoles);
                 if (roles.Length > 0)
                 {
-                    DataProvider.AdministratorsInRolesDao.AddUserToRoles(_userName, roles);
+                    foreach (var role in roles)
+                    {
+                        DataProvider.AdministratorsInRolesDao.AddUserToRole(_userName, role);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -151,7 +159,11 @@ namespace SiteServer.BackgroundPages.Settings
                 if (LbAssignedRoles.SelectedIndex != -1)
                 {
                     var selectedRoles = ControlUtils.GetSelectedListControlValueArray(LbAssignedRoles);
-                    DataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, selectedRoles);
+
+                    foreach (var selectedRole in selectedRoles)
+                    {
+                        DataProvider.AdministratorsInRolesDao.RemoveUserFromRole(_userName, selectedRole);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -170,7 +182,10 @@ namespace SiteServer.BackgroundPages.Settings
                 var roles = ControlUtils.GetListControlValues(LbAssignedRoles);
                 if (roles.Length > 0)
                 {
-                    DataProvider.AdministratorsInRolesDao.RemoveUserFromRoles(_userName, roles);
+                    foreach (var role in roles)
+                    {
+                        DataProvider.AdministratorsInRolesDao.RemoveUserFromRole(_userName, role);
+                    }
                 }
                 ListBoxDataBind();
             }
@@ -214,8 +229,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (isChanged)
             {
-                var redirectUrl = PageAdministrator.GetRedirectUrl();
-                LayerUtils.CloseAndRedirect(Page, redirectUrl);
+                LayerUtils.CloseAndRedirect(Page, AdminPagesUtils.Settings.AdministratorsUrl);
             }
         }
     }

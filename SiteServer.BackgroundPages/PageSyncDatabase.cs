@@ -12,12 +12,12 @@ namespace SiteServer.BackgroundPages
     {
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageSyncDatabase), null);
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageSyncDatabase), null);
         }
 
         public string UpdateDatabaseApiUrl => ApiRouteSyncDatabase.GetUrl(ApiManager.InnerApiUrl);
 
-        public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
+        public string AdminUrl => PageUtilsEx.GetAdminUrl(string.Empty);
 
         public void Page_Load(object sender, EventArgs e)
         {

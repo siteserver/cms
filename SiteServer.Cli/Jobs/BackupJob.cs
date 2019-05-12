@@ -68,7 +68,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+            WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {

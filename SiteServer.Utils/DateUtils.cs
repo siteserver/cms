@@ -4,62 +4,72 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
-	public static class DateUtils
-	{
+    public static class DateUtils
+    {
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
 
-	    public static DateTime GetExpiresAt(TimeSpan expiresAt)
-	    {
-	        return DateTime.UtcNow.Add(expiresAt);
-	    }
+        public static DateTime GetExpiresAt(TimeSpan expiresAt)
+        {
+            return DateTime.UtcNow.Add(expiresAt);
+        }
+
+        public static string GetRelatedDateTimeString(DateTimeOffset? offset)
+        {
+            return offset.HasValue ? GetRelatedDateTimeString(offset.Value.DateTime) : string.Empty;
+        }
 
         public static string GetRelatedDateTimeString(DateTime datetime)
         {
-            string retval;
+            string retVal;
             var interval = DateTime.Now - datetime;
             if (interval.Days > 0)
             {
                 if (interval.Days >= 7 && interval.Days < 35)
                 {
-                    retval = $"{interval.Days/7}周";
+                    retVal = $"{interval.Days / 7}周";
                 }
                 else
                 {
-                    retval = $"{interval.Days}天";
+                    retVal = $"{interval.Days}天";
                 }
             }
             else if (interval.Hours > 0)
             {
-                retval = $"{interval.Hours}小时";
+                retVal = $"{interval.Hours}小时";
             }
             else if (interval.Minutes > 0)
             {
-                retval = $"{interval.Minutes}分钟";
+                retVal = $"{interval.Minutes}分钟";
             }
             else if (interval.Seconds > 0)
             {
-                retval = $"{interval.Seconds}秒";
+                retVal = $"{interval.Seconds}秒";
             }
             else if (interval.Milliseconds > 0)
             {
-                retval = $"{interval.Milliseconds}毫秒";
+                retVal = $"{interval.Milliseconds}毫秒";
             }
             else
             {
-                retval = "1毫秒";
+                retVal = "1毫秒";
             }
-            return retval;
+            return retVal;
         }
 
-        public static string GetRelatedDateTimeString(DateTime datetime, string postfix)
+        public static string GetDateAndTimeString(DateTimeOffset? offset, EDateFormatType dateFormat, ETimeFormatType timeFormat)
         {
-            return $"{GetRelatedDateTimeString(datetime)}{postfix}";
+            return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime, dateFormat, timeFormat) : string.Empty;
         }
 
         public static string GetDateAndTimeString(DateTime datetime, EDateFormatType dateFormat, ETimeFormatType timeFormat)
         {
             return $"{GetDateString(datetime, dateFormat)} {GetTimeString(datetime, timeFormat)}";
+        }
+
+        public static string GetDateAndTimeString(DateTimeOffset? offset)
+        {
+            return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
         }
 
         public static string GetDateAndTimeString(DateTime datetime)
@@ -68,21 +78,21 @@ namespace SiteServer.Utils
             return GetDateAndTimeString(datetime, EDateFormatType.Day, ETimeFormatType.ShortTime);
         }
 
+        public static string GetDateString(DateTimeOffset? offset)
+        {
+            return offset.HasValue ? GetDateString(offset.Value.DateTime) : string.Empty;
+        }
+
         public static string GetDateString(DateTime datetime)
         {
             if (datetime == SqlMinValue || datetime == DateTime.MinValue) return string.Empty;
             return GetDateString(datetime, EDateFormatType.Day);
         }
 
-	    public static string GetDateString(DateTimeOffset? offset)
-	    {
-	        return offset.HasValue ? GetDateString(offset.Value.DateTime) : string.Empty;
-	    }
-
-        public static string GetDateAndTimeString(DateTimeOffset? offset)
-	    {
-	        return offset.HasValue ? GetDateAndTimeString(offset.Value.DateTime) : string.Empty;
-	    }
+        public static string GetDateString(DateTimeOffset? offset, EDateFormatType dateFormat)
+        {
+            return offset.HasValue ? GetDateString(offset.Value.DateTime, dateFormat) : string.Empty;
+        }
 
         public static string GetDateString(DateTime datetime, EDateFormatType dateFormat)
         {
@@ -106,50 +116,34 @@ namespace SiteServer.Utils
             return datetime.ToString(format);
         }
 
-		public static string GetTimeString(DateTime datetime)
-		{
-			return GetTimeString(datetime, ETimeFormatType.ShortTime);
-		}
+        public static string GetTimeString(DateTimeOffset? offset)
+        {
+            return offset.HasValue ? GetTimeString(offset.Value.DateTime) : string.Empty;
+        }
+
+        public static string GetTimeString(DateTime datetime)
+        {
+            return GetTimeString(datetime, ETimeFormatType.ShortTime);
+        }
+
+        public static string GetTimeString(DateTimeOffset? offset, ETimeFormatType timeFormat)
+        {
+            return offset.HasValue ? GetTimeString(offset.Value.DateTime, timeFormat) : string.Empty;
+        }
 
         public static string GetTimeString(DateTime datetime, ETimeFormatType timeFormat)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (timeFormat == ETimeFormatType.LongTime)
             {
-                retval = datetime.ToLongTimeString();
+                retVal = datetime.ToLongTimeString();
             }
             else if (timeFormat == ETimeFormatType.ShortTime)
             {
-                retval = datetime.ToShortTimeString();
+                retVal = datetime.ToShortTimeString();
             }
-            return retval;
+            return retVal;
         }
-
-		public static int GetSeconds(string intWithUnitString)
-		{
-			var seconds = 0;
-			if (!string.IsNullOrEmpty(intWithUnitString))
-			{
-				intWithUnitString = intWithUnitString.Trim().ToLower();
-				if (intWithUnitString.EndsWith("h"))
-				{
-					seconds = 60 * 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('h'));
-				}
-				else if (intWithUnitString.EndsWith("m"))
-				{
-					seconds = 60 * TranslateUtils.ToInt(intWithUnitString.TrimEnd('m'));
-				}
-				else if (intWithUnitString.EndsWith("s"))
-				{
-					seconds = TranslateUtils.ToInt(intWithUnitString.TrimEnd('s'));
-				}
-				else
-				{
-					seconds = TranslateUtils.ToInt(intWithUnitString);
-				}
-			}
-			return seconds;
-		}
 
         public static bool IsSince(string val)
         {
@@ -194,116 +188,71 @@ namespace SiteServer.Utils
             return hours;
         }
 
-        public static bool IsTheSameDay(DateTime d1, DateTime d2)
+        public static string Format(DateTimeOffset? offset, string formatString)
         {
-            if (d1.Year == d2.Year && d1.Month == d2.Month && d1.Day == d2.Day)
-            {
-                return true;
-            }
-            return false;
+            return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
         }
-
-	    public static string Format(DateTimeOffset? offset, string formatString)
-	    {
-	        return offset.HasValue ? Format(offset.Value.DateTime, formatString) : string.Empty;
-	    }
 
         public static string Format(DateTime datetime, string formatString)
         {
-            string retval;
+            string retVal;
             if (!string.IsNullOrEmpty(formatString))
             {
-                retval = formatString.IndexOf("{0:", StringComparison.Ordinal) != -1 ? string.Format(DateTimeFormatInfo.InvariantInfo, formatString, datetime) : datetime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
+                retVal = formatString.IndexOf("{0:", StringComparison.Ordinal) != -1 ? string.Format(DateTimeFormatInfo.InvariantInfo, formatString, datetime) : datetime.ToString(formatString, DateTimeFormatInfo.InvariantInfo);
             }
             else
             {
-                retval = GetDateString(datetime);
+                retVal = GetDateString(datetime);
             }
-            return retval;
+            return retVal;
         }
 
-		public static DateTime SqlMinValue => new DateTime(1754, 1, 1, 0, 0, 0, 0);
-
-	    //Task used
-        public static int GetDayOfWeek(DateTime dateTime)
-        {
-            switch (dateTime.DayOfWeek)
-            {
-                case DayOfWeek.Monday:
-                    return 1;
-
-                case DayOfWeek.Tuesday:
-                    return 2;
-
-                case DayOfWeek.Wednesday:
-                    return 3;
-
-                case DayOfWeek.Thursday:
-                    return 4;
-
-                case DayOfWeek.Friday:
-                    return 5;
-
-                case DayOfWeek.Saturday:
-                    return 6;
-
-                default:
-                    return 7;
-            }
-        }
+        public static DateTime SqlMinValue => new DateTime(1754, 1, 1, 0, 0, 0, 0);
 
         public static string ParseThisMoment(DateTime dateTime)
         {
-            if (dateTime != SqlMinValue)
+            if (dateTime <= SqlMinValue) return string.Empty;
+
+            var now = DateTime.Now;
+
+            if (now.Year == dateTime.Year && now.Month == dateTime.Month)
             {
-                return ParseThisMoment(dateTime, DateTime.Now);
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// 把两个时间差，三天内的时间用今天，昨天，前天表示，后跟时间，无日期
-        /// </summary>
-        public static string ParseThisMoment(DateTime dateTime, DateTime currentDateTime)
-        {
-            string result;
-            if (currentDateTime.Year == dateTime.Year && currentDateTime.Month == dateTime.Month)//如果date和当前时间年份或者月份不一致，则直接返回"yyyy-MM-dd HH:mm"格式日期
-            {
-                if (DateDiff("hour", dateTime, currentDateTime) <= 10)//如果date和当前时间间隔在10小时内(曾经是3小时)
+                if (DateDiff("hour", dateTime, now) <= 10)//如果date和当前时间间隔在10小时内
                 {
-                    if (DateDiff("hour", dateTime, currentDateTime) > 0)
-                        return DateDiff("hour", dateTime, currentDateTime) + "小时前";
-
-                    if (DateDiff("minute", dateTime, currentDateTime) > 0)
-                        return DateDiff("minute", dateTime, currentDateTime) + "分钟前";
-
-                    if (DateDiff("second", dateTime, currentDateTime) >= 0)
-                        return DateDiff("second", dateTime, currentDateTime) + "秒前";
-                    else
-                        return "刚才";//为了解决时间精度不够导致发帖时间问题的兼容
-                }
-                else
-                {
-                    switch (currentDateTime.Day - dateTime.Day)
+                    if (DateDiff("hour", dateTime, now) > 0)
                     {
-                        case 0:
-                            result = "今天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
-                            break;
-                        case 1:
-                            result = "昨天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
-                            break;
-                        case 2:
-                            result = "前天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
-                            break;
-                        default:
-                            result = dateTime.ToString("yyyy-MM-dd HH:mm");
-                            break;
+                        return DateDiff("hour", dateTime, now) + "小时前";
                     }
+
+                    if (DateDiff("minute", dateTime, now) > 0)
+                    {
+                        return DateDiff("minute", dateTime, now) + "分钟前";
+                    }
+
+                    if (DateDiff("second", dateTime, now) >= 0)
+                    {
+                        return DateDiff("second", dateTime, now) + "秒前";
+                    }
+                    return "刚才";
+                }
+
+                if (now.Day - dateTime.Day == 0)
+                {
+                    return "今天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
+                }
+
+                if (now.Day - dateTime.Day == 1)
+                {
+                    return "昨天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
+                }
+
+                if (now.Day - dateTime.Day == 2)
+                {
+                    return "前天 " + dateTime.ToString("HH") + ":" + dateTime.ToString("mm");
                 }
             }
-            else
-                result = dateTime.ToString("yyyy-MM-dd HH:mm");
-            return result;
+
+            return dateTime.ToString("yyyy-MM-dd HH:mm");
         }
 
         /// <summary>
@@ -312,48 +261,53 @@ namespace SiteServer.Utils
         /// <returns></returns>
         public static long DateDiff(string interval, DateTime startDate, DateTime endDate)
         {
-            long retval = 0;
+            long retVal = 0;
             var ts = new TimeSpan(endDate.Ticks - startDate.Ticks);
             if (interval == "second")
             {
-                retval = (long)ts.TotalSeconds;
+                retVal = (long)ts.TotalSeconds;
             }
             else if (interval == "minute")
             {
-                retval = (long) ts.TotalMinutes;
+                retVal = (long)ts.TotalMinutes;
             }
             else if (interval == "hour")
             {
-                retval = (long) ts.TotalHours;
+                retVal = (long)ts.TotalHours;
             }
             else if (interval == "day")
             {
-                retval = ts.Days;
+                retVal = ts.Days;
             }
             else if (interval == "week")
             {
-                retval = ts.Days / 7;
+                retVal = ts.Days / 7;
             }
             else if (interval == "month")
             {
-                retval = ts.Days / 30;
+                retVal = ts.Days / 30;
             }
             else if (interval == "quarter")
             {
-                retval = ts.Days / 30 / 3;
+                retVal = ts.Days / 30 / 3;
             }
             else if (interval == "year")
             {
-                retval = ts.Days / 365;
+                retVal = ts.Days / 365;
             }
-            return retval;
+            return retVal;
         }
 
-	    private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
-	    public static long ToUnixTime(DateTime dateTime)
-	    {
-	        return (dateTime - UnixEpoch).Ticks / TimeSpan.TicksPerMillisecond;
-	    }
+        public static long ToUnixTime(DateTimeOffset? offset)
+        {
+            return offset.HasValue ? ToUnixTime(offset.Value.DateTime) : 0;
+        }
+
+        public static long ToUnixTime(DateTime dateTime)
+        {
+            return (dateTime - UnixEpoch).Ticks / TimeSpan.TicksPerMillisecond;
+        }
     }
 }

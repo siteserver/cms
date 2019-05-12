@@ -13,7 +13,7 @@ namespace SiteServer.API
     {
         public void Configuration(IAppBuilder app)
         {
-            PluginManager.LoadPlugins(HostingEnvironment.ApplicationPhysicalPath);
+            PluginManager.LoadPlugins(HostingEnvironment.ApplicationVirtualPath, HostingEnvironment.ApplicationPhysicalPath);
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }

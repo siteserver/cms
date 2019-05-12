@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Settings
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
             LtlPageTitle.Text = $"用户增加最近{_count}{EStatictisXTypeUtils.GetText(EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType")))}分配图表";
 
-            EStatictisXTypeUtils.AddListItems(DdlXType);
+            FxUtils.AddListItemsToEStatictisXType(DdlXType);
 
             _xType = EStatictisXTypeUtils.GetEnumType(AuthRequest.GetQueryString("XType"));
 
@@ -171,7 +172,7 @@ yArray.push('{GetGraphicY(i)}');
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            PageUtilsEx.Redirect(PageUrl);
         }
 
         private string _pageUrl;
@@ -181,7 +182,7 @@ yArray.push('{GetGraphicY(i)}');
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetSettingsUrl(nameof(PageAnalysisUser), new NameValueCollection
+                    _pageUrl = PageUtilsEx.GetSettingsUrl(nameof(PageAnalysisUser), new NameValueCollection
                     {
                         {"DateFrom",  TbDateFrom.Text},
                         {"DateTo",  TbDateTo.Text},

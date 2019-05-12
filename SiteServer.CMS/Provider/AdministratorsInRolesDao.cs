@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -8,188 +7,207 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
 {
-    public class AdministratorsInRolesDao : DataProviderBase
+    public class AdministratorsInRolesDao: IDatabaseDao
     {
-        public override string TableName => "siteserver_AdministratorsInRoles";
-
-        public override List<TableColumn> TableColumns => new List<TableColumn>
+        private readonly Repository<AdministratorsInRolesInfo> _repository;
+        public AdministratorsInRolesDao()
         {
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.Id),
-                DataType = DataType.Integer,
-                IsIdentity = true,
-                IsPrimaryKey = true
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.RoleName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorsInRolesInfo.UserName),
-                DataType = DataType.VarChar,
-                DataLength = 255
-            }
-        };
-
-        public string[] GetRolesForUser(string userName)
-        {
-            var tmpRoleNames = string.Empty;
-            var sqlString = "SELECT RoleName FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpRoleNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpRoleNames.Length > 0)
-            {
-                tmpRoleNames = tmpRoleNames.Substring(0, tmpRoleNames.Length - 1);
-                return tmpRoleNames.Split(',');
-            }
-
-            return new string[0];
+            _repository = new Repository<AdministratorsInRolesInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
         }
 
-        public string[] GetUsersInRole(string roleName)
+        public string TableName => _repository.TableName;
+        public List<TableColumn> TableColumns => _repository.TableColumns;
+
+        //public override string TableName => "siteserver_AdministratorsInRoles";
+
+        //public override List<TableColumn> TableColumns => new List<TableColumn>
+        //{
+        //    new TableColumn
+        //    {
+        //        AttributeName = nameof(AdministratorsInRolesInfo.Id),
+        //        DataType = DataType.Integer,
+        //        IsIdentity = true,
+        //        IsPrimaryKey = true
+        //    },
+        //    new TableColumn
+        //    {
+        //        AttributeName = nameof(AdministratorsInRolesInfo.RoleName),
+        //        DataType = DataType.VarChar
+        //    },
+        //    new TableColumn
+        //    {
+        //        AttributeName = nameof(AdministratorsInRolesInfo.UserName),
+        //        DataType = DataType.VarChar
+        //    }
+        //};
+
+        private static class Attr
         {
-            var tmpUserNames = string.Empty;
-            var sqlString = "SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName ORDER BY userName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
+            public const string Id = nameof(AdministratorsInRolesInfo.Id);
+            public const string Guid = nameof(AdministratorsInRolesInfo.Guid);
+            public const string LastModifiedDate = nameof(AdministratorsInRolesInfo.LastModifiedDate);
+            public const string RoleName = nameof(AdministratorsInRolesInfo.RoleName);
+            public const string UserName = nameof(AdministratorsInRolesInfo.UserName);
         }
 
-        public void RemoveUserFromRoles(string userName, string[] roleNames)
+        public IEnumerable<string> GetUserNameListByRoleName(string roleName)
         {
-            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            foreach (var roleName in roleNames)
-            {
-                var parms = new IDataParameter[]
-                {
-                    GetParameter("@UserName", DataType.VarChar, 255, userName),
-                    GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-                };
-                ExecuteNonQuery(sqlString, parms);
-            }
+            return _repository.GetAll<string>(Q
+                .Select(Attr.UserName)
+                .Where(Attr.RoleName, roleName)
+                .Distinct());
+            //var list = new List<string>();
+
+            //const string sqlString = "SELECT DISTINCT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName";
+
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter("@RoleName", roleName)
+            //};
+
+            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
+            //{
+            //    while (rdr.Read())
+            //    {
+            //        list.Add(DatabaseApi.GetString(rdr, 0));
+            //    }
+            //    rdr.Close();
+            //}
+
+            //return list;
         }
+
+        public IList<string> GetRolesForUser(string userName)
+        {
+            return _repository.GetAll<string>(Q
+                .Select(Attr.RoleName)
+                .Where(Attr.UserName, userName)
+                .Distinct());
+            //var tmpRoleNames = string.Empty;
+            //const string sqlString = "SELECT RoleName FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName ORDER BY RoleName";
+
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter("@UserName", userName)
+            //};
+
+            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
+            //{
+            //    while (rdr.Read())
+            //    {
+            //        tmpRoleNames += DatabaseApi.GetString(rdr, 0) + ",";
+            //    }
+            //    rdr.Close();
+            //}
+
+            //if (tmpRoleNames.Length > 0)
+            //{
+            //    tmpRoleNames = tmpRoleNames.Substring(0, tmpRoleNames.Length - 1);
+            //    return tmpRoleNames.Split(',');
+            //}
+
+            //return new string[0];
+        }
+
+        public void RemoveUser(string userName)
+        {
+            _repository.Delete(Q
+                .Where(Attr.UserName, userName));
+            //const string sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName";
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter("@UserName", userName)
+            //};
+            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        }
+
+        //public void RemoveUserFromRoles(string userName, string[] roleNames)
+        //{
+        //    foreach (var roleName in roleNames)
+        //    {
+        //        DeleteAll(new Query()
+        //            .Equal(Attr.UserName, userName)
+        //            .Equal(Attr.RoleName, roleName));
+        //    }
+        //    //const string sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
+        //    //foreach (var roleName in roleNames)
+        //    //{
+        //    //    IDataParameter[] parameters =
+        //    //    {
+        //    //        GetParameter("@UserName", userName),
+        //    //        GetParameter("@RoleName", roleName)
+        //    //    };
+        //    //    DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
+        //    //}
+        //}
 
         public void RemoveUserFromRole(string userName, string roleName)
         {
-            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName),
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
+            _repository.Delete(Q
+                .Where(Attr.UserName, userName)
+                .Where(Attr.RoleName, roleName));
 
-            ExecuteNonQuery(sqlString, parms);
-        }
+            //const string sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
 
-        public string[] FindUsersInRole(string roleName, string userNameToMatch)
-        {
-            var tmpUserNames = string.Empty;
-            string sqlString =
-                $"SELECT UserName FROM siteserver_AdministratorsInRoles WHERE RoleName = @RoleName AND UserName LIKE '%{AttackUtils.FilterSql(userNameToMatch)}%'";
+            //IDataParameter[] parameters =
+            //{
+            //    GetParameter("@UserName", userName),
+            //    GetParameter("@RoleName", roleName)
+            //};
 
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                while (rdr.Read())
-                {
-                    tmpUserNames += GetString(rdr, 0) + ",";
-                }
-                rdr.Close();
-            }
-
-            if (tmpUserNames.Length > 0)
-            {
-                tmpUserNames = tmpUserNames.Substring(0, tmpUserNames.Length - 1);
-                return tmpUserNames.Split(',');
-            }
-
-            return new string[0];
+            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
         }
 
         public bool IsUserInRole(string userName, string roleName)
         {
-            var isUserInRole = false;
-            const string sqlString = "SELECT * FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
-            var parms = new IDataParameter[]
-            {
-                GetParameter("@UserName", DataType.VarChar, 255, userName),
-                GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-            };
-            using (var rdr = ExecuteReader(sqlString, parms))
-            {
-                if (rdr.Read())
-                {
-                    if (!rdr.IsDBNull(0))
-                    {
-                        isUserInRole = true;
-                    }
-                }
-                rdr.Close();
-            }
-            return isUserInRole;
+            return _repository.Exists(Q
+                .Where(Attr.UserName, userName)
+                .Where(Attr.RoleName, roleName));
+
+            //var isUserInRole = false;
+            //const string sqlString = "SELECT * FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";
+
+            //IDataParameter[] parameters = 
+            //{
+            //    GetParameter("@UserName", userName),
+            //    GetParameter("@RoleName", roleName)
+            //};
+            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
+            //{
+            //    if (rdr.Read())
+            //    {
+            //        if (!rdr.IsDBNull(0))
+            //        {
+            //            isUserInRole = true;
+            //        }
+            //    }
+            //    rdr.Close();
+            //}
+            //return isUserInRole;
         }
 
-        public void AddUserToRoles(string userName, string[] roleNames)
+        public int AddUserToRole(string userName, string roleName)
         {
-            foreach (var roleName in roleNames)
-            {
-                AddUserToRole(userName, roleName);
-            }
-        }
-
-        public void AddUserToRole(string userName, string roleName)
-        {
-            if (!DataProvider.AdministratorDao.IsUserNameExists(userName)) return;
+            if (!DataProvider.AdministratorDao.IsUserNameExists(userName)) return 0;
             if (!IsUserInRole(userName, roleName))
             {
-                var sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
-
-                var parms = new IDataParameter[]
+                return _repository.Insert(new AdministratorsInRolesInfo
                 {
-                    GetParameter("@UserName", DataType.VarChar, 255, userName),
-                    GetParameter("@RoleName", DataType.VarChar, 255, roleName)
-                };
+                    UserName = userName,
+                    RoleName = roleName
+                });
+                //const string sqlString = "INSERT INTO siteserver_AdministratorsInRoles (UserName, RoleName) VALUES (@UserName, @RoleName)";
 
-                ExecuteNonQuery(sqlString, parms);
+                //IDataParameter[] parameters = 
+                //{
+                //    GetParameter("@UserName", userName),
+                //    GetParameter("@RoleName", roleName)
+                //};
+
+                //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             }
+
+            return 0;
         }
     }
 }

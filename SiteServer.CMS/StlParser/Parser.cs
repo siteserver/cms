@@ -61,7 +61,7 @@ namespace SiteServer.CMS.StlParser
             {
                 if (isDynamic)
                 {
-                    var pageUrl = PageUtils.AddProtocolToUrl(PageUtils.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
+                    var pageUrl = PageUtilsEx.AddProtocolToUrl(PageUtilsEx.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);

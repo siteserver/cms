@@ -49,7 +49,7 @@ namespace SiteServer.Cli.Jobs
 
             if (FileUtils.IsFileExists(webConfigPath))
             {
-                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+                WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
                 try
                 {

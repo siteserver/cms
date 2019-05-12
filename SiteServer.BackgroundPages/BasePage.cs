@@ -42,14 +42,14 @@ namespace SiteServer.BackgroundPages
             {
                 if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
                 {
-                    PageUtils.Redirect(PageUtils.GetAdminUrl("Installer"));
+                    PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl("Installer"));
                     return;
                 }
 
                 #if !DEBUG
                 if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
-                    PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
+                    PageUtilsEx.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
                 }
                 #endif
@@ -57,10 +57,10 @@ namespace SiteServer.BackgroundPages
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
             {
-                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.IsLockedOut) // 检测管理员是否登录，检测管理员帐号是否被锁定
+                if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
-                    PageUtils.RedirectToLoginPage();
+                    PageUtilsEx.RedirectToLoginPage();
                     return;
                 }
             }
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages
             {
                 writer.Write($@"<script type=""text/javascript"">
 if (window.top.location.href.toLowerCase().indexOf(""main.cshtml"") == -1){{
-	window.top.location.href = ""{PageUtils.GetMainUrl(0)}"";
+	window.top.location.href = ""{PageUtilsEx.GetMainUrl(0)}"";
 }}
 </script>");
             }
@@ -209,7 +209,7 @@ setTimeout(function() {{
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetAdminUrl(string.Empty));
+            PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)
@@ -251,7 +251,7 @@ setTimeout(function() {{
         public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{PageUtils.ApplicationPath}', '{siteUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{PageUtilsEx.ApplicationPath}', '{siteUrl}')";
         }
     }
 }

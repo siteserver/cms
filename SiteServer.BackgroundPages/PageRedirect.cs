@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() }
             });
@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrlToChannel(int siteId, int channelId)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() },
                 {nameof(channelId), channelId.ToString() }
@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrlToContent(int siteId, int channelId, int contentId)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() },
                 {nameof(channelId), channelId.ToString() },
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrlToFile(int siteId, int fileTemplateId)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() },
                 {nameof(fileTemplateId), fileTemplateId.ToString() }
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrlToSpecial(int siteId, int specialId)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageRedirect), new NameValueCollection
             {
                 {nameof(siteId), siteId.ToString() },
                 {nameof(specialId), specialId.ToString() }
@@ -123,7 +123,7 @@ namespace SiteServer.BackgroundPages
             }
             else
             {
-                PageUtils.Redirect(url);
+                PageUtilsEx.Redirect(url);
             }
         }
 
@@ -139,12 +139,12 @@ namespace SiteServer.BackgroundPages
                 var url = siteInfo.Additional.IsSeparatedWeb
                     ? ApiRoutePreview.GetSiteUrl(siteId)
                     : siteInfo.Additional.WebUrl;
-                PageUtils.Redirect(url);
+                PageUtilsEx.Redirect(url);
             }
             else
             {
-                var url = PageUtils.ApplicationPath;
-                PageUtils.Redirect(url);
+                var url = PageUtilsEx.ApplicationPath;
+                PageUtilsEx.Redirect(url);
             }
         }
     }

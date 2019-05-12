@@ -41,7 +41,7 @@ namespace SiteServer.CMS.Core
             //    StringUtils.ReplaceHrefOrSrc(builder, url, "@");
             //}
 
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var relatedSiteUrl = PageUtilsEx.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             StringUtils.ReplaceHrefOrSrc(builder, relatedSiteUrl, "@");
 
             builder.Replace("@'@", "'@");

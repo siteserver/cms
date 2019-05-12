@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId, string startDate, string endDate)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisAdminWork), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAnalysisAdminWork), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"startDate", startDate},
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0 && siteIdList.Count > 0)
             {
-                PageUtils.Redirect(GetRedirectUrl(siteIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
+                PageUtilsEx.Redirect(GetRedirectUrl(siteIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
                 return;
             }
 
@@ -144,7 +144,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
+            PageUtilsEx.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
         }
 
         private void SetXHashtableUser(string userName, string siteName)

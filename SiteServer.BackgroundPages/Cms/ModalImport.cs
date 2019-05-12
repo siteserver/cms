@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 title = "导入联动字段";
             }
-            return LayerUtils.GetOpenScript(title, PageUtils.GetCmsUrl(siteId, nameof(ModalImport), new NameValueCollection
+            return LayerUtils.GetOpenScript(title, PageUtilsEx.GetCmsUrl(siteId, nameof(ModalImport), new NameValueCollection
             {
                 {"Type", type}
             }), Width, Height);
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             _type = AuthRequest.GetQueryString("Type");
 
             if (!IsPostBack)

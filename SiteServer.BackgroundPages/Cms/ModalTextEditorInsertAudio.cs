@@ -17,13 +17,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入音频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入音频", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
+        public string UploadUrl => PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertAudio), new NameValueCollection
         {
             {"upload", true.ToString()}
         });

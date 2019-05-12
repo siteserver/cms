@@ -9,7 +9,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Data
 {
-    public class DataProviderBase
+    public class DataProviderBase: IDatabaseDao
     {
         protected virtual string ConnectionString => WebConfigUtils.ConnectionString;
 

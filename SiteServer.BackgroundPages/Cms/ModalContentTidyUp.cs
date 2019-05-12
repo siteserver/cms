@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("整理排序", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentTidyUp), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}

@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlEdit.Text =
                 $@"<a href='javascript:;' onclick=""{ModalKeywordAdd.GetOpenWindowStringToEdit(keywordId)}"">编辑</a>";
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteKeyword), new NameValueCollection
+            var urlDelete = PageUtilsEx.GetSettingsUrl(nameof(PageSiteKeyword), new NameValueCollection
             {
                 {"Delete", "True"},
                 {"KeywordID", keywordId.ToString()}
@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Settings
             var filePath = PathUtils.GetTemporaryFilesPath("敏感词.txt");
             FileUtils.DeleteFileIfExists(filePath);
             FileUtils.WriteText(filePath, ECharset.utf_8, sbContent.ToString());
-            PageUtils.Download(Page.Response, filePath);
+            PageUtilsEx.Download(Page.Response, filePath);
         }
     }
 }

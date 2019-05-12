@@ -88,7 +88,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    parsedContent = pageInfo.UserInfo.GetString(attributeName);
+                    parsedContent = pageInfo.UserInfo.Get<string>(attributeName);
                 }
             }
 	        catch

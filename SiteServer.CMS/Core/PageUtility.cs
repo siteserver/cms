@@ -86,7 +86,7 @@ namespace SiteServer.CMS.Core
 
         private static string GetLocalSiteUrl(SiteInfo siteInfo, string requestPath)
         {
-            var url = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var url = PageUtilsEx.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
 
             if (string.IsNullOrEmpty(url))
             {
@@ -467,14 +467,14 @@ namespace SiteServer.CMS.Core
                 {
                     return GetSiteUrl(siteInfo, url.Substring(1), isLocal);
                 }
-                return PageUtils.ParseNavigationUrl(url);
+                return PageUtilsEx.ParseNavigationUrl(url);
             }
-            return PageUtils.ParseNavigationUrl(url);
+            return PageUtilsEx.ParseNavigationUrl(url);
         }
 
         public static string GetVirtualUrl(SiteInfo siteInfo, string url)
         {
-            var relatedSiteUrl = PageUtils.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            var relatedSiteUrl = PageUtilsEx.ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
             return StringUtils.ReplaceStartsWith(virtualUrl, "@//", "@/");
         }

@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Account
             adminInfo.Email = TbEmail.Text;
             adminInfo.Mobile = TbMobile.Text;
 
-            DataProvider.AdministratorDao.Update(adminInfo);
+            DataProvider.AdministratorDao.Update(adminInfo, out _);
 
             SuccessMessage("资料更改成功");
         }

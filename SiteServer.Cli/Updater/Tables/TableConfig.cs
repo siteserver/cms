@@ -57,7 +57,7 @@ namespace SiteServer.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ConfigInfo.SystemConfig), nameof(SettingsXml)}
+                {"SystemConfig", nameof(SettingsXml)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

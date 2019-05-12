@@ -9,6 +9,77 @@ namespace SiteServer.Utils
 {
     public static class StringUtils
     {
+        public static bool Equals(string s1, string s2)
+        {
+            return s1 == s2 || string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2);
+        }
+
+        public static bool EqualsIgnoreCase(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2))
+                return true;
+            if (string.IsNullOrEmpty(s1) || string.IsNullOrEmpty(s2) || s2.Length != s1.Length)
+                return false;
+            return string.Compare(s1, 0, s2, 0, s2.Length, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
+        public static bool EndsWith(string s, char c)
+        {
+            int length = s.Length;
+            if (length != 0)
+                return (int)s[length - 1] == (int)c;
+            return false;
+        }
+
+        public static bool EndsWithIgnoreCase(string s1, string s2)
+        {
+            int indexA = s1.Length - s2.Length;
+            if (indexA < 0)
+                return false;
+            return string.Compare(s1, indexA, s2, 0, s2.Length, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
+        public static bool StartsWith(string s, char c)
+        {
+            if (s.Length != 0)
+                return (int)s[0] == (int)c;
+            return false;
+        }
+
+        public static bool StartsWithIgnoreCase(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1) || string.IsNullOrEmpty(s2) || s2.Length > s1.Length)
+                return false;
+            return string.Compare(s1, 0, s2, 0, s2.Length, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
+        public static bool ArrayEquals(string[] a, string[] b)
+        {
+            if (a == null != (b == null))
+                return false;
+            if (a == null)
+                return true;
+            int length = a.Length;
+            if (length != b.Length)
+                return false;
+            for (int index = 0; index < length; ++index)
+            {
+                if (a[index] != b[index])
+                    return false;
+            }
+            return true;
+        }
+
+
+        public static string[] ObjectArrayToStringArray(object[] objectArray)
+        {
+            string[] strArray = new string[objectArray.Length];
+            objectArray.CopyTo((Array)strArray, 0);
+            return strArray;
+        }
+
+        //------------------------------//
+
         public static bool IsMobile(string val)
         {
             return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);
@@ -91,9 +162,9 @@ namespace SiteServer.Utils
             return text.Substring(0, startIndex);
         }
 
-        public static string Guid()
+        public static string GetGuid()
         {
-            return System.Guid.NewGuid().ToString();
+            return Guid.NewGuid().ToString();
         }
 
         public static string GetShortGuid()
@@ -117,29 +188,9 @@ namespace SiteServer.Utils
             return isUppercase ? retval.ToUpper() : retval.ToLower();
         }
 
-        public static bool EqualsIgnoreCase(string a, string b)
-        {
-            if (a == b) return true;
-            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return false;
-
-            return a.Equals(b, StringComparison.OrdinalIgnoreCase);
-        }
-
         public static bool EqualsIgnoreNull(string a, string b)
         {
             return string.IsNullOrEmpty(a) ? string.IsNullOrEmpty(b) : string.Equals(a, b);
-        }
-
-        public static bool StartsWithIgnoreCase(string text, string startString)
-        {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(startString)) return false;
-            return text.Trim().ToLower().StartsWith(startString.Trim().ToLower()) || string.Equals(text.Trim(), startString.Trim(), StringComparison.OrdinalIgnoreCase);
-        }
-
-        public static bool EndsWithIgnoreCase(string text, string endString)
-        {
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(endString)) return false;
-            return text.Trim().ToLower().EndsWith(endString.Trim().ToLower());
         }
 
         public static bool StartsWith(string text, string startString)
@@ -315,22 +366,42 @@ namespace SiteServer.Utils
 
         public static string ReplaceStartsWith(string input, string replace, string to)
         {
-            var retval = input;
+            var retVal = input;
             if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.StartsWith(replace))
             {
-                retval = to + input.Substring(replace.Length);
+                retVal = to + input.Substring(replace.Length);
             }
-            return retval;
+            return retVal;
         }
 
         public static string ReplaceStartsWithIgnoreCase(string input, string replace, string to)
         {
-            var retval = input;
+            var retVal = input;
             if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.ToLower().StartsWith(replace.ToLower()))
             {
-                retval = to + input.Substring(replace.Length);
+                retVal = to + input.Substring(replace.Length);
             }
-            return retval;
+            return retVal;
+        }
+
+        public static string ReplaceEndsWith(string input, string replace, string to)
+        {
+            var retVal = input;
+            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.EndsWith(replace))
+            {
+                retVal = input.Substring(0, input.Length - replace.Length) + to;
+            }
+            return retVal;
+        }
+
+        public static string ReplaceEndsWithIgnoreCase(string input, string replace, string to)
+        {
+            var retVal = input;
+            if (!string.IsNullOrEmpty(input) && !string.IsNullOrEmpty(replace) && input.ToLower().EndsWith(replace.ToLower()))
+            {
+                retVal = input.Substring(0, input.Length - replace.Length) + to;
+            }
+            return retVal;
         }
 
         public static string ReplaceNewlineToBr(string inputString)

@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int templateId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateLog), new NameValueCollection
             {
                 {"TemplateID", templateId.ToString()}
             });
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             BtnDelete.Attributes.Add("onclick",
                 PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(
-                    PageUtils.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
+                    PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplateLog), new NameValueCollection
                     {
                         {"TemplateID", _templateId.ToString()},
                         {"Delete", true.ToString()}

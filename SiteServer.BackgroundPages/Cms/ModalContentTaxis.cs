@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("内容排序", PageUtils.GetCmsUrl(siteId, nameof(ModalContentTaxis), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("内容排序", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentTaxis), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));

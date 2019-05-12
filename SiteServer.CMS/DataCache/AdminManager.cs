@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
@@ -332,7 +333,7 @@ namespace SiteServer.CMS.DataCache
             return !string.IsNullOrEmpty(departmentName) ? $"{adminInfo.DisplayName}({departmentName})" : adminInfo.DisplayName;
         }
 
-        public static string GetRolesHtml(string userName)
+        public static string GetRoleNames(string userName)
         {
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;
@@ -376,9 +377,15 @@ namespace SiteServer.CMS.DataCache
             return roleNames;
         }
 
+        public static bool IsSuperAdmin(string userName)
+        {
+            var roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(userName);
+            return roles.Any(role => EPredefinedRoleUtils.Equals(EPredefinedRole.ConsoleAdministrator, role));
+        }
+
         public static string GetUploadPath(params string[] paths)
         {
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
+            var path = PathUtilsEx.GetSiteFilesPath(DirectoryUtils.SiteFiles.Administrators, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
@@ -396,7 +403,7 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetUploadUrl(params string[] paths)
         {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
+            return PageUtilsEx.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Administrators, PageUtils.Combine(paths)));
         }
 
         public static string GetUserUploadUrl(int userId, string relatedUrl)

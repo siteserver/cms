@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string relatedPath, string fileName)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
                 {"RelatedPath", relatedPath},
                 {"FileName", fileName}
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string relatedPath, string fileName, string updateName, string hiddenClientId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
                 {"RelatedPath", relatedPath},
                 {"FileName", fileName},
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string relatedPath, string fileName)
         {
-            return LayerUtils.GetOpenScript("查看文件属性", PageUtils.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看文件属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
                 {"RelatedPath", relatedPath},
                 {"FileName", fileName}
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId,string hiddenClientId, string relatedPath, string fileName)
         {
-            return LayerUtils.GetOpenScript("查看文件属性", PageUtils.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看文件属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
                 {"HiddenClientID", hiddenClientId},
                 {"RelatedPath", relatedPath},
@@ -103,7 +103,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithTextBoxValue(int siteId, string textBoxId)
         {
-            return LayerUtils.GetOpenScriptWithTextBoxValue("查看文件属性", PageUtils.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue("查看文件属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
                 {"TextBoxID", textBoxId}
             }), textBoxId, 680, 660);
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             if (AuthRequest.IsQueryExists("TextBoxID"))
             {
                 var textBoxId = AuthRequest.GetQueryString("TextBoxID");
@@ -141,7 +141,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!FileUtils.IsFileExists(_filePath))
             {
-                PageUtils.RedirectToErrorPage("此文件不存在！");
+                PageUtilsEx.RedirectToErrorPage("此文件不存在！");
                 return;
             }
 

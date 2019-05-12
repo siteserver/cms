@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToAdd(int departmentId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdministratorAdd), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdministratorAdd), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()}
             });
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToEdit(int departmentId, string userName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdministratorAdd), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdministratorAdd), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()},
                 {"userName", userName}

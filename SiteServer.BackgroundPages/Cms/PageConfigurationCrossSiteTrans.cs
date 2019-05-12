@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int currentChannelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationCrossSiteTrans), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationCrossSiteTrans), new NameValueCollection
             {
                 {"CurrentChannelId", currentChannelId.ToString()}
             });
@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId");
+			PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            EBooleanUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
+            FxUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
             ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Additional.IsCrossSiteTransChecked.ToString());
         }
 

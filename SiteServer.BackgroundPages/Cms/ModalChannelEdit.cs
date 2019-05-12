@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("快速修改栏目", PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("快速修改栏目", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
-                    PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
+                    PageUtilsEx.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
 

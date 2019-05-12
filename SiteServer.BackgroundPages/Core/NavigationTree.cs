@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Core
                             {
                                 childBuilder.Append($@"
 <li>
-    <a href=""{PageUtils.GetLoadingUrl(href)}"" onclick=""closeMenu()"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
+    <a href=""{PageUtilsEx.GetLoadingUrl(href)}"" onclick=""closeMenu()"" target=""{(string.IsNullOrEmpty(childTab.Target) ? "right" : childTab.Target)}"">
         <i class=""{childTab.IconClass}""></i>
         {childTab.Text}
     </a>
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Core
                     {
                         builder.Append($@"
 <li class=""has_sub"">
-    <a href=""{PageUtils.GetLoadingUrl(href)}"" onclick=""closeMenu()"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
+    <a href=""{PageUtilsEx.GetLoadingUrl(href)}"" onclick=""closeMenu()"" class=""waves-effect waves-primary {(parent.Selected ? "subdrop" : "")}"" target=""{(string.IsNullOrEmpty(parent.Target) ? "right" : parent.Target)}"">
         <i class=""{parent.IconClass ?? "ion-star"}""></i>
         <span> {parent.Text} </span>
     </a>

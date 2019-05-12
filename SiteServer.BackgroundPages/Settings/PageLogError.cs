@@ -56,9 +56,9 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogError = !ConfigManager.SystemConfigInfo.IsLogError;
+                ConfigManager.Instance.IsLogError = !ConfigManager.Instance.IsLogError;
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogError ? "启用" : "禁用")}日志记录");
+                SuccessMessage($"成功{(ConfigManager.Instance.IsLogError ? "启用" : "禁用")}日志记录");
             }
 
             SpContents.ControlToPaginate = RptContents;
@@ -96,24 +96,24 @@ namespace SiteServer.BackgroundPages.Settings
                 TbDateTo.Text = AuthRequest.GetQueryString("dateTo");
             }
 
-            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
             {
                 {"Delete", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
                 AlertUtils.ConfirmRedirect("删除所有日志", "此操作将删除所有日志信息，确定吗？", "删除全部",
-                    PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                    PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                     {
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogError)
+            if (ConfigManager.Instance.IsLogError)
             {
                 BtnSetting.Text = "禁用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("禁用系统错误日志", "此操作将禁用系统错误日志记录功能，确定吗？", "禁 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -124,7 +124,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "启用系统错误日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("启用系统错误日志", "此操作将启用系统错误日志记录功能，确定吗？", "启 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+                        PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlId.Text = $@"<a href=""{PageUtils.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
+            ltlId.Text = $@"<a href=""{PageUtilsEx.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(addDate);
             ltlMessage.Text = message;
             ltlSummary.Text = summary;
@@ -159,7 +159,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    public void Search_OnClick(object sender, EventArgs e)
 	    {
-	        PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+	        PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
 	        {
 	            {"category", DdlCategory.SelectedValue},
 	            {"pluginId", DdlPluginId.SelectedValue},

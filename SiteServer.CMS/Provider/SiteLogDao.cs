@@ -100,9 +100,9 @@ namespace SiteServer.CMS.Provider
 
         public void DeleteIfThreshold()
         {
-            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+            if (!ConfigManager.Instance.IsTimeThreshold) return;
 
-            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
+            var days = ConfigManager.Instance.TimeThreshold;
             if (days <= 0) return;
 
             ExecuteNonQuery($@"DELETE FROM siteserver_SiteLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");

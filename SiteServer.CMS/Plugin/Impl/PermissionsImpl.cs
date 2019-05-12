@@ -30,7 +30,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public PermissionsImpl(AdministratorInfo adminInfo)
         {
-            if (adminInfo == null || adminInfo.IsLockedOut) return;
+            if (adminInfo == null || adminInfo.Locked) return;
 
             _adminInfo = adminInfo;
 
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_channelIdList != null) return _channelIdList;
-                if (_adminInfo == null || _adminInfo.IsLockedOut) return new List<int>();
+                if (_adminInfo == null || _adminInfo.Locked) return new List<int>();
 
                 _channelIdList = DataCacheManager.Get<List<int>>(_channelIdListKey);
 
@@ -217,7 +217,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_permissionList != null) return _permissionList;
-                if (_adminInfo == null || _adminInfo.IsLockedOut) return new List<string>();
+                if (_adminInfo == null || _adminInfo.Locked) return new List<string>();
 
                 _permissionList = DataCacheManager.Get<List<string>>(_permissionListKey);
 
@@ -254,7 +254,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_roles != null) return _roles;
-                if (_adminInfo == null || _adminInfo.IsLockedOut)
+                if (_adminInfo == null || _adminInfo.Locked)
                     return new List<string> { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
 
                 _roles = DataCacheManager.Get<List<string>>(_rolesKey);
@@ -273,7 +273,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_websitePermissionDict != null) return _websitePermissionDict;
-                if (_adminInfo == null || _adminInfo.IsLockedOut) return new Dictionary<int, List<string>>();
+                if (_adminInfo == null || _adminInfo.Locked) return new Dictionary<int, List<string>>();
 
                 _websitePermissionDict = DataCacheManager.Get<Dictionary<int, List<string>>>(_websitePermissionDictKey);
 
@@ -310,7 +310,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_channelPermissionDict != null) return _channelPermissionDict;
-                if (_adminInfo == null || _adminInfo.IsLockedOut) return new Dictionary<string, List<string>>();
+                if (_adminInfo == null || _adminInfo.Locked) return new Dictionary<string, List<string>>();
 
                 _channelPermissionDict = DataCacheManager.Get<Dictionary<string, List<string>>>(_channelPermissionDictKey);
 
@@ -349,7 +349,7 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 if (_channelPermissionListIgnoreChannelId != null) return _channelPermissionListIgnoreChannelId;
-                if (_adminInfo == null || _adminInfo.IsLockedOut) return new List<string>();
+                if (_adminInfo == null || _adminInfo.Locked) return new List<string>();
 
                 _channelPermissionListIgnoreChannelId = DataCacheManager.Get<List<string>>(_channelPermissionListIgnoreChannelIdKey);
                 if (_channelPermissionListIgnoreChannelId == null)
@@ -490,7 +490,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public int? GetOnlyAdminId(int siteId, int channelId)
         {
-            if (!ConfigManager.Instance.SystemConfigInfo.IsViewContentOnlySelf
+            if (!ConfigManager.Instance.IsViewContentOnlySelf
                 || IsConsoleAdministrator
                 || IsSystemAdministrator
                 || HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))

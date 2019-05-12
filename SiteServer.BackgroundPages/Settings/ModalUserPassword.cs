@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return LayerUtils.GetOpenScript("重设密码", PageUtils.GetSettingsUrl(nameof(ModalUserPassword), new NameValueCollection
+            return LayerUtils.GetOpenScript("重设密码", PageUtilsEx.GetSettingsUrl(nameof(ModalUserPassword), new NameValueCollection
             {
                 {"userName", userName}
             }), 450, 290);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -81,31 +80,31 @@ namespace SiteServer.Utils.Enumerations
             return retval;
         }
 
-		public static EPredefinedRole GetEnumTypeByRoles(string[] roles)
-		{
-			var isConsoleAdministrator = false;
-			var isSystemAdministrator = false;
+        public static EPredefinedRole GetEnumTypeByRoles(IList<string> roles)
+        {
+            var isConsoleAdministrator = false;
+            var isSystemAdministrator = false;
 
-			if (roles != null && roles.Length > 0)
-			{
-				foreach (var role in roles)
-				{
-					if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-					{
-						isConsoleAdministrator = true;
-					}
+            if (roles != null)
+            {
+                foreach (var role in roles)
+                {
+                    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
+                    {
+                        isConsoleAdministrator = true;
+                    }
                     else if (Equals(EPredefinedRole.SystemAdministrator, role))
-					{
-						isSystemAdministrator = true;
-					}
-				}
-			}
-			if (isConsoleAdministrator) return EPredefinedRole.ConsoleAdministrator;
+                    {
+                        isSystemAdministrator = true;
+                    }
+                }
+            }
+            if (isConsoleAdministrator) return EPredefinedRole.ConsoleAdministrator;
             if (isSystemAdministrator) return EPredefinedRole.SystemAdministrator;
             return EPredefinedRole.Administrator;
-		}
+        }
 
-		public static bool Equals(EPredefinedRole type, string typeStr)
+        public static bool Equals(EPredefinedRole type, string typeStr)
 		{
 			if (string.IsNullOrEmpty(typeStr)) return false;
 			if (string.Equals(GetValue(type).ToLower(), typeStr.ToLower()))
@@ -120,15 +119,15 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-		public static ListItem GetListItem(EPredefinedRole type, bool selected)
-		{
-			var item = new ListItem(GetText(type), GetValue(type));
-			if (selected)
-			{
-				item.Selected = true;
-			}
-			return item;
-		}
+		//public static ListItem GetListItem(EPredefinedRole type, bool selected)
+		//{
+		//	var item = new ListItem(GetText(type), GetValue(type));
+		//	if (selected)
+		//	{
+		//		item.Selected = true;
+		//	}
+		//	return item;
+		//}
 
 	    public static bool IsConsoleAdministrator(IList<string> roles)
 	    {

@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         private string GetRedirectUrl(string path)
         {
-            return PageUtils.GetCmsUrl(SiteId, nameof(ModalSelectImage), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalSelectImage), new NameValueCollection
             {
                 {"RootPath", _rootPath},
                 {"CurrentRootPath", path},
@@ -36,12 +36,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string SiteUrl => SiteInfo.Additional.WebUrl;
 
-        public string RootUrl => PageUtils.ApplicationPath;
+        public string RootUrl => PageUtilsEx.ApplicationPath;
 
         public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
         {
             return LayerUtils.GetOpenScript("选择图片",
-                PageUtils.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},
                     {"CurrentRootPath", siteInfo.Additional.ImageUploadDirectoryName},
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
+            PageUtilsEx.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
@@ -157,7 +157,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 navigationUrl = GetRedirectUrl(_currentRootPath);
             }
-            PageUtils.Redirect(navigationUrl);
+            PageUtilsEx.Redirect(navigationUrl);
         }
 
 

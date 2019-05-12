@@ -1,9 +1,11 @@
 ﻿using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.StlParser.Template;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -14,10 +16,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "数据库链接字符串名称")]
         public const string ConnectionStringName = nameof(ConnectionStringName);
-        
+
         [StlAttribute(Title = "数据库链接字符串")]
         public const string ConnectionString = nameof(ConnectionString);
-        
+
         [StlAttribute(Title = "数据库查询语句")]
         public const string QueryString = nameof(QueryString);
 

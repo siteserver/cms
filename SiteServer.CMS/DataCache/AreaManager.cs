@@ -11,6 +11,41 @@ namespace SiteServer.CMS.DataCache
         private static readonly object LockObject = new object();
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(AreaManager));
 
+        public static List<KeyValuePair<int, string>> GetRestAreas()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+
+            var areaIdList = GetAreaIdList();
+            var parentsCountDict = new Dictionary<int, bool>();
+            foreach (var areaId in areaIdList)
+            {
+                var areaInfo = GetAreaInfo(areaId);
+                list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, parentsCountDict)));
+            }
+
+            return list;
+        }
+
+        public static string GetTreeItem(string name, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict)
+        {
+            var str = "";
+            if (isLastNode == false)
+            {
+                parentsCountDict[parentsCount] = false;
+            }
+            else
+            {
+                parentsCountDict[parentsCount] = true;
+            }
+            for (var i = 0; i < parentsCount; i++)
+            {
+                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "¡¡" : "©¦");
+            }
+            str = string.Concat(str, isLastNode ? "©¸" : "©À");
+            str = string.Concat(str, name);
+            return str;
+        }
+
         public static AreaInfo GetAreaInfo(int areaId)
         {
             var pairList = GetAreaInfoPairList();
@@ -87,7 +122,10 @@ namespace SiteServer.CMS.DataCache
 
         public static void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            lock (LockObject)
+            {
+                DataCacheManager.Remove(CacheKey);
+            }
         }
 
         public static List<KeyValuePair<int, AreaInfo>> GetAreaInfoPairList()

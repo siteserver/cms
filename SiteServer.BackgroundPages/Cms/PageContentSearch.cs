@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlCheck(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentSearch), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentSearch), new NameValueCollection
             {
                 {"isCheckOnly", true.ToString() }
             });
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             _channelId = AuthRequest.IsQueryExists("channelId") ? AuthRequest.GetQueryInt("channelId") : SiteId;
 
             _isCheckOnly = AuthRequest.GetQueryBool("isCheckOnly");
@@ -171,11 +171,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_isCheckOnly)
             {
-                CheckManager.LoadContentLevelToCheck(DdlState, SiteInfo, isChecked, checkedLevel);
+                FxUtils.LoadContentLevelToCheck(DdlState, SiteInfo, isChecked, checkedLevel);
             }
             else
             {
-                CheckManager.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
+                FxUtils.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
             }
             
             ControlUtils.SelectSingleItem(DdlState, state.ToString());
@@ -318,7 +318,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            PageUtilsEx.Redirect(PageUrl);
         }
 
         private string _pageUrl;
@@ -328,7 +328,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentSearch), new NameValueCollection
+                    _pageUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentSearch), new NameValueCollection
                     {
                         {"channelId", DdlChannelId.SelectedValue},
                         {"state", DdlState.SelectedValue},

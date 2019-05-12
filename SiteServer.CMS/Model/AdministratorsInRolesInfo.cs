@@ -1,11 +1,14 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-	public class AdministratorsInRolesInfo
+    [Table("siteserver_AdministratorsInRoles")]
+    public class AdministratorsInRolesInfo : Entity
     {
-        public int Id { get; set; }
-
+        [TableColumn]
         public string RoleName { get; set; }
 
-	    public string UserName { get; set; }
-	}
+        [TableColumn]
+        public string UserName { get; set; }
+    }
 }

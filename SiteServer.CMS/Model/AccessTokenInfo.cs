@@ -1,23 +1,27 @@
 ﻿using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-    public class AccessTokenInfo
+    [Table("siteserver_AccessToken")]
+    public class AccessTokenInfo : Entity
     {
-        public int Id { get; set; }
-
+        [TableColumn]
         public string Title { get; set; }
 
+        [TableColumn]
         public string Token { get; set; }
 
+        [TableColumn]
         public string AdminName { get; set; }
 
+        [TableColumn]
         public string Scopes { get; set; }
 
+        [TableColumn]
         public int RateLimit { get; set; }
 
-        public DateTime AddDate { get; set; }
-
-        public DateTime UpdatedDate { get; set; }
+        [TableColumn]
+        public DateTimeOffset? AddDate { get; set; }
     }
 }

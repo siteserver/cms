@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelAdd), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString() },
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl) }
@@ -65,19 +65,19 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
             _channelId = AuthRequest.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(AttackUtils.FilterSqlAndXss(AuthRequest.GetQueryString("ReturnUrl")));
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ChannelAdd))
             //{
-            //    PageUtils.RedirectToErrorPage("您没有添加栏目的权限！");
+            //    PageUtilsEx.RedirectToErrorPage("您没有添加栏目的权限！");
             //    return;
             //}
 
             var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             if (parentNodeInfo.Additional.IsChannelAddable == false)
             {
-                PageUtils.RedirectToErrorPage("此栏目不能添加子栏目！");
+                PageUtilsEx.RedirectToErrorPage("此栏目不能添加子栏目！");
                 return;
             }
 
@@ -159,7 +159,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 theChannelId = _channelId;
             }
-            PageUtils.Redirect(GetRedirectUrl(SiteId, theChannelId, AuthRequest.GetQueryString("ReturnUrl")));
+            PageUtilsEx.Redirect(GetRedirectUrl(SiteId, theChannelId, AuthRequest.GetQueryString("ReturnUrl")));
         }
 
         public string PreviewImageSrc

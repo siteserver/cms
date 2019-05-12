@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Xml;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
@@ -48,7 +49,7 @@ namespace SiteServer.CMS.DataCache
 
 			    permissionManager = new PermissionConfigManager();
 
-			    var path = PathUtils.GetMenusPath("Permissions.config");
+			    var path = PathUtilsEx.GetMenusPath("Permissions.config");
 			    if (FileUtils.IsFileExists(path))
 			    {
 			        var doc = new XmlDocument();

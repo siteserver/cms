@@ -20,9 +20,11 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
 
-            LtlCount.Text = CacheUtils.Count.ToString();
+            var allKeys = CacheUtils.AllKeys;
 
-            RptContents.DataSource = CacheUtils.AllKeys;
+            LtlCount.Text = allKeys.Count.ToString();
+
+            RptContents.DataSource = allKeys;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
@@ -70,7 +72,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
-            PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageUtilityCache), null));
+            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageUtilityCache), null));
         }
 
     }

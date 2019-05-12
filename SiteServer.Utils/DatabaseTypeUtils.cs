@@ -1,5 +1,4 @@
-﻿using System.Web.UI.WebControls;
-using Datory;
+﻿using Datory;
 
 namespace SiteServer.Utils
 {
@@ -44,23 +43,23 @@ namespace SiteServer.Utils
             return Equals(type, typeStr);
         }
 
-        public static ListItem GetListItem(DatabaseType type, bool selected)
-        {
-            var item = new ListItem(type.Value, type.Value);
-            if (selected)
-            {
-                item.Selected = true;
-            }
-            return item;
-        }
+        //public static ListItem GetListItem(DatabaseType type, bool selected)
+        //{
+        //    var item = new ListItem(type.Value, type.Value);
+        //    if (selected)
+        //    {
+        //        item.Selected = true;
+        //    }
+        //    return item;
+        //}
 
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl == null) return;
-            listControl.Items.Add(GetListItem(DatabaseType.MySql, false));
-            listControl.Items.Add(GetListItem(DatabaseType.SqlServer, false));
-            listControl.Items.Add(GetListItem(DatabaseType.PostgreSql, false));
-            listControl.Items.Add(GetListItem(DatabaseType.Oracle, false));
-        }
+        //public static void AddListItems(ListControl listControl)
+        //{
+        //    if (listControl == null) return;
+        //    listControl.Items.Add(GetListItem(DatabaseType.MySql, false));
+        //    listControl.Items.Add(GetListItem(DatabaseType.SqlServer, false));
+        //    listControl.Items.Add(GetListItem(DatabaseType.PostgreSql, false));
+        //    listControl.Items.Add(GetListItem(DatabaseType.Oracle, false));
+        //}
     }
 }

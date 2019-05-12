@@ -2,6 +2,8 @@
 using System.IO;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -21,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString()
         {
-            return LayerUtils.GetOpenScript("手动升级 SiteServer CMS 版本", PageUtils.GetSettingsUrl(nameof(ModalManualUpdateSystem), null), 560, 430);
+            return LayerUtils.GetOpenScript("手动升级 SiteServer CMS 版本", PageUtilsEx.GetSettingsUrl(nameof(ModalManualUpdateSystem), null), 560, 430);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -30,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            EBooleanUtils.AddListItems(RblInstallType, "上传升级包", "指定版本号");
+            FxUtils.AddListItems(RblInstallType, "上传升级包", "指定版本号");
             ControlUtils.SelectSingleItem(RblInstallType, true.ToString());
         }
 
@@ -63,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog($"手动升级 SiteServer CMS 版本：{TbVersion.Text}");
 
-	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
+	        LayerUtils.CloseAndRedirect(Page, PageUtilsEx.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }
 
 	    private void UpdateByUpload()
@@ -78,7 +80,7 @@ namespace SiteServer.BackgroundPages.Settings
 	        }
 
 	        var idAndVersion = Path.GetFileNameWithoutExtension(filePath);
-	        var directoryPath = PathUtils.GetPackagesPath(idAndVersion);
+	        var directoryPath = PathUtilsEx.GetPackagesPath(idAndVersion);
 	        var localFilePath = PathUtils.Combine(directoryPath, idAndVersion + ".nupkg");
 
 	        if (!Directory.Exists(directoryPath))
@@ -92,7 +94,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	        AuthRequest.AddAdminLog("手动升级 SiteServer CMS 版本：" + idAndVersion);
 
-	        LayerUtils.CloseAndRedirect(Page, PageUtils.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
+	        LayerUtils.CloseAndRedirect(Page, PageUtilsEx.GetAdminUrl(PageUtils.Combine("plugins/manage.cshtml")));
 	    }
 	}
 }

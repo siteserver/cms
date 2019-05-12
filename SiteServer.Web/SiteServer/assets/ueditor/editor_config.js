@@ -127,6 +127,8 @@
         xssFilterRules: false,
         inputXssFilter: false,
         outputXssFilter: false,
+        disabledTableInTable:false,
+        allowDivTransToP:false,
         whitList: {
             a: ["target", "href", "title", "class", "style", "name"],
             abbr: ["title", "class", "style"],

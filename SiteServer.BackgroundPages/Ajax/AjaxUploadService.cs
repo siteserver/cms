@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Ajax
     {
         public static string GetContentPhotoUploadSingleUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
             {
                 {"siteID", siteId.ToString()},
                 {"isContentPhoto", true.ToString()}
@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetContentPhotoUploadMultipleUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxUploadService), new NameValueCollection
             {
                 {"siteID", siteId.ToString()},
                 {"isContentPhotoSwfUpload", true.ToString()}

@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteTemplate), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -128,15 +128,15 @@ namespace SiteServer.BackgroundPages.Settings
             ltlDescription.Text = siteTemplateInfo.Description;
             if (!string.IsNullOrEmpty(siteTemplateInfo.PicFileName))
             {
-                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(dirInfo.Name);
+                var siteTemplateUrl = PageUtilsEx.GetSiteTemplatesUrl(dirInfo.Name);
                 ltlDownloadUrl.Text +=
-                    $"<a href=\"{PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName)}\" target=_blank>样图</a>&nbsp;&nbsp;";
+                    $"<a href=\"{PageUtilsEx.GetSiteTemplateMetadataUrl(siteTemplateUrl, siteTemplateInfo.PicFileName)}\" target=_blank>样图</a>&nbsp;&nbsp;";
             }
             ltlCreationDate.Text = DateUtils.GetDateString(dirInfo.CreationTime);
             if (!string.IsNullOrEmpty(siteTemplateInfo.WebSiteUrl))
             {
                 ltlDownloadUrl.Text +=
-                    $"<a href=\"{PageUtils.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>演示</a>&nbsp;&nbsp;";
+                    $"<a href=\"{PageUtilsEx.ParseConfigRootUrl(siteTemplateInfo.WebSiteUrl)}\" target=_blank>演示</a>&nbsp;&nbsp;";
             }
 
             var fileName = dirInfo.Name + ".zip";
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(0, dirInfo.Name)}"">重新压缩</a>&nbsp;&nbsp;";
 
                 ltlDownloadUrl.Text +=
-                    $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileName)}"" target=""_blank"">下载压缩包</a>";
+                    $@"<a href=""{PageUtilsEx.GetSiteTemplatesUrl(fileName)}"" target=""_blank"">下载压缩包</a>";
             }
             else
             {
@@ -159,7 +159,7 @@ namespace SiteServer.BackgroundPages.Settings
             var urlAdd = $"siteAdd.cshtml?type=create&createType=local&createTemplateId={dirInfo.Name}";
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
+            var urlDelete = PageUtilsEx.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
             {
                 {"DeleteDirectory", "True"},
                 {"SiteTemplateDir", dirInfo.Name}
@@ -188,9 +188,9 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateUnZip(0, fileInfo.Name)}"">解压</a>&nbsp;&nbsp;";
 
             ltlDownloadUrl.Text +=
-                $@"<a href=""{PageUtils.GetSiteTemplatesUrl(fileInfo.Name)}"" target=""_blank"">下载压缩包</a>";
+                $@"<a href=""{PageUtilsEx.GetSiteTemplatesUrl(fileInfo.Name)}"" target=""_blank"">下载压缩包</a>";
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
+            var urlDelete = PageUtilsEx.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection
                 {
                     {"DeleteZipFile", "True"},
                     {"FileName", fileInfo.Name}

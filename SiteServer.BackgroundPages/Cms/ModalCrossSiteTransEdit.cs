@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScript("跨站转发设置", PageUtils.GetCmsUrl(siteId, nameof(ModalCrossSiteTransEdit), new NameValueCollection
+            return LayerUtils.GetOpenScript("跨站转发设置", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCrossSiteTransEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }));
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(_channelInfo.Additional.TransChannelIds));
             TbNodeNames.Text = _channelInfo.Additional.TransChannelNames;
 
-            EBooleanUtils.AddListItems(DdlIsAutomatic, "系统自动转发", "需手动操作");
+            FxUtils.AddListItems(DdlIsAutomatic, "系统自动转发", "需手动操作");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutomatic, _channelInfo.Additional.TransIsAutomatic.ToString());
 
             ETranslateContentTypeUtils.AddListItems(DdlTranslateDoneType, false);

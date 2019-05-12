@@ -83,7 +83,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+            WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
             if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
@@ -110,7 +110,7 @@ namespace SiteServer.Cli.Jobs
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                SystemManager.CreateSiteServerTables();
+                SystemManager.SyncSystemTables();
             }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));

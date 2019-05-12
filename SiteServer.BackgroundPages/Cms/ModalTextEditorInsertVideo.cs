@@ -25,13 +25,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("插入视频", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
+            return LayerUtils.GetOpenScript("插入视频", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 520);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
+        public string UploadUrl => PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTextEditorInsertVideo), new NameValueCollection
         {
             {"upload", true.ToString()}
         });

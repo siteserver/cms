@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrl(string cookieName)
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageValidateCode), new NameValueCollection
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageValidateCode), new NameValueCollection
             {
                 {"cookieName", cookieName}
             });

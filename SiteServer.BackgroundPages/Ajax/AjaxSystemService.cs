@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetLoadingDepartmentsUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
             {
                 {"type", TypeGetLoadingDepartments }
             });
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetLoadingAreasUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxSystemService), new NameValueCollection
             {
                 {"type", TypeGetLoadingAreas }
             });

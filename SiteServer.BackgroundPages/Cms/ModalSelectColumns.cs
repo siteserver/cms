@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScript("设置显示项", PageUtils.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置显示项", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalSelectColumns), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }));
@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
 

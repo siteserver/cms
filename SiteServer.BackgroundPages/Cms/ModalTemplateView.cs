@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int templateLogId)
         {
-            return LayerUtils.GetOpenScript("查看修订内容", PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看修订内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTemplateView), new NameValueCollection
             {
                 {"templateLogID", templateLogId.ToString()}
             }));
@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
            
 			if (!IsPostBack)
 			{

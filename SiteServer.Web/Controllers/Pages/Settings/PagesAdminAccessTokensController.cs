@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -30,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    adminNames = DataProvider.AdministratorDao.GetUserNameList();
+                    adminNames = DataProvider.AdministratorDao.GetUserNameList().ToList();
                 }
                 else
                 {
@@ -49,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList(),
+                    Value = DataProvider.AccessTokenDao.GetAll(),
                     adminNames,
                     scopes,
                     request.AdminName
@@ -79,7 +80,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList()
+                    Value = DataProvider.AccessTokenDao.GetAll()
                 });
             }
             catch (Exception ex)
@@ -102,7 +103,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 if (itemObj.Id > 0)
                 {
-                    var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(itemObj.Id);
+                    var tokenInfo = DataProvider.AccessTokenDao.Get(itemObj.Id);
 
                     if (tokenInfo.Title != itemObj.Title && DataProvider.AccessTokenDao.IsTitleExists(itemObj.Title))
                     {
@@ -138,7 +139,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = DataProvider.AccessTokenDao.GetAccessTokenInfoList()
+                    Value = DataProvider.AccessTokenDao.GetAll()
                 });
             }
             catch (Exception ex)

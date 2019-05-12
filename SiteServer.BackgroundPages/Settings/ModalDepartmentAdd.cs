@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToAdd(string returnUrl)
         {
             return LayerUtils.GetOpenScript("添加部门",
-                PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
+                PageUtilsEx.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
                 }), 460, 400);
@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToEdit(int departmentId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("修改部门",
-                PageUtils.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
+                PageUtilsEx.GetSettingsUrl(nameof(ModalDepartmentAdd), new NameValueCollection
                 {
                     {"DepartmentID", departmentId.ToString()},
                     {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}

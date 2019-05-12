@@ -10,6 +10,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.StlParser.Template;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -20,7 +21,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "每页显示的内容数目")]
         public const string PageNum = nameof(PageNum);
-        
+
         [StlAttribute(Title = "翻页中生成的静态页面最大数，剩余页面将动态获取")]
         public const string MaxPage = nameof(MaxPage);
 
@@ -82,7 +83,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(ListInfo.PageNum)));//需要生成的总页数
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageContentsElement, ex);
             }

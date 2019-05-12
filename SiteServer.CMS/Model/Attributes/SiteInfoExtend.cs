@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -160,7 +161,7 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(SeparatedWebUrl), PageUtils.AddEndSlashToUrl(value));
         }
 
-        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtils.ParseNavigationUrl($"~/{_siteDir}");
+        public string WebUrl => IsSeparatedWeb ? SeparatedWebUrl : PageUtilsEx.ParseNavigationUrl($"~/{_siteDir}");
 
         public bool IsSeparatedAssets
         {

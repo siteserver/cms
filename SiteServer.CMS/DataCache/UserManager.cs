@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -295,26 +294,26 @@ namespace SiteServer.CMS.DataCache
 
         public static bool IsIpAddressCached(string ipAddress)
         {
-            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
+            if (ConfigManager.Instance.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
             {
                 return true;
             }
-            var obj = CacheUtils.Get($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}");
+            var obj = CacheUtils.Get($"SiteServer.CMS.Provider.User.InsertObject.IpAddress.{ipAddress}");
             return obj == null;
         }
 
         public static void CacheIpAddress(string ipAddress)
         {
-            if (ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
+            if (ConfigManager.Instance.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
             {
-                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.UserDao.Insert.IpAddress.{ipAddress}", ipAddress, ConfigManager.SystemConfigInfo.UserRegistrationMinMinutes);
+                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.User.InsertObject.IpAddress.{ipAddress}", ipAddress, ConfigManager.Instance.UserRegistrationMinMinutes);
             }
         }
 
         public static string GetHomeUploadPath(params string[] paths)
         {
-            
-            var path = PathUtils.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
+
+            var path = PathUtilsEx.GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }
@@ -332,7 +331,7 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetHomeUploadUrl(params string[] paths)
         {
-            return PageUtils.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
+            return PageUtilsEx.GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Home, PageUtils.Combine(paths)));
         }
 
         public static string DefaultAvatarUrl => GetHomeUploadUrl("default_avatar.png");
@@ -342,7 +341,7 @@ namespace SiteServer.CMS.DataCache
             return GetHomeUploadUrl(userId.ToString(), relatedUrl);
         }
 
-        public static string GetUserAvatarUrl(IUserInfo userInfo)
+        public static string GetUserAvatarUrl(UserInfo userInfo)
         {
             var imageUrl = userInfo?.AvatarUrl;
 

@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.StlParser.Template;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {

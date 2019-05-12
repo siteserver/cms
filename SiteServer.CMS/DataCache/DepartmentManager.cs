@@ -11,6 +11,41 @@ namespace SiteServer.CMS.DataCache
         private static readonly object LockObject = new object();
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(DepartmentManager));
 
+        public static List<KeyValuePair<int, string>> GetRestDepartments()
+        {
+            var list = new List<KeyValuePair<int, string>>();
+
+            var departmentIdList = GetDepartmentIdList();
+            var parentsCountDict = new Dictionary<int, bool>();
+            foreach (var departmentId in departmentIdList)
+            {
+                var departmentInfo = GetDepartmentInfo(departmentId);
+                list.Add(new KeyValuePair<int, string>(departmentId, GetTreeItem(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, parentsCountDict)));
+            }
+
+            return list;
+        }
+
+        public static string GetTreeItem(string name, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict)
+        {
+            var str = "";
+            if (isLastNode == false)
+            {
+                parentsCountDict[parentsCount] = false;
+            }
+            else
+            {
+                parentsCountDict[parentsCount] = true;
+            }
+            for (var i = 0; i < parentsCount; i++)
+            {
+                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "¡¡" : "©¦");
+            }
+            str = string.Concat(str, isLastNode ? "©¸" : "©À");
+            str = string.Concat(str, name);
+            return str;
+        }
+
         public static DepartmentInfo GetDepartmentInfo(int departmentId)
         {
             var pairList = GetDepartmentInfoKeyValuePair();
@@ -23,16 +58,6 @@ namespace SiteServer.CMS.DataCache
                 }
             }
             return null;
-        }
-
-        public static string GetThisDepartmentName(int departmentId)
-        {
-            var departmentInfo = GetDepartmentInfo(departmentId);
-            if (departmentInfo != null)
-            {
-                return departmentInfo.DepartmentName;
-            }
-            return string.Empty;
         }
 
         public static string GetDepartmentName(int departmentId)
@@ -61,19 +86,6 @@ namespace SiteServer.CMS.DataCache
             return TranslateUtils.ObjectCollectionToString(departmentNameList, " > ");
         }
 
-        public static string GetDepartmentCode(int departmentId)
-        {
-            if (departmentId > 0)
-            {
-                var departmentInfo = GetDepartmentInfo(departmentId);
-                if (departmentInfo != null)
-                {
-                    return departmentInfo.Code;
-                }
-            }
-            return string.Empty;
-        }
-
         public static string GetParentsPath(int departmentId)
         {
             var retval = string.Empty;
@@ -98,7 +110,10 @@ namespace SiteServer.CMS.DataCache
 
         public static void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            lock (LockObject)
+            {
+                DataCacheManager.Remove(CacheKey);
+            }
         }
 
         public static List<KeyValuePair<int, DepartmentInfo>> GetDepartmentInfoKeyValuePair()

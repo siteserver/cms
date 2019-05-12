@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Settings
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var title = siteInfo.IsRoot ? "转移到子目录" : "转移到根目录";
             return LayerUtils.GetOpenScript(title,
-                PageUtils.GetSettingsUrl(nameof(ModalChangeSiteType),
+                PageUtilsEx.GetSettingsUrl(nameof(ModalChangeSiteType),
                     new NameValueCollection
                     {
                         {"SiteId", siteId.ToString()}
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _isHeadquarters = SiteInfo.IsRoot;
 

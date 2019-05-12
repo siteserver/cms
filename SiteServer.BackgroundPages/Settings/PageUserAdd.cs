@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToAdd(string returnUrl)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
             {
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl) }
             });
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrlToEdit(int userId, string returnUrl)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageUserAdd), new NameValueCollection
             {
                 {"userID", userId.ToString() },
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl) }
@@ -75,9 +75,9 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.SystemConfigInfo.UserPasswordRestriction, EUserPasswordRestriction.None))
+            if (!EUserPasswordRestrictionUtils.Equals(ConfigManager.Instance.UserPasswordRestriction, EUserPasswordRestriction.None))
             {
-                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserPasswordRestriction))}";
+                LtlPasswordTips.Text = $"请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(ConfigManager.Instance.UserPasswordRestriction))}";
             }
 
             if (!string.IsNullOrEmpty(_returnUrl))
@@ -102,8 +102,8 @@ namespace SiteServer.BackgroundPages.Settings
                     Password = TbPassword.Text,
                     CreateDate = DateTime.Now,
                     LastActivityDate = DateUtils.SqlMinValue,
-                    IsChecked = true,
-                    IsLockedOut = false,
+                    Checked = true,
+                    Locked = false,
                     DisplayName = TbDisplayName.Text,
                     Email = TbEmail.Text,
                     Mobile = TbMobile.Text,

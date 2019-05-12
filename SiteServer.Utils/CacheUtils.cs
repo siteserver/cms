@@ -1,39 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Caching;
 using System.Text.RegularExpressions;
-using System.Web;
-using System.Web.Caching;
 
 namespace SiteServer.Utils
 {
     public static class CacheUtils
     {
-        private static readonly Cache Cache;
-
-        /// <summary>
-        /// Static initializer should ensure we only have to look up the current cache
-        /// instance once.
-        /// </summary>
-        static CacheUtils()
-        {
-            var context = HttpContext.Current;
-            Cache = context != null ? context.Cache : HttpRuntime.Cache;
-        }
-
         public static void ClearAll()
         {
-            if (Cache == null) return;
-
-            var cacheEnum = Cache.GetEnumerator();
-            var keys = new List<string>();
-            while (cacheEnum.MoveNext())
+            var cacheKeys = MemoryCache.Default.Select(kvp => kvp.Key).ToList();
+            foreach (var cacheKey in cacheKeys)
             {
-                if (cacheEnum.Key != null) keys.Add(cacheEnum.Key.ToString());
-            }
-
-            foreach (var key in keys)
-            {
-                Cache.Remove(key);
+                MemoryCache.Default.Remove(cacheKey);
             }
         }
 
@@ -47,36 +27,30 @@ namespace SiteServer.Utils
 
         private static void RemoveByPattern(string pattern)
         {
-            if (Cache == null) return;
-
-            var cacheEnum = Cache.GetEnumerator();
+            var cacheKeys = MemoryCache.Default.Select(kvp => kvp.Key).ToList();
             var regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Compiled);
-            while (cacheEnum.MoveNext())
+            foreach (var cacheKey in cacheKeys)
             {
-                if (cacheEnum.Key != null && regex.IsMatch(cacheEnum.Key.ToString()))
+                if (cacheKey != null && regex.IsMatch(cacheKey))
                 {
-                    Cache.Remove(cacheEnum.Key.ToString());
+                    MemoryCache.Default.Remove(cacheKey);
                 }
             }
         }
 
-        /// <summary>
-        /// Removes the specified key from the cache
-        /// </summary>
-        /// <param name="key"></param>
         public static void Remove(string key)
         {
-            Cache?.Remove(key);
+            MemoryCache.Default.Remove(key);
         }
 
         public static void Insert(string key, object obj)
         {
-            InnerInsert(key, obj, null, Cache.NoSlidingExpiration);
+            InnerInsert(key, obj, null, TimeSpan.FromDays(365));
         }
 
         public static void Insert(string key, object obj, string filePath)
         {
-            InnerInsert(key, obj, filePath, Cache.NoSlidingExpiration);
+            InnerInsert(key, obj, filePath, TimeSpan.FromDays(365));
         }
 
         public static void Insert(string key, object obj, TimeSpan timeSpan, string filePath)
@@ -94,84 +68,51 @@ namespace SiteServer.Utils
             InnerInsert(key, obj, null, TimeSpan.FromMinutes(minutes));
         }
 
-        public static void InsertSeconds(string key, object obj, int seconds)
-        {
-            InnerInsert(key, obj, null, TimeSpan.FromSeconds(seconds));
-        }
-
         private static void InnerInsert(string key, object obj, string filePath, TimeSpan timeSpan)
         {
-            if (Cache == null) return;
-
             if (string.IsNullOrEmpty(key)) return;
 
-            Cache.Remove(key);
-            if (obj != null)
+            Remove(key);
+            if (obj == null) return;
+
+            var policy = new CacheItemPolicy
             {
-                Cache.Insert(key, obj, string.IsNullOrEmpty(filePath) ? null : new CacheDependency(filePath), Cache.NoAbsoluteExpiration, timeSpan, CacheItemPriority.Normal, null);
+                SlidingExpiration = timeSpan
+            };
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                policy.ChangeMonitors.Add(new HostFileChangeMonitor(new List<string> { filePath }));
             }
+
+            MemoryCache.Default.Set(key, obj, policy);
         }
 
         public static object Get(string key)
         {
-            return Cache?.Get(key);
+            return MemoryCache.Default.Get(key);
         }
 
-        public static int GetInt(string key, int notFound)
+        public static T Get<T>(string key)
         {
-            var retval = Get(key);
-            if (retval == null)
+            if (MemoryCache.Default[key] is T t)
             {
-                return notFound;
+                return t;
             }
-            return (int) retval;
-        }
-
-        public static DateTime GetDateTime(string key, DateTime notFound)
-        {
-            var retval = Get(key);
-            if (retval == null)
-            {
-                return notFound;
-            }
-            return (DateTime)retval;
-        }
-
-        public static T Get<T>(string key) where T : class
-        {
-            return Cache?.Get(key) as T;
+            return default;
         }
 
         public static bool Exists(string key)
         {
-            var val = Cache?.Get(key);
-            return val != null;
-        }
-
-        public static bool Exists<T>(string key) where T : class
-        {
-            var val = Cache?.Get(key) as T;
-            return val != null;
+            return MemoryCache.Default.Contains(key);
         }
 
         public static List<string> AllKeys
         {
             get
             {
-                var keys = new List<string>();
-
-                if (Cache == null) return keys;
-
-                var cacheEnum = Cache.GetEnumerator();
-                while (cacheEnum.MoveNext())
-                {
-                    if (cacheEnum.Key != null) keys.Add(cacheEnum.Key.ToString());
-                }
-
-                return keys;
+                return MemoryCache.Default.Select(kvp => kvp.Key).ToList();
             }
         }
-
-        public static int Count => Cache?.Count ?? 0;
     }
 }

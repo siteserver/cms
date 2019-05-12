@@ -1,4 +1,5 @@
 ﻿using System;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages
@@ -12,7 +13,7 @@ namespace SiteServer.BackgroundPages
             if (IsForbidden) return;
 
             AuthRequest.AdminLogout();
-            PageUtils.Redirect(PageUtils.GetLoginUrl());
+            PageUtilsEx.Redirect(PageUtilsEx.GetLoginUrl());
         }
     }
 }

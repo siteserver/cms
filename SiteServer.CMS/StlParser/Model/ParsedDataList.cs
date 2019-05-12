@@ -6,337 +6,337 @@ using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Model
 {
-	/// <summary>
-	/// ƒ£∞Â÷ß≥÷µƒ Ù–‘£∫
-	/// AccessKey
-	/// BackColor
-	/// BorderColor
-	/// BorderWidth
-	/// CellPadding
-	/// CellSpacing
-	/// CssClass
-	/// Enabled
-	/// ForeColor
-	/// GridLines
-	/// HorizontalAlign
-	/// RepeatColumns
-	/// RepeatDirection
-	/// RepeatLayout
-	/// ToolTip
-	/// Visible
-	/// </summary>
-	public class ParsedDataList : DataList
-	{
-		public static ListDictionary AttributeList
-		{
-			get
-			{
-				var attributes = new ListDictionary();
-				attributes.Add("cellpadding", "ÃÓ≥‰");
-				attributes.Add("cellspacing", "º‰æ‡");
-				attributes.Add("class", "¿‡");
-				attributes.Add("columns", "¡– ˝");
-				attributes.Add("direction", "∑ΩœÚ");
-				attributes.Add("layout", "÷∏∂®¡˜ªÚ±Ì∏Ò Ω");
-				return attributes;
-			}
-		}
+    /// <summary>
+    /// Ê®°ÊùøÊîØÊåÅÁöÑÂ±ûÊÄßÔºö
+    /// AccessKey
+    /// BackColor
+    /// BorderColor
+    /// BorderWidth
+    /// CellPadding
+    /// CellSpacing
+    /// CssClass
+    /// Enabled
+    /// ForeColor
+    /// GridLines
+    /// HorizontalAlign
+    /// RepeatColumns
+    /// RepeatDirection
+    /// RepeatLayout
+    /// ToolTip
+    /// Visible
+    /// </summary>
+    public class ParsedDataList : DataList
+    {
+        public static ListDictionary AttributeList
+        {
+            get
+            {
+                var attributes = new ListDictionary();
+                attributes.Add("cellpadding", "Â°´ÂÖÖ");
+                attributes.Add("cellspacing", "Èó¥Ë∑ù");
+                attributes.Add("class", "Á±ª");
+                attributes.Add("columns", "ÂàóÊï∞");
+                attributes.Add("direction", "ÊñπÂêë");
+                attributes.Add("layout", "ÊåáÂÆöÊµÅÊàñË°®Ê†ºÂºè");
+                return attributes;
+            }
+        }
 
-		public StringDictionary stringDictionary = new StringDictionary();
-		
-		private bool IsExists(string attributeName)
-		{
-			if (stringDictionary[attributeName] != null)
-			{
-				return true;
-			}
-			return false;
-		}
+        public StringDictionary stringDictionary = new StringDictionary();
 
-		public override string AccessKey
-		{
-			get{ return base.AccessKey; }
-			set
-			{
-				if (!IsExists("AccessKey"))
-				{
-					stringDictionary["AccessKey"] = string.Empty;
-					base.AccessKey = value;
-				}
-			}
-		}
+        private bool IsExists(string attributeName)
+        {
+            if (stringDictionary[attributeName] != null)
+            {
+                return true;
+            }
+            return false;
+        }
 
-		public override Color BackColor
-		{
-			get{ return base.BackColor; }
-			set
-			{
-				if (!IsExists("BackColor"))
-				{
-					stringDictionary["BackColor"] = string.Empty;
-					base.BackColor = value;
-				}
-			}
-		}
+        public override string AccessKey
+        {
+            get { return base.AccessKey; }
+            set
+            {
+                if (!IsExists("AccessKey"))
+                {
+                    stringDictionary["AccessKey"] = string.Empty;
+                    base.AccessKey = value;
+                }
+            }
+        }
 
-		public override Color BorderColor
-		{
-			get{ return base.BorderColor; }
-			set
-			{
-				if (!IsExists("BorderColor"))
-				{
-					stringDictionary["BorderColor"] = string.Empty;
-					base.BorderColor = value;
-				}
-			}
-		}
+        public override Color BackColor
+        {
+            get { return base.BackColor; }
+            set
+            {
+                if (!IsExists("BackColor"))
+                {
+                    stringDictionary["BackColor"] = string.Empty;
+                    base.BackColor = value;
+                }
+            }
+        }
 
-		public override Unit BorderWidth
-		{
-			get{ return base.BorderWidth; }
-			set
-			{
-				if (!IsExists("BorderWidth"))
-				{
-					stringDictionary["BorderWidth"] = string.Empty;
-					base.BorderWidth = value;
-				}
-			}
-		}
+        public override Color BorderColor
+        {
+            get { return base.BorderColor; }
+            set
+            {
+                if (!IsExists("BorderColor"))
+                {
+                    stringDictionary["BorderColor"] = string.Empty;
+                    base.BorderColor = value;
+                }
+            }
+        }
 
-		public override int CellPadding
-		{
-			get{ return base.CellPadding; }
-			set
-			{
-				if (!IsExists("CellPadding"))
-				{
-					stringDictionary["CellPadding"] = string.Empty;
-					base.CellPadding = value;
-				}
-			}
-		}
+        public override Unit BorderWidth
+        {
+            get { return base.BorderWidth; }
+            set
+            {
+                if (!IsExists("BorderWidth"))
+                {
+                    stringDictionary["BorderWidth"] = string.Empty;
+                    base.BorderWidth = value;
+                }
+            }
+        }
 
-		public override int CellSpacing
-		{
-			get{ return base.CellSpacing; }
-			set
-			{
-				if (!IsExists("CellSpacing"))
-				{
-					stringDictionary["CellSpacing"] = string.Empty;
-					base.CellSpacing = value;
-				}
-			}
-		}
+        public override int CellPadding
+        {
+            get { return base.CellPadding; }
+            set
+            {
+                if (!IsExists("CellPadding"))
+                {
+                    stringDictionary["CellPadding"] = string.Empty;
+                    base.CellPadding = value;
+                }
+            }
+        }
 
-		public override string CssClass
-		{
-			get{ return base.CssClass; }
-			set
-			{
-				if (!IsExists("CssClass"))
-				{
-					stringDictionary["CssClass"] = string.Empty;
-					base.CssClass = value;
-				}
-			}
-		}
+        public override int CellSpacing
+        {
+            get { return base.CellSpacing; }
+            set
+            {
+                if (!IsExists("CellSpacing"))
+                {
+                    stringDictionary["CellSpacing"] = string.Empty;
+                    base.CellSpacing = value;
+                }
+            }
+        }
 
-		public override bool Enabled
-		{
-			get{ return base.Enabled; }
-			set
-			{
-				if (!IsExists("Enabled"))
-				{
-					stringDictionary["Enabled"] = string.Empty;
-					base.Enabled = value;
-				}
-			}
-		}
+        public override string CssClass
+        {
+            get { return base.CssClass; }
+            set
+            {
+                if (!IsExists("CssClass"))
+                {
+                    stringDictionary["CssClass"] = string.Empty;
+                    base.CssClass = value;
+                }
+            }
+        }
 
-		public override Color ForeColor
-		{
-			get{ return base.ForeColor; }
-			set
-			{
-				if (!IsExists("ForeColor"))
-				{
-					stringDictionary["ForeColor"] = string.Empty;
-					base.ForeColor = value;
-				}
-			}
-		}
+        public override bool Enabled
+        {
+            get { return base.Enabled; }
+            set
+            {
+                if (!IsExists("Enabled"))
+                {
+                    stringDictionary["Enabled"] = string.Empty;
+                    base.Enabled = value;
+                }
+            }
+        }
 
-		public override GridLines GridLines
-		{
-			get{ return base.GridLines; }
-			set
-			{
-				if (!IsExists("GridLines"))
-				{
-					stringDictionary["GridLines"] = string.Empty;
-					base.GridLines = value;
-				}
-			}
-		}
+        public override Color ForeColor
+        {
+            get { return base.ForeColor; }
+            set
+            {
+                if (!IsExists("ForeColor"))
+                {
+                    stringDictionary["ForeColor"] = string.Empty;
+                    base.ForeColor = value;
+                }
+            }
+        }
 
-		public override HorizontalAlign HorizontalAlign
-		{
-			get{ return base.HorizontalAlign; }
-			set
-			{
-				if (!IsExists("HorizontalAlign"))
-				{
-					stringDictionary["HorizontalAlign"] = string.Empty;
-					base.HorizontalAlign = value;
-				}
-			}
-		}
+        public override GridLines GridLines
+        {
+            get { return base.GridLines; }
+            set
+            {
+                if (!IsExists("GridLines"))
+                {
+                    stringDictionary["GridLines"] = string.Empty;
+                    base.GridLines = value;
+                }
+            }
+        }
 
-		public override int RepeatColumns
-		{
-			get{ return base.RepeatColumns; }
-			set
-			{
-				if (!IsExists("RepeatColumns"))
-				{
-					stringDictionary["RepeatColumns"] = string.Empty;
-					base.RepeatColumns = value;
-				}
-			}
-		}
+        public override HorizontalAlign HorizontalAlign
+        {
+            get { return base.HorizontalAlign; }
+            set
+            {
+                if (!IsExists("HorizontalAlign"))
+                {
+                    stringDictionary["HorizontalAlign"] = string.Empty;
+                    base.HorizontalAlign = value;
+                }
+            }
+        }
 
-		public override RepeatDirection RepeatDirection
-		{
-			get{ return base.RepeatDirection; }
-			set
-			{
-				if (!IsExists("RepeatDirection"))
-				{
-					stringDictionary["RepeatDirection"] = string.Empty;
-					base.RepeatDirection = value;
-				}
-			}
-		}
+        public override int RepeatColumns
+        {
+            get { return base.RepeatColumns; }
+            set
+            {
+                if (!IsExists("RepeatColumns"))
+                {
+                    stringDictionary["RepeatColumns"] = string.Empty;
+                    base.RepeatColumns = value;
+                }
+            }
+        }
 
-		public override RepeatLayout RepeatLayout
-		{
-			get{ return base.RepeatLayout; }
-			set
-			{
-				if (!IsExists("RepeatLayout"))
-				{
-					stringDictionary["RepeatLayout"] = string.Empty;
-					base.RepeatLayout = value;
-				}
-			}
-		}
+        public override RepeatDirection RepeatDirection
+        {
+            get { return base.RepeatDirection; }
+            set
+            {
+                if (!IsExists("RepeatDirection"))
+                {
+                    stringDictionary["RepeatDirection"] = string.Empty;
+                    base.RepeatDirection = value;
+                }
+            }
+        }
 
-		public override string ToolTip
-		{
-			get{ return base.ToolTip; }
-			set
-			{
-				if (!IsExists("ToolTip"))
-				{
-					stringDictionary["ToolTip"] = string.Empty;
-					base.ToolTip = value;
-				}
-			}
-		}
+        public override RepeatLayout RepeatLayout
+        {
+            get { return base.RepeatLayout; }
+            set
+            {
+                if (!IsExists("RepeatLayout"))
+                {
+                    stringDictionary["RepeatLayout"] = string.Empty;
+                    base.RepeatLayout = value;
+                }
+            }
+        }
 
-		public override bool Visible
-		{
-			get{ return base.Visible; }
-			set
-			{
-				if (!IsExists("Visible"))
-				{
-					stringDictionary["Visible"] = string.Empty;
-					base.Visible = value;
-				}
-			}
-		}
+        public override string ToolTip
+        {
+            get { return base.ToolTip; }
+            set
+            {
+                if (!IsExists("ToolTip"))
+                {
+                    stringDictionary["ToolTip"] = string.Empty;
+                    base.ToolTip = value;
+                }
+            }
+        }
 
-		public void AddAttribute(string attributeName, string attributeValue)
-		{
-			if (string.IsNullOrEmpty(attributeName) || string.IsNullOrEmpty(attributeValue))
-			{
-				return;
-			}
-			attributeName = attributeName.Trim().ToLower();
-			attributeValue = attributeValue.Trim().ToLower();
-			if (attributeName.Equals("accesskey"))
-			{
-				AccessKey = attributeValue;
-			}
-			else if (attributeName.Equals("backcolor") || attributeName.Equals("bgcolor"))
-			{
-				BackColor = TranslateUtils.ToColor(attributeValue);
-			}
-			else if (attributeName.Equals("bordercolor"))
-			{
-				BorderColor = TranslateUtils.ToColor(attributeValue);
-			}
-			else if (attributeName.Equals("borderwidth") || attributeName.Equals("border"))
-			{
-				BorderWidth = TranslateUtils.ToUnit(attributeValue);
-			}
-			else if (attributeName.Equals("cellpadding"))
-			{
-				CellPadding = TranslateUtils.ToInt(attributeValue);
-			}
-			else if (attributeName.Equals("cellspacing"))
-			{
-				CellSpacing = TranslateUtils.ToInt(attributeValue);
-			}
-			else if (attributeName.Equals("cssclass") || attributeName.Equals("class"))
-			{
-				CssClass = attributeValue;
-			}
-			else if (attributeName.Equals("enabled"))
-			{
-				Enabled = TranslateUtils.ToBool(attributeValue, true);
-			}
-			else if (attributeName.Equals("forecolor"))
-			{
-				ForeColor = TranslateUtils.ToColor(attributeValue);
-			}
-			else if (attributeName.Equals("gridlines"))
-			{
-				GridLines = TranslateUtils.ToGridLines(attributeValue);
-			}
-			else if (attributeName.Equals("horizontalalign"))
-			{
-				HorizontalAlign = TranslateUtils.ToHorizontalAlign(attributeValue);
-			}
-			else if (attributeName.Equals("repeatcolumns") || attributeName.Equals("columns"))
-			{
-				RepeatColumns = TranslateUtils.ToInt(attributeValue);
-			}
-			else if (attributeName.Equals("repeatdirection") || attributeName.Equals("direction"))
-			{
-				RepeatDirection = TranslateUtils.ToRepeatDirection(attributeValue);
-			}
-			else if (attributeName.Equals("repeatlayout"))
-			{
-				RepeatLayout = TranslateUtils.ToRepeatLayout(attributeValue);
-			}
-			else if (attributeName.Equals("tooltip"))
-			{
-				ToolTip = attributeValue;
-			}
-			else if (attributeName.Equals("visible"))
-			{
-				Visible = TranslateUtils.ToBool(attributeValue, true);
-			}
-			else
-			{
-				ControlUtils.AddAttribute(this, attributeName, attributeValue);
-			}
-		}
-	}
+        public override bool Visible
+        {
+            get { return base.Visible; }
+            set
+            {
+                if (!IsExists("Visible"))
+                {
+                    stringDictionary["Visible"] = string.Empty;
+                    base.Visible = value;
+                }
+            }
+        }
+
+        public void AddAttribute(string attributeName, string attributeValue)
+        {
+            if (string.IsNullOrEmpty(attributeName) || string.IsNullOrEmpty(attributeValue))
+            {
+                return;
+            }
+            attributeName = attributeName.Trim().ToLower();
+            attributeValue = attributeValue.Trim().ToLower();
+            if (attributeName.Equals("accesskey"))
+            {
+                AccessKey = attributeValue;
+            }
+            else if (attributeName.Equals("backcolor") || attributeName.Equals("bgcolor"))
+            {
+                BackColor = TranslateUtils.ToColor(attributeValue);
+            }
+            else if (attributeName.Equals("bordercolor"))
+            {
+                BorderColor = TranslateUtils.ToColor(attributeValue);
+            }
+            else if (attributeName.Equals("borderwidth") || attributeName.Equals("border"))
+            {
+                BorderWidth = TranslateUtilsEx.ToUnit(attributeValue);
+            }
+            else if (attributeName.Equals("cellpadding"))
+            {
+                CellPadding = TranslateUtils.ToInt(attributeValue);
+            }
+            else if (attributeName.Equals("cellspacing"))
+            {
+                CellSpacing = TranslateUtils.ToInt(attributeValue);
+            }
+            else if (attributeName.Equals("cssclass") || attributeName.Equals("class"))
+            {
+                CssClass = attributeValue;
+            }
+            else if (attributeName.Equals("enabled"))
+            {
+                Enabled = TranslateUtils.ToBool(attributeValue, true);
+            }
+            else if (attributeName.Equals("forecolor"))
+            {
+                ForeColor = TranslateUtils.ToColor(attributeValue);
+            }
+            else if (attributeName.Equals("gridlines"))
+            {
+                GridLines = TranslateUtilsEx.ToGridLines(attributeValue);
+            }
+            else if (attributeName.Equals("horizontalalign"))
+            {
+                HorizontalAlign = TranslateUtilsEx.ToHorizontalAlign(attributeValue);
+            }
+            else if (attributeName.Equals("repeatcolumns") || attributeName.Equals("columns"))
+            {
+                RepeatColumns = TranslateUtils.ToInt(attributeValue);
+            }
+            else if (attributeName.Equals("repeatdirection") || attributeName.Equals("direction"))
+            {
+                RepeatDirection = TranslateUtilsEx.ToRepeatDirection(attributeValue);
+            }
+            else if (attributeName.Equals("repeatlayout"))
+            {
+                RepeatLayout = TranslateUtilsEx.ToRepeatLayout(attributeValue);
+            }
+            else if (attributeName.Equals("tooltip"))
+            {
+                ToolTip = attributeValue;
+            }
+            else if (attributeName.Equals("visible"))
+            {
+                Visible = TranslateUtils.ToBool(attributeValue, true);
+            }
+            else
+            {
+                ControlUtils.AddAttribute(this, attributeName, attributeValue);
+            }
+        }
+    }
 }

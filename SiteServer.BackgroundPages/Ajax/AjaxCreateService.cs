@@ -6,8 +6,6 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -22,7 +20,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetCountArrayUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCreateService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCreateService), new NameValueCollection
             {
                 {"type", TypeGetCountArray }
             });
@@ -30,7 +28,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetCreateSiteUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCreateService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCreateService), new NameValueCollection
             {
                 {"type", TypeCreateSite }
             });
@@ -130,7 +128,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtilsEx.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -188,7 +186,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtilsEx.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
@@ -227,7 +225,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
                 retval = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
-                        $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
+                        $"top.location.href='{PageUtilsEx.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {

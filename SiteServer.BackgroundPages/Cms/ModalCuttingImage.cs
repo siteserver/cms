@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowStringWithTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("裁切图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"textBoxClientID", textBoxClientId}
             }));
@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToImageUrl(int siteId, string imageUrl)
         {
-            return LayerUtils.GetOpenScript("裁切图片", PageUtils.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("裁切图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
             {
                 {"imageUrl", imageUrl}
             }));
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
             _imageUrl = AuthRequest.GetQueryString("imageUrl");
 
@@ -56,8 +56,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlScript.Text = $@"
 <script type=""text/javascript"">
-    var rootUrl = '{PageUtils.GetRootUrl(string.Empty)}';
-    var siteUrl = '{PageUtils.ParseNavigationUrl($"~/{SiteInfo.SiteDir}")}';
+    var rootUrl = '{PageUtilsEx.GetRootUrl(string.Empty)}';
+    var siteUrl = '{PageUtilsEx.ParseNavigationUrl($"~/{SiteInfo.SiteDir}")}';
     var virtualUrl = {virtualUrl};
     var imageUrl = virtualUrl;
     if(imageUrl && imageUrl.search(/\.bmp|\.jpg|\.jpeg|\.gif|\.png|\.webp$/i) != -1){{

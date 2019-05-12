@@ -156,11 +156,6 @@ namespace SiteServer.CMS.Core
                 uploadDateFormatString = siteInfo.Additional.FileUploadDateFormatString;
                 uploadDirectoryName = "/Special";
             }
-            else if (uploadType == EUploadType.AdvImage)
-            {
-                uploadDateFormatString = siteInfo.Additional.FileUploadDateFormatString;
-                uploadDirectoryName = "/AdvImage";
-            }
 
             string directoryPath;
             var dateFormatType = EDateFormatTypeUtils.GetEnumType(uploadDateFormatString);
@@ -260,7 +255,7 @@ namespace SiteServer.CMS.Core
             var siteInfoList = SiteManager.GetSiteInfoList();
             foreach (var siteInfo in siteInfoList)
             {
-                if (siteInfo?.IsRoot!= false) continue;
+                if (siteInfo?.IsRoot != false) continue;
 
                 if (StringUtils.Contains(directoryDir, siteInfo.SiteDir.ToLower()))
                 {
@@ -273,7 +268,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetCurrentSiteDir()
         {
-            return GetSiteDir(PathUtils.GetCurrentPagePath());
+            return GetSiteDir(PathUtilsEx.GetCurrentPagePath());
         }
 
         public static int GetCurrentSiteId()
@@ -322,13 +317,13 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtils.MapPath(resolvedPath);
+            return PathUtilsEx.MapPath(resolvedPath);
         }
 
         public static string MapPath(SiteInfo siteInfo, string virtualPath, bool isCopyToSite)
@@ -344,13 +339,13 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtils.MapPath(resolvedPath);
+            return PathUtilsEx.MapPath(resolvedPath);
         }
 
         public static string MapPath(string directoryPath, string virtualPath)
@@ -375,7 +370,7 @@ namespace SiteServer.CMS.Core
                     return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
                 }
             }
-            return PathUtils.MapPath(resolvedPath);
+            return PathUtilsEx.MapPath(resolvedPath);
         }
 
         //将编辑器中图片上传至本机
@@ -385,7 +380,7 @@ namespace SiteServer.CMS.Core
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, PageUtilsEx.ApplicationPath) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, siteInfo.Additional.WebUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
@@ -545,7 +540,7 @@ namespace SiteServer.CMS.Core
                 foreach (var element in elements)
                 {
                     var value = string.Empty;
-                    
+
                     if (StringUtils.EqualsIgnoreCase(element, ChannelId))
                     {
                         value = channelId.ToString();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
 			if (!IsPostBack)
 			{
@@ -33,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
                 DdlFileUploadDateFormatString.Items.Add(new ListItem("按年/月/日存入不同目录", EDateFormatTypeUtils.GetValue(EDateFormatType.Day)));
                 ControlUtils.SelectSingleItemIgnoreCase(DdlFileUploadDateFormatString, SiteInfo.Additional.FileUploadDateFormatString);
 
-				EBooleanUtils.AddListItems(DdlIsFileUploadChangeFileName, "自动修改文件名", "保持文件名不变");
+				FxUtils.AddListItems(DdlIsFileUploadChangeFileName, "自动修改文件名", "保持文件名不变");
                 ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.Additional.IsFileUploadChangeFileName.ToString());
 
                 TbFileUploadTypeCollection.Text = SiteInfo.Additional.FileUploadTypeCollection.Replace("|", ",");

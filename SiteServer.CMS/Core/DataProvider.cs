@@ -191,7 +191,7 @@ namespace SiteServer.CMS.Core
             _userMenuDao = null;
         }
 
-        public static List<DataProviderBase> AllProviders => new List<DataProviderBase>
+        public static List<IDatabaseDao> AllProviders => new List<IDatabaseDao>
         {
             AccessTokenDao,
             AdministratorDao,

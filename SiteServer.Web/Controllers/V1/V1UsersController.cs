@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -28,15 +28,22 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var userInfo = new UserInfo(request.GetPostObject<Dictionary<string, object>>());
-                if (!ConfigManager.SystemConfigInfo.IsUserRegistrationGroup)
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var dict = request.GetPostObject<Dictionary<string, object>>();
+
+                var userInfo = new UserInfo();
+                foreach (var o in dict)
+                {
+                    userInfo.Set(o.Key, o.Value);
+                }
+
+                if (!ConfigManager.Instance.IsUserRegistrationGroup)
                 {
                     userInfo.GroupId = 0;
                 }
                 var password = request.GetPostString("password");
 
-                var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtils.GetIpAddress(), out var errorMessage);
+                var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtilsEx.GetIpAddress(), out var errorMessage);
                 if (userId == 0)
                 {
                     return BadRequest(errorMessage);
@@ -59,9 +66,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -98,9 +104,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -130,9 +135,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -161,7 +165,7 @@ namespace SiteServer.API.Controllers.V1
             var userInfo = UserManager.GetUserInfoByUserId(id);
 
             var avatarUrl = !string.IsNullOrEmpty(userInfo?.AvatarUrl) ? userInfo.AvatarUrl : UserManager.DefaultAvatarUrl;
-            avatarUrl = PageUtils.AddProtocolToUrl(avatarUrl);
+            avatarUrl = PageUtilsEx.AddProtocolToUrl(avatarUrl);
 
             return Ok(new
             {
@@ -174,9 +178,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -197,7 +200,7 @@ namespace SiteServer.API.Controllers.V1
 
                     var fileName = UserManager.GetUserUploadFileName(postFile.FileName);
                     var filePath = UserManager.GetUserUploadPath(userInfo.Id, fileName);
-                    
+
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
                         return BadRequest("image file extension is not correct");
@@ -228,9 +231,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
                 if (!isAuth) return Unauthorized();
@@ -241,7 +243,7 @@ namespace SiteServer.API.Controllers.V1
                 var users = DataProvider.UserDao.GetUsers(skip, top);
                 var count = DataProvider.UserDao.GetCount();
 
-                return Ok(new PageResponse(users, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(users, top, skip, Request.RequestUri.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -255,7 +257,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -289,8 +291,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var userInfo = request.IsUserLoggin ? request.UserInfo : null;
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var userInfo = UserManager.GetUserInfoByUserId(request.UserId);
                 request.UserLogout();
 
                 return Ok(new
@@ -310,9 +312,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -322,7 +323,7 @@ namespace SiteServer.API.Controllers.V1
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var retval = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
+                var retval = DataProvider.UserLogDao.Insert(userInfo.UserName, logInfo);
 
                 return Ok(new
                 {
@@ -341,9 +342,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -358,7 +358,7 @@ namespace SiteServer.API.Controllers.V1
 
                 var logs = DataProvider.UserLogDao.ApiGetLogs(userInfo.UserName, skip, top);
 
-                return Ok(new PageResponse(logs, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
+                return Ok(new PageResponse(logs, top, skip, Request.RequestUri.AbsoluteUri) { Count = DataProvider.UserDao.GetCount() });
             }
             catch (Exception ex)
             {
@@ -372,9 +372,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isAuth = request.IsApiAuthenticated &&
-                             AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
                              request.IsAdminLoggin &&
@@ -396,7 +395,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     return BadRequest(errorMessage);
                 }
-                
+
                 return Ok(new
                 {
                     Value = userInfo

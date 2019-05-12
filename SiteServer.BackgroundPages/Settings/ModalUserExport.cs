@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
@@ -17,7 +18,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString()
         {
-            return LayerUtils.GetOpenScript("导出用户", PageUtils.GetSettingsUrl(nameof(ModalUserExport), null), 450, 270);
+            return LayerUtils.GetOpenScript("导出用户", PageUtilsEx.GetSettingsUrl(nameof(ModalUserExport), null), 450, 270);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
 			if (!IsPostBack)
 			{
                 PhExport.Visible = true;
-                ETriStateUtils.AddListItems(DdlCheckedState, "全部", "审核通过", "未审核");
+                FxUtils.AddListItemsToETriState(DdlCheckedState, "全部", "审核通过", "未审核");
                 ControlUtils.SelectSingleItem(DdlCheckedState, ETriStateUtils.GetValue(ETriState.All));
 			}
 		}

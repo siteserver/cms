@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string jsMethod)
         {
-            return LayerUtils.GetOpenScript("选择内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentMultipleSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("选择内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentMultipleSelect), new NameValueCollection
             {
                 {"jsMethod", jsMethod}
             }));
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             _jsMethod = AuthRequest.GetQueryString("jsMethod");
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             var channelId = AuthRequest.GetQueryInt("channelId");
             if (channelId == 0)
             {
@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, PageUrl));
+            PageUtilsEx.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -171,7 +171,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
+                    _pageUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalContentMultipleSelect), new NameValueCollection
                     {
                         {"channelId", DdlChannelId.SelectedValue},
                         {"SearchType", DdlSearchType.SelectedValue},

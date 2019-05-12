@@ -114,8 +114,6 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.Taxis, value);
         }
 
-	    public bool Color { get; set; }
-
 	    public string GroupNameCollection
         {
             get => GetString(ContentAttribute.GroupNameCollection);
@@ -128,8 +126,6 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.Tags, value);
         }
 
-	    public bool Checked { get; set; }
-
 	    public int SourceId
         {
             get => GetInt(ContentAttribute.SourceId);
@@ -140,6 +136,12 @@ namespace SiteServer.CMS.Model
         {
             get => GetInt(ContentAttribute.ReferenceId);
             set => Set(ContentAttribute.ReferenceId, value);
+        }
+
+        public bool Checked
+        {
+            get => IsChecked;
+            set => IsChecked = value;
         }
 
         public bool IsChecked
@@ -196,14 +198,22 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.Title, value);
         }
 
-	    public bool Top { get; set; }
-	    public bool Recommend { get; set; }
-	    public bool Hot { get; set; }
+        public bool Top
+        {
+            get => IsTop;
+            set => IsTop = value;
+        }
 
-	    public bool IsTop
+        public bool IsTop
         {
             get => GetBool(ContentAttribute.IsTop);
             set => Set(ContentAttribute.IsTop, value);
+        }
+
+        public bool Recommend
+        {
+            get => IsRecommend;
+            set => IsRecommend = value;
         }
 
         public bool IsRecommend
@@ -212,10 +222,22 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.IsRecommend, value);
         }
 
+        public bool Hot
+        {
+            get => IsHot;
+            set => IsHot = value;
+        }
+
         public bool IsHot
         {
             get => GetBool(ContentAttribute.IsHot);
             set => Set(ContentAttribute.IsHot, value);
+        }
+
+        public bool Color
+        {
+            get => IsColor;
+            set => IsColor = value;
         }
 
         public bool IsColor

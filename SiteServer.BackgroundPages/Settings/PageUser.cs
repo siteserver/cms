@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageUser), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageUser), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -108,19 +108,19 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 SpContents.ItemsPerPage = TranslateUtils.ToInt(DdlPageNum.SelectedValue) == 0 ? 25 : TranslateUtils.ToInt(DdlPageNum.SelectedValue);
 
-                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand();
+                //SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand();
             }
             else
             {
                 SpContents.ItemsPerPage = AuthRequest.GetQueryInt("PageNum") == 0 ? Constants.PageSize : AuthRequest.GetQueryInt("PageNum");
 
-                SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(AuthRequest.GetQueryInt("groupId"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryInt("creationDate"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.GetQueryInt("loginCount"), AuthRequest.GetQueryString("searchType"));
+                //SpContents.SelectCommand = DataProvider.UserDao.GetSelectCommand(AuthRequest.GetQueryInt("groupId"), AuthRequest.GetQueryString("keyword"), AuthRequest.GetQueryInt("creationDate"), AuthRequest.GetQueryInt("lastActivityDate"), AuthRequest.GetQueryInt("loginCount"), AuthRequest.GetQueryString("searchType"));
             }
 
             RptContents.ItemDataBound += rptContents_ItemDataBound;
             SpContents.OrderByString = "ORDER BY IsChecked, Id DESC";
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.UserLockLoginType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.UserLockLoginType);
 
             if (IsPostBack) return;
 
@@ -206,8 +206,8 @@ namespace SiteServer.BackgroundPages.Settings
             var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfLogin));
             var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfFailedLogin));
             var groupId = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.GroupId));
-            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.IsChecked));
-            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.IsLockedOut));
+            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Checked));
+            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Locked));
             var displayName = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.DisplayName));
             var email = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Email));
             var mobile = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Mobile));
@@ -228,8 +228,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state += @"<span style=""color:red;"">[已锁定]</span>";
             }
-            else if (ConfigManager.SystemConfigInfo.IsUserLockLogin &&
-                     ConfigManager.SystemConfigInfo.UserLockLoginCount <= countOfFailedLogin)
+            else if (ConfigManager.Instance.IsUserLockLogin &&
+                     ConfigManager.Instance.UserLockLoginCount <= countOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -238,7 +238,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - lastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.UserLockLoginHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.Instance.UserLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state += $@"<span style=""color:red;"">[已锁定{hours}小时]</span>";
@@ -265,7 +265,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            PageUtilsEx.Redirect(PageUrl);
         }
 
         private string _pageUrl;

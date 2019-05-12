@@ -27,7 +27,7 @@ namespace SiteServer.CMS.Core
         {
             var list = new List<Tab>();
 
-            var menuPath = PathUtils.GetMenusPath("Top.config");
+            var menuPath = PathUtilsEx.GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Core
 	    {
 	        var list = new List<Tab>();
 
-	        var menuPath = PathUtils.GetMenusPath("Top.config");
+	        var menuPath = PathUtilsEx.GetMenusPath("Top.config");
 	        if (!FileUtils.IsFileExists(menuPath)) return list;
 
 	        var tabs = GetTabs(menuPath);
@@ -110,7 +110,7 @@ namespace SiteServer.CMS.Core
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var filePath = PathUtils.GetMenusPath($"{topId}.config");
+                var filePath = PathUtilsEx.GetMenusPath($"{topId}.config");
                 var tabCollection = GetTabs(filePath);
                 if (tabCollection?.Tabs != null)
                 {

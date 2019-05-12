@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -33,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("设置表单验证", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleValidateAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("设置表单验证", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTableStyleValidateAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
@@ -78,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbMinNum.Text = _styleInfo.Additional.MinNum.ToString();
             TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
 
-            ValidateTypeUtils.AddListItems(DdlValidateType);
+            FxUtils.AddListItemsToValidateType(DdlValidateType);
             ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Additional.ValidateType.Value);
 
             TbRegExp.Text = _styleInfo.Additional.RegExp;

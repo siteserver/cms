@@ -485,7 +485,7 @@ $(document).ready(function(){{
 
             var selectedValues = TranslateUtils.StringCollectionToStringList(attributes.GetString(styleInfo.AttributeName));
 
-            InputParserUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            FxUtils.GetValidateAttributesForListItem(checkBoxList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType.Value, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
             foreach (var styleItem in styleItems)
             {
@@ -548,7 +548,7 @@ $(document).ready(function(){{
 
             var selectedValue = attributes.GetString(styleInfo.AttributeName);
 
-            InputParserUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
+            FxUtils.GetValidateAttributesForListItem(radioButtonList, styleInfo.Additional.IsValidate, styleInfo.DisplayName, styleInfo.Additional.IsRequired, styleInfo.Additional.MinNum, styleInfo.Additional.MaxNum, styleInfo.Additional.ValidateType.Value, styleInfo.Additional.RegExp, styleInfo.Additional.ErrorMessage);
 
             var isTicked = false;
             foreach (var styleItem in styleItems)

@@ -117,27 +117,20 @@ namespace SiteServer.CMS.DataCache
         {
             get
             {
-                var retval = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                    if (retval == null)
+                    retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
+                    if (retVal == null)
                     {
-                        try
-                        {
-                            retval = DataProvider.ConfigDao.GetConfigInfo();
-                            DataCacheManager.Insert(CacheKey, retval);
-                        }
-                        catch
-                        {
-                            return new ConfigInfo(0, false, string.Empty, DateTime.Now, string.Empty);
-                        }
+                        retVal = DataProvider.ConfigDao.GetConfigInfo();
+                        DataCacheManager.Insert(CacheKey, retVal);
                     }
                 }
 
-                return retval;
+                return retVal;
             }
         }
 
@@ -151,7 +144,5 @@ namespace SiteServer.CMS.DataCache
                 }
             }
         }
-
-        public static SystemConfigInfo SystemConfigInfo => Instance.SystemConfigInfo;
     }
 }

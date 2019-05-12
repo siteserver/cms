@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.CMS.Api.V1;
+using Datory;
 using SiteServer.CMS.Core;
+using SiteServer.Utils;
+using System.Web;
+using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
@@ -13,29 +14,47 @@ namespace SiteServer.API.Controllers.V1
     public class V1AdministratorsController : ApiController
     {
         private const string Route = "";
+        private const string RouteMe = "me";
         private const string RouteActionsLogin = "actions/login";
         private const string RouteActionsLogout = "actions/logout";
         private const string RouteActionsResetPassword = "actions/resetPassword";
         private const string RouteAdministrator = "{id:int}";
 
         [HttpPost, Route(Route)]
-        public IHttpActionResult Create([FromBody] AdministratorInfoCreateUpdate adminInfo)
+        public IHttpActionResult Create()
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                var retval = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
-                if (retval == null)
+                var adminInfo = new AdministratorInfo
+                {
+                    UserName = request.GetPostString(nameof(AdministratorInfo.UserName)),
+                    Password = request.GetPostString(nameof(AdministratorInfo.Password)),
+                    CreationDate = DateTime.Now,
+                    CreatorUserName = request.UserName,
+                    Locked = request.GetPostBool(nameof(AdministratorInfo.Locked)),
+                    SiteIdCollection = request.GetPostString(nameof(AdministratorInfo.SiteIdCollection)),
+                    SiteId = request.GetPostInt(nameof(AdministratorInfo.SiteId)),
+                    DepartmentId = request.GetPostInt(nameof(AdministratorInfo.DepartmentId)),
+                    AreaId = request.GetPostInt(nameof(AdministratorInfo.AreaId)),
+                    DisplayName = request.GetPostString(nameof(AdministratorInfo.DisplayName)),
+                    Mobile = request.GetPostString(nameof(AdministratorInfo.Mobile)),
+                    Email = request.GetPostString(nameof(AdministratorInfo.Email)),
+                    AvatarUrl = request.GetPostString(nameof(AdministratorInfo.AvatarUrl))
+                };
+
+                var id = DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage);
+                if (id == 0)
                 {
                     return BadRequest(errorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = adminInfo
                 });
             }
             catch (Exception ex)
@@ -46,27 +65,68 @@ namespace SiteServer.API.Controllers.V1
         }
 
         [HttpPut, Route(RouteAdministrator)]
-        public IHttpActionResult Update(int id, [FromBody] AdministratorInfoCreateUpdate adminInfo)
+        public IHttpActionResult Update(int id)
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (adminInfo == null) return BadRequest("Could not read administrator from body");
+                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                if (adminInfo == null) return NotFound();
 
-                var retval = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out var errorMessage);
-                if (retval == null)
+                if (request.IsPostExists(nameof(AdministratorInfo.UserName)))
+                {
+                    adminInfo.UserName = request.GetPostString(nameof(AdministratorInfo.UserName));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.Locked)))
+                {
+                    adminInfo.Locked = request.GetPostBool(nameof(AdministratorInfo.Locked));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.SiteIdCollection)))
+                {
+                    adminInfo.SiteIdCollection = request.GetPostString(nameof(AdministratorInfo.SiteIdCollection));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.SiteId)))
+                {
+                    adminInfo.SiteId = request.GetPostInt(nameof(AdministratorInfo.SiteId));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.DepartmentId)))
+                {
+                    adminInfo.DepartmentId = request.GetPostInt(nameof(AdministratorInfo.DepartmentId));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.AreaId)))
+                {
+                    adminInfo.AreaId = request.GetPostInt(nameof(AdministratorInfo.AreaId));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.DisplayName)))
+                {
+                    adminInfo.DisplayName = request.GetPostString(nameof(AdministratorInfo.DisplayName));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.Mobile)))
+                {
+                    adminInfo.Mobile = request.GetPostString(nameof(AdministratorInfo.Mobile));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.Email)))
+                {
+                    adminInfo.Email = request.GetPostString(nameof(AdministratorInfo.Email));
+                }
+                if (request.IsPostExists(nameof(AdministratorInfo.AvatarUrl)))
+                {
+                    adminInfo.AvatarUrl = request.GetPostString(nameof(AdministratorInfo.AvatarUrl));
+                }
+
+                var updated = DataProvider.AdministratorDao.Update(adminInfo, out var errorMessage);
+                if (!updated)
                 {
                     return BadRequest(errorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = adminInfo
                 });
             }
             catch (Exception ex)
@@ -81,13 +141,14 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
+                if (adminInfo == null) return NotFound();
 
-                var adminInfo = DataProvider.AdministratorDao.ApiDelete(id);
+                DataProvider.AdministratorDao.Delete(adminInfo);
 
                 return Ok(new
                 {
@@ -106,13 +167,36 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
+                var adminInfo = AdminManager.GetAdminInfoByUserId(id);
 
-                var adminInfo = DataProvider.AdministratorDao.ApiGetAdministrator(id);
+                if (adminInfo == null) return NotFound();
+
+                return Ok(new
+                {
+                    Value = adminInfo
+                });
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(ex);
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpGet, Route(RouteMe)]
+        public IHttpActionResult GetSelf()
+        {
+            try
+            {
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+
+                if (!request.IsAdminLoggin) return Unauthorized();
+
+                var adminInfo = AdminManager.GetAdminInfoByUserId(request.AdminId);
 
                 return Ok(new
                 {
@@ -131,17 +215,19 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
 
-                var administrators = DataProvider.AdministratorDao.ApiGetAdministrators(skip, top);
-                var count = DataProvider.AdministratorDao.ApiGetCount();
+                var query = Q.Limit(top).Offset(skip);
+                var administrators = DataProvider.AdministratorDao.GetAll(query);
+                var count = DataProvider.AdministratorDao.GetCount();
 
-                return Ok(new PageResponse(administrators, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(administrators, top, skip, Request.RequestUri.AbsoluteUri) { Count = count });
             }
             catch (Exception ex)
             {
@@ -155,7 +241,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -197,9 +283,9 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var adminInfo = request.IsAdminLoggin ? request.AdminInfo : null;
-                request.AdminLogout();
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+
+                var adminInfo = AdminManager.GetAdminInfoByUserId(request.AdminId);
 
                 return Ok(new
                 {
@@ -218,8 +304,8 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
-                var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
                 var account = request.GetPostString("account");

@@ -8,6 +8,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.StlParser.Template;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {

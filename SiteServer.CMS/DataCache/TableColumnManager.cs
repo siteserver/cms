@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -123,6 +125,118 @@ namespace SiteServer.CMS.DataCache
         public static void ClearCache()
         {
             TableColumnManagerCache.Clear();
+        }
+
+        public static bool CreateTable(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex)
+        {
+            ex = null;
+
+            try
+            {
+                DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
+            }
+            catch (Exception e)
+            {
+                ex = e;
+                LogUtils.AddErrorLog(pluginId, ex, string.Empty);
+                return false;
+            }
+
+            if (isContentTable)
+            {
+                try
+                {
+                    DatoryUtils.CreateIndex(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+
+
+                    //sqlString =
+                    //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_General")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.IsTop)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC, {DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Id)} DESC)";
+
+                    //ExecuteNonQuery(ConnectionString, sqlString);
+                }
+                catch (Exception e)
+                {
+                    ex = e;
+                    LogUtils.AddErrorLog(pluginId, ex, string.Empty);
+                    return false;
+                }
+
+                try
+                {
+                    DatoryUtils.CreateIndex(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+
+                    //sqlString =
+                    //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
+
+                    //ExecuteNonQuery(ConnectionString, sqlString);
+                }
+                catch (Exception e)
+                {
+                    ex = e;
+                    LogUtils.AddErrorLog(pluginId, ex, string.Empty);
+                    return false;
+                }
+            }
+
+            ClearCache();
+            return true;
+        }
+
+        public static void AlterTable(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
+        {
+            try
+            {
+                DatoryUtils.AlterTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName,
+                    GetRealTableColumns(tableColumns), dropColumnNames);
+
+                ClearCache();
+            }
+            catch (Exception ex)
+            {
+                LogUtils.AddErrorLog(pluginId, ex, string.Empty);
+            }
+        }
+
+        private static IList<TableColumn> GetRealTableColumns(IEnumerable<TableColumn> tableColumns)
+        {
+            var realTableColumns = new List<TableColumn>();
+            foreach (var tableColumn in tableColumns)
+            {
+                if (string.IsNullOrEmpty(tableColumn.AttributeName) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)) || StringUtils.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
+                {
+                    continue;
+                }
+
+                if (tableColumn.DataType == DataType.VarChar && tableColumn.DataLength == 0)
+                {
+                    tableColumn.DataLength = 2000;
+                }
+                realTableColumns.Add(tableColumn);
+            }
+
+            realTableColumns.InsertRange(0, new List<TableColumn>
+            {
+                new TableColumn
+                {
+                    AttributeName = nameof(Entity.Id),
+                    DataType = DataType.Integer,
+                    IsIdentity = true,
+                    IsPrimaryKey = true
+                },
+                new TableColumn
+                {
+                    AttributeName = nameof(Entity.Guid),
+                    DataType = DataType.VarChar,
+                    DataLength = 50
+                },
+                new TableColumn
+                {
+                    AttributeName = nameof(Entity.LastModifiedDate),
+                    DataType = DataType.DateTime
+                }
+            });
+
+            return realTableColumns;
         }
     }
 

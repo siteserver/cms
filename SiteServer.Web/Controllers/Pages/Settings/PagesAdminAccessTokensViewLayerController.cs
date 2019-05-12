@@ -25,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var tokenInfo = DataProvider.AccessTokenDao.GetAccessTokenInfo(id);
+                var tokenInfo = DataProvider.AccessTokenDao.Get(id);
                 var accessToken = TranslateUtils.DecryptStringBySecretKey(tokenInfo.Token);
 
                 return Ok(new
@@ -52,7 +52,8 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(id));
+                var accessTokenInfo = DataProvider.AccessTokenDao.Get(id);
+                var accessToken = TranslateUtils.DecryptStringBySecretKey(DataProvider.AccessTokenDao.Regenerate(accessTokenInfo));
 
                 return Ok(new
                 {

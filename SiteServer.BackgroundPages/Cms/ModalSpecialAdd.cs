@@ -24,12 +24,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加专题", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), null), 500, 400);
+            return LayerUtils.GetOpenScript("添加专题", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalSpecialAdd), null), 500, 400);
         }
 
         public static string GetOpenWindowString(int siteId, int specialId)
         {
-            return LayerUtils.GetOpenScript("编辑专题", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("编辑专题", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalSpecialAdd), new NameValueCollection
             {
                 {"specialId", specialId.ToString()}
             }), 500, 400);
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             if (specialId > 0)

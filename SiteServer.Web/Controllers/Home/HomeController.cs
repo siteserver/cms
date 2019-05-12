@@ -54,7 +54,7 @@ namespace SiteServer.API.Controllers.Home
                 return Ok(new
                 {
                     Value = request.UserInfo,
-                    Config = ConfigManager.Instance.SystemConfigInfo
+                    Config = ConfigManager.Instance
                 });
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = ConfigManager.Instance,
                 Styles = TableStyleManager.GetUserStyleInfoList(),
                 Groups = UserGroupManager.GetUserGroupInfoList()
             };
@@ -85,13 +85,13 @@ namespace SiteServer.API.Controllers.Home
                 var userMenus = UserMenuManager.GetAllUserMenuInfoList();
                 foreach (var menuInfo1 in userMenus)
                 {
-                    if (menuInfo1.IsDisabled || menuInfo1.ParentId != 0 ||
+                    if (menuInfo1.Disabled || menuInfo1.ParentId != 0 ||
                         !string.IsNullOrEmpty(menuInfo1.GroupIdCollection) &&
                         !StringUtils.In(menuInfo1.GroupIdCollection, request.UserInfo.GroupId)) continue;
                     var children = new List<object>();
                     foreach (var menuInfo2 in userMenus)
                     {
-                        if (menuInfo2.IsDisabled || menuInfo2.ParentId != menuInfo1.Id ||
+                        if (menuInfo2.Disabled || menuInfo2.ParentId != menuInfo1.Id ||
                             !string.IsNullOrEmpty(menuInfo2.GroupIdCollection) &&
                             !StringUtils.In(menuInfo2.GroupIdCollection, request.UserInfo.GroupId)) continue;
 
@@ -120,7 +120,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = ConfigManager.Instance,
                 Menus = menus,
                 DefaultPageUrl = defaultPageUrl
             };
@@ -131,7 +131,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = ConfigManager.Instance,
                 Styles = TableStyleManager.GetUserStyleInfoList()
             };
         }
@@ -209,7 +209,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = ConfigManager.Instance,
                 Sites = sites,
                 Channels = channels,
                 Site = site,
@@ -328,7 +328,7 @@ namespace SiteServer.API.Controllers.Home
             return new
             {
                 Value = request.UserInfo,
-                Config = ConfigManager.Instance.SystemConfigInfo,
+                Config = ConfigManager.Instance,
                 Sites = sites,
                 Channels = channels,
                 Site = site,

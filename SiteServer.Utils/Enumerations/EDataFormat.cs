@@ -1,5 +1,4 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -77,24 +76,24 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-		public static ListItem GetListItem(EDataFormat type, bool selected)
-		{
-			var item = new ListItem(GetText(type), GetValue(type));
-			if (selected)
-			{
-				item.Selected = true;
-			}
-			return item;
-		}
+		//public static ListItem GetListItem(EDataFormat type, bool selected)
+		//{
+		//	var item = new ListItem(GetText(type), GetValue(type));
+		//	if (selected)
+		//	{
+		//		item.Selected = true;
+		//	}
+		//	return item;
+		//}
 
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                listControl.Items.Add(GetListItem(EDataFormat.String, false));
-                listControl.Items.Add(GetListItem(EDataFormat.Json, false));
-                listControl.Items.Add(GetListItem(EDataFormat.Xml, false));
-            }
-        }
+  //      public static void AddListItems(ListControl listControl)
+  //      {
+  //          if (listControl != null)
+  //          {
+  //              listControl.Items.Add(GetListItem(EDataFormat.String, false));
+  //              listControl.Items.Add(GetListItem(EDataFormat.Json, false));
+  //              listControl.Items.Add(GetListItem(EDataFormat.Xml, false));
+  //          }
+  //      }
 	}
 }

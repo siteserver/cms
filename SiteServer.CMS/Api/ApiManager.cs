@@ -6,11 +6,11 @@ namespace SiteServer.CMS.Api
 {
     public static class ApiManager
     {
-        public static bool IsSeparatedApi => ConfigManager.SystemConfigInfo.IsSeparatedApi;
+        public static bool IsSeparatedApi => ConfigManager.Instance.IsSeparatedApi;
 
-        public static string ApiUrl => ConfigManager.SystemConfigInfo.ApiUrl;
+        public static string ApiUrl => ConfigManager.Instance.ApiUrl;
 
-        public static string RootUrl => PageUtils.ApplicationPath;
+        public static string RootUrl => PageUtilsEx.ApplicationPath;
 
         private static string _innerApiUrl;
 
@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+                    _innerApiUrl = PageUtilsEx.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }

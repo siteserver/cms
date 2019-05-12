@@ -28,12 +28,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelTranslate), null);
         }
 
         public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             });
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelTranslate), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId");
+			PageUtilsEx.CheckRequestParameter("siteId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
@@ -242,7 +242,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!string.IsNullOrEmpty(ReturnUrl))
             {
-                PageUtils.Redirect(ReturnUrl);
+                PageUtilsEx.Redirect(ReturnUrl);
             }
         }
 

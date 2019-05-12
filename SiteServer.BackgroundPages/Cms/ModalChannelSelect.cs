@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, bool isProtocol)
         {
             return LayerUtils.GetOpenScript("栏目选择",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"isProtocol", isProtocol.ToString()}
                 }), 460, 450);
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             });
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringByItemIndex(int siteId, string jsMethod, string itemIndex)
         {
             return LayerUtils.GetOpenScript("栏目选择",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelSelect), new NameValueCollection
                 {
                     {"jsMethod", jsMethod},
                     {"itemIndex", itemIndex}
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
                         var pageUrl = PageUtility.GetChannelUrl(SiteInfo, ChannelManager.GetChannelInfo(SiteId, channelId), false);
                         if (_isProtocol)
                         {
-                            pageUrl = PageUtils.AddProtocolToUrl(pageUrl);
+                            pageUrl = PageUtilsEx.AddProtocolToUrl(pageUrl);
                         }
 
                         string scripts = $"window.parent.selectChannel('{nodeNames}', '{channelId}', '{pageUrl}');";
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(SiteId, SiteId);
 
-                    var linkUrl = PageUtils.GetCmsUrl(SiteId, nameof(ModalChannelSelect), new NameValueCollection
+                    var linkUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalChannelSelect), new NameValueCollection
                     {
                         {"channelId", nodeInfo.Id.ToString()},
                         {"isProtocol", _isProtocol.ToString()},

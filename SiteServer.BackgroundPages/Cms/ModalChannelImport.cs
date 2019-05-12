@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("导入栏目",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelImport), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelImport), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }), 600, 300);

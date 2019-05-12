@@ -31,7 +31,7 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                if (!ConfigManager.SystemConfigInfo.IsLogError) return 0;
+                if (!ConfigManager.Instance.IsLogError) return 0;
 
                 DataProvider.ErrorLogDao.DeleteIfThreshold();
 
@@ -52,11 +52,11 @@ namespace SiteServer.CMS.Core
             var logId = AddErrorLog(ex, summary);
             if (logId > 0)
             {
-                PageUtils.RedirectToErrorPage(logId);
+                PageUtilsEx.RedirectToErrorPage(logId);
             }
             else
             {
-                PageUtils.RedirectToErrorPage(ex.Message);
+                PageUtilsEx.RedirectToErrorPage(ex.Message);
             }
         }
 
@@ -93,7 +93,7 @@ stl: {stlContent}
 
         public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogSite) return;
+            if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
@@ -117,7 +117,7 @@ stl: {stlContent}
                     {
                         channelId = -channelId;
                     }
-                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtilsEx.GetIpAddress(), DateTime.Now, action, summary);
 
                     DataProvider.SiteLogDao.Insert(siteLogInfo);
                 }
@@ -130,7 +130,7 @@ stl: {stlContent}
 
         public static void AddAdminLog(string adminName, string action, string summary = "")
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
+            if (!ConfigManager.Instance.IsLogAdmin) return;
 
             try
             {
@@ -144,7 +144,7 @@ stl: {stlContent}
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                var logInfo = new LogInfo(0, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                var logInfo = new LogInfo(0, adminName, PageUtilsEx.GetIpAddress(), DateTime.Now, action, summary);
 
                 DataProvider.LogDao.Insert(logInfo);
             }
@@ -161,7 +161,7 @@ stl: {stlContent}
 
         public static void AddUserLog(string userName, string actionType, string summary)
         {
-            if (!ConfigManager.SystemConfigInfo.IsLogUser) return;
+            if (!ConfigManager.Instance.IsLogUser) return;
 
             try
             {
@@ -172,10 +172,16 @@ stl: {stlContent}
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
 
-                var userLogInfo = new UserLogInfo(0, userName, PageUtils.GetIpAddress(), DateTime.Now, actionType,
-                    summary);
+                var userLogInfo = new UserLogInfo
+                {
+                    UserName = userName,
+                    IpAddress = PageUtilsEx.GetIpAddress(),
+                    AddDate = DateTime.Now,
+                    Action = actionType,
+                    Summary = summary
+                };
 
-                DataProvider.UserLogDao.Insert(userLogInfo);
+                DataProvider.UserLogDao.Insert(userName, userLogInfo);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -41,7 +42,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public List<string> GetUserNameList()
         {
-            return DataProvider.AdministratorDao.GetUserNameList();
+            return DataProvider.AdministratorDao.GetUserNameList().ToList();
         }
 
         public IPermissions GetPermissions(string userName)

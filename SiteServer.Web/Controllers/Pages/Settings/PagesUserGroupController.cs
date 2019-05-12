@@ -97,7 +97,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
                 else if (itemObj.Id == 0)
                 {
-                    ConfigManager.SystemConfigInfo.UserDefaultGroupAdminName = itemObj.AdminName;
+                    ConfigManager.Instance.UserDefaultGroupAdminName = itemObj.AdminName;
 
                     DataProvider.ConfigDao.Update(ConfigManager.Instance);
 

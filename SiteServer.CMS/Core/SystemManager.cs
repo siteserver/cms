@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using Datory;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -71,19 +72,19 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void CreateSiteServerTables()
+        public static void SyncSystemTables()
         {
-            foreach (var provider in DataProvider.AllProviders)
+            foreach (var repository in DataProvider.AllProviders)
             {
-                if (string.IsNullOrEmpty(provider.TableName) || provider.TableColumns == null || provider.TableColumns.Count <= 0) continue;
+                if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!DataProvider.DatabaseDao.IsTableExists(provider.TableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, repository.TableName))
                 {
-                    DataProvider.DatabaseDao.CreateTable(provider.TableName, provider.TableColumns, out _, out _);
+                    TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(provider.TableName, provider.TableColumns);
+                    TableColumnManager.AlterTable(repository.TableName, repository.TableColumns, string.Empty);
                 }
             }
         }
@@ -93,13 +94,13 @@ namespace SiteServer.CMS.Core
             var tableNameList = SiteManager.GetAllTableNameList();
             foreach (var tableName in tableNameList)
             {
-                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
                 {
-                    DataProvider.DatabaseDao.CreateTable(tableName, DataProvider.ContentDao.TableColumns, out _, out _);
+                    TableColumnManager.CreateTable(tableName, DataProvider.ContentDao.TableColumns, string.Empty, true, out _);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumns, ContentAttribute.DropAttributes.Value);
+                    TableColumnManager.AlterTable(tableName, DataProvider.ContentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
                 }
             }
         }
@@ -109,13 +110,18 @@ namespace SiteServer.CMS.Core
             var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo(0, true, ProductVersion, DateTime.Now, string.Empty);
+                configInfo = new ConfigInfo
+                {
+                    Initialized = true,
+                    DatabaseVersion = ProductVersion,
+                    UpdateDate = DateTime.Now
+                };
                 DataProvider.ConfigDao.Insert(configInfo);
             }
             else
             {
                 configInfo.DatabaseVersion = ProductVersion;
-                configInfo.IsInitialized = true;
+                configInfo.Initialized = true;
                 configInfo.UpdateDate = DateTime.Now;
                 DataProvider.ConfigDao.Update(configInfo);
             }
@@ -125,17 +131,11 @@ namespace SiteServer.CMS.Core
         {
             CacheUtils.ClearAll();
 
-            CreateSiteServerTables();
+            SyncSystemTables();
 
             SyncContentTables();
 
             UpdateConfigVersion();
-        }
-
-
-        public static bool IsNeedUpdate()
-        {
-            return !StringUtils.EqualsIgnoreCase(ProductVersion, DataProvider.ConfigDao.GetDatabaseVersion());
         }
 
         public static bool IsNeedInstall()

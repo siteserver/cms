@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelEdit), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelEdit), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!HasChannelPermissions(_channelId, ConfigManager.ChannelPermissions.ChannelEdit))
                 {
-                    PageUtils.RedirectToErrorPage("您没有修改栏目的权限！");
+                    PageUtilsEx.RedirectToErrorPage("您没有修改栏目的权限！");
                     return;
                 }
             }
@@ -306,7 +306,7 @@ namespace SiteServer.BackgroundPages.Cms
             AuthRequest.AddSiteLog(SiteId, "修改栏目", $"栏目:{TbNodeName.Text}");
 
             SuccessMessage("栏目修改成功！");
-            PageUtils.Redirect(ReturnUrl);
+            PageUtilsEx.Redirect(ReturnUrl);
         }
 
         public string ReturnUrl { get; private set; }

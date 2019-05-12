@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -18,13 +19,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new AuthenticatedRequest(HttpContext.Current.Request);
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
                 if (request.AdminId != userId &&
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+                    !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
                 {
                     return Unauthorized();
                 }
@@ -48,9 +49,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var roleNames = string.Empty;
                 if (isOrdinaryAdmin)
                 {
-                    roleNames = AdminManager.GetRolesHtml(adminInfo.UserName);
+                    roleNames = AdminManager.GetRoleNames(adminInfo.UserName);
                 }
-                
+
                 return Ok(new
                 {
                     Value = adminInfo,

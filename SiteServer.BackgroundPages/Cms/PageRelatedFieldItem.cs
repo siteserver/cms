@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int relatedFieldId, int parentId, int level)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"ParentID", parentId.ToString() },
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int relatedFieldId, int level)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageRelatedFieldItem), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString() },
                 {"Level", level.ToString() }

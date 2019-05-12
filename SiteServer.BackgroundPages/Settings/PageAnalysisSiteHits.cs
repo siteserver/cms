@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSiteHits), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAnalysisSiteHits), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -84,7 +84,7 @@ yArrayHits.push('{yValueHits}');";
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtils.Redirect(siteId > 0
+            PageUtilsEx.Redirect(siteId > 0
                 ? PageAnalysisSiteHitsChannels.GetRedirectUrl(siteId)
                 : GetRedirectUrl());
         }

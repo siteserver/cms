@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.Utils.Enumerations
 {
@@ -77,17 +76,17 @@ namespace SiteServer.Utils.Enumerations
             return Equals(type, typeStr);
         }
 
-        public static void AddListItems(ListControl listControl, string allText, string trueText, string falseText)
-        {
-            if (listControl != null)
-            {
-                var item = new ListItem(allText, GetValue(ETriState.All));
-                listControl.Items.Add(item);
-                item = new ListItem(trueText, GetValue(ETriState.True));
-                listControl.Items.Add(item);
-                item = new ListItem(falseText, GetValue(ETriState.False));
-                listControl.Items.Add(item);
-            }
-        }
+        //public static void AddListItems(ListControl listControl, string allText, string trueText, string falseText)
+        //{
+        //    if (listControl != null)
+        //    {
+        //        var item = new ListItem(allText, GetValue(ETriState.All));
+        //        listControl.Items.Add(item);
+        //        item = new ListItem(trueText, GetValue(ETriState.True));
+        //        listControl.Items.Add(item);
+        //        item = new ListItem(falseText, GetValue(ETriState.False));
+        //        listControl.Items.Add(item);
+        //    }
+        //}
 	}
 }

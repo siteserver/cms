@@ -20,7 +20,7 @@ namespace SiteServer.BackgroundPages.Cms
 
 	    public static string GetOpenWindowString(int siteId, int templateId, string includeUrl)
         {
-            return LayerUtils.GetOpenScript("还原历史版本", PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateRestore), new NameValueCollection
+            return LayerUtils.GetOpenScript("还原历史版本", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
                 {"templateID", templateId.ToString()},
                 {"includeUrl", includeUrl}
@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _templateId = AuthRequest.GetQueryInt("templateID");
             _includeUrl = AuthRequest.GetQueryString("includeUrl");
@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlLogId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(ModalTemplateRestore), new NameValueCollection
+            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
                 {"templateID", _templateId.ToString()},
                 {"includeUrl", _includeUrl},

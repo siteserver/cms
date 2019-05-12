@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string tag)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentsTag), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentsTag), new NameValueCollection
             {
                 {"tag", tag}
             });
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlItemEditUrl.Text =
                 $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, contentInfo.ChannelId, contentInfo.Id, PageUrl)}"">编辑</a>";
 
-            var removeUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsTag), new NameValueCollection
+            var removeUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentsTag), new NameValueCollection
             {
                 {"tag", _tag},
                 {"channelId", contentInfo.ChannelId.ToString()},
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (string.IsNullOrEmpty(_pageUrl))
                 {
-                    _pageUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsTag), new NameValueCollection
+                    _pageUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentsTag), new NameValueCollection
                     {
                         {"tag", _tag}
                     });
@@ -129,7 +129,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageContentTags.GetRedirectUrl(SiteId));
+            PageUtilsEx.Redirect(PageContentTags.GetRedirectUrl(SiteId));
         }
     }
 }

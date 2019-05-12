@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Plugin.Impl;
+﻿using SiteServer.CMS.Core;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -23,7 +24,7 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("SeparatedApiUrl", value);
         }
 
-        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtils.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+        public string ApiUrl => IsSeparatedApi ? SeparatedApiUrl : PageUtilsEx.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
 
         public bool IsLogSite
         {

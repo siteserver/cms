@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("创建文件夹", PageUtils.GetCmsUrl(siteId, nameof(ModalCreateDirectory), new NameValueCollection
+            return LayerUtils.GetOpenScript("创建文件夹", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCreateDirectory), new NameValueCollection
             {
                 {"CurrentRootPath", currentRootPath}
             }), 400, 250);
@@ -25,7 +25,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "CurrentRootPath");
+            PageUtilsEx.CheckRequestParameter("siteId", "CurrentRootPath");
 
 			_currentRootPath = AuthRequest.GetQueryString("CurrentRootPath").TrimEnd('/');
 			_directoryPath = PathUtility.MapPath(SiteInfo, _currentRootPath);

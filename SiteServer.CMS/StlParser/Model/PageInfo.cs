@@ -5,6 +5,7 @@ using SiteServer.CMS.Model;
 using SiteServer.Plugin;
 using System.Text;
 using SiteServer.CMS.Api;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Model
 {

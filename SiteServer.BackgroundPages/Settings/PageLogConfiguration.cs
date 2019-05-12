@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -20,9 +21,9 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Log);
 
-            EBooleanUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
-            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.SystemConfigInfo.IsTimeThreshold.ToString());
-            TbTime.Text = ConfigManager.SystemConfigInfo.TimeThreshold.ToString();
+            FxUtils.AddListItems(RblIsTimeThreshold, "启用", "不启用");
+            ControlUtils.SelectSingleItem(RblIsTimeThreshold, ConfigManager.Instance.IsTimeThreshold.ToString());
+            TbTime.Text = ConfigManager.Instance.TimeThreshold.ToString();
 
             PhTimeThreshold.Visible = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
         }
@@ -34,10 +35,10 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            ConfigManager.SystemConfigInfo.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
-            if (ConfigManager.SystemConfigInfo.IsTimeThreshold)
+            ConfigManager.Instance.IsTimeThreshold = TranslateUtils.ToBool(RblIsTimeThreshold.SelectedValue);
+            if (ConfigManager.Instance.IsTimeThreshold)
             {
-                ConfigManager.SystemConfigInfo.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
+                ConfigManager.Instance.TimeThreshold = TranslateUtils.ToInt(TbTime.Text);
             }
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);

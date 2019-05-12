@@ -23,13 +23,13 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
-            return LayerUtils.GetOpenScript("导入Word", PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+            return LayerUtils.GetOpenScript("导入Word", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTextEditorImportWord), new NameValueCollection
             {
                 {"AttributeName", attributeName}
             }), 600, 400);
         }
 
-        public string UploadUrl => PageUtils.GetCmsUrl(SiteId, nameof(ModalTextEditorImportWord), new NameValueCollection
+        public string UploadUrl => PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTextEditorImportWord), new NameValueCollection
         {
             {"upload", true.ToString()}
         });
@@ -110,11 +110,11 @@ namespace SiteServer.BackgroundPages.Cms
 
                 foreach (var fileName in fileNames.Split('|'))
                 {
-                    var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                    var wordContent = WordUtils.Parse(SiteId, filePath, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked);
-                    wordContent = ContentUtility.TextEditorContentDecode(SiteInfo, wordContent, true);
-                    builder.Append(wordContent);
-                    FileUtils.DeleteFileIfExists(filePath);
+                    var (title, content) = WordManager.GetWord(SiteInfo, false, false,
+                        CbIsClearFormat.Checked,
+                        CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName);
+
+                    builder.Append(content);
                 }
                 var script = "parent." + UEditorUtils.GetInsertHtmlScript(_attributeName, builder.ToString());
                 LayerUtils.CloseWithoutRefresh(Page, script);

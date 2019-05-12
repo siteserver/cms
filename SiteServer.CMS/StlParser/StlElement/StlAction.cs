@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
@@ -39,19 +39,21 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type)
         {
-            var stlAnchor = new HtmlAnchor();
+            var attributes = new Dictionary<string, string>();
 
             foreach (var attributeName in contextInfo.Attributes.AllKeys)
             {
-                stlAnchor.Attributes.Add(attributeName, contextInfo.Attributes[attributeName]);
+                attributes[attributeName] = contextInfo.Attributes[attributeName];
             }
 
+            string htmlId;
+            attributes.TryGetValue("id", out htmlId);
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 
             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-            stlAnchor.InnerHtml = innerBuilder.ToString();
+            var innerHtml = innerBuilder.ToString();
 
             //计算动作开始
             if (!string.IsNullOrEmpty(type))
@@ -62,23 +64,23 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";
-                    if (!string.IsNullOrEmpty(stlAnchor.InnerHtml))
+                    if (!string.IsNullOrEmpty(innerHtml))
                     {
-                        if (stlAnchor.InnerHtml.IndexOf(",", StringComparison.Ordinal) != -1)
+                        if (innerHtml.IndexOf(",", StringComparison.Ordinal) != -1)
                         {
-                            msgToTraditionalChinese = stlAnchor.InnerHtml.Substring(0, stlAnchor.InnerHtml.IndexOf(",", StringComparison.Ordinal));
-                            msgToSimplifiedChinese = stlAnchor.InnerHtml.Substring(stlAnchor.InnerHtml.IndexOf(",", StringComparison.Ordinal) + 1);
+                            msgToTraditionalChinese = innerHtml.Substring(0, innerHtml.IndexOf(",", StringComparison.Ordinal));
+                            msgToSimplifiedChinese = innerHtml.Substring(innerHtml.IndexOf(",", StringComparison.Ordinal) + 1);
                         }
                         else
                         {
-                            msgToTraditionalChinese = stlAnchor.InnerHtml;
+                            msgToTraditionalChinese = innerHtml;
                         }
                     }
-                    stlAnchor.InnerHtml = msgToTraditionalChinese;
+                    innerHtml = msgToTraditionalChinese;
 
-                    if (string.IsNullOrEmpty(stlAnchor.ID))
+                    if (!string.IsNullOrEmpty(htmlId))
                     {
-                        stlAnchor.ID = "translateLink";
+                        htmlId = "translateLink";
                     }
 
                     pageInfo.FootCodes[TypeTranslate] = $@"
@@ -88,7 +90,7 @@ var translateDelay = 0;
 var cookieDomain = ""/"";
 var msgToTraditionalChinese = ""{msgToTraditionalChinese}"";
 var msgToSimplifiedChinese = ""{msgToSimplifiedChinese}"";
-var translateButtonId = ""{stlAnchor.ClientID}"";
+var translateButtonId = ""{htmlId}"";
 translateInitilization();
 </script>
 ";
@@ -100,15 +102,21 @@ translateInitilization();
             }
             //计算动作结束
 
-            stlAnchor.HRef = url;
+            attributes["href"] = url;
+            if (!string.IsNullOrEmpty(htmlId))
+            {
+                attributes["id"] = htmlId;
+            }
 
             if (!string.IsNullOrEmpty(onclick))
             {
-                stlAnchor.Attributes.Add("onclick", onclick);
+                attributes["onclick"] = onclick;
             }
 
             // 如果是实体标签，则只返回url
-            return contextInfo.IsStlEntity ? stlAnchor.HRef : ControlUtils.GetControlRenderHtml(stlAnchor);
+            return contextInfo.IsStlEntity
+                ? url
+                : $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
     }
 }

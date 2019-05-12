@@ -24,14 +24,14 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _styleInfoList = TableStyleManager.GetSiteStyleInfoList(SiteId);
 

@@ -76,29 +76,5 @@
 
         [StlAttribute(Title = "方向")]
         public const string Direction = nameof(Direction);
-
-        [StlAttribute(Title = "整体高度")]
-        public const string Height = nameof(Height);
-
-        [StlAttribute(Title = "整体宽度")]
-        public const string Width = nameof(Width);
-
-        [StlAttribute(Title = "整体对齐")]
-        public const string Align = nameof(Align);
-
-        [StlAttribute(Title = "项高度")]
-        public const string ItemHeight = nameof(ItemHeight);
-
-        [StlAttribute(Title = "项宽度")]
-        public const string ItemWidth = nameof(ItemWidth);
-
-        [StlAttribute(Title = "项水平对齐")]
-        public const string ItemAlign = nameof(ItemAlign);
-
-        [StlAttribute(Title = "项垂直对齐")]
-        public const string ItemVerticalAlign = nameof(ItemVerticalAlign);
-
-        [StlAttribute(Title = "项Css类")]
-        public const string ItemClass = nameof(ItemClass);
     }
 }

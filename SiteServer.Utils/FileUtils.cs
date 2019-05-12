@@ -7,51 +7,47 @@ using System.Threading.Tasks;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
-{	
-	public static class FileUtils
-	{
-	    public static string TryReadText(string filePath)
-	    {
-	        var text = string.Empty;
-
-	        try
-	        {
-	            if (IsFileExists(filePath))
-	            {
-	                text = ReadText(filePath, Encoding.UTF8);
-	            }
-	        }
-	        catch
-	        {
-	            // ignored
-	        }
-
-	        return text;
-	    }
-
-        public static string ReadText(string filePath, ECharset charset)
-		{
-			var sr = new StreamReader(filePath, ECharsetUtils.GetEncoding(charset));
-			var text = sr.ReadToEnd();
-			sr.Close();
-			return text;
-		}
-
-        public static string ReadText(string filePath, Encoding encoding)
+{
+    public static class FileUtils
+    {
+        public static string TryReadText(string filePath)
         {
-            var sr = new StreamReader(filePath, encoding);
-            var text = sr.ReadToEnd();
-            sr.Close();
+            var text = string.Empty;
+
+            try
+            {
+                if (IsFileExists(filePath))
+                {
+                    text = ReadText(filePath, Encoding.UTF8);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
             return text;
         }
 
-	    public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
-	    {
-	        var sr = new StreamReader(filePath, encoding);
-	        var text = await sr.ReadToEndAsync();
-	        sr.Close();
-	        return text;
-	    }
+        public static string ReadText(string filePath, ECharset charset)
+        {
+            return ReadText(filePath, ECharsetUtils.GetEncoding(charset));
+        }
+
+        public static string ReadText(string filePath, Encoding encoding)
+        {
+            return File.ReadAllText(filePath, encoding);
+        }
+
+        public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
+        {
+            using (var sr = new StreamReader(filePath, encoding))
+            {
+                var text = await sr.ReadToEndAsync();
+                sr.Close();
+                return text;
+            }
+        }
 
         public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)
         {
@@ -71,65 +67,71 @@ namespace SiteServer.Utils
             WriteText(filePath, ECharsetUtils.GetEncoding(charset), content);
         }
 
-	    public static void WriteText(string filePath, string content)
-	    {
-	        WriteText(filePath, Encoding.UTF8, content);
-	    }
+        public static void WriteText(string filePath, string content)
+        {
+            WriteText(filePath, Encoding.UTF8, content);
+        }
 
         public static void WriteText(string filePath, Encoding encoding, string content)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-            var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            using (var writer = new StreamWriter(file, encoding))
-            {
-                writer.Write(content);
-                writer.Flush();
-                writer.Close();
+            File.WriteAllText(filePath, content, encoding);
 
-                file.Close();
-            }
+            // var file = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
+            // using (var writer = new StreamWriter(file, encoding))
+            // {
+            //     writer.Write(content);
+            //     writer.Flush();
+            //     writer.Close();
+
+            //     file.Close();
+            // }
         }
 
-	    public static void AppendText(string filePath, string content)
-	    {
-	        AppendText(filePath, Encoding.UTF8, content);
-	    }
+        public static void AppendText(string filePath, string content)
+        {
+            AppendText(filePath, Encoding.UTF8, content);
+        }
 
         public static void AppendText(string filePath, ECharset charset, string content)
         {
             AppendText(filePath, ECharsetUtils.GetEncoding(charset), content);
         }
 
-	    public static void AppendText(string filePath, Encoding encoding, string content)
-	    {
-	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+        public static void AppendText(string filePath, Encoding encoding, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-	        using (var writer = new StreamWriter(file, encoding))
-	        {
-	            writer.Write(content);
-	            writer.Flush();
-	            writer.Close();
+            using (var file = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+            {
+                using (var writer = new StreamWriter(file, encoding))
+                {
+                    writer.Write(content);
+                    writer.Flush();
+                    writer.Close();
 
-	            file.Close();
-	        }
+                    file.Close();
+                }
+            }
         }
 
-	    public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
-	    {
-	        DirectoryUtils.CreateDirectoryIfNotExists(filePath);
+        public static async Task AppendTextAsync(string filePath, Encoding encoding, string content)
+        {
+            DirectoryUtils.CreateDirectoryIfNotExists(filePath);
 
-	        var file = new FileStream(filePath, FileMode.Append, FileAccess.Write);
-	        using (var writer = new StreamWriter(file, encoding))
-	        {
-	            await writer.WriteAsync(content);
-	            writer.Flush();
-	            writer.Close();
+            using (var file = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+            {
+                using (var writer = new StreamWriter(file, encoding))
+                {
+                    await writer.WriteAsync(content);
+                    writer.Flush();
+                    writer.Close();
 
-	            file.Close();
-	        }
-	    }
+                    file.Close();
+                }
+            }
+        }
 
         public static void RemoveReadOnlyAndHiddenIfExists(string filePath)
         {
@@ -158,23 +160,25 @@ namespace SiteServer.Utils
             return new FileStream(filePath, FileMode.Open);
         }
 
-		public static string ReadBase64StringFromFile(string filePath)
-		{
-		    var fin = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-			var storage = new byte[fin.Length];
-			fin.Read(storage, 0, storage.Length);
-			fin.Close();
-			var text = Convert.ToBase64String(storage, 0, storage.Length);
-			return text;  
-		}
+        public static string ReadBase64StringFromFile(string filePath)
+        {
+            using (var fin = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                var storage = new byte[fin.Length];
+                fin.Read(storage, 0, storage.Length);
+                fin.Close();
+                var text = Convert.ToBase64String(storage, 0, storage.Length);
+                return text;
+            }
+        }
 
-		public static bool IsFileExists(string filePath)
-		{
+        public static bool IsFileExists(string filePath)
+        {
             return File.Exists(filePath);
-		}
+        }
 
         public static bool DeleteFileIfExists(string filePath)
-		{
+        {
             var retval = true;
             try
             {
@@ -197,16 +201,16 @@ namespace SiteServer.Utils
                 retval = false;
             }
             return retval;
-		}
+        }
 
-		public static void DeleteFilesIfExists(string directoryPath, List<string> fileNameArrayList)
-		{
-			foreach (string fileName in fileNameArrayList)
-			{
-				var filePath = Path.Combine(directoryPath, fileName);
-				DeleteFileIfExists(filePath);
-			}
-		}
+        public static void DeleteFilesIfExists(string directoryPath, List<string> fileNameArrayList)
+        {
+            foreach (string fileName in fileNameArrayList)
+            {
+                var filePath = Path.Combine(directoryPath, fileName);
+                DeleteFileIfExists(filePath);
+            }
+        }
 
         public static void DeleteFilesIfExists(string[] filePaths)
         {
@@ -221,21 +225,21 @@ namespace SiteServer.Utils
             return CopyFile(sourceFilePath, destFilePath, true);
         }
 
-		public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride)
-		{
+        public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride)
+        {
             var retval = true;
-		    try
-		    {
-		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
+            try
+            {
+                DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
 
-		        File.Copy(sourceFilePath, destFilePath, isOverride);
-		    }
-		    catch
-		    {
-		        retval = false;
-		    }
-		    return retval;
-		}
+                File.Copy(sourceFilePath, destFilePath, isOverride);
+            }
+            catch
+            {
+                retval = false;
+            }
+            return retval;
+        }
 
         //public static bool MoveFile(string sourceFilePath, string destFilePath)
         //{
@@ -276,8 +280,8 @@ namespace SiteServer.Utils
             return ECharsetUtils.GetEnumType(encoding.BodyName);
         }
 
-	    public static string ComputeHash(string filePath)
-	    {
+        public static string ComputeHash(string filePath)
+        {
             using (var md5 = MD5.Create())
             {
                 using (var stream = File.OpenRead(filePath))
@@ -404,5 +408,5 @@ namespace SiteServer.Utils
                 return string.Empty;
             }
         }
-	}
+    }
 }

@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, string attributeName)
         {
             return LayerUtils.GetOpenScript("插入图片",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTextEditorInsertImage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTextEditorInsertImage), new NameValueCollection
                 {
                     {"attributeName", attributeName}
                 }), 700, 550);
@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "attributeName");
+            PageUtilsEx.CheckRequestParameter("siteId", "attributeName");
             _attributeName = AuthRequest.GetQueryString("attributeName");
 
             if (IsPostBack) return;

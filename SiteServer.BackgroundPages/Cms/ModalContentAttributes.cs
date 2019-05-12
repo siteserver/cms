@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringWithCheckBoxValue(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtils.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("设置内容属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentAttributes), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }), "contentIdCollection", "请选择需要设置属性的内容！", 450, 350);
@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);

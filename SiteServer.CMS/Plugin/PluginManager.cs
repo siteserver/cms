@@ -33,7 +33,7 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    var pluginsPath = PathUtils.PluginsPath;
+                    var pluginsPath = PathUtilsEx.PluginsPath;
                     if (!Directory.Exists(pluginsPath))
                     {
                         return dict;
@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Plugin
                     foreach (var directoryName in directoryNames)
                     {
                         if (StringUtils.StartsWith(directoryName, ".") || StringUtils.EqualsIgnoreCase(directoryName, "packages")) continue;
-                        
+
                         var pluginInfo = ActivePlugin(directoryName);
                         if (pluginInfo != null)
                         {
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Plugin
                 {
                     metadata = PackageUtils.GetPackageMetadataFromPluginDirectory(directoryName, out errorMessage);
 
-                    var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
+                    var dllDirectoryPath = PathUtilsEx.GetPluginDllDirectoryPath(directoryName);
                     if (string.IsNullOrEmpty(dllDirectoryPath))
                     {
                         throw new Exception($"插件可执行文件 {directoryName}.dll 不存在");
@@ -183,9 +183,9 @@ namespace SiteServer.CMS.Plugin
 
         private static List<PluginInstance> _pluginInfoListRunnable;
 
-        public static void LoadPlugins(string applicationPhysicalPath)
+        public static void LoadPlugins(string applicationPath, string applicationPhysicalPath)
         {
-            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
+            WebConfigUtils.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
             Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
@@ -312,7 +312,7 @@ namespace SiteServer.CMS.Plugin
         {
             get
             {
-                var packagesPath = PathUtils.GetPackagesPath();
+                var packagesPath = PathUtilsEx.GetPackagesPath();
                 DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
                 return DirectoryUtils.GetDirectoryNames(packagesPath).ToList();
             }
@@ -567,7 +567,7 @@ namespace SiteServer.CMS.Plugin
         //    return actions;
         //}
 
-        
+
 
         //public static bool Install(string pluginId, string version, out string errorMessage)
         //{
@@ -589,7 +589,7 @@ namespace SiteServer.CMS.Plugin
 
         //        var downloadUrl = $"http://download.siteserver.cn/plugins/{pluginId}/{version}/{pluginId}.zip";
         //        WebClientUtils.SaveRemoteFileToLocal(downloadUrl, zipFilePath);
-                
+
         //        ZipUtils.UnpackFiles(zipFilePath, directoryPath);
         //        FileUtils.DeleteFileIfExists(zipFilePath);
 
@@ -613,7 +613,7 @@ namespace SiteServer.CMS.Plugin
 
         public static void Delete(string pluginId)
         {
-            DirectoryUtils.DeleteDirectoryIfExists(PathUtils.GetPluginPath(pluginId));
+            DirectoryUtils.DeleteDirectoryIfExists(PathUtilsEx.GetPluginPath(pluginId));
             ClearCache();
         }
 

@@ -29,12 +29,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdminRoleAdd), null);
         }
 
         public static string GetRedirectUrl(string roleName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), new NameValueCollection { { "RoleName", roleName } });
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdminRoleAdd), new NameValueCollection { { "RoleName", roleName } });
         }
 
         public static string GetReturnRedirectUrl(string roleName)
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 queryString.Add("RoleName", roleName);
             }
-            return PageUtils.GetSettingsUrl(nameof(PageAdminRoleAdd), queryString);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdminRoleAdd), queryString);
         }
 
         public string GetSitesHtml(List<int> allSiteIdList, List<int> managedSiteIdList)
@@ -156,7 +156,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                PageUtils.RedirectToErrorPage("页面超时，请重新进入。");
+                PageUtilsEx.RedirectToErrorPage("页面超时，请重新进入。");
             }
 
             if (Request.QueryString["Return"] == null)
@@ -248,7 +248,7 @@ if (ss_role) {
         {
             if (AuthRequest.GetQueryString("Return") != null)
             {
-                PageUtils.Redirect(PageAdminRole.GetRedirectUrl());
+                PageUtilsEx.Redirect(PageAdminRole.GetRedirectUrl());
             }
         }
     }

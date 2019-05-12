@@ -7,6 +7,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -57,12 +58,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteAdd), null);
         }
 
         public static string GetRedirectUrl(string siteTemplateDir, string onlineTemplateName)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteAdd), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteAdd), new NameValueCollection
             {
                 {"siteTemplateDir", siteTemplateDir},
                 {"onlineTemplateName", onlineTemplateName}
@@ -121,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             ControlUtils.SelectSingleItem(DdlParentId, "0");
 
-            ECharsetUtils.AddListItems(DdlCharset);
+            FxUtils.AddListItemsToECharset(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, ECharsetUtils.GetValue(ECharset.utf_8));
 
             var tableNameList = SiteManager.GetSiteTableNames();
@@ -300,8 +301,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
                 var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
-                PageUtils.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
-                    CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.Guid()));
+                PageUtilsEx.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
+                    CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid()));
             }
             else
             {
@@ -357,7 +358,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(templateInfo.SiteTemplateName))
             {
-                ltlTemplateName.Text = !string.IsNullOrEmpty(templateInfo.WebSiteUrl) ? $@"<a href=""{PageUtils.ParseConfigRootUrl(templateInfo.WebSiteUrl)}"" target=""_blank"">{templateInfo.SiteTemplateName}</a>" : templateInfo.SiteTemplateName;
+                ltlTemplateName.Text = !string.IsNullOrEmpty(templateInfo.WebSiteUrl) ? $@"<a href=""{PageUtilsEx.ParseConfigRootUrl(templateInfo.WebSiteUrl)}"" target=""_blank"">{templateInfo.SiteTemplateName}</a>" : templateInfo.SiteTemplateName;
             }
 
             ltlName.Text = directoryInfo.Name;
@@ -369,8 +370,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (!string.IsNullOrEmpty(templateInfo.PicFileName))
             {
-                var siteTemplateUrl = PageUtils.GetSiteTemplatesUrl(directoryInfo.Name);
-                var picFileName = PageUtils.GetSiteTemplateMetadataUrl(siteTemplateUrl, templateInfo.PicFileName);
+                var siteTemplateUrl = PageUtilsEx.GetSiteTemplatesUrl(directoryInfo.Name);
+                var picFileName = PageUtilsEx.GetSiteTemplateMetadataUrl(siteTemplateUrl, templateInfo.PicFileName);
                 ltlSamplePic.Text = $@"<a href=""{picFileName}"" target=""_blank"">样图</a>";
             }
         }

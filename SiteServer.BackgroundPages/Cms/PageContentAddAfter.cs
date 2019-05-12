@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAddAfter), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentAddAfter), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ContentID", contentId.ToString()},
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtils.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
+			PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
 			var channelId = AuthRequest.GetQueryInt("channelId");
             _contentId = AuthRequest.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
@@ -73,13 +73,13 @@ namespace SiteServer.BackgroundPages.Cms
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtils.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
+                PageUtilsEx.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
                 return;
             }
 
 		    if (after == EContentAddAfter.ManageContents)
 		    {
-		        PageUtils.Redirect(_returnUrl);
+		        PageUtilsEx.Redirect(_returnUrl);
 		        return;
 		    }
 

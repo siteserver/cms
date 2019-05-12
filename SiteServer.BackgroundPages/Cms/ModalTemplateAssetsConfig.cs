@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             return LayerUtils.GetOpenScript($"{name}文件夹设置",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateAssetsConfig), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTemplateAssetsConfig), new NameValueCollection
                 {
                     {"type", type}
                 }), 500, 400);
@@ -42,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "type");
+            PageUtilsEx.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
 
             _type = AuthRequest.GetQueryString("type");

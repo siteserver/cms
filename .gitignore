@@ -4,6 +4,8 @@ update/
 build/
 *.exe
 *.exe.config
+*.xml
+*.dll.config
 package-lock.json
 Web.Backup.config
 Web.Restore.config

@@ -29,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
+                    Value = ConfigManager.Instance,
                     WebConfigUtils.HomeDirectory,
                     request.AdminToken,
                     Styles = TableStyleManager.GetUserStyleInfoList()
@@ -53,15 +53,15 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool("isHomeClosed");
-                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString("homeTitle");
-                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool("isHomeLogo");
-                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString("homeLogoUrl");
-                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
-                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
-                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
-                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
+                ConfigManager.Instance.IsHomeClosed = request.GetPostBool("isHomeClosed");
+                ConfigManager.Instance.HomeTitle = request.GetPostString("homeTitle");
+                ConfigManager.Instance.IsHomeLogo = request.GetPostBool("isHomeLogo");
+                ConfigManager.Instance.HomeLogoUrl = request.GetPostString("homeLogoUrl");
+                ConfigManager.Instance.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
+                ConfigManager.Instance.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
+                ConfigManager.Instance.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
+                ConfigManager.Instance.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
+                ConfigManager.Instance.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
@@ -76,7 +76,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = ConfigManager.Instance
                 });
             }
             catch (Exception ex)
@@ -118,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
+                    homeLogoUrl = PageUtilsEx.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
                 }
 
                 return Ok(new

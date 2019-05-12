@@ -233,7 +233,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     orderByString = orderValue;
                 }
             }
-            
+
             return ETaxisTypeUtils.GetChannelOrderByString(taxisType, orderByString, null);
         }
 
@@ -292,7 +292,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     orderByString = orderValue;
                 }
             }
-            
+
             return ETaxisTypeUtils.GetContentOrderByString(taxisType, orderByString);
         }
 
@@ -338,7 +338,7 @@ namespace SiteServer.CMS.StlParser.Utility
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
-                        
+
                         if (string.IsNullOrEmpty(where))
                         {
                             where =
@@ -389,8 +389,8 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 var minContentInfo = new MinContentInfo
                 {
-                    Id = (int) dataItem[ContentAttribute.Id],
-                    ChannelId = (int) dataItem[ContentAttribute.ChannelId]
+                    Id = (int)dataItem[ContentAttribute.Id],
+                    ChannelId = (int)dataItem[ContentAttribute.ChannelId]
                 };
                 list.Add(minContentInfo);
             }
@@ -419,6 +419,28 @@ namespace SiteServer.CMS.StlParser.Utility
             }
 
             return ie;
+        }
+
+        public static List<int> GetChannelsChannelIdList(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)
+        {
+            List<int> list;
+
+            if (isTotal)//从所有栏目中选择
+            {
+                var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
+                list = StlChannelCache.GetStlChannelIdListBySiteId(siteId, startNum, totalNum, sqlWhereString, orderByString);
+            }
+            else
+            {
+                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                if (nodeInfo == null) return null;
+
+                var sqlWhereString = StlChannelCache.GetWhereString(siteId, group, groupNot, isImageExists, isImage, where);
+                var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, string.Empty, string.Empty, string.Empty);
+                list = StlChannelCache.GetStlChannelIdList(channelIdList, startNum, totalNum, sqlWhereString, orderByString);
+            }
+
+            return list;
         }
 
         public static DataSet GetPageChannelsDataSet(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)

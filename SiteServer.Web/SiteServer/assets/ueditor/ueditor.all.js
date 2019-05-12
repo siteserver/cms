@@ -8051,7 +8051,7 @@ UE.Editor.defaultOptions = function(editor){
         textarea: 'editorValue',
         focus: false,
         focusInEnd: true,
-        autoClearEmptyNode: true,
+        autoClearEmptyNode: false,
         fullscreen: false,
         readonly: false,
         zIndex: 999,
@@ -9967,8 +9967,8 @@ var LocalStorage = UE.LocalStorage = (function () {
 UE.plugins['defaultfilter'] = function () {
     var me = this;
     me.setOpt({
-        'allowDivTransToP':true,
-        'disabledTableInTable':true
+        'allowDivTransToP':false,
+        'disabledTableInTable':false
     });
     //默认的过滤处理
     //进入编辑器的内容处理
@@ -10095,13 +10095,13 @@ UE.plugins['defaultfilter'] = function () {
                         }
                         node.parentNode.removeChild(node);
                         break;
-                    case 'dl':
-                        node.tagName = 'ul';
-                        break;
-                    case 'dt':
-                    case 'dd':
-                        node.tagName = 'li';
-                        break;
+                    // case 'dl':
+                    //     node.tagName = 'ul';
+                    //     break;
+                    // case 'dt':
+                    // case 'dd':
+                    //     node.tagName = 'li';
+                    //     break;
                     case 'li':
                         var className = node.getAttr('class');
                         if (!className || !/list\-/.test(className)) {
@@ -10141,14 +10141,14 @@ UE.plugins['defaultfilter'] = function () {
         root.traversal(function (node) {
             if (node.type == 'element') {
 
-                if (me.options.autoClearEmptyNode && dtd.$inline[node.tagName] && !dtd.$empty[node.tagName] && (!node.attrs || utils.isEmptyObject(node.attrs))) {
+                // if (me.options.autoClearEmptyNode && dtd.$inline[node.tagName] && !dtd.$empty[node.tagName] && (!node.attrs || utils.isEmptyObject(node.attrs))) {
 
-                    if (!node.firstChild()) node.parentNode.removeChild(node);
-                    else if (node.tagName == 'span' && (!node.attrs || utils.isEmptyObject(node.attrs))) {
-                        node.parentNode.removeChild(node, true)
-                    }
-                    return;
-                }
+                //     if (!node.firstChild()) node.parentNode.removeChild(node);
+                //     else if (node.tagName == 'span' && (!node.attrs || utils.isEmptyObject(node.attrs))) {
+                //         node.parentNode.removeChild(node, true)
+                //     }
+                //     return;
+                // }
                 switch (node.tagName) {
                     case 'div':
                         if (val = node.getAttr('cdata_tag')) {
@@ -10165,13 +10165,12 @@ UE.plugins['defaultfilter'] = function () {
                             })
                         }
                         break;
-                        break;
-                    case 'span':
-                        val = node.getAttr('id');
-                        if(val && /^_baidu_bookmark_/i.test(val)){
-                            node.parentNode.removeChild(node)
-                        }
-                        break;
+                    // case 'span':
+                    //     val = node.getAttr('id');
+                    //     if(val && /^_baidu_bookmark_/i.test(val)){
+                    //         node.parentNode.removeChild(node)
+                    //     }
+                    //     break;
                     case 'img':
                         if (val = node.getAttr('_src')) {
                             node.setAttr({
@@ -10531,12 +10530,12 @@ UE.plugins['autotypeset'] = function(){
     }
 
     function removeNotAttributeSpan(node){
-        if(!node.style.cssText){
-            domUtils.removeAttributes(node,['style']);
-            if(node.tagName.toLowerCase() == 'span' && domUtils.hasNoAttributes(node)){
-                domUtils.remove(node,true);
-            }
-        }
+        // if(!node.style.cssText){
+        //     domUtils.removeAttributes(node,['style']);
+        //     if(node.tagName.toLowerCase() == 'span' && domUtils.hasNoAttributes(node)){
+        //         domUtils.remove(node,true);
+        //     }
+        // }
     }
     function autotype(type,html){
 

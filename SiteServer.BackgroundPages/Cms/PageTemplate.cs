@@ -21,12 +21,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplate), null);
         }
 
         public static string GetRedirectUrl(int siteId, TemplateType templateType)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", templateType.Value}
             });
@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _templateType = AuthRequest.GetQueryString("templateType");
             _keywords = AuthRequest.GetQueryString("keywords");
@@ -118,7 +118,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlTemplateType_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -127,7 +127,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnSearch_Click(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -178,7 +178,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 else
                 {
-                    var defaultUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+                    var defaultUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                     {
                         {"TemplateID", templateId.ToString()},
                         {"SetDefault", true.ToString()},
@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!isDefault)
             {
-                var deleteUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+                var deleteUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                 {
                     {"TemplateID", templateId.ToString()},
                     {"Delete", true.ToString()},

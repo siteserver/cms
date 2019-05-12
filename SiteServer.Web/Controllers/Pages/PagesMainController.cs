@@ -32,7 +32,7 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = new AuthenticatedRequest();
-                var redirect = request.AdminRedirectCheck(checkInstall:true, checkDatabaseVersion:true, checkLogin:true);
+                var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true, checkLogin: true);
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
@@ -49,7 +49,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(adminInfo.SiteId)
+                            RedirectUrl = PageUtilsEx.GetMainUrl(adminInfo.SiteId)
                         });
                     }
 
@@ -58,7 +58,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetMainUrl(siteIdListWithPermissions[0])
+                            RedirectUrl = PageUtilsEx.GetMainUrl(siteIdListWithPermissions[0])
                         });
                     }
 
@@ -172,7 +172,7 @@ namespace SiteServer.API.Controllers.Pages
 
                         siteMenus.Add(new Tab
                         {
-                            Href = PageUtils.GetMainUrl(site.Id),
+                            Href = PageUtilsEx.GetMainUrl(site.Id),
                             Target = "_top",
                             Text = site.SiteName
                         });
@@ -197,7 +197,7 @@ namespace SiteServer.API.Controllers.Pages
                     new Tab {Href = PageUtility.GetSiteUrl(siteInfo, false), Target = "_blank", Text = "访问站点"},
                     new Tab {Href = ApiRoutePreview.GetSiteUrl(siteInfo.Id), Target = "_blank", Text = "预览站点"}
                 };
-                menus.Add(new Tab {Text = "站点链接", Children = linkMenus.ToArray()});
+                menus.Add(new Tab { Text = "站点链接", Children = linkMenus.ToArray() });
             }
 
             if (isSuperAdmin)
@@ -273,7 +273,7 @@ namespace SiteServer.API.Controllers.Pages
         }
 
         [HttpPost, Route(RouteActionsCreate)]
-        public async Task<IHttpActionResult> Create()
+        public IHttpActionResult Create()
         {
             try
             {
@@ -291,9 +291,14 @@ namespace SiteServer.API.Controllers.Pages
                     try
                     {
                         var start = DateTime.Now;
-                        await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
-                            pendingTask.ChannelId,
-                            pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId);
+                        // FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
+                        //     pendingTask.ChannelId,
+                        //     pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId).ConfigureAwait(false).GetAwaiter();
+
+                        Task.Run(() => FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
+                                                    pendingTask.ChannelId,
+                                                    pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId)).ConfigureAwait(false).GetAwaiter();
+
                         var timeSpan = DateUtils.GetRelatedDateTimeString(start);
                         CreateTaskManager.AddSuccessLog(pendingTask, timeSpan);
                     }

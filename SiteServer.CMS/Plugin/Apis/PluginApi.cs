@@ -18,12 +18,12 @@ namespace SiteServer.CMS.Plugin.Apis
 
             if (StringUtils.StartsWith(relatedUrl, "~/"))
             {
-                return PageUtils.GetRootUrl(relatedUrl.Substring(1));
+                return PageUtilsEx.GetRootUrl(relatedUrl.Substring(1));
             }
 
             if (StringUtils.StartsWith(relatedUrl, "@/"))
             {
-                return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
+                return PageUtilsEx.GetAdminUrl(relatedUrl.Substring(1));
             }
 
             return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));
@@ -36,7 +36,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetPluginPath(string pluginId, string relatedPath = "")
         {
-            var path = PathUtils.Combine(PathUtils.GetPluginPath(pluginId), relatedPath);
+            var path = PathUtils.Combine(PathUtilsEx.GetPluginPath(pluginId), relatedPath);
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;
         }

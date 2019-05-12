@@ -21,7 +21,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetRedirectUrl(string type)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", type}
             });
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetTitlesUrl(int siteId, int channelId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTitles},
                 {"siteId", siteId.ToString()},
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetWordSpliterUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetWordSpliter},
                 {"siteId", siteId.ToString()}
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetDetectionUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetection},
                 {"siteId", siteId.ToString()}
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetDetectionReplaceUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetDetectionReplace},
                 {"siteId", siteId.ToString()}
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetTagsUrl(int siteId)
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxCmsService), new NameValueCollection
             {
                 {"type", TypeGetTags},
                 {"siteId", siteId.ToString()}

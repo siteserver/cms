@@ -12,7 +12,7 @@ namespace SiteServer.Cli.Jobs
     public static class InstallJob
     {
         public const string CommandName = "install";
-        
+
         private static string _configFile;
         private static string _userName;
         private static string _password;
@@ -83,7 +83,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
+            WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
             await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");

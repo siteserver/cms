@@ -746,7 +746,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var pageList = (DropDownList)sender;
             var pageIndex = Convert.ToInt32(pageList.SelectedValue);
-            PageUtils.Redirect(GetNavigationUrl(pageIndex + 1));
+            PageUtilsEx.Redirect(GetNavigationUrl(pageIndex + 1));
         }
     }
 }

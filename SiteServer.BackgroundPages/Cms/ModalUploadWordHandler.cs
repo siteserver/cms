@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.Utils;
 
@@ -9,7 +10,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(ModalUploadWordHandler), null);
+            return PageUtilsEx.GetCmsWebHandlerUrl(siteId, nameof(ModalUploadWordHandler), null);
         }
 
         protected override object Process()

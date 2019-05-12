@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
             string exportType, string contentIdCollection, string displayAttributes, bool isPeriods,
             string startDate, string endDate, ETriState checkedState)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                     {
                         {"channelId", channelId.ToString()},
                         {"ExportType", exportType},
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToChannel(int siteId, string checkBoxId, string alertString)
         {
             return LayerUtils.GetOpenScriptWithCheckBoxValue("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"ExportType", ExportTypeChannel}
                 }), checkBoxId, alertString, Width, Height);
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToSingleTableStyle(string tableName, int siteId, int relatedIdentity)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle},
@@ -67,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToRelatedField(int siteId, int relatedFieldId)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"RelatedFieldID", relatedFieldId.ToString()},
                     {"ExportType", ExportTypeRelatedField}
@@ -77,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowStringToExport(int siteId, string exportType)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"ExportType", exportType}
                 }), Width, Height);

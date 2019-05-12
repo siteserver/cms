@@ -36,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, List<int> relatedIdentities, string tableName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("批量添加显示样式", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTableStylesAdd), new NameValueCollection
             {
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},
                 {"TableName", tableName},

@@ -2,7 +2,7 @@
 var $pageTypeAdmin = 'admin';
 var $pageTypeUser = 'user';
 
-var data = {
+var $data = {
   pageLoad: false,
   pageAlert: null,
   pageType: utils.getQueryString('pageType'),
@@ -17,7 +17,7 @@ var data = {
   roleNames: null
 };
 
-var methods = {
+var $methods = {
   getConfig: function () {
     var $this = this;
 
@@ -40,14 +40,14 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'administrators.cshtml';
   }
 };
 
 new Vue({
   el: '#main',
-  data: data,
-  methods: methods,
+  data: $data,
+  methods: $methods,
   created: function () {
     this.getConfig();
   }

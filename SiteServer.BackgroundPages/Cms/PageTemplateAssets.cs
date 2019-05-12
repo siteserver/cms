@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAssets), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateAssets), new NameValueCollection
             {
                 {"type", type}
             });
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "type");
+            PageUtilsEx.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
             var tips = string.Empty;
 

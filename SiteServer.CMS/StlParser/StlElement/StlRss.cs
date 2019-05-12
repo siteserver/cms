@@ -204,7 +204,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 channel.Description = nodeInfo.Content;
                 channel.Description = string.IsNullOrEmpty(channel.Description) ? nodeInfo.ChannelName : StringUtils.MaxLengthText(channel.Description, 200);
             }
-            channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
+            channel.Link = new Uri(PageUtilsEx.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
 
             var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
@@ -224,7 +224,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     item.Description = StringUtils.Replace("&", item.Description, "&amp;");
                     item.PubDate = contentInfo.AddDate.Value;
-                    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
+                    item.Link = new Uri(PageUtilsEx.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
 
                     channel.Items.Add(item);
                 }

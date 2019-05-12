@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
             string jsMethod)
         {
             return LayerUtils.GetOpenScript("选择目标栏目",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
                 {
                     {"isSiteSelect", isSiteSelect.ToString()},
                     {"jsMethod", jsMethod}
@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string GetRedirectUrl(int targetSiteId, string targetChannelId)
         {
-            return PageUtils.GetCmsUrl(targetSiteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(targetSiteId, nameof(ModalChannelMultipleSelect), new NameValueCollection
             {
                 {"isSiteSelect", _isSiteSelect.ToString()},
                 {"jsMethod", _jsMethod},
@@ -155,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             var redirectUrl = GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), string.Empty);
-            PageUtils.Redirect(redirectUrl);
+            PageUtilsEx.Redirect(redirectUrl);
         }
 
         private void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)

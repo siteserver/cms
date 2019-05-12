@@ -1,5 +1,6 @@
 ﻿using System.Web.UI;
 using System.Web.UI.HtmlControls;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls

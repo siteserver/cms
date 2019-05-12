@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId}
             }), 520, 220);
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToTextBox(int siteId, string textBoxClientId, bool isNeedWaterMark)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"TextBoxClientID", textBoxClientId},
                 {"IsNeedWaterMark", isNeedWaterMark.ToString()}
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringToList(int siteId, string currentRootPath)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalUploadImageSingle), new NameValueCollection
             {
                 {"CurrentRootPath", currentRootPath}
             }), 520, 220);
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
             if (!string.IsNullOrEmpty(_currentRootPath) && !_currentRootPath.StartsWith("@"))
             {

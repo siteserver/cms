@@ -1,29 +1,41 @@
-﻿using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Provider;
+﻿using Datory;
 
 namespace SiteServer.CMS.Model
 {
-    [Table(UserMenuDao.DatabaseTableName)]
-    public class UserMenuInfo
+    [Table("siteserver_UserMenu")]
+    public class UserMenuInfo : Entity
     {
-        public int Id { get; set; }
-
+        [TableColumn]
         public string SystemId { get; set; }
 
+        [TableColumn]
         public string GroupIdCollection { get; set; }
 
-        public bool IsDisabled { get; set; }
+        [TableColumn]
+        private string IsDisabled { get; set; }
 
+        public bool Disabled
+        {
+            get => IsDisabled == "True";
+            set => IsDisabled = value.ToString();
+        }
+
+        [TableColumn]
         public int ParentId { get; set; }
 
+        [TableColumn]
         public int Taxis { get; set; }
 
+        [TableColumn]
         public string Text { get; set; }
 
+        [TableColumn]
         public string IconClass { get; set; }
 
+        [TableColumn]
         public string Href { get; set; }
 
+        [TableColumn]
         public string Target { get; set; }
     }
 }

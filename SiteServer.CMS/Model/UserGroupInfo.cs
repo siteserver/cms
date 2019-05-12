@@ -1,15 +1,14 @@
-﻿using Dapper.Contrib.Extensions;
-using SiteServer.CMS.Provider;
+﻿using Datory;
 
 namespace SiteServer.CMS.Model
 {
-    [Table(UserGroupDao.DatabaseTableName)]
-    public class UserGroupInfo
+    [Table("siteserver_UserGroup")]
+    public class UserGroupInfo : Entity
     {
-        public int Id { get; set; }
-
+        [TableColumn]
         public string GroupName { get; set; }
 
+        [TableColumn]
         public string AdminName { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageChannelDelete), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageChannelDelete), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             });
@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _deleteContents = AuthRequest.GetQueryBool("DeleteContents");
 

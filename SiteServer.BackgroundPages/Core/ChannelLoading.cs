@@ -43,13 +43,13 @@ namespace SiteServer.BackgroundPages.Core
                     {
                         editUrl = $@"<a href=""{PageChannelEdit.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id, PageChannel.GetRedirectUrl(nodeInfo.SiteId, nodeInfo.Id))}"" onclick=""event.stopPropagation()"">编辑</a>";
                         upLink =
-                            $@"<a href=""{PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            $@"<a href=""{PageUtilsEx.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
                             {
                                 {"Subtract", true.ToString()},
                                 {"channelId", nodeInfo.Id.ToString()}
                             })}"" onclick=""event.stopPropagation()""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
                         downLink =
-                            $@"<a href=""{PageUtils.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
+                            $@"<a href=""{PageUtilsEx.GetCmsUrl(nodeInfo.SiteId, nameof(PageChannel), new NameValueCollection
                             {
                                 {"Add", true.ToString()},
                                 {"channelId", nodeInfo.Id.ToString()}

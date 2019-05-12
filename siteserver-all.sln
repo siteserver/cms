@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Utils", "SiteServer.Utils\SiteServer.Utils.csproj", "{2176D8BA-5F57-4C56-8E21-A09011517AE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Utils", "SiteServer.Utils\SiteServer.Utils.csproj", "{2176D8BA-5F57-4C56-8E21-A09011517AE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.CMS", "SiteServer.CMS\SiteServer.CMS.csproj", "{944127C3-915D-4F02-A534-64EC668C46EC}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.API", "SiteServer.Web\SiteServer.API.csproj", "{69C00F60-F28A-4CBC-B1A4-2DB73BB97471}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Utils.Tests", "SiteServer.Utils.Tests\SiteServer.Utils.Tests.csproj", "{EA26E255-DA68-47EE-8A3F-B4E37F45570B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.CMS.Tests", "SiteServer.CMS.Tests\SiteServer.CMS.Tests.csproj", "{146053D1-34B8-4F55-B2CF-FAAC6968DACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA26E255-DA68-47EE-8A3F-B4E37F45570B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA26E255-DA68-47EE-8A3F-B4E37F45570B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA26E255-DA68-47EE-8A3F-B4E37F45570B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA26E255-DA68-47EE-8A3F-B4E37F45570B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{146053D1-34B8-4F55-B2CF-FAAC6968DACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{146053D1-34B8-4F55-B2CF-FAAC6968DACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{146053D1-34B8-4F55-B2CF-FAAC6968DACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{146053D1-34B8-4F55-B2CF-FAAC6968DACC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

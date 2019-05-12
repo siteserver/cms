@@ -31,7 +31,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
             return LayerUtils.GetOpenScript("批量导入Word文件",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalUploadWord), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalUploadWord), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
                     {"returnUrl", returnUrl}
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
@@ -53,7 +53,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             int checkedLevel;
             var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, SiteId, out checkedLevel);
-            CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
+            FxUtils.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, null, isChecked, checkedLevel);
             ControlUtils.SelectSingleItem(DdlContentLevel, CheckManager.LevelInt.CaoGao.ToString());
         }
 
@@ -83,33 +83,28 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName);
+                        var (title, content) = WordManager.GetWord(SiteInfo, CbIsFirstLineTitle.Checked, CbIsFirstLineRemove.Checked, CbIsClearFormat.Checked, CbIsFirstLineIndent.Checked, CbIsClearFontSize.Checked, CbIsClearFontFamily.Checked, CbIsClearImages.Checked, fileName);
 
-                        if (!string.IsNullOrEmpty(formCollection[ContentAttribute.Title]))
+                        var contentInfo = new ContentInfo
                         {
-                            var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
+                            ChannelId = _channelInfo.Id,
+                            SiteId = SiteId,
+                            AdminId = AuthRequest.AdminId,
+                            AddUserName = AuthRequest.AdminName,
+                            AddDate = DateTime.Now,
+                            CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue),
+                            Title = title,
+                            Content = content
+                        };
 
-                            var contentInfo = new ContentInfo(dict)
-                            {
-                                ChannelId = _channelInfo.Id,
-                                SiteId = SiteId,
-                                AddUserName = AuthRequest.AdminName,
-                                AddDate = DateTime.Now
-                            };
+                        contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                        contentInfo.LastEditUserName = contentInfo.AddUserName;
+                        contentInfo.LastEditDate = contentInfo.AddDate;
 
-                            contentInfo.LastEditUserName = contentInfo.AddUserName;
-                            contentInfo.LastEditDate = contentInfo.AddDate;
+                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
 
-                            contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                            contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
-
-                            contentInfo.Title = formCollection[ContentAttribute.Title];
-
-                            contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
-
-                            CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
-                            CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
-                        }
+                        CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
+                        CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
                     }
                 }
             }

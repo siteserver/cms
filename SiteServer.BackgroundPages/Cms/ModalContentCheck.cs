@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowStringForMultiChannels(int siteId, string returnUrl)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("审核内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
             }), "IDsCollection", "请选择需要审核的内容！", 560, 550);
@@ -43,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("审核内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
+            return LayerUtils.GetOpenScript("审核内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"contentIdCollection", contentId.ToString()},
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentCheck), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)},
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
@@ -107,7 +108,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            CheckManager.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
+            FxUtils.LoadContentLevelToCheck(DdlCheckType, SiteInfo, isChecked, checkedLevel);
 
             var listItem = new ListItem("<保持原栏目不变>", "0");
             DdlTranslateChannelId.Items.Add(listItem);

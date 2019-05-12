@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys
         public IHttpActionResult Main()
         {
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{SystemManager.ProductVersion}";
-            var packagePath = PathUtils.GetPackagesPath(idWithVersion);
+            var packagePath = PathUtilsEx.GetPackagesPath(idWithVersion);
             var homeDirectory = PathUtils.GetHomeDirectoryPath(string.Empty);
             if (!DirectoryUtils.IsDirectoryExists(homeDirectory) || !FileUtils.IsFileExists(PathUtils.Combine(homeDirectory, "config.js")))
             {

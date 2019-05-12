@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int relatedFieldId, int parentId, int level)
         {
-            return LayerUtils.GetOpenScript("添加字段项", PageUtils.GetCmsUrl(siteId, nameof(ModalRelatedFieldItemAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("添加字段项", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalRelatedFieldItemAdd), new NameValueCollection
             {
                 {"RelatedFieldID", relatedFieldId.ToString()},
                 {"ParentID", parentId.ToString()},

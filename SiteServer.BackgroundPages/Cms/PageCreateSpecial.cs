@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateSpecial(SiteId, specialId);
             }
 
-            PageUtils.Redirect(CmsPages.GetCreateStatusUrl(SiteId));
+            PageUtilsEx.Redirect(CmsPages.GetCreateStatusUrl(SiteId));
         }
     }
 }

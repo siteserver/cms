@@ -18,13 +18,13 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowStringToAdd()
         {
-            return LayerUtils.GetOpenScript("添加敏感词", PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
+            return LayerUtils.GetOpenScript("添加敏感词", PageUtilsEx.GetSettingsUrl(nameof(ModalKeywordAdd), null), 460, 300);
         }
 
         public static string GetOpenWindowStringToEdit(int keywordId)
         {
             return LayerUtils.GetOpenScript("修改敏感词",
-                PageUtils.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
+                PageUtilsEx.GetSettingsUrl(nameof(ModalKeywordAdd), new NameValueCollection
                 {
                     {"KeywordID", keywordId.ToString()}
                 }), 460, 300);

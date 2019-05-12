@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetCountArrayUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeGetCountArray }
             });
@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetBackupUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeBackup }
             });
@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public static string GetRecoveryUrl()
         {
-            return PageUtils.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
+            return PageUtilsEx.GetAjaxUrl(nameof(AjaxBackupService), new NameValueCollection
             {
                 {"type", TypeRecovery }
             });

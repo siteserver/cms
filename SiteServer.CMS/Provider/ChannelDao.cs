@@ -1198,16 +1198,6 @@ ORDER BY Taxis";
             return dic;
         }
 
-        public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
-
-            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
-
-            return ExecuteDataset(sqlSelect);
-        }
-
         public DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
@@ -1225,6 +1215,64 @@ ORDER BY Taxis";
             var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
             return ExecuteDataset(sqlSelect);
+        }
+
+        public List<int> GetStlChannelIdList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        {
+            if (channelIdList == null || channelIdList.Count == 0)
+            {
+                return null;
+            }
+
+            var sqlWhereString =
+                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
+
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+            var list = new List<int>();
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var channelId = GetInt(rdr, 0);
+                    list.Add(channelId);
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        {
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+            return ExecuteDataset(sqlSelect);
+        }
+
+        public List<int> GetStlChannelIdListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        {
+            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+            var channelIdList = new List<int>();
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                while (rdr.Read())
+                {
+                    var channelId = GetInt(rdr, 0);
+                    channelIdList.Add(channelId);
+                }
+                rdr.Close();
+            }
+
+            return channelIdList;
         }
 
         public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)

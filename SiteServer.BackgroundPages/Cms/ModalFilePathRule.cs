@@ -18,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, bool isChannel, string textBoxclientId)
         {
-            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtils.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithTextBoxValue(isChannel ? "栏目页文件名规则" : "内容页文件名规则", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFilePathRule), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"IsChannel", isChannel.ToString()},

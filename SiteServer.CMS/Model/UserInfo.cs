@@ -1,347 +1,198 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using Dapper.Contrib.Extensions;
+using Datory;
 using Newtonsoft.Json;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    [Table(UserDao.DatabaseTableName)]
-    [JsonConverter(typeof(UserConverter))]
-    public class UserInfo : AttributesImpl, IUserInfo
+    [Table("siteserver_User")]
+    public class UserInfo : Entity, IUserInfo
     {
-        public UserInfo()
-        {
-
-        }
-
-        public UserInfo(IDataReader rdr) : base(rdr)
-        {
-
-        }
-
-        public UserInfo(IDataRecord record) : base(record)
-        {
-
-        }
-
-        public UserInfo(DataRowView view) : base(view)
-        {
-
-        }
-
-        public UserInfo(DataRow row) : base(row)
-        {
-
-        }
-
-        public UserInfo(Dictionary<string, object> dict) : base(dict)
-        {
-
-        }
-
-        public UserInfo(NameValueCollection nvc) : base(nvc)
-        {
-
-        }
-
-        public UserInfo(object anonymous) : base(anonymous)
-        {
-
-        }
+        /// <summary>
+        /// ç”¨æˆ·åã€‚
+        /// </summary>
+        [TableColumn]
+        public string UserName { get; set; }
 
         /// <summary>
-        /// ÓÃ»§Id¡£
+        /// å¯†ç ã€‚
         /// </summary>
-        public int Id
-        {
-            get => GetInt(UserAttribute.Id);
-            set => Set(UserAttribute.Id, value);
-        }
+        [TableColumn]
+        [JsonIgnore]
+        public string Password { get; set; }
 
         /// <summary>
-        /// ÓÃ»§Ãû¡£
+        /// åŠ å¯†æ ¼å¼ã€‚
         /// </summary>
-        public string UserName
-        {
-            get => GetString(UserAttribute.UserName);
-            set => Set(UserAttribute.UserName, value);
-        }
+        [TableColumn]
+        [JsonIgnore]
+        public string PasswordFormat { get; set; }
 
         /// <summary>
-        /// ´´½¨Ê±¼ä¡£
+        /// ç§˜é’¥ã€‚
         /// </summary>
-        public string Password
-        {
-            get => GetString(UserAttribute.Password);
-            set => Set(UserAttribute.Password, value);
-        }
+        [TableColumn]
+        [JsonIgnore]
+        public string PasswordSalt { get; set; }
 
         /// <summary>
-        /// ´´½¨Ê±¼ä¡£
+        /// åˆ›å»ºæ—¶é—´ã€‚
         /// </summary>
-        public string PasswordFormat
-        {
-            get => GetString(UserAttribute.PasswordFormat);
-            set => Set(UserAttribute.PasswordFormat, value);
-        }
+        [TableColumn]
+        public DateTime? CreateDate { get; set; }
 
         /// <summary>
-        /// ´´½¨Ê±¼ä¡£
+        /// æœ€åä¸€æ¬¡é‡è®¾å¯†ç æ—¶é—´ã€‚
         /// </summary>
-        public string PasswordSalt
-        {
-            get => GetString(UserAttribute.PasswordSalt);
-            set => Set(UserAttribute.PasswordSalt, value);
-        }
+        [TableColumn]
+        public DateTime? LastResetPasswordDate { get; set; }
 
         /// <summary>
-        /// ´´½¨Ê±¼ä¡£
+        /// æœ€åæ´»åŠ¨æ—¶é—´ã€‚
         /// </summary>
-        public DateTime? CreateDate
-        {
-            get => GetDateTime(UserAttribute.CreateDate, DateUtils.SqlMinValue);
-            set => Set(UserAttribute.CreateDate, value);
-        }
+        [TableColumn]
+        public DateTime? LastActivityDate { get; set; }
 
         /// <summary>
-        /// ×îºóÒ»´ÎÖØÉèÃÜÂëÊ±¼ä¡£
+        /// ç”¨æˆ·ç»„Idã€‚
         /// </summary>
-        public DateTime? LastResetPasswordDate
-        {
-            get => GetDateTime(UserAttribute.LastResetPasswordDate, DateUtils.SqlMinValue);
-            set => Set(UserAttribute.LastResetPasswordDate, value);
-        }
+        [TableColumn]
+        public int GroupId { get; set; }
 
         /// <summary>
-        /// ×îºó»î¶¯Ê±¼ä¡£
+        /// ç™»å½•æ¬¡æ•°ã€‚
         /// </summary>
-        public DateTime? LastActivityDate
-        {
-            get => GetDateTime(UserAttribute.LastActivityDate, DateUtils.SqlMinValue);
-            set => Set(UserAttribute.LastActivityDate, value);
-        }
+        [TableColumn]
+        public int CountOfLogin { get; set; }
 
         /// <summary>
-        /// ÓÃ»§×éId¡£
+        /// è¿ç»­ç™»å½•å¤±è´¥æ¬¡æ•°ã€‚
         /// </summary>
-        public int GroupId
-        {
-            get => GetInt(UserAttribute.GroupId);
-            set => Set(UserAttribute.GroupId, value);
-        }
+        [TableColumn]
+        public int CountOfFailedLogin { get; set; }
 
         /// <summary>
-        /// µÇÂ¼´ÎÊı¡£
+        /// æ˜¯å¦å·²å®¡æ ¸ç”¨æˆ·ã€‚
         /// </summary>
-        public int CountOfLogin
-        {
-            get => GetInt(UserAttribute.CountOfLogin);
-            set => Set(UserAttribute.CountOfLogin, value);
-        }
-
-        /// <summary>
-        /// Á¬ĞøµÇÂ¼Ê§°Ü´ÎÊı¡£
-        /// </summary>
-        public int CountOfFailedLogin
-        {
-            get => GetInt(UserAttribute.CountOfFailedLogin);
-            set => Set(UserAttribute.CountOfFailedLogin, value);
-        }
-
-        /// <summary>
-        /// ÊÇ·ñÒÑÉóºËÓÃ»§¡£
-        /// </summary>
-        public bool IsChecked
-        {
-            get => GetBool(UserAttribute.IsChecked);
-            set => Set(UserAttribute.IsChecked, value);
-        }
+        [TableColumn]
+        private string IsChecked { get; set; }
 
         public bool Checked
         {
-            get => IsChecked;
-            set => IsChecked = value;
+            get => IsChecked == "True";
+            set => IsChecked = value.ToString();
         }
 
         /// <summary>
-        /// ÊÇ·ñ±»Ëø¶¨¡£
+        /// æ˜¯å¦è¢«é”å®šã€‚
         /// </summary>
-        public bool IsLockedOut
-        {
-            get => GetBool(UserAttribute.IsLockedOut);
-            set => Set(UserAttribute.IsLockedOut, value);
-        }
+        [TableColumn]
+        private string IsLockedOut { get; set; }
 
         public bool Locked
         {
-            get => IsLockedOut;
-            set => IsLockedOut = value;
+            get => IsLockedOut == "True";
+            set => IsLockedOut = value.ToString();
         }
 
         /// <summary>
-        /// ĞÕÃû¡£
+        /// å§“åã€‚
         /// </summary>
-        public string DisplayName
-        {
-            get => GetString(UserAttribute.DisplayName);
-            set => Set(UserAttribute.DisplayName, value);
-        }
+        [TableColumn]
+        public string DisplayName { get; set; }
 
         /// <summary>
-        /// ÊÖ»úºÅ¡£
+        /// æ‰‹æœºå·ã€‚
         /// </summary>
-        public string Mobile
-        {
-            get => GetString(UserAttribute.Mobile);
-            set => Set(UserAttribute.Mobile, value);
-        }
+        [TableColumn]
+        public string Mobile { get; set; }
 
         /// <summary>
-        /// ÓÊÏä¡£
+        /// é‚®ç®±ã€‚
         /// </summary>
-        public string Email
-        {
-            get => GetString(UserAttribute.Email);
-            set => Set(UserAttribute.Email, value);
-        }
+        [TableColumn]
+        public string Email { get; set; }
 
         /// <summary>
-        /// Í·ÏñÍ¼Æ¬Â·¾¶¡£
+        /// å¤´åƒå›¾ç‰‡è·¯å¾„ã€‚
         /// </summary>
-        public string AvatarUrl
-        {
-            get => GetString(UserAttribute.AvatarUrl);
-            set => Set(UserAttribute.AvatarUrl, value);
-        }
+        [TableColumn]
+        public string AvatarUrl { get; set; }
 
         /// <summary>
-        /// ĞÔ±ğ¡£
+        /// æ€§åˆ«ã€‚
         /// </summary>
-        public string Gender
-        {
-            get => GetString(UserAttribute.Gender);
-            set => Set(UserAttribute.Gender, value);
-        }
+        [TableColumn]
+        public string Gender { get; set; }
 
         /// <summary>
-        /// ³öÉúÈÕÆÚ¡£
+        /// å‡ºç”Ÿæ—¥æœŸã€‚
         /// </summary>
-        public string Birthday
-        {
-            get => GetString(UserAttribute.Birthday);
-            set => Set(UserAttribute.Birthday, value);
-        }
+        [TableColumn]
+        public string Birthday { get; set; }
 
         /// <summary>
-        /// Î¢ĞÅ¡£
+        /// å¾®ä¿¡ã€‚
         /// </summary>
-        public string WeiXin
-        {
-            get => GetString(UserAttribute.WeiXin);
-            set => Set(UserAttribute.WeiXin, value);
-        }
+        [TableColumn]
+        public string WeiXin { get; set; }
 
         /// <summary>
-        /// QQ¡£
+        /// QQã€‚
         /// </summary>
-        public string Qq
-        {
-            get => GetString(UserAttribute.Qq);
-            set => Set(UserAttribute.Qq, value);
-        }
+        [TableColumn]
+        public string Qq { get; set; }
 
         /// <summary>
-        /// Î¢²©¡£
+        /// å¾®åšã€‚
         /// </summary>
-        public string WeiBo
-        {
-            get => GetString(UserAttribute.WeiBo);
-            set => Set(UserAttribute.WeiBo, value);
-        }
+        [TableColumn]
+        public string WeiBo { get; set; }
 
         /// <summary>
-        /// ¼ò½é¡£
+        /// ç®€ä»‹ã€‚
         /// </summary>
-        public string Bio
-        {
-            get => GetString(UserAttribute.Bio);
-            set => Set(UserAttribute.Bio, value);
-        }
+        [TableColumn(Text = true)]
+        public string Bio { get; set; }
 
         /// <summary>
-        /// ¸½¼Ó×Ö¶Î¡£
+        /// é™„åŠ å­—æ®µã€‚
         /// </summary>
-        public string SettingsXml
-        {
-            get => GetString(UserAttribute.SettingsXml);
-            set => Set(UserAttribute.SettingsXml, value);
-        }
+        [TableColumn(Text = true, Extend = true)]
+        public string SettingsXml { get; set; }
 
-        public override Dictionary<string, object> ToDictionary()
-        {
-            var dict = base.ToDictionary();
-            
-            var styleInfoList = TableStyleManager.GetUserStyleInfoList();
+        //public Dictionary<string, object> ToDictionary()
+        //{
+        //    var dict = base.ToDictionary();
 
-            foreach (var styleInfo in styleInfoList)
-            {
-                dict.Remove(styleInfo.AttributeName);
-                dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
-            }
+        //    var styleInfoList = TableStyleManager.GetUserStyleInfoList();
 
-            foreach (var attributeName in UserAttribute.AllAttributes.Value)
-            {
-                if (StringUtils.StartsWith(attributeName, "Is"))
-                {
-                    dict.Remove(attributeName);
-                    dict[attributeName] = GetBool(attributeName);
-                }
-                else
-                {
-                    dict.Remove(attributeName);
-                    dict[attributeName] = Get(attributeName);
-                }
-            }
+        //    foreach (var styleInfo in styleInfoList)
+        //    {
+        //        dict.Remove(styleInfo.AttributeName);
+        //        dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
+        //    }
 
-            foreach (var attributeName in UserAttribute.ExcludedAttributes.Value)
-            {
-                dict.Remove(attributeName);
-            }
+        //    foreach (var attributeName in UserAttribute.AllAttributes.Value)
+        //    {
+        //        if (StringUtils.StartsWith(attributeName, "Is"))
+        //        {
+        //            dict.Remove(attributeName);
+        //            dict[attributeName] = GetBool(attributeName);
+        //        }
+        //        else
+        //        {
+        //            dict.Remove(attributeName);
+        //            dict[attributeName] = Get(attributeName);
+        //        }
+        //    }
 
-            return dict;
-        }
+        //    foreach (var attributeName in UserAttribute.ExcludedAttributes.Value)
+        //    {
+        //        dict.Remove(attributeName);
+        //    }
 
-        private class UserConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(AttributesImpl);
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                var attributes = value as AttributesImpl;
-                serializer.Serialize(writer, attributes?.ToDictionary());
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-                JsonSerializer serializer)
-            {
-                var value = (string)reader.Value;
-                if (string.IsNullOrEmpty(value)) return null;
-                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(value);
-                var content = new UserInfo(dict);
-
-                return content;
-            }
-        }
+        //    return dict;
+        //}
     }
 }

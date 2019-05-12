@@ -27,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, int itemId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTableStyleSite), new NameValueCollection
             {
                 {"ItemID", itemId.ToString()},
                 {"ReturnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -125,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTaxis.Text = styleInfo.Taxis == 0 ? string.Empty : styleInfo.Taxis.ToString();
 
-            var urlStyle = PageUtils.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
+            var urlStyle = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTableStyleSite), new NameValueCollection
             {
                 {"TableName", _tableName},
                 {"RelatedIdentity", SiteId.ToString()},

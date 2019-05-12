@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using AngleSharp;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -268,7 +269,7 @@ selObj.selectedIndex=0;
             }
             if (!string.IsNullOrEmpty(displayTitle))
             {
-                var listitem = new ListItem(displayTitle, PageUtils.UnclickedUrl) {Selected = true};
+                var listitem = new ListItem(displayTitle, PageUtils.UnclickedUrl) { Selected = true };
                 selectControl.Items.Add(listitem);
             }
 

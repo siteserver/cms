@@ -13,6 +13,8 @@ namespace SiteServer.Utils
         /// </summary>
         public static string PhysicalApplicationPath { get; private set; }
 
+        public static string ApplicationPath { get; private set; }
+
         public static bool IsProtectData { get; private set; }
         public static DatabaseType DatabaseType { get; private set; }
 
@@ -37,8 +39,17 @@ namespace SiteServer.Utils
 
         public static bool IsNightlyUpdate { get; private set; }
 
-        public static void Load(string physicalApplicationPath, string webConfigPath)
+        public static void Load(string applicationPath, string physicalApplicationPath, string webConfigPath)
         {
+            if (string.IsNullOrEmpty(applicationPath) || StringUtils.Equals(applicationPath, "/"))
+            {
+                applicationPath = "/";
+            }
+            else
+            {
+                ApplicationPath = applicationPath.TrimEnd('/');
+            }
+
             PhysicalApplicationPath = physicalApplicationPath;
 
             var isProtectData = false;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -15,25 +16,25 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationSite), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationSite), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            ECharsetUtils.AddListItems(DdlCharset);
+            FxUtils.AddListItemsToECharset(DdlCharset);
             ControlUtils.SelectSingleItem(DdlCharset, SiteInfo.Additional.Charset);
 
             TbPageSize.Text = SiteInfo.Additional.PageSize.ToString();
 
-            EBooleanUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
+            FxUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.Additional.IsCreateDoubleClick.ToString());
         }
 

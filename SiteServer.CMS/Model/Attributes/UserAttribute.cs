@@ -6,6 +6,8 @@ namespace SiteServer.CMS.Model.Attributes
     public static class UserAttribute
     {
         public const string Id = nameof(UserInfo.Id);
+        public const string Guid = nameof(UserInfo.Guid);
+        public const string LastModifiedDate = nameof(UserInfo.LastModifiedDate);
         public const string UserName = nameof(UserInfo.UserName);
         public const string Password = nameof(UserInfo.Password);
         public const string PasswordFormat = nameof(UserInfo.PasswordFormat);
@@ -16,8 +18,8 @@ namespace SiteServer.CMS.Model.Attributes
         public const string CountOfLogin = nameof(UserInfo.CountOfLogin);
         public const string CountOfFailedLogin = nameof(UserInfo.CountOfFailedLogin);
         public const string GroupId = nameof(UserInfo.GroupId);
-        public const string IsChecked = nameof(UserInfo.IsChecked);
-        public const string IsLockedOut = nameof(UserInfo.IsLockedOut);
+        public const string IsChecked = nameof(IsChecked);
+        public const string IsLockedOut = nameof(IsLockedOut);
         public const string AvatarUrl = nameof(UserInfo.AvatarUrl);
         public const string DisplayName = nameof(UserInfo.DisplayName);
         public const string Mobile = nameof(UserInfo.Mobile);
@@ -28,11 +30,13 @@ namespace SiteServer.CMS.Model.Attributes
         public const string Qq = nameof(UserInfo.Qq);
         public const string WeiBo = nameof(UserInfo.WeiBo);
         public const string Bio = nameof(UserInfo.Bio);
-        public const string SettingsXml = nameof(UserInfo.SettingsXml);
+        public const string SettingsXml = nameof(SettingsXml);
 
         public static readonly Lazy<List<string>> AllAttributes = new Lazy<List<string>>(() => new List<string>
         {
             Id,
+            Guid,
+            LastModifiedDate,
             UserName,
             Password,
             PasswordFormat,

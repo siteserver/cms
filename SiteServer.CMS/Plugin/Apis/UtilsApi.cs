@@ -44,17 +44,17 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetRootUrl(string relatedUrl = "")
         {
-            return PageUtils.GetRootUrl(relatedUrl);
+            return PageUtilsEx.GetRootUrl(relatedUrl);
         }
 
         public string GetAdminUrl(string relatedUrl = "")
         {
-            return PageUtils.GetAdminUrl(relatedUrl);
+            return PageUtilsEx.GetAdminUrl(relatedUrl);
         }
 
         public string GetHomeUrl(string relatedUrl = "")
         {
-            return PageUtils.GetHomeUrl(relatedUrl);
+            return PageUtilsEx.GetHomeUrl(relatedUrl);
         }
 
         public string GetApiUrl(string relatedUrl = "")

@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
 	    {
-	        return PageUtils.GetSettingsUrl(nameof(PageSiteTable), null);
+	        return PageUtilsEx.GetSettingsUrl(nameof(PageSiteTable), null);
 	    }
 
 		public void Page_Load(object sender, EventArgs e)

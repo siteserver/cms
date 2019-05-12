@@ -138,6 +138,10 @@ namespace SiteServer.Utils
             return directoryPath;
         }
 
+        public static string GetParentPath(string path)
+        {
+            return Directory.GetParent(path).FullName;
+        }
 
         public static bool IsDirectoryExists(string directoryPath)
         {

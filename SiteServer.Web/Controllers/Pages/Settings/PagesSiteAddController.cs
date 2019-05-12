@@ -219,7 +219,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 }
 
                 var redirectUrl = PageProgressBar.GetCreateSiteUrl(siteId,
-                    isImportContents, isImportTableStyles, siteTemplateDir, onlineTemplateName, StringUtils.Guid());
+                    isImportContents, isImportTableStyles, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid());
 
                 return Ok(new
                 {

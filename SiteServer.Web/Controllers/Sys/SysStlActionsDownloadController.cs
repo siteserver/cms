@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.Sys
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        PageUtils.Redirect(fileUrl);
+                        PageUtilsEx.Redirect(fileUrl);
                         return;
                     }
 
@@ -39,13 +39,13 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            PageUtilsEx.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        PageUtilsEx.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                         return;
                     }
                 }
@@ -57,14 +57,14 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            PageUtilsEx.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
-                        PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        var fileUrl = PageUtilsEx.GetRootUrlByPhysicalPath(filePath);
+                        PageUtilsEx.Redirect(PageUtilsEx.ParseNavigationUrl(fileUrl));
                         return;
                     }
                 }
@@ -84,7 +84,7 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            PageUtils.Redirect(fileUrl);
+                            PageUtilsEx.Redirect(fileUrl);
                             return;
                         }
 
@@ -94,13 +94,13 @@ namespace SiteServer.API.Controllers.Sys
                         {
                             if (FileUtils.IsFileExists(filePath))
                             {
-                                PageUtils.Download(HttpContext.Current.Response, filePath);
+                                PageUtilsEx.Download(HttpContext.Current.Response, filePath);
                                 return;
                             }
                         }
                         else
                         {
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            PageUtilsEx.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                             return;
                         }
                     }

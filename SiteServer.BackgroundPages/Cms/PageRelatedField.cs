@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageRelatedField), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageRelatedField), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -70,7 +70,7 @@ namespace SiteServer.BackgroundPages.Cms
                 $@"<a href=""javascript:;"" onclick=""{ModalExportMessage.GetOpenWindowStringToRelatedField(SiteId, relatedFieldInfo.Id)}"">导出</a>";
             ltlDeleteUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{PageUtils.GetRedirectStringWithConfirm(
-                    PageUtils.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
+                    PageUtilsEx.GetCmsUrl(SiteId, nameof(PageRelatedField), new NameValueCollection
                     {
                         {"RelatedFieldID", relatedFieldInfo.Id.ToString()},
                         {"Delete", true.ToString()}

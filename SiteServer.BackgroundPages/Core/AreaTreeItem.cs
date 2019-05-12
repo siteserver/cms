@@ -4,6 +4,7 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Ajax;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.BackgroundPages.Core
 {

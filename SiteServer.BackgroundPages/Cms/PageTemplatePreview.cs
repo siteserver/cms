@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnReturn_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
+            PageUtilsEx.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
         }
     }
 }

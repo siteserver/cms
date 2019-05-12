@@ -22,12 +22,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (currentDepartmentId != 0)
             {
-                return PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
+                return PageUtilsEx.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"CurrentDepartmentID", currentDepartmentId.ToString() }
                 });
             }
-            return PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdminDepartment), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
 
-                PageUtils.Redirect(GetRedirectUrl(departmentId));
+                PageUtilsEx.Redirect(GetRedirectUrl(departmentId));
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnAdd.Attributes.Add("onclick", ModalDepartmentAdd.GetOpenWindowStringToAdd(GetRedirectUrl(0)));
 
-            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtilsEx.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
             {
                 {"Delete", "True" }
             }), "DepartmentIDCollection", "DepartmentIDCollection", "请选择需要删除的部门！", "此操作将删除对应部门以及所有下级部门，确认删除吗？"));
@@ -134,14 +134,14 @@ namespace SiteServer.BackgroundPages.Settings
                 string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalDepartmentAdd.GetOpenWindowStringToEdit(
                     departmentInfo.Id, GetRedirectUrl(departmentInfo.Id))}"">编辑</a>";
 
-                var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
+                var urlUp = PageUtilsEx.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Subtract", "True"},
                     {"DepartmentID", departmentInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
-                var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
+                var urlDown = PageUtilsEx.GetSettingsUrl(nameof(PageAdminDepartment), new NameValueCollection
                 {
                     {"Add", "True"},
                     {"DepartmentID", departmentInfo.Id.ToString()}

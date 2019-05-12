@@ -12,7 +12,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteUrlAssets), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteUrlAssets), null);
         }
 
         public void Page_Load(object sender, EventArgs e)

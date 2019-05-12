@@ -166,13 +166,9 @@ namespace SiteServer.API.Controllers.Home
                 {
                     if (string.IsNullOrEmpty(fileName)) continue;
 
-                    var formCollection = WordUtils.GetWordNameValueCollection(siteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
+                    var (title, content) = WordManager.GetWord(siteInfo, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
 
-                    if (string.IsNullOrEmpty(formCollection[ContentAttribute.Title])) continue;
-
-                    var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, formCollection, ContentAttribute.AllAttributes.Value);
-
-                    var contentInfo = new ContentInfo(dict)
+                    var contentInfo = new ContentInfo
                     {
                         ChannelId = channelInfo.Id,
                         SiteId = siteId,
@@ -182,13 +178,13 @@ namespace SiteServer.API.Controllers.Home
                         AdminId = request.AdminId,
                         UserId = request.UserId,
                         IsChecked = isChecked,
-                        CheckedLevel = checkedLevel
+                        CheckedLevel = checkedLevel,
+                        Title = title,
+                        Content = content
                     };
 
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = contentInfo.AddDate;
-
-                    contentInfo.Title = formCollection[ContentAttribute.Title];
 
                     contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
 

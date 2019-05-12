@@ -18,14 +18,14 @@ namespace SiteServer.BackgroundPages
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSiteServerUrl(nameof(PageUpdateSystem), null);
+            return PageUtilsEx.GetSiteServerUrl(nameof(PageUpdateSystem), null);
         }
 
         public string PackageId => PackageUtils.PackageIdSsCms;
 
         public string InstalledVersion => SystemManager.ProductVersion;
 
-        public string AdminUrl => PageUtils.GetAdminUrl(string.Empty);
+        public string AdminUrl => PageUtilsEx.GetAdminUrl(string.Empty);
 
         public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 

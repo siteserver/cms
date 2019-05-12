@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetOpenWindowString(int siteId, int channelId)
         {
             return LayerUtils.GetOpenScript("页面生成规则",
-                PageUtils.GetCmsUrl(siteId, nameof(ModalTemplateFilePathRule), new NameValueCollection
+                PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTemplateFilePathRule), new NameValueCollection
                 {
                     {"channelId", channelId.ToString()}
                 }));
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             if (IsPostBack) return;

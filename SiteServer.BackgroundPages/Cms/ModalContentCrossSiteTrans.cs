@@ -19,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
-            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtils.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
+            return LayerUtils.GetOpenScriptWithCheckBoxValue("跨站转发", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentCrossSiteTrans), new NameValueCollection
             {
                 {"channelId", channelId.ToString()}
             }), "contentIdCollection", "请选择需要转发的内容！", 400, 410);
@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));

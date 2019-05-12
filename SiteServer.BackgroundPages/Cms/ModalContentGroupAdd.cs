@@ -16,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string groupName)
         {
-            return LayerUtils.GetOpenScript("修改内容组", PageUtils.GetCmsUrl(siteId, nameof(ModalContentGroupAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript("修改内容组", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentGroupAdd), new NameValueCollection
             {
                 {"GroupName", groupName}
             }), 600, 300);
@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId)
         {
-            return LayerUtils.GetOpenScript("添加内容组", PageUtils.GetCmsUrl(siteId, nameof(ModalContentGroupAdd), null), 600, 300);
+            return LayerUtils.GetOpenScript("添加内容组", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentGroupAdd), null), 600, 300);
         }
 
 		public void Page_Load(object sender, EventArgs e)

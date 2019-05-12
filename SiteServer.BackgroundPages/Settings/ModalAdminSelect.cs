@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetShowPopWinString(int departmentId, string scriptName)
         {
-            return LayerUtils.GetOpenScript("管理员选择", PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            return LayerUtils.GetOpenScript("管理员选择", PageUtilsEx.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"departmentID", departmentId.ToString()},
                 {"scriptName", scriptName}
@@ -31,7 +32,7 @@ namespace SiteServer.BackgroundPages.Settings
 		{
             _departmentId = AuthRequest.GetQueryInt("departmentID");
             _scriptName = AuthRequest.GetQueryString("ScriptName");
-		    var url = PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+		    var url = PageUtilsEx.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"scriptName", _scriptName}
             });
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
                     if (_departmentId > 0)
                     {
                         LtlDepartment.Text = DepartmentManager.GetDepartmentName(_departmentId);
-                        RptUser.DataSource = DataProvider.AdministratorDao.GetUserNameList(_departmentId, false);
+                        RptUser.DataSource = DataProvider.AdministratorDao.GetUserNameList(_departmentId);
                         RptUser.ItemDataBound += RptUser_ItemDataBound;
                         RptUser.DataBind();
                     }
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             var ltlUrl = e.Item.FindControl("ltlUrl") as Literal;
 
-            var url = PageUtils.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
+            var url = PageUtilsEx.GetSettingsUrl(nameof(ModalAdminSelect), new NameValueCollection
             {
                 {"scriptName", _scriptName},
                 {"UserName", userName}

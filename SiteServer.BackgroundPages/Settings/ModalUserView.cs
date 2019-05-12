@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetOpenWindowString(string userName)
         {
-            return LayerUtils.GetOpenScript("查看用户信息", PageUtils.GetSettingsUrl(nameof(ModalUserView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看用户信息", PageUtilsEx.GetSettingsUrl(nameof(ModalUserView), new NameValueCollection
             {
                 {"UserName", userName}
             }));

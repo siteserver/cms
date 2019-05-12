@@ -61,29 +61,29 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else if (AuthRequest.IsQueryExists("Setting"))
             {
-                ConfigManager.SystemConfigInfo.IsLogUser = !ConfigManager.SystemConfigInfo.IsLogUser;
+                ConfigManager.Instance.IsLogUser = !ConfigManager.Instance.IsLogUser;
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
-                SuccessMessage($"成功{(ConfigManager.SystemConfigInfo.IsLogUser ? "启用" : "禁用")}日志记录");
+                SuccessMessage($"成功{(ConfigManager.Instance.IsLogUser ? "启用" : "禁用")}日志记录");
             }
 
-            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+            BtnDelete.Attributes.Add("onclick", PageUtils.GetRedirectStringWithCheckBoxValueAndAlert(PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
             {
                 {"Delete", "True" }
             }), "IDCollection", "IDCollection", "请选择需要删除的日志！", "此操作将删除所选日志，确认吗？"));
 
             BtnDeleteAll.Attributes.Add("onclick",
                 AlertUtils.ConfirmRedirect("删除所有日志", "此操作将删除所有日志信息，确定吗？", "删除全部",
-                    PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+                    PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
                     {
                         {"DeleteAll", "True"}
                     })));
 
-            if (ConfigManager.SystemConfigInfo.IsLogUser)
+            if (ConfigManager.Instance.IsLogUser)
             {
                 BtnSetting.Text = "禁用用户日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("禁用用户日志", "此操作将禁用用户日志记录功能，确定吗？", "禁 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+                        PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Settings
                 BtnSetting.Text = "启用用户日志";
                 BtnSetting.Attributes.Add("onclick",
                     AlertUtils.ConfirmRedirect("启用用户日志", "此操作将启用用户日志记录功能，确定吗？", "启 用",
-                        PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+                        PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
                         {
                             {"Setting", "True"}
                         })));
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUtils.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
             {
                 {"UserName", TbUserName.Text},
                 {"Keyword", TbKeyword.Text},

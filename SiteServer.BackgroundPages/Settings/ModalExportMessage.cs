@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowStringToSingleTableStyle(string tableName)
         {
             return LayerUtils.GetOpenScript("导出数据",
-                PageUtils.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
+                PageUtilsEx.GetSettingsUrl(nameof(ModalExportMessage), new NameValueCollection
                 {
                     {"TableName", tableName},
                     {"ExportType", ExportTypeSingleTableStyle}

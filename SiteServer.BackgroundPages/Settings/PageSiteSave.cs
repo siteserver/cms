@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -52,7 +53,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageSiteSave), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteSave), new NameValueCollection
             {
                 {"siteId", siteId.ToString()}
             });
@@ -62,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
 
@@ -80,7 +81,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             TbSiteTemplateName.Text = SiteInfo.SiteName;
 
-            EBooleanUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
+            FxUtils.AddListItems(RblIsSaveAllFiles, "全部文件", "指定文件");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllFiles, true.ToString());
 
             var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
@@ -114,10 +115,10 @@ namespace SiteServer.BackgroundPages.Settings
                 }
             }
 
-            EBooleanUtils.AddListItems(RblIsSaveContents, "保存内容数据", "不保存内容数据");
+            FxUtils.AddListItems(RblIsSaveContents, "保存内容数据", "不保存内容数据");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveContents, true.ToString());
 
-            EBooleanUtils.AddListItems(RblIsSaveAllChannels, "全部栏目", "指定栏目");
+            FxUtils.AddListItems(RblIsSaveAllChannels, "全部栏目", "指定栏目");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsSaveAllChannels, true.ToString());
 
             LtlChannelTree.Text = GetChannelTreeHtml();
@@ -384,7 +385,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageSite.GetRedirectUrl());
+            PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
         }
     }
 }

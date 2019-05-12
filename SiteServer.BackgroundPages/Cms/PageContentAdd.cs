@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlOfAdd(int siteId, int channelId, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"returnUrl", StringUtils.ValueToUrl(returnUrl)}
@@ -60,7 +60,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlOfEdit(int siteId, int channelId, int id, string returnUrl)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentAdd), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"id", id.ToString()},
@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             var contentId = AuthRequest.GetQueryInt("id");
@@ -153,7 +153,7 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
+                    FxUtils.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -180,10 +180,12 @@ namespace SiteServer.BackgroundPages.Cms
                         var contentLevel = AuthRequest.GetQueryInt("contentLevel");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
-                        var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
-                        attributes.Load(formCollection);
+                        var (title, content) = WordManager.GetWord(SiteInfo, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
 
-                        TbTitle.Text = formCollection[ContentAttribute.Title];
+                        attributes.Set(ContentAttribute.Title, title);
+                        attributes.Set(BackgroundContentAttribute.Content, content);
+
+                        TbTitle.Text = title;
                     }
 
                     AcAttributes.Attributes = attributes;
@@ -464,7 +466,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PageUtils.Redirect(redirectUrl);
+            PageUtilsEx.Redirect(redirectUrl);
         }
 
         private bool IsPermissions(int contentId)
@@ -473,7 +475,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (_channelInfo == null || _channelInfo.Additional.IsContentAddable == false)
                 {
-                    PageUtils.RedirectToErrorPage("此栏目不能添加内容！");
+                    PageUtilsEx.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;
                 }
 
@@ -481,11 +483,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtils.RedirectToLoginPage();
+                        PageUtilsEx.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtils.RedirectToErrorPage("您无此栏目的添加内容权限！");
+                    PageUtilsEx.RedirectToErrorPage("您无此栏目的添加内容权限！");
                     return false;
                 }
             }
@@ -495,11 +497,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtils.RedirectToLoginPage();
+                        PageUtilsEx.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtils.RedirectToErrorPage("您无此栏目的修改内容权限！");
+                    PageUtilsEx.RedirectToErrorPage("您无此栏目的修改内容权限！");
                     return false;
                 }
             }

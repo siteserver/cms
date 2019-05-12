@@ -138,7 +138,7 @@ namespace SiteServer.API.Controllers.Preview
                 {
                     if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
                     {
-                        PageUtils.Redirect(nodeInfo.LinkUrl);
+                        PageUtilsEx.Redirect(nodeInfo.LinkUrl);
                         return null;
                     }
                 }
@@ -282,7 +282,7 @@ namespace SiteServer.API.Controllers.Preview
 
                 if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(ContentAttribute.LinkUrl)))
                 {
-                    PageUtils.Redirect(contextInfo.ContentInfo.GetString(ContentAttribute.LinkUrl));
+                    PageUtilsEx.Redirect(contextInfo.ContentInfo.GetString(ContentAttribute.LinkUrl));
                     return null;
                 }
 

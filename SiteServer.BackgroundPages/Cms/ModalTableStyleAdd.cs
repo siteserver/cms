@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int tableStyleId, List<int> relatedIdentities, string tableName, string attributeName, string redirectUrl)
         {
-            return LayerUtils.GetOpenScript(string.IsNullOrEmpty(attributeName) ? "新增字段" : "修改字段", PageUtils.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
+            return LayerUtils.GetOpenScript(string.IsNullOrEmpty(attributeName) ? "新增字段" : "修改字段", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTableStyleAdd), new NameValueCollection
             {
                 {"TableStyleID", tableStyleId.ToString()},
                 {"RelatedIdentities", TranslateUtils.ObjectCollectionToString(relatedIdentities)},

@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 if (!iconUrl.StartsWith("../"))
                 {
-                    item._iconFolderUrl = PageUtils.ParseNavigationUrl(iconUrl);
+                    item._iconFolderUrl = PageUtilsEx.ParseNavigationUrl(iconUrl);
                 }
             }
             else

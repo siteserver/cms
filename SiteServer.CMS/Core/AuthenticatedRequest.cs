@@ -518,18 +518,18 @@ namespace SiteServer.CMS.Core
             if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
             {
                 redirect = true;
-                redirectUrl = PageUtils.GetAdminUrl("Installer/");
+                redirectUrl = PageUtilsEx.GetAdminUrl("Installer/");
             }
-            else if (checkDatabaseVersion && ConfigManager.Instance.IsInitialized &&
+            else if (checkDatabaseVersion && ConfigManager.Instance.Initialized &&
                      ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
             {
                 redirect = true;
-                redirectUrl = PageUtils.GetAdminUrl("pageSyncDatabase.aspx");
+                redirectUrl = PageUtilsEx.GetAdminUrl("pageSyncDatabase.aspx");
             }
-            else if (checkLogin && (!IsAdminLoggin || AdminInfo == null || AdminInfo.IsLockedOut))
+            else if (checkLogin && (!IsAdminLoggin || AdminInfo == null || AdminInfo.Locked))
             {
                 redirect = true;
-                redirectUrl = PageUtils.GetAdminUrl("pageLogin.cshtml");
+                redirectUrl = PageUtilsEx.GetAdminUrl("pageLogin.cshtml");
             }
 
             if (redirect)

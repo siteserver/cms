@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlToAdd(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAssetsAdd), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateAssetsAdd), new NameValueCollection
             {
                 {"type", type}
             });
@@ -37,7 +38,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrlToEdit(int siteId, string type, string fileName)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateAssetsAdd), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateAssetsAdd), new NameValueCollection
             {
                 {"type", type},
                 {"fileName", fileName}
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "type");
+            PageUtilsEx.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
@@ -92,13 +93,13 @@ namespace SiteServer.BackgroundPages.Cms
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
-            ECharsetUtils.AddListItems(DdlCharset);
+            FxUtils.AddListItemsToECharset(DdlCharset);
 
             if (_fileName != null)
             {
                 if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(_fileName), _ext))
                 {
-                    PageUtils.RedirectToErrorPage("对不起，此文件格式无法编辑！");
+                    PageUtilsEx.RedirectToErrorPage("对不起，此文件格式无法编辑！");
                 }
                 else
                 {
@@ -193,7 +194,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
+            PageUtilsEx.Redirect(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
         }
     }
 }

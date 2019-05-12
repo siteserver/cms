@@ -24,7 +24,7 @@ namespace SiteServer.CMS.DataCache.Core
 
         public static int GetInt(string cacheKey)
         {
-            return CacheUtils.GetInt(cacheKey, -1);
+            return CacheUtils.Exists(cacheKey) ? CacheUtils.Get<int>(cacheKey) : -1;
         }
 
         public static void Set(string cacheKey, object value)

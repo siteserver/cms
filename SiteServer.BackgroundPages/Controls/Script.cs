@@ -1,4 +1,5 @@
 ﻿using System.Web.UI;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Controls
 		{
 		    if (!string.IsNullOrEmpty(Src))
 		    {
-                writer.Write($@"<script src=""{(Src.StartsWith("~") ? PageUtils.ParseNavigationUrl(Src) : PageUtils.GetAdminUrl(Src))}"" type=""text/javascript""></script>");
+                writer.Write($@"<script src=""{(Src.StartsWith("~") ? PageUtilsEx.ParseNavigationUrl(Src) : PageUtilsEx.GetAdminUrl(Src))}"" type=""text/javascript""></script>");
             }
 		}
 

@@ -33,7 +33,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl()
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAdministrator), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdministrator), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -122,7 +122,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
-            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.SystemConfigInfo.AdminLockLoginType);
+            _lockType = EUserLockTypeUtils.GetEnumType(ConfigManager.Instance.AdminLockLoginType);
 
             if (IsPostBack) return;
 
@@ -280,8 +280,8 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 state = @"<span style=""color:red;"">[已被锁定]</span>";
             }
-            else if (ConfigManager.SystemConfigInfo.IsAdminLockLogin &&
-                       ConfigManager.SystemConfigInfo.AdminLockLoginCount <= countOfFailedLogin)
+            else if (ConfigManager.Instance.IsAdminLockLogin &&
+                       ConfigManager.Instance.AdminLockLoginCount <= countOfFailedLogin)
             {
                 if (_lockType == EUserLockType.Forever)
                 {
@@ -290,7 +290,7 @@ namespace SiteServer.BackgroundPages.Settings
                 else
                 {
                     var ts = new TimeSpan(DateTime.Now.Ticks - lastActivityDate.Ticks);
-                    var hours = Convert.ToInt32(ConfigManager.SystemConfigInfo.AdminLockLoginHours - ts.TotalHours);
+                    var hours = Convert.ToInt32(ConfigManager.Instance.AdminLockLoginHours - ts.TotalHours);
                     if (hours > 0)
                     {
                         state = $@"<span style=""color:red;"">[错误登录次数过多，已被锁定{hours}小时]</span>";
@@ -302,7 +302,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(PageUrl);
+            PageUtilsEx.Redirect(PageUrl);
         }
 
         private string _pageUrl;

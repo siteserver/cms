@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string type)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageServiceStl), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageServiceStl), new NameValueCollection
             {
                 {"type", type}
             });

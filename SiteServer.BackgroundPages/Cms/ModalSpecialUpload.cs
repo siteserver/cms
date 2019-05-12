@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int specialId)
         {
-            return LayerUtils.GetOpenScript("上传压缩包", PageUtils.GetCmsUrl(siteId, nameof(ModalSpecialUpload), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传压缩包", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalSpecialUpload), new NameValueCollection
             {
                 {"specialId", specialId.ToString()}
             }), 500, 320);
@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             _specialInfo = SpecialManager.GetSpecialInfo(SiteId, specialId);

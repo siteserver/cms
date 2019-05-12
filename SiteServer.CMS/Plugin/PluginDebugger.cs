@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Plugin
@@ -18,7 +19,7 @@ namespace SiteServer.CMS.Plugin
 
             _watcher = new FileSystemWatcher
             {
-                Path = PathUtils.PluginsPath,
+                Path = PathUtilsEx.PluginsPath,
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
                 IncludeSubdirectories = true
             };

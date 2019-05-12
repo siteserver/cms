@@ -34,7 +34,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, int channelId, int contentId, string returnUrl)
         {
-            return LayerUtils.GetOpenScript("查看内容", PageUtils.GetCmsUrl(siteId, nameof(ModalContentView), new NameValueCollection
+            return LayerUtils.GetOpenScript("查看内容", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalContentView), new NameValueCollection
             {
                 {"channelId", channelId.ToString()},
                 {"id", contentId.ToString()},
@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "channelId", "id", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "id", "ReturnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             if (_channelId < 0) _channelId = -_channelId;

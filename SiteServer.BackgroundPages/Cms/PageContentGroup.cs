@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageContentGroup), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentGroup), null);
         }
 
 		public void Page_Load(object sender, EventArgs e)
@@ -84,13 +84,13 @@ namespace SiteServer.BackgroundPages.Cms
             ltlContentGroupName.Text = groupInfo.GroupName;
             ltlDescription.Text = groupInfo.Description;
 
-            hlUp.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
+            hlUp.NavigateUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
                 {"Direction", "UP"}
             });
-            hlDown.NavigateUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
+            hlDown.NavigateUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"SetTaxis", true.ToString()},
@@ -102,7 +102,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlEdit.Text =
                 $@"<a href=""javascript:;"" onClick=""{ModalContentGroupAdd.GetOpenWindowString(SiteId, groupInfo.GroupName)}"">修改</a>";
 
-            ltlDelete.Text = $@"<a href=""{PageUtils.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
+            ltlDelete.Text = $@"<a href=""{PageUtilsEx.GetCmsUrl(SiteId, nameof(PageContentGroup), new NameValueCollection
             {
                 {"GroupName", groupInfo.GroupName},
                 {"Delete", true.ToString()}

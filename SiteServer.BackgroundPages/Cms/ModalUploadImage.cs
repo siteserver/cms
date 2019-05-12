@@ -29,7 +29,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetOpenWindowString(int siteId, string textBoxClientId)
         {
-            return LayerUtils.GetOpenScript("上传图片", PageUtils.GetCmsUrl(siteId, nameof(ModalUploadImage), new NameValueCollection
+            return LayerUtils.GetOpenScript("上传图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalUploadImage), new NameValueCollection
             {
                 {"textBoxClientID", textBoxClientId}
             }), 600, 560);
@@ -39,7 +39,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
 
             if (IsPostBack) return;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;

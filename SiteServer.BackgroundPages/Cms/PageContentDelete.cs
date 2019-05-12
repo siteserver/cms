@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetRedirectClickStringForMultiChannels(int siteId, bool isDeleteFromTrash,
             string returnUrl)
         {
-            return PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.GetCmsUrl(siteId, nameof(PageContentDelete),
+            return PageUtils.GetRedirectStringWithCheckBoxValue(PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentDelete),
                 new NameValueCollection
                 {
                     {"IsDeleteFromTrash", isDeleteFromTrash.ToString()},
@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         public static string GetRedirectClickStringForSingleChannel(int siteId, int channelId,
             bool isDeleteFromTrash, string returnUrl)
         {
-            return PageUtils.GetRedirectStringWithCheckBoxValue(PageUtils.GetCmsUrl(siteId, nameof(PageContentDelete),
+            return PageUtils.GetRedirectStringWithCheckBoxValue(PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentDelete),
                 new NameValueCollection
                 {
                     {"channelId", channelId.ToString()},
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId", "ReturnUrl");
+            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _isDeleteFromTrash = AuthRequest.GetQueryBool("IsDeleteFromTrash");
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
             //{
             //    if (!base.HasChannelPermissions(Math.Abs(this.channelId), AppManager.CMS.Permission.Channel.ContentDelete))
             //    {
-            //        PageUtils.RedirectToErrorPage("您没有删除此栏目内容的权限！");
+            //        PageUtilsEx.RedirectToErrorPage("您没有删除此栏目内容的权限！");
             //        return;
             //    }
             //}
@@ -85,7 +85,7 @@ namespace SiteServer.BackgroundPages.Cms
             //    {
             //        if (!base.HasChannelPermissions(Math.Abs(this.channelId), AppManager.CMS.Permission.Channel.ContentDelete))
             //        {
-            //            PageUtils.RedirectToErrorPage("您没有删除此栏目内容的权限！");
+            //            PageUtilsEx.RedirectToErrorPage("您没有删除此栏目内容的权限！");
             //            return;
             //        }
             //    }
@@ -199,7 +199,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtils.Redirect(_returnUrl);
+            PageUtilsEx.Redirect(_returnUrl);
         }
 
     }

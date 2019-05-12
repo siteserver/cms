@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -22,33 +23,33 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageConfigurationContent), null);
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationContent), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
-            EBooleanUtils.AddListItems(DdlIsSaveImageInTextEditor, "保存", "不保存");
+            FxUtils.AddListItems(DdlIsSaveImageInTextEditor, "保存", "不保存");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsSaveImageInTextEditor, SiteInfo.Additional.IsSaveImageInTextEditor.ToString());
 
-            EBooleanUtils.AddListItems(DdlIsAutoPageInTextEditor, "自动分页", "手动分页");
+            FxUtils.AddListItems(DdlIsAutoPageInTextEditor, "自动分页", "手动分页");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoPageInTextEditor, SiteInfo.Additional.IsAutoPageInTextEditor.ToString());
 
             PhAutoPage.Visible = SiteInfo.Additional.IsAutoPageInTextEditor;
             TbAutoPageWordNum.Text = SiteInfo.Additional.AutoPageWordNum.ToString();
 
-            EBooleanUtils.AddListItems(DdlIsContentTitleBreakLine, "启用标题换行", "不启用");
+            FxUtils.AddListItems(DdlIsContentTitleBreakLine, "启用标题换行", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsContentTitleBreakLine, SiteInfo.Additional.IsContentTitleBreakLine.ToString());
 
             //保存时，敏感词自动检测
-            EBooleanUtils.AddListItems(DdlIsAutoCheckKeywords, "启用敏感词自动检测", "不启用");
+            FxUtils.AddListItems(DdlIsAutoCheckKeywords, "启用敏感词自动检测", "不启用");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsAutoCheckKeywords, SiteInfo.Additional.IsAutoCheckKeywords.ToString());
 
             DdlIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));

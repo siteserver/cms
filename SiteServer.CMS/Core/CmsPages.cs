@@ -6,7 +6,7 @@ namespace SiteServer.CMS.Core
     {
         public static string GetContentsUrl(int siteId, int channelId)
         {
-            return PageUtils.GetCmsUrl("contents", siteId, new
+            return PageUtilsEx.GetCmsUrl("contents", siteId, new
             {
                 channelId
             });
@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetCreateStatusUrl(int siteId)
         {
-            return PageUtils.GetCmsUrl("createStatus", siteId);
+            return PageUtilsEx.GetCmsUrl("createStatus", siteId);
         }
     }
 }

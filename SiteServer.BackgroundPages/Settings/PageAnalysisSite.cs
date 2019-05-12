@@ -41,7 +41,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetRedirectUrl(string startDate, string endDate)
         {
-            return PageUtils.GetSettingsUrl(nameof(PageAnalysisSite), new NameValueCollection
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAnalysisSite), new NameValueCollection
             {
                 {"startDate", startDate},
                 {"endDate", endDate}
@@ -148,12 +148,12 @@ yArrayUpdate.push('{yValueUpdate}');";
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
             if (siteId > 0)
             {
-                PageUtils.Redirect(PageAnalysisSiteChannels.GetRedirectUrl(siteId, TbStartDate.Text,
+                PageUtilsEx.Redirect(PageAnalysisSiteChannels.GetRedirectUrl(siteId, TbStartDate.Text,
                     TbEndDate.Text));
             }
             else
             {
-                PageUtils.Redirect(GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
+                PageUtilsEx.Redirect(GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
             }
         }
 

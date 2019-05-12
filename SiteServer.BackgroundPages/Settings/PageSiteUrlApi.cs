@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -20,10 +21,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            EBooleanUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.SystemConfigInfo.IsSeparatedApi.ToString());
-            PhSeparatedApi.Visible = ConfigManager.SystemConfigInfo.IsSeparatedApi;
-            TbSeparatedApiUrl.Text = ConfigManager.SystemConfigInfo.SeparatedApiUrl;
+            FxUtils.AddListItems(RblIsSeparatedApi, "API独立部署", "API与CMS部署在一起");
+            ControlUtils.SelectSingleItem(RblIsSeparatedApi, ConfigManager.Instance.IsSeparatedApi.ToString());
+            PhSeparatedApi.Visible = ConfigManager.Instance.IsSeparatedApi;
+            TbSeparatedApiUrl.Text = ConfigManager.Instance.SeparatedApiUrl;
         }
 
         public void RblIsSeparatedApi_SelectedIndexChanged(object sender, EventArgs e)
@@ -33,8 +34,8 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            ConfigManager.SystemConfigInfo.IsSeparatedApi = TranslateUtils.ToBool(RblIsSeparatedApi.SelectedValue);
-            ConfigManager.SystemConfigInfo.SeparatedApiUrl = TbSeparatedApiUrl.Text;
+            ConfigManager.Instance.IsSeparatedApi = TranslateUtils.ToBool(RblIsSeparatedApi.SelectedValue);
+            ConfigManager.Instance.SeparatedApiUrl = TbSeparatedApiUrl.Text;
 
             DataProvider.ConfigDao.Update(ConfigManager.Instance);
 

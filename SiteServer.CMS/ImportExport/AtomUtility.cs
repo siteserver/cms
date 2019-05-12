@@ -78,7 +78,7 @@ namespace SiteServer.CMS.ImportExport
                 Author = new AtomPersonConstruct("author",
                     "siteserver", new Uri("http://www.siteserver.cn")),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
-                    TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now))
+                    TimeZoneInfo.Utc.GetUtcOffset(DateTime.Now))
             };
 
             return feed;
@@ -91,9 +91,9 @@ namespace SiteServer.CMS.ImportExport
                 Id = new Uri("http://www.siteserver.cn/"),
                 Title = new AtomContentConstruct("title", "title"),
                 Modified = new AtomDateConstruct("modified", DateTime.Now,
-                    TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now)),
+                    TimeZoneInfo.Utc.GetUtcOffset(DateTime.Now)),
                 Issued = new AtomDateConstruct("issued", DateTime.Now,
-                    TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now))
+                    TimeZoneInfo.Utc.GetUtcOffset(DateTime.Now))
             };
 
             return entry;

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Parsers;
@@ -8,6 +7,7 @@ using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiteServer.CMS.Core;
 
 namespace SiteServer.CMS.StlParser.Model
 {
@@ -280,74 +280,14 @@ namespace SiteServer.CMS.StlParser.Model
                     listInfo.Layout = ELayout.Table;
                     if (listInfo.Columns > 1 && isSetDirection == false)
                     {
-                        listInfo.Direction = RepeatDirection.Horizontal;
+                        listInfo.Direction = "horizontal";
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Direction))
                 {
                     listInfo.Layout = ELayout.Table;
-                    listInfo.Direction = TranslateUtils.ToRepeatDirection(value);
+                    listInfo.Direction = value;
                     isSetDirection = true;
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Height))
-                {
-                    try
-                    {
-                        listInfo.Height = Unit.Parse(value);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Width))
-                {
-                    try
-                    {
-                        listInfo.Width = Unit.Parse(value);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Align))
-                {
-                    listInfo.Align = value;
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ItemHeight))
-                {
-                    try
-                    {
-                        listInfo.ItemHeight = Unit.Parse(value);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ItemWidth))
-                {
-                    try
-                    {
-                        listInfo.ItemWidth = Unit.Parse(value);
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ItemAlign))
-                {
-                    listInfo.ItemAlign = value;
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ItemVerticalAlign))
-                {
-                    listInfo.ItemVerticalAlign = value;
-                }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ItemClass))
-                {
-                    listInfo.ItemClass = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.IsImage))
                 {
@@ -459,23 +399,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int Columns { get; private set; }
 
-        public RepeatDirection Direction { get; private set; } = RepeatDirection.Vertical;
-
-        public Unit Height { get; private set; } = Unit.Empty;
-
-        public Unit Width { get; private set; } = Unit.Percentage(100);
-
-        public string Align { get; private set; } = string.Empty;
-
-        public Unit ItemHeight { get; private set; } = Unit.Empty;
-
-        public Unit ItemWidth { get; private set; } = Unit.Empty;
-
-        public string ItemAlign { get; private set; } = string.Empty;
-
-        public string ItemVerticalAlign { get; private set; } = string.Empty;
-
-        public string ItemClass { get; private set; } = string.Empty;
+        public string Direction { get; private set; } = "vertical";
 
         public bool IsImage
         {
@@ -610,5 +534,44 @@ namespace SiteServer.CMS.StlParser.Model
         public string Where { get; set; } = string.Empty;
 
         public NameValueCollection Others { get; } = TranslateUtils.NewIgnoreCaseNameValueCollection();
+
+        public NameValueCollection GetTableAttributes()
+        {
+            var nameValueCollection = new NameValueCollection();
+            foreach (var key in Others.AllKeys)
+            {
+                if (!StringUtils.StartsWithIgnoreCase(key, "item"))
+                {
+                    nameValueCollection[key] = Others[key];
+                }
+            }
+            if (string.IsNullOrEmpty(nameValueCollection["width"]))
+            {
+                nameValueCollection["width"] = "100%";
+            }
+            return nameValueCollection;
+        }
+
+        public NameValueCollection GetCellAttributes()
+        {
+            var nameValueCollection = new NameValueCollection();
+            foreach (var key in Others.AllKeys)
+            {
+                if (StringUtils.StartsWithIgnoreCase(key, "item"))
+                {
+                    var attributeName = StringUtils.ReplaceStartsWithIgnoreCase(key, "item", string.Empty);
+                    if (StringUtils.EqualsIgnoreCase(attributeName, "VerticalAlign"))
+                    {
+                        nameValueCollection["valign"] = Others[key];
+                    }
+                    else
+                    {
+                        nameValueCollection[attributeName] = Others[key];
+                    }
+                }
+            }
+
+            return nameValueCollection;
+        }
     }
 }

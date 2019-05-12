@@ -9,7 +9,7 @@ namespace SiteServer.BackgroundPages.Cms
     {
         public static string GetRedirectUrl(int siteId)
         {
-            return PageUtils.GetCmsWebHandlerUrl(siteId, nameof(ModalTextEditorInsertImageHandler), null);
+            return PageUtilsEx.GetCmsWebHandlerUrl(siteId, nameof(ModalTextEditorInsertImageHandler), null);
         }
 
         protected override object Process()

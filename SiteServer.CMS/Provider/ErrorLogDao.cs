@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using Datory;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -94,9 +95,9 @@ namespace SiteServer.CMS.Provider
 
         public void DeleteIfThreshold()
         {
-            if (!ConfigManager.SystemConfigInfo.IsTimeThreshold) return;
+            if (!ConfigManager.Instance.IsTimeThreshold) return;
 
-            var days = ConfigManager.SystemConfigInfo.TimeThreshold;
+            var days = ConfigManager.Instance.TimeThreshold;
             if (days <= 0) return;
 
             ExecuteNonQuery($@"DELETE FROM {TableName} WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");

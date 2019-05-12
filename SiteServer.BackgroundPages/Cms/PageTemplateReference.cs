@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.Text;
 using System.Web.UI.WebControls;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
@@ -17,7 +18,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public static string GetRedirectUrl(int siteId, string elementName)
         {
-            return PageUtils.GetCmsUrl(siteId, nameof(PageTemplateReference), new NameValueCollection
+            return PageUtilsEx.GetCmsUrl(siteId, nameof(PageTemplateReference), new NameValueCollection
             {
                 {"elementName", elementName}
             });
@@ -29,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtils.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
 
             _elementName = AuthRequest.GetQueryString("elementName");
 

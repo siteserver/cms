@@ -22,12 +22,12 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (currentAreaId > 0)
             {
-                return PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                return PageUtilsEx.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"CurrentAreaID", currentAreaId.ToString()}
                 });
             }
-            return PageUtils.GetSettingsUrl(nameof(PageAdminArea), null);
+            return PageUtilsEx.GetSettingsUrl(nameof(PageAdminArea), null);
         }
 
         public void Page_Load(object sender, EventArgs e)
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.AreaDao.UpdateTaxis(areaId, isSubtract);
 
-                PageUtils.Redirect(GetRedirectUrl(areaId));
+                PageUtilsEx.Redirect(GetRedirectUrl(areaId));
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnAdd.Attributes.Add("onclick", ModalAreaAdd.GetOpenWindowStringToAdd(GetRedirectUrl(0)));
 
-            var urlDelete = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+            var urlDelete = PageUtilsEx.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
             {
                 {"Delete", "True"}
             });
@@ -130,14 +130,14 @@ namespace SiteServer.BackgroundPages.Settings
                 string editUrl = $@"<a href=""javascript:;"" onclick=""{ModalAreaAdd.GetOpenWindowStringToEdit(areaInfo.Id,
                     GetRedirectUrl(areaInfo.Id))}"">编辑</a>";
 
-                var urlUp = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                var urlUp = PageUtilsEx.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Subtract", "True"},
                     {"AreaID", areaInfo.Id.ToString()}
                 });
                 string upLink = $@"<a href=""{urlUp}""><img src=""../Pic/icon/up.gif"" border=""0"" alt=""上升"" /></a>";
 
-                var urlDown = PageUtils.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
+                var urlDown = PageUtilsEx.GetSettingsUrl(nameof(PageAdminArea), new NameValueCollection
                 {
                     {"Add", "True"},
                     {"AreaID", areaInfo.Id.ToString()}

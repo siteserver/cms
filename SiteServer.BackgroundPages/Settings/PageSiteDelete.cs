@@ -14,7 +14,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    public static string GetRedirectUrl(int siteId)
 	    {
-	        return PageUtils.GetSettingsUrl(nameof(PageSiteDelete), new NameValueCollection
+	        return PageUtilsEx.GetSettingsUrl(nameof(PageSiteDelete), new NameValueCollection
 	        {
 	            {"siteId", siteId.ToString()}
 	        });
@@ -56,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
             else
             {
                 AddScript(
-                    $@"setTimeout(""window.top.location.href='{PageUtils.GetMainUrl(0)}'"", 1500);");
+                    $@"setTimeout(""window.top.location.href='{PageUtilsEx.GetMainUrl(0)}'"", 1500);");
             }
 
             AuthRequest.AddAdminLog("删除站点", $"站点:{SiteInfo.SiteName}");
@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Settings
 
 	    public void Return_OnClick(object sender, EventArgs e)
 	    {
-	        PageUtils.Redirect(PageSite.GetRedirectUrl());
+	        PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
 	    }
 	}
 }
