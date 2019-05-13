@@ -29,18 +29,34 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Channel);
 
-            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
-            var channelIdList = GetChannelIdList(pageInfo, contextInfo, listInfo);
+            // var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+            var channelList = GetContainerChannelList(pageInfo, contextInfo, listInfo);
 
             if (contextInfo.IsStlEntity)
             {
-                return ParseEntity(pageInfo, dataSource, channelIdList);
+                return ParseEntity(pageInfo, channelList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, dataSource, channelIdList);
+            return ParseElement(pageInfo, contextInfo, listInfo, channelList);
         }
 
-        public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        // public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        // {
+        //     var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+
+        //     channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+
+        //     var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
+
+        //     if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren)))
+        //     {
+        //         listInfo.Scope = EScopeType.Descendant;
+        //     }
+
+        //     return StlDataUtility.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
+        // }
+
+        public static List<Container.Channel> GetContainerChannelList(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
@@ -53,28 +69,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 listInfo.Scope = EScopeType.Descendant;
             }
 
-            return StlDataUtility.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
+            return StlDataUtility.GetContainerChannelList(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         }
 
-        public static List<int> GetChannelIdList(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Channel> channelList)
         {
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
-
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
-
-            var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
-
-            if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren)))
-            {
-                listInfo.Scope = EScopeType.Descendant;
-            }
-
-            return StlDataUtility.GetChannelsChannelIdList(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
-        }
-
-        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource, List<int> channelIdList)
-        {
-            if (channelIdList == null || channelIdList.Count == 0) return string.Empty;
+            if (channelList == null || channelList.Count == 0) return string.Empty;
 
             var builder = new StringBuilder();
 
@@ -96,16 +96,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                     isSeparator = true;
                 }
 
-                for (var i = 0; i < channelIdList.Count; i++)
+                for (var i = 0; i < channelList.Count; i++)
                 {
-                    if (isSeparator && i % 2 != 0 && i != channelIdList.Count - 1)
+                    if (isSeparator && i % 2 != 0 && i != channelList.Count - 1)
                     {
                         builder.Append(listInfo.SeparatorTemplate);
                     }
 
-                    var channelId = channelIdList[i];
+                    var channel = channelList[i];
 
-                    pageInfo.ChannelItems.Push(new ChannelItemInfo(channelId, i));
+                    pageInfo.ChannelItems.Push(channel);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                     builder.Append(TemplateUtility.GetChannelsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Channel, contextInfo));
                 }
@@ -150,18 +150,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                             for (var cell = 1; cell <= columns; cell++)
                             {
                                 var cellHtml = string.Empty;
-                                if (itemIndex < channelIdList.Count)
+                                if (itemIndex < channelList.Count)
                                 {
-                                    var channelId = channelIdList[itemIndex];
+                                    var channel = channelList[itemIndex];
 
-                                    pageInfo.ChannelItems.Push(new ChannelItemInfo(channelId, itemIndex));
+                                    pageInfo.ChannelItems.Push(channel);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
                                     cellHtml = TemplateUtility.GetChannelsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Channel, contextInfo);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
                             }
-                            if (itemIndex >= channelIdList.Count) break;
+                            if (itemIndex >= channelList.Count) break;
                         }
                     }
 
@@ -182,15 +182,24 @@ namespace SiteServer.CMS.StlParser.StlElement
             return builder.ToString();
         }
 
-        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource, List<int> channelIdList)
+        private static object ParseEntity(PageInfo pageInfo, List<Container.Channel> channelList)
         {
-            var channelInfoList = new List<Dictionary<string, object>>();
-            var table = dataSource.Tables[0];
-            foreach (DataRow row in table.Rows)
-            {
-                var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
+            // var table = dataSource.Tables[0];
+            // foreach (DataRow row in table.Rows)
+            // {
+            //     var channelId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
 
-                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+            //     var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+            //     if (channelInfo != null)
+            //     {
+            //         channelInfoList.Add(channelInfo.ToDictionary());
+            //     }
+            // }
+
+            var channelInfoList = new List<Dictionary<string, object>>();
+            foreach (var channel in channelList)
+            {
+                var channelInfo = ChannelManager.GetChannelInfo(channel.SiteId, channel.Id);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

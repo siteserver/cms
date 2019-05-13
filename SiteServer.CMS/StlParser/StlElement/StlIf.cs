@@ -10,6 +10,7 @@ using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -380,7 +381,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
             }
-            
+
             return isSuccess;
         }
 
@@ -675,7 +676,22 @@ function {functionName}(pageNum)
         private static string GetAttributeValueByContext(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
         {
             string theValue = null;
-            if (contextInfo.ContextType == EContextType.Content)
+            if (contextInfo.ContextType == EContextType.Site)
+            {
+                if (contextInfo.Container.SiteItem != null)
+                {
+                    var siteInfo = SiteManager.GetSiteInfo(contextInfo.Container.SiteItem.Id);
+                    if (siteInfo != null)
+                    {
+                        theValue = GetValueFromSite(pageInfo, contextInfo, siteInfo, testTypeStr);
+                    }
+                }
+                else
+                {
+                    theValue = GetValueFromSite(pageInfo, contextInfo, contextInfo.SiteInfo, testTypeStr);
+                }
+            }
+            else if (contextInfo.ContextType == EContextType.Content)
             {
                 theValue = GetValueFromContent(pageInfo, contextInfo, testTypeStr);
             }
@@ -685,37 +701,24 @@ function {functionName}(pageNum)
             }
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
-                if (contextInfo.ItemContainer.SqlItem != null)
+                if (contextInfo.Container.SqlItem != null)
                 {
-                    theValue = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, testTypeStr, "{0}");
-                }
-            }
-            else if (contextInfo.ContextType == EContextType.Site)
-            {
-                if (contextInfo.ItemContainer.SiteItem != null)
-                {
-                    theValue = DataBinder.Eval(contextInfo.ItemContainer.SiteItem.DataItem, testTypeStr, "{0}");
+                    if (contextInfo.Container.SqlItem.Dictionary.TryGetValue(testTypeStr, out var value))
+                    {
+                        theValue = Convert.ToString(value);
+                    }
                 }
             }
             else
             {
-                if (contextInfo.ItemContainer != null)
+                if (contextInfo.Container != null)
                 {
-                    //else if (contextInfo.ItemContainer.InputItem != null)
-                    //{
-                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.InputItem.DataItem, testTypeStr, "{0}");
-                    //}
-                    //else if (contextInfo.ItemContainer.ContentItem != null)
-                    //{
-                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ContentItem.DataItem, testTypeStr, "{0}");
-                    //}
-                    //else if (contextInfo.ItemContainer.ChannelItem != null)
-                    //{
-                    //    theValue = DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, testTypeStr, "{0}");
-                    //}
-                    if (contextInfo.ItemContainer.SqlItem != null)
+                    if (contextInfo.Container.SqlItem != null)
                     {
-                        theValue = DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, testTypeStr, "{0}");
+                        if (contextInfo.Container.SqlItem.Dictionary.TryGetValue(testTypeStr, out var value))
+                        {
+                            theValue = Convert.ToString(value);
+                        }
                     }
                 }
                 else if (contextInfo.ContentId != 0)//获取内容
@@ -729,6 +732,45 @@ function {functionName}(pageNum)
             }
 
             return theValue ?? string.Empty;
+        }
+
+        private static string GetValueFromSite(PageInfo pageInfo, ContextInfo contextInfo, SiteInfo siteInfo, string testTypeStr)
+        {
+            string theValue;
+
+            if (StringUtils.EqualsIgnoreCase(SiteAttribute.Id, testTypeStr))
+            {
+                theValue = siteInfo.Id.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.SiteName, testTypeStr))
+            {
+                theValue = siteInfo.SiteName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.SiteDir, testTypeStr))
+            {
+                theValue = siteInfo.SiteDir;
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.TableName, testTypeStr))
+            {
+                theValue = siteInfo.TableName;
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.IsRoot, testTypeStr))
+            {
+                theValue = siteInfo.IsRoot.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.ParentId, testTypeStr))
+            {
+                theValue = siteInfo.ParentId.ToString();
+            }
+            else if (StringUtils.EqualsIgnoreCase(SiteAttribute.Taxis, testTypeStr))
+            {
+                theValue = siteInfo.Taxis.ToString();
+            }
+            else
+            {
+                theValue = siteInfo.Additional.GetString(testTypeStr);
+            }
+            return theValue;
         }
 
         private static string GetValueFromChannel(PageInfo pageInfo, ContextInfo contextInfo, string testTypeStr)
@@ -818,7 +860,7 @@ function {functionName}(pageNum)
             }
             else
             {
-                if (contextInfo.ItemContainer != null)
+                if (contextInfo.Container != null)
                 {
                     //else if (contextInfo.ItemContainer.InputItem != null)
                     //{
@@ -832,9 +874,12 @@ function {functionName}(pageNum)
                     //{
                     //    addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.ChannelItem.DataItem, NodeAttribute.AddDate);
                     //}
-                    if (contextInfo.ItemContainer.SqlItem != null)
+                    if (contextInfo.Container.SqlItem != null)
                     {
-                        addDate = (DateTime)DataBinder.Eval(contextInfo.ItemContainer.SqlItem.DataItem, "AddDate");
+                        if (contextInfo.Container.SqlItem.Dictionary.TryGetValue("AddDate", out var value))
+                        {
+                            addDate = (DateTime)value;
+                        }
                     }
                 }
                 else if (contextInfo.ContentId != 0)//获取内容
@@ -875,7 +920,7 @@ function {functionName}(pageNum)
         private static bool IsNumber(int number, string testOperate, string testValue)
         {
             var isSuccess = false;
-            
+
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals))
             {
                 if (number == TranslateUtils.ToInt(testValue))

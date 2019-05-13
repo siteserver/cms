@@ -3,6 +3,7 @@ using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages
 {
@@ -28,7 +29,7 @@ namespace SiteServer.BackgroundPages
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
-            _messageType = messageType; 
+            _messageType = messageType;
             _message = ex != null ? $"{message}<!-- {ex} -->" : message;
         }
 
@@ -46,13 +47,13 @@ namespace SiteServer.BackgroundPages
                     return;
                 }
 
-                #if !DEBUG
+#if !DEBUG
                 if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
                     PageUtilsEx.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
                 }
-                #endif
+#endif
             }
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页

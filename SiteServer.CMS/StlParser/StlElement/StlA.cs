@@ -6,6 +6,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -43,7 +44,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var attributes = new Dictionary<string, string>();
+            var attributes = new NameValueCollection();
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
@@ -126,10 +127,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex,
             string channelName, int upLevel, int topLevel, bool removeTarget, string href, string queryString,
-            string host, Dictionary<string, string> attributes)
+            string host, NameValueCollection attributes)
         {
-            string htmlId;
-            attributes.TryGetValue("id", out htmlId);
+            string htmlId = attributes["id"];
 
             if (!string.IsNullOrEmpty(htmlId) && !string.IsNullOrEmpty(contextInfo.ContainerClientId))
             {

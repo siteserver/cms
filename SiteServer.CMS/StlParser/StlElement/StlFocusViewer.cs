@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model.Attributes;
@@ -11,6 +10,7 @@ using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
+using System.Collections.Generic;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var imageHeight = 182;
             var textHeight = 25;
             var bgColor = string.Empty;
-            var genericControl = new HtmlGenericControl("div");
+            var attributes = new NameValueCollection();
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -202,14 +202,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    genericControl.Attributes[name] = value;
+                    attributes[name] = value;
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, genericControl, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+            return ParseImpl(pageInfo, contextInfo, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlGenericControl genericControl, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
@@ -542,9 +542,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         titles = TranslateUtils.ObjectCollectionToString(titleCollection, "|");
                     }
                     var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
-                    genericControl.ID = uniqueId;
-                    genericControl.InnerHtml = "&nbsp;";
-                    var divHtml = ControlUtils.GetControlRenderHtml(genericControl);
+                    attributes["id"] = uniqueId;
+                    var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
+
                     string scriptHtml = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
 <script type=""text/javascript"">

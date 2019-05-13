@@ -6,14 +6,15 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageTemplate : BasePageCms
+    public class PageTemplate : BasePageCms
     {
-		public DropDownList DdlTemplateType;
-		public TextBox TbKeywords;
-		public Repeater RptContents;
+        public DropDownList DdlTemplateType;
+        public TextBox TbKeywords;
+        public Repeater RptContents;
         public Literal LtlCommands;
 
         private string _templateType;
@@ -67,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     SuccessDeleteMessage();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     FailDeleteMessage(ex);
                 }
@@ -75,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
             else if (AuthRequest.IsQueryExists("SetDefault"))
             {
                 var templateId = AuthRequest.GetQueryInt("TemplateID");
-			
+
                 try
                 {
                     var templateInfo = TemplateManager.GetTemplateInfo(SiteId, templateId);
@@ -88,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                     SuccessMessage();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     FailMessage(ex, "操作失败");
                 }
@@ -212,5 +213,5 @@ namespace SiteServer.BackgroundPages.Cms
                 $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", $"此操作将删除模板“{templateName}”，确认吗？", deleteUrl)}"">删除</a>";
             }
         }
-	}
+    }
 }

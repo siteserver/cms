@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -18,7 +19,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override bool IsSinglePage => true;
 
-	    public static string GetOpenWindowString(int siteId, int templateId, string includeUrl)
+        public static string GetOpenWindowString(int siteId, int templateId, string includeUrl)
         {
             return LayerUtils.GetOpenScript("还原历史版本", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             }));
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -88,5 +89,5 @@ namespace SiteServer.BackgroundPages.Cms
                 LayerUtils.CloseAndRedirect(Page, PageTemplateAdd.GetRedirectUrlToRestore(SiteId, _templateId, templateLogId));
             }
         }
-	}
+    }
 }

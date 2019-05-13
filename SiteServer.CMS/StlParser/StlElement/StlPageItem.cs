@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -238,15 +237,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            var pageHyperLink = new HyperLink();
-                            ControlUtils.AddAttributesIfNotExists(pageHyperLink, attributes);
-                            pageHyperLink.Text = text;
+                            var linkAttributes = new NameValueCollection();
+                            TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
                             if (!string.IsNullOrEmpty(linkClass))
                             {
-                                pageHyperLink.CssClass = linkClass;
+                                linkAttributes["class"] = linkClass;
                             }
-                            pageHyperLink.NavigateUrl = pageUrl;
-                            parsedContent = ControlUtils.GetControlRenderHtml(pageHyperLink);
+                            linkAttributes["href"] = pageUrl;
+                            parsedContent = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{text}</a>";
                         }
                     }
                     else
@@ -369,16 +367,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                var pageHyperLink = new HyperLink
-                                {
-                                    NavigateUrl = pageUrl,
-                                    Text = $"{leftText}{index}{rightText}"
-                                };
+                                var linkAttributes = new NameValueCollection();
+                                linkAttributes["href"] = pageUrl;
+                                var innerHtml = $"{leftText}{index}{rightText}";
                                 if (!string.IsNullOrEmpty(linkClass))
                                 {
-                                    pageHyperLink.CssClass = linkClass;
+                                    linkAttributes["class"] = linkClass;
                                 }
-                                pageBuilder.Append(ControlUtils.GetControlRenderHtml(pageHyperLink) + "&nbsp;");
+                                pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>&nbsp;");
                             }
                         }
                         else
@@ -411,40 +407,39 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
                 {
-                    var selectControl = new HtmlSelect();
+                    var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
                     {
-                        selectControl.Attributes.Add("class", textClass);
+                        selectAttributes["class"] = textClass;
                     }
-                    foreach (string key in attributes.Keys)
-                    {
-                        selectControl.Attributes[key] = attributes[key];
-                    }
+                    TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
 
                     var uniqueId = "PageSelect_" + pageInfo.UniqueId;
-                    selectControl.ID = uniqueId;
+                    selectAttributes["id"] = uniqueId;
 
                     string scriptHtml =
                         $"<script language=\"JavaScript\">function {uniqueId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
-                    selectControl.Attributes.Add("onChange", $"{uniqueId}_jumpMenu('self',this,0)");
+                    selectAttributes["onchange"] = $"{uniqueId}_jumpMenu('self',this,0)";
 
-                    for (var index = 1; index <= pageCount; index++)
+                    var htmlBuider = new StringBuilder();
+                    using (var htmlSelect = new Html.Select(htmlBuider, selectAttributes))
                     {
-                        if (currentPageIndex + 1 != index)
+                        for (var index = 1; index <= pageCount; index++)
                         {
-                            pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
+                            if (currentPageIndex + 1 != index)
+                            {
+                                pageUrl = contextType == EContextType.Channel ? PagerUtility.GetUrlInChannelPage(type, pageInfo.SiteInfo, nodeInfo, index, currentPageIndex, pageCount, pageInfo.IsLocal) : PagerUtility.GetUrlInContentPage(type, pageInfo.SiteInfo, channelId, contentId, index, currentPageIndex, pageCount, pageInfo.IsLocal);
 
-                            var listitem = new ListItem(index.ToString(), pageUrl);
-                            selectControl.Items.Add(listitem);
-                        }
-                        else
-                        {
-                            var listitem = new ListItem(index.ToString(), string.Empty) {Selected = true};
-                            selectControl.Items.Add(listitem);
+                                htmlSelect.AddOption(index.ToString(), pageUrl);
+                            }
+                            else
+                            {
+                                htmlSelect.AddOption(index.ToString(), string.Empty, true);
+                            }
                         }
                     }
 
-                    parsedContent = scriptHtml + ControlUtils.GetControlRenderHtml(selectControl);
+                    parsedContent = scriptHtml + htmlBuider.ToString();
                 }
 
                 if (isAddSpan && !string.IsNullOrEmpty(textClass))
@@ -717,16 +712,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            var pageHyperLink = new HyperLink();
-                            ControlUtils.AddAttributesIfNotExists(pageHyperLink, attributes);
-                            pageHyperLink.NavigateUrl = PageUtils.UnclickedUrl;
-                            pageHyperLink.Attributes.Add("onclick", clickString);
-                            pageHyperLink.Text = text;
+                            var linkAttributes = new NameValueCollection();
+                            TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
+                            linkAttributes["href"] = PageUtils.UnclickedUrl;
+                            linkAttributes["onclick"] = clickString;
                             if (!string.IsNullOrEmpty(linkClass))
                             {
-                                pageHyperLink.CssClass = linkClass;
+                                linkAttributes["class"] = linkClass;
                             }
-                            parsedContent = ControlUtils.GetControlRenderHtml(pageHyperLink);
+                            parsedContent = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{text}</a>";
                         }
                     }
                     else
@@ -856,14 +850,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                var pageHyperLink = new HyperLink {NavigateUrl = PageUtils.UnclickedUrl};
-                                pageHyperLink.Attributes.Add("onclick", clickString);
-                                pageHyperLink.Text = $"{leftText}{index}{rightText}";
+                                var linkAttributes = new NameValueCollection();
+                                linkAttributes["href"] = PageUtils.UnclickedUrl;
+                                linkAttributes["onclick"] = clickString;
                                 if (!string.IsNullOrEmpty(linkClass))
                                 {
-                                    pageHyperLink.CssClass = linkClass;
+                                    linkAttributes["class"] = linkClass;
                                 }
-                                pageBuilder.Append(ControlUtils.GetControlRenderHtml(pageHyperLink) + "&nbsp;");
+                                pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{leftText}{index}{rightText}</a>&nbsp;");
                             }
                         }
                         else
@@ -904,34 +898,36 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
                 {
-                    var selectControl = new HtmlSelect();
+                    var selectAttributes = new NameValueCollection();
+
                     if (!string.IsNullOrEmpty(textClass))
                     {
-                        selectControl.Attributes.Add("class", textClass);
+                        selectAttributes["class"] = textClass;
                     }
-                    foreach (string key in attributes.Keys)
-                    {
-                        selectControl.Attributes[key] = attributes[key];
-                    }
+                    TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
+
                     var uniqueId = "PageSelect_" + pageInfo.UniqueId;
-                    selectControl.ID = uniqueId;
-                    selectControl.Attributes.Add("onChange", clickString);
-                    selectControl.Attributes.Add("style", "display:none");
-                    for (var index = 1; index <= pageCount; index++)
+                    selectAttributes["id"] = uniqueId;
+                    selectAttributes["onchange"] = clickString;
+                    selectAttributes["style"] = "display:none";
+
+                    var htmlBuilder = new StringBuilder();
+                    using (var htmlSelect = new Html.Select(htmlBuilder, selectAttributes))
                     {
-                        if (currentPageIndex + 1 != index)
+                        for (var index = 1; index <= pageCount; index++)
                         {
-                            var listitem = new ListItem(index.ToString(), $"{index - 1}");
-                            selectControl.Items.Add(listitem);
-                        }
-                        else
-                        {
-                            var listitem = new ListItem(index.ToString(), string.Empty) {Selected = true};
-                            selectControl.Items.Add(listitem);
+                            if (currentPageIndex + 1 != index)
+                            {
+                                htmlSelect.AddOption(index.ToString(), $"{index - 1}");
+                            }
+                            else
+                            {
+                                htmlSelect.AddOption(index.ToString(), string.Empty, true);
+                            }
                         }
                     }
 
-                    parsedContent = ControlUtils.GetControlRenderHtml(selectControl);
+                    parsedContent = htmlBuilder.ToString();
                 }
 
                 if (isAddSpan && !string.IsNullOrEmpty(textClass))
@@ -1192,16 +1188,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         else
                         {
-                            var pageHyperLink = new HyperLink();
-                            ControlUtils.AddAttributesIfNotExists(pageHyperLink, attributes);
-                            pageHyperLink.NavigateUrl = PageUtils.UnclickedUrl;
-                            pageHyperLink.Attributes.Add("onclick", jsMethod + ";return false;");
-                            pageHyperLink.Text = text;
+                            var linkAttributes = new NameValueCollection();
+                            TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
+                            linkAttributes["href"] = PageUtils.UnclickedUrl;
+                            linkAttributes["onclick"] = jsMethod + ";return false;";
                             if (!string.IsNullOrEmpty(linkClass))
                             {
-                                pageHyperLink.CssClass = linkClass;
+                                linkAttributes["class"] = linkClass;
                             }
-                            parsedContent = ControlUtils.GetControlRenderHtml(pageHyperLink);
+                            parsedContent = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{text}</a>";
                         }
                     }
                     else
@@ -1330,14 +1325,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                             }
                             else
                             {
-                                var pageHyperLink = new HyperLink {NavigateUrl = PageUtils.UnclickedUrl};
-                                pageHyperLink.Attributes.Add("onclick", jsMethod + ";return false;");
-                                pageHyperLink.Text = $"{leftText}{index}{rightText}";
+                                var linkAttributes = new NameValueCollection();
+                                linkAttributes["href"] = PageUtils.UnclickedUrl;
+                                linkAttributes["onclick"] = jsMethod + ";return false;";
                                 if (!string.IsNullOrEmpty(linkClass))
                                 {
-                                    pageHyperLink.CssClass = linkClass;
+                                    linkAttributes["class"] = linkClass;
                                 }
-                                pageBuilder.Append(ControlUtils.GetControlRenderHtml(pageHyperLink) + "&nbsp;");
+                                pageBuilder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{leftText}{index}{rightText}</a>&nbsp;");
                             }
                         }
                         else
@@ -1377,29 +1372,29 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (type.ToLower().Equals(TypePageSelect.ToLower()))//页跳转
                 {
-                    var selectControl = new HtmlSelect();
+                    var selectAttributes = new NameValueCollection();
                     if (!string.IsNullOrEmpty(textClass))
                     {
-                        selectControl.Attributes.Add("class", textClass);
+                        selectAttributes["class"] = textClass;
                     }
-                    foreach (string key in attributes.Keys)
-                    {
-                        selectControl.Attributes[key] = attributes[key];
-                    }
+                    TranslateUtils.AddAttributesIfNotExists(selectAttributes, attributes);
+                    selectAttributes["onchange"] = jsMethod + ";return false;";
 
-                    selectControl.Attributes.Add("onChange", jsMethod + ";return false;");
-
-                    for (var index = 1; index <= pageCount; index++)
+                    var htmlBuilder = new StringBuilder();
+                    using (var htmlSelect = new Html.Select(htmlBuilder, selectAttributes))
                     {
-                        var listitem = new ListItem(index.ToString(), index.ToString());
-                        if (currentPageIndex + 1 == index)
+                        for (var index = 1; index <= pageCount; index++)
                         {
-                            listitem.Selected = true;
+                            var selected = false;
+                            if (currentPageIndex + 1 == index)
+                            {
+                                selected = true;
+                            }
+                            htmlSelect.AddOption(index.ToString(), index.ToString(), selected);
                         }
-                        selectControl.Items.Add(listitem);
                     }
 
-                    parsedContent = ControlUtils.GetControlRenderHtml(selectControl);
+                    parsedContent = htmlBuilder.ToString();
                 }
 
                 if (isAddSpan && !string.IsNullOrEmpty(textClass))

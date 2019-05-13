@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -131,7 +132,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 DdlGroupId.Items.Add(new ListItem(groupInfo.GroupName, groupInfo.Id.ToString()));
             }
-            
+
             //添加隐藏属性
             DdlSearchType.Items.Add(new ListItem("用户Id", UserAttribute.Id));
             DdlSearchType.Items.Add(new ListItem("用户名", UserAttribute.UserName));

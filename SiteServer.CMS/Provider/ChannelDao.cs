@@ -13,13 +13,12 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.Provider
 {
     public class ChannelDao : DataProviderBase
     {
-        private string SqlColumns => $"{ChannelAttribute.Id}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
-
         public override string TableName => "siteserver_Channel";
 
         public override List<TableColumn> TableColumns => new List<TableColumn>
@@ -1198,45 +1197,53 @@ ORDER BY Taxis";
             return dic;
         }
 
-        public DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        // public DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     if (channelIdList == null || channelIdList.Count == 0)
+        //     {
+        //         return null;
+        //     }
+
+        //     //var sqlWhereString =
+        //     //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
+
+        //     var sqlWhereString =
+        //         $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
+
+        //     //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+        //     var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+        //     return ExecuteDataset(sqlSelect);
+        // }
+
+        public List<Container.Channel> GetContainerChannelList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
                 return null;
             }
 
-            //var sqlWhereString =
-            //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
-
             var sqlWhereString =
                 $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
 
-            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, Container.Channel.SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return ExecuteDataset(sqlSelect);
-        }
-
-        public List<int> GetStlChannelIdList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            if (channelIdList == null || channelIdList.Count == 0)
-            {
-                return null;
-            }
-
-            var sqlWhereString =
-                $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString}";
-
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
-
-            var list = new List<int>();
+            var list = new List<Container.Channel>();
+            var itemIndex = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var channelId = GetInt(rdr, 0);
-                    list.Add(channelId);
+                    var i = 0;
+                    list.Add(new Container.Channel
+                    {
+                        ItemIndex = itemIndex++,
+                        Id = GetInt(rdr, i++),
+                        SiteId = GetInt(rdr, i++),
+                        AddDate = GetDateTime(rdr, i++),
+                        Taxis = GetInt(rdr, i++)
+                    });
                 }
                 rdr.Close();
             }
@@ -1244,46 +1251,54 @@ ORDER BY Taxis";
             return list;
         }
 
-        public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // public DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+
+        //     //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+        //     var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+        //     return ExecuteDataset(sqlSelect);
+        // }
+
+        public List<Container.Channel> GetContainerChannelListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
             var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, Container.Channel.SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return ExecuteDataset(sqlSelect);
-        }
-
-        public List<int> GetStlChannelIdListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
-
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
-
-            var channelIdList = new List<int>();
+            var channelItemList = new List<Container.Channel>();
+            var itemIndex = 0;
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
-                    var channelId = GetInt(rdr, 0);
-                    channelIdList.Add(channelId);
+                    var i = 0;
+                    channelItemList.Add(new Container.Channel
+                    {
+                        ItemIndex = itemIndex++,
+                        Id = GetInt(rdr, i++),
+                        SiteId = GetInt(rdr, i++),
+                        AddDate = GetDateTime(rdr, i++),
+                        Taxis = GetInt(rdr, i++)
+                    });
                 }
                 rdr.Close();
             }
 
-            return channelIdList;
+            return channelItemList;
         }
 
-        public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
+        // public DataSet GetStlDataSetBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     var sqlWhereString = $"WHERE (SiteId = {siteId} {whereString})";
 
-            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
-            var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+        //     //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlColumns, sqlWhereString, orderByString);
+        //     var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
 
-            return ExecuteDataset(sqlSelect);
-        }
+        //     return ExecuteDataset(sqlSelect);
+        // }
 
         public List<string> GetContentModelPluginIdList()
         {

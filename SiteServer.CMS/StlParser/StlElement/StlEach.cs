@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
+﻿using System.Collections.Generic;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
-using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlParser.Template;
+using System.Text;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -43,16 +40,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 type = BackgroundContentAttribute.ImageUrl;
             }
 
-            var contextType = EContextType.Each;
-            IEnumerable dataSource = null;
             var contentInfo = contextInfo.ContentInfo;
+            var valueList = new List<string>();
+
             if (contentInfo != null)
             {
-                var eachList = new List<string>();
-
                 if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
                 {
-                    eachList.Add(contentInfo.GetString(type));
+                    valueList.Add(contentInfo.GetString(type));
                 }
 
                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
@@ -61,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                     {
-                        eachList.Add(extendValue);
+                        valueList.Add(extendValue);
                     }
                 }
 
@@ -70,96 +65,212 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (listInfo.StartNum > 1)
                     {
                         var count = listInfo.StartNum - 1;
-                        if (count > eachList.Count)
+                        if (count > valueList.Count)
                         {
-                            count = eachList.Count;
+                            count = valueList.Count;
                         }
-                        eachList.RemoveRange(0, count);
+                        valueList.RemoveRange(0, count);
                     }
 
                     if (listInfo.TotalNum > 0)
                     {
-                        if (listInfo.TotalNum < eachList.Count)
+                        if (listInfo.TotalNum < valueList.Count)
                         {
-                            eachList.RemoveRange(listInfo.TotalNum, eachList.Count - listInfo.TotalNum);
+                            valueList.RemoveRange(listInfo.TotalNum, valueList.Count - listInfo.TotalNum);
                         }
                     }
                 }
-
-                dataSource = eachList;
             }
+
+            if (valueList == null || valueList.Count == 0) return string.Empty;
+
+            var eachList = new List<Container.Each>();
+            var index = 0;
+            foreach (string value in valueList)
+            {
+                eachList.Add(new Container.Each
+                {
+                    ItemIndex = index++,
+                    Value = value
+                });
+            }
+
+            var builder = new StringBuilder();
 
             if (listInfo.Layout == ELayout.None)
             {
-                var rptContents = new Repeater
-                {
-                    ItemTemplate =
-                        new RepeaterTemplate(listInfo.ItemTemplate, listInfo.SelectedItems,
-                            listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat,
-                            pageInfo, contextType, contextInfo)
-                };
-
                 if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+                    builder.Append(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+
+                var isAlternative = false;
+                var isSeparator = false;
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+                    isAlternative = true;
                 }
                 if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
-                {
-                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
+                    isSeparator = true;
                 }
 
-                rptContents.DataSource = dataSource;
-
-                rptContents.DataBind();
-
-                if (rptContents.Items.Count > 0)
+                for (var i = 0; i < eachList.Count; i++)
                 {
-                    parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
+                    if (isSeparator && i % 2 != 0 && i != eachList.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorTemplate);
+                    }
+
+                    var each = eachList[i];
+
+                    pageInfo.EachItems.Push(each);
+                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    builder.Append(TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Each, contextInfo));
+                }
+
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+                {
+                    builder.Append(listInfo.FooterTemplate);
                 }
             }
             else
             {
-                var pdlContents = new ParsedDataList();
-
-                TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
-
-                pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
-                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
-                {
-                    pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
-                {
-                    pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
-                {
-                    pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
-                }
+                var isAlternative = false;
                 if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
+                    isAlternative = true;
                 }
 
-                pdlContents.DataSource = dataSource;
+                var tableAttributes = listInfo.GetTableAttributes();
+                var cellAttributes = listInfo.GetCellAttributes();
 
-                pdlContents.DataBind();
-
-                if (pdlContents.Items.Count > 0)
+                using (Html.Table table = new Html.Table(builder, tableAttributes))
                 {
-                    parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
+                    if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+                    {
+                        table.StartHead();
+                        using (var tHead = table.AddRow())
+                        {
+                            tHead.AddCell(listInfo.HeaderTemplate, cellAttributes);
+                        }
+                        table.EndHead();
+                    }
+
+                    table.StartBody();
+
+                    var columns = listInfo.Columns <= 1 ? 1 : listInfo.Columns;
+                    var itemIndex = 0;
+
+                    while (true)
+                    {
+                        using (var tr = table.AddRow(null))
+                        {
+                            for (var cell = 1; cell <= columns; cell++)
+                            {
+                                var cellHtml = string.Empty;
+                                if (itemIndex < eachList.Count)
+                                {
+                                    var each = eachList[itemIndex];
+
+                                    pageInfo.EachItems.Push(each);
+                                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                                    cellHtml = TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Each, contextInfo);
+                                }
+                                tr.AddCell(cellHtml, cellAttributes);
+                                itemIndex++;
+                            }
+                            if (itemIndex >= eachList.Count) break;
+                        }
+                    }
+
+                    table.EndBody();
+
+                    if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+                    {
+                        table.StartFoot();
+                        using (var tFoot = table.AddRow())
+                        {
+                            tFoot.AddCell(listInfo.FooterTemplate, cellAttributes);
+                        }
+                        table.EndFoot();
+                    }
                 }
             }
 
-            return parsedContent;
+            return builder.ToString();
+
+            // if (listInfo.Layout == ELayout.None)
+            // {
+            //     var rptContents = new Repeater
+            //     {
+            //         ItemTemplate =
+            //             new RepeaterTemplate(listInfo.ItemTemplate, listInfo.SelectedItems,
+            //                 listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat,
+            //                 pageInfo, contextType, contextInfo)
+            //     };
+
+            //     if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+            //     {
+            //         rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+            //     {
+            //         rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
+            //     {
+            //         rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
+            //     {
+            //         rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
+            //     }
+
+            //     rptContents.DataSource = dataSource;
+
+            //     rptContents.DataBind();
+
+            //     if (rptContents.Items.Count > 0)
+            //     {
+            //         parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
+            //     }
+            // }
+            // else
+            // {
+            //     var pdlContents = new ParsedDataList();
+
+            //     TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
+
+            //     pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
+            //     if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+            //     {
+            //         pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+            //     {
+            //         pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
+            //     {
+            //         pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
+            //     {
+            //         pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, contextType, contextInfo);
+            //     }
+
+            //     pdlContents.DataSource = dataSource;
+
+            //     pdlContents.DataBind();
+
+            //     if (pdlContents.Items.Count > 0)
+            //     {
+            //         parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
+            //     }
+            // }
+
+            // return parsedContent;
         }
     }
 }

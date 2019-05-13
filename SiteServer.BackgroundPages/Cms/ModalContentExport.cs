@@ -6,10 +6,11 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalContentExport : BasePageCms
+    public class ModalContentExport : BasePageCms
     {
         public DropDownList DdlExportType;
         public DropDownList DdlPeriods;
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -125,6 +126,6 @@ namespace SiteServer.BackgroundPages.Cms
             var checkedState = ETriStateUtils.GetEnumType(DdlPeriods.SelectedValue);
             var redirectUrl = ModalExportMessage.GetRedirectUrlStringToExportContent(SiteId, _channelId, DdlExportType.SelectedValue, AuthRequest.GetQueryString("contentIdCollection"), displayAttributes, isPeriods, startDate, endDate, checkedState);
             PageUtilsEx.Redirect(redirectUrl);
-		}
-	}
+        }
+    }
 }

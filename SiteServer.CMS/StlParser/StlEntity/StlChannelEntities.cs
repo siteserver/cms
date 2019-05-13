@@ -13,11 +13,11 @@ namespace SiteServer.CMS.StlParser.StlEntity
 {
     [StlElement(Title = "栏目实体", Description = "通过 {channel.} 实体在模板中显示栏目值")]
     public static class StlChannelEntities
-	{
+    {
         public const string EntityName = "channel";
 
         private const string ChannelId = nameof(ChannelId);
-	    private const string ChannelName = nameof(ChannelName);
+        private const string ChannelName = nameof(ChannelName);
         private const string ChannelIndex = nameof(ChannelIndex);
         private const string Title = nameof(Title);
         private const string Content = nameof(Content);
@@ -29,19 +29,19 @@ namespace SiteServer.CMS.StlParser.StlEntity
         private const string ItemIndex = nameof(ItemIndex);
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
-	    {
-	        {ChannelId, "栏目ID"},
-	        {Title, "栏目名称"},
-	        {ChannelName, "栏目名称"},
-	        {ChannelIndex, "栏目索引"},
-	        {Content, "栏目正文"},
-	        {NavigationUrl, "栏目链接地址"},
-	        {ImageUrl, "栏目图片地址"},
-	        {AddDate, "栏目添加日期"},
-	        {DirectoryName, "生成文件夹名称"},
-	        {Group, "栏目组别"},
-	        {ItemIndex, "栏目排序"}
-	    };
+        {
+            {ChannelId, "栏目ID"},
+            {Title, "栏目名称"},
+            {ChannelName, "栏目名称"},
+            {ChannelIndex, "栏目索引"},
+            {Content, "栏目正文"},
+            {NavigationUrl, "栏目链接地址"},
+            {ImageUrl, "栏目图片地址"},
+            {AddDate, "栏目添加日期"},
+            {DirectoryName, "生成文件夹名称"},
+            {Group, "栏目组别"},
+            {ItemIndex, "栏目排序"}
+        };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -65,7 +65,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                         channelId = contextInfo.ChannelId;
                     }
                 }
-                
+
                 if (attributeName.ToLower().StartsWith("up") && attributeName.IndexOf(".", StringComparison.Ordinal) != -1)
                 {
                     if (attributeName.ToLower().StartsWith("up."))
@@ -138,9 +138,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 {
                     parsedContent = nodeInfo.GroupNameCollection;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
+                else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.Container?.ChannelItem != null)
                 {
-                    parsedContent = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.ItemIndex, attributeName, contextInfo).ToString();
+                    parsedContent = StlParserUtility.ParseItemIndex(contextInfo.Container.ChannelItem.ItemIndex, attributeName, contextInfo).ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.Keywords, attributeName))//栏目组别
                 {
@@ -188,7 +188,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
             if (isAddAndNotPostBack && value == null)
             {
                 value = defaultValue;
-            } 
+            }
 
             return value.ToString();
         }

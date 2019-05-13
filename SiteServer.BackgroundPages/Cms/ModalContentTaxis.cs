@@ -10,6 +10,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {

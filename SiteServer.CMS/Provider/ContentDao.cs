@@ -19,14 +19,13 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
 using Datory;
 using SiteServer.CMS.Plugin.Apis;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.CMS.Provider
 {
     public class ContentDao : DataProviderBase
     {
         private const int TaxisIsTopStartValue = 2000000000;
-
-        private static string MinListColumns { get; } = $"{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}";
 
         public static string GetContentTableName(int siteId)
         {
@@ -303,7 +302,7 @@ namespace SiteServer.CMS.Provider
             ContentManager.RemoveCache(tableName, channelId);
         }
 
-        
+
 
         public void SetAutoPageContentToSite(SiteInfo siteInfo)
         {
@@ -478,7 +477,7 @@ namespace SiteServer.CMS.Provider
             if (!string.IsNullOrEmpty(tableName) && contentIdList != null && contentIdList.Count > 0)
             {
                 TagUtils.RemoveTags(siteId, contentIdList);
-                
+
                 var sqlString =
                     $"DELETE FROM {tableName} WHERE SiteId = {siteId} AND {ContentAttribute.ReferenceId} > 0 AND Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(contentIdList)})";
 
@@ -1328,11 +1327,6 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             return DataProvider.DatabaseDao.GetIntResult(sqlString);
         }
 
-        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
-        {
-            return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
-        }
-
         public List<int> GetIdListBySameTitle(string tableName, int channelId, string title)
         {
             var list = new List<int>();
@@ -1405,6 +1399,11 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             }
 
             return retVal;
+        }
+
+        public DataSet GetStlDataSourceChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        {
+            return GetStlDataSourceChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
         }
 
         private DataSet GetStlDataSourceChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
@@ -1538,12 +1537,320 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             return startNum <= 1 ? GetStlDataSourceByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString) : GetStlDataSourceByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
         }
 
+        public List<Container.Content> GetContainerContentListChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        {
+            return GetContainerContentListChecked(tableName, channelIdList, startNum, totalNum, orderByString, whereString, others);
+        }
+
+        private List<Container.Content> GetContainerContentListChecked(string tableName, List<int> channelIdList, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        {
+            if (channelIdList == null || channelIdList.Count == 0) return null;
+
+            var sqlWhereString = channelIdList.Count == 1 ? $"WHERE (ChannelId = {channelIdList[0]} AND IsChecked = '{true}' {whereString})" : $"WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString})";
+
+            if (others != null && others.Count > 0)
+            {
+                var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
+
+                foreach (var attributeName in others.AllKeys)
+                {
+                    if (StringUtils.ContainsIgnoreCase(columnNameList, attributeName))
+                    {
+                        var value = others.Get(attributeName);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            value = value.Trim();
+                            if (StringUtils.StartsWithIgnoreCase(value, "not:"))
+                            {
+                                value = value.Substring("not:".Length);
+                                if (value.IndexOf(',') == -1)
+                                {
+                                    sqlWhereString += $" AND ({attributeName} <> '{value}')";
+                                }
+                                else
+                                {
+                                    var collection = TranslateUtils.StringCollectionToStringList(value);
+                                    foreach (var val in collection)
+                                    {
+                                        sqlWhereString += $" AND ({attributeName} <> '{val}')";
+                                    }
+                                }
+                            }
+                            else if (StringUtils.StartsWithIgnoreCase(value, "contains:"))
+                            {
+                                value = value.Substring("contains:".Length);
+                                if (value.IndexOf(',') == -1)
+                                {
+                                    sqlWhereString += $" AND ({attributeName} LIKE '%{value}%')";
+                                }
+                                else
+                                {
+                                    var builder = new StringBuilder(" AND (");
+                                    var collection = TranslateUtils.StringCollectionToStringList(value);
+                                    foreach (var val in collection)
+                                    {
+                                        builder.Append($" {attributeName} LIKE '%{val}%' OR ");
+                                    }
+                                    builder.Length -= 3;
+
+                                    builder.Append(")");
+
+                                    sqlWhereString += builder.ToString();
+                                }
+                            }
+                            else if (StringUtils.StartsWithIgnoreCase(value, "start:"))
+                            {
+                                value = value.Substring("start:".Length);
+                                if (value.IndexOf(',') == -1)
+                                {
+                                    sqlWhereString += $" AND ({attributeName} LIKE '{value}%')";
+                                }
+                                else
+                                {
+                                    var builder = new StringBuilder(" AND (");
+                                    var collection = TranslateUtils.StringCollectionToStringList(value);
+                                    foreach (var val in collection)
+                                    {
+                                        builder.Append($" {attributeName} LIKE '{val}%' OR ");
+                                    }
+                                    builder.Length -= 3;
+
+                                    builder.Append(")");
+
+                                    sqlWhereString += builder.ToString();
+                                }
+                            }
+                            else if (StringUtils.StartsWithIgnoreCase(value, "end:"))
+                            {
+                                value = value.Substring("end:".Length);
+                                if (value.IndexOf(',') == -1)
+                                {
+                                    sqlWhereString += $" AND ({attributeName} LIKE '%{value}')";
+                                }
+                                else
+                                {
+                                    var builder = new StringBuilder(" AND (");
+                                    var collection = TranslateUtils.StringCollectionToStringList(value);
+                                    foreach (var val in collection)
+                                    {
+                                        builder.Append($" {attributeName} LIKE '%{val}' OR ");
+                                    }
+                                    builder.Length -= 3;
+
+                                    builder.Append(")");
+
+                                    sqlWhereString += builder.ToString();
+                                }
+                            }
+                            else
+                            {
+                                if (value.IndexOf(',') == -1)
+                                {
+                                    sqlWhereString += $" AND ({attributeName} = '{value}')";
+                                }
+                                else
+                                {
+                                    var builder = new StringBuilder(" AND (");
+                                    var collection = TranslateUtils.StringCollectionToStringList(value);
+                                    foreach (var val in collection)
+                                    {
+                                        builder.Append($" {attributeName} = '{val}' OR ");
+                                    }
+                                    builder.Length -= 3;
+
+                                    builder.Append(")");
+
+                                    sqlWhereString += builder.ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return startNum <= 1 ? GetContainerContentListByContentNumAndWhereString(tableName, totalNum, sqlWhereString, orderByString) : GetContainerContentListByStartNum(tableName, startNum, totalNum, sqlWhereString, orderByString);
+        }
+
+        private List<Container.Content> GetContainerContentListByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
+        {
+            var list = new List<Container.Content>();
+            var itemIndex = 0;
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                var sqlString = DataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, Container.Content.SqlColumns, whereString, orderByString);
+
+                //{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var i = 0;
+                        list.Add(new Container.Content
+                        {
+                            ItemIndex = itemIndex++,
+                            Id = GetInt(rdr, i++),
+                            SiteId = GetInt(rdr, i++),
+                            ChannelId = GetInt(rdr, i++),
+                            Top = TranslateUtils.ToBool(GetString(rdr, i++)),
+                            AddDate = GetDateTime(rdr, i++),
+                            LastEditDate = GetDateTime(rdr, i++),
+                            Taxis = GetInt(rdr, i++),
+                            Hits = GetInt(rdr, i++),
+                            HitsByDay = GetInt(rdr, i++),
+                            HitsByWeek = GetInt(rdr, i++),
+                            HitsByMonth = GetInt(rdr, i++),
+                        });
+                    }
+                    rdr.Close();
+                }
+            }
+
+            return list;
+        }
+
+        private List<Container.Content> GetContainerContentListByStartNum(string tableName, int startNum, int totalNum, string whereString, string orderByString)
+        {
+            var list = new List<Container.Content>();
+            var itemIndex = 0;
+
+            if (!string.IsNullOrEmpty(tableName))
+            {
+                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, whereString, orderByString);
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, whereString, orderByString, startNum - 1, totalNum);
+
+                using (var rdr = ExecuteReader(sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        var i = 0;
+                        list.Add(new Container.Content
+                        {
+                            ItemIndex = itemIndex++,
+                            Id = GetInt(rdr, i++),
+                            SiteId = GetInt(rdr, i++),
+                            ChannelId = GetInt(rdr, i++),
+                            Top = TranslateUtils.ToBool(GetString(rdr, i++)),
+                            AddDate = GetDateTime(rdr, i++),
+                            LastEditDate = GetDateTime(rdr, i++),
+                            Taxis = GetInt(rdr, i++),
+                            Hits = GetInt(rdr, i++),
+                            HitsByDay = GetInt(rdr, i++),
+                            HitsByWeek = GetInt(rdr, i++),
+                            HitsByMonth = GetInt(rdr, i++),
+                        });
+                    }
+                    rdr.Close();
+                }
+            }
+
+            return list;
+        }
+
+        public List<Container.Content> GetContainerContentListBySqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
+        {
+            var pageSqlString = string.Empty;
+
+            var temp = sqlString.ToLower();
+            var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
+            if (pos > -1)
+                sqlString = sqlString.Substring(0, pos);
+
+            var recordsInLastPage = itemsPerPage;
+
+            // Calculate the correspondent number of pages
+            var lastPage = totalCount / itemsPerPage;
+            var remainder = totalCount % itemsPerPage;
+            if (remainder > 0)
+                lastPage++;
+            var pageCount = lastPage;
+
+            if (remainder > 0)
+                recordsInLastPage = remainder;
+
+            var recsToRetrieve = itemsPerPage;
+            if (currentPageIndex == pageCount - 1)
+                recsToRetrieve = recordsInLastPage;
+
+            orderString = orderString.ToUpper();
+            var orderStringReverse = orderString.Replace(" DESC", " DESC2");
+            orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
+            orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
+
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                pageSqlString = $@"
+SELECT {Container.Content.SqlColumns} FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                pageSqlString = $@"
+SELECT {Container.Content.SqlColumns} FROM (
+    SELECT TOP {recsToRetrieve} * FROM (
+        SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
+    ) AS t1 {orderStringReverse}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                pageSqlString = $@"
+SELECT {Container.Content.SqlColumns} FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
+    ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
+) AS t2 {orderString}";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                pageSqlString = $@"
+SELECT {Container.Content.SqlColumns} FROM (
+    SELECT * FROM (
+        SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} {orderString}
+    ) WHERE ROWNUM <= {recsToRetrieve} {orderStringReverse}
+) {orderString}";
+            }
+
+            var list = new List<Container.Content>();
+            var itemIndex = 0;
+
+            using (var rdr = ExecuteReader(pageSqlString))
+            {
+                while (rdr.Read())
+                {
+                    var i = 0;
+                    list.Add(new Container.Content
+                    {
+                        ItemIndex = itemIndex++,
+                        Id = GetInt(rdr, i++),
+                        SiteId = GetInt(rdr, i++),
+                        ChannelId = GetInt(rdr, i++),
+                        Top = TranslateUtils.ToBool(GetString(rdr, i++)),
+                        AddDate = GetDateTime(rdr, i++),
+                        LastEditDate = GetDateTime(rdr, i++),
+                        Taxis = GetInt(rdr, i++),
+                        Hits = GetInt(rdr, i++),
+                        HitsByDay = GetInt(rdr, i++),
+                        HitsByWeek = GetInt(rdr, i++),
+                        HitsByMonth = GetInt(rdr, i++),
+                    });
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
+
         private DataSet GetStlDataSourceByContentNumAndWhereString(string tableName, int totalNum, string whereString, string orderByString)
         {
             DataSet dataset = null;
             if (!string.IsNullOrEmpty(tableName))
             {
-                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, MinListColumns, whereString, orderByString);
+                var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, totalNum, Container.Content.SqlColumns, whereString, orderByString);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -1555,7 +1862,7 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             if (!string.IsNullOrEmpty(tableName))
             {
                 //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, whereString, orderByString);
-                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderByString, startNum - 1, totalNum);
+                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, whereString, orderByString, startNum - 1, totalNum);
                 dataset = ExecuteDataset(sqlSelect);
             }
             return dataset;
@@ -1738,7 +2045,7 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
             if (totalCount > 0 && parameters.Skip < totalCount)
             {
-                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, parameters.Skip, parameters.Top);
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, whereString, orderString, parameters.Skip, parameters.Top);
 
                 using (var connection = GetConnection())
                 {
@@ -1800,7 +2107,7 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             totalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString, dbArgs);
             if (totalCount > 0 && skip < totalCount)
             {
-                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, skip, top);
+                var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, whereString, orderString, skip, top);
 
                 using (var connection = GetConnection())
                 {
@@ -2121,7 +2428,7 @@ group by tmp.userName";
             if (!string.IsNullOrEmpty(tableName))
             {
                 //return DataProvider.DatabaseDao.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, sqlWhereString, orderByString);
-                return DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+                return DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
             }
             return string.Empty;
         }
@@ -2699,7 +3006,7 @@ GO");
         {
             var list = new List<int>();
 
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, offset, limit);
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, Container.Content.SqlColumns, whereString, orderString, offset, limit);
 
             using (var rdr = ExecuteReader(sqlString))
             {

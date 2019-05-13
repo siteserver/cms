@@ -1,6 +1,4 @@
-﻿using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -9,7 +7,8 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
-using AngleSharp;
+using System.Text;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -87,8 +86,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var selectControl = new HtmlSelect();
-
+            var attributes = new NameValueCollection();
             var isChannel = true;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
@@ -216,14 +214,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    selectControl.Attributes[name] = value;
+                    attributes[name] = value;
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, selectControl, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
+            return ParseImpl(pageInfo, contextInfo, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlSelect selectControl, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
         {
             EScopeType scopeType;
             if (!string.IsNullOrEmpty(scopeTypeString))
@@ -244,7 +242,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
 
             var uniqueId = "Select_" + pageInfo.UniqueId;
-            selectControl.ID = uniqueId;
+            attributes["id"] = uniqueId;
 
             string scriptHtml;
             if (openWin)
@@ -259,80 +257,86 @@ selObj.selectedIndex=0;
 {"}"}
 //-->
 </script>";
-                selectControl.Attributes.Add("onChange", $"{uniqueId}_jumpMenu('parent',this)");
+                attributes["onchange"] = $"{uniqueId}_jumpMenu('parent',this)";
             }
             else
             {
                 scriptHtml =
                     $"<script language=\"JavaScript\">function {uniqueId}_jumpMenu(targ,selObj,restore){{eval(targ+\".location=\'\"+selObj.options[selObj.selectedIndex].value+\"\'\");if (restore) selObj.selectedIndex=0;}}</script>";
-                selectControl.Attributes.Add("onChange", $"{uniqueId}_jumpMenu('self',this,0)");
-            }
-            if (!string.IsNullOrEmpty(displayTitle))
-            {
-                var listitem = new ListItem(displayTitle, PageUtils.UnclickedUrl) { Selected = true };
-                selectControl.Items.Add(listitem);
+
+                attributes["onchange"] = $"{uniqueId}_jumpMenu('self',this,0)";
             }
 
-            if (isChannel)
+            var htmlBuilder = new StringBuilder();
+            using (var htmlSelect = new Html.Select(htmlBuilder, attributes))
             {
-                var channelIdList = StlDataUtility.GetChannelIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
-
-                if (channelIdList != null && channelIdList.Count > 0)
+                if (!string.IsNullOrEmpty(displayTitle))
                 {
-                    foreach (var channelIdInSelect in channelIdList)
-                    {
-                        var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelIdInSelect);
+                    htmlSelect.AddOption(displayTitle, PageUtils.UnclickedUrl, true);
+                }
 
-                        if (nodeInfo != null)
+                if (isChannel)
+                {
+                    var channelIdList = StlDataUtility.GetChannelIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
+
+                    if (channelIdList != null && channelIdList.Count > 0)
+                    {
+                        foreach (var channelIdInSelect in channelIdList)
                         {
-                            var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
-                            var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal);
+                            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelIdInSelect);
+
+                            if (nodeInfo != null)
+                            {
+                                var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
+                                var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal);
+                                if (!string.IsNullOrEmpty(queryString))
+                                {
+                                    url = PageUtils.AddQueryString(url, queryString);
+                                }
+
+                                htmlSelect.AddOption(title, url);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+
+                    if (minContentInfoList != null)
+                    {
+                        foreach (var minContentInfo in minContentInfoList)
+                        {
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                            var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);
                             }
-                            var listitem = new ListItem(title, url);
-                            selectControl.Items.Add(listitem);
+
+                            htmlSelect.AddOption(title, url);
                         }
+                        //foreach (var dataItem in dataSource)
+                        //{
+                        //    var contentInfo = new BackgroundContentInfo(dataItem);
+                        //    if (contentInfo != null)
+                        //    {
+                        //        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
+                        //        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo);
+                        //        if (!string.IsNullOrEmpty(queryString))
+                        //        {
+                        //            url = PageUtils.AddQueryString(url, queryString);
+                        //        }
+                        //        var listitem = new ListItem(title, url);
+                        //        selectControl.Items.Add(listitem);
+                        //    }
+                        //}
                     }
                 }
             }
-            else
-            {
-                var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
 
-                if (minContentInfoList != null)
-                {
-                    foreach (var minContentInfo in minContentInfoList)
-                    {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
-                        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
-                        if (!string.IsNullOrEmpty(queryString))
-                        {
-                            url = PageUtils.AddQueryString(url, queryString);
-                        }
-                        selectControl.Items.Add(new ListItem(title, url));
-                    }
-                    //foreach (var dataItem in dataSource)
-                    //{
-                    //    var contentInfo = new BackgroundContentInfo(dataItem);
-                    //    if (contentInfo != null)
-                    //    {
-                    //        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                    //        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo);
-                    //        if (!string.IsNullOrEmpty(queryString))
-                    //        {
-                    //            url = PageUtils.AddQueryString(url, queryString);
-                    //        }
-                    //        var listitem = new ListItem(title, url);
-                    //        selectControl.Items.Add(listitem);
-                    //    }
-                    //}
-                }
-            }
-
-            return scriptHtml + ControlUtils.GetControlRenderHtml(selectControl);
+            return scriptHtml + htmlBuilder.ToString();
         }
     }
 }

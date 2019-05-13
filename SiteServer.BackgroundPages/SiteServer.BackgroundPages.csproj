@@ -499,7 +499,7 @@
     <Compile Include="Core\AreaTreeItem.cs" />
     <Compile Include="Core\BackgroundInputTypeParser.cs" />
     <Compile Include="Core\ChannelLoading.cs" />
-    <Compile Include="Core\ControlUtility.cs" />
+    <Compile Include="Core\ControlUtils.cs" />
     <Compile Include="Core\DepartmentTreeItem.cs" />
     <Compile Include="Core\NavigationTreeItem.cs" />
     <Compile Include="Core\NodeNaviTreeItem.cs" />

@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -63,7 +63,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, separator, target, linkClass, wordNum,isContainSelf);
+            return ParseImpl(pageInfo, contextInfo, separator, target, linkClass, wordNum, isContainSelf);
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
@@ -93,26 +93,26 @@ namespace SiteServer.CMS.StlParser.StlElement
                     var currentNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, currentId);
                     if (currentId == pageInfo.SiteId)
                     {
-                        var stlAnchor = new HtmlAnchor();
+                        var attributes = new NameValueCollection();
                         if (!string.IsNullOrEmpty(target))
                         {
-                            stlAnchor.Target = target;
+                            attributes["target"] = target;
                         }
                         if (!string.IsNullOrEmpty(linkClass))
                         {
-                            stlAnchor.Attributes.Add("class", linkClass);
+                            attributes["class"] = linkClass;
                         }
                         var url = PageUtility.GetIndexPageUrl(pageInfo.SiteInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
-                            stlAnchor.Target = string.Empty;
+                            attributes["target"] = string.Empty;
                         }
-                        stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        attributes["href"] = url;
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
-                        builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
+                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
 
                         if (parentsCount > 0)
                         {
@@ -121,49 +121,49 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else if (currentId == contextInfo.ChannelId)
                     {
-                        var stlAnchor = new HtmlAnchor();
+                        var attributes = new NameValueCollection();
                         if (!string.IsNullOrEmpty(target))
                         {
-                            stlAnchor.Target = target;
+                            attributes["target"] = target;
                         }
                         if (!string.IsNullOrEmpty(linkClass))
                         {
-                            stlAnchor.Attributes.Add("class", linkClass);
+                            attributes["class"] = linkClass;
                         }
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
-                            stlAnchor.Target = string.Empty;
+                            attributes["target"] = string.Empty;
                         }
-                        stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        attributes["href"] = url;
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
-                        builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
+                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
                     }
                     else
                     {
-                        var stlAnchor = new HtmlAnchor();
+                        var attributes = new NameValueCollection();
                         if (!string.IsNullOrEmpty(target))
                         {
-                            stlAnchor.Target = target;
+                            attributes["target"] = target;
                         }
                         if (!string.IsNullOrEmpty(linkClass))
                         {
-                            stlAnchor.Attributes.Add("class", linkClass);
+                            attributes["class"] = linkClass;
                         }
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
-                            stlAnchor.Target = string.Empty;
+                            attributes["target"] = string.Empty;
                         }
-                        stlAnchor.HRef = url;
-                        stlAnchor.InnerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
+                        attributes["href"] = url;
+                        var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        ControlUtils.AddAttributesIfNotExists(stlAnchor, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
 
-                        builder.Append(ControlUtils.GetControlRenderHtml(stlAnchor));
+                        builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
 
                         if (parentsCount > 0)
                         {

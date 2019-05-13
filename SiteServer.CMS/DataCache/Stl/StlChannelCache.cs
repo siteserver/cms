@@ -3,6 +3,7 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache.Stl
@@ -56,19 +57,38 @@ namespace SiteServer.CMS.DataCache.Stl
             return retval;
         }
 
-        public static DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // public static DataSet GetStlDataSourceBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlDataSourceBySiteId),
+        //                siteId.ToString(), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
+        //     var retval = StlCacheManager.Get<DataSet>(cacheKey);
+        //     if (retval != null) return retval;
+
+        //     lock (LockObject)
+        //     {
+        //         retval = StlCacheManager.Get<DataSet>(cacheKey);
+        //         if (retval == null)
+        //         {
+        //             retval = DataProvider.ChannelDao.GetStlDataSourceBySiteId(siteId, startNum, totalNum, whereString, orderByString);
+        //             StlCacheManager.Set(cacheKey, retval);
+        //         }
+        //     }
+
+        //     return retval;
+        // }
+
+        public static List<Container.Channel> GetContainerChannelListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlDataSourceBySiteId),
-                       siteId.ToString(), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<DataSet>(cacheKey);
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelListBySiteId), siteId.ToString(), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
+            var retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
             if (retval != null) return retval;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<DataSet>(cacheKey);
+                retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetStlDataSourceBySiteId(siteId, startNum, totalNum, whereString, orderByString);
+                    retval = DataProvider.ChannelDao.GetContainerChannelListBySiteId(siteId, startNum, totalNum, whereString, orderByString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }
@@ -76,59 +96,39 @@ namespace SiteServer.CMS.DataCache.Stl
             return retval;
         }
 
-        public static List<int> GetStlChannelIdListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        // public static DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlDataSet),
+        //                TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
+        //     var retval = StlCacheManager.Get<DataSet>(cacheKey);
+        //     if (retval != null) return retval;
+
+        //     lock (LockObject)
+        //     {
+        //         retval = StlCacheManager.Get<DataSet>(cacheKey);
+        //         if (retval == null)
+        //         {
+        //             retval = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, whereString, orderByString);
+        //             StlCacheManager.Set(cacheKey, retval);
+        //         }
+        //     }
+
+        //     return retval;
+        // }
+
+        public static List<Container.Channel> GetContainerChannelList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlChannelIdListBySiteId),
-                       siteId.ToString(), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<List<int>>(cacheKey);
-            if (retval != null) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheManager.Get<List<int>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetStlChannelIdListBySiteId(siteId, startNum, totalNum, whereString, orderByString);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
-        public static DataSet GetStlDataSet(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlDataSet),
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelList),
                        TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<DataSet>(cacheKey);
+            var retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
             if (retval != null) return retval;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<DataSet>(cacheKey);
+                retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetStlDataSet(channelIdList, startNum, totalNum, whereString, orderByString);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
-        public static List<int> GetStlChannelIdList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetStlChannelIdList),
-                       TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<List<int>>(cacheKey);
-            if (retval != null) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheManager.Get<List<int>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetStlChannelIdList(channelIdList, startNum, totalNum, whereString, orderByString);
+                    retval = DataProvider.ChannelDao.GetContainerChannelList(channelIdList, startNum, totalNum, whereString, orderByString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }

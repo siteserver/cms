@@ -1,15 +1,14 @@
 ﻿using System.Text;
-using System.Web.UI.HtmlControls;
-using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "文字缩放", Description = "通过 stl:zoom 标签在模板中实现文字缩放功能")]
     public class StlZoom
-	{
+    {
         private StlZoom() { }
         public const string ElementName = "stl:zoom";
 
@@ -20,10 +19,10 @@ namespace SiteServer.CMS.StlParser.StlElement
         private const string FontSize = nameof(FontSize);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var zoomId = string.Empty;
+        {
+            var zoomId = string.Empty;
             var fontSize = 16;
-            var stlAnchor = new HtmlAnchor();
+            var attributes = new NameValueCollection();
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -39,14 +38,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                    TranslateUtils.AddAttributeIfNotExists(attributes, name, value);
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlAnchor, zoomId, fontSize);
-		}
+            return ParseImpl(pageInfo, contextInfo, attributes, zoomId, fontSize);
+        }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string zoomId, int fontSize)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string zoomId, int fontSize)
         {
             if (string.IsNullOrEmpty(zoomId))
             {
@@ -74,19 +73,16 @@ function stlDoZoom(zoomId, size){
 ");
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
-            {
-                stlAnchor.InnerHtml = "缩放";
-            }
-            else
+            var innerHtml = "缩放";
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                stlAnchor.InnerHtml = innerBuilder.ToString();
+                innerHtml = innerBuilder.ToString();
             }
-            stlAnchor.Attributes["href"] = $"javascript:stlDoZoom('{zoomId}', {fontSize});";
+            attributes["href"] = $"javascript:stlDoZoom('{zoomId}', {fontSize});";
 
-            return ControlUtils.GetControlRenderHtml(stlAnchor);
+            return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
-	}
+    }
 }

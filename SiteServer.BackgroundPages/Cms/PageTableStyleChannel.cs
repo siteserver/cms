@@ -6,10 +6,11 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageTableStyleChannel : BasePageCms
+    public class PageTableStyleChannel : BasePageCms
     {
         public DropDownList DdlChannelId;
         public Repeater RptContents;
@@ -32,7 +33,7 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
-                
+
             //删除样式
             if (AuthRequest.IsQueryExists("DeleteStyle"))
             {
@@ -125,5 +126,5 @@ namespace SiteServer.BackgroundPages.Cms
             ltlEditStyle.Text +=
                 $@"&nbsp;&nbsp;<a href=""{urlStyle}"" onClick=""javascript:return confirm('此操作将删除对应显示样式，确认吗？');"">删除</a>";
         }
-	}
+    }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -39,15 +40,14 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type)
         {
-            var attributes = new Dictionary<string, string>();
+            var attributes = new NameValueCollection();
 
             foreach (var attributeName in contextInfo.Attributes.AllKeys)
             {
                 attributes[attributeName] = contextInfo.Attributes[attributeName];
             }
 
-            string htmlId;
-            attributes.TryGetValue("id", out htmlId);
+            string htmlId = attributes["id"];
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 

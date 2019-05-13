@@ -10,6 +10,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using SiteServer.Utils.Auth;
+using System.Linq;
 
 namespace SiteServer.Utils
 {
@@ -37,7 +38,7 @@ namespace SiteServer.Utils
 
         public static List<int> ToIntList(int intValue)
         {
-            return new List<int> {intValue};
+            return new List<int> { intValue };
         }
 
         public static int ToInt(string intStr, int defaultValue = 0)
@@ -160,7 +161,7 @@ namespace SiteServer.Utils
             return color;
         }
 
-        
+
 
         public static string ToTwoCharString(int i)
         {
@@ -288,7 +289,7 @@ namespace SiteServer.Utils
             }
             return builder.Length == 0 ? "null" : builder.ToString();
         }
-        
+
 
         public static NameValueCollection ToNameValueCollection(string separateString)
         {
@@ -393,7 +394,7 @@ namespace SiteServer.Utils
             }
             return builder.ToString();
         }
-        
+
         public static string NameValueCollectionToJsonString(NameValueCollection attributes)
         {
             var jsonString = new StringBuilder("{");
@@ -649,7 +650,7 @@ namespace SiteServer.Utils
             return encryptor.OutString;
         }
 
-        
+
 
         public static List<Dictionary<string, object>> DataTableToDictionaryList(DataTable dataTable)
         {
@@ -673,6 +674,29 @@ namespace SiteServer.Utils
             var comparer = StringComparer.OrdinalIgnoreCase;
             var caseInsensitiveDictionary = new NameValueCollection(comparer);
             return caseInsensitiveDictionary;
+        }
+
+        public static void AddAttributesIfNotExists(NameValueCollection target, NameValueCollection attributes)
+        {
+            if (target == null || attributes == null) return;
+
+            foreach (var attributeName in attributes.AllKeys)
+            {
+                if (string.IsNullOrEmpty(target[attributeName]))
+                {
+                    target[attributeName] = attributes[attributeName];
+                }
+            }
+        }
+
+        public static void AddAttributeIfNotExists(NameValueCollection target, string attributeName, string attributeValue)
+        {
+            if (target == null || attributeName == null) return;
+
+            if (string.IsNullOrEmpty(target[attributeName]))
+            {
+                target[attributeName] = attributeValue;
+            }
         }
     }
 }

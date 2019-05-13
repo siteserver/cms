@@ -28,7 +28,7 @@ namespace SiteServer.CMS.StlParser.Model
             IsInnerElement = contextInfo.IsInnerElement;
             IsStlEntity = contextInfo.IsStlEntity;
             PageItemIndex = contextInfo.PageItemIndex;
-            ItemContainer = contextInfo.ItemContainer;
+            Container = contextInfo.Container;
             ContainerClientId = contextInfo.ContainerClientId;
 
             OuterHtml = contextInfo.OuterHtml;
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public int PageItemIndex { get; set; }
 
-        public DbItemContainer ItemContainer { get; set; }
+        public Container Container { get; set; }
 
         public string ContainerClientId { get; set; }
     }

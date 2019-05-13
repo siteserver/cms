@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -58,6 +59,47 @@ namespace SiteServer.CMS.DataCache.Stl
             return retval;
         }
 
+        public static List<Container.Content> GetContainerContentListChecked(List<int> channelIdList, string tableName, int startNum, int totalNum, string orderByString, string whereString, NameValueCollection others)
+        {
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContainerContentListChecked),
+                    TranslateUtils.ObjectCollectionToString(channelIdList), tableName, startNum.ToString(), totalNum.ToString(), orderByString, whereString, TranslateUtils.NameValueCollectionToString(others));
+            var retval = StlCacheManager.Get<List<Container.Content>>(cacheKey);
+            if (retval != null) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheManager.Get<List<Container.Content>>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.ContentDao.GetContainerContentListChecked(channelIdList, tableName, startNum, totalNum, orderByString, whereString, others);
+                    StlCacheManager.Set(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
+        public static List<Container.Content> GetContainerContentListBySqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex)
+        {
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetContainerContentListBySqlString),
+                       sqlString, orderByString, totalNum.ToString(), pageNum.ToString(), currentPageIndex.ToString());
+            var retval = StlCacheManager.Get<List<Container.Content>>(cacheKey);
+            if (retval != null) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheManager.Get<List<Container.Content>>(cacheKey);
+                if (retval == null)
+                {
+                    retval = DataProvider.ContentDao.GetContainerContentListBySqlString(sqlString, orderByString, totalNum, pageNum,
+                    currentPageIndex);
+                    StlCacheManager.Set(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
         public static string GetValue(string tableName, int contentId, string type)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetValue), tableName,
@@ -76,7 +118,7 @@ namespace SiteServer.CMS.DataCache.Stl
                         retval = tuple.Item2;
                         StlCacheManager.Set(cacheKey, retval);
                     }
-                }                
+                }
             }
 
             return retval;
@@ -183,7 +225,7 @@ namespace SiteServer.CMS.DataCache.Stl
             }
 
             return retval;
-        }        
+        }
 
         public static int GetChannelId(string tableName, int contentId)
         {

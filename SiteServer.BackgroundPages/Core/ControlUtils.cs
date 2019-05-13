@@ -6,35 +6,35 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 
-namespace SiteServer.CMS.Core
+namespace SiteServer.BackgroundPages.Core
 {
-	/// <summary>
-	/// 对控件的帮助类
-	/// </summary>
-	public class ControlUtils
-	{
-		private ControlUtils()
-		{
+    /// <summary>
+    /// 对控件的帮助类
+    /// </summary>
+    public class ControlUtils
+    {
+        private ControlUtils()
+        {
 
-		}
+        }
 
-	    /// <summary>
-	    /// 得到代表控件的HTML代码
-	    /// </summary>
-	    /// <param name="control">控件</param>
-	    /// <returns></returns>
-	    public static string GetControlRenderHtml(Control control)
-	    {
-	        if (control == null) return string.Empty;
+        /// <summary>
+        /// 得到代表控件的HTML代码
+        /// </summary>
+        /// <param name="control">控件</param>
+        /// <returns></returns>
+        public static string GetControlRenderHtml(Control control)
+        {
+            if (control == null) return string.Empty;
 
-	        var builder = new StringBuilder();
-	        var sw = new System.IO.StringWriter(builder);
-	        var htw = new HtmlTextWriter(sw);
-	        control.RenderControl(htw);
-	        return builder.ToString();
-	    }
+            var builder = new StringBuilder();
+            var sw = new System.IO.StringWriter(builder);
+            var htw = new HtmlTextWriter(sw);
+            control.RenderControl(htw);
+            return builder.ToString();
+        }
 
-	    public static string GetControlRenderHtml(Control control, Page page)
+        public static string GetControlRenderHtml(Control control, Page page)
         {
             if (control == null) return string.Empty;
 
@@ -47,69 +47,69 @@ namespace SiteServer.CMS.Core
             return builder.ToString();
         }
 
-		/// <summary>
-		/// 如果此控件不存在此属性，将属性添加到控件中
-		/// </summary>
-		/// <param name="accessor">控件</param>
-		/// <param name="attributes">属性集合</param>
-		public static void AddAttributesIfNotExists(IAttributeAccessor accessor, NameValueCollection attributes)
-		{
-		    if (accessor == null || attributes == null) return;
+        /// <summary>
+        /// 如果此控件不存在此属性，将属性添加到控件中
+        /// </summary>
+        /// <param name="accessor">控件</param>
+        /// <param name="attributes">属性集合</param>
+        public static void AddAttributesIfNotExists(IAttributeAccessor accessor, NameValueCollection attributes)
+        {
+            if (accessor == null || attributes == null) return;
 
-		    foreach (var key in attributes.AllKeys)
-		    {
-		        if (accessor.GetAttribute(key) == null)
-		        {
-		            accessor.SetAttribute(key, attributes[key]);
-		        }
-		    }
-		}
+            foreach (var key in attributes.AllKeys)
+            {
+                if (accessor.GetAttribute(key) == null)
+                {
+                    accessor.SetAttribute(key, attributes[key]);
+                }
+            }
+        }
 
-		/// <summary>
-		/// 如果此控件不存在此属性，将属性添加到控件中
-		/// </summary>
-		/// <param name="accessor"></param>
-		/// <param name="attributeName"></param>
-		/// <param name="attributeValue"></param>
-		public static void AddAttributeIfNotExists(IAttributeAccessor accessor, string attributeName, string attributeValue)
-		{
-		    if (accessor == null || attributeName == null) return;
+        /// <summary>
+        /// 如果此控件不存在此属性，将属性添加到控件中
+        /// </summary>
+        /// <param name="accessor"></param>
+        /// <param name="attributeName"></param>
+        /// <param name="attributeValue"></param>
+        public static void AddAttributeIfNotExists(IAttributeAccessor accessor, string attributeName, string attributeValue)
+        {
+            if (accessor == null || attributeName == null) return;
 
-		    if (accessor.GetAttribute(attributeName) == null)
-		    {
-		        accessor.SetAttribute(attributeName, attributeValue);
-		    }
-		}
+            if (accessor.GetAttribute(attributeName) == null)
+            {
+                accessor.SetAttribute(attributeName, attributeValue);
+            }
+        }
 
 
-		/// <summary>
-		/// 将属性添加到控件中
-		/// </summary>
-		/// <param name="accessor">控件</param>
-		/// <param name="attributes">属性集合</param>
-		public static void AddAttributes(IAttributeAccessor accessor, StringDictionary attributes)
-		{
-		    if (accessor == null || attributes == null) return;
+        /// <summary>
+        /// 将属性添加到控件中
+        /// </summary>
+        /// <param name="accessor">控件</param>
+        /// <param name="attributes">属性集合</param>
+        public static void AddAttributes(IAttributeAccessor accessor, StringDictionary attributes)
+        {
+            if (accessor == null || attributes == null) return;
 
-		    foreach (string key in attributes.Keys)
-		    {
-		        accessor.SetAttribute(key, attributes[key]);
-		    }
-		}
+            foreach (string key in attributes.Keys)
+            {
+                accessor.SetAttribute(key, attributes[key]);
+            }
+        }
 
-		/// <summary>
-		/// 将属性添加到控件中
-		/// </summary>
-		/// <param name="accessor"></param>
-		/// <param name="attributeName"></param>
-		/// <param name="attributeValue"></param>
-		public static void AddAttribute(IAttributeAccessor accessor, string attributeName, string attributeValue)
-		{
-			if (accessor != null && attributeName != null)
-			{
-				accessor.SetAttribute(attributeName, attributeValue);
-			}
-		}
+        /// <summary>
+        /// 将属性添加到控件中
+        /// </summary>
+        /// <param name="accessor"></param>
+        /// <param name="attributeName"></param>
+        /// <param name="attributeValue"></param>
+        public static void AddAttribute(IAttributeAccessor accessor, string attributeName, string attributeValue)
+        {
+            if (accessor != null && attributeName != null)
+            {
+                accessor.SetAttribute(attributeName, attributeValue);
+            }
+        }
 
         public static void AddListControlItems(ListControl listControl, List<string> list)
         {
@@ -123,23 +123,23 @@ namespace SiteServer.CMS.Core
         }
 
 
-		public static string[] GetSelectedListControlValueArray(ListControl listControl)
-		{
-			var arraylist = new ArrayList();
-			if (listControl != null)
-			{
-				foreach (ListItem item in listControl.Items)
-				{
-					if (item.Selected)
-					{
-						arraylist.Add(item.Value);
-					}
-				}
-			}
-			var retval = new string[arraylist.Count];
-			arraylist.CopyTo(retval);
-			return retval;
-		}
+        public static string[] GetSelectedListControlValueArray(ListControl listControl)
+        {
+            var arraylist = new ArrayList();
+            if (listControl != null)
+            {
+                foreach (ListItem item in listControl.Items)
+                {
+                    if (item.Selected)
+                    {
+                        arraylist.Add(item.Value);
+                    }
+                }
+            }
+            var retval = new string[arraylist.Count];
+            arraylist.CopyTo(retval);
+            return retval;
+        }
 
         public static string GetSelectedListControlValueCollection(ListControl listControl)
         {
@@ -222,19 +222,19 @@ namespace SiteServer.CMS.Core
         }
 
         public static string[] GetListControlValues(ListControl listControl)
-		{
-			var arraylist = new ArrayList();
-			if (listControl != null)
-			{
-				foreach (ListItem item in listControl.Items)
-				{
-					arraylist.Add(item.Value);
-				}
-			}
-			var retval = new string[arraylist.Count];
-			arraylist.CopyTo(retval);
-			return retval;
-		}
+        {
+            var arraylist = new ArrayList();
+            if (listControl != null)
+            {
+                foreach (ListItem item in listControl.Items)
+                {
+                    arraylist.Add(item.Value);
+                }
+            }
+            var retval = new string[arraylist.Count];
+            arraylist.CopyTo(retval);
+            return retval;
+        }
 
         public static void SelectSingleItem(ListControl listControl, string value)
         {
@@ -321,59 +321,59 @@ namespace SiteServer.CMS.Core
             }
         }
 
-		public static void SelectMultiItemsIgnoreCase(ListControl listControl, params string[] values)
-		{
-		    if (listControl == null) return;
+        public static void SelectMultiItemsIgnoreCase(ListControl listControl, params string[] values)
+        {
+            if (listControl == null) return;
 
             listControl.ClearSelection();
             foreach (ListItem item in listControl.Items)
-		    {
-		        foreach (var value in values)
-		        {
-		            if (StringUtils.EqualsIgnoreCase(item.Value, value))
+            {
+                foreach (var value in values)
+                {
+                    if (StringUtils.EqualsIgnoreCase(item.Value, value))
                     {
-		                item.Selected = true;
-		                break;
-		            }
-		        }
-		    }
-		}
+                        item.Selected = true;
+                        break;
+                    }
+                }
+            }
+        }
 
-	    public static void SelectMultiItemsIgnoreCase(ListControl listControl, List<string> values)
-	    {
-	        if (listControl == null) return;
+        public static void SelectMultiItemsIgnoreCase(ListControl listControl, List<string> values)
+        {
+            if (listControl == null) return;
 
-	        listControl.ClearSelection();
-	        foreach (ListItem item in listControl.Items)
-	        {
-	            foreach (var value in values)
-	            {
-	                if (StringUtils.EqualsIgnoreCase(item.Value, value))
-	                {
-	                    item.Selected = true;
-	                    break;
-	                }
-	            }
-	        }
-	    }
+            listControl.ClearSelection();
+            foreach (ListItem item in listControl.Items)
+            {
+                foreach (var value in values)
+                {
+                    if (StringUtils.EqualsIgnoreCase(item.Value, value))
+                    {
+                        item.Selected = true;
+                        break;
+                    }
+                }
+            }
+        }
 
         public static string SelectedItemsValueToStringCollection(ListItemCollection items)
-		{
-			var builder = new StringBuilder();
-			if (items!= null)
-			{
-				foreach (ListItem item in items)
-				{
-					if (item.Selected)
-					{
-						builder.Append(item.Value).Append(",");
-					}
-				}
-				if (builder.Length != 0)
-					builder.Remove(builder.Length - 1, 1);
-			}
-			return builder.ToString();
-		}
+        {
+            var builder = new StringBuilder();
+            if (items != null)
+            {
+                foreach (ListItem item in items)
+                {
+                    if (item.Selected)
+                    {
+                        builder.Append(item.Value).Append(",");
+                    }
+                }
+                if (builder.Length != 0)
+                    builder.Remove(builder.Length - 1, 1);
+            }
+            return builder.ToString();
+        }
 
         public static Control FindControlBySelfAndChildren(string id, Control baseControl)
         {
@@ -386,7 +386,7 @@ namespace SiteServer.CMS.Core
                 {
                     ctrl = FindControlByChildren(id, baseControl.Controls);
                 }
-            }            
+            }
             return ctrl;
         }
 
@@ -605,5 +605,5 @@ namespace SiteServer.CMS.Core
         //        }
         //    }
         //}
-	}
+    }
 }

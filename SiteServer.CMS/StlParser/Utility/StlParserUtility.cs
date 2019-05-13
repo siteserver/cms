@@ -363,23 +363,23 @@ namespace SiteServer.CMS.StlParser.Utility
             var dbItemIndex = 0;
             if (contextInfo.ContextType == EContextType.Channel)
             {
-                dbItemIndex = contextInfo.ItemContainer.ChannelItem.ItemIndex;
+                dbItemIndex = contextInfo.Container.ChannelItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.Content)
             {
-                dbItemIndex = contextInfo.ItemContainer.ContentItem.ItemIndex;
+                dbItemIndex = contextInfo.Container.ContentItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.SqlContent)
             {
-                dbItemIndex = contextInfo.ItemContainer.SqlItem.ItemIndex;
+                dbItemIndex = contextInfo.Container.SqlItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.Site)
             {
-                dbItemIndex = contextInfo.ItemContainer.SiteItem.ItemIndex;
+                dbItemIndex = contextInfo.Container.SiteItem.ItemIndex;
             }
             else if (contextInfo.ContextType == EContextType.Each)
             {
-                dbItemIndex = contextInfo.ItemContainer.EachItem.ItemIndex;
+                dbItemIndex = contextInfo.Container.EachItem.ItemIndex;
             }
 
             return contextInfo.PageItemIndex + dbItemIndex + 1;

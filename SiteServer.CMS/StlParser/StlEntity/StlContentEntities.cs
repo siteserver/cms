@@ -280,9 +280,9 @@ namespace SiteServer.CMS.StlParser.StlEntity
                             parsedContent = addUserName;
                         }
                     }
-                    else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
+                    else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && contextInfo.Container?.ContentItem != null)
                     {
-                        parsedContent = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ContentItem.ItemIndex, attributeName, contextInfo).ToString();
+                        parsedContent = StlParserUtility.ParseItemIndex(contextInfo.Container.ContentItem.ItemIndex, attributeName, contextInfo).ToString();
                     }
                     else
                     {

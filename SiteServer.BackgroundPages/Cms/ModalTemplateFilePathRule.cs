@@ -6,6 +6,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -15,7 +16,7 @@ namespace SiteServer.BackgroundPages.Cms
         public TextBox TbLinkUrl;
         public DropDownList DdlLinkType;
         public TextBox TbFilePath;
-        
+
         public TextBox TbChannelFilePathRule;
         public TextBox TbContentFilePathRule;
         public Button BtnCreateChannelRule;
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-                
+
                 if (TbChannelFilePathRule.Text != PathUtility.GetChannelFilePathRule(SiteInfo, _channelId))
                 {
                     channelInfo.ChannelFilePathRule = TbChannelFilePathRule.Text;
@@ -172,5 +173,5 @@ namespace SiteServer.BackgroundPages.Cms
                 LayerUtils.CloseAndRedirect(Page, PageConfigurationCreateRule.GetRedirectUrl(SiteId, _channelId));
             }
         }
-	}
+    }
 }

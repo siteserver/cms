@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Specialized;
-using System.Web.UI.HtmlControls;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.Utils;
@@ -74,7 +73,7 @@ namespace SiteServer.CMS.Core
                         }
                     }
                 }
-                
+
                 parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
             }
             //else if (styleInfo.InputType == InputType.TextArea)
@@ -147,7 +146,7 @@ namespace SiteServer.CMS.Core
                         }
                     }
                 }
-                
+
                 parsedContent = separator == null ? TranslateUtils.ObjectCollectionToString(selectedTexts) : TranslateUtils.ObjectCollectionToString(selectedTexts, separator);
             }
             else if (inputType == InputType.TextEditor)
@@ -251,10 +250,11 @@ namespace SiteServer.CMS.Core
                 {
                     if (!imageUrl.ToUpper().Trim().EndsWith(".SWF"))
                     {
-                        var htmlImage = new HtmlImage();
-                        ControlUtils.AddAttributesIfNotExists(htmlImage, attributes);
-                        htmlImage.Src = imageUrl;
-                        retVal = ControlUtils.GetControlRenderHtml(htmlImage);
+                        var imageAttributes = new NameValueCollection();
+                        TranslateUtils.AddAttributesIfNotExists(imageAttributes, attributes);
+                        imageAttributes["src"] = imageUrl;
+
+                        retVal = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
                     }
                     else
                     {
@@ -331,23 +331,25 @@ namespace SiteServer.CMS.Core
             }
             else
             {
-                var stlAnchor = new HtmlAnchor();
-                ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId,
+                var linkAttributes = new NameValueCollection();
+
+                TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId,
                     contentId, fileUrl);
-                stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml)
+
+                innerHtml = string.IsNullOrEmpty(innerHtml)
                     ? PageUtils.GetFileNameFromUrl(fileUrl)
                     : innerHtml;
                 if (isLower)
                 {
-                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToLower();
+                    innerHtml = innerHtml.ToLower();
                 }
                 if (isUpper)
                 {
-                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToUpper();
+                    innerHtml = innerHtml.ToUpper();
                 }
 
-                retVal = ControlUtils.GetControlRenderHtml(stlAnchor);
+                retVal = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{innerHtml}</a>";
             }
 
             return retVal;
@@ -364,21 +366,22 @@ namespace SiteServer.CMS.Core
             }
             else
             {
-                var stlAnchor = new HtmlAnchor();
-                ControlUtils.AddAttributesIfNotExists(stlAnchor, attributes);
-                stlAnchor.HRef = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
-                stlAnchor.InnerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
+                var linkAttributes = new NameValueCollection();
+
+                TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)
                 {
-                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToLower();
+                    innerHtml = innerHtml.ToLower();
                 }
                 if (isUpper)
                 {
-                    stlAnchor.InnerHtml = stlAnchor.InnerHtml.ToUpper();
+                    innerHtml = innerHtml.ToUpper();
                 }
 
-                retVal = ControlUtils.GetControlRenderHtml(stlAnchor);
+                retVal = $@"<a {TranslateUtils.ToAttributesString(linkAttributes)}>{innerHtml}</a>";
             }
 
             return retVal;

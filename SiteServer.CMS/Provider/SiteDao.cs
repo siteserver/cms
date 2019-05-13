@@ -9,6 +9,8 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.Provider
 {
@@ -82,16 +84,16 @@ namespace SiteServer.CMS.Provider
             //获取排序值
             var taxis = GetMaxTaxis() + 1;
             var insertParms = new IDataParameter[]
-			{
-				GetParameter(ParmId, DataType.Integer, info.Id),
-				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
+            {
+                GetParameter(ParmId, DataType.Integer, info.Id),
+                GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
                 GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
                 GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
+                GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
                 GetParameter(ParmParentId, DataType.Integer, info.ParentId),
                 GetParameter(ParmTaxis, DataType.Integer, taxis),
-				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString())
-			};
+                GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString())
+            };
 
             ExecuteNonQuery(trans, sqlString, insertParms);
             SiteManager.ClearCache();
@@ -121,16 +123,16 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
 
             var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
+            {
+                GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
                 GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
                 GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
+                GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
                 GetParameter(ParmParentId, DataType.Integer, info.ParentId),
                 GetParameter(ParmTaxis, DataType.Integer, info.Taxis),
-				GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString()),
-				GetParameter(ParmId, DataType.Integer, info.Id)
-			};
+                GetParameter(ParmSettingsXml, DataType.Text, info.Additional.ToString()),
+                GetParameter(ParmId, DataType.Integer, info.Id)
+            };
 
             if (info.IsRoot)
             {
@@ -170,9 +172,9 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"SELECT SiteDir FROM {TableName} WHERE IsRoot = @IsRoot";
 
             var parms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
-			};
+            {
+                GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
+            };
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -190,9 +192,9 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"UPDATE {TableName} SET IsRoot = @IsRoot";
 
             var updateParms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
-			};
+            {
+                GetParameter(ParmIsRoot, DataType.VarChar, 18, false.ToString())
+            };
 
             ExecuteNonQuery(sqlString, updateParms);
             SiteManager.ClearCache();
@@ -263,9 +265,9 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"SELECT Id FROM {TableName} WHERE IsRoot = @IsRoot";
 
             var parms = new IDataParameter[]
-			{
-				GetParameter(ParmIsRoot, DataType.VarChar, 18, true.ToString())
-			};
+            {
+                GetParameter(ParmIsRoot, DataType.VarChar, 18, true.ToString())
+            };
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -285,9 +287,9 @@ namespace SiteServer.CMS.Provider
             var sqlString = $"SELECT Id FROM {TableName} WHERE SiteDir = @SiteDir";
 
             var parms = new IDataParameter[]
-			{
-				GetParameter(ParmSiteDir, DataType.VarChar, 50, siteDir)
-			};
+            {
+                GetParameter(ParmSiteDir, DataType.VarChar, 50, siteDir)
+            };
 
             using (var rdr = ExecuteReader(sqlString, parms))
             {
@@ -320,10 +322,58 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
-        {
-            IDataReader ie = null;
+        // public IDataReader GetStlDataSource(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+        // {
+        //     IDataReader ie = null;
 
+        //     var sqlWhereString = string.Empty;
+
+        //     SiteInfo siteInfo = null;
+        //     if (!string.IsNullOrEmpty(siteName))
+        //     {
+        //         siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
+        //     }
+        //     else if (!string.IsNullOrEmpty(siteDir))
+        //     {
+        //         siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
+        //     }
+
+        //     if (siteInfo != null)
+        //     {
+        //         sqlWhereString = $"WHERE (ParentId = {siteInfo.Id})";
+        //     }
+        //     else
+        //     {
+        //         if (scopeType == EScopeType.Children)
+        //         {
+        //             sqlWhereString = "WHERE (ParentId = 0 AND IsRoot = 'False')";
+        //         }
+        //         else if (scopeType == EScopeType.Descendant)
+        //         {
+        //             sqlWhereString = "WHERE (IsRoot = 'False')";
+        //         }
+        //     }
+
+        //     if (!string.IsNullOrEmpty(whereString))
+        //     {
+        //         sqlWhereString = string.IsNullOrEmpty(sqlWhereString) ? $"WHERE ({whereString})" : $"{sqlWhereString} AND ({whereString})";
+        //     }
+
+        //     if (string.IsNullOrEmpty(orderByString) || StringUtils.EqualsIgnoreCase(orderByString, "default"))
+        //     {
+        //         orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
+
+        //         //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+        //         var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+        //         ie = ExecuteReader(sqlSelect);
+        //     }
+
+        //     return ie;
+        // }
+
+        public List<Container.Site> GetContainerSiteList(string siteName, string siteDir, int startNum, int totalNum, string whereString, EScopeType scopeType, string orderByString)
+        {
             var sqlWhereString = string.Empty;
 
             SiteInfo siteInfo = null;
@@ -357,17 +407,29 @@ namespace SiteServer.CMS.Provider
                 sqlWhereString = string.IsNullOrEmpty(sqlWhereString) ? $"WHERE ({whereString})" : $"{sqlWhereString} AND ({whereString})";
             }
 
-            if (string.IsNullOrEmpty(orderByString) || StringUtils.EqualsIgnoreCase(orderByString, "default"))
+            orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
+
+            //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
+            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(TableName, Container.Site.SqlColumns, sqlWhereString, orderByString, startNum - 1, totalNum);
+
+            var list = new List<Container.Site>();
+            var itemIndex = 0;
+
+            using (var rdr = ExecuteReader(sqlString))
             {
-                orderByString = "ORDER BY IsRoot DESC, ParentId, Taxis DESC, Id";
-
-                //var sqlSelect = DataProvider.DatabaseDao.GetSelectSqlString(TableName, startNum, totalNum, SqlUtils.Asterisk, sqlWhereString, orderByString);
-                var sqlSelect = DataProvider.DatabaseDao.GetPageSqlString(TableName, SqlUtils.Asterisk, sqlWhereString, orderByString, startNum - 1, totalNum);
-
-                ie = ExecuteReader(sqlSelect);
+                while (rdr.Read())
+                {
+                    var i = 0;
+                    list.Add(new Container.Site
+                    {
+                        ItemIndex = itemIndex++,
+                        Id = GetInt(rdr, i++)
+                    });
+                }
+                rdr.Close();
             }
 
-            return ie;
+            return list;
         }
 
         private static int GetMaxTaxis()

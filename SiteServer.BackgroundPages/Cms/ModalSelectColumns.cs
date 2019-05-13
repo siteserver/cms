@@ -8,6 +8,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Cms
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.InputType == InputType.TextEditor) continue;
-                
+
                 var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
                 if (styleInfo.AttributeName == ContentAttribute.Title)
                 {

@@ -9,36 +9,36 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "播放视频", Description = "通过 stl:video 标签在模板中显示视频播放器")]
     public class StlVideo
-	{
+    {
         private StlVideo() { }
-		public const string ElementName = "stl:video";
+        public const string ElementName = "stl:video";
 
         [StlAttribute(Title = "指定视频的字段")]
         private const string Type = nameof(Type);
-         
-		[StlAttribute(Title = "视频地址")]
+
+        [StlAttribute(Title = "视频地址")]
         private const string PlayUrl = nameof(PlayUrl);
-         
+
         [StlAttribute(Title = "图片地址")]
         private const string ImageUrl = nameof(ImageUrl);
-         
+
         [StlAttribute(Title = "宽度")]
         private const string Width = nameof(Width);
-         
+
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
-         
+
         [StlAttribute(Title = "是否自动播放")]
         private const string IsAutoPlay = nameof(IsAutoPlay);
-         
+
         [StlAttribute(Title = "是否显示播放控件")]
         private const string IsControls = nameof(IsControls);
-         
+
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
+        {
             var type = BackgroundContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
@@ -87,11 +87,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
         {
-            
+
 
             var videoUrl = string.Empty;
             if (!string.IsNullOrEmpty(playUrl))
@@ -128,7 +128,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextInfo.ContextType == EContextType.Each)
                 {
-                    videoUrl = contextInfo.ItemContainer.EachItem.DataItem as string;
+                    videoUrl = contextInfo.Container.EachItem.Value as string;
                 }
             }
 
@@ -171,5 +171,5 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             return $@"<video {TranslateUtils.ToAttributesString(dict)}></video>";
         }
-	}
+    }
 }

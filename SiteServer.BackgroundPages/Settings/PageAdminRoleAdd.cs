@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public static string GetReturnRedirectUrl(string roleName)
         {
-            var queryString = new NameValueCollection {{"Return", "True"}};
+            var queryString = new NameValueCollection { { "Return", "True" } };
             if (!string.IsNullOrEmpty(roleName))
             {
                 queryString.Add("RoleName", roleName);

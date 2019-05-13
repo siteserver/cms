@@ -9,12 +9,13 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteEdit : BasePageCms
+    public class PageSiteEdit : BasePageCms
     {
-		public TextBox TbSiteName;
+        public TextBox TbSiteName;
         public PlaceHolder PhSiteDir;
         public TextBox TbSiteDir;
         public PlaceHolder PhParentId;
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
         public TextBox TbTableHandWrite;
 
         public TextBox TbTaxis;
-		public RadioButtonList RblIsCheckContentUseLevel;
+        public RadioButtonList RblIsCheckContentUseLevel;
         public PlaceHolder PhCheckContentLevel;
         public DropDownList DdlCheckContentLevel;
         public Button BtnSubmit;
@@ -115,7 +116,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             TbTaxis.Text = SiteInfo.Taxis.ToString();
 
-            RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制",false.ToString()));
+            RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制", false.ToString()));
             RblIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
 
             if (SiteInfo == null)
@@ -177,10 +178,10 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-		public void RblIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
-		{
-		    PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
-		}
+        public void RblIsCheckContentUseLevel_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhCheckContentLevel.Visible = EBooleanUtils.Equals(RblIsCheckContentUseLevel.SelectedValue, EBoolean.True);
+        }
 
         public void RblTableRule_OnSelectedIndexChanged(object sender, EventArgs e)
         {
@@ -197,54 +198,54 @@ namespace SiteServer.BackgroundPages.Settings
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-		    if (!Page.IsPostBack || !Page.IsValid) return;
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.SiteName = TbSiteName.Text;
-		    SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-		    SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
-		    if (SiteInfo.Additional.IsCheckContentLevel)
-		    {
-		        SiteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
-		    }
+            SiteInfo.SiteName = TbSiteName.Text;
+            SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
+            SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+            if (SiteInfo.Additional.IsCheckContentLevel)
+            {
+                SiteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+            }
 
-		    var isTableChanged = false;
+            var isTableChanged = false;
 
-		    var tableName = string.Empty;
-		    var tableRule = ETableRuleUtils.GetEnumType(RblTableRule.SelectedValue);
-		    if (tableRule == ETableRule.Choose)
-		    {
-		        tableName = DdlTableChoose.SelectedValue;
-		    }
-		    else if (tableRule == ETableRule.HandWrite)
-		    {
-		        tableName = TbTableHandWrite.Text;
-		        if (!DataProvider.DatabaseDao.IsTableExists(tableName))
-		        {
-		            DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-		        }
-		        else
-		        {
-		            DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
-		        }
+            var tableName = string.Empty;
+            var tableRule = ETableRuleUtils.GetEnumType(RblTableRule.SelectedValue);
+            if (tableRule == ETableRule.Choose)
+            {
+                tableName = DdlTableChoose.SelectedValue;
+            }
+            else if (tableRule == ETableRule.HandWrite)
+            {
+                tableName = TbTableHandWrite.Text;
+                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                {
+                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                }
+                else
+                {
+                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                }
             }
 
             if (!StringUtils.EqualsIgnoreCase(SiteInfo.TableName, tableName))
-		    {
-		        isTableChanged = true;
-		        SiteInfo.TableName = tableName;
-		    }
+            {
+                isTableChanged = true;
+                SiteInfo.TableName = tableName;
+            }
 
-		    if (SiteInfo.IsRoot == false)
-		    {
-		        if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir, false), TbSiteDir.Text))
-		        {
-		            var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
-		            if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
-		            {
-		                FailMessage("站点修改失败，已存在相同的发布路径！");
-		                return;
-		            }
+            if (SiteInfo.IsRoot == false)
+            {
+                if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir, false), TbSiteDir.Text))
+                {
+                    var list = DataProvider.SiteDao.GetLowerSiteDirList(SiteInfo.ParentId);
+                    if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
+                    {
+                        FailMessage("站点修改失败，已存在相同的发布路径！");
+                        return;
+                    }
 
                     var parentPsPath = WebConfigUtils.PhysicalApplicationPath;
                     if (SiteInfo.ParentId > 0)
@@ -255,22 +256,22 @@ namespace SiteServer.BackgroundPages.Settings
                     DirectoryUtility.ChangeSiteDir(parentPsPath, SiteInfo.SiteDir, TbSiteDir.Text);
                 }
 
-		        if (PhParentId.Visible && SiteInfo.ParentId != TranslateUtils.ToInt(DdlParentId.SelectedValue))
-		        {
-		            var newParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
-		            var list = DataProvider.SiteDao.GetLowerSiteDirList(newParentId);
-		            if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
-		            {
-		                FailMessage("站点修改失败，已存在相同的发布路径！");
-		                return;
-		            }
+                if (PhParentId.Visible && SiteInfo.ParentId != TranslateUtils.ToInt(DdlParentId.SelectedValue))
+                {
+                    var newParentId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
+                    var list = DataProvider.SiteDao.GetLowerSiteDirList(newParentId);
+                    if (list.IndexOf(TbSiteDir.Text.ToLower()) != -1)
+                    {
+                        FailMessage("站点修改失败，已存在相同的发布路径！");
+                        return;
+                    }
 
                     DirectoryUtility.ChangeParentSite(SiteInfo.ParentId, TranslateUtils.ToInt(DdlParentId.SelectedValue), SiteId, TbSiteDir.Text);
                     SiteInfo.ParentId = newParentId;
                 }
 
-		        SiteInfo.SiteDir = TbSiteDir.Text;
-		    }
+                SiteInfo.SiteDir = TbSiteDir.Text;
+            }
 
             DataProvider.SiteDao.Update(SiteInfo);
             if (isTableChanged)

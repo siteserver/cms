@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using System.Web.UI.HtmlControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -8,6 +7,7 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -19,16 +19,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
-        
+
         [StlAttribute(Title = "当无内容时显示的信息")]
         private const string EmptyText = nameof(EmptyText);
-        
+
         [StlAttribute(Title = "导航提示信息")]
         private const string TipText = nameof(TipText);
-        
+
         [StlAttribute(Title = "显示字数")]
         private const string WordNum = nameof(WordNum);
-        
+
         [StlAttribute(Title = "是否开启键盘，↑↓←→键分别为上下左右")]
         private const string IsKeyboard = nameof(IsKeyboard);
 
@@ -47,7 +47,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var stlAnchor = new HtmlAnchor();
+            var attributes = new NameValueCollection();
             var type = TypeNextContent;
             var emptyText = string.Empty;
             var tipText = string.Empty;
@@ -80,17 +80,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                    TranslateUtils.AddAttributeIfNotExists(attributes, name, value);
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlAnchor, type, emptyText, tipText, wordNum, isKeyboard);
+            return ParseImpl(pageInfo, contextInfo, attributes, type, emptyText, tipText, wordNum, isKeyboard);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string type, string emptyText, string tipText, int wordNum, bool isKeyboard)
         {
             string parsedContent;
 
+            var innerHtml = string.Empty;
             string successTemplateString;
             string failureTemplateString;
             StlParserUtility.GetYesNo(contextInfo.InnerHtml, out successTemplateString, out failureTemplateString);
@@ -111,16 +112,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                         var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, siblingNodeInfo, pageInfo.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
-                            stlAnchor.Target = string.Empty;
+                            attributes["target"] = string.Empty;
                         }
-                        stlAnchor.HRef = url;
+                        attributes["href"] = url;
 
                         if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                         {
-                            stlAnchor.InnerHtml = ChannelManager.GetChannelName(pageInfo.SiteId, siblingChannelId);
+                            innerHtml = ChannelManager.GetChannelName(pageInfo.SiteId, siblingChannelId);
                             if (wordNum > 0)
                             {
-                                stlAnchor.InnerHtml = StringUtils.MaxLengthText(stlAnchor.InnerHtml, wordNum);
+                                innerHtml = StringUtils.MaxLengthText(innerHtml, wordNum);
                             }
                         }
                         else
@@ -128,7 +129,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             contextInfo.ChannelId = siblingChannelId;
                             var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                            stlAnchor.InnerHtml = innerBuilder.ToString();
+                            innerHtml = innerBuilder.ToString();
                         }
                     }
                 }
@@ -148,9 +149,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                             var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, siblingContentInfo, pageInfo.IsLocal);
                             if (url.Equals(PageUtils.UnclickedUrl))
                             {
-                                stlAnchor.Target = string.Empty;
+                                attributes["target"] = string.Empty;
                             }
-                            stlAnchor.HRef = url;
+                            attributes["href"] = url;
 
                             if (isKeyboard)
                             {
@@ -170,10 +171,10 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                             if (string.IsNullOrEmpty(contextInfo.InnerHtml))
                             {
-                                stlAnchor.InnerHtml = siblingContentInfo.Title;
+                                innerHtml = siblingContentInfo.Title;
                                 if (wordNum > 0)
                                 {
-                                    stlAnchor.InnerHtml = StringUtils.MaxLengthText(stlAnchor.InnerHtml, wordNum);
+                                    innerHtml = StringUtils.MaxLengthText(innerHtml, wordNum);
                                 }
                             }
                             else
@@ -181,13 +182,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                                 contextInfo.ContentId = siblingContentId;
                                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                                stlAnchor.InnerHtml = innerBuilder.ToString();
+                                innerHtml = innerBuilder.ToString();
                             }
                         }
                     }
                 }
 
-                parsedContent = string.IsNullOrEmpty(stlAnchor.HRef) ? emptyText : ControlUtils.GetControlRenderHtml(stlAnchor);
+                parsedContent = string.IsNullOrEmpty(attributes["href"]) ? emptyText : $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
             }
             else
             {

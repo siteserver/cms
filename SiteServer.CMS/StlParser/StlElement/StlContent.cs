@@ -69,7 +69,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
-        
+
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var leftText = string.Empty;
@@ -268,7 +268,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
-                    parsedContent = InputTypeUtils.ParseString(InputType.TextArea,  contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    parsedContent = InputTypeUtils.ParseString(InputType.TextArea, contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                 }
                 else if (BackgroundContentAttribute.Content.ToLower().Equals(type))
                 {
@@ -547,9 +547,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     parsedContent = contentInfo.Tags;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.ItemContainer?.ContentItem != null)
+                else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.Container?.ContentItem != null)
                 {
-                    var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ContentItem.ItemIndex, type, contextInfo);
+                    var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.Container.ContentItem.ItemIndex, type, contextInfo);
                     parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
                 }
                 else if (ContentAttribute.AddUserName.ToLower().Equals(type))

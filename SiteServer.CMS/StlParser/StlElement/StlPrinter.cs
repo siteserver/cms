@@ -5,12 +5,13 @@ using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "打印", Description = "通过 stl:printer 标签在模板中实现打印功能")]
     public class StlPrinter
-	{
+    {
         private StlPrinter() { }
         public const string ElementName = "stl:printer";
 
@@ -27,12 +28,12 @@ namespace SiteServer.CMS.StlParser.StlElement
         private const string LocationId = nameof(LocationId);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var titleId = string.Empty;
+        {
+            var attributes = new NameValueCollection();
+            var titleId = string.Empty;
             var bodyId = string.Empty;
             var logoId = string.Empty;
             var locationId = string.Empty;
-            var stlAnchor = new HtmlAnchor();
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -56,14 +57,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    ControlUtils.AddAttributeIfNotExists(stlAnchor, name, value);
+                    TranslateUtils.AddAttributeIfNotExists(attributes, name, value);
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlAnchor, titleId, bodyId, logoId, locationId);
-		}
+            return ParseImpl(pageInfo, contextInfo, attributes, titleId, bodyId, logoId, locationId);
+        }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlAnchor stlAnchor, string titleId, string bodyId, string logoId, string locationId)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
             var jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, pageInfo.TemplateInfo.Charset == ECharset.gb2312 ? SiteFilesAssets.Print.JsGb2312 : SiteFilesAssets.Print.JsUtf8);
 
@@ -137,21 +138,16 @@ function stlLoadPrintJs()
 ");
             }
 
-            if (string.IsNullOrEmpty(contextInfo.InnerHtml))
-            {
-                stlAnchor.InnerHtml = "打印";
-            }
-            else
+            var innerHtml = "打印";
+            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
                 StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                stlAnchor.InnerHtml = innerBuilder.ToString();
+                innerHtml = innerBuilder.ToString();
             }
-            stlAnchor.Attributes["href"] = "javascript:stlLoadPrintJs();";
+            attributes["href"] = "javascript:stlLoadPrintJs();";
 
-            var parsedContent = ControlUtils.GetControlRenderHtml(stlAnchor);
-
-            return parsedContent;
+            return $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }
-	}
+    }
 }

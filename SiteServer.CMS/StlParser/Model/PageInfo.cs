@@ -12,41 +12,23 @@ namespace SiteServer.CMS.StlParser.Model
     public class PageInfo
     {
         public SortedDictionary<string, string> HeadCodes { get; }
-
         public SortedDictionary<string, string> BodyCodes { get; }
-
         public SortedDictionary<string, string> FootCodes { get; }
-
         public SiteInfo SiteInfo { get; private set; }
-
         public Dictionary<string, string> Parameters { get; set; }
-
         public string ApiUrl { get; }
-
         public TemplateInfo TemplateInfo { get; }
-
         public UserInfo UserInfo { get; set; }
-
         public int SiteId { get; private set; }
-
         public int PageChannelId { get; private set; }
-
         public int PageContentId { get; private set; }
-
         public bool IsLocal { get; set; }
-
-        public Stack<ChannelItemInfo> ChannelItems { get; }
-
-        public Stack<ContentItemInfo> ContentItems { get; }
-
-        public Stack SqlItems { get; }
-
-        public Stack SiteItems { get; }
-
-        public Stack EachItems { get; }
-
+        public Stack<Container.Site> SiteItems { get; }
+        public Stack<Container.Channel> ChannelItems { get; }
+        public Stack<Container.Content> ContentItems { get; }
+        public Stack<Container.Each> EachItems { get; }
+        public Stack<Container.Sql> SqlItems { get; }
         public Dictionary<string, object> PluginItems { get; }
-
         private int _uniqueId;
 
         public int UniqueId
@@ -75,12 +57,11 @@ namespace SiteServer.CMS.StlParser.Model
             _uniqueId = 1;
             ApiUrl = ApiManager.ApiUrl;
 
-            ChannelItems = new Stack<ChannelItemInfo>(5);
-            ContentItems = new Stack<ContentItemInfo>(5);
-            SqlItems = new Stack(5);
-            SiteItems = new Stack(5);
-            EachItems = new Stack(5);
-
+            SiteItems = new Stack<Container.Site>(5);
+            ChannelItems = new Stack<Container.Channel>(5);
+            ContentItems = new Stack<Container.Content>(5);
+            EachItems = new Stack<Container.Each>(5);
+            SqlItems = new Stack<Container.Sql>(5);
             PluginItems = pluginItems;
         }
 
@@ -120,11 +101,6 @@ namespace SiteServer.CMS.StlParser.Model
             }
         }
 
-        /// <summary>
-        /// 将一个页面的js复制给本页面，提供给分页时使用
-        /// add by sessionliang at 20151209
-        /// </summary>
-        /// <param name="lastPageInfo"></param>
         public void AddLastPageScript(PageInfo lastPageInfo)
         {
             foreach (var key in lastPageInfo.BodyCodes.Keys)
@@ -150,11 +126,6 @@ namespace SiteServer.CMS.StlParser.Model
             }
         }
 
-        /// <summary>
-        /// 将一个页面的js从本页面去除，提供给分页时使用
-        ///  add by sessionliang at 20151209
-        /// </summary>
-        /// <param name="lastPageInfo"></param>
         public void ClearLastPageScript(PageInfo lastPageInfo)
         {
             foreach (var key in lastPageInfo.BodyCodes.Keys)
@@ -390,7 +361,7 @@ wnd_frame.src=url;}}
                     builder.Append(BodyCodes[key]);
                 }
                 return builder.ToString();
-            }   
+            }
         }
 
         public string FootCodesHtml

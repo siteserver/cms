@@ -9,10 +9,11 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalTableStylesAdd : BasePageCms
+    public class ModalTableStylesAdd : BasePageCms
     {
         public TextBox TbAttributeNames;
         public DropDownList DdlInputType;
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
             }));
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -86,7 +87,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             ReFresh(null, EventArgs.Empty);
-		}
+        }
 
         public void ReFresh(object sender, EventArgs e)
         {
@@ -132,7 +133,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 LayerUtils.CloseAndRedirect(Page, _redirectUrl);
             }
-		}
+        }
 
         private bool InsertTableStyleInfo(InputType inputType)
         {
@@ -206,7 +207,7 @@ namespace SiteServer.BackgroundPages.Cms
                     attributeNames.Add(styleInfo.AttributeName);
                     DataProvider.TableStyleDao.Insert(styleInfo);
                 }
-                
+
 
                 if (SiteId > 0)
                 {
@@ -223,8 +224,8 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 FailMessage(ex, "显示样式添加失败：" + ex.Message);
             }
-            
+
             return isChanged;
         }
-	}
+    }
 }

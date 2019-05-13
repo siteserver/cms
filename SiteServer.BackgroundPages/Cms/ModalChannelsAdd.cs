@@ -9,6 +9,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -109,7 +110,7 @@ namespace SiteServer.BackgroundPages.Cms
                     return;
                 }
 
-                var insertedChannelIdHashtable = new Hashtable {[1] = parentChannelId}; //key为栏目的级别，1为第一级栏目
+                var insertedChannelIdHashtable = new Hashtable { [1] = parentChannelId }; //key为栏目的级别，1为第一级栏目
 
                 var nodeNameArray = TbNodeNames.Text.Split('\n');
                 List<string> nodeIndexNameList = null;

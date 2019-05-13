@@ -11,20 +11,21 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageChannelTranslate : BasePageCms
+    public class PageChannelTranslate : BasePageCms
     {
         public ListBox LbChannelIdFrom;
         public DropDownList DdlSiteId;
         public DropDownList DdlChannelIdTo;
-		public DropDownList DdlTranslateType;
-		public RadioButtonList RblIsDeleteAfterTranslate;
+        public DropDownList DdlTranslateType;
+        public RadioButtonList RblIsDeleteAfterTranslate;
         public PlaceHolder PhReturn;
         public Button BtnSubmit;
 
-		private bool[] _isLastNodeArray;
+        private bool[] _isLastNodeArray;
 
         public static string GetRedirectUrl(int siteId)
         {
@@ -60,13 +61,13 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtilsEx.CheckRequestParameter("siteId");
+            PageUtilsEx.CheckRequestParameter("siteId");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             if (!HasChannelPermissions(SiteId, ConfigManager.ChannelPermissions.ContentDelete))
-			{
+            {
                 RblIsDeleteAfterTranslate.Visible = false;
-			}
+            }
 
             if (IsPostBack) return;
 
@@ -119,43 +120,43 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		public string GetTitle(ChannelInfo channelInfo)
-		{
-			var str = "";
+        public string GetTitle(ChannelInfo channelInfo)
+        {
+            var str = "";
             if (channelInfo.Id == SiteId)
-			{
+            {
                 channelInfo.IsLastNode = true;
-			}
+            }
             if (channelInfo.IsLastNode == false)
-			{
+            {
                 _isLastNodeArray[channelInfo.ParentsCount] = false;
-			}
-			else
-			{
+            }
+            else
+            {
                 _isLastNodeArray[channelInfo.ParentsCount] = true;
-			}
+            }
             for (var i = 0; i < channelInfo.ParentsCount; i++)
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-		    str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
-		    str = string.Concat(str, channelInfo.ChannelName);
-		    var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelInfo.Id);
+            str = string.Concat(str, channelInfo.IsLastNode ? "└" : "├");
+            str = string.Concat(str, channelInfo.ChannelName);
+            var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelInfo.Id);
             var count = ContentManager.GetCount(SiteInfo, channelInfo, onlyAdminId);
             if (count != 0)
             {
                 str = $"{str} ({count})";
             }
-			return str;
-		}
+            return str;
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-		    if (!Page.IsPostBack) return;
+        {
+            if (!Page.IsPostBack) return;
 
-		    var targetChannelId = TranslateUtils.ToInt(DdlChannelIdTo.SelectedValue);
+            var targetChannelId = TranslateUtils.ToInt(DdlChannelIdTo.SelectedValue);
 
-		    var targetSiteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
+            var targetSiteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
 
             var translateType = ETranslateTypeUtils.GetEnumType(DdlTranslateType.SelectedValue);
 
@@ -246,38 +247,38 @@ namespace SiteServer.BackgroundPages.Cms
             }
         }
 
-		private void TranslateChannelAndContent(List<ChannelInfo> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList)
-		{
-			if (nodeInfoList == null || nodeInfoList.Count == 0)
-			{
-				return;
-			}
+        private void TranslateChannelAndContent(List<ChannelInfo> nodeInfoList, int targetSiteId, int parentId, ETranslateType translateType, List<string> nodeIndexNameList, List<string> filePathList)
+        {
+            if (nodeInfoList == null || nodeInfoList.Count == 0)
+            {
+                return;
+            }
 
-			if (nodeIndexNameList == null)
-			{
+            if (nodeIndexNameList == null)
+            {
                 nodeIndexNameList = DataProvider.ChannelDao.GetIndexNameList(targetSiteId);
-			}
+            }
 
             if (filePathList == null)
-			{
+            {
                 filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteId(targetSiteId);
-			}
+            }
 
-			foreach (var oldNodeInfo in nodeInfoList)
-			{
-			    var nodeInfo = new ChannelInfo(oldNodeInfo)
-			    {
-			        SiteId = targetSiteId,
-			        ParentId = parentId,
-			        ChildrenCount = 0,
-			        AddDate = DateTime.Now
-			    };
+            foreach (var oldNodeInfo in nodeInfoList)
+            {
+                var nodeInfo = new ChannelInfo(oldNodeInfo)
+                {
+                    SiteId = targetSiteId,
+                    ParentId = parentId,
+                    ChildrenCount = 0,
+                    AddDate = DateTime.Now
+                };
 
-			    if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
+                if (RblIsDeleteAfterTranslate.Visible && EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True))
                 {
                     nodeIndexNameList.Add(nodeInfo.IndexName);
                 }
-               
+
                 else if (!string.IsNullOrEmpty(nodeInfo.IndexName) && nodeIndexNameList.IndexOf(nodeInfo.IndexName) == -1)
                 {
                     nodeIndexNameList.Add(nodeInfo.IndexName);
@@ -322,45 +323,45 @@ namespace SiteServer.BackgroundPages.Cms
 
                     CreateManager.CreateChannel(targetSiteId, targetChannelId);
                 }
-			}
-		}
+            }
+        }
 
-		private void TranslateContent(int channelId, int targetSiteId, int targetChannelId)
-		{
+        private void TranslateContent(int channelId, int targetSiteId, int targetChannelId)
+        {
             var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
 
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
 
             var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
-		    var translateType = RblIsDeleteAfterTranslate.Visible &&
-		                        EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True)
-		        ? ETranslateContentType.Cut
-		        : ETranslateContentType.Copy;
+            var translateType = RblIsDeleteAfterTranslate.Visible &&
+                                EBooleanUtils.Equals(RblIsDeleteAfterTranslate.SelectedValue, EBoolean.True)
+                ? ETranslateContentType.Cut
+                : ETranslateContentType.Copy;
 
             foreach (var contentId in contentIdList)
-			{
+            {
                 ContentUtility.Translate(SiteInfo, channelId, contentId, targetSiteId, targetChannelId, translateType);
-			}
-		}
+            }
+        }
 
-		public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
-		{
-			var psId = int.Parse(DdlSiteId.SelectedValue);
+        public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var psId = int.Parse(DdlSiteId.SelectedValue);
 
             DdlChannelIdTo.Items.Clear();
 
-			var channelIdList = ChannelManager.GetChannelIdList(psId);
+            var channelIdList = ChannelManager.GetChannelIdList(psId);
             var nodeCount = channelIdList.Count;
-			_isLastNodeArray = new bool[nodeCount];
+            _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
-			{
+            {
                 var nodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
                 var value = IsOwningChannelId(nodeInfo.Id) ? nodeInfo.Id.ToString() : "";
                 value = (nodeInfo.Additional.IsContentAddable) ? value : "";
                 var listitem = new ListItem(GetTitle(nodeInfo), value);
                 DdlChannelIdTo.Items.Add(listitem);
-			}
-		}
+            }
+        }
 
         public string ReturnUrl { get; private set; }
     }

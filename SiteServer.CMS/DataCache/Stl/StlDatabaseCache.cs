@@ -1,6 +1,12 @@
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using Dapper;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
+using SiteServer.CMS.StlParser.Model;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -82,6 +88,51 @@ namespace SiteServer.CMS.DataCache.Stl
                 if (retval == null)
                 {
                     retval = DataProvider.DatabaseDao.GetDataSet(connectionString, queryString);
+                    StlCacheManager.Set(cacheKey, retval);
+                }
+            }
+
+            return retval;
+        }
+
+        public static List<Container.Sql> GetContainerSqlList(string connectionString, string queryString)
+        {
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetContainerSqlList),
+                connectionString, queryString);
+            var retval = StlCacheManager.Get<List<Container.Sql>>(cacheKey);
+            if (retval != null) return retval;
+
+            lock (LockObject)
+            {
+                retval = StlCacheManager.Get<List<Container.Sql>>(cacheKey);
+                if (retval == null)
+                {
+                    if (string.IsNullOrEmpty(connectionString))
+                    {
+                        connectionString = WebConfigUtils.ConnectionString;
+                    }
+                    var rows = new List<Container.Sql>();
+                    var itemIndex = 0;
+                    using (var connection = new Connection(WebConfigUtils.DatabaseType, connectionString))
+                    {
+                        using (var reader = connection.ExecuteReader(queryString))
+                        {
+                            while (reader.Read())
+                            {
+                                var dict = new Dictionary<string, object>();
+                                for (var i = 0; i < reader.FieldCount; i++)
+                                {
+                                    dict[reader.GetName(i)] = reader.GetValue(i);
+                                }
+                                rows.Add(new Container.Sql
+                                {
+                                    ItemIndex = itemIndex,
+                                    Dictionary = dict
+                                });
+                            }
+                        }
+                    }
+                    retval = rows;
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }

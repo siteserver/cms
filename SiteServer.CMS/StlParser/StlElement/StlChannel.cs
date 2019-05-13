@@ -411,9 +411,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     return contextInfo.OuterHtml;
                 }
             }
-            else if (StringUtils.StartsWithIgnoreCase(type, ChannelAttribute.ItemIndex) && contextInfo.ItemContainer?.ChannelItem != null)
+            else if (StringUtils.StartsWithIgnoreCase(type, ChannelAttribute.ItemIndex) && contextInfo.Container?.ChannelItem != null)
             {
-                var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.ItemContainer.ChannelItem.ItemIndex, type, contextInfo);
+                var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.Container.ChannelItem.ItemIndex, type, contextInfo);
                 parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfChannels.ToLower()))
@@ -426,7 +426,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
-            { 
+            {
                 var count = StlContentCache.GetCountCheckedImage(pageInfo.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }

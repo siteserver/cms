@@ -18,21 +18,21 @@ namespace SiteServer.CMS.StlParser.Template
     {
         public static string GetContentsItemTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-            //var contentInfo = new BackgroundContentInfo(itemContainer.ContentItem.DataItem);
+            var container = Container.GetContainer(pageInfo);
+            //var contentInfo = new BackgroundContentInfo(container.ContentItem.DataItem);
 
-            ContentItemInfo contentItemInfo = null;
+            Container.Content contentItemInfo = null;
             if (pageInfo.ContentItems.Count > 0)
             {
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
             var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contentItemInfo.ChannelId,
-                contentItemInfo.ContentId);
+                contentItemInfo.Id);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
-            contextInfo.ItemContainer = itemContainer;
+            contextInfo.Container = container;
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ChannelId = contentInfo.ChannelId;
             contextInfo.ContentId = contentInfo.Id;
@@ -79,7 +79,7 @@ namespace SiteServer.CMS.StlParser.Template
             var innerBuilder = new StringBuilder(theTemplateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopContentItem(pageInfo);
+            Container.PopContentItem(pageInfo);
 
             if (contentInfo.SiteId != pageInfo.SiteId)
             {
@@ -170,7 +170,7 @@ namespace SiteServer.CMS.StlParser.Template
                     }
                 }
             }
-            else if (IsNumberInRange(contextInfo.ItemContainer.ContentItem.ItemIndex + 1, itemType))
+            else if (IsNumberInRange(contextInfo.Container.ContentItem.ItemIndex + 1, itemType))
             {
                 templateString = selectedItems.Get(itemTypes);
                 return true;
@@ -180,13 +180,13 @@ namespace SiteServer.CMS.StlParser.Template
 
         public static string GetChannelsItemTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+            var container = Container.GetContainer(pageInfo);
 
-            var channelId = itemContainer.ChannelItem.ChannelId;
+            var channelId = container.ChannelItem.Id;
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
-            contextInfo.ItemContainer = itemContainer;
+            contextInfo.Container = container;
             contextInfo.ContainerClientId = containerClientId;
             contextInfo.ChannelId = channelId;
 
@@ -237,7 +237,7 @@ namespace SiteServer.CMS.StlParser.Template
                             }
                         }
                     }
-                    else if (IsNumberInRange(itemContainer.ChannelItem.ItemIndex + 1, itemType))
+                    else if (IsNumberInRange(container.ChannelItem.ItemIndex + 1, itemType))
                     {
                         templateString = selectedItems.Get(itemType);
                         break;
@@ -248,25 +248,25 @@ namespace SiteServer.CMS.StlParser.Template
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopChannelItem(pageInfo);
+            Container.PopChannelItem(pageInfo);
 
             return innerBuilder.ToString();
         }
 
         public static string GetSqlContentsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+            var container = Container.GetContainer(pageInfo);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
+            contextInfo.Container = container;
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.AllKeys)
                 {
-                    if (IsNumberInRange(itemContainer.SqlItem.ItemIndex + 1, itemType))
+                    if (IsNumberInRange(container.SqlItem.ItemIndex + 1, itemType))
                     {
                         templateString = selectedItems.Get(itemType);
                         break;
@@ -277,21 +277,19 @@ namespace SiteServer.CMS.StlParser.Template
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopSqlItem(pageInfo);
+            Container.PopSqlItem(pageInfo);
 
             return innerBuilder.ToString();
         }
 
         public static string GetSitesTemplateString(string templateString, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
-
-            var siteId = SqlUtils.EvalInt(itemContainer.SiteItem.DataItem, SiteAttribute.Id);
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var container = Container.GetContainer(pageInfo);
+            var siteInfo = SiteManager.GetSiteInfo(container.SiteItem.Id);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
+            contextInfo.Container = container;
             contextInfo.ContextType = contextType;
 
             var preSiteInfo = pageInfo.SiteInfo;
@@ -302,7 +300,7 @@ namespace SiteServer.CMS.StlParser.Template
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopSiteItems(pageInfo);
+            Container.PopSiteItems(pageInfo);
 
             pageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, contextInfo);
 
@@ -311,18 +309,18 @@ namespace SiteServer.CMS.StlParser.Template
 
         public static string GetEachsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, PageInfo pageInfo, EContextType contextType, ContextInfo contextInfoRef)
         {
-            var itemContainer = DbItemContainer.GetItemContainer(pageInfo);
+            var container = Container.GetContainer(pageInfo);
 
             var contextInfo = contextInfoRef.Clone();
             contextInfo.ContextType = contextType;
             contextInfo.ContainerClientId = containerClientId;
-            contextInfo.ItemContainer = itemContainer;
+            contextInfo.Container = container;
 
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.AllKeys)
                 {
-                    if (IsNumberInRange(itemContainer.SqlItem.ItemIndex + 1, itemType))
+                    if (IsNumberInRange(container.SqlItem.ItemIndex + 1, itemType))
                     {
                         templateString = selectedItems.Get(itemType);
                         break;
@@ -333,52 +331,52 @@ namespace SiteServer.CMS.StlParser.Template
             var innerBuilder = new StringBuilder(templateString);
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
 
-            DbItemContainer.PopEachItem(pageInfo);
+            Container.PopEachItem(pageInfo);
 
             return innerBuilder.ToString();
         }
 
-        public static void PutListInfoToMyDataList(ParsedDataList myDataList, ListInfo listInfo)
-        {
-            myDataList.RepeatColumns = listInfo.Columns;
-            // myDataList.RepeatDirection = listInfo.Direction;
-            // myDataList.Height = listInfo.Height;
-            // myDataList.Width = listInfo.Width;
-            // if (!string.IsNullOrEmpty(listInfo.Align))
-            // {
-            //     myDataList.HorizontalAlign = TranslateUtilsEx.ToHorizontalAlign(listInfo.Align);
-            // }
-            // myDataList.ItemStyle.Height = listInfo.ItemHeight;
-            // myDataList.ItemStyle.Width = listInfo.ItemWidth;
-            // myDataList.ItemStyle.HorizontalAlign = HorizontalAlign.Left;
-            // if (!string.IsNullOrEmpty(listInfo.ItemAlign))
-            // {
-            //     myDataList.ItemStyle.HorizontalAlign = TranslateUtilsEx.ToHorizontalAlign(listInfo.ItemAlign);
-            // }
-            // myDataList.ItemStyle.VerticalAlign = VerticalAlign.Top;
-            // if (!string.IsNullOrEmpty(listInfo.ItemVerticalAlign))
-            // {
-            //     myDataList.ItemStyle.VerticalAlign = TranslateUtilsEx.ToVerticalAlign(listInfo.ItemVerticalAlign);
-            // }
-            // if (!string.IsNullOrEmpty(listInfo.ItemClass))
-            // {
-            //     myDataList.ItemStyle.CssClass = listInfo.ItemClass;
-            // }
+        // public static void PutListInfoToMyDataList(ParsedDataList myDataList, ListInfo listInfo)
+        // {
+        //     myDataList.RepeatColumns = listInfo.Columns;
+        //     // myDataList.RepeatDirection = listInfo.Direction;
+        //     // myDataList.Height = listInfo.Height;
+        //     // myDataList.Width = listInfo.Width;
+        //     // if (!string.IsNullOrEmpty(listInfo.Align))
+        //     // {
+        //     //     myDataList.HorizontalAlign = TranslateUtilsEx.ToHorizontalAlign(listInfo.Align);
+        //     // }
+        //     // myDataList.ItemStyle.Height = listInfo.ItemHeight;
+        //     // myDataList.ItemStyle.Width = listInfo.ItemWidth;
+        //     // myDataList.ItemStyle.HorizontalAlign = HorizontalAlign.Left;
+        //     // if (!string.IsNullOrEmpty(listInfo.ItemAlign))
+        //     // {
+        //     //     myDataList.ItemStyle.HorizontalAlign = TranslateUtilsEx.ToHorizontalAlign(listInfo.ItemAlign);
+        //     // }
+        //     // myDataList.ItemStyle.VerticalAlign = VerticalAlign.Top;
+        //     // if (!string.IsNullOrEmpty(listInfo.ItemVerticalAlign))
+        //     // {
+        //     //     myDataList.ItemStyle.VerticalAlign = TranslateUtilsEx.ToVerticalAlign(listInfo.ItemVerticalAlign);
+        //     // }
+        //     // if (!string.IsNullOrEmpty(listInfo.ItemClass))
+        //     // {
+        //     //     myDataList.ItemStyle.CssClass = listInfo.ItemClass;
+        //     // }
 
-            if (listInfo.Layout == ELayout.Table)
-            {
-                myDataList.RepeatLayout = RepeatLayout.Table;
-            }
-            else if (listInfo.Layout == ELayout.Flow)
-            {
-                myDataList.RepeatLayout = RepeatLayout.Flow;
-            }
+        //     if (listInfo.Layout == ELayout.Table)
+        //     {
+        //         myDataList.RepeatLayout = RepeatLayout.Table;
+        //     }
+        //     else if (listInfo.Layout == ELayout.Flow)
+        //     {
+        //         myDataList.RepeatLayout = RepeatLayout.Flow;
+        //     }
 
-            foreach (var attributeName in listInfo.Others.AllKeys)
-            {
-                myDataList.AddAttribute(attributeName, listInfo.Others[attributeName]);
-            }
-        }
+        //     foreach (var attributeName in listInfo.Others.AllKeys)
+        //     {
+        //         myDataList.AddAttribute(attributeName, listInfo.Others[attributeName]);
+        //     }
+        // }
 
         private static bool IsNumberInRange(int number, string range)
         {

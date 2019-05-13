@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Web.UI.WebControls;
-using SiteServer.CMS.Core;
+﻿using System.Collections.Generic;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.CMS.StlParser.Template;
+using System.Text;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -25,112 +20,239 @@ namespace SiteServer.CMS.StlParser.StlElement
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
             var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
-            var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+            // var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
+            var contentList = GetContainerContentList(pageInfo, contextInfo, listInfo);
 
             if (contextInfo.IsStlEntity)
             {
-                return ParseEntity(pageInfo, dataSource);
+                return ParseEntity(pageInfo, contentList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, dataSource);
+            return ParseElement(pageInfo, contextInfo, listInfo, contentList);
         }
 
-        private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        // private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        // {
+        //     var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+
+        //     channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+
+        //     return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+        // }
+
+        private static List<Container.Content> GetContainerContentList(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         {
             var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
             channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return StlDataUtility.GetContainerContentList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
-        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, DataSet dataSource)
+        public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Content> contentList)
         {
-            var parsedContent = string.Empty;
+            if (contentList == null || contentList.Count == 0) return string.Empty;
+
+            var builder = new StringBuilder();
 
             if (listInfo.Layout == ELayout.None)
             {
-                var rptContents = new Repeater
-                {
-                    ItemTemplate =
-                        new RepeaterTemplate(listInfo.ItemTemplate, listInfo.SelectedItems,
-                            listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat,
-                            pageInfo, EContextType.Content, contextInfo)
-                };
-
                 if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
                 {
-                    rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+                    builder.Append(listInfo.HeaderTemplate);
                 }
-                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+
+                var isAlternative = false;
+                var isSeparator = false;
+                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+                    isAlternative = true;
                 }
                 if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
                 {
-                    rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
-                {
-                    rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+                    isSeparator = true;
                 }
 
-                rptContents.DataSource = dataSource;
-                rptContents.DataBind();
-
-                if (rptContents.Items.Count > 0)
+                for (var i = 0; i < contentList.Count; i++)
                 {
-                    parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
+                    if (isSeparator && i % 2 != 0 && i != contentList.Count - 1)
+                    {
+                        builder.Append(listInfo.SeparatorTemplate);
+                    }
+
+                    var content = contentList[i];
+
+                    pageInfo.ContentItems.Push(content);
+                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                    builder.Append(TemplateUtility.GetContentsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Content, contextInfo));
+                }
+
+                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+                {
+                    builder.Append(listInfo.FooterTemplate);
                 }
             }
             else
             {
-                var pdlContents = new ParsedDataList();
-
-                TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
-
-                pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
-                if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
-                {
-                    pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
-                {
-                    pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
-                }
-                if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
-                {
-                    pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
-                }
+                var isAlternative = false;
                 if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
                 {
-                    pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+                    isAlternative = true;
                 }
 
-                pdlContents.DataSource = dataSource;
-                pdlContents.DataKeyField = ContentAttribute.Id;
-                pdlContents.DataBind();
+                var tableAttributes = listInfo.GetTableAttributes();
+                var cellAttributes = listInfo.GetCellAttributes();
 
-                if (pdlContents.Items.Count > 0)
+                using (Html.Table table = new Html.Table(builder, tableAttributes))
                 {
-                    parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
+                    if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+                    {
+                        table.StartHead();
+                        using (var tHead = table.AddRow())
+                        {
+                            tHead.AddCell(listInfo.HeaderTemplate, cellAttributes);
+                        }
+                        table.EndHead();
+                    }
+
+                    table.StartBody();
+
+                    var columns = listInfo.Columns <= 1 ? 1 : listInfo.Columns;
+                    var itemIndex = 0;
+
+                    while (true)
+                    {
+                        using (var tr = table.AddRow(null))
+                        {
+                            for (var cell = 1; cell <= columns; cell++)
+                            {
+                                var cellHtml = string.Empty;
+                                if (itemIndex < contentList.Count)
+                                {
+                                    var content = contentList[itemIndex];
+
+                                    pageInfo.ContentItems.Push(content);
+                                    var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
+                                    cellHtml = TemplateUtility.GetContentsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Content, contextInfo);
+                                }
+                                tr.AddCell(cellHtml, cellAttributes);
+                                itemIndex++;
+                            }
+                            if (itemIndex >= contentList.Count) break;
+                        }
+                    }
+
+                    table.EndBody();
+
+                    if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+                    {
+                        table.StartFoot();
+                        using (var tFoot = table.AddRow())
+                        {
+                            tFoot.AddCell(listInfo.FooterTemplate, cellAttributes);
+                        }
+                        table.EndFoot();
+                    }
                 }
             }
 
-            return parsedContent;
+            return builder.ToString();
+
+            // var parsedContent = string.Empty;
+
+            // if (listInfo.Layout == ELayout.None)
+            // {
+            //     var rptContents = new Repeater
+            //     {
+            //         ItemTemplate =
+            //             new RepeaterTemplate(listInfo.ItemTemplate, listInfo.SelectedItems,
+            //                 listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat,
+            //                 pageInfo, EContextType.Content, contextInfo)
+            //     };
+
+            //     if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+            //     {
+            //         rptContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+            //     {
+            //         rptContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
+            //     {
+            //         rptContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
+            //     {
+            //         rptContents.AlternatingItemTemplate = new RepeaterTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+            //     }
+
+            //     rptContents.DataSource = dataSource;
+            //     rptContents.DataBind();
+
+            //     if (rptContents.Items.Count > 0)
+            //     {
+            //         parsedContent = ControlUtils.GetControlRenderHtml(rptContents);
+            //     }
+            // }
+            // else
+            // {
+            //     var pdlContents = new ParsedDataList();
+
+            //     TemplateUtility.PutListInfoToMyDataList(pdlContents, listInfo);
+
+            //     pdlContents.ItemTemplate = new DataListTemplate(listInfo.ItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+            //     if (!string.IsNullOrEmpty(listInfo.HeaderTemplate))
+            //     {
+            //         pdlContents.HeaderTemplate = new SeparatorTemplate(listInfo.HeaderTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
+            //     {
+            //         pdlContents.FooterTemplate = new SeparatorTemplate(listInfo.FooterTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.SeparatorTemplate))
+            //     {
+            //         pdlContents.SeparatorTemplate = new SeparatorTemplate(listInfo.SeparatorTemplate);
+            //     }
+            //     if (!string.IsNullOrEmpty(listInfo.AlternatingItemTemplate))
+            //     {
+            //         pdlContents.AlternatingItemTemplate = new DataListTemplate(listInfo.AlternatingItemTemplate, listInfo.SelectedItems, listInfo.SelectedValues, listInfo.SeparatorRepeatTemplate, listInfo.SeparatorRepeat, pageInfo, EContextType.Content, contextInfo);
+            //     }
+
+            //     pdlContents.DataSource = dataSource;
+            //     pdlContents.DataKeyField = ContentAttribute.Id;
+            //     pdlContents.DataBind();
+
+            //     if (pdlContents.Items.Count > 0)
+            //     {
+            //         parsedContent = ControlUtils.GetControlRenderHtml(pdlContents);
+            //     }
+            // }
+
+            // return parsedContent;
         }
 
-        private static object ParseEntity(PageInfo pageInfo, DataSet dataSource)
+        private static object ParseEntity(PageInfo pageInfo, List<Container.Content> contentList)
         {
             var contentInfoList = new List<Dictionary<string, object>>();
 
-            var table = dataSource.Tables[0];
-            foreach (DataRow row in table.Rows)
-            {
-                var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
-                var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
+            // var table = dataSource.Tables[0];
+            // foreach (DataRow row in table.Rows)
+            // {
+            //     var contentId = Convert.ToInt32(row[nameof(ContentAttribute.Id)]);
+            //     var channelId = Convert.ToInt32(row[nameof(ContentAttribute.ChannelId)]);
 
-                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelId, contentId);
+            //     var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelId, contentId);
+
+            //     if (contentInfo != null)
+            //     {
+            //         contentInfoList.Add(contentInfo.ToDictionary());
+            //     }
+            // }
+
+            foreach (var content in contentList)
+            {
+                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, content.ChannelId, content.Id);
 
                 if (contentInfo != null)
                 {

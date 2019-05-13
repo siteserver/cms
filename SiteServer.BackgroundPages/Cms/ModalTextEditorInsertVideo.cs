@@ -6,6 +6,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils.LitJson;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -66,7 +67,7 @@ namespace SiteServer.BackgroundPages.Cms
             TbHeight.Text = SiteInfo.Additional.ConfigUEditorVideoHeight.ToString();
         }
 
-	    private Hashtable Upload()
+        private Hashtable Upload()
         {
             var success = false;
             var url = string.Empty;
@@ -210,7 +211,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var script = "parent." + UEditorUtils.GetInsertVideoScript(_attributeName, playUrl, imageUrl, SiteInfo);
             LayerUtils.CloseWithoutRefresh(Page, script);
-		}
+        }
 
-	}
+    }
 }

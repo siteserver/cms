@@ -5,10 +5,11 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalRelatedFieldAdd : BasePageCms
+    public class ModalRelatedFieldAdd : BasePageCms
     {
         public TextBox TbRelatedFieldName;
         public DropDownList DdlTotalLevel;
@@ -41,7 +42,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("添加联动字段", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalRelatedFieldAdd), null), 550, 550);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -104,7 +105,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			var isChanged = false;
+            var isChanged = false;
 
             var relatedFieldInfo = new RelatedFieldInfo
             {
@@ -130,47 +131,47 @@ namespace SiteServer.BackgroundPages.Cms
                 TbSuffix5.Text
             };
             relatedFieldInfo.Suffixes = TranslateUtils.ObjectCollectionToString(suffix);
-				
-			if (AuthRequest.IsQueryExists("RelatedFieldID"))
-			{
-				try
-				{
+
+            if (AuthRequest.IsQueryExists("RelatedFieldID"))
+            {
+                try
+                {
                     relatedFieldInfo.Id = AuthRequest.GetQueryInt("RelatedFieldID");
                     DataProvider.RelatedFieldDao.Update(relatedFieldInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改联动字段", $"联动字段:{relatedFieldInfo.Title}");
-					isChanged = true;
-				}
-				catch(Exception ex)
-				{
+                    isChanged = true;
+                }
+                catch (Exception ex)
+                {
                     FailMessage(ex, "联动字段修改失败！");
-				}
-			}
-			else
-			{
+                }
+            }
+            else
+            {
                 var relatedFieldNameList = DataProvider.RelatedFieldDao.GetTitleList(SiteId);
                 if (relatedFieldNameList.IndexOf(TbRelatedFieldName.Text) != -1)
-				{
+                {
                     FailMessage("联动字段添加失败，联动字段名称已存在！");
-				}
-				else
-				{
-					try
-					{
+                }
+                else
+                {
+                    try
+                    {
                         DataProvider.RelatedFieldDao.Insert(relatedFieldInfo);
                         AuthRequest.AddSiteLog(SiteId, "添加联动字段", $"联动字段:{relatedFieldInfo.Title}");
-						isChanged = true;
-					}
-					catch(Exception ex)
-					{
-						FailMessage(ex, "联动字段添加失败！");
-					}
-				}
-			}
+                        isChanged = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        FailMessage(ex, "联动字段添加失败！");
+                    }
+                }
+            }
 
-			if (isChanged)
-			{
+            if (isChanged)
+            {
                 LayerUtils.Close(Page);
-			}
-		}
-	}
+            }
+        }
+    }
 }

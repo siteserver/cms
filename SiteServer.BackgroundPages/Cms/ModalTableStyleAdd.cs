@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -159,12 +160,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var itemInfo = (TableStyleItemInfo) e.Item.DataItem;
+            var itemInfo = (TableStyleItemInfo)e.Item.DataItem;
 
-            var ltlSeq = (Literal) e.Item.FindControl("ltlSeq");
-            var tbTitle = (TextBox) e.Item.FindControl("tbTitle");
-            var tbValue = (TextBox) e.Item.FindControl("tbValue");
-            var cbIsSelected = (CheckBox) e.Item.FindControl("cbIsSelected");
+            var ltlSeq = (Literal)e.Item.FindControl("ltlSeq");
+            var tbTitle = (TextBox)e.Item.FindControl("tbTitle");
+            var tbValue = (TextBox)e.Item.FindControl("tbValue");
+            var cbIsSelected = (CheckBox)e.Item.FindControl("cbIsSelected");
 
             ltlSeq.Text = (e.Item.ItemIndex + 1).ToString();
             tbTitle.Text = itemInfo.ItemTitle;
@@ -270,7 +271,7 @@ namespace SiteServer.BackgroundPages.Cms
                         return;
                     }
                 }
-            }  
+            }
 
             if (_styleInfo.Id == 0 && _styleInfo.RelatedIdentity == 0)//数据库中没有此项及父项的表样式
             {
@@ -294,7 +295,7 @@ namespace SiteServer.BackgroundPages.Cms
         private bool UpdateTableStyleInfo(InputType inputType)
         {
             var isChanged = false;
-            _styleInfo.AttributeName =TbAttributeName.Text;
+            _styleInfo.AttributeName = TbAttributeName.Text;
             _styleInfo.DisplayName = AttackUtils.FilterXss(TbDisplayName.Text);
             _styleInfo.HelpText = TbHelpText.Text;
             _styleInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
@@ -315,7 +316,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
-                
+
 
                 var isRapid = TranslateUtils.ToBool(DdlIsRapid.SelectedValue);
                 if (isRapid)
@@ -382,7 +383,7 @@ namespace SiteServer.BackgroundPages.Cms
                 return false;
             }
 
-            if (TableStyleManager.IsExists(relatedIdentity, _tableName, TbAttributeName.Text))   
+            if (TableStyleManager.IsExists(relatedIdentity, _tableName, TbAttributeName.Text))
             {
                 FailMessage($@"显示样式添加失败：字段名""{TbAttributeName.Text}""已存在");
                 return false;

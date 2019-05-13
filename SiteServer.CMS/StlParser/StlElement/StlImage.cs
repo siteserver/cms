@@ -1,5 +1,4 @@
-﻿using System.Web.UI.HtmlControls;
-using SiteServer.Utils;
+﻿using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -9,58 +8,60 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "显示图片", Description = "通过 stl:image 标签在模板中显示栏目或内容的图片")]
     public class StlImage
-	{
-		private StlImage(){}
-		public const string ElementName = "stl:image";
+    {
+        private StlImage() { }
+        public const string ElementName = "stl:image";
 
-		[StlAttribute(Title = "栏目索引")]
+        [StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
-        
-		[StlAttribute(Title = "栏目名称")]
+
+        [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
-        
-		[StlAttribute(Title = "显示父栏目")]
+
+        [StlAttribute(Title = "显示父栏目")]
         private const string Parent = nameof(Parent);
-        
-		[StlAttribute(Title = "上级栏目的级别")]
+
+        [StlAttribute(Title = "上级栏目的级别")]
         private const string UpLevel = nameof(UpLevel);
-        
+
         [StlAttribute(Title = "从首页向下的栏目级别")]
         private const string TopLevel = nameof(TopLevel);
-        
+
         [StlAttribute(Title = "指定存储图片的字段")]
         private const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
-	    private const string No = nameof(No);
+        [StlAttribute(Title = "显示字段存储的第几幅图片，默认为 1")]
+        private const string No = nameof(No);
 
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
-        
-		[StlAttribute(Title = "显示的图片地址")]
+
+        [StlAttribute(Title = "显示的图片地址")]
         private const string Src = nameof(Src);
-        
+
         [StlAttribute(Title = "当指定的图片不存在时显示的图片地址")]
         private const string AltSrc = nameof(AltSrc);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var isGetPicUrlFromAttribute = false;
+        {
+            var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
             var type = BackgroundContentAttribute.ImageUrl;
-		    var no = 0;
+            var no = 0;
             var isOriginal = false;
             var src = string.Empty;
             var altSrc = string.Empty;
-            var stlImage = new HtmlImage();
+            var attributes = new NameValueCollection();
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -128,14 +129,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    stlImage.Attributes[name] = value;
+                    attributes[name] = value;
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, stlImage, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc);
-		}
+            return ParseImpl(pageInfo, contextInfo, attributes, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, no, isOriginal, src, altSrc);
+        }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, HtmlImage stlImage, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, int no, bool isOriginal, string src, string altSrc)
         {
             var parsedContent = string.Empty;
 
@@ -225,7 +226,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (contextType == EContextType.Each)
                 {
-                    picUrl = contextInfo.ItemContainer.EachItem.DataItem as string;
+                    picUrl = contextInfo.Container.EachItem.Value as string;
                 }
             }
 
@@ -247,12 +248,12 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else
                 {
-                    stlImage.Src = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
-                    parsedContent = ControlUtils.GetControlRenderHtml(stlImage);
+                    attributes["src"] = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
+                    parsedContent = $@"<img {TranslateUtils.ToAttributesString(attributes)}>";
                 }
             }
 
             return parsedContent;
         }
-	}
+    }
 }

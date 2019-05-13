@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- <TargetFramework>netstandard2.0</TargetFramework> -->
     <TargetFramework>net461</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
