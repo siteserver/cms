@@ -4,14 +4,16 @@
       - master
 
   version: 6.10.{build}
-  image: Visual Studio 2017
+  image: Visual Studio 2019 Preview
 
-  assembly_info:
+  dotnet_csproj:
     patch: true
-    file: '**\AssemblyInfo.cs'
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    file: '**\*.csproj'
+    version: '{version}'
+    package_version: '{version}'
+    assembly_version: '{version}'
+    file_version: '{version}'
+    informational_version: '{version}'
 
   configuration:
     - Release
@@ -33,7 +35,7 @@
     - node_modules # local npm modules
 
   before_build:
-    - nuget restore siteserver-all.sln
+    - dotnet restore siteserver-all.sln
 
   build:
     project: siteserver-all.sln # path to Visual Studio solution or project
@@ -82,14 +84,16 @@
       - staging
 
   version: 6.10.{build}-beta
-  image: Visual Studio 2017
+  image: Visual Studio 2019 Preview
 
-  assembly_info:
+  dotnet_csproj:
     patch: true
-    file: '**\AssemblyInfo.cs'
-    assembly_version: "{version}"
-    assembly_file_version: "{version}"
-    assembly_informational_version: "{version}"
+    file: '**\*.csproj'
+    version: '{version}'
+    package_version: '{version}'
+    assembly_version: '{version}'
+    file_version: '{version}'
+    informational_version: '{version}'
 
   configuration:
     - Release
@@ -116,7 +120,7 @@
     - node_modules # local npm modules
 
   before_build:
-    - nuget restore siteserver-all.sln
+    - dotnet restore siteserver-all.sln
 
   build:
     project: siteserver-all.sln # path to Visual Studio solution or project
