@@ -1,7 +1,4 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# https://docs.microsoft.com/azure/devops/pipelines
 
 pool:
   vmImage: 'windows-2019'
@@ -10,34 +7,39 @@ variables:
   solution: 'siteserver-all.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  version: 6.10.$(Build.BuildNumber)
 
 steps:
-- task: NuGetToolInstaller@0
-
-- task: NuGetCommand@2
+- task: DotNetCoreInstaller@0
   inputs:
-    restoreSolution: '$(solution)'
+    version: '2.2' # replace this value with the version that you need for your project
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+- script: dotnet restore $(solution)
 
-# Visual Studio Test Platform Installer
-# Acquires the test platform from nuget.org or the tools cache. Satisfies the ‘vstest’ demand and can be used for running tests and collecting diagnostic data using the Visual Studio Test task.
-- task: VisualStudioTestPlatformInstaller@1
+- task: DotNetCoreCLI@2
   inputs:
-    packageFeedSelector: 'nugetOrg' # Options: nugetOrg, customFeed, netShare
-    versionSelector: 'latestPreRelease' # Required when packageFeedSelector == NugetOrg || PackageFeedSelector == CustomFeed# Options: latestPreRelease, latestStable, specificVersion
-    #testPlatformVersion: # Required when versionSelector == SpecificVersion
-    #customFeed: # Required when packageFeedSelector == CustomFeed
-    #username: # Optional
-    #password: # Optional
-    #netShare: # Required when packageFeedSelector == NetShare
+    command: 'restore'
+    projects: '**/*.csproj'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+- script: dotnet pack /p:PackageVersion=$(version)  # define version variable elsewhere in your pipeline
+
+- task: Gulp@1
+  inputs:
+    gulpFile: 'gulpfile.js'
+    targets: 'build'
+    enableCodeCoverage: false
+
+
+
