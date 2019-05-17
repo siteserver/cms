@@ -7,12 +7,12 @@ variables:
   solution: 'siteserver-all.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  version: 6.10.$(Build.BuildNumber)
+  version: 6.10.$(Build.BuildNumber)-beta
 
 steps:
 - task: DotNetCoreInstaller@0
   inputs:
-    version: '2.2' # replace this value with the version that you need for your project
+    version: '3.0.100-preview5-011568' # replace this value with the version that you need for your project
 
 - script: dotnet restore $(solution)
 
