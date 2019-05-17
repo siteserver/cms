@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -21,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -42,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (ETaxisTypeUtils.Equals(channelInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+                if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
                 {
                     isUp = !isUp;
                 }
@@ -52,26 +54,24 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     contentIdList.Reverse();
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                     if (contentInfo == null) continue;
 
-                    var isTop = contentInfo.IsTop;
+                    var isTop = contentInfo.Top;
                     for (var i = 1; i <= taxis; i++)
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelId, contentId, isTop) == false)
+                            if (channelInfo.ContentDao.SetTaxisToUp(channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelId, contentId, isTop) == false)
+                            if (channelInfo.ContentDao.SetTaxisToDown(channelId, contentId, isTop) == false)
                             {
                                 break;
                             }
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 
-                request.AddSiteLog(siteId, channelId, 0, "对内容排序", string.Empty);
+                request.AddChannelLog(siteId, channelId, "对内容排序");
 
                 return Ok(new
                 {

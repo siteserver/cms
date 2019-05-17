@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System.Web;
+using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
@@ -12,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteUpdate.Route)]
         public IHttpActionResult Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
 
             if (!request.IsAdminLoggin)
             {

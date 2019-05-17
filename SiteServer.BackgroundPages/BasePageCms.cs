@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -7,7 +8,7 @@ using SiteServer.Utils;
 namespace SiteServer.BackgroundPages
 {
     public class BasePageCms : BasePage
-	{
+    {
         public bool HasChannelPermissions(int channelId, params string[] channelPermissionArray)
         {
             return AuthRequest.AdminPermissionsImpl.HasChannelPermissions(SiteId, channelId, channelPermissionArray);
@@ -48,15 +49,15 @@ namespace SiteServer.BackgroundPages
 
         private SiteInfo _siteInfo;
 
-	    public SiteInfo SiteInfo
-	    {
-	        get
-	        {
-	            if (_siteInfo != null) return _siteInfo;
-	            _siteInfo = SiteManager.GetSiteInfo(SiteId);
-	            return _siteInfo;
-	        }
-	    }
+        public SiteInfo SiteInfo
+        {
+            get
+            {
+                if (_siteInfo != null) return _siteInfo;
+                _siteInfo = SiteManager.GetSiteInfo(SiteId);
+                return _siteInfo;
+            }
+        }
 
         public void VerifySitePermissions(params string[] sitePermissions)
         {
@@ -65,7 +66,7 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
+            FxUtils.Page.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
         }
 
         public void VerifyChannelPermissions(int channelId, params string[] channelPermissions)
@@ -75,13 +76,13 @@ namespace SiteServer.BackgroundPages
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
+            FxUtils.Page.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
         }
 
         private NameValueCollection _attributes;
         public NameValueCollection Attributes => _attributes ?? (_attributes = new NameValueCollection());
 
-	    public void AddAttributes(NameValueCollection attributes)
+        public void AddAttributes(NameValueCollection attributes)
         {
             if (attributes == null) return;
             foreach (string key in attributes.Keys)

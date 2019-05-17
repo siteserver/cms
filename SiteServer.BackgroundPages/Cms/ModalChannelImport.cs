@@ -7,14 +7,15 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalChannelImport : BasePageCms
+    public class ModalChannelImport : BasePageCms
     {
         protected DropDownList DdlParentChannelId;
-		public HtmlInputFile HifFile;
-		public DropDownList DdlIsOverride;
+        public HtmlInputFile HifFile;
+        public DropDownList DdlIsOverride;
 
         private bool[] _isLastNodeArray;
 
@@ -39,13 +40,13 @@ namespace SiteServer.BackgroundPages.Cms
             _isLastNodeArray = new bool[nodeCount];
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
-                var itemChannelId = nodeInfo.Id;
-                var nodeName = nodeInfo.ChannelName;
-                var parentsCount = nodeInfo.ParentsCount;
-                var isLastNode = nodeInfo.IsLastNode;
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, theChannelId);
+                var itemChannelId = channelInfo.Id;
+                var nodeName = channelInfo.ChannelName;
+                var parentsCount = channelInfo.ParentsCount;
+                var isLastNode = channelInfo.LastNode;
                 var value = IsOwningChannelId(itemChannelId) ? itemChannelId.ToString() : string.Empty;
-                value = (nodeInfo.Additional.IsChannelAddable) ? value : string.Empty;
+                value = (channelInfo.IsChannelAddable) ? value : string.Empty;
                 if (!string.IsNullOrEmpty(value))
                 {
                     if (!HasChannelPermissions(theChannelId, ConfigManager.ChannelPermissions.ChannelAdd))
@@ -88,33 +89,33 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			if (HifFile.PostedFile != null && "" != HifFile.PostedFile.FileName)
-			{
-				var filePath = HifFile.PostedFile.FileName;
+            if (HifFile.PostedFile != null && "" != HifFile.PostedFile.FileName)
+            {
+                var filePath = HifFile.PostedFile.FileName;
                 if (!EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
-				{
+                {
                     FailMessage("必须上传Zip压缩文件");
-					return;
-				}
+                    return;
+                }
 
-				try
-				{
+                try
+                {
                     var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
                     HifFile.PostedFile.SaveAs(localFilePath);
 
-					var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
+                    var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                     importObject.ImportChannelsAndContentsByZipFile(TranslateUtils.ToInt(DdlParentChannelId.SelectedValue), localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue));
 
                     AuthRequest.AddSiteLog(SiteId, "导入栏目");
 
                     LayerUtils.Close(Page);
-				}
-				catch(Exception ex)
-				{
+                }
+                catch (Exception ex)
+                {
                     FailMessage(ex, "导入栏目失败！");
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }

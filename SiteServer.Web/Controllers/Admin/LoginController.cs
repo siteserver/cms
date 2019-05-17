@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Admin
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
-        public static object AdminRedirectCheck(IAuthenticatedRequest request, bool checkInstall = false, bool checkDatabaseVersion = false,
+        public static object AdminRedirectCheck(IRequest request, bool checkInstall = false, bool checkDatabaseVersion = false,
             bool checkLogin = false)
         {
             var redirect = false;
@@ -61,7 +61,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var redirect = AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
@@ -147,7 +147,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -20,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
@@ -65,12 +66,12 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 DataProvider.ConfigDao.Update(ConfigManager.Instance);
 
-//                var config = $@"var $apiConfig = {{
-//    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
-//    apiUrl: '{ApiManager.ApiUrl}',
-//    innerApiUrl: '{ApiManager.InnerApiUrl}'
-//}};
-//";
+                //                var config = $@"var $apiConfig = {{
+                //    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
+                //    apiUrl: '{ApiManager.ApiUrl}',
+                //    innerApiUrl: '{ApiManager.InnerApiUrl}'
+                //}};
+                //";
 
                 request.AddAdminLog("修改用户中心设置");
 
@@ -90,7 +91,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {

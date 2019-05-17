@@ -14,9 +14,9 @@ using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageConfigurationSiteAttributes : BasePageCms
+    public class PageConfigurationSiteAttributes : BasePageCms
     {
-		public TextBox TbSiteName;
+        public TextBox TbSiteName;
         public Literal LtlAttributes;
         public Button BtnSubmit;
 
@@ -27,21 +27,21 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtilsEx.GetCmsUrl(siteId, nameof(PageConfigurationSiteAttributes), null);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _styleInfoList = TableStyleManager.GetSiteStyleInfoList(SiteId);
 
             if (!IsPostBack)
-			{
+            {
                 VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
                 TbSiteName.Text = SiteInfo.SiteName;
 
-			    var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.Additional.ToDictionary());
+                var nameValueCollection = TranslateUtils.DictionaryToNameValueCollection(SiteInfo.ToDictionary());
 
                 LtlAttributes.Text = GetAttributesHtml(nameValueCollection);
 
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 LtlAttributes.Text = GetAttributesHtml(Request.Form);
             }
-		}
+        }
 
         private string GetAttributesHtml(NameValueCollection formCollection)
         {
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (_styleInfoList == null) return string.Empty;
 
-            var attributes = new AttributesImpl(formCollection);
+            var attributes = TranslateUtils.ToDictionary(formCollection);
 
             var builder = new StringBuilder();
             foreach (var styleInfo in _styleInfoList)
@@ -73,7 +73,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var value = BackgroundInputTypeParser.Parse(SiteInfo, 0, styleInfo, attributes, pageScripts, out extra);
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (InputTypeUtils.Equals(styleInfo.InputType, InputType.TextEditor))
+                if (InputTypeUtils.Equals(styleInfo.Type, InputType.TextEditor))
                 {
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
@@ -105,14 +105,17 @@ namespace SiteServer.BackgroundPages.Cms
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-		    if (!Page.IsPostBack || !Page.IsValid) return;
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.SiteName = TbSiteName.Text;
+            SiteInfo.SiteName = TbSiteName.Text;
 
             var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Page.Request.Form, null);
 
-		    SiteInfo.Additional.Load(dict);
+            foreach (var o in dict)
+            {
+                SiteInfo.Set(o.Key, o.Value);
+            }
 
             DataProvider.SiteDao.Update(SiteInfo);
 
@@ -120,5 +123,5 @@ namespace SiteServer.BackgroundPages.Cms
 
             SuccessMessage("站点设置修改成功！");
         }
-	}
+    }
 }

@@ -131,7 +131,7 @@
     //        List<string> databaseNameList;
     //        var connectionStringWithoutDatabaseName = GetConnectionString(false);
     //        var databaseType = EDatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
-    //        var isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+    //        var isConnectValid = DatabaseUtils.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
 
     //        if (isConnectValid)
     //        {

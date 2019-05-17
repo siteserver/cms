@@ -84,7 +84,11 @@ namespace SiteServer.Cli
                 {TestJob.CommandName, TestJob.Execute}
             };
 
-            PluginManager.LoadPlugins("/", CliUtils.PhysicalApplicationPath);
+            var applicationPath = "/";
+            var applicationPhysicalPath = CliUtils.PhysicalApplicationPath;
+            WebConfigUtils.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
+            PluginManager.Load(null);
+
             var pluginJobs = PluginJobManager.GetJobs();
             if (pluginJobs != null && pluginJobs.Count > 0)
             {

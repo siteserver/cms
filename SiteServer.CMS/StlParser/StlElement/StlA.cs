@@ -7,6 +7,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 using System.Collections.Specialized;
+using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -177,9 +178,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var title = contextInfo.ContentInfo?.Title;
                         title = ContentUtility.FormatTitle(
-                            contextInfo.ContentInfo?.GetString("BackgroundContentAttribute.TitleFormatString"), title);
+                            contextInfo.ContentInfo?.TitleFormatString, title);
 
-                        if (pageInfo.SiteInfo.Additional.IsContentTitleBreakLine)
+                        if (pageInfo.SiteInfo.IsContentTitleBreakLine)
                         {
                             title = title.Replace("  ", string.Empty);
                         }

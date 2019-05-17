@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "ReturnUrl");
             var channelId = int.Parse(AuthRequest.GetQueryString("channelId"));
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _returnUrl = AuthRequest.GetQueryString("ReturnUrl");
@@ -97,11 +97,11 @@ namespace SiteServer.BackgroundPages.Cms
                             Content = content
                         };
 
-                        contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                        contentInfo.Checked = contentInfo.CheckedLevel >= SiteInfo.CheckContentLevel;
                         contentInfo.LastEditUserName = contentInfo.AddUserName;
                         contentInfo.LastEditDate = contentInfo.AddDate;
 
-                        contentInfo.Id = DataProvider.ContentDao.Insert(tableName, SiteInfo, _channelInfo, contentInfo);
+                        contentInfo.Id = _channelInfo.ContentDao.Insert(SiteInfo, _channelInfo, contentInfo);
 
                         CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
                         CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);

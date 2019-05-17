@@ -53,9 +53,8 @@ namespace SiteServer.CMS.StlParser
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
-            var contentIdList = StlContentCache.GetContentIdListChecked(tableName, channelId, orderByString);
+            var contentIdList = StlContentCache.GetContentIdListChecked(channelInfo, orderByString);
 
             foreach (var contentId in contentIdList)
             {
@@ -112,7 +111,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -146,7 +145,7 @@ namespace SiteServer.CMS.StlParser
                         currentPageIndex);
                     thePageInfo.AddLastPageScript(pageInfo);
 
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
 
                     thePageInfo.ClearLastPageScript(pageInfo);
                     pageInfo.ClearLastPageScript();
@@ -176,7 +175,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -203,13 +202,13 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetChannelPageFilePath(siteInfo, thePageInfo.PageChannelId,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
                 }
             }
             else
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, contentBuilder);
             }
         }
 
@@ -222,7 +221,7 @@ namespace SiteServer.CMS.StlParser
                 return;
             }
 
-            if (!contentInfo.IsChecked)
+            if (!contentInfo.Checked)
             {
                 DeleteManager.DeleteContent(siteInfo, channelInfo.Id, contentId);
                 return;
@@ -230,10 +229,10 @@ namespace SiteServer.CMS.StlParser
 
 
             if (!ContentManager.IsCreatable(channelInfo, contentInfo)) return;
-            
 
-            if (siteInfo.Additional.IsCreateStaticContentByAddDate &&
-                contentInfo.AddDate < siteInfo.Additional.CreateStaticContentAddDate)
+
+            if (siteInfo.IsCreateStaticContentByAddDate &&
+                contentInfo.AddDate < siteInfo.CreateStaticContentAddDate)
             {
                 return;
             }
@@ -280,7 +279,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -317,7 +316,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
 
                     if (index != -1)
                     {
@@ -348,7 +347,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageChannels>
@@ -374,7 +373,7 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
                 }
             }
             //如果标签中存在<stl:pageSqlContents>
@@ -400,13 +399,13 @@ namespace SiteServer.CMS.StlParser
 
                     filePath = PathUtility.GetContentPageFilePath(siteInfo, thePageInfo.PageChannelId, contentInfo,
                         currentPageIndex);
-                    await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, pagedBuilder);
+                    await GenerateFileAsync(filePath, pagedBuilder);
                 }
             }
             else //无翻页
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, contentBuilder);
             }
         }
 
@@ -414,7 +413,7 @@ namespace SiteServer.CMS.StlParser
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var templateInfo = TemplateManager.GetTemplateInfo(siteId, fileTemplateId);
-            if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+            if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
             {
                 return;
             }
@@ -425,7 +424,7 @@ namespace SiteServer.CMS.StlParser
 
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-            await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+            await GenerateFileAsync(filePath, contentBuilder);
         }
 
         private static async Task CreateSpecialAsync(int siteId, int specialId)
@@ -440,7 +439,7 @@ namespace SiteServer.CMS.StlParser
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, filePath, false);
-                await GenerateFileAsync(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+                await GenerateFileAsync(filePath, contentBuilder);
             }
         }
 
@@ -460,25 +459,25 @@ namespace SiteServer.CMS.StlParser
         //    var pageBeforeBodyScripts = StlParserManager.GetPageInfoScript(pageInfo, false);
         //    contentBuilder.Insert(0, pageBeforeBodyScripts);
         //    contentBuilder.Append(pageAfterBodyScripts);
-        //    GenerateFile(filePath, pageInfo.TemplateInfo.Charset, contentBuilder);
+        //    GenerateFile(filePath, contentBuilder);
         //    return parsedVirtualUrl;
         //}
 
         /// <summary>
         /// 在操作系统中创建文件，如果文件存在，重新创建此文件
         /// </summary>
-        private static async Task GenerateFileAsync(string filePath, ECharset charset, StringBuilder contentBuilder)
+        private static async Task GenerateFileAsync(string filePath, StringBuilder contentBuilder)
         {
             if (string.IsNullOrEmpty(filePath)) return;
 
             try
             {
-                await FileUtils.WriteTextAsync(filePath, ECharsetUtils.GetEncoding(charset), contentBuilder.ToString());
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, contentBuilder.ToString());
             }
             catch
             {
                 FileUtils.RemoveReadOnlyAndHiddenIfExists(filePath);
-                await FileUtils.WriteTextAsync(filePath, ECharsetUtils.GetEncoding(charset), contentBuilder.ToString());
+                await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, contentBuilder.ToString());
             }
         }
     }

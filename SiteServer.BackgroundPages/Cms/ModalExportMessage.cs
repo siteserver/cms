@@ -19,7 +19,6 @@ namespace SiteServer.BackgroundPages.Cms
         public const int Width = 580;
         public const int Height = 250;
         public const string ExportTypeContentZip = "ContentZip";
-        public const string ExportTypeContentAccess = "ContentAccess";
         public const string ExportTypeContentExcel = "ContentExcel";
         public const string ExportTypeContentTxtZip = "ContentTxtZip";
         public const string ExportTypeRelatedField = "RelatedField";
@@ -111,17 +110,6 @@ namespace SiteServer.BackgroundPages.Cms
                         var checkedState = ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("checkedState"));
                         isExport = ExportContentZip(channelId, contentIdCollection, isPeriods, startDate, endDate, checkedState, out fileName);
                     }
-                    else if (_exportType == ExportTypeContentAccess)
-                    {
-                        var channelId = AuthRequest.GetQueryInt("channelId");
-                        var contentIdCollection = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-                        var displayAttributes = TranslateUtils.StringCollectionToStringList(AuthRequest.GetQueryString("DisplayAttributes"));
-                        var isPeriods = AuthRequest.GetQueryBool("isPeriods");
-                        var startDate = AuthRequest.GetQueryString("startDate");
-                        var endDate = AuthRequest.GetQueryString("endDate");
-                        var checkedState = ETriStateUtils.GetEnumType(AuthRequest.GetQueryString("checkedState"));
-                        isExport = ExportContentAccess(channelId, contentIdCollection, displayAttributes, isPeriods, startDate, endDate, checkedState, out fileName);
-                    }
                     else if (_exportType == ExportTypeContentExcel)
                     {
                         var channelId = AuthRequest.GetQueryInt("channelId");
@@ -180,14 +168,6 @@ namespace SiteServer.BackgroundPages.Cms
             var filePath = PathUtils.GetTemporaryFilesPath(fileName);
             var exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
             return exportObject.ExportContents(filePath, channelId, contentIdArrayList, isPeriods, dateFrom, dateTo, checkedState);
-        }
-
-        private bool ExportContentAccess(int channelId, List<int> contentIdArrayList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)
-        {
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            fileName = $"{nodeInfo.ChannelName}.mdb";
-            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-            return AccessObject.CreateAccessFileForContents(filePath, SiteInfo, nodeInfo, contentIdArrayList, displayAttributes, isPeriods, dateFrom, dateTo, checkedState);
         }
 
         private void ExportContentExcel(int channelId, List<int> contentIdList, List<string> displayAttributes, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState, out string fileName)

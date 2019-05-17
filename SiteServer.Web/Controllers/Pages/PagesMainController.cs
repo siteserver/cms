@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -15,6 +16,7 @@ using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
@@ -31,7 +33,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true, checkLogin: true);
                 if (redirect != null) return Ok(redirect);
 
@@ -277,7 +279,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -326,7 +328,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
 
             if (!request.IsAdminLoggin)
             {

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -19,7 +21,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -56,7 +58,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -93,12 +95,12 @@ namespace SiteServer.API.Controllers.Home
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                     }
 
                     request.AddSiteLog(siteId, "批量设置内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
                 }
-                else if(pageType == "cancelGroup")
+                else if (pageType == "cancelGroup")
                 {
                     foreach (var contentId in contentIdList)
                     {
@@ -112,7 +114,7 @@ namespace SiteServer.API.Controllers.Home
                         }
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                     }
 
                     request.AddSiteLog(siteId, "批量取消内容组", $"内容组:{TranslateUtils.ObjectCollectionToString(groupNames)}");
@@ -146,7 +148,7 @@ namespace SiteServer.API.Controllers.Home
                         if (!list.Contains(groupInfo.GroupName)) list.Add(groupInfo.GroupName);
                         contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
 
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                     }
 
                     request.AddSiteLog(siteId, "批量设置内容组", $"内容组:{groupInfo.GroupName}");

@@ -11,10 +11,10 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalContentImport : BasePageCms
+    public class ModalContentImport : BasePageCms
     {
         public DropDownList DdlImportType;
-		public HtmlInputFile HifFile;
+        public HtmlInputFile HifFile;
         public DropDownList DdlIsOverride;
         public TextBox TbImportStart;
         public TextBox TbImportCount;
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var isChecked = false;
             var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-            if (checkedLevel >= SiteInfo.Additional.CheckContentLevel)
+            if (checkedLevel >= SiteInfo.CheckContentLevel)
             {
                 isChecked = true;
             }
@@ -72,22 +72,6 @@ namespace SiteServer.BackgroundPages.Cms
                     var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
                     var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
                     importObject.ImportContentsByZipFile(nodeInfo, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
-                }
-                else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentAccess))
-                {
-                    var filePath = HifFile.PostedFile.FileName;
-                    if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".mdb"))
-                    {
-                        FailMessage("必须上传后缀为“.mdb”的Access文件");
-                        return;
-                    }
-
-                    var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
-
-                    HifFile.PostedFile.SaveAs(localFilePath);
-
-                    var importObject = new ImportObject(SiteId, AuthRequest.AdminName);
-                    importObject.ImportContentsByAccessFile(_channelId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                 }
                 else if (StringUtils.EqualsIgnoreCase(DdlImportType.SelectedValue, ModalExportMessage.ExportTypeContentExcel))
                 {
@@ -122,14 +106,14 @@ namespace SiteServer.BackgroundPages.Cms
                     importObject.ImportContentsByTxtZipFile(_channelId, localFilePath, TranslateUtils.ToBool(DdlIsOverride.SelectedValue), TranslateUtils.ToInt(TbImportStart.Text), TranslateUtils.ToInt(TbImportCount.Text), isChecked, checkedLevel);
                 }
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "导入内容", string.Empty);
+                AuthRequest.AddChannelLog(SiteId, _channelId, "导入内容");
 
                 LayerUtils.Close(Page);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FailMessage(ex, "导入内容失败！");
             }
         }
-	}
+    }
 }

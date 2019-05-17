@@ -68,7 +68,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _channelId = AuthRequest.IsQueryExists("channelId") ? AuthRequest.GetQueryInt("channelId") : SiteId;
 
             _isCheckOnly = AuthRequest.GetQueryBool("isCheckOnly");
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Cms
             var onlyAdminId = _isAdminOnly
                 ? AuthRequest.AdminId
                 : AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteInfo.Id, _channelInfo.Id);
-            var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
+            var whereString = _channelInfo.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
                 dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, onlyAdminId,
                 AuthRequest.AdminPermissionsImpl,
@@ -123,12 +123,12 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 ControlToPaginate = RptContents,
                 TableName = tableName,
-                PageSize = SiteInfo.Additional.PageSize,
+                PageSize = SiteInfo.PageSize,
                 Page = AuthRequest.GetQueryInt(Pager.QueryNamePage, 1),
                 OrderSqlString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc),
                 ReturnColumnNames = TranslateUtils.ObjectCollectionToString(allAttributeNameList),
                 WhereSqlString = whereString,
-                TotalCount = DataProvider.DatabaseDao.GetPageTotalCount(tableName, whereString)
+                TotalCount = DatabaseUtils.GetPageTotalCount(tableName, whereString)
             };
 
             if (IsPostBack) return;
@@ -139,10 +139,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     //DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
 
-                    var list = DataProvider.ContentDao.GetContentIdListByTrash(SiteId, tableName);
+                    var list = _channelInfo.ContentDao.GetContentIdListByTrash(SiteId);
                     foreach (var (contentChannelId, contentId) in list)
                     {
-                        ContentUtility.Delete(tableName, SiteInfo, contentChannelId, contentId);
+                        var contentChannelInfo = ChannelManager.GetChannelInfo(SiteId, contentChannelId);
+                        ContentUtility.Delete(SiteInfo, contentChannelInfo, contentId);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
@@ -153,21 +154,22 @@ namespace SiteServer.BackgroundPages.Cms
                     var idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
                     foreach (var channelId in idsDictionary.Keys)
                     {
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                         var contentIdList = idsDictionary[channelId];
-                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, ChannelManager.GetTableName(SiteInfo, channelId), contentIdList);
+                        channelInfo.ContentDao.UpdateTrashContents(SiteId, channelId, contentIdList);
                     }
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原内容");
                     SuccessMessage("成功还原内容!");
                 }
                 else if (AuthRequest.IsQueryExists("IsRestoreAll"))
                 {
-                    DataProvider.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId, tableName);
+                    _channelInfo.ContentDao.UpdateRestoreContentsByTrash(SiteId, _channelId);
                     AuthRequest.AddSiteLog(SiteId, "从回收站还原所有内容");
                     SuccessMessage("成功还原所有内容!");
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.ChannelUI.AddListItems(DdlChannelId.Items, SiteInfo, true, true, AuthRequest.AdminPermissionsImpl);
 
             if (_isCheckOnly)
             {
@@ -177,12 +179,12 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 FxUtils.LoadContentLevelToList(DdlState, SiteInfo, _isCheckOnly, isChecked, checkedLevel);
             }
-            
+
             ControlUtils.SelectSingleItem(DdlState, state.ToString());
 
             foreach (var styleInfo in _allStyleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
 
                 var listitem = new ListItem(styleInfo.DisplayName, styleInfo.AttributeName);
                 DdlSearchType.Items.Add(listitem);
@@ -203,7 +205,7 @@ namespace SiteServer.BackgroundPages.Cms
             PgContents.DataBind();
 
             LtlColumnsHead.Text += TextUtility.GetColumnsHeadHtml(_styleInfoList, _pluginColumns, _attributesOfDisplay);
-            
+
 
             BtnSelect.Attributes.Add("onclick", ModalSelectColumns.GetOpenWindowString(SiteId, _channelId));
 
@@ -268,7 +270,8 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var contentInfo = new ContentInfo((IDataRecord)e.Item.DataItem);
+            var record = (IDataRecord)e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(record));
 
             var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
             var ltlChannel = (Literal)e.Item.FindControl("ltlChannel");
@@ -279,7 +282,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
 
             var specialHtml = string.Empty;
-            
+
             if (_isTrashOnly)
             {
                 specialHtml = DateUtils.GetDateAndTimeString(contentInfo.LastEditDate);
@@ -318,7 +321,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUrl);
+            FxUtils.Page.Redirect(PageUrl);
         }
 
         private string _pageUrl;

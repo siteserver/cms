@@ -4,23 +4,24 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteDelete : BasePageCms
-	{
-	    public Literal LtlSiteName;
-		public RadioButtonList RblRetainFiles;
+    public class PageSiteDelete : BasePageCms
+    {
+        public Literal LtlSiteName;
+        public RadioButtonList RblRetainFiles;
 
-	    public static string GetRedirectUrl(int siteId)
-	    {
-	        return PageUtilsEx.GetSettingsUrl(nameof(PageSiteDelete), new NameValueCollection
-	        {
-	            {"siteId", siteId.ToString()}
-	        });
-	    }
+        public static string GetRedirectUrl(int siteId)
+        {
+            return PageUtilsEx.GetSettingsUrl(nameof(PageSiteDelete), new NameValueCollection
+            {
+                {"siteId", siteId.ToString()}
+            });
+        }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -64,9 +65,9 @@ namespace SiteServer.BackgroundPages.Settings
             DataProvider.SiteDao.Delete(SiteId);
         }
 
-	    public void Return_OnClick(object sender, EventArgs e)
-	    {
-	        PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
-	    }
-	}
+        public void Return_OnClick(object sender, EventArgs e)
+        {
+            FxUtils.Page.Redirect(PageSite.GetRedirectUrl());
+        }
+    }
 }

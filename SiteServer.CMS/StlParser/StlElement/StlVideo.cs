@@ -39,7 +39,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var type = BackgroundContentAttribute.VideoUrl;
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var width = 0;
@@ -107,21 +107,21 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (contextInfo.ContentInfo == null)
                         {
-                            videoUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                            videoUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                                if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                    videoUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }
                         else
                         {
-                            videoUrl = contextInfo.ContentInfo.GetString(type);
+                            videoUrl = contextInfo.ContentInfo.Get<string>(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                                videoUrl = contextInfo.ContentInfo.VideoUrl;
                             }
                         }
                     }

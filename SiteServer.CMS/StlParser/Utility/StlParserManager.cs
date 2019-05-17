@@ -29,13 +29,13 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var templateInfo = new TemplateInfo
             {
-                TemplateType = templateType
+                Type = templateType
             };
             var pageInfo = new PageInfo(channelId, contentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);
 
             var parsedBuilder = new StringBuilder(template);
-            
+
             ParseTemplateContent(parsedBuilder, pageInfo, contextInfo);
 
             return pageInfo.HeadCodesHtml + pageInfo.BodyCodesHtml + parsedBuilder + pageInfo.FootCodesHtml;
@@ -70,7 +70,7 @@ namespace SiteServer.CMS.StlParser.Utility
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
-                TemplateType = context.TemplateType
+                Type = context.TemplateType
             };
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, context.PluginItems);
             var contextInfo = new ContextInfo(pageInfo);

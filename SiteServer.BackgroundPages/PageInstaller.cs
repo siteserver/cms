@@ -13,7 +13,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.BackgroundPages
 {
     public class PageInstaller : BasePage
-	{
+    {
         public Literal LtlVersionInfo;
 
         public PlaceHolder PhStep1;
@@ -29,18 +29,18 @@ namespace SiteServer.BackgroundPages
         public Button BtnStep2;
 
         public PlaceHolder PhStep3;
-	    public DropDownList DdlSqlDatabaseType;
+        public DropDownList DdlSqlDatabaseType;
 
         public PlaceHolder PhSql1;
         public TextBox TbSqlServer;
         public DropDownList DdlIsDefaultPort;
-	    public PlaceHolder PhSqlPort;
-	    public TextBox TbSqlPort;
+        public PlaceHolder PhSqlPort;
+        public TextBox TbSqlPort;
         public TextBox TbSqlUserName;
         public TextBox TbSqlPassword;
         public HtmlInputHidden HihSqlHiddenPassword;
-	    public PlaceHolder PhSqlOracleDatabase;
-	    public TextBox TbSqlOracleDatabase;
+        public PlaceHolder PhSqlOracleDatabase;
+        public TextBox TbSqlOracleDatabase;
         public PlaceHolder PhSql2;
         public DropDownList DdlSqlDatabaseName;
 
@@ -51,20 +51,20 @@ namespace SiteServer.BackgroundPages
         public TextBox TbAdminName;
 
         public PlaceHolder PhStep5;
-	    public Literal LtlGo;
+        public Literal LtlGo;
 
         protected override bool IsSinglePage => true;
 
-	    protected override bool IsAccessable => true;
+        protected override bool IsAccessable => true;
 
-	    protected override bool IsInstallerPage => true;
+        protected override bool IsInstallerPage => true;
 
-	    public static string GetRedirectUrl()
-	    {
-	        return PageUtilsEx.GetSiteServerUrl("installer/default", null);
-	    }
+        public static string GetRedirectUrl()
+        {
+            return PageUtilsEx.GetSiteServerUrl("installer/default", null);
+        }
 
-	    public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsPostBack) return;
 
@@ -108,7 +108,7 @@ namespace SiteServer.BackgroundPages
             {
                 BtnStep2.Visible = true;
 
-                LtlDomain.Text = PageUtilsEx.GetHost();
+                LtlDomain.Text = AuthRequest.Host;
                 LtlVersion.Text = SystemManager.ProductVersion;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
                 LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;
@@ -200,9 +200,9 @@ namespace SiteServer.BackgroundPages
                 else
                 {
                     var connectionStringWithoutDatabaseName = GetConnectionString(databaseType == DatabaseType.Oracle);
-                    isConnectValid = DataProvider.DatabaseDao.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
+                    isConnectValid = DatabaseUtils.ConnectToServer(databaseType, connectionStringWithoutDatabaseName, out databaseNameList, out errorMessage);
                 }
-                
+
                 if (isConnectValid)
                 {
                     if (databaseType != DatabaseType.Oracle)
@@ -255,7 +255,7 @@ namespace SiteServer.BackgroundPages
         }
 
         public void BtnPrevious_Click(object sender, EventArgs e)
-		{
+        {
             DdlSqlDatabaseType.Enabled = true;
 
             if (PhStep4.Visible)
@@ -280,7 +280,7 @@ namespace SiteServer.BackgroundPages
             {
                 SetSetp(1);
             }
-		}
+        }
 
         private void SetSetp(int step)
         {
@@ -363,7 +363,7 @@ namespace SiteServer.BackgroundPages
             try
             {
                 SystemManager.InstallDatabase(TbAdminName.Text, TbAdminPassword.Text);
-                
+
                 return true;
             }
             catch (Exception e)
@@ -378,7 +378,7 @@ namespace SiteServer.BackgroundPages
             errorMessage = string.Empty;
 
             var returnValue = false;
-            
+
             try
             {
                 var isProtectData = TranslateUtils.ToBool(DdlIsProtectData.SelectedValue);
@@ -398,5 +398,5 @@ namespace SiteServer.BackgroundPages
 
             return returnValue;
         }
-	}
+    }
 }

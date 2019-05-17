@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -19,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
@@ -28,7 +29,7 @@ namespace SiteServer.API.Controllers.Sys
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        PageUtilsEx.Redirect(fileUrl);
+                        FxUtils.Page.Redirect(fileUrl);
                         return;
                     }
 
@@ -39,13 +40,13 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtilsEx.Download(HttpContext.Current.Response, filePath);
+                            FxUtils.Page.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
-                        PageUtilsEx.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        FxUtils.Page.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                         return;
                     }
                 }
@@ -57,14 +58,14 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            PageUtilsEx.Download(HttpContext.Current.Response, filePath);
+                            FxUtils.Page.Download(HttpContext.Current.Response, filePath);
                             return;
                         }
                     }
                     else
                     {
                         var fileUrl = PageUtilsEx.GetRootUrlByPhysicalPath(filePath);
-                        PageUtilsEx.Redirect(PageUtilsEx.ParseNavigationUrl(fileUrl));
+                        FxUtils.Page.Redirect(PageUtilsEx.ParseNavigationUrl(fileUrl));
                         return;
                     }
                 }
@@ -78,13 +79,13 @@ namespace SiteServer.API.Controllers.Sys
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
-                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
+                    channelInfo.ContentDao.AddDownloads(channelId, contentId);
 
-                    if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
+                    if (!string.IsNullOrEmpty(contentInfo?.Get<string>(ContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            PageUtilsEx.Redirect(fileUrl);
+                            FxUtils.Page.Redirect(fileUrl);
                             return;
                         }
 
@@ -94,13 +95,13 @@ namespace SiteServer.API.Controllers.Sys
                         {
                             if (FileUtils.IsFileExists(filePath))
                             {
-                                PageUtilsEx.Download(HttpContext.Current.Response, filePath);
+                                FxUtils.Page.Download(HttpContext.Current.Response, filePath);
                                 return;
                             }
                         }
                         else
                         {
-                            PageUtilsEx.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            FxUtils.Page.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
                             return;
                         }
                     }

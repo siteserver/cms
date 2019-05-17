@@ -85,7 +85,7 @@ namespace SiteServer.CMS.Packaging
                 }
 
                 var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
-                WebClientUtils.SaveRemoteFileToLocal(
+                FileUtility.SaveRemoteFileToLocal(
                     $"https://api.siteserver.cn/downloads/update/{version}", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.Packaging
 
                 var localFilePath = PathUtils.Combine(directoryPath, idWithVersion + ".nupkg");
 
-                WebClientUtils.SaveRemoteFileToLocal(
+                FileUtility.SaveRemoteFileToLocal(
                     $"https://api.siteserver.cn/downloads/package/{packageId}/{version}", localFilePath);
 
                 ZipUtils.ExtractZip(localFilePath, directoryPath);
@@ -212,7 +212,7 @@ namespace SiteServer.CMS.Packaging
                             }
                         }
                     }
-                    
+
                 }
             }
             catch (Exception ex)

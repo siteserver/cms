@@ -4,20 +4,21 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.Utils.Images;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
     //http://www.codeproject.com/Articles/83225/A-Simple-JPEG-Encoder-in-C
-	public class ModalCuttingImage : BasePageCms
+    public class ModalCuttingImage : BasePageCms
     {
         public Literal LtlScript;
 
-		private string _textBoxClientId;
+        private string _textBoxClientId;
         private string _imageUrl;
 
         protected override bool IsSinglePage => true;
 
-	    public static string GetOpenWindowStringWithTextBox(int siteId, string textBoxClientId)
+        public static string GetOpenWindowStringWithTextBox(int siteId, string textBoxClientId)
         {
             return LayerUtils.GetOpenScript("裁切图片", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCuttingImage), new NameValueCollection
             {
@@ -33,11 +34,11 @@ namespace SiteServer.BackgroundPages.Cms
             }));
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
             _imageUrl = AuthRequest.GetQueryString("imageUrl");
 
@@ -156,6 +157,6 @@ if (parent.document.getElementById('{_textBoxClientId}'))
             {
                 FailMessage(ex, ex.Message);
             }
-		}
-	}
+        }
+    }
 }

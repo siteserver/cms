@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Utils.LitJson;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -44,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            CbIsAutoPlay.Checked = SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay;
+            CbIsAutoPlay.Checked = SiteInfo.ConfigUEditorAudioIsAutoPlay;
         }
 
-        public string TypeCollection => SiteInfo.Additional.VideoUploadTypeCollection;
+        public string TypeCollection => SiteInfo.VideoUploadTypeCollection;
 
         private Hashtable Upload()
         {
@@ -116,9 +117,9 @@ namespace SiteServer.BackgroundPages.Cms
             var playUrl = TbPlayUrl.Text;
             var isAutoPlay = CbIsAutoPlay.Checked;
 
-            if (isAutoPlay != SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay)
+            if (isAutoPlay != SiteInfo.ConfigUEditorAudioIsAutoPlay)
             {
-                SiteInfo.Additional.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
+                SiteInfo.ConfigUEditorAudioIsAutoPlay = isAutoPlay;
                 DataProvider.SiteDao.Update(SiteInfo);
             }
 

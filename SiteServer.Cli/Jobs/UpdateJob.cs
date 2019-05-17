@@ -16,7 +16,7 @@ namespace SiteServer.Cli.Jobs
     {
         public const string CommandName = "update";
         private const string Folder = "update";
-        
+
         private static string _directory;
         private static bool _contentSplit;
         private static bool _isHelp;
@@ -145,7 +145,7 @@ namespace SiteServer.Cli.Jobs
                 foreach (var siteId in siteIdList)
                 {
                     var siteTableInfo = splitSiteTableDict[siteId];
-                    var siteTableName = ContentDao.GetContentTableName(siteId);
+                    var siteTableName = Constants.GetContentTableName(siteId);
                     newTableNames.Add(siteTableName);
 
                     await FileUtils.WriteTextAsync(newTreeInfo.GetTableMetadataFilePath(siteTableName), Encoding.UTF8, TranslateUtils.JsonSerialize(siteTableInfo));

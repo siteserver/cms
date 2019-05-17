@@ -42,21 +42,6 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static ContentInfo GetContent(SiteInfo siteInfo, int channelId, int contentId)
-            {
-                lock (LockObject)
-                {
-                    var dict = GetContentDict(channelId);
-                    dict.TryGetValue(contentId, out var contentInfo);
-                    if (contentInfo != null && contentInfo.ChannelId == channelId && contentInfo.Id == contentId) return contentInfo;
-
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelId), channelId, contentId);
-                    dict[contentId] = contentInfo;
-
-                    return new ContentInfo(contentInfo);
-                }
-            }
-
             public static ContentInfo GetContent(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
             {
                 lock (LockObject)
@@ -65,17 +50,12 @@ namespace SiteServer.CMS.DataCache.Content
                     dict.TryGetValue(contentId, out var contentInfo);
                     if (contentInfo != null && contentInfo.ChannelId == channelInfo.Id && contentInfo.Id == contentId) return contentInfo;
 
-                    contentInfo = DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
+                    contentInfo = channelInfo.ContentDao.GetCacheContentInfo(contentId);
                     dict[contentId] = contentInfo;
 
-                    return new ContentInfo(contentInfo);
+                    return contentInfo;
                 }
             }
-        }
-
-        public static ContentInfo GetContentInfo(SiteInfo siteInfo, int channelId, int contentId)
-        {
-            return ContentCache.GetContent(siteInfo, channelId, contentId);
         }
 
         public static ContentInfo GetContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)

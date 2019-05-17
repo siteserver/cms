@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
+using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -84,6 +87,55 @@ namespace SiteServer.CMS.DataCache
                 tokenInfo = dict[token];
             }
             return tokenInfo;
+        }
+
+        public static string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
+        {
+            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
+
+            var userToken = new AccessTokenImpl
+            {
+                UserId = userId,
+                UserName = userName,
+                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
+            };
+
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+        }
+
+        public static string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        {
+            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
+
+            var userToken = new AccessTokenImpl
+            {
+                UserId = userId,
+                UserName = userName,
+                ExpiresAt = expiresAt
+            };
+
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+        }
+
+        public static AccessTokenImpl ParseAccessToken(string accessToken)
+        {
+            if (string.IsNullOrEmpty(accessToken)) return new AccessTokenImpl();
+
+            try
+            {
+                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, WebConfigUtils.SecretKey);
+
+                if (tokenObj?.ExpiresAt.AddDays(Constants.AccessTokenExpireDays) > DateTime.Now)
+                {
+                    return tokenObj;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return new AccessTokenImpl();
         }
     }
 }

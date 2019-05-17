@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
@@ -20,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
@@ -59,7 +61,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
@@ -71,7 +73,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DatabaseUtils.GetCount(tableName)
                 });
             }
             catch (Exception ex)
@@ -85,7 +87,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Site))
                 {
@@ -99,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = columns,
-                    Count = DataProvider.DatabaseDao.GetCount(tableName)
+                    Count = DatabaseUtils.GetCount(tableName)
                 });
             }
             catch (Exception ex)

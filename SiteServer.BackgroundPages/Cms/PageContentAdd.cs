@@ -43,7 +43,6 @@ namespace SiteServer.BackgroundPages.Cms
 
         private ChannelInfo _channelInfo;
         private List<TableStyleInfo> _styleInfoList;
-        private string _tableName;
 
         protected override bool IsSinglePage => true;
 
@@ -72,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             var contentId = AuthRequest.GetQueryInt("id");
@@ -83,7 +82,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             ContentInfo contentInfo = null;
             _styleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
@@ -94,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
                 contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
             }
 
-            var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
+            var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));
             LtlTitleHtml.Text = ContentUtility.GetTitleHtml(titleFormat);
 
             AcAttributes.SiteInfo = SiteInfo;
@@ -113,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
                     PhTranslate.Visible = true;
                     BtnTranslate.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-                    ETranslateContentTypeUtils.AddListItems(DdlTranslateType, true);
+                    ControlUtils.TranslateContentTypeUI.AddListItems(DdlTranslateType, true);
                     ControlUtils.SelectSingleItem(DdlTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
                 }
                 else
@@ -134,7 +132,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var item = new ListItem(groupName, groupName);
                     CblContentGroups.Items.Add(item);
                 }
-                
+
                 BtnContentGroupAdd.Attributes.Add("onclick", ModalContentGroupAdd.GetOpenWindowString(SiteId));
 
                 LtlTags.Text = ContentUtility.GetTagsHtml(AjaxCmsService.GetTagsUrl(SiteId));
@@ -149,7 +147,7 @@ namespace SiteServer.BackgroundPages.Cms
                         checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
                         if (checkedLevel != CheckManager.LevelInt.NotChange)
                         {
-                            isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+                            isChecked = checkedLevel >= SiteInfo.CheckContentLevel;
                         }
                     }
 
@@ -182,8 +180,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                         var (title, content) = WordManager.GetWord(SiteInfo, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
 
-                        attributes.Set(ContentAttribute.Title, title);
-                        attributes.Set(BackgroundContentAttribute.Content, content);
+                        attributes[ContentAttribute.Title] = title;
+                        attributes[ContentAttribute.Content] = content;
 
                         TbTitle.Text = title;
                     }
@@ -197,19 +195,19 @@ namespace SiteServer.BackgroundPages.Cms
                     TbTags.Text = contentInfo.Tags;
 
                     var list = new List<string>();
-                    if (contentInfo.IsTop)
+                    if (contentInfo.Top)
                     {
                         list.Add(ContentAttribute.IsTop);
                     }
-                    if (contentInfo.IsRecommend)
+                    if (contentInfo.Recommend)
                     {
                         list.Add(ContentAttribute.IsRecommend);
                     }
-                    if (contentInfo.IsHot)
+                    if (contentInfo.Hot)
                     {
                         list.Add(ContentAttribute.IsHot);
                     }
-                    if (contentInfo.IsColor)
+                    if (contentInfo.Color)
                     {
                         list.Add(ContentAttribute.IsColor);
                     }
@@ -219,15 +217,15 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         TbAddDate.DateTime = contentInfo.AddDate.Value;
                     }
-                    
+
                     ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection));
 
-                    AcAttributes.Attributes = contentInfo;
+                    AcAttributes.Attributes = contentInfo.ToDictionary();
                 }
             }
             else
             {
-                AcAttributes.Attributes = new AttributesImpl(Request.Form);
+                AcAttributes.Attributes = TranslateUtils.ToDictionary(Request.Form);
             }
             //DataBind();
         }
@@ -274,7 +272,7 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.AddDate = TbAddDate.DateTime;
 
                     contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                    contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
+                    contentInfo.Checked = contentInfo.CheckedLevel >= SiteInfo.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
                     foreach (var service in PluginManager.Services)
@@ -290,13 +288,13 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    
+
                     //判断是不是有审核权限
                     int checkedLevelOfUser;
                     var isCheckedOfUser = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, contentInfo.ChannelId, out checkedLevelOfUser);
-                    if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                    if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                     {
-                        if (contentInfo.IsChecked)
+                        if (contentInfo.Checked)
                         {
                             contentInfo.CheckedLevel = 0;
                         }
@@ -306,14 +304,14 @@ namespace SiteServer.BackgroundPages.Cms
                         contentInfo.Set(ContentAttribute.CheckReasons, string.Empty);
                     }
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(_tableName, SiteInfo, _channelInfo, contentInfo);
+                    contentInfo.Id = _channelInfo.ContentDao.Insert(SiteInfo, _channelInfo, contentInfo);
 
                     TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentInfo.Id);
 
                     CreateManager.CreateContent(SiteId, _channelInfo.Id, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
-                    AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
+                    AuthRequest.AddContentLog(SiteId, _channelInfo.Id, contentInfo.Id, "添加内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                     ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
@@ -336,7 +334,10 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LastEditDate = DateTime.Now;
 
                     var dict = BackgroundInputTypeParser.SaveAttributes(SiteInfo, _styleInfoList, Request.Form, ContentAttribute.AllAttributes.Value);
-                    contentInfo.Load(dict);
+                    foreach (var o in dict)
+                    {
+                        contentInfo.Set(o.Key, o.Value);
+                    }
 
                     contentInfo.GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items);
 
@@ -359,7 +360,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
                     if (checkedLevel != CheckManager.LevelInt.NotChange)
                     {
-                        contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+                        contentInfo.Checked = checkedLevel >= SiteInfo.CheckContentLevel;
                         contentInfo.CheckedLevel = checkedLevel;
                     }
 
@@ -379,14 +380,14 @@ namespace SiteServer.BackgroundPages.Cms
                         }
                     }
 
-                    DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                    _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
 
                     ContentUtility.Translate(SiteInfo, _channelInfo.Id, contentInfo.Id, Request.Form["translateCollection"], ETranslateContentTypeUtils.GetEnumType(DdlTranslateType.SelectedValue), AuthRequest.AdminName);
 
                     CreateManager.CreateContent(SiteId, _channelInfo.Id, contentId);
                     CreateManager.TriggerContentChangedEvent(SiteId, _channelInfo.Id);
 
-                    AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, contentId, "修改内容",
+                    AuthRequest.AddContentLog(SiteId, _channelInfo.Id, contentId, "修改内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                     redirectUrl = ReturnUrl;
@@ -466,16 +467,16 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            PageUtilsEx.Redirect(redirectUrl);
+            FxUtils.Page.Redirect(redirectUrl);
         }
 
         private bool IsPermissions(int contentId)
         {
             if (contentId == 0)
             {
-                if (_channelInfo == null || _channelInfo.Additional.IsContentAddable == false)
+                if (_channelInfo == null || _channelInfo.IsContentAddable == false)
                 {
-                    PageUtilsEx.RedirectToErrorPage("此栏目不能添加内容！");
+                    FxUtils.Page.RedirectToErrorPage("此栏目不能添加内容！");
                     return false;
                 }
 
@@ -483,11 +484,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtilsEx.RedirectToLoginPage();
+                        FxUtils.Page.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtilsEx.RedirectToErrorPage("您无此栏目的添加内容权限！");
+                    FxUtils.Page.RedirectToErrorPage("您无此栏目的添加内容权限！");
                     return false;
                 }
             }
@@ -497,11 +498,11 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (!AuthRequest.IsAdminLoggin)
                     {
-                        PageUtilsEx.RedirectToLoginPage();
+                        FxUtils.Page.RedirectToLoginPage();
                         return false;
                     }
 
-                    PageUtilsEx.RedirectToErrorPage("您无此栏目的修改内容权限！");
+                    FxUtils.Page.RedirectToErrorPage("您无此栏目的修改内容权限！");
                     return false;
                 }
             }

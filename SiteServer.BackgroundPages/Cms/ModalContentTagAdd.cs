@@ -5,12 +5,13 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalContentTagAdd : BasePageCms
+    public class ModalContentTagAdd : BasePageCms
     {
-		protected TextBox TbTags;
+        protected TextBox TbTags;
 
         private string _tagName;
 
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             }), 600, 360);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -47,12 +48,12 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			var isChanged = false;
-				
-			if (!string.IsNullOrEmpty(_tagName))
-			{
-				try
-				{
+            var isChanged = false;
+
+            if (!string.IsNullOrEmpty(_tagName))
+            {
+                try
+                {
                     if (!string.Equals(_tagName, TbTags.Text))
                     {
                         var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
@@ -76,7 +77,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                                 TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentId);
 
-                                var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                                var tuple = SiteInfo.ContentDao.GetValueWithChannelId<string>(contentId, ContentAttribute.Tags);
 
                                 if (tuple != null)
                                 {
@@ -89,7 +90,7 @@ namespace SiteServer.BackgroundPages.Cms
                                             contentTagList.Add(theTag);
                                         }
                                     }
-                                    DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                    SiteInfo.ContentDao.Update(tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
                                 }
                             }
                         }
@@ -101,31 +102,31 @@ namespace SiteServer.BackgroundPages.Cms
 
                     AuthRequest.AddSiteLog(SiteId, "修改内容标签", $"内容标签:{TbTags.Text}");
 
-					isChanged = true;
-				}
-				catch(Exception ex)
-				{
+                    isChanged = true;
+                }
+                catch (Exception ex)
+                {
                     FailMessage(ex, "标签修改失败！");
-				}
-			}
-			else
-			{
+                }
+            }
+            else
+            {
                 try
                 {
                     TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, 0);
                     AuthRequest.AddSiteLog(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}");
                     isChanged = true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     FailMessage(ex, "标签添加失败！");
                 }
-			}
+            }
 
-			if (isChanged)
-			{
+            if (isChanged)
+            {
                 LayerUtils.Close(Page);
-			}
-		}
-	}
+            }
+        }
+    }
 }

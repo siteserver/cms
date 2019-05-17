@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Datory;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
@@ -9,34 +8,6 @@ namespace SiteServer.CMS.Core
 {
     public static class DataProvider
     {
-        private static DatabaseApi _databaseApi;
-        public static DatabaseApi DatabaseApi
-        {
-            get
-            {
-                if (_databaseApi != null) return _databaseApi;
-
-                if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-                {
-                    _databaseApi = new Data.MySql();
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-                {
-                    _databaseApi = new SqlServer();
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-                {
-                    _databaseApi = new PostgreSql();
-                }
-                else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-                {
-                    _databaseApi = new Data.Oracle();
-                }
-
-                return _databaseApi;
-            }
-        }
-
         private static AccessTokenDao _accessTokenDao;
         public static AccessTokenDao AccessTokenDao => _accessTokenDao ?? (_accessTokenDao = new AccessTokenDao());
 
@@ -61,17 +32,8 @@ namespace SiteServer.CMS.Core
         private static ContentCheckDao _contentCheckDao;
         public static ContentCheckDao ContentCheckDao => _contentCheckDao ?? (_contentCheckDao = new ContentCheckDao());
 
-        private static ContentDao _contentDao;
-        public static ContentDao ContentDao => _contentDao ?? (_contentDao = new ContentDao());
-
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
-
-        //private static ContentTagDao _contentTagDao;
-        //public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
-
-        private static DatabaseDao _databaseDao;
-        public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
 
         private static DbCacheDao _dbCacheDao;
         public static DbCacheDao DbCacheDao => _dbCacheDao ?? (_dbCacheDao = new DbCacheDao());
@@ -133,9 +95,6 @@ namespace SiteServer.CMS.Core
         private static TemplateLogDao _templateLogDao;
         public static TemplateLogDao TemplateLogDao => _templateLogDao ?? (_templateLogDao = new TemplateLogDao());
 
-        private static TemplateMatchDao _templateMatchDao;
-        public static TemplateMatchDao TemplateMatchDao => _templateMatchDao ?? (_templateMatchDao = new TemplateMatchDao());
-
         private static UserDao _userDao;
         public static UserDao UserDao => _userDao ?? (_userDao = new UserDao());
 
@@ -150,8 +109,6 @@ namespace SiteServer.CMS.Core
 
         public static void Reset()
         {
-            _databaseApi = null;
-
             _accessTokenDao = null;
             _administratorDao = null;
             _administratorsInRolesDao = null;
@@ -160,10 +117,7 @@ namespace SiteServer.CMS.Core
             _channelGroupDao = null;
             _configDao = null;
             _contentCheckDao = null;
-            _contentDao = null;
             _contentGroupDao = null;
-            //_contentTagDao = null;
-            _databaseDao = null;
             _dbCacheDao = null;
             _departmentDao = null;
             _errorLogDao = null;
@@ -184,7 +138,6 @@ namespace SiteServer.CMS.Core
             _tagDao = null;
             _templateDao = null;
             _templateLogDao = null;
-            _templateMatchDao = null;
             _userDao = null;
             _userGroupDao = null;
             _userLogDao = null;
@@ -201,10 +154,7 @@ namespace SiteServer.CMS.Core
             ChannelGroupDao,
             ConfigDao,
             ContentCheckDao,
-            ContentDao,
             ContentGroupDao,
-            //ContentTagDao,
-            DatabaseDao,
             DbCacheDao,
             DepartmentDao,
             ErrorLogDao,
@@ -225,7 +175,6 @@ namespace SiteServer.CMS.Core
             TagDao,
             TemplateDao,
             TemplateLogDao,
-            TemplateMatchDao,
             UserDao,
             UserGroupDao,
             UserLogDao,

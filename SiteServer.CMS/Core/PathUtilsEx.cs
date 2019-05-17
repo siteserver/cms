@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class PathUtilsEx
     {
-        public static string GetCurrentPagePath()
-        {
-            if (HttpContext.Current != null)
-            {
-                return HttpContext.Current.Request.PhysicalPath;
-            }
-            return string.Empty;
-        }
 
         public static string MapPath(string virtualPath)
         {
@@ -34,22 +25,14 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "~/";
             }
-            if (HttpContext.Current != null)
-            {
-                retval = HttpContext.Current.Server.MapPath(virtualPath);
-            }
-            else
-            {
-                var rootPath = WebConfigUtils.PhysicalApplicationPath;
+            var rootPath = WebConfigUtils.PhysicalApplicationPath;
 
-                virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
-                retval = PathUtils.Combine(rootPath, virtualPath);
-            }
+            virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
+            retval = PathUtils.Combine(rootPath, virtualPath);
 
             if (retval == null) retval = string.Empty;
             return retval.Replace("/", "\\");
         }
-
         public static string GetSiteFilesPath(params string[] paths)
         {
             return MapPath(PathUtils.Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, PathUtils.Combine(paths)));

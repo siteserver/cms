@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Core;
@@ -156,14 +155,14 @@ namespace SiteServer.CMS.DataCache
                 {
                     channelInfo = channelInfoList.FirstOrDefault(x => (x.ParentId == parentId || TranslateUtils.StringCollectionToIntList(x.ParentsPath).Contains(parentId)) && x.ChannelName == channelName);
 
-//                    sqlString = $@"SELECT Id
-//FROM siteserver_Channel 
-//WHERE ((ParentId = {parentId}) OR
-//      (ParentsPath = '{parentId}') OR
-//      (ParentsPath LIKE '{parentId},%') OR
-//      (ParentsPath LIKE '%,{parentId},%') OR
-//      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
-//ORDER BY Taxis";
+                    //                    sqlString = $@"SELECT Id
+                    //FROM siteserver_Channel 
+                    //WHERE ((ParentId = {parentId}) OR
+                    //      (ParentsPath = '{parentId}') OR
+                    //      (ParentsPath LIKE '{parentId},%') OR
+                    //      (ParentsPath LIKE '%,{parentId},%') OR
+                    //      (ParentsPath LIKE '%,{parentId}')) AND ChannelName = '{AttackUtils.FilterSql(channelName)}'
+                    //ORDER BY Taxis";
                 }
             }
             else
@@ -192,6 +191,11 @@ namespace SiteServer.CMS.DataCache
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public static Dictionary<int, ChannelInfo> GetChannelInfoDictionary(int siteId)
+        {
+            return ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
         }
 
         public static List<int> GetChannelIdList(int siteId, string channelGroup)
@@ -484,131 +488,14 @@ namespace SiteServer.CMS.DataCache
             return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
         }
 
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, PermissionsImpl permissionsImpl)
-        {
-            var list = GetChannelIdList(siteInfo.Id);
-            var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
-            foreach (var channelId in list)
-            {
-                var enabled = true;
-                if (isSeeOwning)
-                {
-                    enabled = permissionsImpl.IsOwningChannelId(channelId);
-                    if (!enabled)
-                    {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
-                    }
-                }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
-
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
-                if (!enabled)
-                {
-                    listitem.Attributes.Add("style", "color:gray;");
-                }
-                listItemCollection.Add(listitem);
-            }
-        }
-
-        public static void AddListItems(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, bool isShowContentNum, string contentModelId, PermissionsImpl permissionsImpl)
-        {
-            var list = GetChannelIdList(siteInfo.Id);
-            var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
-            foreach (var channelId in list)
-            {
-                var enabled = true;
-                if (isSeeOwning)
-                {
-                    enabled = permissionsImpl.IsOwningChannelId(channelId);
-                    if (!enabled)
-                    {
-                        if (!permissionsImpl.IsDescendantOwningChannelId(siteInfo.Id, channelId)) continue;
-                    }
-                }
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
-
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
-                if (!enabled)
-                {
-                    listitem.Attributes.Add("style", "color:gray;");
-                }
-                if (!StringUtils.EqualsIgnoreCase(nodeInfo.ContentModelPluginId, contentModelId))
-                {
-                    listitem.Attributes.Add("disabled", "disabled");
-                }
-                listItemCollection.Add(listitem);
-            }
-        }
-
-        public static void AddListItemsForAddContent(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
-        {
-            var list = GetChannelIdList(siteInfo.Id);
-            var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
-            foreach (var channelId in list)
-            {
-                var enabled = true;
-                if (isSeeOwning)
-                {
-                    enabled = permissionsImpl.IsOwningChannelId(channelId);
-                }
-
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
-                if (enabled)
-                {
-                    if (nodeInfo.Additional.IsContentAddable == false) enabled = false;
-                }
-
-                if (!enabled)
-                {
-                    continue;
-                }
-
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
-                listItemCollection.Add(listitem);
-            }
-        }
-
-        /// <summary>
-        /// 得到栏目，并且不对（栏目是否可添加内容）进行判断
-        /// 提供给触发器页面使用
-        /// 使用场景：其他栏目的内容变动之后，设置某个栏目（此栏目不能添加内容）触发生成
-        /// </summary>
-        public static void AddListItemsForCreateChannel(ListItemCollection listItemCollection, SiteInfo siteInfo, bool isSeeOwning, PermissionsImpl permissionsImpl)
-        {
-            var list = GetChannelIdList(siteInfo.Id);
-            var nodeCount = list.Count;
-            var isLastNodeArray = new bool[nodeCount];
-            foreach (var channelId in list)
-            {
-                var enabled = true;
-                if (isSeeOwning)
-                {
-                    enabled = permissionsImpl.IsOwningChannelId(channelId);
-                }
-
-                var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
-
-                if (!enabled)
-                {
-                    continue;
-                }
-
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
-                listItemCollection.Add(listitem);
-            }
-        }
-
         public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
             {
-                channelInfo.IsLastNode = true;
+                channelInfo.LastNode = true;
             }
-            if (channelInfo.IsLastNode == false)
+            if (channelInfo.LastNode == false)
             {
                 isLastNodeArray[channelInfo.ParentsCount] = false;
             }
@@ -620,7 +507,7 @@ namespace SiteServer.CMS.DataCache
             {
                 retval = string.Concat(retval, isLastNodeArray[i] ? "　" : "│");
             }
-            retval = string.Concat(retval, channelInfo.IsLastNode ? "└" : "├");
+            retval = string.Concat(retval, channelInfo.LastNode ? "└" : "├");
             retval = string.Concat(retval, channelInfo.ChannelName);
 
             if (isShowContentNum)
@@ -635,20 +522,20 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetContentAttributesOfDisplay(int siteId, int channelId)
         {
-            var nodeInfo = GetChannelInfo(siteId, channelId);
-            if (nodeInfo == null) return string.Empty;
-            if (siteId != channelId && string.IsNullOrEmpty(nodeInfo.Additional.ContentAttributesOfDisplay))
+            var channelInfo = GetChannelInfo(siteId, channelId);
+            if (channelInfo == null) return string.Empty;
+            if (siteId != channelId && string.IsNullOrEmpty(channelInfo.ContentAttributesOfDisplay))
             {
-                return GetContentAttributesOfDisplay(siteId, nodeInfo.ParentId);
+                return GetContentAttributesOfDisplay(siteId, channelInfo.ParentId);
             }
-            return nodeInfo.Additional.ContentAttributesOfDisplay;
+            return channelInfo.ContentAttributesOfDisplay;
         }
 
         public static List<InputListItem> GetContentsColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var items = new List<InputListItem>();
 
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
@@ -662,7 +549,7 @@ namespace SiteServer.CMS.DataCache
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
 
                 var listitem = new InputListItem
                 {
@@ -749,7 +636,7 @@ namespace SiteServer.CMS.DataCache
                 var channelInfo = GetChannelInfo(siteId, channelId);
                 if (enabled && channelPermissions.Contains(ConfigManager.ChannelPermissions.ContentAdd))
                 {
-                    if (channelInfo.Additional.IsContentAddable == false) enabled = false;
+                    if (channelInfo.IsContentAddable == false) enabled = false;
                 }
 
                 if (enabled)
@@ -767,7 +654,7 @@ namespace SiteServer.CMS.DataCache
         {
             if (siteInfo == null || channelInfo == null) return false;
 
-            if (!channelInfo.Additional.IsChannelCreatable || !string.IsNullOrEmpty(channelInfo.LinkUrl)) return false;
+            if (!channelInfo.IsChannelCreatable || !string.IsNullOrEmpty(channelInfo.LinkUrl)) return false;
 
             var isCreatable = false;
 

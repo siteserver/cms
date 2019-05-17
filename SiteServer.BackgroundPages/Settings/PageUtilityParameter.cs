@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageUtilityParameter : BasePage
+    public class PageUtilityParameter : BasePage
     {
         public Repeater RptContents;
 
@@ -25,8 +26,8 @@ namespace SiteServer.BackgroundPages.Settings
                 new KeyValuePair<string, string>("系统主机名", Dns.GetHostName().ToUpper()),
                 new KeyValuePair<string, string>("系统根目录地址", WebConfigUtils.PhysicalApplicationPath),
                 new KeyValuePair<string, string>("系统程序目录地址", PathUtils.PhysicalSiteServerPath),
-                new KeyValuePair<string, string>("域名", PageUtilsEx.GetHost()),
-                new KeyValuePair<string, string>("访问IP", PageUtilsEx.GetIpAddress()),
+                new KeyValuePair<string, string>("域名", AuthRequest.Host),
+                new KeyValuePair<string, string>("访问IP", AuthRequest.IpAddress),
                 new KeyValuePair<string, string>(".NET 框架", SystemManager.TargetFramework),
                 new KeyValuePair<string, string>(".NET CLR 版本", SystemManager.EnvironmentVersion),
                 new KeyValuePair<string, string>("SiteServer CMS 版本", SystemManager.ProductVersion),
@@ -45,7 +46,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var kvp = (KeyValuePair<string, string>) e.Item.DataItem;
+            var kvp = (KeyValuePair<string, string>)e.Item.DataItem;
 
             var ltlName = (Literal)e.Item.FindControl("ltlName");
             var ltlValue = (Literal)e.Item.FindControl("ltlValue");
@@ -53,5 +54,5 @@ namespace SiteServer.BackgroundPages.Settings
             ltlName.Text = kvp.Key;
             ltlValue.Text = kvp.Value;
         }
-	}
+    }
 }

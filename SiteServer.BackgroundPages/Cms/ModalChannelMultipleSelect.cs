@@ -12,7 +12,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalChannelMultipleSelect : BasePageCms
+    public class ModalChannelMultipleSelect : BasePageCms
     {
         public PlaceHolder PhSiteId;
         public DropDownList DdlSiteId;
@@ -155,7 +155,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             var redirectUrl = GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), string.Empty);
-            PageUtilsEx.Redirect(redirectUrl);
+            FxUtils.Page.Redirect(redirectUrl);
         }
 
         private void AddSite(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
@@ -193,5 +193,5 @@ namespace SiteServer.BackgroundPages.Cms
                 listControl.Items.Add(listitem);
             }
         }
-	}
+    }
 }

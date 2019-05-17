@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -8,7 +9,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class ModalDepartmentAdd : BasePage
+    public class ModalDepartmentAdd : BasePage
     {
         public TextBox TbDepartmentName;
         public TextBox TbCode;
@@ -39,7 +40,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }), 460, 400);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -62,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theDepartmentId in departmentIdList)
                 {
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(theDepartmentId);
-                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode), theDepartmentId.ToString());
+                    var listitem = new ListItem(GetTitle(departmentInfo.Id, departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.LastNode), theDepartmentId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -147,5 +148,5 @@ namespace SiteServer.BackgroundPages.Settings
                 LayerUtils.CloseAndRedirect(Page, _returnUrl);
             }
         }
-	}
+    }
 }

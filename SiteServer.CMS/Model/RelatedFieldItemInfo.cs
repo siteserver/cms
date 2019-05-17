@@ -1,27 +1,23 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-	public class RelatedFieldItemInfo
-	{
-	    public RelatedFieldItemInfo(int id, int relatedFieldId, string itemName, string itemValue, int parentId, int taxis)
-		{
-            Id = id;
-            RelatedFieldId = relatedFieldId;
-            ItemName = itemName;
-            ItemValue = itemValue;
-            ParentId = parentId;
-            Taxis = taxis;
-		}
+    [Table("siteserver_RelatedFieldItem")]
+    public class RelatedFieldItemInfo : Entity
+    {
+        [TableColumn]
+        public int RelatedFieldId { get; set; }
 
-        public int Id { get; set; }
+        [TableColumn]
+        public string ItemName { get; set; }
 
-	    public int RelatedFieldId { get; set; }
+        [TableColumn]
+        public string ItemValue { get; set; }
 
-	    public string ItemName { get; set; }
+        [TableColumn]
+        public int ParentId { get; set; }
 
-	    public string ItemValue { get; set; }
-
-	    public int ParentId { get; set; }
-
-	    public int Taxis { get; set; }
-	}
+        [TableColumn]
+        public int Taxis { get; set; }
+    }
 }

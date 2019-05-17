@@ -64,14 +64,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0 && siteIdList.Count > 0)
             {
-                PageUtilsEx.Redirect(GetRedirectUrl(siteIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
+                FxUtils.Page.Redirect(GetRedirectUrl(siteIdList[0], DateUtils.GetDateAndTimeString(_begin), DateUtils.GetDateAndTimeString(_end)));
                 return;
             }
 
             if (IsPostBack) return;
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Chart);
-            
+
             foreach (var siteId in siteIdList)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
@@ -88,7 +88,7 @@ namespace SiteServer.BackgroundPages.Settings
                 return;
             }
 
-            var ds = DataProvider.ContentDao.GetDataSetOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            var ds = SiteInfo.ContentDao.GetDataSetOfAdminExcludeRecycle(SiteId, _begin, _end);
             if (ds == null || ds.Tables.Count <= 0) return;
 
             var dt = ds.Tables[0];
@@ -117,7 +117,7 @@ yArrayUpdate.push('{yValueUpdate}');";
             SpContents.SortField = "UserName";
             SpContents.SortMode = SortMode.DESC;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringOfAdminExcludeRecycle(SiteInfo.TableName, SiteId, _begin, _end);
+            SpContents.SelectCommand = SiteInfo.ContentDao.GetSqlStringOfAdminExcludeRecycle(SiteId, _begin, _end);
 
             SpContents.DataBind();
         }
@@ -126,9 +126,9 @@ yArrayUpdate.push('{yValueUpdate}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var userName = SqlUtils.EvalString(e.Item.DataItem, "userName");
-            var addCount = SqlUtils.EvalInt(e.Item.DataItem, "addCount");
-            var updateCount = SqlUtils.EvalInt(e.Item.DataItem, "updateCount");
+            var userName = FxUtils.EvalString(e.Item.DataItem, "userName");
+            var addCount = FxUtils.EvalInt(e.Item.DataItem, "addCount");
+            var updateCount = FxUtils.EvalInt(e.Item.DataItem, "updateCount");
 
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlDisplayName = (Literal)e.Item.FindControl("ltlDisplayName");
@@ -144,7 +144,7 @@ yArrayUpdate.push('{yValueUpdate}');";
 
         public void Analysis_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
+            FxUtils.Page.Redirect(GetRedirectUrl(TranslateUtils.ToInt(DdlSiteId.SelectedValue), TbStartDate.Text, TbEndDate.Text));
         }
 
         private void SetXHashtableUser(string userName, string siteName)

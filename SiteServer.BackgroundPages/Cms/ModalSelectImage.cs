@@ -8,6 +8,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.IO;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -34,9 +35,9 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-        public string SiteUrl => SiteInfo.Additional.WebUrl;
+        public string SiteUrl => SiteInfo.WebUrl;
 
-        public string RootUrl => PageUtilsEx.ApplicationPath;
+        public string RootUrl => WebConfigUtils.ApplicationPath;
 
         public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
         {
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
                 PageUtilsEx.GetCmsUrl(siteInfo.Id, nameof(ModalSelectImage), new NameValueCollection
                 {
                     {"RootPath", "@"},
-                    {"CurrentRootPath", siteInfo.Additional.ImageUploadDirectoryName},
+                    {"CurrentRootPath", siteInfo.ImageUploadDirectoryName},
                     {"TextBoxClientID", textBoxClientId}
                 }));
         }
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
+            FxUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "TextBoxClientID");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
@@ -61,11 +62,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectImageCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.ConfigSelectImageCurrentUrl.TrimEnd('/');
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectImageCurrentUrl = _currentRootPath;
+                SiteInfo.ConfigSelectImageCurrentUrl = _currentRootPath;
                 DataProvider.SiteDao.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
@@ -157,7 +158,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 navigationUrl = GetRedirectUrl(_currentRootPath);
             }
-            PageUtilsEx.Redirect(navigationUrl);
+            FxUtils.Page.Redirect(navigationUrl);
         }
 
 

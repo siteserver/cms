@@ -49,13 +49,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSelectCommandByHitsAnalysis(SiteInfo.TableName, SiteId);
+            SpContents.SelectCommand = SiteInfo.ContentDao.GetSelectCommandByHitsAnalysis(SiteId);
 
             SpContents.SortField = ContentAttribute.Hits;
             SpContents.SortMode = SortMode.DESC;
@@ -99,7 +99,7 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtilsEx.Redirect(siteId > 0
+            FxUtils.Page.Redirect(siteId > 0
                 ? GetRedirectUrl(siteId)
                 : PageAnalysisSiteHits.GetRedirectUrl());
         }
@@ -116,7 +116,8 @@ yArrayHitsMonth.push('{yValueHitsMonth}');
             var ltlHitsByMonth = (Literal)e.Item.FindControl("ltlHitsByMonth");
             var ltlLastHitsDate = (Literal)e.Item.FindControl("ltlLastHitsDate");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var dataView = (DataRowView)e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataView));
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, _pageUrl);
 

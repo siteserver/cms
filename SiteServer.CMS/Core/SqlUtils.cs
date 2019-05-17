@@ -4,13 +4,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
-using System.Web.UI;
 using Datory;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using NpgsqlTypes;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.Utils;
+using SqlKata;
 
 namespace SiteServer.CMS.Core
 {
@@ -21,26 +21,7 @@ namespace SiteServer.CMS.Core
 
         public static IDbConnection GetIDbConnection(DatabaseType databaseType, string connectionString)
         {
-            IDbConnection conn = null;
-
-            if (databaseType == DatabaseType.MySql)
-            {
-                conn = new MySqlConnection(connectionString);
-            }
-            else if (databaseType == DatabaseType.SqlServer)
-            {
-                conn = new SqlConnection(connectionString);
-            }
-            else if (databaseType == DatabaseType.PostgreSql)
-            {
-                conn = new NpgsqlConnection(connectionString);
-            }
-            else if (databaseType == DatabaseType.Oracle)
-            {
-                conn = new OracleConnection(connectionString);
-            }
-
-            return conn;
+            return new Connection(databaseType, connectionString);
         }
 
         public static IDbCommand GetIDbCommand()
@@ -181,31 +162,31 @@ namespace SiteServer.CMS.Core
             return parameter;
         }
 
-        public static string GetSqlColumnInList(string columnName, List<int> idList)
-        {
-            if (idList == null || idList.Count == 0) return string.Empty;
+        // public static string GetSqlColumnInList(string columnName, List<int> idList)
+        // {
+        //     if (idList == null || idList.Count == 0) return string.Empty;
 
-            if (idList.Count < 1000)
-            {
-                return $"{columnName} IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-            }
+        //     if (idList.Count < 1000)
+        //     {
+        //         return $"{columnName} IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
+        //     }
 
-            var sql = new StringBuilder();
-            sql.Append(" ").Append(columnName).Append(" IN ( ");
-            for (var i = 0; i < idList.Count; i++)
-            {
-                sql.Append(idList[i] + ",");
-                if ((i + 1) % 1000 == 0 && i + 1 < idList.Count)
-                {
-                    sql.Length -= 1;
-                    sql.Append(" ) OR ").Append(columnName).Append(" IN (");
-                }
-            }
-            sql.Length -= 1;
-            sql.Append(" )");
+        //     var sql = new StringBuilder();
+        //     sql.Append(" ").Append(columnName).Append(" IN ( ");
+        //     for (var i = 0; i < idList.Count; i++)
+        //     {
+        //         sql.Append(idList[i] + ",");
+        //         if ((i + 1) % 1000 == 0 && i + 1 < idList.Count)
+        //         {
+        //             sql.Length -= 1;
+        //             sql.Append(" ) OR ").Append(columnName).Append(" IN (");
+        //         }
+        //     }
+        //     sql.Length -= 1;
+        //     sql.Append(" )");
 
-            return $"({sql})";
-        }
+        //     return $"({sql})";
+        // }
 
         public static string GetInStr(string columnName, string inStr)
         {
@@ -232,9 +213,10 @@ namespace SiteServer.CMS.Core
             return retval;
         }
 
+
+
         public static KeyValuePair<string, IDataParameter> GetInStrWithParameter(string columnName, string inStr)
         {
-            
             var parameterName = $"P{StringUtils.GetShortGuid()}";
             var sqlString = string.Empty;
             var parameter = GetIDbDataParameter(parameterName, DataType.VarChar, 0, inStr);
@@ -259,30 +241,30 @@ namespace SiteServer.CMS.Core
             return new KeyValuePair<string, IDataParameter>(sqlString, parameter);
         }
 
-        public static string GetInStrReverse(string inStr, string columnName)
-        {
-            var retval = string.Empty;
-            inStr = AttackUtils.FilterSql(inStr);
+        // public static string GetInStrReverse(string inStr, string columnName)
+        // {
+        //     var retval = string.Empty;
+        //     inStr = AttackUtils.FilterSql(inStr);
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"INSTR('{inStr}', {columnName}) > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"CHARINDEX({columnName}, '{inStr}') > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"POSITION({columnName} IN '{inStr}') > 0";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"INSTR('{inStr}', {columnName}) > 0";
-            }
+        //     if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+        //     {
+        //         retval = $"INSTR('{inStr}', {columnName}) > 0";
+        //     }
+        //     else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+        //     {
+        //         retval = $"CHARINDEX({columnName}, '{inStr}') > 0";
+        //     }
+        //     else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+        //     {
+        //         retval = $"POSITION({columnName} IN '{inStr}') > 0";
+        //     }
+        //     else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+        //     {
+        //         retval = $"INSTR('{inStr}', {columnName}) > 0";
+        //     }
 
-            return retval;
-        }
+        //     return retval;
+        // }
 
         public static string GetNotInStr(string columnName, string inStr)
         {
@@ -438,28 +420,28 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string ToInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
-        {
-            var builder = new StringBuilder();
-            if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
-            {
-                foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
-                {
-                    builder.Append($"T.{column}, ");
-                }
-                builder.Length = builder.Length - 2;
-                return
-                    $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
-            }
+        // public static string ToInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
+        // {
+        //     var builder = new StringBuilder();
+        //     if (WebConfigUtils.DatabaseType != DatabaseType.Oracle)
+        //     {
+        //         foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
+        //         {
+        //             builder.Append($"T.{column}, ");
+        //         }
+        //         builder.Length = builder.Length - 2;
+        //         return
+        //             $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)}) AS T";
+        //     }
 
-            foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
-            {
-                builder.Append($"{column}, ");
-            }
-            builder.Length = builder.Length - 2;
-            return
-                $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
-        }
+        //     foreach (var column in TranslateUtils.StringCollectionToStringList(columns))
+        //     {
+        //         builder.Append($"{column}, ");
+        //     }
+        //     builder.Length = builder.Length - 2;
+        //     return
+        //         $"SELECT {builder} FROM ({ToTopSqlString(tableName, columns, whereString, orderString, topN)})";
+        // }
 
         public static string GetQuotedIdentifier(string identifier)
         {
@@ -1045,14 +1027,14 @@ SELECT * FROM (
             {
                 retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
-            
+
             return retval;
         }
 
-        public static string GetDateDiffGreatThanDays(string fieldName, string days)
-        {
-            return GetDateDiffGreatThan(fieldName, days, "DAY");
-        }
+        // public static string GetDateDiffGreatThanDays(string fieldName, string days)
+        // {
+        //     return GetDateDiffGreatThan(fieldName, days, "DAY");
+        // }
 
         private static string GetDateDiffGreatThan(string fieldName, string fieldValue, string unit)
         {
@@ -1121,7 +1103,7 @@ SELECT * FROM (
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT(month from {fieldName})";
-            }            
+            }
 
             return retval;
         }
@@ -1294,44 +1276,44 @@ SELECT * FROM (
             return retval;
         }
 
-        public static string ToSqlString(string inputString)
-        {
-            return !string.IsNullOrEmpty(inputString) ? inputString.Replace("'", "''") : string.Empty;
-        }
+        // public static string ToSqlString(string inputString)
+        // {
+        //     return !string.IsNullOrEmpty(inputString) ? inputString.Replace("'", "''") : string.Empty;
+        // }
 
-        public static string ReadNextSqlString(StreamReader reader)
-        {
-            try
-            {
-                var sb = new StringBuilder();
+        // public static string ReadNextSqlString(StreamReader reader)
+        // {
+        //     try
+        //     {
+        //         var sb = new StringBuilder();
 
-                while (true)
-                {
-                    var lineOfText = reader.ReadLine();
+        //         while (true)
+        //         {
+        //             var lineOfText = reader.ReadLine();
 
-                    if (lineOfText == null)
-                    {
-                        return sb.Length > 0 ? sb.ToString() : null;
-                    }
+        //             if (lineOfText == null)
+        //             {
+        //                 return sb.Length > 0 ? sb.ToString() : null;
+        //             }
 
-                    if (lineOfText.StartsWith("--")) continue;
-                    lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        //             if (lineOfText.StartsWith("--")) continue;
+        //             lineOfText = lineOfText.Replace(")ENGINE=INNODB", ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-                    if (lineOfText.TrimEnd().ToUpper() == "GO")
-                    {
-                        break;
-                    }
+        //             if (lineOfText.TrimEnd().ToUpper() == "GO")
+        //             {
+        //                 break;
+        //             }
 
-                    sb.Append(lineOfText + Environment.NewLine);
-                }
+        //             sb.Append(lineOfText + Environment.NewLine);
+        //         }
 
-                return sb.ToString();
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        //         return sb.ToString();
+        //     }
+        //     catch
+        //     {
+        //         return null;
+        //     }
+        // }
 
         public static string ReadNextStatementFromStream(StringReader reader)
         {
@@ -1361,62 +1343,6 @@ SELECT * FROM (
             {
                 return null;
             }
-        }
-
-        private static object Eval(object dataItem, string name)
-        {
-            object o = null;
-            try
-            {
-                o = DataBinder.Eval(dataItem, name);
-            }
-            catch
-            {
-                // ignored
-            }
-            if (o == DBNull.Value)
-            {
-                o = null;
-            }
-            return o;
-        }
-
-        public static int EvalInt(object dataItem, string name)
-        {
-            var o = Eval(dataItem, name);
-            return o == null ? 0 : Convert.ToInt32(o);
-        }
-
-        public static string EvalString(object dataItem, string name)
-        {
-            var o = Eval(dataItem, name);
-            var value =  o?.ToString() ?? string.Empty;
-
-            if (!string.IsNullOrEmpty(value))
-            {
-                value = AttackUtils.UnFilterSql(value);
-            }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == OracleEmptyValue)
-            {
-                value = string.Empty;
-            }
-            return value;
-        }
-
-        public static DateTime EvalDateTime(object dataItem, string name)
-        {
-            var o = Eval(dataItem, name);
-            if (o == null)
-            {
-                return DateUtils.SqlMinValue;
-            }
-            return (DateTime)o;
-        }
-
-        public static bool EvalBool(object dataItem, string name)
-        {
-            var o = Eval(dataItem, name);
-            return o != null && TranslateUtils.ToBool(o.ToString());
         }
 
         public static string GetDatabaseNameFormConnectionString(DatabaseType databaseType, string connectionString)
@@ -1451,6 +1377,6 @@ SELECT * FROM (
             return retval;
         }
 
-        
+
     }
 }

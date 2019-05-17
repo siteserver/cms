@@ -10,7 +10,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalChannelSelect : BasePageCms
+    public class ModalChannelSelect : BasePageCms
     {
         public Literal LtlSite;
         public Repeater RptChannel;
@@ -64,8 +64,8 @@ namespace SiteServer.BackgroundPages.Cms
             _additional.Add("jsMethod", _jsMethod);
             _additional.Add("itemIndex", _itemIndex.ToString());
 
-			if (!IsPostBack)
-			{
+            if (!IsPostBack)
+            {
                 if (AuthRequest.IsQueryExists("channelId"))
                 {
                     var channelId = AuthRequest.GetQueryInt("channelId");
@@ -103,8 +103,8 @@ namespace SiteServer.BackgroundPages.Cms
                     ClientScriptRegisterClientScriptBlock("NodeTreeScript", ChannelLoading.GetScript(SiteInfo, string.Empty, ELoadingType.ChannelClickSelect, null));
                     BindGrid();
                 }
-			}
-		}
+            }
+        }
 
         public void BindGrid()
         {
@@ -128,5 +128,5 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlHtml.Text = ChannelLoading.GetChannelRowHtml(SiteInfo, nodeInfo, enabled, ELoadingType.ChannelClickSelect, _additional, AuthRequest.AdminPermissionsImpl);
         }
-	}
+    }
 }

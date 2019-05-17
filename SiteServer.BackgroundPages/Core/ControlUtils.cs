@@ -11,12 +11,8 @@ namespace SiteServer.BackgroundPages.Core
     /// <summary>
     /// 对控件的帮助类
     /// </summary>
-    public class ControlUtils
+    public static partial class ControlUtils
     {
-        private ControlUtils()
-        {
-
-        }
 
         /// <summary>
         /// 得到代表控件的HTML代码

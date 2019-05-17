@@ -3,16 +3,17 @@ using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages
 {
     public abstract class BaseHandler : IHttpHandler
     {
-        protected AuthenticatedRequest AuthRequest { get; private set; }
+        protected Request AuthRequest { get; private set; }
 
         public void ProcessRequest(HttpContext context)
         {
-            AuthRequest = new AuthenticatedRequest(context.Request);
+            AuthRequest = new Request(context.Request);
 
             if (!AuthRequest.IsAdminLoggin) return;
 

@@ -10,6 +10,7 @@ using SiteServer.Utils.Enumerations;
 using SiteServer.CMS.StlParser.Template;
 using System.Collections.Generic;
 using System.Linq;
+using SiteServer.CMS.DataCache.Stl;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -25,7 +26,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         private readonly PageInfo _pageInfo;
         private readonly ContextInfo _contextInfo;
         private readonly ListInfo _listInfo;
-        private readonly List<Container.Channel> _channelList;
+        private readonly IList<Container.Channel> _channelList;
 
 
         public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo)
@@ -49,7 +50,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 _listInfo.Scope = EScopeType.Descendant;
             }
 
-            _channelList = StlDataUtility.GetContainerChannelList(pageInfo.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImageExists, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _listInfo.Scope, isTotal, _listInfo.Where);
+            var taxisType = StlDataUtility.GetChannelTaxisType(_listInfo.Order, ETaxisType.OrderByTaxis);
+
+            _channelList = StlChannelCache.GetContainerChannelList(pageInfo.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImageExists, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
         }
 
         public int GetPageCount(out int totalNum)
@@ -76,7 +79,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (_channelList != null && _channelList.Count > 0)
                 {
-                    List<Container.Channel> pageChannelList;
+                    IList<Container.Channel> pageChannelList;
 
                     if (pageCount > 1)
                     {

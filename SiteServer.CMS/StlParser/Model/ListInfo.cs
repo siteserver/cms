@@ -199,10 +199,6 @@ namespace SiteServer.CMS.StlParser.Model
                 {
                     listInfo.IsColor = TranslateUtils.ToBool(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Where))
-                {
-                    listInfo.Where = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.TotalNum))
                 {
                     listInfo.TotalNum = TranslateUtils.ToInt(StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo));
@@ -237,6 +233,8 @@ namespace SiteServer.CMS.StlParser.Model
                     {
                         listInfo.OrderByString = value;
                     }
+
+                    listInfo.Order = value;
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupChannel))
                 {
@@ -362,6 +360,8 @@ namespace SiteServer.CMS.StlParser.Model
         public int MaxPage { get; private set; }
 
         public int StartNum { get; private set; } = 1;
+
+        public string Order { get; private set; }
 
         public string OrderByString
         {
@@ -530,8 +530,6 @@ namespace SiteServer.CMS.StlParser.Model
         }
 
         public bool IsColorExists { get; private set; }
-
-        public string Where { get; set; } = string.Empty;
 
         public NameValueCollection Others { get; } = TranslateUtils.NewIgnoreCaseNameValueCollection();
 

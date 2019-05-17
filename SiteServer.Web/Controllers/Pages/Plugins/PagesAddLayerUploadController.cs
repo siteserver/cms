@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
@@ -22,7 +24,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -46,22 +48,22 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
 
-                var fileName = request.HttpRequest["fileName"];
+                var fileName = request.GetPostString("fileName");
 
-                var fileCount = request.HttpRequest.Files.Count;
+                var fileCount = request.Files.Count;
 
                 string filePath = null;
 
                 if (fileCount > 0)
                 {
-                    var file = request.HttpRequest.Files[0];
+                    var file = request.Files[0];
 
                     if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
 
@@ -106,13 +108,13 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
                     return Unauthorized();
                 }
-                
+
                 var fileNames = request.GetPostObject<List<string>>("fileNames");
 
                 foreach (var fileName in fileNames)

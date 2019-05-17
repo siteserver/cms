@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -20,7 +22,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -48,13 +50,13 @@ namespace SiteServer.API.Controllers.Home
                 var pageContentInfoList = new List<ContentInfo>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
 
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
-                    var offset = siteInfo.Additional.PageSize * (page - 1);
-                    var limit = siteInfo.Additional.PageSize;
+                    var offset = siteInfo.PageSize * (page - 1);
+                    var limit = siteInfo.PageSize;
 
                     var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
 
@@ -70,7 +72,7 @@ namespace SiteServer.API.Controllers.Home
 
                 var permissions = new
                 {
-                    IsAdd = request.UserPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.Additional.IsContentAddable,
+                    IsAdd = request.UserPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentAdd) && channelInfo.IsContentAddable,
                     IsDelete = request.UserPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete),
                     IsEdit = request.UserPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentEdit),
                     IsTranslate = request.UserPermissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentTranslate),

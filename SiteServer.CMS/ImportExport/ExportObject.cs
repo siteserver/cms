@@ -45,7 +45,7 @@ namespace SiteServer.CMS.ImportExport
                     {
                         var isSiteDirectory = false;
 
-                        if (_siteInfo.IsRoot)
+                        if (_siteInfo.Root)
                         {
                             foreach (var siteDir in siteDirList)
                             {
@@ -274,30 +274,30 @@ namespace SiteServer.CMS.ImportExport
             foreach (var channelId in allChannelIdList)
             {
                 siteIe.Export(_siteInfo.Id, channelId, true);
-            } 
-             
-            var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.ImageUploadDirectoryName);
+            }
+
+            var imageUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.ImageUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(imageUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.ImageUploadDirectoryName), imageUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.ImageUploadDirectoryName), imageUploadDirectoryPath);
 
-            var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.VideoUploadDirectoryName);
+            var videoUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.VideoUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(videoUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.VideoUploadDirectoryName), videoUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.VideoUploadDirectoryName), videoUploadDirectoryPath);
 
-            var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.Additional.FileUploadDirectoryName);
+            var fileUploadDirectoryPath = PathUtils.Combine(siteContentDirectoryPath, _siteInfo.FileUploadDirectoryName);
             DirectoryUtils.DeleteDirectoryIfExists(fileUploadDirectoryPath);
-            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.Additional.FileUploadDirectoryName), fileUploadDirectoryPath);
+            DirectoryUtils.Copy(PathUtils.Combine(_sitePath, _siteInfo.FileUploadDirectoryName), fileUploadDirectoryPath);
 
-            Atom.Core.AtomFeed feed = AtomUtility.GetEmptyFeed();  
-            var entry = AtomUtility.GetEmptyEntry();  
-            AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", _siteInfo.Additional.ImageUploadDirectoryName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", _siteInfo.Additional.VideoUploadDirectoryName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, "FileUploadDirectoryName", _siteInfo.Additional.FileUploadDirectoryName);
+            Atom.Core.AtomFeed feed = AtomUtility.GetEmptyFeed();
+            var entry = AtomUtility.GetEmptyEntry();
+            AtomUtility.AddDcElement(entry.AdditionalElements, "ImageUploadDirectoryName", _siteInfo.ImageUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "VideoUploadDirectoryName", _siteInfo.VideoUploadDirectoryName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, "FileUploadDirectoryName", _siteInfo.FileUploadDirectoryName);
 
             feed.Entries.Add(entry);
-            var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName); 
+            var uploadFolderPath = PathUtils.Combine(siteContentDirectoryPath, BackupUtility.UploadFolderName);
             DirectoryUtils.CreateDirectoryIfNotExists(uploadFolderPath);
-            var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName); 
+            var uploadFilePath = PathUtils.Combine(uploadFolderPath, BackupUtility.UploadFileName);
             feed.Save(uploadFilePath);
 
             ZipUtils.CreateZip(filePath, siteContentDirectoryPath);

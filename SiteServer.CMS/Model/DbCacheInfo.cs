@@ -1,15 +1,18 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-	public class DbCacheInfo
+    [Table("siteserver_DbCache")]
+    public class DbCacheInfo : Entity
     {
-        public int Id { get; set; }
-
+        [TableColumn]
         public string CacheKey { get; set; }
 
-	    public string CacheValue { get; set; }
+        [TableColumn]
+        public string CacheValue { get; set; }
 
-        public DateTime AddDate { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
     }
 }

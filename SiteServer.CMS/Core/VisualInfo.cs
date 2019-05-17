@@ -5,8 +5,8 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Core
 {
-	public class VisualInfo
-	{
+    public class VisualInfo
+    {
         public SiteInfo SiteInfo { get; private set; }
 
         public int ChannelId { get; private set; }
@@ -25,10 +25,6 @@ namespace SiteServer.CMS.Core
 
         public static VisualInfo GetInstance(int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId)
         {
-            if (siteId == 0)
-            {
-                siteId = PathUtility.GetCurrentSiteId();
-            }
             var visualInfo = new VisualInfo
             {
                 SiteInfo = SiteManager.GetSiteInfo(siteId),
@@ -77,7 +73,7 @@ namespace SiteServer.CMS.Core
             {
                 visualInfo.TemplateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.IsRoot, visualInfo.PageIndex);
+                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.Root, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
@@ -100,5 +96,5 @@ namespace SiteServer.CMS.Core
 
             return visualInfo;
         }
-	}
+    }
 }

@@ -15,7 +15,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected ListBox LbChannelId;
 
-		private int _channelId;
+        private int _channelId;
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
@@ -30,21 +30,21 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
             _channelId = AuthRequest.GetQueryInt("channelId");
 
-			if (!IsPostBack)
-			{
+            if (!IsPostBack)
+            {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
                 FxUtils.AddListItems(DdlIsCreateChannelIfContentChanged, "生成", "不生成");
-                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.Additional.IsCreateChannelIfContentChanged.ToString());
+                ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateChannelIfContentChanged, nodeInfo.IsCreateChannelIfContentChanged.ToString());
 
                 //NodeManager.AddListItemsForAddContent(this.channelIdCollection.Items, base.SiteInfo, false);
-                ChannelManager.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissionsImpl);
-                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.Additional.CreateChannelIdsIfContentChanged));
-			}
-		}
+                ControlUtils.ChannelUI.AddListItemsForCreateChannel(LbChannelId.Items, SiteInfo, false, AuthRequest.AdminPermissionsImpl);
+                ControlUtils.SelectMultiItems(LbChannelId, TranslateUtils.StringCollectionToStringList(nodeInfo.CreateChannelIdsIfContentChanged));
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -54,12 +54,12 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
-                nodeInfo.Additional.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
-                nodeInfo.Additional.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
+                nodeInfo.IsCreateChannelIfContentChanged = TranslateUtils.ToBool(DdlIsCreateChannelIfContentChanged.SelectedValue);
+                nodeInfo.CreateChannelIdsIfContentChanged = ControlUtils.GetSelectedListControlValueCollection(LbChannelId);
 
                 DataProvider.ChannelDao.Update(nodeInfo);
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}");
+                AuthRequest.AddChannelLog(SiteId, _channelId, "设置栏目变动生成页面", $"栏目:{nodeInfo.ChannelName}");
                 isSuccess = true;
             }
             catch (Exception ex)
@@ -72,5 +72,5 @@ namespace SiteServer.BackgroundPages.Cms
                 LayerUtils.CloseAndRedirect(Page, PageConfigurationCreateTrigger.GetRedirectUrl(SiteId, _channelId));
             }
         }
-	}
+    }
 }

@@ -1,32 +1,27 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-    public class TemplateLogInfo
+    [Table("siteserver_TemplateLog")]
+    public class TemplateLogInfo : Entity
     {
-        public TemplateLogInfo(int id, int templateId, int siteId, DateTime addDate, string addUserName, int contentLength, string templateContent)
-        {
-            Id = id;
-            TemplateId = templateId;
-            SiteId = siteId;
-            AddDate = addDate;
-            AddUserName = addUserName;
-            ContentLength = contentLength;
-            TemplateContent = templateContent;
-        }
-
-        public int Id { get; set; }
-
+        [TableColumn]
         public int TemplateId { get; set; }
 
+        [TableColumn]
         public int SiteId { get; set; }
 
-        public DateTime AddDate { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
+        [TableColumn]
         public string AddUserName { get; set; }
 
+        [TableColumn]
         public int ContentLength { get; set; }
 
+        [TableColumn(Text = true)]
         public string TemplateContent { get; set; }
     }
 }

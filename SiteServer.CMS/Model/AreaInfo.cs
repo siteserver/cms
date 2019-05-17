@@ -1,49 +1,38 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-    public class AreaInfo
+    [Table("siteserver_Area")]
+    public class AreaInfo : Entity
     {
-        public AreaInfo()
-        {
-            Id = 0;
-            AreaName = string.Empty;
-            ParentId = 0;
-            ParentsPath = string.Empty;
-            ParentsCount = 0;
-            ChildrenCount = 0;
-            IsLastNode = false;
-            Taxis = 0;
-            CountOfAdmin = 0;
-        }
-
-        public AreaInfo(int id, string areaName, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, int countOfAdmin)
-        {
-            Id = id;
-            AreaName = areaName;
-            ParentId = parentId;
-            ParentsPath = parentsPath;
-            ParentsCount = parentsCount;
-            ChildrenCount = childrenCount;
-            IsLastNode = isLastNode;
-            Taxis = taxis;
-            CountOfAdmin = countOfAdmin;
-        }
-
-        public int Id { get; set; }
-
+        [TableColumn]
         public string AreaName { get; set; }
 
+        [TableColumn]
         public int ParentId { get; set; }
 
+        [TableColumn]
         public string ParentsPath { get; set; }
 
+        [TableColumn]
         public int ParentsCount { get; set; }
 
+        [TableColumn]
         public int ChildrenCount { get; set; }
 
-        public bool IsLastNode { get; set; }
+        [TableColumn]
+        private string IsLastNode { get; set; }
 
+        public bool LastNode
+        {
+            get => IsLastNode == "True";
+            set => IsLastNode = value.ToString();
+        }
+
+        [TableColumn]
         public int Taxis { get; set; }
 
+        [TableColumn]
         public int CountOfAdmin { get; set; }
     }
 }

@@ -36,10 +36,10 @@ namespace SiteServer.BackgroundPages.Controls
 
             if (Param.ControlToPaginate == null) return;
 
-            var sqlString = DataProvider.DatabaseDao.GetPageSqlString(Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
-            var dataSource = DataProvider.DatabaseDao.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
+            var sqlString = DatabaseUtils.GetPageSqlString(Param.TableName, Param.ReturnColumnNames, Param.WhereSqlString, Param.OrderSqlString, (Param.Page - 1) * Param.PageSize, Param.PageSize);
+            // var dataSource = DatabaseUtils.GetDataReader(WebConfigUtils.ConnectionString, sqlString);
 
-            Param.ControlToPaginate.DataSource = dataSource;
+            // Param.ControlToPaginate.DataSource = dataSource;
             Param.ControlToPaginate.DataBind();
         }
 

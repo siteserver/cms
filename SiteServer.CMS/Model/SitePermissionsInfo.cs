@@ -1,70 +1,24 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-	[Serializable]
-	public class SitePermissionsInfo
-	{
-        private int _id;
-        private string _roleName;
-		private int _siteId;
-		private string _channelIdCollection;
-		private string _channelPermissions;
-		private string _websitePermissions;
+    [Table("siteserver_SitePermissions")]
+    public class SitePermissionsInfo : Entity
+    {
+        [TableColumn]
+        public string RoleName { get; set; }
 
-		public SitePermissionsInfo()
-		{
-		    _id = 0;
-			_roleName = string.Empty;
-			_siteId = 0;
-			_channelIdCollection = string.Empty;
-			_channelPermissions = string.Empty;
-			_websitePermissions = string.Empty;
-		}
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public SitePermissionsInfo(string roleName, int siteId, string channelIdCollection, string channelPermissions, string websitePermissions) 
-		{
-			_roleName = roleName;
-			_siteId = siteId;
-			_channelIdCollection = channelIdCollection;
-			_channelPermissions = channelPermissions;
-			_websitePermissions = websitePermissions;
-		}
+        [TableColumn(Text = true)]
+        public string ChannelIdCollection { get; set; }
 
-        public int Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
+        [TableColumn(Text = true)]
+        public string ChannelPermissions { get; set; }
 
-        public string RoleName
-		{
-			get{ return _roleName; }
-			set{ _roleName = value; }
-		}
-
-		public int SiteId
-		{
-			get{ return _siteId; }
-			set{ _siteId = value; }
-		}
-
-		public string ChannelIdCollection
-		{
-			get{ return _channelIdCollection; }
-			set{ _channelIdCollection = value; }
-		}
-
-		public string ChannelPermissions
-		{
-			get{ return _channelPermissions; }
-			set{ _channelPermissions = value; }
-		}
-
-		public string WebsitePermissions
-		{
-			get{ return _websitePermissions; }
-			set{ _websitePermissions = value; }
-		}
-	}
+        [TableColumn(Text = true)]
+        public string WebsitePermissions { get; set; }
+    }
 }

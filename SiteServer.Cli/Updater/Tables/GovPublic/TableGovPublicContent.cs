@@ -4,6 +4,7 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -222,7 +223,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            columns.AddRange(ContentDao.TableColumnsDefault);
             columns.AddRange(NewColumns);
 
             foreach (var tableColumnInfo in oldColumns)

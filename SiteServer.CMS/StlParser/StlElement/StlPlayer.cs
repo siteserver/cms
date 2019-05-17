@@ -12,34 +12,34 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "播放视频", Description = "通过 stl:player 标签在模板中播放视频")]
     public class StlPlayer
-	{
+    {
         private StlPlayer() { }
-		public const string ElementName = "stl:player";
+        public const string ElementName = "stl:player";
 
         [StlAttribute(Title = "指定存储媒体的字段")]
         public const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "视频地址")]
-	    public const string PlayUrl = nameof(PlayUrl);
-        
-	    [StlAttribute(Title = "图片地址")]
-	    public const string ImageUrl = nameof(ImageUrl);
-        
-	    [StlAttribute(Title = "指定播放器")]
-	    public const string PlayBy = nameof(PlayBy);
-        
-	    [StlAttribute(Title = "宽度")]
-	    public const string Width = nameof(Width);
-        
-	    [StlAttribute(Title = "高度")]
-        public const string Height = nameof(Height);
-        
-	    [StlAttribute(Title = "是否自动播放")]
-	    public const string IsAutoPlay = nameof(IsAutoPlay);
+        [StlAttribute(Title = "视频地址")]
+        public const string PlayUrl = nameof(PlayUrl);
 
-	    private const string PlayByHtml5 = "Html5";
+        [StlAttribute(Title = "图片地址")]
+        public const string ImageUrl = nameof(ImageUrl);
+
+        [StlAttribute(Title = "指定播放器")]
+        public const string PlayBy = nameof(PlayBy);
+
+        [StlAttribute(Title = "宽度")]
+        public const string Width = nameof(Width);
+
+        [StlAttribute(Title = "高度")]
+        public const string Height = nameof(Height);
+
+        [StlAttribute(Title = "是否自动播放")]
+        public const string IsAutoPlay = nameof(IsAutoPlay);
+
+        private const string PlayByHtml5 = "Html5";
         private const string PlayByFlowPlayer = "FlowPlayer";
-	    private const string PlayByJwPlayer = "JWPlayer";
+        private const string PlayByJwPlayer = "JWPlayer";
 
         public static List<string> PlayByList => new List<string>
         {
@@ -49,8 +49,8 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-            var type = BackgroundContentAttribute.VideoUrl;
+        {
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var imageUrl = string.Empty;
             var playBy = string.Empty;
@@ -93,7 +93,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(pageInfo, contextInfo, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {
@@ -104,21 +104,21 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (contextInfo.ContentInfo == null)
                     {
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.GetString(type);
+                        playUrl = contextInfo.ContentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                            playUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.VideoUrl);
                         }
                     }
                 }

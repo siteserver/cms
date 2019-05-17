@@ -1,11 +1,10 @@
 ﻿using System;
-using Ganss.XSS;
 
 namespace SiteServer.Utils
 {
     public static class AttackUtils
     {
-        private static readonly HtmlSanitizer Sanitizer = new HtmlSanitizer();
+        //private static readonly HtmlSanitizer Sanitizer = new HtmlSanitizer();
 
         public static string FilterSqlAndXss(string objStr)
         {
@@ -14,8 +13,9 @@ namespace SiteServer.Utils
 
         public static string FilterXss(string html)
         {
-            if (string.IsNullOrEmpty(html)) return string.Empty;
-            return Sanitizer.Sanitize(html);
+            //if (string.IsNullOrEmpty(html)) return string.Empty;
+            //return Sanitizer.Sanitize(html);
+            return html;
         }
 
         public static string FilterSql(string objStr)

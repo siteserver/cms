@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.V1
 {
     public class ApiContentsParameters
     {
-        public ApiContentsParameters(AuthenticatedRequest request)
+        public ApiContentsParameters(IRequest request)
         {
             ChannelIds = TranslateUtils.StringCollectionToIntList(request.GetQueryString("channelIds"));
             ChannelGroup = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("channelGroup")));
@@ -18,7 +18,11 @@ namespace SiteServer.CMS.Api.V1
             Skip = request.GetQueryInt("skip");
             Likes = TranslateUtils.StringCollectionToStringList(StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("like"))));
             OrderBy = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("orderBy")));
-            QueryString = new NameValueCollection(request.QueryString);
+            QueryString = new NameValueCollection();
+            foreach (var key in request.QueryKeys)
+            {
+                QueryString[key] = request.GetQueryString(key);
+            }
 
             QueryString.Remove("siteId");
             QueryString.Remove("channelIds");

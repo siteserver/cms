@@ -87,7 +87,7 @@ namespace SiteServer.CMS.StlParser.Model
             {
                 if (_contentInfo != null) return _contentInfo;
                 if (ContentId <= 0) return null;
-                _contentInfo = ContentManager.GetContentInfo(SiteInfo, ChannelId, ContentId);
+                _contentInfo = ContentManager.GetContentInfo(SiteInfo, ChannelInfo, ContentId);
                 return _contentInfo;
             }
             set { _contentInfo = value; }

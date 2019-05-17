@@ -1,11 +1,12 @@
 using System.Web.UI;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Controls
 {
-	public class Message : Control
-	{
+    public class Message : Control
+    {
         private bool isShowImmidiatary = false;
         public bool IsShowImmidiatary
         {
@@ -27,8 +28,8 @@ namespace SiteServer.BackgroundPages.Controls
             set { content = value; }
         }
 
-		protected override void Render(HtmlTextWriter writer)
-		{
+        protected override void Render(HtmlTextWriter writer)
+        {
             if (isShowImmidiatary) // 有直接显示的消息
             {
                 writer.Write(MessageUtils.GetMessageHtml(messageType, content, this));
@@ -37,6 +38,6 @@ namespace SiteServer.BackgroundPages.Controls
             {
                 writer.Write(MessageUtils.GetMessageHtml(this));
             }
-		}
-	}
+        }
+    }
 }

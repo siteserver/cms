@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -120,7 +120,7 @@ namespace SiteServer.CMS.DataCache
                 var siteInfo = pair.Value;
                 if (siteInfo == null) continue;
 
-                if (siteInfo.IsRoot)
+                if (siteInfo.Root)
                 {
                     return siteInfo;
                 }
@@ -167,7 +167,7 @@ namespace SiteServer.CMS.DataCache
             foreach (var siteId in siteIdList)
             {
                 var siteInfo = GetSiteInfo(siteId);
-                if (siteInfo.IsRoot)
+                if (siteInfo.Root)
                 {
                     hqSiteId = siteInfo.Id;
                 }
@@ -256,7 +256,7 @@ namespace SiteServer.CMS.DataCache
 
         private static List<string> GetTableNameList(bool includeSiteTables, bool includePluginTables)
         {
-            
+
             var tableNames = new List<string>();
 
             if (includeSiteTables)
@@ -288,7 +288,7 @@ namespace SiteServer.CMS.DataCache
 
         public static List<string> GetTableNameList(SiteInfo siteInfo)
         {
-            var tableNames = new List<string>{ siteInfo.TableName };
+            var tableNames = new List<string> { siteInfo.TableName };
             var pluginTableNames = PluginContentManager.GetContentTableNameList();
             foreach (var pluginTableName in pluginTableNames)
             {
@@ -335,80 +335,11 @@ namespace SiteServer.CMS.DataCache
             return level;
         }
 
-        public static void AddListItems(ListControl listControl)
-        {
-            var siteIdList = GetSiteIdList();
-            var mySystemInfoList = new List<SiteInfo>();
-            var parentWithChildren = new Hashtable();
-            SiteInfo hqSiteInfo = null;
-            foreach (var siteId in siteIdList)
-            {
-                var siteInfo = GetSiteInfo(siteId);
-                if (siteInfo.IsRoot)
-                {
-                    hqSiteInfo = siteInfo;
-                }
-                else
-                {
-                    if (siteInfo.ParentId == 0)
-                    {
-                        mySystemInfoList.Add(siteInfo);
-                    }
-                    else
-                    {
-                        var children = new List<SiteInfo>();
-                        if (parentWithChildren.Contains(siteInfo.ParentId))
-                        {
-                            children = (List<SiteInfo>)parentWithChildren[siteInfo.ParentId];
-                        }
-                        children.Add(siteInfo);
-                        parentWithChildren[siteInfo.ParentId] = children;
-                    }
-                }
-            }
-            if (hqSiteInfo != null)
-            {
-                AddListItem(listControl, hqSiteInfo, parentWithChildren, 0);
-            }
-            foreach (var siteInfo in mySystemInfoList)
-            {
-                AddListItem(listControl, siteInfo, parentWithChildren, 0);
-            }
-        }
-
-        private static void AddListItem(ListControl listControl, SiteInfo siteInfo, Hashtable parentWithChildren, int level)
-        {
-            var padding = string.Empty;
-            for (var i = 0; i < level; i++)
-            {
-                padding += "　";
-            }
-            if (level > 0)
-            {
-                padding += "└ ";
-            }
-
-            if (parentWithChildren[siteInfo.Id] != null)
-            {
-                var children = (List<SiteInfo>)parentWithChildren[siteInfo.Id];
-                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName + $"({children.Count})", siteInfo.Id.ToString()));
-                level++;
-                foreach (SiteInfo subSiteInfo in children)
-                {
-                    AddListItem(listControl, subSiteInfo, parentWithChildren, level);
-                }
-            }
-            else
-            {
-                listControl.Items.Add(new ListItem(padding + siteInfo.SiteName, siteInfo.Id.ToString()));
-            }
-        }
-
         public static int GetParentSiteId(int siteId)
         {
             var parentSiteId = 0;
             var siteInfo = GetSiteInfo(siteId);
-            if (siteInfo != null && siteInfo.IsRoot == false)
+            if (siteInfo != null && siteInfo.Root == false)
             {
                 parentSiteId = siteInfo.ParentId;
                 if (parentSiteId == 0)
@@ -421,7 +352,7 @@ namespace SiteServer.CMS.DataCache
 
         private static string GetSiteDir(List<KeyValuePair<int, SiteInfo>> listFromDb, SiteInfo siteInfo)
         {
-            if (siteInfo == null || siteInfo.IsRoot) return string.Empty;
+            if (siteInfo == null || siteInfo.Root) return string.Empty;
             if (siteInfo.ParentId != 0)
             {
                 SiteInfo parent = null;
@@ -478,7 +409,7 @@ namespace SiteServer.CMS.DataCache
 
             var level = GetSiteLevel(siteInfo.Id);
             string psLogo;
-            if (siteInfo.IsRoot)
+            if (siteInfo.Root)
             {
                 psLogo = "siteHQ.gif";
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -23,7 +24,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -52,7 +53,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();

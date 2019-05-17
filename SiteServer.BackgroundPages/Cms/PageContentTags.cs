@@ -11,12 +11,12 @@ using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageContentTags : BasePageCms
+    public class PageContentTags : BasePageCms
     {
-		public Repeater RptContents;
+        public Repeater RptContents;
         public SqlPager SpContents;
 
-		public Button BtnAddTag;
+        public Button BtnAddTag;
 
         public static string GetRedirectUrl(int siteId)
         {
@@ -38,12 +38,12 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         foreach (var contentId in contentIdList)
                         {
-                            var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
+                            var tuple = SiteInfo.ContentDao.GetValueWithChannelId<string>(contentId, ContentAttribute.Tags);
                             if (tuple != null)
                             {
                                 var contentTagList = TranslateUtils.StringCollectionToStringList(tuple.Item2);
                                 contentTagList.Remove(tagName);
-                                DataProvider.ContentDao.Update(SiteInfo.TableName, tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList));
+                                SiteInfo.ContentDaoList.ForEach(dao => dao.Update(tuple.Item1, contentId, ContentAttribute.Tags, TranslateUtils.ObjectCollectionToString(contentTagList)));
                             }
                         }
                     }
@@ -58,7 +58,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
 
             SpContents.SelectCommand = DataProvider.TagDao.GetSqlString(SiteId, 0, true, 0);
             SpContents.SortField = nameof(TagInfo.UseNum);
@@ -80,9 +80,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var tag = SqlUtils.EvalString(e.Item.DataItem, nameof(TagInfo.Tag));
-            var level = SqlUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.Level));
-            var useNum = SqlUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.UseNum));
+            var tag = FxUtils.EvalString(e.Item.DataItem, nameof(TagInfo.Tag));
+            var level = FxUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.Level));
+            var useNum = FxUtils.EvalInt(e.Item.DataItem, nameof(TagInfo.UseNum));
 
             var ltlTagName = (Literal)e.Item.FindControl("ltlTagName");
             var ltlCount = (Literal)e.Item.FindControl("ltlCount");
@@ -116,5 +116,5 @@ namespace SiteServer.BackgroundPages.Cms
             ltlDeleteUrl.Text =
                 $"<a href=\"{urlDelete}\" onClick=\"javascript:return confirm('此操作将删除内容标签“{tag}”，确认吗？');\">删除</a>";
         }
-	}
+    }
 }

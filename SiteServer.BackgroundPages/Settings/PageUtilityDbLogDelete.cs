@@ -19,7 +19,8 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsPostBack) return;
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Utility);
-            var dt = DataProvider.LogDao.GetLastRemoveLogDate(AuthRequest.AdminName);
+
+            var dt = DataProvider.LogDao.GetLastRemoveLogDate();
             LtlLastExecuteDate.Text = dt == DateTime.MinValue ? "无记录" : DateUtils.GetDateAndTimeString(dt);
         }
 
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            DataProvider.DatabaseDao.DeleteDbLog();
+            DatabaseUtils.DeleteDbLog();
 
             AuthRequest.AddAdminLog("清空数据库日志");
 

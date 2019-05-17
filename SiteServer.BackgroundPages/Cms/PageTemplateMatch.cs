@@ -36,9 +36,9 @@ namespace SiteServer.BackgroundPages.Cms
             var str = string.Empty;
             if (nodeInfo.Id == SiteId)
             {
-                nodeInfo.IsLastNode = true;
+                nodeInfo.LastNode = true;
             }
-            if (nodeInfo.IsLastNode == false)
+            if (nodeInfo.LastNode == false)
             {
                 _isLastNodeArray[nodeInfo.ParentsCount] = false;
             }
@@ -50,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 str = string.Concat(str, _isLastNodeArray[i] ? "　" : "│");
             }
-            str = string.Concat(str, nodeInfo.IsLastNode ? "└" : "├");
+            str = string.Concat(str, nodeInfo.LastNode ? "└" : "├");
             str = string.Concat(str, StringUtils.MaxLengthText(nodeInfo.ChannelName, 8));
 
             if (nodeInfo.ParentId == 0)
@@ -94,7 +94,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var defaultChannelTemplateId = TemplateManager.GetDefaultTemplateId(SiteId, TemplateType.ChannelTemplate);
             _defaultChannelTemplateName = TemplateManager.GetTemplateName(SiteId, defaultChannelTemplateId);
@@ -141,9 +141,17 @@ namespace SiteServer.BackgroundPages.Cms
                 LbChannelId.Items.Add(listitem);
             }
 
-            LbChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
-            LbContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
-            DataBind();
+            var templateInfoList = TemplateManager.GetTemplateInfoList(SiteId, TemplateType.ChannelTemplate);
+            templateInfoList.ForEach(templateInfo =>
+            {
+                LbChannelTemplateId.Items.Add(new ListItem(templateInfo.TemplateName, templateInfo.Id.ToString()));
+            });
+
+            templateInfoList = TemplateManager.GetTemplateInfoList(SiteId, TemplateType.ContentTemplate);
+            templateInfoList.ForEach(templateInfo =>
+            {
+                LbContentTemplateId.Items.Add(new ListItem(templateInfo.TemplateName, templateInfo.Id.ToString()));
+            });
 
             ControlUtils.SelectMultiItems(LbChannelId, selectedChannelIdList);
             ControlUtils.SelectSingleItem(LbChannelTemplateId, selectedChannelTemplateId);
@@ -332,7 +340,16 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (channelTemplateId != -1)
                 {
-                    var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, TemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+                    var templateInfo = new TemplateInfo
+                    {
+                        SiteId = SiteId,
+                        TemplateName = nodeInfo.ChannelName,
+                        Type = TemplateType.ChannelTemplate,
+                        RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
+                        CreatedFileFullName = "index.html",
+                        CreatedFileExtName = ".html",
+                        Default = false
+                    };
 
                     if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
                     {
@@ -375,7 +392,16 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelId = int.Parse(item.Value);
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
-                var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", TemplateType.ChannelTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+                var templateInfo = new TemplateInfo
+                {
+                    SiteId = SiteId,
+                    TemplateName = nodeInfo.ChannelName + "_下级",
+                    Type = TemplateType.ChannelTemplate,
+                    RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
+                    CreatedFileFullName = "index.html",
+                    CreatedFileExtName = ".html",
+                    Default = false
+                };
 
                 if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
                 {
@@ -432,7 +458,16 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (contentTemplateId != -1)
                 {
-                    var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName, TemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + ".html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+                    var templateInfo = new TemplateInfo
+                    {
+                        SiteId = SiteId,
+                        TemplateName = nodeInfo.ChannelName,
+                        Type = TemplateType.ContentTemplate,
+                        RelatedFileName = "T_" + nodeInfo.ChannelName + ".html",
+                        CreatedFileFullName = "index.html",
+                        CreatedFileExtName = ".html",
+                        Default = false
+                    };
                     if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
                     {
                         continue;
@@ -472,7 +507,16 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelId = int.Parse(item.Value);
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
-                var templateInfo = new TemplateInfo(0, SiteId, nodeInfo.ChannelName + "_下级", TemplateType.ContentTemplate, "T_" + nodeInfo.ChannelName + "_下级.html", "index.html", ".html", ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset), false);
+                var templateInfo = new TemplateInfo
+                {
+                    SiteId = SiteId,
+                    TemplateName = nodeInfo.ChannelName + "_下级",
+                    Type = TemplateType.ContentTemplate,
+                    RelatedFileName = "T_" + nodeInfo.ChannelName + "_下级.html",
+                    CreatedFileFullName = "index.html",
+                    CreatedFileExtName = ".html",
+                    Default = false
+                };
 
                 if (relatedFileNameList.Contains(templateInfo.RelatedFileName.ToLower()))
                 {

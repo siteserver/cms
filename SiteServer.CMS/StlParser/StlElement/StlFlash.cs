@@ -53,7 +53,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = BackgroundContentAttribute.ImageUrl;
+            var type = ContentAttribute.ImageUrl;
             var src = string.Empty;
             var altSrc = string.Empty;
             var width = "100%";
@@ -152,14 +152,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
-                        var tableName = ChannelManager.GetTableName(contextInfo.SiteInfo, nodeInfo);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = StlContentCache.GetValue(tableName, contentId, type);
+                        flashUrl = StlContentCache.GetValue(nodeInfo, contentId, type);
                     }
                     else
                     {
-                        flashUrl = contextInfo.ContentInfo.GetString(type);
+                        flashUrl = contextInfo.ContentInfo.Get<string>(type);
                     }
                 }
                 else//获取栏目Flash
@@ -196,7 +195,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     parsedContent = StlPlayer.Parse(pageInfo, contextInfo);
                 }
                 else
-                {                    
+                {
                     flashUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, flashUrl, pageInfo.IsLocal);
 
                     parsedContent = $@"

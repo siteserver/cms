@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "HiddenClientID");
+            FxUtils.CheckRequestParameter("siteId", "RootPath", "CurrentRootPath", "HiddenClientID");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _currentRootPath = AuthRequest.GetQueryString("CurrentRootPath");
@@ -84,11 +84,11 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (string.IsNullOrEmpty(_currentRootPath))
             {
-                _currentRootPath = SiteInfo.Additional.ConfigSelectFileCurrentUrl.TrimEnd('/');
+                _currentRootPath = SiteInfo.ConfigSelectFileCurrentUrl.TrimEnd('/');
             }
             else
             {
-                SiteInfo.Additional.ConfigSelectFileCurrentUrl = _currentRootPath;
+                SiteInfo.ConfigSelectFileCurrentUrl = _currentRootPath;
                 DataProvider.SiteDao.Update(SiteInfo);
             }
             _currentRootPath = _currentRootPath.TrimEnd('/');
@@ -97,7 +97,7 @@ namespace SiteServer.BackgroundPages.Cms
             DirectoryUtils.CreateDirectoryIfNotExists(_directoryPath);
             if (!DirectoryUtils.IsDirectoryExists(_directoryPath))
             {
-                PageUtilsEx.RedirectToErrorPage("文件夹不存在！");
+                FxUtils.Page.RedirectToErrorPage("文件夹不存在！");
                 return;
             }
 
@@ -192,13 +192,13 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 navigationUrl = GetRedirectUrl(_currentRootPath);
             }
-            PageUtilsEx.Redirect(navigationUrl);
+            FxUtils.Page.Redirect(navigationUrl);
         }
 
         public void ddlListType_SelectedIndexChanged(object sender, EventArgs e)
         {
             var navigationUrl = GetRedirectUrlWithType(_currentRootPath, DdlListType.SelectedValue);
-            PageUtilsEx.Redirect(navigationUrl);
+            FxUtils.Page.Redirect(navigationUrl);
         }
 
         #region Helper
@@ -419,7 +419,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 var fileModifyDateTime = fileInfo.LastWriteTime;
                 var linkUrl = PageUtils.Combine(directoryUrl, fileInfo.Name);
-                var attachmentUrl = linkUrl.Replace(SiteInfo.Additional.WebUrl, "@");
+                var attachmentUrl = linkUrl.Replace(SiteInfo.WebUrl, "@");
                 //string fileViewUrl = Modal.FileView.GetOpenWindowString(base.SiteId, attachmentUrl);
                 var fileViewUrl = ModalFileView.GetOpenWindowStringHidden(SiteId, attachmentUrl, _hiddenClientId);
                 string trHtml =

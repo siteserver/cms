@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -16,7 +18,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -36,9 +38,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
-                DataProvider.ContentDao.UpdateArrangeTaxis(tableName, channelId, attributeName, isDesc);
+                channelInfo.ContentDao.UpdateArrangeTaxis(channelId, attributeName, isDesc);
 
                 request.AddSiteLog(siteId, "批量整理", string.Empty);
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -22,7 +24,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -41,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retval = new List<IDictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
@@ -79,7 +81,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -102,7 +104,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
                 if (isChecked)
                 {
                     checkedLevel = 0;
@@ -119,23 +121,34 @@ namespace SiteServer.API.Controllers.Home
                     contentInfo.Set(ContentAttribute.CheckDate, DateTime.Now);
                     contentInfo.Set(ContentAttribute.CheckReasons, reasons);
 
-                    contentInfo.IsChecked = isChecked;
+                    contentInfo.Checked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
 
                     if (isTranslate && translateChannelId > 0)
                     {
                         var translateChannelInfo = ChannelManager.GetChannelInfo(siteId, translateChannelId);
                         contentInfo.ChannelId = translateChannelInfo.Id;
-                        DataProvider.ContentDao.Update(siteInfo, translateChannelInfo, contentInfo);
+                        translateChannelInfo.ContentDao.Update(siteInfo, translateChannelInfo, contentInfo);
                     }
                     else
                     {
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                     }
 
                     contentInfoList.Add(contentInfo);
 
-                    var checkInfo = new ContentCheckInfo(0, tableName, siteId, contentInfo.ChannelId, contentInfo.Id, request.AdminName, isChecked, checkedLevel, DateTime.Now, reasons);
+                    var checkInfo = new ContentCheckInfo
+                    {
+                        TableName = tableName,
+                        SiteId = siteId,
+                        ChannelId = contentInfo.ChannelId,
+                        ContentId = contentInfo.Id,
+                        UserName = request.AdminName,
+                        Checked = isChecked,
+                        CheckedLevel = checkedLevel,
+                        CheckDate = DateTime.Now,
+                        Reasons = reasons
+                    };
                     DataProvider.ContentCheckDao.Insert(checkInfo);
                 }
 

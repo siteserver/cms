@@ -3,10 +3,11 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalTemplateView : BasePageCms
+    public class ModalTemplateView : BasePageCms
     {
         public TextBox TbContent;
 
@@ -18,17 +19,17 @@ namespace SiteServer.BackgroundPages.Cms
             }));
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
-           
-			if (!IsPostBack)
-			{
+            FxUtils.CheckRequestParameter("siteId");
+
+            if (!IsPostBack)
+            {
                 var templateLogId = AuthRequest.GetQueryInt("templateLogID");
                 TbContent.Text = DataProvider.TemplateLogDao.GetTemplateContent(templateLogId);
-			}
-		}
-	}
+            }
+        }
+    }
 }

@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.Type);
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 

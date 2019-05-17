@@ -7,6 +7,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.BackgroundPages.Core;
+using System.Linq;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -40,7 +41,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             if (IsPostBack) return;
@@ -54,7 +55,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 TbLinkUrl.Text = channelInfo.LinkUrl;
 
-                ELinkTypeUtils.AddListItems(DdlLinkType);
+                ControlUtils.LinkTypeUI.AddListItems(DdlLinkType);
                 ControlUtils.SelectSingleItem(DdlLinkType, channelInfo.LinkType);
 
                 TbFilePath.Text = string.IsNullOrEmpty(channelInfo.FilePath) ? PageUtility.GetInputChannelUrl(SiteInfo, channelInfo, false) : channelInfo.FilePath;
@@ -66,8 +67,8 @@ namespace SiteServer.BackgroundPages.Cms
             TbContentFilePathRule.Text = string.IsNullOrEmpty(channelInfo.ContentFilePathRule) ? PathUtility.GetContentFilePathRule(SiteInfo, _channelId) : channelInfo.ContentFilePathRule;
             BtnCreateContentRule.Attributes.Add("onclick", ModalFilePathRule.GetOpenWindowString(SiteId, _channelId, false, TbContentFilePathRule.ClientID));
 
-            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.Additional.IsChannelCreatable.ToString());
-            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.Additional.IsContentCreatable.ToString());
+            ControlUtils.SelectSingleItem(RblIsChannelCreatable, channelInfo.IsChannelCreatable.ToString());
+            ControlUtils.SelectSingleItem(RblIsContentCreatable, channelInfo.IsContentCreatable.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -98,8 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
                             TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
                         }
 
-                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId);
-                        filePathArrayList.AddRange(DataProvider.TemplateMatchDao.GetAllFilePathBySiteId(SiteId));
+                        var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId).ToList();
                         if (filePathArrayList.IndexOf(TbFilePath.Text) != -1)
                         {
                             FailMessage("栏目修改失败，栏目页面路径已存在！");
@@ -152,14 +152,14 @@ namespace SiteServer.BackgroundPages.Cms
                     channelInfo.ContentFilePathRule = TbContentFilePathRule.Text;
                 }
 
-                channelInfo.Additional.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
-                channelInfo.Additional.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
+                channelInfo.IsChannelCreatable = TranslateUtils.ToBool(RblIsChannelCreatable.SelectedValue);
+                channelInfo.IsContentCreatable = TranslateUtils.ToBool(RblIsContentCreatable.SelectedValue);
 
                 DataProvider.ChannelDao.Update(channelInfo);
 
                 CreateManager.CreateChannel(SiteId, _channelId);
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "设置页面生成规则", $"栏目:{channelInfo.ChannelName}");
+                AuthRequest.AddChannelLog(SiteId, _channelId, "设置页面生成规则", $"栏目:{channelInfo.ChannelName}");
 
                 isSuccess = true;
             }

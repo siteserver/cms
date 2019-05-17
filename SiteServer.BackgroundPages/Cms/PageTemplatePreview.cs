@@ -6,6 +6,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -23,18 +24,18 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
-            TemplateTypeUtils.AddListItems(DdlTemplateType);
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.TemplateTypeUI.AddListItems(DdlTemplateType);
+            ControlUtils.ChannelUI.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
             if (AuthRequest.IsQueryExists("fromCache"))
             {
                 TbTemplate.Text = TranslateUtils.DecryptStringBySecretKey(CacheUtils.Get<string>("SiteServer.BackgroundPages.Cms.PageTemplatePreview"));
             }
-            
+
             if (AuthRequest.IsQueryExists("returnUrl"))
             {
                 BtnReturn.Visible = true;
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
         }
 
         public void BtnPreview_OnClick(object sender, EventArgs e)
-        {           
+        {
             if (string.IsNullOrEmpty(TbTemplate.Text))
             {
                 FailMessage("请输入STL标签");
@@ -74,8 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var count = ContentManager.GetCount(SiteInfo, channelInfo, true);
                     if (count > 0)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelInfo);
-                        contentId = DataProvider.ContentDao.GetFirstContentId(tableName, channelId);
+                        contentId = channelInfo.ContentDao.GetFirstContentId(SiteId, channelId);
                     }
 
                     if (contentId == 0)
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnReturn_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
+            FxUtils.Page.Redirect(TranslateUtils.DecryptStringBySecretKey(AuthRequest.GetQueryString("returnUrl")));
         }
     }
 }

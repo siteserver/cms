@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -56,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 isChanged = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 isChanged = false;
                 FailMessage(ex, ex.Message);

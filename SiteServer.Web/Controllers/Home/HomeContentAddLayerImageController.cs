@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -21,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -41,7 +43,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = siteInfo.Additional
+                    Value = siteInfo
                 });
             }
             catch (Exception ex)
@@ -56,7 +58,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -75,9 +77,9 @@ namespace SiteServer.API.Controllers.Home
                 var url = string.Empty;
                 var contentLength = 0;
 
-                if (request.HttpRequest.Files.Count > 0)
+                if (request.Files.Count > 0)
                 {
-                    var file = request.HttpRequest.Files[0];
+                    var file = request.Files[0];
 
                     var filePath = file.FileName;
                     var fileExtName = PathUtils.GetExtension(filePath).ToLower();
@@ -120,7 +122,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -197,45 +199,45 @@ namespace SiteServer.API.Controllers.Home
                 }
 
                 var changed = false;
-                if (siteInfo.Additional.ConfigImageIsFix != isFix)
+                if (siteInfo.ConfigImageIsFix != isFix)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageIsFix = isFix;
+                    siteInfo.ConfigImageIsFix = isFix;
                 }
-                if (siteInfo.Additional.ConfigImageFixWidth != fixWidth)
+                if (siteInfo.ConfigImageFixWidth != fixWidth)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageFixWidth = fixWidth;
+                    siteInfo.ConfigImageFixWidth = fixWidth;
                 }
-                if (siteInfo.Additional.ConfigImageFixHeight != fixHeight)
+                if (siteInfo.ConfigImageFixHeight != fixHeight)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageFixHeight = fixHeight;
+                    siteInfo.ConfigImageFixHeight = fixHeight;
                 }
-                if (siteInfo.Additional.ConfigImageIsEditor != isEditor)
+                if (siteInfo.ConfigImageIsEditor != isEditor)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageIsEditor = isEditor;
+                    siteInfo.ConfigImageIsEditor = isEditor;
                 }
-                if (siteInfo.Additional.ConfigImageEditorIsFix != editorIsFix)
+                if (siteInfo.ConfigImageEditorIsFix != editorIsFix)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorIsFix = editorIsFix;
+                    siteInfo.ConfigImageEditorIsFix = editorIsFix;
                 }
-                if (siteInfo.Additional.ConfigImageEditorFixWidth != editorFixWidth)
+                if (siteInfo.ConfigImageEditorFixWidth != editorFixWidth)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorFixWidth = editorFixWidth;
+                    siteInfo.ConfigImageEditorFixWidth = editorFixWidth;
                 }
-                if (siteInfo.Additional.ConfigImageEditorFixHeight != editorFixHeight)
+                if (siteInfo.ConfigImageEditorFixHeight != editorFixHeight)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorFixHeight = editorFixHeight;
+                    siteInfo.ConfigImageEditorFixHeight = editorFixHeight;
                 }
-                if (siteInfo.Additional.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
+                if (siteInfo.ConfigImageEditorIsLinkToOriginal != editorIsLinkToOriginal)
                 {
                     changed = true;
-                    siteInfo.Additional.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
+                    siteInfo.ConfigImageEditorIsLinkToOriginal = editorIsLinkToOriginal;
                 }
 
                 if (changed)

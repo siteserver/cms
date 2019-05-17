@@ -16,6 +16,7 @@ using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.API.Controllers.Preview
 {
@@ -33,7 +34,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLogAndRedirect(ex);
+                FxUtils.Page.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -51,7 +52,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLogAndRedirect(ex);
+                FxUtils.Page.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -70,7 +71,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLogAndRedirect(ex);
+                FxUtils.Page.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -88,7 +89,7 @@ namespace SiteServer.API.Controllers.Preview
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLogAndRedirect(ex);
+                FxUtils.Page.AddErrorLogAndRedirect(ex);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotFound);
@@ -100,7 +101,7 @@ namespace SiteServer.API.Controllers.Preview
             {
                 Content =
                     new StringContent(html,
-                        Encoding.GetEncoding(siteInfo.Additional.Charset), "text/html")
+                        Encoding.GetEncoding(siteInfo.Charset), "text/html")
 
             };
         }
@@ -124,12 +125,12 @@ namespace SiteServer.API.Controllers.Preview
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             //需要完善，考虑单页模板、内容正文、翻页及外部链接
 
-            if (templateInfo.TemplateType == TemplateType.FileTemplate)           //单页
+            if (templateInfo.Type == TemplateType.FileTemplate)           //单页
             {
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
                 return Response(contentBuilder.ToString(), siteInfo);
             }
-            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate || templateInfo.TemplateType == TemplateType.ChannelTemplate)        //栏目页面
+            if (templateInfo.Type == TemplateType.IndexPageTemplate || templateInfo.Type == TemplateType.ChannelTemplate)        //栏目页面
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, visualInfo.ChannelId);
                 if (nodeInfo == null) return null;
@@ -138,7 +139,7 @@ namespace SiteServer.API.Controllers.Preview
                 {
                     if (!string.IsNullOrEmpty(nodeInfo.LinkUrl))
                     {
-                        PageUtilsEx.Redirect(nodeInfo.LinkUrl);
+                        FxUtils.Page.Redirect(nodeInfo.LinkUrl);
                         return null;
                     }
                 }
@@ -276,13 +277,13 @@ namespace SiteServer.API.Controllers.Preview
                 Parser.Parse(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
                 return Response(contentBuilder.ToString(), siteInfo);
             }
-            if (templateInfo.TemplateType == TemplateType.ContentTemplate)        //内容页面
+            if (templateInfo.Type == TemplateType.ContentTemplate)        //内容页面
             {
                 if (contextInfo.ContentInfo == null) return null;
 
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(ContentAttribute.LinkUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.Get<string>(ContentAttribute.LinkUrl)))
                 {
-                    PageUtilsEx.Redirect(contextInfo.ContentInfo.GetString(ContentAttribute.LinkUrl));
+                    FxUtils.Page.Redirect(contextInfo.ContentInfo.Get<string>(ContentAttribute.LinkUrl));
                     return null;
                 }
 

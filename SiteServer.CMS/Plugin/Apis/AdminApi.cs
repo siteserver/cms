@@ -67,17 +67,17 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
-            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
         }
 
         public string GetAccessToken(int userId, string userName, DateTime expiresAt)
         {
-            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
         }
 
         public IAccessToken ParseAccessToken(string accessToken)
         {
-            return AuthenticatedRequest.ParseAccessToken(accessToken);
+            return AccessTokenManager.ParseAccessToken(accessToken);
         }
     }
 }

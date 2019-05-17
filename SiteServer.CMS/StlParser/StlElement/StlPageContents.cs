@@ -3,6 +3,7 @@ using System.Text;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
+using SiteServer.CMS.Model;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
@@ -47,7 +48,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         }
 
         //API StlActionsSearchController调用
-        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, int pageNum, string tableName, string whereString)
+        public StlPageContents(string stlPageContentsElement, PageInfo pageInfo, ContextInfo contextInfo, int pageNum, ChannelInfo channelInfo, string whereString)
         {
             _pageInfo = pageInfo;
             _contextInfo = contextInfo;
@@ -59,13 +60,12 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             _listInfo.Scope = EScopeType.All;
 
-            _listInfo.Where += whereString;
             if (pageNum > 0)
             {
                 _listInfo.PageNum = pageNum;
             }
 
-            _sqlString = StlDataUtility.GetPageContentsSqlStringBySearch(tableName, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImageExists, _listInfo.IsImage, _listInfo.IsVideoExists, _listInfo.IsVideo, _listInfo.IsFileExists, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _listInfo.IsTopExists, _listInfo.IsTop, _listInfo.IsRecommendExists, _listInfo.IsRecommend, _listInfo.IsHotExists, _listInfo.IsHot, _listInfo.IsColorExists, _listInfo.IsColor, _listInfo.Where);
+            _sqlString = StlDataUtility.GetPageContentsSqlStringBySearch(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImageExists, _listInfo.IsImage, _listInfo.IsVideoExists, _listInfo.IsVideo, _listInfo.IsFileExists, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.OrderByString, _listInfo.IsTopExists, _listInfo.IsTop, _listInfo.IsRecommendExists, _listInfo.IsRecommend, _listInfo.IsHotExists, _listInfo.IsHot, _listInfo.IsColorExists, _listInfo.IsColor, whereString);
         }
 
         public int GetPageCount(out int totalNum)
@@ -74,7 +74,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var pageCount = 1;
             try
             {
-                //totalNum = DataProvider.DatabaseDao.GetPageTotalCount(SqlString);
+                //totalNum = DatabaseUtils.GetPageTotalCount(SqlString);
                 totalNum = StlDatabaseCache.GetPageTotalCount(_sqlString);
                 if (_listInfo.PageNum != 0 && _listInfo.PageNum < totalNum)//需要翻页
                 {
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var maxPage = _listInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.SiteInfo.Additional.CreateStaticMaxPage;
+                    maxPage = _pageInfo.SiteInfo.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -111,11 +111,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (!string.IsNullOrEmpty(_sqlString))
                 {
-                    var contentList = StlContentCache.GetContainerContentListBySqlString(_sqlString, _listInfo.OrderByString, totalNum, _listInfo.PageNum, currentPageIndex);
+                    var contentList = StlContentCache.GetContainerContentListBySqlString(_contextInfo.ChannelInfo, _sqlString, _listInfo.OrderByString, totalNum, _listInfo.PageNum, currentPageIndex);
                     parsedContent = StlContents.ParseElement(_pageInfo, _contextInfo, _listInfo, contentList);
 
                     // var pageSqlString = StlDatabaseCache.GetStlPageSqlString(_sqlString, _listInfo.OrderByString, totalNum, _listInfo.PageNum, currentPageIndex);
-                    // var datasource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
+                    // var datasource = DatabaseUtils.GetDataSource(pageSqlString);
 
                     // if (_listInfo.Layout == ELayout.None)
                     // {

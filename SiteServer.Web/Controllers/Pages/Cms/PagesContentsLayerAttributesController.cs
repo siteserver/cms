@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -18,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -54,27 +56,27 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = true;
+                                contentInfo.Recommend = true;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = true;
+                                contentInfo.Hot = true;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = true;
+                                contentInfo.Color = true;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = true;
+                                contentInfo.Top = true;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                         }
 
                         request.AddSiteLog(siteId, "设置内容属性");
                     }
                 }
-                else if(pageType == "cancelAttributes")
+                else if (pageType == "cancelAttributes")
                 {
                     if (isRecommend || isHot || isColor || isTop)
                     {
@@ -85,21 +87,21 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                             if (isRecommend)
                             {
-                                contentInfo.IsRecommend = false;
+                                contentInfo.Recommend = false;
                             }
                             if (isHot)
                             {
-                                contentInfo.IsHot = false;
+                                contentInfo.Hot = false;
                             }
                             if (isColor)
                             {
-                                contentInfo.IsColor = false;
+                                contentInfo.Color = false;
                             }
                             if (isTop)
                             {
-                                contentInfo.IsTop = false;
+                                contentInfo.Top = false;
                             }
-                            DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                            channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                         }
 
                         request.AddSiteLog(siteId, "取消内容属性");
@@ -113,7 +115,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
                     }
 
                     request.AddSiteLog(siteId, "设置内容点击量");

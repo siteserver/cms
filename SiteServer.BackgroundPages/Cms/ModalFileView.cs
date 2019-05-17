@@ -5,10 +5,11 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalFileView : BasePageCms
+    public class ModalFileView : BasePageCms
     {
         public Literal LtlFileName;
         public Literal LtlFileType;
@@ -21,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
         public Literal LtlEdit;
         public Literal LtlChangeName;
 
-		private string _relatedPath;
+        private string _relatedPath;
         private string _fileName;
         private string _filePath;
         private string _updateName;
@@ -88,10 +89,10 @@ namespace SiteServer.BackgroundPages.Cms
                     fileName = fileUrl.Substring(i + 1, fileUrl.Length - i - 1);
                 }
             }
-            return GetOpenWindowString(siteId,hiddenClientId, relatedPath, fileName);
+            return GetOpenWindowString(siteId, hiddenClientId, relatedPath, fileName);
         }
 
-        public static string GetOpenWindowString(int siteId,string hiddenClientId, string relatedPath, string fileName)
+        public static string GetOpenWindowString(int siteId, string hiddenClientId, string relatedPath, string fileName)
         {
             return LayerUtils.GetOpenScript("查看文件属性", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalFileView), new NameValueCollection
             {
@@ -109,11 +110,11 @@ namespace SiteServer.BackgroundPages.Cms
             }), textBoxId, 680, 660);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             if (AuthRequest.IsQueryExists("TextBoxID"))
             {
                 var textBoxId = AuthRequest.GetQueryString("TextBoxID");
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (!FileUtils.IsFileExists(_filePath))
             {
-                PageUtilsEx.RedirectToErrorPage("此文件不存在！");
+                FxUtils.Page.RedirectToErrorPage("此文件不存在！");
                 return;
             }
 
@@ -170,5 +171,5 @@ namespace SiteServer.BackgroundPages.Cms
                         SiteId, _relatedPath, fileInfo.Name, _hiddenClientId)}"">改 名</a>";
             }
         }
-	}
+    }
 }

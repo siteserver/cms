@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlName.Text = $@"<a href=""{PageUtilsEx.GetLoadingUrl(PageUtilsEx.GetMainUrl(siteInfo.Id))}"" target=""_top"">{SiteManager.GetSiteName(siteInfo)}</a>";
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.WebUrl}"" target=""_blank"">{siteInfo.WebUrl}</a>";
         }
     }
 }

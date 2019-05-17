@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
@@ -17,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin || !request.AdminPermissions.IsSuperAdmin())
                 {
                     return Unauthorized();
@@ -28,15 +29,15 @@ namespace SiteServer.API.Controllers.Pages
                     return BadRequest("系统未安装，向导被禁用");
                 }
 
-        //var installedVersion = SystemManager.Version;
+                //var installedVersion = SystemManager.Version;
 
-        //var AdminUrl = PageUtils.GetAdminUrl(string.Empty);
+                //var AdminUrl = PageUtils.GetAdminUrl(string.Empty);
 
-        //var DownloadApiUrl = ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
+                //var DownloadApiUrl = ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
 
-        //var UpdateApiUrl = ApiRouteUpdate.GetUrl(ApiManager.InnerApiUrl);
+                //var UpdateApiUrl = ApiRouteUpdate.GetUrl(ApiManager.InnerApiUrl);
 
-        //var UpdateSsCmsApiUrl = ApiRouteUpdateSsCms.GetUrl(ApiManager.InnerApiUrl);
+                //var UpdateSsCmsApiUrl = ApiRouteUpdateSsCms.GetUrl(ApiManager.InnerApiUrl);
 
                 return Ok(new
                 {
@@ -55,7 +56,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(Route)]
         public IHttpActionResult Upgrade()
         {
-            var request = new AuthenticatedRequest(HttpContext.Current.Request);
+            var request = new Request(HttpContext.Current.Request);
 
             var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 

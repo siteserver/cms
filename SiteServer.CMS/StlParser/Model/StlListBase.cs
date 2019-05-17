@@ -65,9 +65,6 @@
         [StlAttribute(Title = "仅显示附件内容")]
         public const string IsFile = nameof(IsFile);
 
-        [StlAttribute(Title = "条件判断")]
-        public const string Where = nameof(Where);
-
         [StlAttribute(Title = "布局")]
         public const string Layout = nameof(Layout);
 

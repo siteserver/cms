@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>netstandard2.0</TargetFramework> -->
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <!-- <TargetFramework>net461</TargetFramework> -->
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.12.0" />
+    <PackageReference Include="AngleSharp" Version="0.12.1" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.4" />
-    <PackageReference Include="MySql.Data" Version="8.0.16" />
-    <PackageReference Include="Npgsql" Version="4.0.6" />
     <PackageReference Include="NuGet.Common" Version="5.0.0" />
     <PackageReference Include="NuGet.Packaging" Version="5.0.0" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="18.6.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
     <PackageReference Include="System.IO.Packaging" Version="4.5.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
@@ -24,10 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Web" />
   </ItemGroup>
 
 </Project>

@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Plugin.Impl
 {
     public class PermissionsImpl : IPermissions
     {
-        private readonly AdministratorInfo _adminInfo;
+        private readonly IAdministratorInfo _adminInfo;
         private readonly string _rolesKey;
         private readonly string _permissionListKey;
         private readonly string _websitePermissionDictKey;
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.Plugin.Impl
         private List<string> _channelPermissionListIgnoreChannelId;
         private List<int> _channelIdList;
 
-        public PermissionsImpl(AdministratorInfo adminInfo)
+        public PermissionsImpl(IAdministratorInfo adminInfo)
         {
             if (adminInfo == null || adminInfo.Locked) return;
 

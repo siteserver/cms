@@ -1,27 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Web;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class TabManager
-	{
-	    public static TabCollection GetTabs(string filePath)
-	    {
-	        if (filePath.StartsWith("/") || filePath.StartsWith("~"))
-	        {
-	            filePath = HttpContext.Current.Server.MapPath(filePath);
-	        }
+    {
+        public static TabCollection GetTabs(string filePath)
+        {
+            if (filePath.StartsWith("/") || filePath.StartsWith("~"))
+            {
+                filePath = PathUtilsEx.MapPath(filePath);
+            }
 
-	        var tc = CacheUtils.Get(filePath) as TabCollection;
-	        if (tc != null) return tc;
+            var tc = CacheUtils.Get(filePath) as TabCollection;
+            if (tc != null) return tc;
 
-	        tc = (TabCollection)Serializer.ConvertFileToObject(filePath, typeof(TabCollection));
-	        CacheUtils.Insert(filePath, tc, filePath);
-	        return tc;
-	    }
+            tc = (TabCollection)Serializer.ConvertFileToObject(filePath, typeof(TabCollection));
+            CacheUtils.Insert(filePath, tc, filePath);
+            return tc;
+        }
 
         public static List<Tab> GetTopMenuTabs()
         {
@@ -39,25 +38,25 @@ namespace SiteServer.CMS.Core
             return list;
         }
 
-	    public static List<Tab> GetTopMenuTabsWithChildren()
-	    {
-	        var list = new List<Tab>();
+        public static List<Tab> GetTopMenuTabsWithChildren()
+        {
+            var list = new List<Tab>();
 
-	        var menuPath = PathUtilsEx.GetMenusPath("Top.config");
-	        if (!FileUtils.IsFileExists(menuPath)) return list;
+            var menuPath = PathUtilsEx.GetMenusPath("Top.config");
+            if (!FileUtils.IsFileExists(menuPath)) return list;
 
-	        var tabs = GetTabs(menuPath);
-	        foreach (var parent in tabs.Tabs)
-	        {
-	            if (parent.HasChildren)
-	            {
+            var tabs = GetTabs(menuPath);
+            foreach (var parent in tabs.Tabs)
+            {
+                if (parent.HasChildren)
+                {
 
-	            }
-	            list.Add(parent);
-	        }
+                }
+                list.Add(parent);
+            }
 
-	        return list;
-	    }
+            return list;
+        }
 
         public static bool IsValid(Tab tab, IList permissionList)
         {

@@ -26,7 +26,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.GetInt(cacheKey);
                 if (retval == -1)
                 {
-                    retval = DataProvider.DatabaseDao.GetPageTotalCount(sqlString);
+                    retval = DatabaseUtils.GetPageTotalCount(sqlString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
+                    retval = DatabaseUtils.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
                     currentPageIndex);
                     StlCacheManager.Set(cacheKey, retval);
                 }
@@ -67,7 +67,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                    retval = DatabaseUtils.GetString(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }
@@ -87,7 +87,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<DataSet>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetDataSet(connectionString, queryString);
+                    retval = DatabaseUtils.GetDataSet(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }
@@ -152,7 +152,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<DataTable>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetDataTable(connectionString, queryString);
+                    retval = DatabaseUtils.GetDataTable(connectionString, queryString);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }

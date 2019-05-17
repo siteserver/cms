@@ -22,7 +22,7 @@ namespace SiteServer.BackgroundPages.Cms
         private int _channelId;
         private string _returnUrl;
         private List<int> _contentIdList;
-        private string _tableName;
+        private ChannelInfo _channelInfo;
 
         public static string GetOpenWindowString(int siteId, int channelId, string returnUrl)
         {
@@ -37,12 +37,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl", "contentIdCollection");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelId);
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
 
             if (IsPostBack) return;
 
@@ -56,8 +56,8 @@ namespace SiteServer.BackgroundPages.Cms
             var isUp = DdlTaxisType.SelectedValue == "Up";
             var taxisNum = TranslateUtils.ToInt(TbTaxisNum.Text);
 
-            var nodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            if (ETaxisTypeUtils.Equals(nodeInfo.Additional.DefaultTaxisType, ETaxisType.OrderByTaxis))
+            var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+            if (ETaxisTypeUtils.Equals(channelInfo.DefaultTaxisType, ETaxisType.OrderByTaxis))
             {
                 isUp = !isUp;
             }
@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var contentId in _contentIdList)
             {
-                var tuple = DataProvider.ContentDao.GetValue(_tableName, contentId, ContentAttribute.IsTop);
+                var tuple = _channelInfo.ContentDao.GetValueWithChannelId<string>(contentId, ContentAttribute.IsTop);
                 if (tuple == null) continue;
 
                 var isTop = TranslateUtils.ToBool(tuple.Item2);
@@ -77,14 +77,14 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     if (isUp)
                     {
-                        if (DataProvider.ContentDao.SetTaxisToUp(_tableName, _channelId, contentId, isTop) == false)
+                        if (_channelInfo.ContentDao.SetTaxisToUp(_channelId, contentId, isTop) == false)
                         {
                             break;
                         }
                     }
                     else
                     {
-                        if (DataProvider.ContentDao.SetTaxisToDown(_tableName, _channelId, contentId, isTop) == false)
+                        if (_channelInfo.ContentDao.SetTaxisToDown(_channelId, contentId, isTop) == false)
                         {
                             break;
                         }
@@ -93,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             CreateManager.TriggerContentChangedEvent(SiteId, _channelId);
-            AuthRequest.AddSiteLog(SiteId, _channelId, 0, "对内容排序", string.Empty);
+            AuthRequest.AddChannelLog(SiteId, _channelId, "对内容排序");
 
             LayerUtils.CloseAndRedirect(Page, _returnUrl);
         }

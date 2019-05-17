@@ -62,7 +62,7 @@ namespace SiteServer.CMS.DataCache
 
                 if (list != null) return list;
 
-                list = DataProvider.DatabaseDao.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
+                list = DatabaseUtils.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
@@ -237,6 +237,72 @@ namespace SiteServer.CMS.DataCache
             });
 
             return realTableColumns;
+        }
+
+        public static void CreateContentTable(string tableName, List<TableColumn> tableColumns)
+        {
+            var isDbExists = DatabaseUtils.IsTableExists(tableName);
+            if (isDbExists) return;
+
+            DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
+            DatoryUtils.CreateIndex(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            DatoryUtils.CreateIndex(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
+
+            ClearCache();
+        }
+
+        public static void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
+        {
+            var list = new List<string>();
+
+            var columnNameList = GetTableColumnNameList(tableName);
+            foreach (var tableColumn in tableColumns)
+            {
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    var databaseColumn = GetTableColumnInfo(tableName, tableColumn.AttributeName);
+                    if (databaseColumn != null && !tableColumn.IsIdentity)
+                    {
+                        if (tableColumn.DataType != databaseColumn.DataType ||
+                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
+                        {
+                            list.Add(SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName, SqlUtils.GetColumnTypeString(tableColumn)));
+                        }
+                    }
+                }
+                else
+                {
+                    list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
+                }
+            }
+
+            if (dropColumnNames != null)
+            {
+                foreach (var columnName in columnNameList)
+                {
+                    if (StringUtils.ContainsIgnoreCase(dropColumnNames, columnName))
+                    {
+                        list.Add(SqlUtils.GetDropColumnsSqlString(tableName, columnName));
+                    }
+                }
+            }
+
+            if (list.Count > 0)
+            {
+                foreach (var sqlString in list)
+                {
+                    try
+                    {
+                        DatabaseUtils.Execute(sqlString);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(ex, sqlString);
+                    }
+                }
+
+                ClearCache();
+            }
         }
     }
 

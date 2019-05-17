@@ -1,44 +1,23 @@
 using System;
+using System.Collections.Generic;
+using Datory;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-	[Serializable]
-	public class PermissionsInRolesInfo
-	{
-        private int _id;
-        private string _roleName;
-		private string _generalPermissions;
+    [Table("siteserver_PermissionsInRoles")]
+    public class PermissionsInRolesInfo : Entity
+    {
+        [TableColumn]
+        public string RoleName { get; set; }
 
-		public PermissionsInRolesInfo()
-		{
-		    _id = 0;
-            _roleName = string.Empty;
-			_generalPermissions = string.Empty;
-		}
+        [TableColumn(Text = true)]
+        private string GeneralPermissions { get; set; }
 
-        public PermissionsInRolesInfo(int id, string roleName, string generalPermissions)
+        public List<string> GeneralPermissionList
         {
-            _id = id;
-            _roleName = roleName;
-			_generalPermissions = generalPermissions;
-		}
-
-        public int Id
-        {
-            get { return _id; }
-            set { _id = value; }
+            get => TranslateUtils.StringCollectionToStringList(GeneralPermissions);
+            set => GeneralPermissions = TranslateUtils.ObjectCollectionToString(value);
         }
-
-        public string RoleName
-		{
-			get{ return _roleName; }
-			set{ _roleName = value; }
-		}
-
-		public string GeneralPermissions
-		{
-			get{ return _generalPermissions; }
-			set{ _generalPermissions = value; }
-		}
-	}
+    }
 }

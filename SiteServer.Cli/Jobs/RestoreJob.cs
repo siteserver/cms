@@ -7,6 +7,7 @@ using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -95,7 +96,7 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
             await Console.Out.WriteLineAsync($"恢复文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DataProvider.DatabaseDao.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseUtils.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
@@ -142,14 +143,14 @@ namespace SiteServer.Cli.Jobs
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseUtils.IsTableExists(tableName))
                     {
-                        if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
+                        if (!DatabaseUtils.CreateTable(tableName, tableInfo.Columns, out var ex))
                         {
                             await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                             {
                                 DateTime = DateTime.Now,
-                                Detail = $"创建表 {tableName}: {sqlString}",
+                                Detail = $"创建表 {tableName}",
                                 Exception = ex
                             });
 
@@ -158,7 +159,7 @@ namespace SiteServer.Cli.Jobs
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
+                        TableColumnManager.AlterSystemTable(tableName, tableInfo.Columns);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -177,7 +178,7 @@ namespace SiteServer.Cli.Jobs
 
                                 try
                                 {
-                                    DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
+                                    DatabaseUtils.InsertMultiple(tableName, objects, tableInfo.Columns);
                                 }
                                 catch (Exception ex)
                                 {
@@ -207,10 +208,10 @@ namespace SiteServer.Cli.Jobs
 
             if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = DataProvider.DatabaseDao.GetTableNameList();
+                var tableNameList = DatoryUtils.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
                 foreach (var tableName in tableNameList)
                 {
-                    DataProvider.DatabaseDao.AlterOracleAutoIncresementIdToMaxValue(tableName);
+                    DatabaseUtils.AlterOracleAutoIncresementIdToMaxValue(tableName);
                 }
             }
 

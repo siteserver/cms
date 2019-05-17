@@ -1,33 +1,26 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-	public class TableStyleItemInfo
-	{
-	    public TableStyleItemInfo()
-		{
-            Id = 0;
-            TableStyleId = 0;
-            ItemTitle = string.Empty;
-            ItemValue = string.Empty;
-            IsSelected = false;
-		}
+    [Table("siteserver_TableStyleItem")]
+    public class TableStyleItemInfo : Entity
+    {
+        [TableColumn]
+        public int TableStyleId { get; set; }
 
-        public TableStyleItemInfo(int id, int tableStyleId, string itemTitle, string itemValue, bool isSelected) 
-		{
-            Id = id;
-            TableStyleId = tableStyleId;
-            ItemTitle = itemTitle;
-            ItemValue = itemValue;
-            IsSelected = isSelected;
-		}
+        [TableColumn]
+        public string ItemTitle { get; set; }
 
-        public int Id { get; set; }
+        [TableColumn]
+        public string ItemValue { get; set; }
 
-	    public int TableStyleId { get; set; }
+        [TableColumn]
+        private string IsSelected { get; set; }
 
-	    public string ItemTitle { get; set; }
-
-	    public string ItemValue { get; set; }
-
-	    public bool IsSelected { get; set; }
-	}
+        public bool Selected
+        {
+            get => IsSelected == "True";
+            set => IsSelected = value.ToString();
+        }
+    }
 }

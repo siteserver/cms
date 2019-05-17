@@ -1,33 +1,20 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-	public class PluginConfigInfo
-	{
-	    public PluginConfigInfo()
-		{
-            Id = 0;
-		    PluginId = string.Empty;
-            SiteId = 0;
-            ConfigName = string.Empty;
-            ConfigValue = string.Empty;
-		}
-
-        public PluginConfigInfo(int id, string pluginId, int siteId, string configName, string configValue) 
-		{
-            Id = id;
-            PluginId = pluginId;
-            SiteId = siteId;
-            ConfigName = configName;
-            ConfigValue = configValue;
-        }
-
-        public int Id { get; set; }
-
+    [Table("siteserver_PluginConfig")]
+    public class PluginConfigInfo : Entity
+    {
+        [TableColumn]
         public string PluginId { get; set; }
 
+        [TableColumn]
         public int SiteId { get; set; }
 
-	    public string ConfigName { get; set; }
+        [TableColumn]
+        public string ConfigName { get; set; }
 
-	    public string ConfigValue { get; set; }
-	}
+        [TableColumn(Text = true)]
+        public string ConfigValue { get; set; }
+    }
 }

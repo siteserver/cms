@@ -80,12 +80,12 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlContentLength = (Literal)e.Item.FindControl("ltlContentLength");
             var ltlView = (Literal)e.Item.FindControl("ltlView");
 
-            var logId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.Id));
+            var logId = FxUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.Id));
 
             ltlIndex.Text = Convert.ToString(e.Item.ItemIndex + 1);
-            ltlAddUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateLogInfo.AddUserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLogInfo.AddDate)));
-            ltlContentLength.Text = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.ContentLength)).ToString();
+            ltlAddUserName.Text = FxUtils.EvalString(e.Item.DataItem, nameof(TemplateLogInfo.AddUserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(FxUtils.EvalDateTime(e.Item.DataItem, nameof(TemplateLogInfo.AddDate)));
+            ltlContentLength.Text = FxUtils.EvalInt(e.Item.DataItem, nameof(TemplateLogInfo.ContentLength)).ToString();
             ltlView.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalTemplateView.GetOpenWindowString(SiteId,
                     logId)}"">查看</a>";

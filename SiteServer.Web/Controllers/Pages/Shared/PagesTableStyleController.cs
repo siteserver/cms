@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -20,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -29,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities) ?? new TableStyleInfo
                 {
-                    InputType = InputType.Text
+                    Type = InputType.Text
                 };
                 if (styleInfo.StyleItems == null)
                 {
@@ -44,7 +46,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     {
                         ItemTitle = string.Empty,
                         ItemValue = string.Empty,
-                        IsSelected = false
+                        Selected = false
                     });
                 }
                 else
@@ -55,7 +57,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     foreach (var item in styleInfo.StyleItems)
                     {
                         list.Add(item.ItemValue);
-                        if (item.IsSelected)
+                        if (item.Selected)
                         {
                             isSelected = true;
                         }
@@ -88,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");
@@ -123,7 +125,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     return BadRequest(errorMessage);
                 }
 
-                return Ok(new{});
+                return Ok(new { });
             }
             catch (Exception ex)
             {
@@ -157,19 +159,25 @@ namespace SiteServer.API.Controllers.Pages.Shared
             styleInfo.DisplayName = AttackUtils.FilterXss(body.DisplayName);
             styleInfo.HelpText = body.HelpText;
             styleInfo.Taxis = body.Taxis;
-            styleInfo.InputType = body.InputType;
+            styleInfo.Type = body.Type;
             styleInfo.DefaultValue = body.DefaultValue;
-            styleInfo.IsHorizontal = body.IsHorizontal;
-            styleInfo.ExtendValues = body.Additional.ToString();
+            styleInfo.Horizontal = body.Horizontal;
+            styleInfo.ExtendValues = body.ExtendValues;
             styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
-            if (body.InputType == InputType.CheckBox || body.InputType == InputType.Radio || body.InputType == InputType.SelectMultiple || body.InputType == InputType.SelectOne)
+            var inputType = body.Type;
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 if (isRapid)
                 {
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, 0, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -178,14 +186,19 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     var isHasSelected = false;
                     foreach (var styleItem in body.StyleItems)
                     {
-                        if (body.InputType != InputType.SelectMultiple && body.InputType != InputType.CheckBox && isHasSelected && styleItem.IsSelected)
+                        if (inputType != InputType.SelectMultiple && inputType != InputType.CheckBox && isHasSelected && styleItem.Selected)
                         {
                             errorMessage = "操作失败，只能有一个初始化时选定项！";
                             return false;
                         }
-                        if (styleItem.IsSelected) isHasSelected = true;
+                        if (styleItem.Selected) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, 0, styleItem.ItemTitle, styleItem.ItemValue, styleItem.IsSelected);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            ItemTitle = styleItem.ItemTitle,
+                            ItemValue = styleItem.ItemValue,
+                            Selected = styleItem.Selected
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -204,19 +217,26 @@ namespace SiteServer.API.Controllers.Pages.Shared
             styleInfo.DisplayName = AttackUtils.FilterXss(body.DisplayName);
             styleInfo.HelpText = body.HelpText;
             styleInfo.Taxis = body.Taxis;
-            styleInfo.InputType = body.InputType;
+            styleInfo.Type = body.Type;
             styleInfo.DefaultValue = body.DefaultValue;
-            styleInfo.IsHorizontal = body.IsHorizontal;
-            styleInfo.ExtendValues = body.Additional.ToString();
+            styleInfo.Horizontal = body.Horizontal;
+            styleInfo.ExtendValues = body.ToString();
             styleInfo.StyleItems = new List<TableStyleItemInfo>();
 
-            if (body.InputType == InputType.CheckBox || body.InputType == InputType.Radio || body.InputType == InputType.SelectMultiple || body.InputType == InputType.SelectOne)
+            var inputType = body.Type;
+            if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
             {
                 if (isRapid)
                 {
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = styleInfo.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
@@ -225,21 +245,27 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     var isHasSelected = false;
                     foreach (var styleItem in body.StyleItems)
                     {
-                        if (body.InputType != InputType.SelectMultiple && body.InputType != InputType.CheckBox && isHasSelected && styleItem.IsSelected)
+                        if (inputType != InputType.SelectMultiple && inputType != InputType.CheckBox && isHasSelected && styleItem.Selected)
                         {
                             errorMessage = "操作失败，只能有一个初始化时选定项！";
                             return false;
                         }
-                        if (styleItem.IsSelected) isHasSelected = true;
+                        if (styleItem.Selected) isHasSelected = true;
 
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, styleItem.ItemTitle, styleItem.ItemValue, styleItem.IsSelected);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = styleInfo.Id,
+                            ItemTitle = styleItem.ItemTitle,
+                            ItemValue = styleItem.ItemValue,
+                            Selected = styleItem.Selected
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }
             }
 
             DataProvider.TableStyleDao.Update(styleInfo);
-            
+
             return true;
         }
     }

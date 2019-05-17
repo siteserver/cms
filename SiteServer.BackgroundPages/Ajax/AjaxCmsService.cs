@@ -117,8 +117,8 @@ namespace SiteServer.BackgroundPages.Ajax
             if (type == TypeGetDetection)
             {
                 var content = Request.Form["content"];
-                var arraylist = DataProvider.KeywordDao.GetKeywordListByContent(content);
-                var keywords = TranslateUtils.ObjectCollectionToString(arraylist);
+                var list = DataProvider.KeywordDao.GetKeywordListByContent(content);
+                var keywords = string.Join(",", list);
 
                 Page.Response.Write(keywords);
                 Page.Response.End();
@@ -149,10 +149,8 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var retval = new StringBuilder();
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-
-            var titleList = DataProvider.ContentDao.GetValueListByStartString(tableName, channelId, ContentAttribute.Title, title, 10);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var titleList = channelInfo.ContentDao.GetValueListByStartString(channelId, ContentAttribute.Title, title, 10);
             if (titleList.Count > 0)
             {
                 foreach (var value in titleList)

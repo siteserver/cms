@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Settings
 	                return;
 	            }
 	            
-	            PageUtilsEx.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(0, TbDownloadUrl.Text));
+	            FxUtils.Page.Redirect(ModalProgressBar.GetRedirectUrlStringWithSiteTemplateDownload(0, TbDownloadUrl.Text));
 	        }
 	    }
     }

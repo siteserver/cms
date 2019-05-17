@@ -32,7 +32,13 @@ namespace SiteServer.CMS.ImportExport.Components
 
             var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Taxis)));
             var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Description));
-            DataProvider.ContentGroupDao.Insert(new ContentGroupInfo(groupName, siteId, taxis, description));
+            DataProvider.ContentGroupDao.Insert(new ContentGroupInfo
+            {
+                GroupName = groupName,
+                SiteId = siteId,
+                Taxis = taxis,
+                Description = description
+            });
 
             return true;
         }

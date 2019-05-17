@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageChannelDelete : BasePageCms
+    public class PageChannelDelete : BasePageCms
     {
         public Literal LtlPageTitle;
-		public RadioButtonList RblRetainFiles;
+        public RadioButtonList RblRetainFiles;
         public Button BtnDelete;
 
         private bool _deleteContents;
@@ -30,11 +31,11 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "ReturnUrl");
             ReturnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             _deleteContents = AuthRequest.GetQueryBool("DeleteContents");
 
@@ -119,10 +120,10 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        var contentIdList = channelInfo.ContentDao.GetContentIdList(channelId);
                         DeleteManager.DeleteContents(SiteInfo, channelId, contentIdList);
-                        DataProvider.ContentDao.UpdateTrashContents(SiteId, channelId, tableName, contentIdList);
+                        channelInfo.ContentDao.UpdateTrashContents(SiteId, channelId, contentIdList);
                     }
 
                     AuthRequest.AddSiteLog(SiteId, "清空栏目下的内容", $"栏目:{builder}");
@@ -141,8 +142,8 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in channelIdListToDelete)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        DataProvider.ContentDao.UpdateTrashContentsByChannelId(SiteId, channelId, tableName);
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        channelInfo.ContentDao.UpdateTrashContentsByChannelId(SiteId, channelId);
                         DataProvider.ChannelDao.Delete(SiteId, channelId);
                     }
 

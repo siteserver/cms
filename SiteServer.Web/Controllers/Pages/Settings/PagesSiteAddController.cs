@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -23,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
@@ -43,7 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 foreach (var siteId in siteIdList)
                 {
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.IsRoot == false)
+                    if (siteInfo.Root == false)
                     {
                         if (siteInfo.ParentId == 0)
                         {
@@ -118,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
@@ -168,13 +170,13 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = tableHandWrite;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseUtils.IsTableExists(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        TableColumnManager.CreateContentTable(tableName, ContentDao.TableColumnsDefault);
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        TableColumnManager.AlterSystemTable(tableName, ContentDao.TableColumnsDefault);
                     }
                 }
 
@@ -184,18 +186,18 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentId,
-                    IsRoot = isRoot
+                    Root = isRoot
                 };
 
-                siteInfo.Additional.IsCheckContentLevel = false;
-                siteInfo.Additional.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
+                siteInfo.IsCheckContentLevel = false;
+                siteInfo.Charset = ECharsetUtils.GetValue(ECharset.utf_8);
 
                 var siteId = DataProvider.ChannelDao.InsertSiteInfo(channelInfo, siteInfo, request.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = ContentDao.GetContentTableName(siteId);
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                    tableName = Constants.GetContentTableName(siteId);
+                    TableColumnManager.CreateContentTable(tableName, ContentDao.TableColumnsDefault);
                     DataProvider.SiteDao.UpdateTableName(siteId, tableName);
                 }
 

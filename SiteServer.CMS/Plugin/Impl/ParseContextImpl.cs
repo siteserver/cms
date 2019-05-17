@@ -5,7 +5,7 @@ using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
-    public class ParseContextImpl: IParseContext
+    public class ParseContextImpl : IParseContext
     {
         public ParseContextImpl(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Plugin.Impl
             ChannelId = contextInfo.ChannelId;
             ContentId = contextInfo.ContentId;
             ContentInfo = contextInfo.ContentInfo;
-            TemplateType = pageInfo.TemplateInfo.TemplateType;
+            TemplateType = pageInfo.TemplateInfo.Type;
             TemplateId = pageInfo.TemplateInfo.Id;
 
             HeadCodes = pageInfo.HeadCodes;
@@ -22,7 +22,7 @@ namespace SiteServer.CMS.Plugin.Impl
             StlOuterHtml = stlOuterHtml;
             StlInnerHtml = stlInnerHtml;
             StlAttributes = stlAttributes;
-            
+
             IsStlElement = !contextInfo.IsStlEntity;
             PluginItems = pageInfo.PluginItems;
         }
@@ -44,16 +44,16 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (objectValue is T)
                 {
-                    return (T) objectValue;
+                    return (T)objectValue;
                 }
             }
 
             return default(T);
         }
 
-        public int SiteId  { get; }
+        public int SiteId { get; }
 
-        public int ChannelId  { get; }
+        public int ChannelId { get; }
 
         public int ContentId { get; }
 

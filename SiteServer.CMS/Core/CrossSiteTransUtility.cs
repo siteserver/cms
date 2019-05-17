@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils;
@@ -17,44 +16,47 @@ namespace SiteServer.CMS.Core
         {
             var isCrossSiteTrans = false;
 
-            if (channelInfo != null && channelInfo.Additional.TransType != ECrossSiteTransType.None)
+            if (channelInfo != null)
             {
-                var transType = channelInfo.Additional.TransType;
+                var transType = ECrossSiteTransTypeUtils.GetEnumType(channelInfo.TransType);
                 if (transType != ECrossSiteTransType.None)
                 {
-                    if (transType == ECrossSiteTransType.AllParentSite)
+                    if (transType != ECrossSiteTransType.None)
                     {
-                        var parentSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
-                        if (parentSiteId != 0)
+                        if (transType == ECrossSiteTransType.AllParentSite)
                         {
-                            isCrossSiteTrans = true;
-                        }
-                    }
-                    else if (transType == ECrossSiteTransType.SelfSite)
-                    {
-                        isCrossSiteTrans = true;
-                    }
-                    else if (transType == ECrossSiteTransType.AllSite)
-                    {
-                        isCrossSiteTrans = true;
-                    }
-                    else if (transType == ECrossSiteTransType.SpecifiedSite)
-                    {
-                        if (channelInfo.Additional.TransSiteId > 0)
-                        {
-                            var theSiteInfo = SiteManager.GetSiteInfo(channelInfo.Additional.TransSiteId);
-                            if (theSiteInfo != null)
+                            var parentSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
+                            if (parentSiteId != 0)
                             {
                                 isCrossSiteTrans = true;
                             }
                         }
-                    }
-                    else if (transType == ECrossSiteTransType.ParentSite)
-                    {
-                        var parentSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
-                        if (parentSiteId != 0)
+                        else if (transType == ECrossSiteTransType.SelfSite)
                         {
                             isCrossSiteTrans = true;
+                        }
+                        else if (transType == ECrossSiteTransType.AllSite)
+                        {
+                            isCrossSiteTrans = true;
+                        }
+                        else if (transType == ECrossSiteTransType.SpecifiedSite)
+                        {
+                            if (channelInfo.TransSiteId > 0)
+                            {
+                                var theSiteInfo = SiteManager.GetSiteInfo(channelInfo.TransSiteId);
+                                if (theSiteInfo != null)
+                                {
+                                    isCrossSiteTrans = true;
+                                }
+                            }
+                        }
+                        else if (transType == ECrossSiteTransType.ParentSite)
+                        {
+                            var parentSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
+                            if (parentSiteId != 0)
+                            {
+                                isCrossSiteTrans = true;
+                            }
                         }
                     }
                 }
@@ -69,123 +71,15 @@ namespace SiteServer.CMS.Core
 
             if (channelInfo != null)
             {
-                if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite || channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite || channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
+                var transType = ECrossSiteTransTypeUtils.GetEnumType(channelInfo.TransType);
+
+                if (transType == ECrossSiteTransType.SelfSite || transType == ECrossSiteTransType.ParentSite || transType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    isAutomatic = channelInfo.Additional.TransIsAutomatic;
+                    isAutomatic = channelInfo.TransIsAutomatic;
                 }
             }
 
             return isAutomatic;
-        }
-
-        public static void LoadSiteIdDropDownList(DropDownList siteIdDropDownList, SiteInfo siteInfo, int channelId)
-        {
-            siteIdDropDownList.Items.Clear();
-
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite || channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite || channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
-            {
-                int theSiteId;
-                if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
-                {
-                    theSiteId = siteInfo.Id;
-                }
-                else if (channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
-                {
-                    theSiteId = channelInfo.Additional.TransSiteId;
-                }
-                else
-                {
-                    theSiteId = SiteManager.GetParentSiteId(siteInfo.Id);
-                }
-                if (theSiteId > 0)
-                {
-                    var theSiteInfo = SiteManager.GetSiteInfo(theSiteId);
-                    if (theSiteInfo != null)
-                    {
-                        var listitem = new ListItem(theSiteInfo.SiteName, theSiteInfo.Id.ToString());
-                        siteIdDropDownList.Items.Add(listitem);
-                    }
-                }
-            }
-            else if (channelInfo.Additional.TransType == ECrossSiteTransType.AllParentSite)
-            {
-                var siteIdList = SiteManager.GetSiteIdList();
-
-                var allParentSiteIdList = new List<int>();
-                SiteManager.GetAllParentSiteIdList(allParentSiteIdList, siteIdList, siteInfo.Id);
-
-                foreach (var psId in siteIdList)
-                {
-                    if (psId == siteInfo.Id) continue;
-                    var psInfo = SiteManager.GetSiteInfo(psId);
-                    var show = psInfo.IsRoot || allParentSiteIdList.Contains(psInfo.Id);
-                    if (show)
-                    {
-                        var listitem = new ListItem(psInfo.SiteName, psId.ToString());
-                        if (psInfo.IsRoot) listitem.Selected = true;
-                        siteIdDropDownList.Items.Add(listitem);
-                    }
-                }
-            }
-            else if (channelInfo.Additional.TransType == ECrossSiteTransType.AllSite)
-            {
-                var siteIdList = SiteManager.GetSiteIdList();
-
-                foreach (var psId in siteIdList)
-                {
-                    var psInfo = SiteManager.GetSiteInfo(psId);
-                    var listitem = new ListItem(psInfo.SiteName, psId.ToString());
-                    if (psInfo.IsRoot) listitem.Selected = true;
-                    siteIdDropDownList.Items.Add(listitem);
-                }
-            }
-        }
-
-        public static void LoadChannelIdListBox(ListBox channelIdListBox, SiteInfo siteInfo, int psId, ChannelInfo channelInfo, PermissionsImpl permissionsImpl)
-        {
-            channelIdListBox.Items.Clear();
-
-            var isUseNodeNames = channelInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || channelInfo.Additional.TransType == ECrossSiteTransType.AllSite;
-
-            if (!isUseNodeNames)
-            {
-                var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
-                foreach (var theChannelId in channelIdList)
-                {
-                    var theNodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
-                    if (theNodeInfo != null)
-                    {
-                        var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
-                        channelIdListBox.Items.Add(listitem);
-                    }
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(channelInfo.Additional.TransChannelNames))
-                {
-                    var nodeNameArrayList = TranslateUtils.StringCollectionToStringList(channelInfo.Additional.TransChannelNames);
-                    var channelIdList = ChannelManager.GetChannelIdList(psId);
-                    foreach (var nodeName in nodeNameArrayList)
-                    {
-                        foreach (var theChannelId in channelIdList)
-                        {
-                            var theNodeInfo = ChannelManager.GetChannelInfo(psId, theChannelId);
-                            if (theNodeInfo.ChannelName == nodeName)
-                            {
-                                var listitem = new ListItem(theNodeInfo.ChannelName, theNodeInfo.Id.ToString());
-                                channelIdListBox.Items.Add(listitem);
-                                break;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    ChannelManager.AddListItemsForAddContent(channelIdListBox.Items, SiteManager.GetSiteInfo(psId), false, permissionsImpl);
-                }
-            }
         }
 
         public static string GetDescription(int siteId, ChannelInfo channelInfo)
@@ -194,26 +88,27 @@ namespace SiteServer.CMS.Core
 
             if (channelInfo != null)
             {
-                results = ECrossSiteTransTypeUtils.GetText(channelInfo.Additional.TransType);
+                var transType = ECrossSiteTransTypeUtils.GetEnumType(channelInfo.TransType);
+                results = ECrossSiteTransTypeUtils.GetText(transType);
 
-                if (channelInfo.Additional.TransType == ECrossSiteTransType.AllParentSite || channelInfo.Additional.TransType == ECrossSiteTransType.AllSite)
+                if (transType == ECrossSiteTransType.AllParentSite || transType == ECrossSiteTransType.AllSite)
                 {
-                    if (!string.IsNullOrEmpty(channelInfo.Additional.TransChannelNames))
+                    if (!string.IsNullOrEmpty(channelInfo.TransChannelNames))
                     {
-                        results += $"({channelInfo.Additional.TransChannelNames})";
+                        results += $"({channelInfo.TransChannelNames})";
                     }
                 }
-                else if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite || channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite || channelInfo.Additional.TransType == ECrossSiteTransType.ParentSite)
+                else if (transType == ECrossSiteTransType.SelfSite || transType == ECrossSiteTransType.SpecifiedSite || transType == ECrossSiteTransType.ParentSite)
                 {
                     SiteInfo siteInfo = null;
 
-                    if (channelInfo.Additional.TransType == ECrossSiteTransType.SelfSite)
+                    if (transType == ECrossSiteTransType.SelfSite)
                     {
                         siteInfo = SiteManager.GetSiteInfo(siteId);
                     }
-                    else if (channelInfo.Additional.TransType == ECrossSiteTransType.SpecifiedSite)
+                    else if (transType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        siteInfo = SiteManager.GetSiteInfo(channelInfo.Additional.TransSiteId);
+                        siteInfo = SiteManager.GetSiteInfo(channelInfo.TransSiteId);
                     }
                     else
                     {
@@ -224,10 +119,10 @@ namespace SiteServer.CMS.Core
                         }
                     }
 
-                    if (siteInfo != null && !string.IsNullOrEmpty(channelInfo.Additional.TransChannelIds))
+                    if (siteInfo != null && !string.IsNullOrEmpty(channelInfo.TransChannelIds))
                     {
                         var nodeNameBuilder = new StringBuilder();
-                        var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.Additional.TransChannelIds);
+                        var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
                             var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
@@ -249,23 +144,23 @@ namespace SiteServer.CMS.Core
 
         public static void TransContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetChannelId)
         {
-            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
+            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteInfo.Id, targetChannelId);
 
             var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
             FileUtility.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;
             contentInfo.ChannelId = targetChannelId;
-            contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
+            contentInfo.Checked = targetSiteInfo.IsCrossSiteTransChecked;
             contentInfo.CheckedLevel = 0;
 
             //复制
-            if (Equals(channelInfo.Additional.TransDoneType, ETranslateContentType.Copy))
+            if (Equals(channelInfo.TransDoneType, ETranslateContentType.Copy))
             {
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Copy.ToString());
             }
             //引用地址
-            else if (Equals(channelInfo.Additional.TransDoneType, ETranslateContentType.Reference))
+            else if (Equals(channelInfo.TransDoneType, ETranslateContentType.Reference))
             {
                 contentInfo.SiteId = targetSiteInfo.Id;
                 contentInfo.SourceId = channelInfo.Id;
@@ -274,7 +169,7 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.Reference.ToString());
             }
             //引用内容
-            else if (Equals(channelInfo.Additional.TransDoneType, ETranslateContentType.ReferenceContent))
+            else if (Equals(channelInfo.TransDoneType, ETranslateContentType.ReferenceContent))
             {
                 contentInfo.SiteId = targetSiteInfo.Id;
                 contentInfo.SourceId = channelInfo.Id;
@@ -283,22 +178,22 @@ namespace SiteServer.CMS.Core
                 contentInfo.Set(ContentAttribute.TranslateContentType, ETranslateContentType.ReferenceContent.ToString());
             }
 
-            if (!string.IsNullOrEmpty(targetTableName))
+            if (targetChannelInfo != null)
             {
-                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, channelInfo, contentInfo);
+                targetChannelInfo.ContentDao.Insert(targetSiteInfo, targetChannelInfo, contentInfo);
 
                 #region 复制资源
                 //资源：图片，文件，视频
-                if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.ImageUrl))
                 {
                     //修改图片
-                    var sourceImageUrl = PathUtility.MapPath(siteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl));
+                    var sourceImageUrl = PathUtility.MapPath(siteInfo, contentInfo.ImageUrl);
                     CopyReferenceFiles(targetSiteInfo, sourceImageUrl, siteInfo);
 
                 }
-                else if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl))))
+                else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl))))
                 {
-                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.ImageUrl)));
+                    var sourceImageUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl)));
 
                     foreach (string imageUrl in sourceImageUrls)
                     {
@@ -306,16 +201,16 @@ namespace SiteServer.CMS.Core
                         CopyReferenceFiles(targetSiteInfo, sourceImageUrl, siteInfo);
                     }
                 }
-                if (!string.IsNullOrEmpty(contentInfo.GetString(BackgroundContentAttribute.FileUrl)))
+                if (!string.IsNullOrEmpty(contentInfo.FileUrl))
                 {
                     //修改附件
-                    var sourceFileUrl = PathUtility.MapPath(siteInfo, contentInfo.GetString(BackgroundContentAttribute.FileUrl));
+                    var sourceFileUrl = PathUtility.MapPath(siteInfo, contentInfo.FileUrl);
                     CopyReferenceFiles(targetSiteInfo, sourceFileUrl, siteInfo);
 
                 }
-                else if (!string.IsNullOrEmpty(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl))))
+                else if (!string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl))))
                 {
-                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.GetString(ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl)));
+                    var sourceFileUrls = TranslateUtils.StringCollectionToStringList(contentInfo.Get<string>(ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl)));
 
                     foreach (string fileUrl in sourceFileUrls)
                     {

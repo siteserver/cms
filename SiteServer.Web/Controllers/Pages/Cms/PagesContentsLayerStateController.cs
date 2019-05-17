@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -41,7 +42,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
                 var title = WebUtils.GetContentTitle(siteInfo, contentInfo, string.Empty);
-                var checkState = 
+                var checkState =
                     CheckManager.GetCheckState(siteInfo, contentInfo);
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);

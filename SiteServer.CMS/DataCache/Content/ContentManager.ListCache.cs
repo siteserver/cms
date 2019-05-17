@@ -24,7 +24,7 @@ namespace SiteServer.CMS.DataCache.Content
 
             public static void Remove(int channelId)
             {
-                lock(LockObject)
+                lock (LockObject)
                 {
                     var cacheKey = GetCacheKey(channelId);
                     DataCacheManager.Remove(cacheKey);
@@ -48,7 +48,7 @@ namespace SiteServer.CMS.DataCache.Content
 
             public static void Add(ChannelInfo channelInfo, ContentInfo contentInfo)
             {
-                if (ETaxisTypeUtils.Equals(ETaxisType.OrderByTaxisDesc, channelInfo.Additional.DefaultTaxisType))
+                if (ETaxisTypeUtils.Equals(ETaxisType.OrderByTaxisDesc, channelInfo.DefaultTaxisType))
                 {
                     var contentIdList = GetContentIdList(channelInfo.Id, null);
                     contentIdList.Insert(0, contentInfo.Id);
@@ -64,11 +64,11 @@ namespace SiteServer.CMS.DataCache.Content
 
             public static bool IsChanged(ChannelInfo channelInfo, ContentInfo contentInfo1, ContentInfo contentInfo2)
             {
-                if (contentInfo1.IsTop != contentInfo2.IsTop) return true;
+                if (contentInfo1.Top != contentInfo2.Top) return true;
 
                 var orderAttributeName =
                     ETaxisTypeUtils.GetContentOrderAttributeName(
-                        ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
+                        ETaxisTypeUtils.GetEnumType(channelInfo.DefaultTaxisType));
 
                 return contentInfo1.Get(orderAttributeName) != contentInfo2.Get(orderAttributeName);
             }
@@ -82,14 +82,12 @@ namespace SiteServer.CMS.DataCache.Content
                 return list.Skip(offset).Take(limit).ToList();
             }
 
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
             if (list.Count == offset)
             {
                 var dict = ContentCache.GetContentDict(channelInfo.Id);
 
-                var pageContentInfoList = DataProvider.ContentDao.GetContentInfoList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
-                    DataProvider.ContentDao.GetOrderString(channelInfo, string.Empty), offset, limit);
+                var pageContentInfoList = channelInfo.ContentDao.GetContentInfoList(channelInfo.ContentDao.GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
+                    channelInfo.ContentDao.GetOrderString(channelInfo, string.Empty), offset, limit);
 
                 foreach (var contentInfo in pageContentInfoList)
                 {
@@ -101,8 +99,8 @@ namespace SiteServer.CMS.DataCache.Content
                 return pageContentIdList;
             }
 
-            return DataProvider.ContentDao.GetCacheContentIdList(tableName, DataProvider.ContentDao.GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
-                DataProvider.ContentDao.GetOrderString(channelInfo, string.Empty), offset, limit);
+            return channelInfo.ContentDao.GetCacheContentIdList(channelInfo.ContentDao.GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
+                channelInfo.ContentDao.GetOrderString(channelInfo, string.Empty), offset, limit);
         }
     }
 }

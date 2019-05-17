@@ -6,9 +6,9 @@ using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteUrlAssets : BasePageCms
+    public class PageSiteUrlAssets : BasePageCms
     {
-		public Repeater RptContents;
+        public Repeater RptContents;
 
         public static string GetRedirectUrl()
         {
@@ -44,10 +44,10 @@ namespace SiteServer.BackgroundPages.Settings
             ltlName.Text = SiteManager.GetSiteName(siteInfo);
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlAssetsDir.Text = siteInfo.Additional.AssetsDir;
-            ltlAssetsUrl.Text = $@"<a href=""{siteInfo.Additional.AssetsUrl}"" target=""_blank"">{siteInfo.Additional.AssetsUrl}</a>";
+            ltlAssetsDir.Text = siteInfo.AssetsDir;
+            ltlAssetsUrl.Text = $@"<a href=""{siteInfo.AssetsUrl}"" target=""_blank"">{siteInfo.AssetsUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlAssetsConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }
-	}
+    }
 }

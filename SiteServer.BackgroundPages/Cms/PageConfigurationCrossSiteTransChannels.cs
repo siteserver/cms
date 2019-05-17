@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-			PageUtilsEx.CheckRequestParameter("siteId");
+			FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 

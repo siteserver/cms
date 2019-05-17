@@ -38,12 +38,26 @@ namespace SiteServer.CMS.Plugin.Apis
                     var json = JsonConvert.SerializeObject(config, Formatting.Indented, settings);
                     if (DataProvider.PluginConfigDao.IsExists(pluginId, siteId, name))
                     {
-                        var configInfo = new PluginConfigInfo(0, pluginId, siteId, name, json);
+                        var configInfo = new PluginConfigInfo
+                        {
+                            PluginId = pluginId,
+                            SiteId = siteId,
+                            ConfigName = name,
+                            ConfigValue = json
+                        };
+
                         DataProvider.PluginConfigDao.Update(configInfo);
                     }
                     else
                     {
-                        var configInfo = new PluginConfigInfo(0, pluginId, siteId, name, json);
+                        var configInfo = new PluginConfigInfo
+                        {
+                            PluginId = pluginId,
+                            SiteId = siteId,
+                            ConfigName = name,
+                            ConfigValue = json
+                        };
+
                         DataProvider.PluginConfigDao.Insert(configInfo);
                     }
                 }

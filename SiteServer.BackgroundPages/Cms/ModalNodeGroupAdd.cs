@@ -5,12 +5,13 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalNodeGroupAdd : BasePageCms
+    public class ModalNodeGroupAdd : BasePageCms
     {
-		public TextBox TbNodeGroupName;
+        public TextBox TbNodeGroupName;
         public Literal LtlNodeGroupName;
         public TextBox TbDescription;
 
@@ -27,7 +28,7 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScript("添加栏目组", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalNodeGroupAdd), null), 600, 300);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
             if (IsPostBack) return;
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			var isChanged = false;
+            var isChanged = false;
 
             var nodeGroupInfo = new ChannelGroupInfo
             {
@@ -58,44 +59,44 @@ namespace SiteServer.BackgroundPages.Cms
             };
 
             if (AuthRequest.IsQueryExists("GroupName"))
-			{
-				try
-				{
+            {
+                try
+                {
                     DataProvider.ChannelGroupDao.Update(nodeGroupInfo);
                     AuthRequest.AddSiteLog(SiteId, "修改栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
-					isChanged = true;
+                    isChanged = true;
                 }
-				catch(Exception ex)
-				{
+                catch (Exception ex)
+                {
                     FailMessage(ex, "栏目组修改失败！");
-				}
-			}
-			else
-			{
+                }
+            }
+            else
+            {
                 var nodeGroupNameList = ChannelGroupManager.GetGroupNameList(SiteId);
-				if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
-				{
+                if (nodeGroupNameList.IndexOf(TbNodeGroupName.Text) != -1)
+                {
                     FailMessage("栏目组添加失败，栏目组名称已存在！");
-				}
-				else
-				{
-					try
-					{
-						DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
+                }
+                else
+                {
+                    try
+                    {
+                        DataProvider.ChannelGroupDao.Insert(nodeGroupInfo);
                         AuthRequest.AddSiteLog(SiteId, "添加栏目组", $"栏目组:{nodeGroupInfo.GroupName}");
-						isChanged = true;
+                        isChanged = true;
                     }
                     catch (Exception ex)
                     {
                         FailMessage(ex, "栏目组添加失败！");
-					}
-				}
-			}
+                    }
+                }
+            }
 
-			if (isChanged)
-			{
+            if (isChanged)
+            {
                 LayerUtils.Close(Page);
-			}
-		}
-	}
+            }
+        }
+    }
 }

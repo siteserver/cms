@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -66,14 +67,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             BtnAddStyle.Attributes.Add("onclick", ModalTableStyleAdd.GetOpenWindowString(0, 0, new List<int> { 0 }, _tableName, string.Empty, _redirectUrl));
             BtnAddStyles.Attributes.Add("onclick",
-                ModalTableStylesAdd.GetOpenWindowString(0, new List<int> {0}, _tableName, _redirectUrl));
+                ModalTableStylesAdd.GetOpenWindowString(0, new List<int> { 0 }, _tableName, _redirectUrl));
             BtnImport.Attributes.Add("onclick", ModalTableStyleImport.GetOpenWindowString(_tableName, 0, 0));
             BtnExport.Attributes.Add("onclick", ModalExportMessage.GetOpenWindowStringToSingleTableStyle(_tableName));
         }
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(GetRedirectUrl(_tableName));
+            FxUtils.Page.Redirect(GetRedirectUrl(_tableName));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -94,7 +95,7 @@ namespace SiteServer.BackgroundPages.Settings
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.Type);
 
             var columnInfo = TableColumnManager.GetTableColumnInfo(_tableName, styleInfo.AttributeName);
 
@@ -102,7 +103,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 
-            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.Id, new List<int>{0}, _tableName, styleInfo.AttributeName, _redirectUrl);
+            var showPopWinString = ModalTableStyleAdd.GetOpenWindowString(0, styleInfo.Id, new List<int> { 0 }, _tableName, styleInfo.AttributeName, _redirectUrl);
             var editText = styleInfo.Id != 0 ? "修改" : "添加";
             ltlEditStyle.Text = $@"<a href=""javascript:;"" onclick=""{showPopWinString}"">{editText}</a>";
 
@@ -124,7 +125,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(string.Empty);
+            FxUtils.Page.Redirect(string.Empty);
         }
     }
 }

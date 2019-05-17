@@ -1,430 +1,162 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using Newtonsoft.Json;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
+using Datory;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    [JsonConverter(typeof(ContentConverter))]
-    public class ContentInfo : AttributesImpl, IContentInfo
-	{
-        public ContentInfo()
+    public class ContentInfo : Entity, IContentInfo
+    {
+        public ContentInfo() { }
+
+        public ContentInfo(IDictionary<string, object> dict) : base(dict)
         {
 
         }
 
-        public ContentInfo(IDataReader rdr) : base(rdr)
-        {
+        [TableColumn]
+        public int ChannelId { get; set; }
 
-        }
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public ContentInfo(IDataRecord record) : base(record)
-        {
+        [TableColumn]
+        public string AddUserName { get; set; }
 
-        }
+        [TableColumn]
+        public string LastEditUserName { get; set; }
 
-        public ContentInfo(DataRowView view) : base(view)
-        {
+        [TableColumn]
+        public DateTime? LastEditDate { get; set; }
 
-        }
+        [TableColumn]
+        public int AdminId { get; set; }
 
-        public ContentInfo(DataRow row) : base(row)
-        {
+        [TableColumn]
+        public int UserId { get; set; }
 
-        }
+        [TableColumn]
+        public int Taxis { get; set; }
 
-	    public ContentInfo(Dictionary<string, object> dict) : base(dict)
-	    {
+        [TableColumn]
+        public string GroupNameCollection { get; set; }
 
-	    }
+        [TableColumn]
+        public string Tags { get; set; }
 
-	    public ContentInfo(NameValueCollection nvc) : base(nvc)
-        {
+        [TableColumn]
+        public int SourceId { get; set; }
 
-        }
+        [TableColumn]
+        public int ReferenceId { get; set; }
 
-	    public ContentInfo(object anonymous) : base(anonymous)
-	    {
-
-	    }
-
-	    public ContentInfo(ContentInfo contentInfo)
-	    {
-	        Load(contentInfo);
-        }
-
-        public int Id
-		{
-            get => GetInt(ContentAttribute.Id);
-            set => Set(ContentAttribute.Id, value);
-        }
-
-        public int ChannelId
-        {
-            get => GetInt(ContentAttribute.ChannelId);
-            set => Set(ContentAttribute.ChannelId, value);
-        }
-
-        public int SiteId
-        {
-            get => GetInt(ContentAttribute.SiteId);
-            set => Set(ContentAttribute.SiteId, value);
-        }
-
-        public string AddUserName
-		{
-            get => GetString(ContentAttribute.AddUserName);
-            set => Set(ContentAttribute.AddUserName, value);
-        }
-
-        public string LastEditUserName
-		{
-            get => GetString(ContentAttribute.LastEditUserName);
-            set => Set(ContentAttribute.LastEditUserName, value);
-        }
-
-	    public DateTime? LastEditDate
-	    {
-	        get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
-	        set => Set(ContentAttribute.LastEditDate, value);
-	    }
-
-	    public int AdminId
-	    {
-	        get => GetInt(ContentAttribute.AdminId);
-	        set => Set(ContentAttribute.AdminId, value);
-	    }
-
-	    public int UserId
-	    {
-	        get => GetInt(ContentAttribute.UserId);
-	        set => Set(ContentAttribute.UserId, value);
-	    }
-
-        public int Taxis
-        {
-            get => GetInt(ContentAttribute.Taxis);
-            set => Set(ContentAttribute.Taxis, value);
-        }
-
-	    public string GroupNameCollection
-        {
-            get => GetString(ContentAttribute.GroupNameCollection);
-            set => Set(ContentAttribute.GroupNameCollection, value);
-        }
-
-        public string Tags
-        {
-            get => GetString(ContentAttribute.Tags);
-            set => Set(ContentAttribute.Tags, value);
-        }
-
-	    public int SourceId
-        {
-            get => GetInt(ContentAttribute.SourceId);
-            set => Set(ContentAttribute.SourceId, value);
-        }
-
-        public int ReferenceId
-        {
-            get => GetInt(ContentAttribute.ReferenceId);
-            set => Set(ContentAttribute.ReferenceId, value);
-        }
+        [TableColumn]
+        private string IsChecked { get; set; }
 
         public bool Checked
         {
-            get => IsChecked;
-            set => IsChecked = value;
+            get => IsChecked == "True";
+            set => IsChecked = value.ToString();
         }
 
-        public bool IsChecked
-		{
-            get => GetBool(ContentAttribute.IsChecked);
-            set => Set(ContentAttribute.IsChecked, value);
-        }
+        [TableColumn]
+        public int CheckedLevel { get; set; }
 
-        public int CheckedLevel
-		{
-            get => GetInt(ContentAttribute.CheckedLevel);
-            set => Set(ContentAttribute.CheckedLevel, value);
-        }
+        [TableColumn]
+        public int Hits { get; set; }
 
-        public int Hits
-        {
-            get => GetInt(ContentAttribute.Hits);
-            set => Set(ContentAttribute.Hits, value);
-        }
+        [TableColumn]
+        public int HitsByDay { get; set; }
 
-        public int HitsByDay
-        {
-            get => GetInt(ContentAttribute.HitsByDay);
-            set => Set(ContentAttribute.HitsByDay, value);
-        }
+        [TableColumn]
+        public int HitsByWeek { get; set; }
 
-        public int HitsByWeek
-        {
-            get => GetInt(ContentAttribute.HitsByWeek);
-            set => Set(ContentAttribute.HitsByWeek, value);
-        }
+        [TableColumn]
+        public int HitsByMonth { get; set; }
 
-        public int HitsByMonth
-        {
-            get => GetInt(ContentAttribute.HitsByMonth);
-            set => Set(ContentAttribute.HitsByMonth, value);
-        }
+        [TableColumn]
+        public DateTime? LastHitsDate { get; set; }
 
-	    public DateTime? LastHitsDate
-        {
-            get => GetDateTime(ContentAttribute.LastHitsDate, DateTime.Now);
-            set => Set(ContentAttribute.LastHitsDate, value);
-        }
+        [TableColumn]
+        public int Downloads { get; set; }
 
-	    public int Downloads
-        {
-	        get => GetInt(ContentAttribute.Downloads);
-	        set => Set(ContentAttribute.Downloads, value);
-	    }
+        [TableColumn]
+        public string Title { get; set; }
 
-        public string Title
-		{
-            get => GetString(ContentAttribute.Title);
-            set => Set(ContentAttribute.Title, value);
-        }
+        [TableColumn]
+        private string IsTop { get; set; }
 
         public bool Top
         {
-            get => IsTop;
-            set => IsTop = value;
+            get => IsTop == "True";
+            set => IsTop = value.ToString();
         }
 
-        public bool IsTop
-        {
-            get => GetBool(ContentAttribute.IsTop);
-            set => Set(ContentAttribute.IsTop, value);
-        }
+        [TableColumn]
+        private string IsRecommend { get; set; }
 
         public bool Recommend
         {
-            get => IsRecommend;
-            set => IsRecommend = value;
+            get => IsRecommend == "True";
+            set => IsRecommend = value.ToString();
         }
 
-        public bool IsRecommend
-        {
-            get => GetBool(ContentAttribute.IsRecommend);
-            set => Set(ContentAttribute.IsRecommend, value);
-        }
+        [TableColumn]
+        private string IsHot { get; set; }
 
         public bool Hot
         {
-            get => IsHot;
-            set => IsHot = value;
+            get => IsHot == "True";
+            set => IsHot = value.ToString();
         }
 
-        public bool IsHot
-        {
-            get => GetBool(ContentAttribute.IsHot);
-            set => Set(ContentAttribute.IsHot, value);
-        }
+        [TableColumn]
+        private string IsColor { get; set; }
 
         public bool Color
         {
-            get => IsColor;
-            set => IsColor = value;
+            get => IsColor == "True";
+            set => IsColor = value.ToString();
         }
 
-        public bool IsColor
-        {
-            get => GetBool(ContentAttribute.IsColor);
-            set => Set(ContentAttribute.IsColor, value);
-        }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
-        public DateTime? AddDate
-        {
-            get => GetDateTime(ContentAttribute.AddDate, DateTime.Now);
-            set => Set(ContentAttribute.AddDate, value);
-        }
+        [TableColumn]
+        public string LinkUrl { get; set; }
 
-        public string LinkUrl
-        {
-            get => GetString(ContentAttribute.LinkUrl);
-            set => Set(ContentAttribute.LinkUrl, value);
-        }
+        [TableColumn]
+        public string SubTitle { get; set; }
 
-	    public string SubTitle
-	    {
-	        get => GetString(BackgroundContentAttribute.SubTitle);
-	        set => Set(BackgroundContentAttribute.SubTitle, value);
-	    }
+        [TableColumn]
+        public string ImageUrl { get; set; }
 
-	    public string ImageUrl
-	    {
-	        get => GetString(BackgroundContentAttribute.ImageUrl);
-	        set => Set(BackgroundContentAttribute.ImageUrl, value);
-	    }
+        [TableColumn]
+        public string VideoUrl { get; set; }
 
-	    public string VideoUrl
-	    {
-	        get => GetString(BackgroundContentAttribute.VideoUrl);
-	        set => Set(BackgroundContentAttribute.VideoUrl, value);
-	    }
+        [TableColumn]
+        public string FileUrl { get; set; }
 
-	    public string FileUrl
-	    {
-	        get => GetString(BackgroundContentAttribute.FileUrl);
-	        set => Set(BackgroundContentAttribute.FileUrl, value);
-	    }
+        [TableColumn]
+        public string Author { get; set; }
 
-	    public string Author
-	    {
-	        get => GetString(BackgroundContentAttribute.Author);
-	        set => Set(BackgroundContentAttribute.Author, value);
-	    }
+        [TableColumn]
+        public string Source { get; set; }
 
-	    public string Source
-	    {
-	        get => GetString(BackgroundContentAttribute.Source);
-	        set => Set(BackgroundContentAttribute.Source, value);
-	    }
+        [TableColumn(Text = true)]
+        public string Summary { get; set; }
 
-	    public string Summary
-	    {
-	        get => GetString(BackgroundContentAttribute.Summary);
-	        set => Set(BackgroundContentAttribute.Summary, value);
-	    }
+        [TableColumn(Text = true)]
+        public string Content { get; set; }
 
-	    public string Content
-	    {
-	        get => GetString(BackgroundContentAttribute.Content);
-	        set => Set(BackgroundContentAttribute.Content, value);
-	    }
+        [TableColumn(Text = true, Extend = true)]
+        public string SettingsXml { get; set; }
 
-        public string SettingsXml
-        {
-            get => GetString(ContentAttribute.SettingsXml);
-            set => Set(ContentAttribute.SettingsXml, value);
-        }
+        public string TitleFormatString { get; set; }
 
-        public override Dictionary<string, object> ToDictionary()
-	    {
-	        var dict = base.ToDictionary();
-	        //dict.Remove(nameof(SettingsXml));
-
-            var siteInfo = SiteManager.GetSiteInfo(SiteId);
-	        var channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
-	        var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-
-	        foreach (var styleInfo in styleInfoList)
-	        {
-	            if (styleInfo.InputType == InputType.Image || styleInfo.InputType == InputType.File || styleInfo.InputType == InputType.Video)
-	            {
-	                var value = GetString(styleInfo.AttributeName);
-	                if (!string.IsNullOrEmpty(value))
-	                {
-	                    value = PageUtility.ParseNavigationUrl(siteInfo, value, false);
-	                }
-
-	                dict.Remove(styleInfo.AttributeName);
-                    dict[styleInfo.AttributeName] = value;
-                }
-                else if (styleInfo.InputType == InputType.TextEditor)
-	            {
-	                var value = GetString(styleInfo.AttributeName);
-	                if (!string.IsNullOrEmpty(value))
-	                {
-	                    value = ContentUtility.TextEditorContentDecode(siteInfo, value, false);
-	                }
-	                dict.Remove(styleInfo.AttributeName);
-                    dict[styleInfo.AttributeName] = value;
-	            }
-	            else
-	            {
-	                dict.Remove(styleInfo.AttributeName);
-                    dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
-                }
-	        }
-
-	        foreach (var attributeName in ContentAttribute.AllAttributes.Value)
-	        {
-	            if (StringUtils.StartsWith(attributeName, "Is"))
-	            {
-	                dict.Remove(attributeName);
-                    dict[attributeName] = GetBool(attributeName);
-                }
-	            else if (StringUtils.EqualsIgnoreCase(attributeName, ContentAttribute.Title))
-	            {
-	                var value = GetString(ContentAttribute.Title);
-	                if (siteInfo.Additional.IsContentTitleBreakLine)
-	                {
-	                    value = value.Replace("  ", "<br />");
-	                }
-	                dict.Remove(attributeName);
-                    dict[attributeName] = value;
-                }
-                else
-	            {
-	                dict.Remove(attributeName);
-                    dict[attributeName] = Get(attributeName);
-                }
-            }
-
-	        foreach (var attributeName in ContentAttribute.IncludedAttributes.Value)
-	        {
-	            if (attributeName == ContentAttribute.NavigationUrl)
-	            {
-	                dict.Remove(attributeName);
-                    dict[attributeName] = PageUtility.GetContentUrl(siteInfo, this, false);
-	            }
-	            else if (attributeName == ContentAttribute.CheckState)
-	            {
-	                dict.Remove(attributeName);
-                    dict[attributeName] = CheckManager.GetCheckState(siteInfo, this);
-	            }
-	            else
-	            {
-	                dict.Remove(attributeName);
-                    dict[attributeName] = Get(attributeName);
-	            }
-	        }
-
-	        foreach (var attributeName in ContentAttribute.ExcludedAttributes.Value)
-	        {
-	            dict.Remove(attributeName);
-            }
-
-	        return dict;
-	    }
-
-	    private class ContentConverter : JsonConverter
-	    {
-	        public override bool CanConvert(Type objectType)
-	        {
-	            return objectType == typeof(AttributesImpl);
-	        }
-
-	        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-	        {
-	            var attributes = value as AttributesImpl;
-	            serializer.Serialize(writer, attributes?.ToDictionary());
-	        }
-
-	        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-	            JsonSerializer serializer)
-	        {
-	            var value = (string)reader.Value;
-	            if (string.IsNullOrEmpty(value)) return null;
-                var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(value);
-	            var content = new ContentInfo(dict);
-
-                return content;
-	        }
-	    }
+        public string CheckUserName { get; set; } //审核者
+        public string CheckDate { get; set; }//审核时间
+        public string CheckReasons { get; set; } //审核原因
+        public string TranslateContentType { get; set; }//转移内容类型
     }
 }

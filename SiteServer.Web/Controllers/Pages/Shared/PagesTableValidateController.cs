@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -17,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -29,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                 var veeValidate = string.Empty;
                 if (styleInfo != null)
                 {
-                    veeValidate = styleInfo.Additional.VeeValidate;
+                    veeValidate = styleInfo.VeeValidate;
                 }
 
                 return Ok(new
@@ -48,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");
@@ -58,7 +60,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
 
                 var styleInfo =
                     TableStyleManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
-                styleInfo.Additional.VeeValidate = value;
+                styleInfo.VeeValidate = value;
 
                 //数据库中没有此项及父项的表样式 or 数据库中没有此项的表样式，但是有父项的表样式
                 if (styleInfo.Id == 0 && styleInfo.RelatedIdentity == 0 || styleInfo.RelatedIdentity != relatedIdentities[0])
@@ -73,7 +75,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
                     request.AddAdminLog("修改表单显示样式", $"字段名:{styleInfo.AttributeName}");
                 }
 
-                return Ok(new{});
+                return Ok(new { });
             }
             catch (Exception ex)
             {

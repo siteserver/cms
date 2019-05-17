@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin.Impl;
@@ -13,7 +14,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
         public void Main(int siteId)
         {
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
 
             var callback = request.GetQueryString("callback");
             var relatedFieldId = request.GetQueryInt("relatedFieldId");

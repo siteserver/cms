@@ -435,8 +435,8 @@ namespace SiteServer.BackgroundPages.Controls
             cell.Controls.Add(new LiteralControl("&nbsp;&nbsp;"));
 
             // 上一页
-            var prevImage = new Image {ToolTip = PrevText};
-            var prevText = new Label {Text = PrevText};
+            var prevImage = new Image { ToolTip = PrevText };
+            var prevText = new Label { Text = PrevText };
 
             if (enabled)
             {
@@ -475,8 +475,8 @@ namespace SiteServer.BackgroundPages.Controls
 
             // 下一页
             enabled = isValidPage && canMoveForward;
-            var nextImage = new Image {ToolTip = NextText};
-            var nextText = new Label {Text = NextText};
+            var nextImage = new Image { ToolTip = NextText };
+            var nextText = new Label { Text = NextText };
 
             if (enabled)
             {
@@ -514,8 +514,8 @@ namespace SiteServer.BackgroundPages.Controls
             cell.Controls.Add(new LiteralControl("&nbsp;&nbsp;"));
 
             // 末页
-            var lastImage = new Image {ToolTip = LastText};
-            var lastText = new Label {Text = LastText};
+            var lastImage = new Image { ToolTip = LastText };
+            var lastText = new Label { Text = LastText };
 
             if (enabled)
             {
@@ -671,7 +671,7 @@ namespace SiteServer.BackgroundPages.Controls
 
         private int GetQueryVirtualCount()
         {
-            var recCount = DataProvider.DatabaseDao.GetPageTotalCount(SelectCommand);
+            var recCount = DatabaseUtils.GetPageTotalCount(SelectCommand);
             //            SqlConnection conn = new SqlConnection(ConnectionString);
             //            SqlCommand cmd = new SqlCommand(cmdText, conn);
             //IDbConnection conn = SqlUtils.GetIDbConnection(DataProvider.ADOType, ConnectionString);
@@ -746,7 +746,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var pageList = (DropDownList)sender;
             var pageIndex = Convert.ToInt32(pageList.SelectedValue);
-            PageUtilsEx.Redirect(GetNavigationUrl(pageIndex + 1));
+            FxUtils.Page.Redirect(GetNavigationUrl(pageIndex + 1));
         }
     }
 }

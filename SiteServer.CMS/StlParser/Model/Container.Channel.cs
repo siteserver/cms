@@ -12,6 +12,14 @@ namespace SiteServer.CMS.StlParser.Model
         {
             public static readonly string SqlColumns = $"{ChannelAttribute.Id}, {ChannelAttribute.SiteId}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
 
+            public static readonly string[] Columns = new string[]
+            {
+                ChannelAttribute.Id,
+                ChannelAttribute.SiteId,
+                ChannelAttribute.AddDate,
+                ChannelAttribute.Taxis
+            };
+
             public int ItemIndex { get; set; }
 
             public int Id { get; set; }

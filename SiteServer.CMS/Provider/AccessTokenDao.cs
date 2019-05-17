@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Datory;
-using SiteServer.CMS.Data;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -69,17 +69,6 @@ namespace SiteServer.CMS.Provider
         public bool IsTitleExists(string title)
         {
             return _repository.Exists(Q.Where(Attr.Title, title));
-            //bool exists;
-
-            //using (var connection = GetConnection())
-            //{
-            //    exists = connection.ExecuteScalar<bool>($"SELECT COUNT(1) FROM {TableName} WHERE {nameof(AccessTokenInfo.Title)} = @{nameof(AccessTokenInfo.Title)}", new
-            //    {
-            //        Title = title
-            //    });
-            //}
-
-            //return exists;
         }
 
         public IList<AccessTokenInfo> GetAll()

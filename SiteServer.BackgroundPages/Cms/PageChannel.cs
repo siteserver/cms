@@ -35,7 +35,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (AuthRequest.IsQueryExists("channelId") && (AuthRequest.IsQueryExists("Subtract") || AuthRequest.IsQueryExists("Add")))
             {
@@ -45,10 +45,10 @@ namespace SiteServer.BackgroundPages.Cms
                     var isSubtract = AuthRequest.IsQueryExists("Subtract");
                     DataProvider.ChannelDao.UpdateTaxis(SiteId, channelId, isSubtract);
 
-                    AuthRequest.AddSiteLog(SiteId, channelId, 0, "栏目排序" + (isSubtract ? "上升" : "下降"),
+                    AuthRequest.AddChannelLog(SiteId, channelId, "栏目排序" + (isSubtract ? "上升" : "下降"),
                         $"栏目:{ChannelManager.GetChannelName(SiteId, channelId)}");
 
-                    PageUtilsEx.Redirect(GetRedirectUrl(SiteId, channelId));
+                    FxUtils.Page.Redirect(GetRedirectUrl(SiteId, channelId));
                     return;
                 }
             }

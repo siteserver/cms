@@ -74,7 +74,7 @@ namespace SiteServer.CMS.DataCache.Content
                     CountCache.Add(tableName, contentInfoToUpdate);
                 }
             }
-            
+
             dict[contentInfoToUpdate.Id] = contentInfoToUpdate;
 
             StlContentCache.ClearCache();
@@ -83,8 +83,8 @@ namespace SiteServer.CMS.DataCache.Content
         public static List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();
-            
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
@@ -98,13 +98,13 @@ namespace SiteServer.CMS.DataCache.Content
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
 
                 var column = new ContentColumn
                 {
                     AttributeName = styleInfo.AttributeName,
                     DisplayName = styleInfo.DisplayName,
-                    InputType = styleInfo.InputType
+                    InputType = styleInfo.Type
                 };
                 if (styleInfo.AttributeName == ContentAttribute.Title)
                 {
@@ -276,13 +276,13 @@ namespace SiteServer.CMS.DataCache.Content
 
             //引用链接，不需要生成内容页；引用内容，需要生成内容页；
             if (contentInfo.ReferenceId > 0 &&
-                ETranslateContentTypeUtils.GetEnumType(contentInfo.GetString(ContentAttribute.TranslateContentType)) !=
+                ETranslateContentTypeUtils.GetEnumType(contentInfo.TranslateContentType) !=
                 ETranslateContentType.ReferenceContent)
             {
                 return false;
             }
-            
-            return channelInfo.Additional.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.IsChecked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
+
+            return channelInfo.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.Checked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
         }
     }
 }

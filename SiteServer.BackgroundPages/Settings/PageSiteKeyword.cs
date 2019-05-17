@@ -59,10 +59,10 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var keywordId = SqlUtils.EvalInt(e.Item.DataItem, nameof(KeywordInfo.Id));
-            var keyword = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Keyword));
-            var alternative = SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Alternative));
-            var grade = EKeywordGradeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Grade)));
+            var keywordId = FxUtils.EvalInt(e.Item.DataItem, nameof(KeywordInfo.Id));
+            var keyword = FxUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Keyword));
+            var alternative = FxUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.Alternative));
+            var grade = EKeywordGradeUtils.GetEnumType(FxUtils.EvalString(e.Item.DataItem, nameof(KeywordInfo.KeywordGrade)));
 
             var ltlKeyword = (Literal)e.Item.FindControl("ltlKeyword");
             var ltlAlternative = (Literal)e.Item.FindControl("ltlAlternative");
@@ -106,7 +106,7 @@ namespace SiteServer.BackgroundPages.Settings
             var filePath = PathUtils.GetTemporaryFilesPath("敏感词.txt");
             FileUtils.DeleteFileIfExists(filePath);
             FileUtils.WriteText(filePath, ECharset.utf_8, sbContent.ToString());
-            PageUtilsEx.Download(Page.Response, filePath);
+            FxUtils.Page.Download(Page.Response, filePath);
         }
     }
 }

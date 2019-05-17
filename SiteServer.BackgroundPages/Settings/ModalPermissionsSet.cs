@@ -54,7 +54,7 @@ namespace SiteServer.BackgroundPages.Settings
             var adminInfo = AdminManager.GetAdminInfoByUserName(_userName);
             var siteIdList = TranslateUtils.StringCollectionToIntList(adminInfo.SiteIdCollection);
 
-            SiteManager.AddListItems(CblSiteId);
+            ControlUtils.SiteUI.AddListItems(CblSiteId);
             ControlUtils.SelectMultiItems(CblSiteId, siteIdList);
 
             ListBoxDataBind();

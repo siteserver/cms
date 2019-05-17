@@ -24,11 +24,11 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-			PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
@@ -47,27 +47,27 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             FxUtils.AddListItems(RblIsCrossSiteTransChecked, "无需审核", "需要审核");
-            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.Additional.IsCrossSiteTransChecked.ToString());
+            ControlUtils.SelectSingleItem(RblIsCrossSiteTransChecked, SiteInfo.IsCrossSiteTransChecked.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-		    if (!Page.IsPostBack || !Page.IsValid) return;
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-		    SiteInfo.Additional.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
-				
-		    try
-		    {
-		        DataProvider.SiteDao.Update(SiteInfo);
+            SiteInfo.IsCrossSiteTransChecked = TranslateUtils.ToBool(RblIsCrossSiteTransChecked.SelectedValue);
 
-		        AuthRequest.AddSiteLog(SiteId, "修改默认跨站转发设置");
+            try
+            {
+                DataProvider.SiteDao.Update(SiteInfo);
 
-		        SuccessMessage("默认跨站转发设置修改成功！");
-		    }
-		    catch(Exception ex)
-		    {
-		        FailMessage(ex, "默认跨站转发设置修改失败！");
-		    }
-		}
-	}
+                AuthRequest.AddSiteLog(SiteId, "修改默认跨站转发设置");
+
+                SuccessMessage("默认跨站转发设置修改成功！");
+            }
+            catch (Exception ex)
+            {
+                FailMessage(ex, "默认跨站转发设置修改失败！");
+            }
+        }
+    }
 }

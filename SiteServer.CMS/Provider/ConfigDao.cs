@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Dapper;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Apis;
@@ -32,18 +31,6 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(ConfigInfo configInfo)
         {
-            //var sqlString =
-            //    $"INSERT INTO {TableName} ({nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}) VALUES (@{nameof(ConfigInfo.IsInitialized)}, @{nameof(ConfigInfo.DatabaseVersion)}, @{nameof(ConfigInfo.UpdateDate)}, @{nameof(ConfigInfo.SystemConfig)})";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
-            //    GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
-            //    GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
-            //    GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString())
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             configInfo.Id = _repository.Insert(configInfo);
             if (configInfo.Id > 0)
             {
@@ -55,19 +42,6 @@ namespace SiteServer.CMS.Provider
 
         public bool Update(ConfigInfo configInfo)
         {
-            //var sqlString =
-            //    $"UPDATE {TableName} SET {nameof(ConfigInfo.IsInitialized)} = @{nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}= @{nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}= @{nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)}= @{nameof(ConfigInfo.SystemConfig)} WHERE {nameof(ConfigInfo.Id)} = @{nameof(ConfigInfo.Id)}";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter($"@{nameof(ConfigInfo.IsInitialized)}", info.IsInitialized.ToString()),
-            //    GetParameter($"@{nameof(ConfigInfo.DatabaseVersion)}", info.DatabaseVersion),
-            //    GetParameter($"@{nameof(ConfigInfo.UpdateDate)}",info.UpdateDate),
-            //    GetParameter($"@{nameof(ConfigInfo.SystemConfig)}",info.SystemConfigInfo.ToString()),
-            //    GetParameter($"@{nameof(ConfigInfo.Id)}", info.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
             var updated = _repository.Update(configInfo);
             if (updated)
             {
@@ -81,15 +55,6 @@ namespace SiteServer.CMS.Provider
         {
             try
             {
-                //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.IsInitialized)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
-                //{
-                //    if (rdr.Read())
-                //    {
-                //        isInitialized = TranslateUtils.ToBool(DatabaseApi.GetString(rdr, 0));
-                //    }
-                //    rdr.Close();
-                //}
-
                 var isInitialized = _repository.Get<string>(Q
                     .Select(Attr.IsInitialized)
                     .OrderBy(Attr.Id));
@@ -104,46 +69,8 @@ namespace SiteServer.CMS.Provider
             return false;
         }
 
-        //public string GetDatabaseVersion()
-        //{
-        //    try
-        //    {
-        //        //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.DatabaseVersion)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
-        //        //{
-        //        //    if (rdr.Read())
-        //        //    {
-        //        //        databaseVersion = DatabaseApi.GetString(rdr, 0);
-        //        //    }
-        //        //    rdr.Close();
-        //        //}
-        //        return GetValue<string>(Q
-        //            .Select(Attr.DatabaseVersion)
-        //            .OrderBy(Attr.Id));
-        //    }
-        //    catch
-        //    {
-        //        // ignored
-        //    }
-
-        //    return string.Empty;
-        //}
-
         public ConfigInfo GetConfigInfo()
         {
-            //ConfigInfo info = null;
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, $"SELECT {nameof(ConfigInfo.Id)}, {nameof(ConfigInfo.IsInitialized)}, {nameof(ConfigInfo.DatabaseVersion)}, {nameof(ConfigInfo.UpdateDate)}, {nameof(ConfigInfo.SystemConfig)} FROM {TableName} ORDER BY {nameof(ConfigInfo.Id)}"))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        var i = 0;
-            //        info = new ConfigInfo(DatabaseApi.GetInt(rdr, i++), TranslateUtils.ToBool(DatabaseApi.GetString(rdr, i++)), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetDateTime(rdr, i++), DatabaseApi.GetString(rdr, i));
-            //    }
-            //    rdr.Close();
-            //}
-
-            //return info;
-
             ConfigInfo info = null;
 
             try
@@ -158,8 +85,6 @@ namespace SiteServer.CMS.Provider
             }
 
             return info;
-
-            //return Get(new GenericQuery().OrderBy(Attr.Id));
         }
     }
 }
@@ -175,7 +100,7 @@ namespace SiteServer.CMS.Provider
 
 //namespace SiteServer.CMS.Database.Repositories
 //{
-//    public class ConfigDao : DataProviderBase
+//    public class ConfigDao
 //	{
 //        public override string TableName => "siteserver_Config";
 

@@ -15,15 +15,15 @@ namespace SiteServer.BackgroundPages.Cms
 
         protected override object Process()
         {
-            var fileName = AuthRequest.HttpRequest["fileName"];
+            var fileName = AuthRequest.GetPostString("fileName");
 
-            var fileCount = AuthRequest.HttpRequest.Files.Count;
+            var fileCount = AuthRequest.Files.Count;
 
             string filePath = null;
 
             if (fileCount > 0)
             {
-                var file = AuthRequest.HttpRequest.Files[0];
+                var file = AuthRequest.Files[0];
 
                 //var fileName = Path.GetFileName(file.FileName);
                 //var path = context.Server.MapPath("~/upload/" + fileName);

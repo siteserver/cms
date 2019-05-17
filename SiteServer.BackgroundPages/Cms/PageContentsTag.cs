@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
 
                 var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
-                
+
                 var tagList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags, ' ');
                 if (tagList.Contains(_tag))
                 {
@@ -52,7 +52,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagList, " ");
-                DataProvider.ContentDao.Update(SiteInfo, channelInfo, contentInfo);
+                channelInfo.ContentDao.Update(SiteInfo, channelInfo, contentInfo);
 
                 TagUtils.RemoveTags(SiteId, contentId);
 
@@ -63,8 +63,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentTag(SiteInfo.TableName, _tag, siteId);
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
+            SpContents.SelectCommand = SiteInfo.ContentDao.GetSqlStringByContentTag(_tag, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
@@ -79,14 +79,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var ltlItemTitle = (Literal) e.Item.FindControl("ltlItemTitle");
-            var ltlItemChannel = (Literal) e.Item.FindControl("ltlItemChannel");
-            var ltlItemAddDate = (Literal) e.Item.FindControl("ltlItemAddDate");
-            var ltlItemStatus = (Literal) e.Item.FindControl("ltlItemStatus");
-            var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
-            var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
+            var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
+            var ltlItemChannel = (Literal)e.Item.FindControl("ltlItemChannel");
+            var ltlItemAddDate = (Literal)e.Item.FindControl("ltlItemAddDate");
+            var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
+            var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
+            var ltlItemDeleteUrl = (Literal)e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var dataView = (DataRowView)e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataView));
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageContentTags.GetRedirectUrl(SiteId));
+            FxUtils.Page.Redirect(PageContentTags.GetRedirectUrl(SiteId));
         }
     }
 }

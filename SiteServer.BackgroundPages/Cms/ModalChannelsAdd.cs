@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ReturnUrl");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
@@ -78,13 +78,20 @@ namespace SiteServer.BackgroundPages.Cms
                 PhContentRelatedPluginIds.Visible = false;
             }
 
-            DdlChannelTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ChannelTemplate);
-            DdlContentTemplateId.DataSource = DataProvider.TemplateDao.GetDataSourceByType(SiteId, TemplateType.ContentTemplate);
+            var templateInfoList = TemplateManager.GetTemplateInfoList(SiteId, TemplateType.ChannelTemplate);
+            templateInfoList.ForEach(templateInfo =>
+            {
+                DdlChannelTemplateId.Items.Add(new ListItem(templateInfo.TemplateName, templateInfo.Id.ToString()));
+            });
 
-            DdlChannelTemplateId.DataBind();
+            templateInfoList = TemplateManager.GetTemplateInfoList(SiteId, TemplateType.ContentTemplate);
+            templateInfoList.ForEach(templateInfo =>
+            {
+                DdlContentTemplateId.Items.Add(new ListItem(templateInfo.TemplateName, templateInfo.Id.ToString()));
+            });
+
             DdlChannelTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
             DdlChannelTemplateId.Items[0].Selected = true;
-            DdlContentTemplateId.DataBind();
             DdlContentTemplateId.Items.Insert(0, new ListItem("<默认>", "0"));
             DdlContentTemplateId.Items[0].Selected = true;
 
@@ -113,7 +120,7 @@ namespace SiteServer.BackgroundPages.Cms
                 var insertedChannelIdHashtable = new Hashtable { [1] = parentChannelId }; //key为栏目的级别，1为第一级栏目
 
                 var nodeNameArray = TbNodeNames.Text.Split('\n');
-                List<string> nodeIndexNameList = null;
+                IList<string> nodeIndexNameList = null;
                 foreach (var item in nodeNameArray)
                 {
                     if (string.IsNullOrEmpty(item)) continue;
@@ -176,7 +183,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, parentChannelId, 0, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
+                AuthRequest.AddChannelLog(SiteId, parentChannelId, "快速添加栏目", $"父栏目:{ChannelManager.GetChannelName(SiteId, parentChannelId)},栏目:{TbNodeNames.Text.Replace('\n', ',')}");
 
                 isChanged = true;
             }

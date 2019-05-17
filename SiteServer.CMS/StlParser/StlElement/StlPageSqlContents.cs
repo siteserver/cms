@@ -106,7 +106,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var maxPage = _listInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.SiteInfo.Additional.CreateStaticMaxPage;
+                    maxPage = _pageInfo.SiteInfo.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -129,7 +129,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     return StlSqlContents.ParseElement(_pageInfo, _contextInfo, _listInfo, sqlList);
 
-                    // var dataSource = DataProvider.DatabaseDao.GetDataSource(pageSqlString);
+                    // var dataSource = DatabaseUtils.GetDataSource(pageSqlString);
 
                     // if (_listInfo.Layout == ELayout.None)
                     // {

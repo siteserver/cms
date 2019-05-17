@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class ModalUserPassword : BasePage
+    public class ModalUserPassword : BasePage
     {
-		public Literal LtlUserName;
-		public TextBox TbPassword;
+        public Literal LtlUserName;
+        public TextBox TbPassword;
 
         private string _userName;
 
@@ -20,8 +21,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {"userName", userName}
             }), 450, 290);
         }
-        
-		public void Page_Load(object sender, EventArgs e)
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -58,11 +59,11 @@ namespace SiteServer.BackgroundPages.Settings
 
                 LayerUtils.Close(Page);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FailMessage(ex, "重设密码失败！");
             }
         }
 
-	}
+    }
 }

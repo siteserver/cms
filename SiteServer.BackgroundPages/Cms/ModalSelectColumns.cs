@@ -33,12 +33,12 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
 
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
+            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             _pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(SiteInfo, channelInfo));
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (styleInfo.Type == InputType.TextEditor) continue;
 
                 var listitem = new ListItem($"{styleInfo.DisplayName}({styleInfo.AttributeName})", styleInfo.AttributeName);
                 if (styleInfo.AttributeName == ContentAttribute.Title)
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             var channelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
             var attributesOfDisplay = ControlUtils.SelectedItemsValueToStringCollection(CblDisplayAttributes.Items);
-            channelInfo.Additional.ContentAttributesOfDisplay = attributesOfDisplay;
+            channelInfo.ContentAttributesOfDisplay = attributesOfDisplay;
 
             DataProvider.ChannelDao.Update(channelInfo);
 

@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Editor;
 using SiteServer.CMS.Api.Sys.Editors;
-using SiteServer.CMS.UEditor;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys

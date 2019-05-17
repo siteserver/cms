@@ -39,13 +39,13 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (IsPostBack) return;
 
-            EKeywordGradeUtils.AddListItems(DdlGrade);
+            ControlUtils.KeywordGradeUI.AddListItems(DdlGrade);
             if (_keywordId <= 0) return;
 
             var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
             TbKeyword.Text = keywordInfo.Keyword;
             TbAlternative.Text = keywordInfo.Alternative;
-            ControlUtils.SelectSingleItem(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.Grade));
+            ControlUtils.SelectSingleItem(DdlGrade, EKeywordGradeUtils.GetValue(keywordInfo.KeywordGrade));
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace SiteServer.BackgroundPages.Settings
                     var keywordInfo = DataProvider.KeywordDao.GetKeywordInfo(_keywordId);
                     keywordInfo.Keyword = TbKeyword.Text.Trim();
                     keywordInfo.Alternative = TbAlternative.Text.Trim();
-                    keywordInfo.Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
+                    keywordInfo.KeywordGrade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue);
                     DataProvider.KeywordDao.Update(keywordInfo);
 
                     isChanged = true;
@@ -83,7 +83,7 @@ namespace SiteServer.BackgroundPages.Settings
                         {
                             Keyword = TbKeyword.Text.Trim(),
                             Alternative = TbAlternative.Text.Trim(),
-                            Grade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue)
+                            KeywordGrade = EKeywordGradeUtils.GetEnumType(DdlGrade.SelectedValue)
                         };
                         DataProvider.KeywordDao.Insert(keywordInfo);
                         isChanged = true;

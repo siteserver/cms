@@ -43,7 +43,7 @@ namespace SiteServer.Utils
         {
             if (string.IsNullOrEmpty(applicationPath) || StringUtils.Equals(applicationPath, "/"))
             {
-                applicationPath = "/";
+                ApplicationPath = "/";
             }
             else
             {

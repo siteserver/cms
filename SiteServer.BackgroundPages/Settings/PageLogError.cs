@@ -11,17 +11,17 @@ using SiteServer.CMS.Plugin;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageLogError : BasePage
-	{
-	    public DropDownList DdlCategory;
+    public class PageLogError : BasePage
+    {
+        public DropDownList DdlCategory;
         public DropDownList DdlPluginId;
         public DateTimeTextBox TbDateFrom;
         public DateTimeTextBox TbDateTo;
         public TextBox TbKeyword;
         public Repeater RptContents;
         public SqlPager SpContents;
-		public Button BtnDelete;
-		public Button BtnDeleteAll;
+        public Button BtnDelete;
+        public Button BtnDeleteAll;
         public Literal LtlState;
         public Button BtnSetting;
 
@@ -137,17 +137,17 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(ErrorLogInfo.Id));
-            var addDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLogInfo.AddDate));
-            var message = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Message));
-            var summary = SqlUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Summary));
+            var id = FxUtils.EvalInt(e.Item.DataItem, nameof(ErrorLogInfo.Id));
+            var addDate = FxUtils.EvalDateTime(e.Item.DataItem, nameof(ErrorLogInfo.AddDate));
+            var message = FxUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Message));
+            var summary = FxUtils.EvalString(e.Item.DataItem, nameof(ErrorLogInfo.Summary));
 
             var ltlId = (Literal)e.Item.FindControl("ltlId");
             var ltlAddDate = (Literal)e.Item.FindControl("ltlAddDate");
             var ltlMessage = (Literal)e.Item.FindControl("ltlMessage");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlId.Text = $@"<a href=""{PageUtilsEx.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
+            ltlId.Text = $@"<a href=""{FxUtils.Page.GetErrorPageUrl(id)}"" target=""_blank"">{id}</a>";
             ltlAddDate.Text = DateUtils.GetDateAndTimeString(addDate);
             ltlMessage.Text = message;
             ltlSummary.Text = summary;
@@ -157,16 +157,16 @@ namespace SiteServer.BackgroundPages.Settings
             }
         }
 
-	    public void Search_OnClick(object sender, EventArgs e)
-	    {
-	        PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
-	        {
-	            {"category", DdlCategory.SelectedValue},
-	            {"pluginId", DdlPluginId.SelectedValue},
-	            {"keyword", TbKeyword.Text},
-	            {"dateFrom", TbDateFrom.Text},
-	            {"dateTo", TbDateTo.Text}
-	        }));
-	    }
-	}
+        public void Search_OnClick(object sender, EventArgs e)
+        {
+            FxUtils.Page.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogError), new NameValueCollection
+            {
+                {"category", DdlCategory.SelectedValue},
+                {"pluginId", DdlPluginId.SelectedValue},
+                {"keyword", TbKeyword.Text},
+                {"dateFrom", TbDateFrom.Text},
+                {"dateTo", TbDateTo.Text}
+            }));
+        }
+    }
 }

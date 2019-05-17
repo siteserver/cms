@@ -20,10 +20,10 @@ namespace SiteServer.BackgroundPages.Settings
         public SqlPager SpContents;
         public Literal LtlState;
         public Button BtnDelete;
-		public Button BtnDeleteAll;
+        public Button BtnDeleteAll;
         public Button BtnSetting;
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -120,16 +120,16 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.UserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(LogInfo.AddDate)));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.IpAddress));
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Action));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Summary));
+            ltlUserName.Text = FxUtils.EvalString(e.Item.DataItem, nameof(LogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(FxUtils.EvalDateTime(e.Item.DataItem, nameof(LogInfo.AddDate)));
+            ltlIpAddress.Text = FxUtils.EvalString(e.Item.DataItem, nameof(LogInfo.IpAddress));
+            ltlAction.Text = FxUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Action));
+            ltlSummary.Text = FxUtils.EvalString(e.Item.DataItem, nameof(LogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogAdmin), new NameValueCollection
             {
                 {"UserName", TbUserName.Text},
                 {"Keyword", TbKeyword.Text},
@@ -137,5 +137,5 @@ namespace SiteServer.BackgroundPages.Settings
                 {"DateTo", TbDateTo.Text}
             }));
         }
-	}
+    }
 }

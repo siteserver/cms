@@ -7,8 +7,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office
 {
-	public static class TxtObject
-	{
+    public static class TxtObject
+    {
         public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
@@ -35,7 +35,7 @@ namespace SiteServer.CMS.Core.Office
                                 {ContentAttribute.LastEditDate, DateTime.Now}
                             };
                             var contentInfo = new ContentInfo(dict);
-                            contentInfo.Set(BackgroundContentAttribute.Content, StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim()));
+                            contentInfo.Content = StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim());
 
                             contentInfoList.Add(contentInfo);
                         }
@@ -49,5 +49,5 @@ namespace SiteServer.CMS.Core.Office
 
             return contentInfoList;
         }
-	}
+    }
 }

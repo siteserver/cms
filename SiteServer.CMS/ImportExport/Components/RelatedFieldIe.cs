@@ -6,19 +6,19 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.ImportExport.Components
 {
-	internal class RelatedFieldIe
-	{
-		private readonly int _siteId;
-		private readonly string _directoryPath;
+    internal class RelatedFieldIe
+    {
+        private readonly int _siteId;
+        private readonly string _directoryPath;
 
         public RelatedFieldIe(int siteId, string directoryPath)
-		{
-			_siteId = siteId;
-			_directoryPath = directoryPath;
-		}
+        {
+            _siteId = siteId;
+            _directoryPath = directoryPath;
+        }
 
         public void ExportRelatedField(RelatedFieldInfo relatedFieldInfo)
-		{
+        {
             var filePath = _directoryPath + PathUtils.SeparatorChar + relatedFieldInfo.Id + ".xml";
 
             var feed = ExportRelatedFieldInfo(relatedFieldInfo);
@@ -26,15 +26,15 @@ namespace SiteServer.CMS.ImportExport.Components
             var relatedFieldItemInfoList = DataProvider.RelatedFieldItemDao.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
-			{
+            {
                 AddAtomEntry(feed, relatedFieldItemInfo, 1);
-			}
-			feed.Save(filePath);
-		}
+            }
+            feed.Save(filePath);
+        }
 
         private static AtomFeed ExportRelatedFieldInfo(RelatedFieldInfo relatedFieldInfo)
-		{
-			var feed = AtomUtility.GetEmptyFeed();
+        {
+            var feed = AtomUtility.GetEmptyFeed();
 
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Id), "RelatedFieldID" }, relatedFieldInfo.Id.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" }, relatedFieldInfo.Title);
@@ -43,12 +43,12 @@ namespace SiteServer.CMS.ImportExport.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes), relatedFieldInfo.Prefixes);
             AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes), relatedFieldInfo.Suffixes);
 
-			return feed;
-		}
+            return feed;
+        }
 
         private static void AddAtomEntry(AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
-		{
-			var entry = AtomUtility.GetEmptyEntry();
+        {
+            var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.Id), "ID" }, relatedFieldItemInfo.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.RelatedFieldId), "RelatedFieldID" }, relatedFieldItemInfo.RelatedFieldId.ToString());
@@ -66,15 +66,15 @@ namespace SiteServer.CMS.ImportExport.Components
             {
                 AddAtomEntry(feed, itemInfo, level + 1);
             }
-		}
+        }
 
-		public void ImportRelatedField(bool overwrite)
-		{
-			if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
-			var filePaths = DirectoryUtils.GetFilePaths(_directoryPath);
+        public void ImportRelatedField(bool overwrite)
+        {
+            if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
+            var filePaths = DirectoryUtils.GetFilePaths(_directoryPath);
 
-			foreach (var filePath in filePaths)
-			{
+            foreach (var filePath in filePaths)
+            {
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
                 var title = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" });
@@ -82,7 +82,14 @@ namespace SiteServer.CMS.ImportExport.Components
                 var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes));
                 var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes));
 
-                var relatedFieldInfo = new RelatedFieldInfo(0, title, _siteId, totalLevel, prefixes, suffixes);
+                var relatedFieldInfo = new RelatedFieldInfo
+                {
+                    Title = title,
+                    SiteId = _siteId,
+                    TotalLevel = totalLevel,
+                    Prefixes = prefixes,
+                    Suffixes = suffixes,
+                };
 
                 var srcRelatedFieldInfo = DataProvider.RelatedFieldDao.GetRelatedFieldInfo(_siteId, title);
                 if (srcRelatedFieldInfo != null)
@@ -102,8 +109,8 @@ namespace SiteServer.CMS.ImportExport.Components
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
                 var lastInsertedId = 0;
-				foreach (AtomEntry entry in feed.Entries)
-				{
+                foreach (AtomEntry entry in feed.Entries)
+                {
                     var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemName));
                     var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemValue));
                     var level = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Level"));
@@ -113,13 +120,20 @@ namespace SiteServer.CMS.ImportExport.Components
                         parentId = level != lastInertedLevel ? lastInsertedId : lastInsertedParentId;
                     }
 
-                    var relatedFieldItemInfo = new RelatedFieldItemInfo(0, relatedFieldId, itemName, itemValue, parentId, 0);
-                    lastInsertedId = DataProvider.RelatedFieldItemDao.Insert(relatedFieldItemInfo);
+                    var itemInfo = new RelatedFieldItemInfo
+                    {
+                        RelatedFieldId = relatedFieldId,
+                        ItemName = itemName,
+                        ItemValue = itemValue,
+                        ParentId = parentId
+                    };
+
+                    lastInsertedId = DataProvider.RelatedFieldItemDao.Insert(itemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
-				}
-			}
-		}
+                }
+            }
+        }
 
-	}
+    }
 }

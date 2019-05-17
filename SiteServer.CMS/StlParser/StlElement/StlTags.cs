@@ -11,7 +11,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "标签", Description = "通过 stl:tags 标签在模板中显示内容标签")]
     public class StlTags
-	{
+    {
         private StlTags() { }
         public const string ElementName = "stl:tags";
 
@@ -32,16 +32,16 @@ namespace SiteServer.CMS.StlParser.StlElement
 
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var tagLevel = 1;
+        {
+            var tagLevel = 1;
             var totalNum = 0;
             var isOrderByCount = false;
             var theme = "default";
             var isInnerHtml = !string.IsNullOrEmpty(contextInfo.InnerHtml);
 
-		    foreach (var name in contextInfo.Attributes.AllKeys)
-		    {
-		        var value = contextInfo.Attributes[name];
+            foreach (var name in contextInfo.Attributes.AllKeys)
+            {
+                var value = contextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TagLevel))
                 {
@@ -66,7 +66,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(isInnerHtml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
-		}
+        }
 
         private static string ParseImpl(bool isInnerHtml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
@@ -117,7 +117,13 @@ namespace SiteServer.CMS.StlParser.StlElement
                         }
                         if (!isAdd)
                         {
-                            var tagInfo = new TagInfo(0, pageInfo.SiteId, contentId.ToString(), tagName, 1);
+                            var tagInfo = new TagInfo
+                            {
+                                SiteId = pageInfo.SiteId,
+                                ContentIdCollection = contentId.ToString(),
+                                Tag = tagName,
+                                UseNum = 1
+                            };
                             tagInfoList2.Add(tagInfo);
                         }
                     }
@@ -153,5 +159,5 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             return tagsBuilder.ToString();
         }
-	}
+    }
 }

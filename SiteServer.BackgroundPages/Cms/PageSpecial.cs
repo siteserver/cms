@@ -4,10 +4,11 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageSpecial : BasePageCms
+    public class PageSpecial : BasePageCms
     {
         protected TextBox TbKeyword;
         protected Repeater RptContents;
@@ -22,7 +23,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             var specialId = AuthRequest.GetQueryInt("specialId");
             var keyword = AuthRequest.GetQueryString("keyword");
@@ -50,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var specialInfo = SpecialManager.GetSpecialInfo(SiteId, specialId);
                     var directoryPath = SpecialManager.GetSpecialDirectoryPath(SiteInfo, specialInfo.Url);
                     var zipFilePath = SpecialManager.GetSpecialZipFilePath(directoryPath);
-                    PageUtilsEx.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
+                    FxUtils.Page.Download(Response, zipFilePath, $"{specialInfo.Title}.zip");
                     return;
                 }
             }
@@ -77,7 +78,10 @@ namespace SiteServer.BackgroundPages.Cms
 
             ltlTitle.Text = $@"<a href=""{SpecialManager.GetSpecialUrl(SiteInfo, specialInfo.Url)}"" target=""_blank"">{specialInfo.Title}</a>";
             ltlUrl.Text = specialInfo.Url;
-            ltlAddDate.Text = specialInfo.AddDate.ToString("yyyy-MM-dd HH:mm");
+            if (specialInfo.AddDate != null)
+            {
+                ltlAddDate.Text = specialInfo.AddDate.Value.ToString("yyyy-MM-dd HH:mm");
+            }
 
             ltlActions.Text = $@"
 <a class=""m-r-10"" href=""javascript:;"" onclick=""{ModalSpecialAdd.GetOpenWindowString(SiteId, specialInfo.Id)}"">编辑</a>

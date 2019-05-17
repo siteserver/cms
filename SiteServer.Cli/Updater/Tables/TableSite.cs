@@ -85,7 +85,7 @@ namespace SiteServer.Cli.Updater.Tables
                 {nameof(SiteInfo.SiteName), nameof(PublishmentSystemName)},
                 {nameof(SiteInfo.TableName), nameof(AuxiliaryTableForContent)},
                 {nameof(SiteInfo.SiteDir), nameof(PublishmentSystemDir)},
-                {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
+                {nameof(SiteInfo.Root), nameof(IsHeadquarters)},
                 {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };
 

@@ -18,9 +18,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static SortedList<string, string> TypeList => new SortedList<string, string>
         {
-            {BackgroundContentAttribute.ImageUrl, "遍历内容的图片字段"},
-            {BackgroundContentAttribute.VideoUrl, "遍历内容的视频字段"},
-            {BackgroundContentAttribute.FileUrl, "遍历内容的附件字段"}
+            {ContentAttribute.ImageUrl, "遍历内容的图片字段"},
+            {ContentAttribute.VideoUrl, "遍历内容的视频字段"},
+            {ContentAttribute.FileUrl, "遍历内容的附件字段"}
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
@@ -37,7 +37,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var type = listInfo.Others.Get(Type);
             if (string.IsNullOrEmpty(type))
             {
-                type = BackgroundContentAttribute.ImageUrl;
+                type = ContentAttribute.ImageUrl;
             }
 
             var contentInfo = contextInfo.ContentInfo;
@@ -45,13 +45,13 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             if (contentInfo != null)
             {
-                if (!string.IsNullOrEmpty(contentInfo.GetString(type)))
+                if (!string.IsNullOrEmpty(contentInfo.Get<string>(type)))
                 {
-                    valueList.Add(contentInfo.GetString(type));
+                    valueList.Add(contentInfo.Get<string>(type));
                 }
 
                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                var extendValues = contentInfo.GetString(extendAttributeName);
+                var extendValues = contentInfo.Get<string>(extendAttributeName);
                 if (!string.IsNullOrEmpty(extendValues))
                 {
                     foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))

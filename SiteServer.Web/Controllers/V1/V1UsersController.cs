@@ -28,7 +28,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var dict = request.GetPostObject<Dictionary<string, object>>();
 
                 var userInfo = new UserInfo();
@@ -43,7 +43,7 @@ namespace SiteServer.API.Controllers.V1
                 }
                 var password = request.GetPostString("password");
 
-                var userId = DataProvider.UserDao.Insert(userInfo, password, PageUtilsEx.GetIpAddress(), out var errorMessage);
+                var userId = DataProvider.UserDao.Insert(userInfo, password, request.IpAddress, out var errorMessage);
                 if (userId == 0)
                 {
                     return BadRequest(errorMessage);
@@ -66,7 +66,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -104,7 +104,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -135,7 +135,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -178,7 +178,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -231,7 +231,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
@@ -257,7 +257,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -291,7 +291,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var userInfo = UserManager.GetUserInfoByUserId(request.UserId);
                 request.UserLogout();
 
@@ -312,7 +312,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -342,7 +342,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -372,7 +372,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||

@@ -13,8 +13,8 @@ namespace SiteServer.CMS.Core.Create
         {
             foreach (var channelId in channelIdList)
             {
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var contentIdList = channelInfo.ContentDao.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
                     foreach (var contentId in contentIdList)
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.Core.Create
             }
         }
 
-        public static void DeleteContents(SiteInfo siteInfo, int channelId, List<int> contentIdList)
+        public static void DeleteContents(SiteInfo siteInfo, int channelId, IList<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -46,12 +46,12 @@ namespace SiteServer.CMS.Core.Create
         {
             foreach (var channelId in channelIdList)
             {
+                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
                 var filePath = PathUtility.GetChannelPageFilePath(siteInfo, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-                var contentIdList = DataProvider.ContentDao.GetContentIdList(tableName, channelId);
+                var contentIdList = channelInfo.ContentDao.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
                     DeleteContents(siteInfo, channelId, contentIdList);
@@ -98,7 +98,7 @@ namespace SiteServer.CMS.Core.Create
             foreach (var templateId in templateIdList)
             {
                 var templateInfo = TemplateManager.GetTemplateInfo(siteInfo.Id, templateId);
-                if (templateInfo == null || templateInfo.TemplateType != TemplateType.FileTemplate)
+                if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
                 {
                     return;
                 }

@@ -20,7 +20,6 @@ namespace SiteServer.BackgroundPages.Cms
         public Repeater RptContents;
         public SqlPager SpContents;
 
-        private string _tableName;
         private ChannelInfo _channelInfo;
         private string _contentGroupName;
 
@@ -39,7 +38,6 @@ namespace SiteServer.BackgroundPages.Cms
             var siteId = AuthRequest.GetQueryInt("siteId");
             _contentGroupName = AuthRequest.GetQueryString("contentGroupName");
             _channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-            _tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
 
             if (AuthRequest.IsQueryExists("remove"))
             {
@@ -53,7 +51,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 contentInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupList);
-                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                 AuthRequest.AddSiteLog(SiteId, "移除内容", $"内容:{contentInfo.Title}");
                 SuccessMessage("移除成功");
                 AddWaitAndRedirectScript(PageUrl);
@@ -61,8 +59,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             SpContents.ControlToPaginate = RptContents;
             RptContents.ItemDataBound += RptContents_ItemDataBound;
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
-            SpContents.SelectCommand = DataProvider.ContentDao.GetSqlStringByContentGroup(_tableName, _contentGroupName, siteId);
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
+            SpContents.SelectCommand = _channelInfo.ContentDao.GetSqlStringByContentGroup(_contentGroupName, siteId);
             SpContents.SortField = ContentAttribute.AddDate;
             SpContents.SortMode = SortMode.DESC;
 
@@ -77,14 +75,15 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var ltlItemTitle = (Literal) e.Item.FindControl("ltlItemTitle");
-            var ltlItemChannel = (Literal) e.Item.FindControl("ltlItemChannel");
-            var ltlItemAddDate = (Literal) e.Item.FindControl("ltlItemAddDate");
-            var ltlItemStatus = (Literal) e.Item.FindControl("ltlItemStatus");
-            var ltlItemEditUrl = (Literal) e.Item.FindControl("ltlItemEditUrl");
-            var ltlItemDeleteUrl = (Literal) e.Item.FindControl("ltlItemDeleteUrl");
+            var ltlItemTitle = (Literal)e.Item.FindControl("ltlItemTitle");
+            var ltlItemChannel = (Literal)e.Item.FindControl("ltlItemChannel");
+            var ltlItemAddDate = (Literal)e.Item.FindControl("ltlItemAddDate");
+            var ltlItemStatus = (Literal)e.Item.FindControl("ltlItemStatus");
+            var ltlItemEditUrl = (Literal)e.Item.FindControl("ltlItemEditUrl");
+            var ltlItemDeleteUrl = (Literal)e.Item.FindControl("ltlItemDeleteUrl");
 
-            var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+            var dataView = (DataRowView)e.Item.DataItem;
+            var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataView));
 
             ltlItemTitle.Text = WebUtils.GetContentTitle(SiteInfo, contentInfo, PageUrl);
             ltlItemChannel.Text = ChannelManager.GetChannelNameNavigation(SiteId, contentInfo.ChannelId);
@@ -126,7 +125,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageContentGroup.GetRedirectUrl(SiteId));
+            FxUtils.Page.Redirect(PageContentGroup.GetRedirectUrl(SiteId));
         }
     }
 }

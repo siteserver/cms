@@ -8,9 +8,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "播放音频", Description = "通过 stl:audio 标签在模板中显示并播放音频文件")]
     public class StlAudio
-	{
+    {
         private StlAudio() { }
-		public const string ElementName = "stl:audio";
+        public const string ElementName = "stl:audio";
 
         [StlAttribute(Title = "指定存储音频地址的内容字段，默认为VideoUrl")]
         private const string Type = nameof(Type);
@@ -27,9 +27,9 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-	    public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-            var type = BackgroundContentAttribute.VideoUrl;
+        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        {
+            var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
             var isAutoPlay = false;
             var isPreLoad = true;
@@ -62,7 +62,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(pageInfo, contextInfo, type, playUrl, isAutoPlay, isPreLoad, isLoop);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
         {
@@ -75,34 +75,34 @@ namespace SiteServer.CMS.StlParser.StlElement
                     if (contextInfo.ContentInfo == null)
                     {
                         //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, type);
+                        playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.VideoUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.VideoUrl);
+                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
+                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            if (!StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl))
+                            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
-                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, BackgroundContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(pageInfo.SiteInfo.TableName, contentId, BackgroundContentAttribute.FileUrl);
+                                //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
+                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.GetString(type);
+                        playUrl = contextInfo.ContentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl);
+                            playUrl = contextInfo.ContentInfo.VideoUrl;
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl);
+                            playUrl = contextInfo.ContentInfo.FileUrl;
                         }
                     }
                 }

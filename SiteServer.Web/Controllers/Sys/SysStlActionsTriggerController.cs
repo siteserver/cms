@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -19,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
 
             var siteId = request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);
@@ -95,7 +96,7 @@ namespace SiteServer.API.Controllers.Sys
 
                         parameters["__r"] = StringUtils.GetRandomInt(1, 10000).ToString();
 
-                        PageUtilsEx.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
+                        FxUtils.Page.Redirect(PageUtils.AddQueryString(redirectUrl, parameters));
                         return;
                     }
                 }
@@ -103,7 +104,7 @@ namespace SiteServer.API.Controllers.Sys
             catch
             {
                 var redirectUrl = PageUtility.GetIndexPageUrl(siteInfo, false);
-                PageUtilsEx.Redirect(redirectUrl);
+                FxUtils.Page.Redirect(redirectUrl);
                 return;
             }
 

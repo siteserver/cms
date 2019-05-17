@@ -50,7 +50,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {
-            var type = BackgroundContentAttribute.FileUrl;
+            var type = ContentAttribute.FileUrl;
             var no = 0;
             var src = string.Empty;
             var isFileName = false;
@@ -146,16 +146,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         var contentInfo = contextInfo.ContentInfo;
 
-                        if (!string.IsNullOrEmpty(contentInfo?.GetString(type)))
+                        if (!string.IsNullOrEmpty(contentInfo?.Get<string>(type)))
                         {
                             if (no <= 1)
                             {
-                                fileUrl = contentInfo.GetString(StringUtils.EqualsIgnoreCase(type, BackgroundContentAttribute.FileUrl) ? BackgroundContentAttribute.FileUrl : type);
+                                fileUrl = contentInfo.Get<string>(StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl) ? ContentAttribute.FileUrl : type);
                             }
                             else
                             {
                                 var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                                var extendValues = contentInfo.GetString(extendAttributeName);
+                                var extendValues = contentInfo.Get<string>(extendAttributeName);
                                 if (!string.IsNullOrEmpty(extendValues))
                                 {
                                     var index = 2;

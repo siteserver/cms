@@ -126,7 +126,6 @@ namespace SiteServer.CMS.ImportExport.Components
             if (channelInfo == null) return;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             var fileName = DataProvider.ChannelDao.GetOrderStringInSite(channelId);
 
@@ -137,7 +136,7 @@ namespace SiteServer.CMS.ImportExport.Components
             if (isSaveContents)
             {
                 var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxis);
-                var contentIdList = DataProvider.ContentDao.GetContentIdListChecked(tableName, channelId, orderByString);
+                var contentIdList = channelInfo.ContentDao.GetContentIdListChecked(channelId, orderByString);
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);

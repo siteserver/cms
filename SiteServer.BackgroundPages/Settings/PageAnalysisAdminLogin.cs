@@ -199,7 +199,7 @@ yArray.push('{GetGraphicYUser(adminNumDictionaryName, key)}');
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUrl);
+            FxUtils.Page.Redirect(PageUrl);
         }
 
         private string _pageUrl;

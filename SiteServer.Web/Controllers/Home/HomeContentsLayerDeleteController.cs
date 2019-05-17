@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -21,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -40,7 +42,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retval = new List<IDictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
@@ -69,7 +71,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -94,13 +96,11 @@ namespace SiteServer.API.Controllers.Home
                     DeleteManager.DeleteContents(siteInfo, channelId, contentIdList);
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 if (contentIdList.Count == 1)
                 {
                     var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                    request.AddSiteLog(siteId, channelId, contentId, "删除内容",
+                    var contentTitle = channelInfo.ContentDao.GetValue<string>(contentId, ContentAttribute.Title);
+                    request.AddContentLog(siteId, channelId, contentId, "删除内容",
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
                 }
                 else
@@ -109,7 +109,7 @@ namespace SiteServer.API.Controllers.Home
                         $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
                 }
 
-                DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+                channelInfo.ContentDao.UpdateTrashContents(siteId, channelId, contentIdList);
 
                 CreateManager.TriggerContentChangedEvent(siteId, channelId);
 

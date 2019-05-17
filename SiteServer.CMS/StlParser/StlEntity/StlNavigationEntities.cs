@@ -11,10 +11,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
 {
     [StlElement(Title = "导航实体", Description = "通过 {navigation.}  实体在模板中显示导航链接")]
     public class StlNavigationEntities
-	{
+    {
         private StlNavigationEntities()
-		{
-		}
+        {
+        }
 
         public const string EntityName = "navigation";
 
@@ -23,13 +23,13 @@ namespace SiteServer.CMS.StlParser.StlEntity
         public static string PreviousContent = "PreviousContent";
         public static string NextContent = "NextContent";
 
-	    public static SortedList<string, string> AttributeList => new SortedList<string, string>
-	    {
-	        {PreviousChannel, "上一栏目链接"},
-	        {NextChannel, "下一栏目链接"},
-	        {PreviousContent, "上一内容链接"},
-	        {NextContent, "下一内容链接"}
-	    };
+        public static SortedList<string, string> AttributeList => new SortedList<string, string>
+        {
+            {PreviousChannel, "上一栏目链接"},
+            {NextChannel, "下一栏目链接"},
+            {PreviousContent, "上一内容链接"},
+            {NextContent, "下一内容链接"}
+        };
 
         internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
         {
@@ -59,11 +59,10 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     {
                         var taxis = contextInfo.ContentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, contextInfo.ChannelId);
-                        var siblingContentId = StlContentCache.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
+                        var siblingContentId = StlContentCache.GetContentId(contextInfo.ChannelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, siblingContentId);
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelInfo, siblingContentId);
                             parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
                         }
                     }
@@ -81,5 +80,5 @@ namespace SiteServer.CMS.StlParser.StlEntity
 
             return parsedContent;
         }
-	}
+    }
 }

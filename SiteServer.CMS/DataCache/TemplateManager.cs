@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
@@ -9,8 +10,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache
 {
-	public static class TemplateManager
-	{
+    public static class TemplateManager
+    {
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(TemplateManager));
         private static readonly object SyncRoot = new object();
 
@@ -61,7 +62,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.TemplateType == templateType && templateInfo.TemplateName == templateName)
+                    if (templateInfo.Type == templateType && templateInfo.TemplateName == templateName)
                     {
                         info = templateInfo;
                         break;
@@ -81,7 +82,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.TemplateType == templateType && templateInfo.IsDefault)
+                    if (templateInfo.Type == templateType && templateInfo.Default)
                     {
                         info = templateInfo;
                         break;
@@ -92,7 +93,7 @@ namespace SiteServer.CMS.DataCache
             return info ?? new TemplateInfo
             {
                 SiteId = siteId,
-                TemplateType = templateType
+                Type = templateType
             };
         }
 
@@ -105,7 +106,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.TemplateType == templateType && templateInfo.IsDefault)
+                    if (templateInfo.Type == templateType && templateInfo.Default)
                     {
                         id = templateInfo.Id;
                         break;
@@ -125,7 +126,7 @@ namespace SiteServer.CMS.DataCache
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.TemplateType == templateType && templateInfo.TemplateName == templateName)
+                    if (templateInfo.Type == templateType && templateInfo.TemplateName == templateName)
                     {
                         id = templateInfo.Id;
                         break;
@@ -145,7 +146,7 @@ namespace SiteServer.CMS.DataCache
 
             foreach (var templateInfo in templateInfoDictionary.Values)
             {
-                if (templateInfo.TemplateType == TemplateType.FileTemplate)
+                if (templateInfo.Type == TemplateType.FileTemplate)
                 {
                     list.Add(templateInfo.Id);
                 }
@@ -154,7 +155,7 @@ namespace SiteServer.CMS.DataCache
             return list;
         }
 
-	    private static Dictionary<int, TemplateInfo> GetTemplateInfoDictionaryBySiteId(int siteId, bool flush = false)
+        private static Dictionary<int, TemplateInfo> GetTemplateInfoDictionaryBySiteId(int siteId, bool flush = false)
         {
             var dictionary = GetCacheDictionary();
 
@@ -175,6 +176,69 @@ namespace SiteServer.CMS.DataCache
                 }
             }
             return templateInfoDictionary;
+        }
+
+        public static List<TemplateInfo> GetTemplateInfoList(int siteId, TemplateType type)
+        {
+            var list = new List<TemplateInfo>();
+
+            var templateInfoDictionary = GetTemplateInfoDictionaryBySiteId(siteId);
+            if (templateInfoDictionary == null) return list;
+
+            foreach (var templateInfo in templateInfoDictionary.Values)
+            {
+                if (templateInfo.Type == type)
+                {
+                    list.Add(templateInfo);
+                }
+            }
+
+            return list.OrderBy(x => x.RelatedFileName).ToList();
+        }
+
+        public static List<TemplateInfo> GetTemplateInfoList(int siteId, string searchText, string templateTypeString)
+        {
+            var list = new List<TemplateInfo>();
+
+            var templateInfoDictionary = GetTemplateInfoDictionaryBySiteId(siteId);
+            if (templateInfoDictionary == null) return list;
+
+            var isSearch = !string.IsNullOrEmpty(searchText);
+            var isTemplateType = !string.IsNullOrEmpty(templateTypeString);
+            var tempalteType = TemplateTypeUtils.GetEnumType(templateTypeString);
+
+            foreach (var templateInfo in templateInfoDictionary.Values)
+            {
+                if (isSearch && isTemplateType)
+                {
+                    if (templateInfo.Type == tempalteType && (StringUtils.ContainsIgnoreCase(templateInfo.TemplateName, searchText) || StringUtils.ContainsIgnoreCase(templateInfo.CreatedFileFullName, searchText)))
+                    {
+                        list.Add(templateInfo);
+                    }
+                }
+                else if (isSearch)
+                {
+                    if (StringUtils.ContainsIgnoreCase(templateInfo.TemplateName, searchText) || StringUtils.ContainsIgnoreCase(templateInfo.CreatedFileFullName, searchText))
+                    {
+                        list.Add(templateInfo);
+                    }
+                }
+                else if (isTemplateType)
+                {
+                    if (templateInfo.Type == tempalteType)
+                    {
+                        list.Add(templateInfo);
+                    }
+                }
+                else
+                {
+                    list.Add(templateInfo);
+                }
+
+
+            }
+
+            return list.OrderBy(x => x.RelatedFileName).ToList();
         }
 
         private static void UpdateCache(Dictionary<int, Dictionary<int, TemplateInfo>> dictionary, Dictionary<int, TemplateInfo> templateInfoDictionary, int siteId)
@@ -209,11 +273,11 @@ namespace SiteServer.CMS.DataCache
         public static string GetTemplateFilePath(SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             string filePath;
-            if (templateInfo.TemplateType == TemplateType.IndexPageTemplate)
+            if (templateInfo.Type == TemplateType.IndexPageTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
             }
-            else if (templateInfo.TemplateType == TemplateType.ContentTemplate)
+            else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
                 filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
             }
@@ -224,9 +288,9 @@ namespace SiteServer.CMS.DataCache
             return filePath;
         }
 
-	    public static TemplateInfo GetIndexPageTemplateInfo(int siteId)
-	    {
-	        var templateId = GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
+        public static TemplateInfo GetIndexPageTemplateInfo(int siteId)
+        {
+            var templateId = GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
             TemplateInfo templateInfo = null;
             if (templateId != 0)
             {
@@ -296,11 +360,19 @@ namespace SiteServer.CMS.DataCache
         {
             if (content == null) content = string.Empty;
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
-            FileUtils.WriteText(filePath, templateInfo.Charset, content);
+            FileUtils.WriteText(filePath, content);
 
             if (templateInfo.Id > 0)
             {
-                var logInfo = new TemplateLogInfo(0, templateInfo.Id, templateInfo.SiteId, DateTime.Now, administratorName, content.Length, content);
+                var logInfo = new TemplateLogInfo
+                {
+                    TemplateId = templateInfo.Id,
+                    SiteId = templateInfo.SiteId,
+                    AddDate = DateTime.Now,
+                    AddUserName = administratorName,
+                    ContentLength = content.Length,
+                    TemplateContent = content
+                };
                 DataProvider.TemplateLogDao.Insert(logInfo);
             }
         }
@@ -349,25 +421,25 @@ namespace SiteServer.CMS.DataCache
         public static string GetTemplateContent(SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
-            return GetContentByFilePath(filePath, templateInfo.Charset);
+            return GetContentByFilePath(filePath);
         }
 
-        public static string GetIncludeContent(SiteInfo siteInfo, string file, ECharset charset)
+        public static string GetIncludeContent(SiteInfo siteInfo, string file)
         {
             var filePath = PathUtility.MapPath(siteInfo, PathUtility.AddVirtualToPath(file));
-            return GetContentByFilePath(filePath, charset);
+            return GetContentByFilePath(filePath);
         }
 
-        public static string GetContentByFilePath(string filePath, ECharset charset = ECharset.utf_8)
+        public static string GetContentByFilePath(string filePath)
         {
             try
             {
                 var content = DataCacheManager.Get<string>(filePath);
                 if (content != null) return content;
-                
+
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    content = FileUtils.ReadText(filePath, charset);
+                    content = FileUtils.ReadText(filePath, ECharset.utf_8);
                 }
 
                 DataCacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);

@@ -18,7 +18,7 @@ namespace SiteServer.CMS.StlParser.Model
         public Dictionary<string, string> Parameters { get; set; }
         public string ApiUrl { get; }
         public TemplateInfo TemplateInfo { get; }
-        public UserInfo UserInfo { get; set; }
+        public IUserInfo UserInfo { get; set; }
         public int SiteId { get; private set; }
         public int PageChannelId { get; private set; }
         public int PageContentId { get; private set; }
@@ -194,7 +194,7 @@ namespace SiteServer.CMS.StlParser.Model
 
             if (pageJsName == Const.Jquery)
             {
-                if (SiteInfo.Additional.IsCreateWithJQuery)
+                if (SiteInfo.IsCreateWithJQuery)
                 {
                     retval =
                         $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
@@ -314,7 +314,7 @@ wnd_frame.src=url;}}
             {
                 retval = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Additional.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)

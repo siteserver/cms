@@ -9,6 +9,7 @@ using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
 using System.Text;
 using System.Collections.Specialized;
+using SiteServer.CMS.DataCache.Stl;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -60,9 +61,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "标题文字数量")]
         private const string TitleWordNum = nameof(TitleWordNum);
 
-        [StlAttribute(Title = "获取下拉列表的条件判断")]
-        private const string Where = nameof(Where);
-
         [StlAttribute(Title = "链接参数")]
         private const string QueryString = nameof(QueryString);
 
@@ -101,7 +99,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             var order = string.Empty;
             var totalNum = 0;
             var titleWordNum = 0;
-            var where = string.Empty;
             var queryString = string.Empty;
 
             var isTop = false;
@@ -172,10 +169,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     totalNum = TranslateUtils.ToInt(value, totalNum);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, Where))
-                {
-                    where = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
                     queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
@@ -218,10 +211,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, where, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
+            return ParseImpl(pageInfo, contextInfo, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string where, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
         {
             EScopeType scopeType;
             if (!string.IsNullOrEmpty(scopeTypeString))
@@ -277,7 +270,8 @@ selObj.selectedIndex=0;
 
                 if (isChannel)
                 {
-                    var channelIdList = StlDataUtility.GetChannelIdList(pageInfo.SiteId, channel.Id, orderByString, scopeType, groupChannel, groupChannelNot, false, false, totalNum, where);
+                    var taxisType = StlDataUtility.GetChannelTaxisType(order, ETaxisType.OrderByTaxis);
+                    var channelIdList = StlChannelCache.GetIdListByTotalNum(pageInfo.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, false, false, totalNum);
 
                     if (channelIdList != null && channelIdList.Count > 0)
                     {
@@ -301,13 +295,14 @@ selObj.selectedIndex=0;
                 }
                 else
                 {
-                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
                     if (minContentInfoList != null)
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                            var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))

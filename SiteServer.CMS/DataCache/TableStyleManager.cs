@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -133,9 +134,9 @@ namespace SiteServer.CMS.DataCache
             return GetStyleInfoList(DataProvider.UserDao.TableName, relatedIdentities);
         }
 
-        public static AttributesImpl GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
+        public static IDictionary<string, object> GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
         {
-            var attributes = new AttributesImpl();
+            var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -149,7 +150,7 @@ namespace SiteServer.CMS.DataCache
                     var defaultValues = new List<string>();
                     foreach (var styleItem in styleInfo.StyleItems)
                     {
-                        if (styleItem.IsSelected)
+                        if (styleItem.Selected)
                         {
                             defaultValues.Add(styleItem.ItemValue);
                         }
@@ -162,7 +163,7 @@ namespace SiteServer.CMS.DataCache
 
                 if (!string.IsNullOrEmpty(defaultValue))
                 {
-                    attributes.Set(styleInfo.AttributeName, defaultValue);
+                    attributes[styleInfo.AttributeName] = defaultValue;
                 }
             }
 
@@ -205,7 +206,15 @@ namespace SiteServer.CMS.DataCache
                 return GetDefaultContentTableStyleInfo(tableName, attributeName);
             }
 
-            return new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, false, InputType.Text, string.Empty, true, string.Empty);
+            return new TableStyleInfo
+            {
+                TableName = tableName,
+                AttributeName = attributeName,
+                DisplayName = attributeName,
+                VisibleInList = false,
+                Type = InputType.Text,
+                Horizontal = true
+            };
         }
 
         public static TableStyleInfo GetTableStyleInfo(int id)
@@ -274,21 +283,21 @@ namespace SiteServer.CMS.DataCache
         public static string GetValidateInfo(TableStyleInfo styleInfo)
         {
             var builder = new StringBuilder();
-            if (styleInfo.Additional.IsRequired)
+            if (styleInfo.Required)
             {
                 builder.Append("必填项;");
             }
-            if (styleInfo.Additional.MinNum > 0)
+            if (styleInfo.MinNum > 0)
             {
-                builder.Append($"最少{styleInfo.Additional.MinNum}个字符;");
+                builder.Append($"最少{styleInfo.MinNum}个字符;");
             }
-            if (styleInfo.Additional.MaxNum > 0)
+            if (styleInfo.MaxNum > 0)
             {
-                builder.Append($"最多{styleInfo.Additional.MaxNum}个字符;");
+                builder.Append($"最多{styleInfo.MaxNum}个字符;");
             }
-            if (styleInfo.Additional.ValidateType != ValidateType.None)
+            if (ValidateTypeUtils.Equals(styleInfo.ValidateType, ValidateType.None))
             {
-                builder.Append($"验证:{ValidateTypeUtils.GetText(styleInfo.Additional.ValidateType)};");
+                builder.Append($"验证:{ValidateTypeUtils.GetText(ValidateTypeUtils.GetEnumType(styleInfo.ValidateType))};");
             }
 
             if (builder.Length > 0)
@@ -304,7 +313,7 @@ namespace SiteServer.CMS.DataCache
 
         public static List<int> GetRelatedIdentities(int siteId)
         {
-            return new List<int> {siteId, 0};
+            return new List<int> { siteId, 0 };
         }
 
         public static List<int> GetRelatedIdentities(ChannelInfo channelInfo)
@@ -328,17 +337,25 @@ namespace SiteServer.CMS.DataCache
             return list;
         }
 
-        public static List<int> EmptyRelatedIdentities => new List<int> {0};
+        public static List<int> EmptyRelatedIdentities => new List<int> { 0 };
 
         private static TableStyleInfo GetDefaultContentTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, false, InputType.Text, string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo
+            {
+                TableName = tableName,
+                AttributeName = attributeName,
+                DisplayName = attributeName,
+                VisibleInList = false,
+                Type = InputType.Text,
+                Horizontal = true
+            };
 
             if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Title)))
             {
                 styleInfo.AttributeName = nameof(ContentInfo.Title);
                 styleInfo.DisplayName = "标题";
-                styleInfo.Additional.VeeValidate = "required";
+                styleInfo.VeeValidate = "required";
                 styleInfo.Taxis = 1;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.SubTitle)))
@@ -351,36 +368,36 @@ namespace SiteServer.CMS.DataCache
             {
                 styleInfo.AttributeName = nameof(ContentInfo.ImageUrl);
                 styleInfo.DisplayName = "图片";
-                styleInfo.InputType = InputType.Image;
+                styleInfo.Type = InputType.Image;
                 styleInfo.Taxis = 3;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.VideoUrl)))
             {
                 styleInfo.AttributeName = nameof(ContentInfo.VideoUrl);
                 styleInfo.DisplayName = "视频";
-                styleInfo.InputType = InputType.Video;
+                styleInfo.Type = InputType.Video;
                 styleInfo.Taxis = 4;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.FileUrl)))
             {
                 styleInfo.AttributeName = nameof(ContentInfo.FileUrl);
                 styleInfo.DisplayName = "附件";
-                styleInfo.InputType = InputType.File;
+                styleInfo.Type = InputType.File;
                 styleInfo.Taxis = 5;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Content)))
             {
                 styleInfo.AttributeName = nameof(ContentInfo.Content);
                 styleInfo.DisplayName = "内容";
-                styleInfo.Additional.VeeValidate = "required";
-                styleInfo.InputType = InputType.TextEditor;
+                styleInfo.VeeValidate = "required";
+                styleInfo.Type = InputType.TextEditor;
                 styleInfo.Taxis = 6;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Summary)))
             {
                 styleInfo.AttributeName = nameof(ContentInfo.Summary);
                 styleInfo.DisplayName = "内容摘要";
-                styleInfo.InputType = InputType.TextArea;
+                styleInfo.Type = InputType.TextArea;
                 styleInfo.Taxis = 7;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Author)))
@@ -401,34 +418,42 @@ namespace SiteServer.CMS.DataCache
 
         private static TableStyleInfo GetDefaultUserTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo(0, 0, tableName, attributeName, 0, attributeName, string.Empty, false, InputType.Text, string.Empty, true, string.Empty);
+            var styleInfo = new TableStyleInfo
+            {
+                TableName = tableName,
+                AttributeName = attributeName,
+                DisplayName = attributeName,
+                VisibleInList = false,
+                Type = InputType.Text,
+                Horizontal = true
+            };
 
             if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.DisplayName)))
             {
                 styleInfo.AttributeName = nameof(UserInfo.DisplayName);
                 styleInfo.DisplayName = "姓名";
-                styleInfo.Additional.VeeValidate = "required";
+                styleInfo.VeeValidate = "required";
                 styleInfo.Taxis = 1;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Mobile)))
             {
                 styleInfo.AttributeName = nameof(UserInfo.Mobile);
                 styleInfo.DisplayName = "手机号";
-                styleInfo.Additional.VeeValidate = "mobile";
+                styleInfo.VeeValidate = "mobile";
                 styleInfo.Taxis = 2;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Email)))
             {
                 styleInfo.AttributeName = nameof(UserInfo.Email);
                 styleInfo.DisplayName = "邮箱";
-                styleInfo.Additional.VeeValidate = "email";
+                styleInfo.VeeValidate = "email";
                 styleInfo.Taxis = 3;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Gender)))
             {
                 styleInfo.AttributeName = nameof(UserInfo.Gender);
                 styleInfo.DisplayName = "性别";
-                styleInfo.InputType = InputType.Radio;
+                styleInfo.Type = InputType.Radio;
                 styleInfo.StyleItems = new List<TableStyleItemInfo>
                     {
                         new TableStyleItemInfo
@@ -448,7 +473,7 @@ namespace SiteServer.CMS.DataCache
             {
                 styleInfo.AttributeName = nameof(UserInfo.Birthday);
                 styleInfo.DisplayName = "出生日期";
-                styleInfo.InputType = InputType.Date;
+                styleInfo.Type = InputType.Date;
                 styleInfo.Taxis = 5;
             }
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.WeiXin)))
@@ -472,7 +497,7 @@ namespace SiteServer.CMS.DataCache
             else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Bio)))
             {
                 styleInfo.AttributeName = nameof(UserInfo.Bio);
-                styleInfo.InputType = InputType.TextArea;
+                styleInfo.Type = InputType.TextArea;
                 styleInfo.DisplayName = "个人简介";
                 styleInfo.Taxis = 9;
             }

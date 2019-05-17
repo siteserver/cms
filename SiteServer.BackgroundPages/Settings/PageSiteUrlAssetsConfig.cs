@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteUrlAssetsConfig : BasePageCms
+    public class PageSiteUrlAssetsConfig : BasePageCms
     {
         public Literal LtlSiteName;
 
@@ -38,10 +38,10 @@ namespace SiteServer.BackgroundPages.Settings
             LtlSiteName.Text = SiteInfo.SiteName;
 
             FxUtils.AddListItems(RblIsSeparatedAssets, "资源文件独立部署", "资源文件与Web部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, SiteInfo.Additional.IsSeparatedAssets.ToString());
-            PhSeparatedAssets.Visible = SiteInfo.Additional.IsSeparatedAssets;
-            TbSeparatedAssetsUrl.Text = SiteInfo.Additional.SeparatedAssetsUrl;
-            TbAssetsDir.Text = SiteInfo.Additional.AssetsDir;
+            ControlUtils.SelectSingleItem(RblIsSeparatedAssets, SiteInfo.IsSeparatedAssets.ToString());
+            PhSeparatedAssets.Visible = SiteInfo.IsSeparatedAssets;
+            TbSeparatedAssetsUrl.Text = SiteInfo.SeparatedAssetsUrl;
+            TbAssetsDir.Text = SiteInfo.AssetsDir;
         }
 
         public void RblIsSeparatedAssets_SelectedIndexChanged(object sender, EventArgs e)
@@ -51,9 +51,9 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            SiteInfo.Additional.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
-            SiteInfo.Additional.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
-            SiteInfo.Additional.AssetsDir = TbAssetsDir.Text;
+            SiteInfo.IsSeparatedAssets = TranslateUtils.ToBool(RblIsSeparatedAssets.SelectedValue);
+            SiteInfo.SeparatedAssetsUrl = TbSeparatedAssetsUrl.Text;
+            SiteInfo.AssetsDir = TbAssetsDir.Text;
 
             DataProvider.SiteDao.Update(SiteInfo);
             AuthRequest.AddSiteLog(SiteId, "修改资源文件访问地址");
@@ -64,7 +64,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageSiteUrlAssets.GetRedirectUrl());
+            FxUtils.Page.Redirect(PageSiteUrlAssets.GetRedirectUrl());
         }
     }
 }

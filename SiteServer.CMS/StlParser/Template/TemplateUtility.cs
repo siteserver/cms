@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.DataCache;
@@ -27,7 +26,9 @@ namespace SiteServer.CMS.StlParser.Template
                 contentItemInfo = pageInfo.ContentItems.Peek();
             }
             if (contentItemInfo == null) return string.Empty;
-            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contentItemInfo.ChannelId,
+
+            var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentItemInfo.ChannelId);
+            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo,
                 contentItemInfo.Id);
 
             var contextInfo = contextInfoRef.Clone();
@@ -101,7 +102,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsTop))//置顶内容
             {
-                if (contextInfo.ContentInfo.IsTop)
+                if (contextInfo.ContentInfo.Top)
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -109,7 +110,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedImage))//带图片的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.ImageUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.ImageUrl))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -117,7 +118,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedVideo))//带视频的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.VideoUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.VideoUrl))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -125,7 +126,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedFile))//带附件的内容
             {
-                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.GetString(BackgroundContentAttribute.FileUrl)))
+                if (!string.IsNullOrEmpty(contextInfo.ContentInfo.FileUrl))
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -133,7 +134,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsRecommend))//推荐的内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsRecommend)))
+                if (contextInfo.ContentInfo.Recommend)
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -141,7 +142,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsHot))//热点内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsHot)))
+                if (contextInfo.ContentInfo.Hot)
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;
@@ -149,7 +150,7 @@ namespace SiteServer.CMS.StlParser.Template
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsColor))//醒目内容
             {
-                if (TranslateUtils.ToBool(contextInfo.ContentInfo.GetString(ContentAttribute.IsColor)))
+                if (contextInfo.ContentInfo.Color)
                 {
                     templateString = selectedItems.Get(itemTypes);
                     return true;

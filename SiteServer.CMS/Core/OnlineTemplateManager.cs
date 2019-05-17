@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                var content = WebClientUtils.GetRemoteFileSource(UrlTemplatesXml, ECharset.utf_8);
+                var content = FileUtility.GetRemoteFileSource(UrlTemplatesXml, ECharset.utf_8);
 
                 var document = XmlUtils.GetXmlDocument(content);
                 var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Core
 
                         while (ie.MoveNext())
                         {
-                            var childNode = (XmlNode) ie.Current;
+                            var childNode = (XmlNode)ie.Current;
                             if (childNode == null) continue;
 
                             var nodeName = childNode.Name;

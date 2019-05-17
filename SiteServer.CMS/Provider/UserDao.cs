@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Dapper;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -179,53 +179,6 @@ namespace SiteServer.CMS.Provider
 
         private int InsertWithoutValidation(UserInfo userInfo, string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            //var sqlString = $"INSERT INTO {TableName} (UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreateDate, @LastResetPasswordDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @GroupId, @IsChecked, @IsLockedOut, @DisplayName, @Email, @Mobile, @AvatarUrl, @Gender, @Birthday, @WeiXin, @QQ, @WeiBo, @Bio, @SettingsXml)";
-
-            //userInfo.CreateDate = DateTime.Now;
-            //userInfo.LastActivityDate = DateTime.Now;
-            //userInfo.LastResetPasswordDate = DateTime.Now;
-
-            //userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
-            //userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
-            //userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
-            //userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
-            //userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
-            //userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
-            //userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
-            //userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
-            //userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
-            //userInfo.Bio = AttackUtils.FilterXss(userInfo.Bio);
-            //var settingsXml = userInfo.ToString(UserAttribute.AllAttributes.Value);
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamUserName, userInfo.UserName),
-            //    GetParameter(ParamPassword, password),
-            //    GetParameter(ParamPasswordFormat, EPasswordFormatUtils.GetValueById(passwordFormat)),
-            //    GetParameter(ParamPasswordSalt, passwordSalt),
-            //    GetParameter(ParamCreateDate,userInfo.CreateDate),
-            //    GetParameter(ParamLastResetPasswordDate,userInfo.LastResetPasswordDate),
-            //    GetParameter(ParamLastActivityDate,userInfo.LastActivityDate),
-            //    GetParameter(ParamCountOfLogin, userInfo.CountOfLogin),
-            //    GetParameter(ParamCountOfFailedLogin, userInfo.CountOfFailedLogin),
-            //    GetParameter(ParamGroupId, userInfo.GroupId),
-            //    GetParameter(ParamIsChecked, userInfo.IsChecked.ToString()),
-            //    GetParameter(ParamIsLockedOut, userInfo.IsLockedOut.ToString()),
-            //    GetParameter(ParamDisplayName, userInfo.DisplayName),
-            //    GetParameter(ParamEmail, userInfo.Email),
-            //    GetParameter(ParamMobile, userInfo.Mobile),
-            //    GetParameter(ParamAvatarUrl, userInfo.AvatarUrl),
-            //    GetParameter(ParamGender, userInfo.Gender),
-            //    GetParameter(ParamBirthday, userInfo.Birthday),
-            //    GetParameter(ParamWeiXin, userInfo.WeiXin),
-            //    GetParameter(ParamQq, userInfo.Qq),
-            //    GetParameter(ParamWeiBo, userInfo.WeiBo),
-            //    GetParameter(ParamBio,userInfo.Bio),
-            //    GetParameter(ParamSettingsXml,settingsXml)
-            //};
-
-            //return DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, UserAttribute.Id, sqlString, parameters);
-
             userInfo.Password = password;
             userInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
             userInfo.PasswordSalt = passwordSalt;
@@ -274,48 +227,6 @@ namespace SiteServer.CMS.Provider
 
         public bool Update(UserInfo userInfo)
         {
-            //if (userInfo == null) return;
-
-            //userInfo.DisplayName = AttackUtils.FilterXss(userInfo.DisplayName);
-            //userInfo.Email = AttackUtils.FilterXss(userInfo.Email);
-            //userInfo.Mobile = AttackUtils.FilterXss(userInfo.Mobile);
-            //userInfo.AvatarUrl = AttackUtils.FilterXss(userInfo.AvatarUrl);
-            //userInfo.Gender = AttackUtils.FilterXss(userInfo.Gender);
-            //userInfo.Birthday = AttackUtils.FilterXss(userInfo.Birthday);
-            //userInfo.WeiXin = AttackUtils.FilterXss(userInfo.WeiXin);
-            //userInfo.Qq = AttackUtils.FilterXss(userInfo.Qq);
-            //userInfo.WeiBo = AttackUtils.FilterXss(userInfo.WeiBo);
-            //userInfo.Bio = AttackUtils.FilterXss(userInfo.Bio);
-
-            //var sqlString = $"UPDATE {TableName} SET UserName = @UserName, CreateDate = @CreateDate, LastResetPasswordDate = @LastResetPasswordDate, LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, GroupId = @GroupId, IsChecked = @IsChecked, IsLockedOut = @IsLockedOut, DisplayName = @DisplayName, Email = @Email, Mobile = @Mobile, AvatarUrl = @AvatarUrl, Gender = @Gender, Birthday = @Birthday, WeiXin = @WeiXin, QQ = @QQ, WeiBo = @WeiBo, Bio = @Bio, SettingsXml = @SettingsXml WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamUserName, userInfo.UserName),
-            //    GetParameter(ParamCreateDate,userInfo.CreateDate),
-            //    GetParameter(ParamLastResetPasswordDate,userInfo.LastResetPasswordDate),
-            //    GetParameter(ParamLastActivityDate,userInfo.LastActivityDate),
-            //    GetParameter(ParamCountOfLogin, userInfo.CountOfLogin),
-            //    GetParameter(ParamCountOfFailedLogin, userInfo.CountOfFailedLogin),
-            //    GetParameter(ParamGroupId, userInfo.GroupId),
-            //    GetParameter(ParamIsChecked, userInfo.IsChecked.ToString()),
-            //    GetParameter(ParamIsLockedOut, userInfo.IsLockedOut.ToString()),
-            //    GetParameter(ParamDisplayName, userInfo.DisplayName),
-            //    GetParameter(ParamEmail, userInfo.Email),
-            //    GetParameter(ParamMobile, userInfo.Mobile),
-            //    GetParameter(ParamAvatarUrl, userInfo.AvatarUrl),
-            //    GetParameter(ParamGender, userInfo.Gender),
-            //    GetParameter(ParamBirthday, userInfo.Birthday),
-            //    GetParameter(ParamWeiXin, userInfo.WeiXin),
-            //    GetParameter(ParamQq, userInfo.Qq),
-            //    GetParameter(ParamWeiBo, userInfo.WeiBo),
-            //    GetParameter(ParamBio,userInfo.Bio),
-            //    GetParameter(ParamSettingsXml,userInfo.ToString(UserAttribute.AllAttributes.Value)),
-            //    GetParameter(ParamId, userInfo.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             var updated = _repository.Update(userInfo);
 
             UserManager.UpdateCache(userInfo);
@@ -330,17 +241,6 @@ namespace SiteServer.CMS.Provider
             userInfo.LastActivityDate = DateTime.Now;
             userInfo.CountOfFailedLogin += 1;
 
-            //var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamLastActivityDate, userInfo.LastActivityDate),
-            //    GetParameter(ParamCountOfFailedLogin, userInfo.CountOfFailedLogin),
-            //    GetParameter(ParamId, userInfo.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             _repository.Update(userInfo, Attr.LastActivityDate, Attr.CountOfFailedLogin);
 
             UserManager.UpdateCache(userInfo);
@@ -353,18 +253,6 @@ namespace SiteServer.CMS.Provider
             userInfo.LastActivityDate = DateTime.Now;
             userInfo.CountOfLogin += 1;
             userInfo.CountOfFailedLogin = 0;
-
-            //var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamLastActivityDate, userInfo.LastActivityDate),
-            //    GetParameter(ParamCountOfLogin, userInfo.CountOfLogin),
-            //    GetParameter(ParamCountOfFailedLogin, userInfo.CountOfFailedLogin),
-            //    GetParameter(ParamId, userInfo.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
 
             _repository.Update(userInfo, Attr.LastActivityDate, Attr.CountOfLogin, Attr.CountOfFailedLogin);
 
@@ -470,33 +358,15 @@ namespace SiteServer.CMS.Provider
             userInfo.PasswordSalt = passwordSalt;
             userInfo.LastResetPasswordDate = DateTime.Now;
 
-            //var sqlString = $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, LastResetPasswordDate = @LastResetPasswordDate WHERE UserName = @UserName";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamPassword, userInfo.Password),
-            //    GetParameter(ParamPasswordFormat, userInfo.PasswordFormat),
-            //    GetParameter(ParamPasswordSalt, userInfo.PasswordSalt),
-            //    GetParameter(ParamLastResetPasswordDate,userInfo.LastResetPasswordDate),
-            //    GetParameter(ParamUserName, userName)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             _repository.Update(userInfo, Attr.PasswordFormat, Attr.Password, Attr.PasswordSalt, Attr.LastResetPasswordDate);
 
-            LogUtils.AddUserLog(userName, "修改密码", string.Empty);
+            LogUtils.AddUserLog(string.Empty, userName, "修改密码", string.Empty);
 
             UserManager.UpdateCache(userInfo);
         }
 
         public void Check(List<int> idList)
         {
-            //var sqlString =
-            //    $"UPDATE {TableName} SET IsChecked = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
             _repository.Update(Q
                 .Set(Attr.IsChecked, true.ToString())
                 .WhereIn(Attr.Id, idList)
@@ -507,11 +377,6 @@ namespace SiteServer.CMS.Provider
 
         public void Lock(List<int> idList)
         {
-            //var sqlString =
-            //    $"UPDATE {TableName} SET IsLockedOut = '{true}' WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
             _repository.Update(Q
                 .Set(Attr.IsLockedOut, true.ToString())
                 .WhereIn(Attr.Id, idList)
@@ -522,11 +387,6 @@ namespace SiteServer.CMS.Provider
 
         public void UnLock(List<int> idList)
         {
-            //var sqlString =
-            //    $"UPDATE {TableName} SET IsLockedOut = '{false}', CountOfFailedLogin = 0 WHERE Id IN ({TranslateUtils.ToSqlInStringWithQuote(idList)})";
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
             _repository.Update(Q
                 .Set(Attr.IsLockedOut, false.ToString())
                 .WhereIn(Attr.Id, idList)
@@ -549,23 +409,6 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(userName)) return null;
 
-            //UserInfo userInfo = null;
-            //var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE UserName = @UserName";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamUserName, userName)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        userInfo = new UserInfo(rdr);
-            //    }
-            //    rdr.Close();
-            //}
-
             var userInfo = _repository.Get(Q.Where(Attr.UserName, userName));
 
             UserManager.UpdateCache(userInfo);
@@ -576,23 +419,6 @@ namespace SiteServer.CMS.Provider
         public UserInfo GetByEmail(string email)
         {
             if (string.IsNullOrEmpty(email)) return null;
-
-            //UserInfo userInfo = null;
-            //var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Email = @Email";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamEmail, email)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        userInfo = new UserInfo(rdr);
-            //    }
-            //    rdr.Close();
-            //}
 
             var userInfo = _repository.Get(Q.Where(Attr.Email, email));
 
@@ -605,23 +431,6 @@ namespace SiteServer.CMS.Provider
         {
             if (string.IsNullOrEmpty(mobile)) return null;
 
-            //UserInfo userInfo = null;
-            //var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Mobile = @Mobile";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamMobile, mobile)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        userInfo = new UserInfo(rdr);
-            //    }
-            //    rdr.Close();
-            //}
-
             var userInfo = _repository.Get(Q.Where(Attr.Mobile, mobile));
 
             UserManager.UpdateCache(userInfo);
@@ -633,23 +442,6 @@ namespace SiteServer.CMS.Provider
         {
             if (id <= 0) return null;
 
-            //UserInfo userInfo = null;
-            //var sqlString = $"SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreateDate, LastResetPasswordDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, GroupId, IsChecked, IsLockedOut, DisplayName, Email, Mobile, AvatarUrl, Gender, Birthday, WeiXin, QQ, WeiBo, Bio, SettingsXml FROM {TableName} WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, id)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        userInfo = new UserInfo(rdr);
-            //    }
-            //    rdr.Close();
-            //}
-
             var userInfo = _repository.Get(id);
 
             UserManager.UpdateCache(userInfo);
@@ -660,26 +452,6 @@ namespace SiteServer.CMS.Provider
         public bool IsUserNameExists(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return false;
-
-            //var exists = false;
-
-            //var sqlString = $"SELECT Id FROM {TableName} WHERE UserName = @UserName";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamUserName, userName)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read() && !rdr.IsDBNull(0))
-            //    {
-            //        exists = true;
-            //    }
-            //    rdr.Close();
-            //}
-
-            //return exists;
 
             return _repository.Exists(Q.Where(Attr.UserName, userName));
         }
@@ -700,22 +472,6 @@ namespace SiteServer.CMS.Provider
             var exists = IsUserNameExists(email);
             if (exists) return true;
 
-            //var sqlSelect = $"SELECT Email FROM {TableName} WHERE Email = @Email";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamEmail, email)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlSelect, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        exists = true;
-            //    }
-            //    rdr.Close();
-            //}
-
             return _repository.Exists(Q.Where(Attr.Email, email));
         }
 
@@ -726,108 +482,16 @@ namespace SiteServer.CMS.Provider
             var exists = IsUserNameExists(mobile);
             if (exists) return true;
 
-            //var sqlString = $"SELECT Mobile FROM {TableName} WHERE Mobile = @Mobile";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamMobile, mobile)
-            //};
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        exists = true;
-            //    }
-            //    rdr.Close();
-            //}
-
-            //return exists;
-
             return _repository.Exists(Q.Where(Attr.Mobile, mobile));
         }
 
         public IList<int> GetIdList(bool isChecked)
         {
-            //var idList = new List<int>();
-
-            //var sqlSelect =
-            //    $"SELECT Id FROM {TableName} WHERE IsChecked = '{isChecked}' ORDER BY Id DESC";
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlSelect))
-            //{
-            //    while (rdr.Read())
-            //    {
-            //        idList.Add(DatabaseApi.GetInt(rdr, 0));
-            //    }
-            //    rdr.Close();
-            //}
-
-            //return idList;
-
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.IsChecked, isChecked.ToString())
                 .OrderByDesc(Attr.Id));
         }
-
-        //public string GetSelectCommand()
-        //{
-        //    return DataProvider.DatabaseApi.GetSelectSqlString(TableName, string.Empty);
-        //}
-
-        //public string GetSelectCommand(int groupId, string searchWord, int dayOfCreate, int dayOfLastActivity, int loginCount, string searchType)
-        //{
-        //    var whereBuilder = new StringBuilder();
-
-        //    if (dayOfCreate > 0)
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        var dateTime = DateTime.Now.AddDays(-dayOfCreate);
-        //        whereBuilder.Append($"(CreateDate >= {SqlUtils.GetComparableDate(dateTime)})");
-        //    }
-
-        //    if (dayOfLastActivity > 0)
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        var dateTime = DateTime.Now.AddDays(-dayOfLastActivity);
-        //        whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
-        //    }
-
-        //    if (groupId > -1)
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        whereBuilder.Append(groupId == 0 ? "(GroupId = 0 OR GroupId IS NULL)" : $"GroupId = {groupId}");
-        //    }
-
-        //    searchWord = AttackUtils.FilterSql(searchWord);
-
-        //    if (string.IsNullOrEmpty(searchType))
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        whereBuilder.Append(
-        //            $"(UserName LIKE '%{searchWord}%' OR EMAIL LIKE '%{searchWord}%')");
-        //    }
-        //    else
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        whereBuilder.Append($"({searchType} LIKE '%{searchWord}%') ");
-        //    }
-
-        //    if (loginCount > 0)
-        //    {
-        //        if (whereBuilder.Length > 0) whereBuilder.Append(" AND ");
-        //        whereBuilder.Append($"(CountOfLogin > {loginCount})");
-        //    }
-
-        //    var whereString = string.Empty;
-        //    if (whereBuilder.Length > 0)
-        //    {
-        //        whereString = $"WHERE {whereBuilder}";
-        //    }
-
-        //    return DataProvider.DatabaseApi.GetSelectSqlString(TableName, whereString);
-        //}
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
         {
@@ -907,7 +571,7 @@ namespace SiteServer.CMS.Provider
             if (!CheckPassword(password, isPasswordMd5, userInfo.Password, EPasswordFormatUtils.GetEnumType(userInfo.PasswordFormat), userInfo.PasswordSalt))
             {
                 UpdateLastActivityDateAndCountOfFailedLogin(userInfo);
-                LogUtils.AddUserLog(userInfo.UserName, "用户登录失败", "帐号或密码错误");
+                LogUtils.AddUserLog(string.Empty, userInfo.UserName, "用户登录失败", "帐号或密码错误");
                 errorMessage = "帐号或密码错误";
                 return null;
             }
@@ -956,71 +620,50 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var rdr = DataProvider.DatabaseApi.ExecuteReader(WebConfigUtils.ConnectionString, sqlString))
+            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
             {
-                while (rdr.Read())
+                using (var rdr = connection.ExecuteReader(sqlString))
                 {
-                    var accessNum = rdr.GetInt32(0);
-                    if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Day))
+                    while (rdr.Read())
                     {
-                        var year = rdr.GetValue(1).ToString();
-                        var month = rdr.GetValue(2).ToString();
-                        var day = rdr.GetValue(3).ToString();
-                        var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-{day}");
-                        dict.Add(dateTime, accessNum);
-                    }
-                    else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Month))
-                    {
-                        var year = rdr.GetValue(1).ToString();
-                        var month = rdr.GetValue(2).ToString();
+                        var accessNum = rdr.GetInt32(0);
+                        if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Day))
+                        {
+                            var year = rdr.GetValue(1).ToString();
+                            var month = rdr.GetValue(2).ToString();
+                            var day = rdr.GetValue(3).ToString();
+                            var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-{day}");
+                            dict.Add(dateTime, accessNum);
+                        }
+                        else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Month))
+                        {
+                            var year = rdr.GetValue(1).ToString();
+                            var month = rdr.GetValue(2).ToString();
 
-                        var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-1");
-                        dict.Add(dateTime, accessNum);
+                            var dateTime = TranslateUtils.ToDateTime($"{year}-{month}-1");
+                            dict.Add(dateTime, accessNum);
+                        }
+                        else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Year))
+                        {
+                            var year = rdr.GetValue(1).ToString();
+                            var dateTime = TranslateUtils.ToDateTime($"{year}-1-1");
+                            dict.Add(dateTime, accessNum);
+                        }
                     }
-                    else if (EStatictisXTypeUtils.Equals(xType, EStatictisXType.Year))
-                    {
-                        var year = rdr.GetValue(1).ToString();
-                        var dateTime = TranslateUtils.ToDateTime($"{year}-1-1");
-                        dict.Add(dateTime, accessNum);
-                    }
+                    rdr.Close();
                 }
-                rdr.Close();
             }
+
             return dict;
         }
 
         public int GetCount()
         {
-            //return DatabaseApi.GetCount(TableName);
             return _repository.Count();
         }
 
         public IList<UserInfo> GetUsers(int offset, int limit)
         {
-            //var list = new List<UserInfo>();
-            //List<int> dbList;
-
-            //var sqlString =
-            //    SqlDifferences.GetSqlString(TableName, new List<string>
-            //    {
-            //        nameof(UserInfo.Id)
-            //    }, string.Empty, "ORDER BY Id", offset, limit);
-
-            //using (var connection = GetConnection())
-            //{
-            //    dbList = connection.Query<int>(sqlString).ToList();
-            //}
-
-            //if (dbList.Count > 0)
-            //{
-            //    foreach (var userId in dbList)
-            //    {
-            //        list.Add(UserManager.GetUserInfoByUserId(userId));
-            //    }
-            //}
-
-            //return list;
-
             return _repository.GetAll(Q
                 .Offset(offset)
                 .Limit(limit)
@@ -1029,27 +672,11 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
         public bool IsExists(int id)
         {
-            //var sqlString = $"SELECT COUNT(1) FROM {TableName} WHERE Id = @Id";
-
-            //using (var connection = GetConnection())
-            //{
-            //    return connection.ExecuteScalar<bool>(sqlString, new { Id = id });
-            //}
-
             return _repository.Exists(id);
         }
 
         public void Delete(UserInfo userInfo)
         {
-            //var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(ParamId, userInfo.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             _repository.Delete(userInfo.Id);
 
             UserManager.RemoveCache(userInfo);
@@ -1078,7 +705,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 
 //namespace SiteServer.CMS.Database.Repositories
 //{
-//    public class User : DataProviderBase
+//    public class User
 //    {
 //        public const string DatabaseTableName = "siteserver_User";
 

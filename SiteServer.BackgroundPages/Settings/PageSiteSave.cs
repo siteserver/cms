@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _exportObject = new ExportObject(SiteId, AuthRequest.AdminName);
 
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 TbSiteTemplateDir.Text = "T_" + SiteInfo.SiteName;
             }
@@ -91,7 +91,7 @@ namespace SiteServer.BackgroundPages.Settings
                 if (!fileSystem.IsDirectory) continue;
 
                 var isSiteDirectory = false;
-                if (SiteInfo.IsRoot)
+                if (SiteInfo.Root)
                 {
                     foreach (var siteDir in siteDirList)
                     {
@@ -148,9 +148,9 @@ namespace SiteServer.BackgroundPages.Settings
             var itemBuilder = new StringBuilder();
             if (channelInfo.Id == SiteId)
             {
-                channelInfo.IsLastNode = true;
+                channelInfo.LastNode = true;
             }
-            if (channelInfo.IsLastNode == false)
+            if (channelInfo.LastNode == false)
             {
                 isLastNodeArray[channelInfo.ParentsCount] = false;
             }
@@ -162,7 +162,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 itemBuilder.Append($"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
-            if (channelInfo.IsLastNode)
+            if (channelInfo.LastNode)
             {
                 itemBuilder.Append(channelInfo.ChildrenCount > 0
                     ? $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/minus.png\"/>"
@@ -385,7 +385,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
+            FxUtils.Page.Redirect(PageSite.GetRedirectUrl());
         }
     }
 }

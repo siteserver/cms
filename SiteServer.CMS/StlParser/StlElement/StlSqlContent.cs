@@ -1,5 +1,4 @@
-﻿using System.Web.UI;
-using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.Utils;
 using SiteServer.CMS.StlParser.Model;
@@ -230,7 +229,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     connectionString = WebConfigUtils.ConnectionString;
                 }
 
-                //parsedContent = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                //parsedContent = DatabaseUtils.GetString(connectionString, queryString);
                 parsedContent = StlDatabaseCache.GetString(connectionString, queryString);
             }
 

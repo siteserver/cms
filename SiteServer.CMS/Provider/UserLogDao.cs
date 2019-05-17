@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
@@ -30,38 +29,10 @@ namespace SiteServer.CMS.Provider
             public const string Action = nameof(UserLogInfo.Action);
         }
 
-        //public void Insert(UserLogInfo logInfo)
-        //{
-        //    //const string sqlString = "INSERT INTO siteserver_UserLog(UserName, IPAddress, AddDate, Action, Summary) VALUES (@UserName, @IPAddress, @AddDate, @Action, @Summary)";
-
-        //    //IDataParameter[] parameters =
-        //    //{
-        //    //    GetParameter(ParamUserName, logInfo.UserName),
-        //    //    GetParameter(ParamIpAddress, logInfo.IpAddress),
-        //    //    GetParameter(ParamAddDate,logInfo.AddDate),
-        //    //    GetParameter(ParamAction, logInfo.Action),
-        //    //    GetParameter(ParamSummary, logInfo.Summary)
-        //    //};
-
-        //    //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
-        //    InsertObject(logInfo);
-        //}
-
         public UserLogInfo Insert(string userName, UserLogInfo logInfo)
         {
             logInfo.UserName = userName;
-            logInfo.IpAddress = PageUtilsEx.GetIpAddress();
             logInfo.AddDate = DateTime.Now;
-
-            //using (var connection = GetConnection())
-            //{
-            //    var identity = connection.InsertObject(logInfo);
-            //    if (identity > 0)
-            //    {
-            //        logInfo.Id = Convert.ToInt32(identity);
-            //    }
-            //}
 
             logInfo.Id = _repository.Insert(logInfo);
 
@@ -75,8 +46,6 @@ namespace SiteServer.CMS.Provider
             var days = ConfigManager.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, $@"DELETE FROM siteserver_UserLog WHERE AddDate < {SqlUtils.GetComparableDateTime(DateTime.Now.AddDays(-days))}");
-
             _repository.Delete(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
         }
 
@@ -84,39 +53,16 @@ namespace SiteServer.CMS.Provider
         {
             if (idList == null || idList.Count <= 0) return;
 
-            //var sqlString =
-            //    $"DELETE FROM siteserver_UserLog WHERE ID IN ({TranslateUtils.ToSqlInStringWithoutQuote(idList)})";
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
             _repository.Delete(Q.WhereIn(Attr.Id, idList));
         }
 
         public void DeleteAll()
         {
-            //const string sqlString = "DELETE FROM siteserver_UserLog";
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString);
-
             _repository.Delete();
         }
 
         public int GetCount()
         {
-            //var count = 0;
-            //const string sqlString = "SELECT Count(ID) FROM siteserver_UserLog";
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString))
-            //{
-            //    if (rdr.Read())
-            //    {
-            //        count = DatabaseApi.GetInt(rdr, 0);
-            //    }
-            //    rdr.Close();
-            //}
-
-            //return count;
-
             return _repository.Count();
         }
 
@@ -175,36 +121,6 @@ namespace SiteServer.CMS.Provider
 
         public List<ILogInfo> List(string userName, int totalNum, string action)
         {
-            //var list = new List<ILogInfo>();
-            //var sqlString = "SELECT * FROM siteserver_UserLog WHERE UserName = @UserName";
-
-            //if (!string.IsNullOrEmpty(action))
-            //{
-            //    sqlString += " And Action = @Action";
-            //}
-            //sqlString += " ORDER BY ID DESC";
-
-            //var parameters = new List<IDataParameter>
-            //{
-            //    GetParameter(ParamUserName, userName)
-            //};
-            //if (!string.IsNullOrEmpty(action))
-            //{
-            //    parameters.Add(GetParameter(ParamAction, action));
-            //}
-
-            //using (var rdr = DatabaseApi.ExecuteReader(ConnectionString, sqlString, parameters.ToArray()))
-            //{
-            //    while (rdr.Read())
-            //    {
-            //        var i = 0;
-            //        var info = new UserLogInfo(DatabaseApi.GetInt(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetDateTime(rdr, i++), DatabaseApi.GetString(rdr, i++), DatabaseApi.GetString(rdr, i));
-            //        list.Add(info);
-            //    }
-            //}
-
-            //return list;
-
             var query = Q.Where(Attr.UserName, userName);
             if (!string.IsNullOrEmpty(action))
             {
@@ -219,14 +135,6 @@ namespace SiteServer.CMS.Provider
 
         public IList<UserLogInfo> ApiGetLogs(string userName, int offset, int limit)
         {
-            //var sqlString =
-            //    SqlDifferences.GetSqlString(TableName, null, $"WHERE {nameof(UserLogInfo.UserName)} = @{nameof(UserLogInfo.UserName)}", "ORDER BY Id DESC", offset, limit);
-
-            //using (var connection = GetConnection())
-            //{
-            //    return connection.Query<UserLogInfo>(sqlString, new { UserName = userName }).ToList();
-            //}
-
             return _repository.GetAll(Q
                 .Where(Attr.UserName, userName)
                 .Offset(offset)
@@ -252,7 +160,7 @@ namespace SiteServer.CMS.Provider
 
 //namespace SiteServer.CMS.Database.Repositories
 //{
-//    public class UserLog : DataProviderBase
+//    public class UserLog
 //    {
 //        public override string TableName => "siteserver_UserLog";
 

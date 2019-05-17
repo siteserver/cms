@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -49,7 +50,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (AuthRequest.IsQueryExists("isContent"))
             {
@@ -112,13 +113,13 @@ namespace SiteServer.BackgroundPages.Cms
 
                     foreach (var channelId in _idsDictionary.Keys)
                     {
-                        var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                        var contentIdArrayList = _idsDictionary[channelId];
-                        if (contentIdArrayList != null)
+                        var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                        var contentIdList = _idsDictionary[channelId];
+                        if (contentIdList != null)
                         {
-                            foreach (var contentId in contentIdArrayList)
+                            foreach (var contentId in contentIdList)
                             {
-                                DataProvider.ContentDao.AddContentGroupList(tableName, contentId, groupNameList);
+                                channelInfo.ContentDao.AddContentGroupList(contentId, groupNameList);
                             }
                         }
                     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
@@ -23,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -65,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var downloadUrl = string.Empty;
 
@@ -100,15 +102,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var contentInfoList = new List<ContentInfo>();
                 var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
+                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.PageSize));
                 if (pages == 0) pages = 1;
 
                 if (count > 0)
                 {
                     for (var page = 1; page <= pages; page++)
                     {
-                        var offset = siteInfo.Additional.PageSize * (page - 1);
-                        var limit = siteInfo.Additional.PageSize;
+                        var offset = siteInfo.PageSize * (page - 1);
+                        var limit = siteInfo.PageSize;
 
                         var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
 
@@ -122,9 +124,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             if (!isAllCheckedLevel)
                             {
                                 var checkedLevel = contentInfo.CheckedLevel;
-                                if (contentInfo.IsChecked)
+                                if (contentInfo.Checked)
                                 {
-                                    checkedLevel = siteInfo.Additional.CheckContentLevel;
+                                    checkedLevel = siteInfo.CheckContentLevel;
                                 }
                                 if (!checkedLevelKeys.Contains(checkedLevel))
                                 {

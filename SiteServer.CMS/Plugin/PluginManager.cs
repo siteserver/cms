@@ -183,11 +183,9 @@ namespace SiteServer.CMS.Plugin
 
         private static List<PluginInstance> _pluginInfoListRunnable;
 
-        public static void LoadPlugins(string applicationPath, string applicationPhysicalPath)
+        public static void Load(Func<IRequest> requestFunc)
         {
-            WebConfigUtils.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
-
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
@@ -198,7 +196,7 @@ namespace SiteServer.CMS.Plugin
                 SiteApi = SiteApi.Instance,
                 UserApi = UserApi.Instance,
                 UtilsApi = UtilsApi.Instance
-            });
+            }, requestFunc);
 
             _pluginInfoListRunnable = PluginInfoListRunnable;
         }

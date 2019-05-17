@@ -34,7 +34,7 @@
 
               <div class="form-row">
                 <label for="LbChannelTemplateId">栏目模板列表</label>
-                <asp:ListBox ID="LbChannelTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="Id" SelectionMode="Single"
+                <asp:ListBox ID="LbChannelTemplateId" class="form-control" SelectionMode="Single"
                   Rows="25" runat="server"></asp:ListBox>
               </div>
             </div>
@@ -48,7 +48,7 @@
             <div class="col-3">
               <div class="form-row">
                 <label for="LbContentTemplateId">内容模板列表</label>
-                <asp:ListBox ID="LbContentTemplateId" class="form-control" DataTextField="TemplateName" DataValueField="Id" SelectionMode="Single"
+                <asp:ListBox ID="LbContentTemplateId" class="form-control" SelectionMode="Single"
                   Rows="25" runat="server"></asp:ListBox>
               </div>
             </div>

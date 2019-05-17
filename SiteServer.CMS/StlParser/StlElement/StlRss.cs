@@ -180,7 +180,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         {
             var feed = new RssFeed
             {
-                Encoding = ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset),
+                Encoding = Encoding.UTF8,
                 Version = RssVersion.RSS20
             };
 
@@ -206,7 +206,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             channel.Link = new Uri(PageUtilsEx.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -214,7 +214,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     var item = new RssItem();
 
-                    var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
                     item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
                     item.Description = contentInfo.Summary;
                     if (string.IsNullOrEmpty(item.Description))
@@ -233,7 +234,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             feed.Channels.Add(channel);
 
             var builder = new StringBuilder();
-            var textWriter = new EncodedStringWriter(builder, ECharsetUtils.GetEncoding(pageInfo.TemplateInfo.Charset));
+            var textWriter = new EncodedStringWriter(builder, Encoding.UTF8);
             feed.Write(textWriter);
 
             return builder.ToString();

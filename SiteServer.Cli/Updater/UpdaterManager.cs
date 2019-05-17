@@ -150,11 +150,11 @@ namespace SiteServer.Cli.Updater
                         foreach (var siteId in siteIdList)
                         {
                             var siteRows = siteIdWithRows[siteId];
-                            var siteTableName = ContentDao.GetContentTableName(siteId);
+                            var siteTableName = Constants.GetContentTableName(siteId);
                             var siteTableInfo = splitSiteTableDict[siteId];
                             siteTableInfo.TotalCount += siteRows.Count;
 
-                            foreach(var tableColumn in converter.NewColumns)
+                            foreach (var tableColumn in converter.NewColumns)
                             {
                                 if (!siteTableInfo.Columns.Any(t => StringUtils.EqualsIgnoreCase(t.AttributeName, tableColumn.AttributeName)))
                                 {
@@ -278,10 +278,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.ContainsIgnoreCase(TableTemplateLog.OldTableNames, oldTableName))
             {
                 converter = TableTemplateLog.Converter;
-            }
-            else if (StringUtils.ContainsIgnoreCase(TableTemplateMatch.OldTableNames, oldTableName))
-            {
-                converter = TableTemplateMatch.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableUser.OldTableName, oldTableName))
             {

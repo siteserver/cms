@@ -11,18 +11,18 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache
 {
-	public static class SpecialManager
-	{
+    public static class SpecialManager
+    {
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(SpecialManager));
         private static readonly object SyncRoot = new object();
 
-	    public static SpecialInfo DeleteSpecialInfo(int siteId, int specialId)
-	    {
-	        var specialInfo = GetSpecialInfo(siteId, specialId);
-	        DataProvider.SpecialDao.Delete(siteId, specialId);
+        public static SpecialInfo DeleteSpecialInfo(int siteId, int specialId)
+        {
+            var specialInfo = GetSpecialInfo(siteId, specialId);
+            DataProvider.SpecialDao.Delete(siteId, specialId);
 
-	        return specialInfo;
-	    }
+            return specialInfo;
+        }
 
         public static SpecialInfo GetSpecialInfo(int siteId, int specialId)
         {
@@ -36,28 +36,28 @@ namespace SiteServer.CMS.DataCache
             return specialInfo;
         }
 
-	    public static string GetTitle(int siteId, int specialId)
-	    {
-	        var title = string.Empty;
+        public static string GetTitle(int siteId, int specialId)
+        {
+            var title = string.Empty;
 
-	        var specialInfo = GetSpecialInfo(siteId, specialId);
-	        if (specialInfo != null)
-	        {
-	            title = specialInfo.Title;
-	        }
+            var specialInfo = GetSpecialInfo(siteId, specialId);
+            if (specialInfo != null)
+            {
+                title = specialInfo.Title;
+            }
 
-	        return title;
-	    }
+            return title;
+        }
 
         public static List<TemplateInfo> GetTemplateInfoList(SiteInfo siteInfo, int specialId)
-	    {
+        {
             var list = new List<TemplateInfo>();
 
-	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
-	        if (specialInfo != null)
-	        {
-	            var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
-	            var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
+            var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
+            if (specialInfo != null)
+            {
+                var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+                var srcDirectoryPath = GetSpecialSrcDirectoryPath(directoryPath);
 
                 var htmlFilePaths = Directory.GetFiles(srcDirectoryPath, "*.html", SearchOption.AllDirectories);
                 foreach (var htmlFilePath in htmlFilePaths)
@@ -66,15 +66,14 @@ namespace SiteServer.CMS.DataCache
 
                     var templateInfo = new TemplateInfo
                     {
-                        Charset = ECharset.utf_8,
                         Content = GetContentByFilePath(htmlFilePath),
                         CreatedFileExtName = ".html",
                         CreatedFileFullName = PathUtils.Combine(specialInfo.Url, relatedPath),
                         Id = 0,
-                        IsDefault = false,
+                        Default = false,
                         RelatedFileName = string.Empty,
                         SiteId = siteInfo.Id,
-                        TemplateType = TemplateType.FileTemplate,
+                        Type = TemplateType.FileTemplate,
                         TemplateName = relatedPath
                     };
 
@@ -83,22 +82,22 @@ namespace SiteServer.CMS.DataCache
             }
 
             return list;
-	    }
+        }
 
-	    public static List<int> GetAllSpecialIdList(int siteId)
-	    {
-	        var list = new List<int>();
+        public static List<int> GetAllSpecialIdList(int siteId)
+        {
+            var list = new List<int>();
 
-	        var specialInfoDictionary = GetSpecialInfoDictionaryBySiteId(siteId);
-	        if (specialInfoDictionary == null) return list;
+            var specialInfoDictionary = GetSpecialInfoDictionaryBySiteId(siteId);
+            if (specialInfoDictionary == null) return list;
 
-	        foreach (var specialInfo in specialInfoDictionary.Values)
-	        {
-	            list.Add(specialInfo.Id);
+            foreach (var specialInfo in specialInfoDictionary.Values)
+            {
+                list.Add(specialInfo.Id);
             }
 
-	        return list;
-	    }
+            return list;
+        }
 
         private static Dictionary<int, SpecialInfo> GetSpecialInfoDictionaryBySiteId(int siteId, bool flush = false)
         {
@@ -157,7 +156,7 @@ namespace SiteServer.CMS.DataCache
             {
                 var content = DataCacheManager.Get<string>(filePath);
                 if (content != null) return content;
-                
+
                 if (FileUtils.IsFileExists(filePath))
                 {
                     content = FileUtils.ReadText(filePath, Encoding.UTF8);
@@ -173,31 +172,31 @@ namespace SiteServer.CMS.DataCache
         }
 
         public static string GetSpecialDirectoryPath(SiteInfo siteInfo, string url)
-	    {
-	        var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-	        return PathUtility.MapPath(siteInfo, virtualPath);
-	    }
+        {
+            var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
+            return PathUtility.MapPath(siteInfo, virtualPath);
+        }
 
-	    public static string GetSpecialUrl(SiteInfo siteInfo, string url)
-	    {
-	        var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
-	        return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
-	    }
+        public static string GetSpecialUrl(SiteInfo siteInfo, string url)
+        {
+            var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
+            return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
+        }
 
-	    public static string GetSpecialUrl(SiteInfo siteInfo, int specialId)
-	    {
-	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
-	        return GetSpecialUrl(siteInfo, specialInfo.Url);
-	    }
+        public static string GetSpecialUrl(SiteInfo siteInfo, int specialId)
+        {
+            var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
+            return GetSpecialUrl(siteInfo, specialInfo.Url);
+        }
 
         public static string GetSpecialZipFilePath(string directoryPath)
-	    {
-	        return PathUtils.Combine(directoryPath, "_src.zip");
-	    }
+        {
+            return PathUtils.Combine(directoryPath, "_src.zip");
+        }
 
-	    public static string GetSpecialSrcDirectoryPath(string directoryPath)
-	    {
-	        return PathUtils.Combine(directoryPath, "_src");
-	    }
+        public static string GetSpecialSrcDirectoryPath(string directoryPath)
+        {
+            return PathUtils.Combine(directoryPath, "_src");
+        }
     }
 }

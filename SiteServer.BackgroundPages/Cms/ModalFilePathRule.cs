@@ -4,10 +4,11 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalFilePathRule : BasePageCms
+    public class ModalFilePathRule : BasePageCms
     {
         public Literal LtlRules;
         public TextBox TbRule;
@@ -26,7 +27,7 @@ namespace SiteServer.BackgroundPages.Cms
             }), textBoxclientId);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Cms
             var entitiesDictionary = _isChannel
                 ? PathUtility.ChannelFilePathRules.GetDictionary(SiteInfo, _channelId)
                 : PathUtility.ContentFilePathRules.GetDictionary(SiteInfo, _channelId);
-            
+
             foreach (string label in entitiesDictionary.Keys)
             {
                 count++;
@@ -84,6 +85,6 @@ namespace SiteServer.BackgroundPages.Cms
         {
             string scripts = $"window.parent.document.all.{_textBoxClientId}.value = '{TbRule.Text}';";
             LayerUtils.CloseWithoutRefresh(Page, scripts);
-		}
-	}
+        }
+    }
 }

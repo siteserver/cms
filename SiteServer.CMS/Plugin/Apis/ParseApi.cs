@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Plugin.Apis
             var templateInfo = new TemplateInfo
             {
                 Id = context.TemplateId,
-                TemplateType = context.TemplateType
+                Type = context.TemplateType
             };
             var pageInfo = new PageInfo(context.ChannelId, context.ContentId, siteInfo, templateInfo, new Dictionary<string, object>());
             var contextInfo = new ContextInfo(pageInfo);

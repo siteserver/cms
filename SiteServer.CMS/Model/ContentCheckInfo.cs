@@ -1,41 +1,42 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-	public class ContentCheckInfo
-	{
-	    public ContentCheckInfo(int id, string tableName, int siteId, int channelId, int contentId, string userName, bool isChecked, int checkedLevel, DateTime checkDate, string reasons) 
-		{
-            Id = id;
-            TableName = tableName;
-            SiteId = siteId;
-            ChannelId = channelId;
-            ContentId = contentId;
-            UserName = userName;
-            IsChecked = isChecked;
-            CheckedLevel = checkedLevel;
-            CheckDate = checkDate;
-            Reasons = reasons;
-		}
+    [Table("siteserver_ContentCheck")]
+    public class ContentCheckInfo : Entity
+    {
+        [TableColumn]
+        public string TableName { get; set; }
 
-        public int Id { get; }
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public string TableName { get; }
+        [TableColumn]
+        public int ChannelId { get; set; }
 
-        public int SiteId { get; }
+        [TableColumn]
+        public int ContentId { get; set; }
 
-        public int ChannelId { get; }
+        [TableColumn]
+        public string UserName { get; set; }
 
-        public int ContentId { get; }
+        [TableColumn]
+        private string IsChecked { get; set; }
 
-        public string UserName { get; }
+        public bool Checked
+        {
+            get => IsChecked == "True";
+            set => IsChecked = value.ToString();
+        }
 
-        public bool IsChecked { get; }
+        [TableColumn]
+        public int CheckedLevel { get; set; }
 
-        public int CheckedLevel { get; }
+        [TableColumn]
+        public DateTime? CheckDate { get; set; }
 
-        public DateTime CheckDate { get; }
-
-        public string Reasons { get; }
+        [TableColumn]
+        public string Reasons { get; set; }
     }
 }

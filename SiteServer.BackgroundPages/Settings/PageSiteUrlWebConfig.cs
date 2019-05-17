@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteUrlWebConfig : BasePageCms
+    public class PageSiteUrlWebConfig : BasePageCms
     {
         public Literal LtlSiteName;
 
@@ -37,9 +37,9 @@ namespace SiteServer.BackgroundPages.Settings
             LtlSiteName.Text = SiteInfo.SiteName;
 
             FxUtils.AddListItems(RblIsSeparatedWeb, "Web独立部署", "Web与CMS部署在一起");
-            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.Additional.IsSeparatedWeb.ToString());
-            PhSeparatedWeb.Visible = SiteInfo.Additional.IsSeparatedWeb;
-            TbSeparatedWebUrl.Text = SiteInfo.Additional.SeparatedWebUrl;
+            ControlUtils.SelectSingleItem(RblIsSeparatedWeb, SiteInfo.IsSeparatedWeb.ToString());
+            PhSeparatedWeb.Visible = SiteInfo.IsSeparatedWeb;
+            TbSeparatedWebUrl.Text = SiteInfo.SeparatedWebUrl;
         }
 
         public void RblIsSeparatedWeb_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,11 +49,11 @@ namespace SiteServer.BackgroundPages.Settings
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-            SiteInfo.Additional.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
-            SiteInfo.Additional.SeparatedWebUrl = TbSeparatedWebUrl.Text;
-            if (!string.IsNullOrEmpty(SiteInfo.Additional.SeparatedWebUrl) && !SiteInfo.Additional.SeparatedWebUrl.EndsWith("/"))
+            SiteInfo.IsSeparatedWeb = TranslateUtils.ToBool(RblIsSeparatedWeb.SelectedValue);
+            SiteInfo.SeparatedWebUrl = TbSeparatedWebUrl.Text;
+            if (!string.IsNullOrEmpty(SiteInfo.SeparatedWebUrl) && !SiteInfo.SeparatedWebUrl.EndsWith("/"))
             {
-                SiteInfo.Additional.SeparatedWebUrl = SiteInfo.Additional.SeparatedWebUrl + "/";
+                SiteInfo.SeparatedWebUrl = SiteInfo.SeparatedWebUrl + "/";
             }
 
             DataProvider.SiteDao.Update(SiteInfo);
@@ -65,7 +65,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageSiteUrlWeb.GetRedirectUrl());
+            FxUtils.Page.Redirect(PageSiteUrlWeb.GetRedirectUrl());
         }
     }
 }

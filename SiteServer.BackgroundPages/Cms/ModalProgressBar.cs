@@ -130,7 +130,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtilsEx.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
+                //FxUtils.Page.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将栏目放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateContentsOneByOne") && AuthRequest.IsQueryExists("channelId") &&
                      AuthRequest.IsQueryExists("contentIdCollection"))
@@ -142,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtilsEx.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
+                //FxUtils.Page.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将内容放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateByTemplate") && AuthRequest.IsQueryExists("templateId"))
             {
@@ -150,7 +150,7 @@ namespace SiteServer.BackgroundPages.Cms
                 CreateManager.CreateByTemplate(SiteId, templateId);
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtilsEx.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                //FxUtils.Page.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             else if (AuthRequest.IsQueryExists("CreateByIDsCollection") && AuthRequest.IsQueryExists("IDsCollection"))
             {
@@ -163,7 +163,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
 
                 LayerUtils.CloseAndOpenPageCreateStatus(Page);
-                //PageUtilsEx.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
+                //FxUtils.Page.Redirect(ModalTipMessage.GetRedirectUrlString(SiteId, "已成功将文件放入生成队列"));
             }
             //---------------------------------------------------------------------------------------//
             else if (AuthRequest.IsQueryExists("SiteTemplateDownload"))

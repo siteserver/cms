@@ -1,42 +1,27 @@
 ﻿using System;
+using Datory;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model
 {
-    public class LogInfo: ILogInfo
+    [Table("siteserver_Log")]
+    public class LogInfo : Entity, ILogInfo
     {
         public const string AdminLogin = "后台管理员登录";
 
-        public LogInfo()
-        {
-            Id = 0;
-            UserName = string.Empty;
-            IpAddress = string.Empty;
-            AddDate = DateTime.Now;
-            Action = string.Empty;
-            Summary = string.Empty;
-        }
-
-        public LogInfo(int id, string userName, string ipAddress, DateTime addDate, string action, string summary)
-        {
-            Id = id;
-            UserName = userName;
-            IpAddress = ipAddress;
-            AddDate = addDate;
-            Action = action;
-            Summary = summary;
-        }
-
-        public int Id { get; set; }
-
+        [TableColumn]
         public string UserName { get; set; }
 
+        [TableColumn]
         public string IpAddress { get; set; }
 
+        [TableColumn]
         public DateTime? AddDate { get; set; }
 
+        [TableColumn]
         public string Action { get; set; }
 
+        [TableColumn]
         public string Summary { get; set; }
     }
 }

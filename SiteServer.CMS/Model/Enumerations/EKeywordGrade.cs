@@ -1,14 +1,13 @@
 using System;
-using System.Web.UI.WebControls;
 
 namespace SiteServer.CMS.Model.Enumerations
 {
-	public enum EKeywordGrade
-	{
+    public enum EKeywordGrade
+    {
         Normal,         //一般
         Sensitive,      //比较敏感
         Dangerous       //危险
-	}
+    }
 
     public class EKeywordGradeUtils
     {
@@ -79,19 +78,6 @@ namespace SiteServer.CMS.Model.Enumerations
         public static bool Equals(string typeStr, EKeywordGrade type)
         {
             return Equals(type, typeStr);
-        }
-
-        public static void AddListItems(ListControl listControl)
-        {
-            if (listControl != null)
-            {
-                var item = new ListItem(GetText(EKeywordGrade.Normal), GetValue(EKeywordGrade.Normal));
-                listControl.Items.Add(item);
-                item = new ListItem(GetText(EKeywordGrade.Sensitive), GetValue(EKeywordGrade.Sensitive));
-                listControl.Items.Add(item);
-                item = new ListItem(GetText(EKeywordGrade.Dangerous), GetValue(EKeywordGrade.Dangerous));
-                listControl.Items.Add(item);
-            }
         }
     }
 }

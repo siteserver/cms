@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class ModalAdminAccessToken : BasePage
-	{
-	    public static readonly string PageUrl = PageUtilsEx.GetSettingsUrl(nameof(ModalAdminAccessToken));
+    public class ModalAdminAccessToken : BasePage
+    {
+        public static readonly string PageUrl = PageUtilsEx.GetSettingsUrl(nameof(ModalAdminAccessToken));
 
         public Literal LtlTitle;
-		public Literal LtlToken;
-	    public Literal LtlAddDate;
-	    public Literal LtlUpdatedDate;
+        public Literal LtlToken;
+        public Literal LtlAddDate;
+        public Literal LtlUpdatedDate;
 
         private int _id;
 
@@ -24,8 +25,8 @@ namespace SiteServer.BackgroundPages.Settings
                 {"id", id.ToString()}
             }), 0, 420);
         }
-        
-		public void Page_Load(object sender, EventArgs e)
+
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -55,7 +56,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 SuccessMessage("API密钥重新设置成功！");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FailMessage(ex, "API密钥重新设置失败！");
             }

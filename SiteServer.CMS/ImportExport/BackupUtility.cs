@@ -8,8 +8,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.ImportExport
 {
-	public class BackupUtility
-	{
+    public class BackupUtility
+    {
         public const string CacheTotalCount = "_TotalCount";
         public const string CacheCurrentCount = "_CurrentCount";
         public const string CacheMessage = "_Message";
@@ -28,7 +28,7 @@ namespace SiteServer.CMS.ImportExport
 
             var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
 
-            exportObject.ExportChannels(channelIdList, filePath);  
+            exportObject.ExportChannels(channelIdList, filePath);
         }
 
         public static void BackupFiles(int siteId, string filePath, string adminName)
@@ -61,7 +61,7 @@ namespace SiteServer.CMS.ImportExport
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
-            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.Additional.WebUrl, string.Empty, string.Empty, metadataPath);
+            exportObject.ExportMetadata(siteInfo.SiteName, siteInfo.WebUrl, string.Empty, string.Empty, metadataPath);
 
             ZipUtils.CreateZip(filePath, siteTemplatePath);
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
@@ -99,7 +99,7 @@ namespace SiteServer.CMS.ImportExport
                     DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
-                    if (templateInfo.IsDefault == false)
+                    if (templateInfo.Default == false)
                     {
                         DataProvider.TemplateDao.Delete(siteId, templateInfo.Id);
                     }

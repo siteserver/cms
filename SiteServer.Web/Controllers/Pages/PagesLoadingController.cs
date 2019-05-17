@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -16,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpGet, Route(Route)]
         public void Redirect()
         {
-            var request = new AuthenticatedRequest(HttpContext.Current.Request);
+            var request = new Request(HttpContext.Current.Request);
 
             var redirectUrl = request.GetQueryString("redirectUrl");
             var encryptedUrl = request.GetQueryString("encryptedUrl");
@@ -46,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
-            var isLocal = siteInfo.Additional.IsSeparatedWeb || siteInfo.Additional.IsSeparatedAssets;
+            var isLocal = siteInfo.IsSeparatedWeb || siteInfo.IsSeparatedAssets;
 
             if (siteId > 0 && channelId > 0 && contentId > 0)
             {
@@ -81,14 +82,14 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteId == 0)
                 {
-                    redirectUrl = PageUtilsEx.ApplicationPath;
+                    redirectUrl = WebConfigUtils.ApplicationPath;
                 }
                 else
                 {
                     var redirectSiteInfo = SiteManager.GetSiteInfo(siteId);
-                    redirectUrl = redirectSiteInfo.Additional.IsSeparatedWeb
+                    redirectUrl = redirectSiteInfo.IsSeparatedWeb
                         ? ApiRoutePreview.GetSiteUrl(siteId)
-                        : redirectSiteInfo.Additional.WebUrl;
+                        : redirectSiteInfo.WebUrl;
                 }
             }
 
@@ -100,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 var redirectUrl = request.GetPostString("redirectUrl");
                 var encryptedUrl = request.GetPostString("encryptedUrl");

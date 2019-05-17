@@ -268,6 +268,10 @@ var methods = {
     location.reload();
   },
 
+  btnContinueReturnClick: function() {
+    parent.location.hash = 'pages/contents.html';
+  },
+
   btnSubmitClick: function () {
     var $this = this;
     this.pageAlert = null;

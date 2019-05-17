@@ -9,7 +9,7 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageContentAddAfter : BasePageCms
+    public class PageContentAddAfter : BasePageCms
     {
         public RadioButtonList RblOperation;
         public PlaceHolder PhSiteId;
@@ -38,12 +38,12 @@ namespace SiteServer.BackgroundPages.Cms
             });
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-			PageUtilsEx.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
-			var channelId = AuthRequest.GetQueryInt("channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "ContentID", "ReturnUrl");
+            var channelId = AuthRequest.GetQueryInt("channelId");
             _contentId = AuthRequest.GetQueryInt("ContentID");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
@@ -69,36 +69,36 @@ namespace SiteServer.BackgroundPages.Cms
         }
 
         public void RblOperation_SelectedIndexChanged(object sender, EventArgs e)
-		{
+        {
             var after = (EContentAddAfter)TranslateUtils.ToEnum(typeof(EContentAddAfter), RblOperation.SelectedValue, EContentAddAfter.ContinueAdd);
             if (after == EContentAddAfter.ContinueAdd)
             {
-                PageUtilsEx.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
+                FxUtils.Page.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, AuthRequest.GetQueryString("ReturnUrl")));
                 return;
             }
 
-		    if (after == EContentAddAfter.ManageContents)
-		    {
-		        PageUtilsEx.Redirect(_returnUrl);
-		        return;
-		    }
+            if (after == EContentAddAfter.ManageContents)
+            {
+                FxUtils.Page.Redirect(_returnUrl);
+                return;
+            }
 
-		    if (after == EContentAddAfter.Contribute)
-		    {
-		        CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
+            if (after == EContentAddAfter.Contribute)
+            {
+                ControlUtils.CrossSiteTransUI.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
 
-		        if (DdlSiteId.Items.Count > 0)
-		        {
-		            DdlSiteId_SelectedIndexChanged(sender, e);
-		        }
-		        PhSiteId.Visible = PhSubmit.Visible = true;
-		    }
-		}
+                if (DdlSiteId.Items.Count > 0)
+                {
+                    DdlSiteId_SelectedIndexChanged(sender, e);
+                }
+                PhSiteId.Visible = PhSubmit.Visible = true;
+            }
+        }
 
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.CrossSiteTransUI.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -119,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
+                AuthRequest.AddContentLog(SiteId, _channelInfo.Id, _contentId, "内容跨站转发", $"转发到站点:{targetSiteInfo.SiteName}");
 
                 SuccessMessage("内容跨站转发成功，请选择后续操作。");
                 RblOperation.Items.Clear();
@@ -133,5 +133,5 @@ namespace SiteServer.BackgroundPages.Cms
                 FailMessage(ex, "内容跨站转发失败！");
             }
         }
-	}
+    }
 }

@@ -98,7 +98,7 @@ namespace SiteServer.BackgroundPages.Settings
             foreach (var siteId in siteIdArrayList)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                if (siteInfo.IsRoot == false)
+                if (siteInfo.Root == false)
                 {
                     if (siteInfo.ParentId == 0)
                     {
@@ -128,9 +128,9 @@ namespace SiteServer.BackgroundPages.Settings
             var tableNameList = SiteManager.GetSiteTableNames();
             if (tableNameList.Count > 0)
             {
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Choose, true));
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Create, false));
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.Choose, true));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.Create, false));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.HandWrite, false));
 
                 PhTableChoose.Visible = true;
                 PhTableHandWrite.Visible = false;
@@ -142,8 +142,8 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Create, true));
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.Create, true));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.HandWrite, false));
 
                 PhTableChoose.Visible = false;
                 PhTableHandWrite.Visible = false;
@@ -301,7 +301,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;
                 var onlineTemplateName = IsOnlineTemplate ? HihOnlineTemplateName.Value : string.Empty;
-                PageUtilsEx.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
+                FxUtils.Page.Redirect(PageProgressBar.GetCreateSiteUrl(theSiteId,
                     CbIsImportContents.Checked, CbIsImportTableStyles.Checked, siteTemplateDir, onlineTemplateName, StringUtils.GetGuid()));
             }
             else
@@ -459,13 +459,13 @@ namespace SiteServer.BackgroundPages.Settings
                 else if (tableRule == ETableRule.HandWrite)
                 {
                     tableName = TbTableHandWrite.Text;
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (!DatabaseUtils.IsTableExists(tableName))
                     {
-                        DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        TableColumnManager.CreateContentTable(tableName, ContentDao.TableColumnsDefault);
                     }
                     else
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                        TableColumnManager.AlterSystemTable(tableName, ContentDao.TableColumnsDefault);
                     }
                 }
 
@@ -475,23 +475,23 @@ namespace SiteServer.BackgroundPages.Settings
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentSiteId,
-                    IsRoot = isRoot
+                    Root = isRoot
                 };
 
-                siteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+                siteInfo.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
 
-                if (siteInfo.Additional.IsCheckContentLevel)
+                if (siteInfo.IsCheckContentLevel)
                 {
-                    siteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                    siteInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
                 }
-                siteInfo.Additional.Charset = DdlCharset.SelectedValue;
+                siteInfo.Charset = DdlCharset.SelectedValue;
 
                 var siteId = DataProvider.ChannelDao.InsertSiteInfo(nodeInfo, siteInfo, AuthRequest.AdminName);
 
                 if (string.IsNullOrEmpty(tableName))
                 {
-                    tableName = ContentDao.GetContentTableName(siteId);
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                    tableName = Constants.GetContentTableName(siteId);
+                    TableColumnManager.CreateContentTable(tableName, ContentDao.TableColumnsDefault);
                     DataProvider.SiteDao.UpdateTableName(siteId, tableName);
                 }
 

@@ -6,31 +6,32 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageTemplateAssets : BasePageCms
-	{
-	    public Literal LtlPageTitle;
+    public class PageTemplateAssets : BasePageCms
+    {
+        public Literal LtlPageTitle;
         public Repeater RptContents;
-	    public Button BtnConfig;
+        public Button BtnConfig;
         public Button BtnAdd;
 
         private string _type;
         private string _name;
-	    private string _ext;
-	    private string _assetsDir;
+        private string _ext;
+        private string _assetsDir;
         private string _directoryPath;
 
         public const string TypeInclude = "include";
         public const string TypeJs = "js";
-        public const string TypeCss= "css";
+        public const string TypeCss = "css";
         public const string NameInclude = "包含文件";
         public const string NameJs = "脚本文件";
         public const string NameCss = "样式文件";
-	    public const string ExtInclude = ".html";
-	    public const string ExtJs = ".js";
-	    public const string ExtCss = ".css";
+        public const string ExtInclude = ".html";
+        public const string ExtJs = ".js";
+        public const string ExtCss = ".css";
 
         public static string GetRedirectUrl(int siteId, string type)
         {
@@ -44,7 +45,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "type");
+            FxUtils.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
             var tips = string.Empty;
 
@@ -52,15 +53,15 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameInclude;
                 _ext = ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
-                
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
+
                 tips = $@"包含文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;stl:include file=""/{_assetsDir}/包含文件.html""&gt;&lt;/stl:include&gt; 引用。";
             }
             else if (_type == TypeJs)
             {
                 _name = NameJs;
                 _ext = ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
                 tips =
                     $@"脚本文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;script type=""text/javascript"" src=""{{stl.siteUrl}}/{_assetsDir}/脚本文件.js""&gt;&lt;/script&gt; 引用。";
             }
@@ -68,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 _name = NameCss;
                 _ext = ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
                 tips = $@"样式文件存放在 <code>{_assetsDir}</code> 目录中，模板中使用 &lt;link rel=""stylesheet"" type=""text/css"" href=""{{stl.siteUrl}}/{_assetsDir}/样式文件.css"" /&gt; 引用。";
             }
 
@@ -141,5 +142,5 @@ namespace SiteServer.BackgroundPages.Cms
             ltlDelete.Text =
                 $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete($"删除{_name}", $"此操作将删除{_name}，确认吗", $"{GetRedirectUrl(SiteId, _type)}&delete={true}&fileName={fileName}")}"">删除</a>";
         }
-	}
+    }
 }

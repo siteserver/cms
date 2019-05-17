@@ -304,7 +304,6 @@ namespace SiteServer.CMS.Core
         public class Print
         {
             public const string JsUtf8 = "scripts/print_uft8.js";
-            public const string JsGb2312 = "scripts/print.js";
             public const string IconUrl = "Icons/print";
         }
 

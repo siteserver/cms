@@ -4,6 +4,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages
 {
@@ -25,7 +26,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public AuthenticatedRequest AuthRequest { get; private set; }
+        public Request AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -37,23 +38,15 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new AuthenticatedRequest(Request);
+            AuthRequest = new Request(Request);
 
             if (!IsInstallerPage)
             {
-                if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+                if (ConfigManager.Instance.Initialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
-                    PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl("Installer"));
+                    FxUtils.Page.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
                 }
-
-#if !DEBUG
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
-                {
-                    PageUtilsEx.Redirect(PageSyncDatabase.GetRedirectUrl());
-                    return;
-                }
-#endif
             }
 
             if (!IsAccessable) // 如果页面不能直接访问且又没有登录则直接跳登录页
@@ -61,7 +54,7 @@ namespace SiteServer.BackgroundPages
                 if (!AuthRequest.IsAdminLoggin || AuthRequest.AdminInfo == null || AuthRequest.AdminInfo.Locked) // 检测管理员是否登录，检测管理员帐号是否被锁定
                 {
                     IsForbidden = true;
-                    PageUtilsEx.RedirectToLoginPage();
+                    FxUtils.Page.RedirectToLoginPage();
                     return;
                 }
             }
@@ -205,12 +198,12 @@ setTimeout(function() {{
 
         public void VerifySystemPermissions(params string[] permissionArray)
         {
-            if (AuthRequest.AdminPermissionsImpl.HasSystemPermissions(permissionArray))
+            if (AuthRequest.AdminPermissions.HasSystemPermissions(permissionArray))
             {
                 return;
             }
             AuthRequest.AdminLogout();
-            PageUtilsEx.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
+            FxUtils.Page.Redirect(PageUtilsEx.GetAdminUrl(string.Empty));
         }
 
         public virtual void Submit_OnClick(object sender, EventArgs e)
@@ -252,7 +245,7 @@ setTimeout(function() {{
         public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{PageUtilsEx.ApplicationPath}', '{siteUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{WebConfigUtils.ApplicationPath}', '{siteUrl}')";
         }
     }
 }

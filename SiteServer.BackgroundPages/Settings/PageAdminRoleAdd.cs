@@ -157,7 +157,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                PageUtilsEx.RedirectToErrorPage("页面超时，请重新进入。");
+                FxUtils.Page.RedirectToErrorPage("页面超时，请重新进入。");
             }
 
             if (Request.QueryString["Return"] == null)
@@ -249,7 +249,7 @@ if (ss_role) {
         {
             if (AuthRequest.GetQueryString("Return") != null)
             {
-                PageUtilsEx.Redirect(PageAdminRole.GetRedirectUrl());
+                FxUtils.Page.Redirect(PageAdminRole.GetRedirectUrl());
             }
         }
     }

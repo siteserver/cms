@@ -3,16 +3,17 @@ using System.Collections.Specialized;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalFileChangeName : BasePageCms
+    public class ModalFileChangeName : BasePageCms
     {
         protected Literal LtlFileName;
         protected TextBox TbFileName;
 
-		private string _rootPath;
-		private string _directoryPath;
+        private string _rootPath;
+        private string _directoryPath;
 
         public static string GetOpenWindowString(int siteId, string rootPath, string fileName)
         {
@@ -33,20 +34,20 @@ namespace SiteServer.BackgroundPages.Cms
             }), 400, 250);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "RootPath");
+            FxUtils.CheckRequestParameter("siteId", "RootPath");
 
             _rootPath = AuthRequest.GetQueryString("RootPath").TrimEnd('/');
             _directoryPath = PathUtility.MapPath(SiteInfo, _rootPath);
 
-			if (!Page.IsPostBack)
-			{
+            if (!Page.IsPostBack)
+            {
                 LtlFileName.Text = AuthRequest.GetQueryString("FileName");
-			}
-		}
+            }
+        }
 
         private string RedirectUrl()
         {
@@ -76,5 +77,5 @@ namespace SiteServer.BackgroundPages.Cms
             //JsUtils.SubModal.CloseModalPageWithoutRefresh(Page);
             LayerUtils.CloseAndRedirect(Page, RedirectUrl());
         }
-	}
+    }
 }

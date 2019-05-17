@@ -11,6 +11,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
+using System.Web;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -128,7 +129,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -240,7 +241,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 var filePath = PathUtility.GetSiteTemplatesPath(directoryName + ".zip");
                 FileUtils.DeleteFileIfExists(filePath);
-                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+                FileUtility.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "模板压缩包下载成功，开始解压缩");
@@ -290,7 +291,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var fileName = PageUtils.GetFileNameFromUrl(downloadUrl);
                 var filePath = PathUtilsEx.GetPluginPath(fileName);
                 FileUtils.DeleteFileIfExists(filePath);
-                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+                FileUtility.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "4");
                 CacheUtils.Insert(cacheMessageKey, "插件压缩包下载成功，开始安装");
@@ -394,7 +395,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
+        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, Request request)
         {
             var list = new List<string>();
 

@@ -34,7 +34,6 @@ namespace SiteServer.CMS.StlParser.StlElement
         public const string AttributeStartNum = "startNum";
         public const string AttributeTotalNum = "totalNum";
         public const string AttributeTitleWordNum = "titleWordNum";
-        public const string AttributeWhere = "where";
         public const string AttributeIsTop = "isTop";
         public const string AttributeIsRecommend = "isRecommend";
         public const string AttributeIsHot = "isHot";
@@ -74,7 +73,6 @@ namespace SiteServer.CMS.StlParser.StlElement
             var isShowText = true;
             var isTopText = string.Empty;
             var titleWordNum = 0;
-            var where = string.Empty;
 
             var isTop = false;
             var isTopExists = false;
@@ -144,10 +142,6 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     titleWordNum = TranslateUtils.ToInt(value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(name, AttributeWhere))
-                {
-                    where = value;
-                }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
                 {
                     isTopExists = true;
@@ -206,16 +200,16 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, where, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+            return ParseImpl(pageInfo, contextInfo, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, string where, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
             var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -229,7 +223,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -316,8 +311,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -377,8 +373,9 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
-                        var imageUrl = contentInfo.GetString(BackgroundContentAttribute.ImageUrl);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
@@ -496,7 +493,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))

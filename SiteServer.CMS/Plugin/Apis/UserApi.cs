@@ -63,7 +63,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public bool Insert(IUserInfo userInfo, string password, out string errorMessage)
         {
-            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, PageUtilsEx.GetIpAddress(), out errorMessage);
+            var userId = DataProvider.UserDao.Insert(userInfo as UserInfo, password, string.Empty, out errorMessage);
             return userId > 0;
         }
 
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public void AddLog(string userName, string action, string summary)
         {
-            LogUtils.AddUserLog(userName, action, summary);
+            LogUtils.AddUserLog(string.Empty, userName, action, summary);
         }
 
         public List<ILogInfo> GetLogs(string userName, int totalNum, string action = "")
@@ -100,17 +100,17 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
         {
-            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
         }
 
         public string GetAccessToken(int userId, string userName, DateTime expiresAt)
         {
-            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
         }
 
         public IAccessToken ParseAccessToken(string accessToken)
         {
-            return AuthenticatedRequest.ParseAccessToken(accessToken);
+            return AccessTokenManager.ParseAccessToken(accessToken);
         }
     }
 }

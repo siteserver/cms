@@ -7,13 +7,14 @@ using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalImport : BasePageCms
+    public class ModalImport : BasePageCms
     {
-		public HtmlInputFile HifMyFile;
-		public DropDownList DdlIsOverride;
+        public HtmlInputFile HifMyFile;
+        public DropDownList DdlIsOverride;
 
         private string _type;
 
@@ -38,14 +39,14 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _type = AuthRequest.GetQueryString("Type");
 
             if (!IsPostBack)
-			{
-			
-			}
-		}
+            {
+
+            }
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -79,6 +80,6 @@ namespace SiteServer.BackgroundPages.Cms
                     }
                 }
             }
-		}
-	}
+        }
+    }
 }

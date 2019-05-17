@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _templateType = AuthRequest.GetQueryString("templateType");
             _keywords = AuthRequest.GetQueryString("keywords");
@@ -47,7 +47,7 @@ namespace SiteServer.BackgroundPages.Cms
             VerifySitePermissions(ConfigManager.WebSitePermissions.Template);
 
             DdlTemplateType.Items.Add(new ListItem("<所有类型>", string.Empty));
-            TemplateTypeUtils.AddListItems(DdlTemplateType);
+            ControlUtils.TemplateTypeUI.AddListItems(DdlTemplateType);
             ControlUtils.SelectSingleItem(DdlTemplateType, _templateType);
 
             TbKeywords.Text = _keywords;
@@ -63,7 +63,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.Delete(SiteId, templateId);
                         AuthRequest.AddSiteLog(SiteId,
-                            $"删除{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"删除{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessDeleteMessage();
@@ -84,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                     {
                         DataProvider.TemplateDao.SetDefault(SiteId, templateId);
                         AuthRequest.AddSiteLog(SiteId,
-                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.TemplateType)}",
+                            $"设置默认{TemplateTypeUtils.GetText(templateInfo.Type)}",
                             $"模板名称:{templateInfo.TemplateName}");
                     }
                     SuccessMessage();
@@ -112,14 +112,14 @@ namespace SiteServer.BackgroundPages.Cms
 ";
             }
 
-            RptContents.DataSource = DataProvider.TemplateDao.GetDataSource(SiteId, _keywords, _templateType);
+            RptContents.DataSource = TemplateManager.GetTemplateInfoList(SiteId, _keywords, _templateType);
             RptContents.ItemDataBound += RptContents_ItemDataBound;
             RptContents.DataBind();
         }
 
         public void DdlTemplateType_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -128,7 +128,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void BtnSearch_Click(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
             {
                 {"templateType", DdlTemplateType.SelectedValue},
                 {"keywords", TbKeywords.Text}
@@ -139,12 +139,8 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var templateId = SqlUtils.EvalInt(e.Item.DataItem, nameof(TemplateInfo.Id));
-            var templateType = TemplateTypeUtils.GetEnumType(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateType)));
-            var templateName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.TemplateName));
-            var relatedFileName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.RelatedFileName));
-            var createdFileFullName = SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.CreatedFileFullName));
-            var isDefault = TranslateUtils.ToBool(SqlUtils.EvalString(e.Item.DataItem, nameof(TemplateInfo.IsDefault)));
+            var templateInfo = (TemplateInfo)e.Item.DataItem;
+            var templateType = templateInfo.Type;
 
             var ltlTemplateName = (Literal)e.Item.FindControl("ltlTemplateName");
             var ltlRelatedFileName = (Literal)e.Item.FindControl("ltlRelatedFileName");
@@ -157,23 +153,23 @@ namespace SiteServer.BackgroundPages.Cms
             var ltlCreateUrl = (Literal)e.Item.FindControl("ltlCreateUrl");
             var ltlDeleteUrl = (Literal)e.Item.FindControl("ltlDeleteUrl");
 
-            var templateAddUrl = PageTemplateAdd.GetRedirectUrl(SiteId, templateId, templateType);
-            ltlTemplateName.Text = $@"<a href=""{templateAddUrl}"">{templateName}</a>";
-            ltlRelatedFileName.Text = relatedFileName;
+            var templateAddUrl = PageTemplateAdd.GetRedirectUrl(SiteId, templateInfo.Id, templateInfo.Type);
+            ltlTemplateName.Text = $@"<a href=""{templateAddUrl}"">{templateInfo.TemplateName}</a>";
+            ltlRelatedFileName.Text = templateInfo.RelatedFileName;
 
             if (templateType == TemplateType.IndexPageTemplate || templateType == TemplateType.FileTemplate)
             {
-                var url = PageUtility.ParseNavigationUrl(SiteInfo, createdFileFullName, false);
-                ltlFileName.Text = $"<a href='{url}' target='_blank'>{createdFileFullName}</a>";
+                var url = PageUtility.ParseNavigationUrl(SiteInfo, templateInfo.CreatedFileFullName, false);
+                ltlFileName.Text = $"<a href='{url}' target='_blank'>{templateInfo.CreatedFileFullName}</a>";
             }
 
-            ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateId, templateType, isDefault).ToString();
+            ltlUseCount.Text = DataProvider.ChannelDao.GetTemplateUseCount(SiteId, templateInfo.Id, templateType, templateInfo.Default).ToString();
 
             ltlTemplateType.Text = TemplateTypeUtils.GetText(templateType);
 
             if (templateType != TemplateType.FileTemplate)
             {
-                if (isDefault)
+                if (templateInfo.Default)
                 {
                     ltlDefaultUrl.Text = @"<span class=""badge badge-primary"">默认模板</span>";
                 }
@@ -181,7 +177,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     var defaultUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                     {
-                        {"TemplateID", templateId.ToString()},
+                        {"TemplateID", templateInfo.Id.ToString()},
                         {"SetDefault", true.ToString()},
                         { "TemplateType", templateType.Value }
                     });
@@ -190,27 +186,27 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            var copyUrl = PageTemplateAdd.GetRedirectUrlToCopy(SiteId, templateId);
+            var copyUrl = PageTemplateAdd.GetRedirectUrlToCopy(SiteId, templateInfo.Id);
             ltlCopyUrl.Text = $@"<a href=""{copyUrl}"">快速复制</a>";
 
-            var logUrl = PageTemplateLog.GetRedirectUrl(SiteId, templateId);
+            var logUrl = PageTemplateLog.GetRedirectUrl(SiteId, templateInfo.Id);
             ltlLogUrl.Text = $@"<a href=""{logUrl}"">修订历史</a>";
 
             ltlCreateUrl.Text =
                 $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithCreateByTemplate(
-                    SiteId, templateId)}"">生成页面</a>";
+                    SiteId, templateInfo.Id)}"">生成页面</a>";
 
-            if (!isDefault)
+            if (!templateInfo.Default)
             {
                 var deleteUrl = PageUtilsEx.GetCmsUrl(SiteId, nameof(PageTemplate), new NameValueCollection
                 {
-                    {"TemplateID", templateId.ToString()},
+                    {"TemplateID", templateInfo.Id.ToString()},
                     {"Delete", true.ToString()},
                     { "TemplateType", templateType.Value }
                 });
 
                 ltlDeleteUrl.Text =
-                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", $"此操作将删除模板“{templateName}”，确认吗？", deleteUrl)}"">删除</a>";
+                $@"<a href=""javascript:;"" onclick=""{AlertUtils.ConfirmDelete("删除文件", $"此操作将删除模板“{templateInfo.TemplateName}”，确认吗？", deleteUrl)}"">删除</a>";
             }
         }
     }

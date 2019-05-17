@@ -5,12 +5,13 @@ using SiteServer.CMS.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.ImportExport;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalTableStyleImport : BasePageCms
+    public class ModalTableStyleImport : BasePageCms
     {
-		public HtmlInputFile HifMyFile;
+        public HtmlInputFile HifMyFile;
 
         private string _tableName;
         private int _relatedIdentity;
@@ -31,21 +32,21 @@ namespace SiteServer.BackgroundPages.Cms
 
             _tableName = AuthRequest.GetQueryString("TableName");
             _relatedIdentity = int.Parse(AuthRequest.GetQueryString("RelatedIdentity"));
-		}
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
-			{
-				var filePath = HifMyFile.PostedFile.FileName;
+            if (HifMyFile.PostedFile != null && "" != HifMyFile.PostedFile.FileName)
+            {
+                var filePath = HifMyFile.PostedFile.FileName;
                 if (!EFileSystemTypeUtils.IsZip(PathUtils.GetExtension(filePath)))
-				{
+                {
                     FailMessage("必须上传Zip压缩文件");
-					return;
-				}
+                    return;
+                }
 
-				try
-				{
+                try
+                {
                     var localFilePath = PathUtils.GetTemporaryFilesPath(PathUtils.GetFileName(filePath));
 
                     HifMyFile.PostedFile.SaveAs(localFilePath);
@@ -55,12 +56,12 @@ namespace SiteServer.BackgroundPages.Cms
                     AuthRequest.AddSiteLog(SiteId, "导入表单显示样式");
 
                     LayerUtils.Close(Page);
-				}
-				catch(Exception ex)
-				{
-					FailMessage(ex, "导入表样式失败！");
-				}
-			}
-		}
-	}
+                }
+                catch (Exception ex)
+                {
+                    FailMessage(ex, "导入表样式失败！");
+                }
+            }
+        }
+    }
 }

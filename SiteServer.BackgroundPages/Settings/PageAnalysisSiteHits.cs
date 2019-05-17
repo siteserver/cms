@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -46,7 +47,7 @@ namespace SiteServer.BackgroundPages.Settings
                 //x轴信息
                 SetXHashtable(key, siteInfo.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetTotalHits(siteInfo.TableName, siteId));
+                SetYHashtable(key, siteInfo.ContentDao.GetTotalHits(siteId));
             }
 
             RptContents.DataSource = siteIdList;
@@ -70,7 +71,7 @@ yArrayHits.push('{yValueHits}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var siteId = (int) e.Item.DataItem;
+            var siteId = (int)e.Item.DataItem;
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
@@ -84,7 +85,7 @@ yArrayHits.push('{yValueHits}');";
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtilsEx.Redirect(siteId > 0
+            FxUtils.Page.Redirect(siteId > 0
                 ? PageAnalysisSiteHitsChannels.GetRedirectUrl(siteId)
                 : GetRedirectUrl());
         }

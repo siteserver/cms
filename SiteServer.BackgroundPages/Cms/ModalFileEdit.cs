@@ -9,21 +9,21 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalFileEdit : BasePageCms
+    public class ModalFileEdit : BasePageCms
     {
         protected TextBox TbFileName;
         protected DropDownList DdlIsPureText;
         public DropDownList DdlCharset;
-        
+
         protected PlaceHolder PhPureText;
         protected TextBox TbFileContent;
         protected PlaceHolder PhFileContent;
-        protected UEditor UeFileContent;
+        protected SiteServer.BackgroundPages.Controls.UEditor UeFileContent;
 
         protected Literal LtlOpen;
         protected Literal LtlView;
 
-		private string _relatedPath;
+        private string _relatedPath;
         private string _theFileName;
         private bool _isCreate;
         private ECharset _fileCharset;
@@ -66,11 +66,11 @@ namespace SiteServer.BackgroundPages.Cms
             return GetOpenWindowString(siteId, relatedPath, fileName, false);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "RelatedPath", "FileName", "IsCreate");
+            FxUtils.CheckRequestParameter("siteId", "RelatedPath", "FileName", "IsCreate");
             _relatedPath = AuthRequest.GetQueryString("RelatedPath").Trim('/');
             if (!_relatedPath.StartsWith("@"))
             {
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
             _fileCharset = ECharset.utf_8;
             if (SiteInfo != null)
             {
-                _fileCharset = ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset);
+                _fileCharset = ECharsetUtils.GetEnumType(SiteInfo.Charset);
             }
 
             if (_isCreate == false)
@@ -92,7 +92,7 @@ namespace SiteServer.BackgroundPages.Cms
 
                 if (!FileUtils.IsFileExists(filePath))
                 {
-                    PageUtilsEx.RedirectToErrorPage("此文件不存在！");
+                    FxUtils.Page.RedirectToErrorPage("此文件不存在！");
                     return;
                 }
             }
@@ -254,5 +254,5 @@ namespace SiteServer.BackgroundPages.Cms
                 FailMessage(errorMessage);
             }
         }
-	}
+    }
 }

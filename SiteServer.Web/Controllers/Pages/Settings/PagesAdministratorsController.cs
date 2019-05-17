@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -25,7 +26,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -190,7 +191,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -226,7 +227,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -238,7 +239,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 adminIdList.Remove(request.AdminId);
 
                 DataProvider.AdministratorDao.Lock(adminIdList);
-                LogUtils.AddAdminLog(request.AdminName, "锁定管理员");
+                request.AddAdminLog("锁定管理员");
 
                 return Ok(new
                 {
@@ -257,7 +258,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -269,7 +270,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 adminIdList.Remove(request.AdminId);
 
                 DataProvider.AdministratorDao.UnLock(adminIdList);
-                LogUtils.AddAdminLog(request.AdminName, "解锁管理员");
+                request.AddAdminLog("解锁管理员");
 
                 return Ok(new
                 {

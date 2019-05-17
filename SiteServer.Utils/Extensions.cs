@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Http;
+using Datory;
 using SiteServer.Plugin;
+using SqlKata;
 
 namespace SiteServer.Utils
 {
@@ -19,6 +21,78 @@ namespace SiteServer.Utils
                 return char.ToLowerInvariant(str[0]) + str.Substring(1);
             }
             return str;
+        }
+
+        public static Query WhereInStr(this Query query, string columnName, string inStr)
+        {
+            var where = string.Empty;
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                where = $"INSTR([{columnName}], ?) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                where = $"CHARINDEX(?, [{columnName}]) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                where = $"POSITION(? IN [{columnName}]) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                where = $"INSTR([{columnName}], ?) > 0";
+            }
+
+            query.WhereRaw(where, inStr);
+            return query;
+        }
+
+        public static Query WhereInStrReverse(this Query query, string columnName, string inStr)
+        {
+            var where = string.Empty;
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                where = $"INSTR(?, [{columnName}]) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                where = $"CHARINDEX([{columnName}], ?) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                where = $"POSITION([{columnName}] IN ?) > 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                where = $"INSTR(?, [{columnName}]) > 0";
+            }
+
+            query.WhereRaw(where, inStr);
+            return query;
+        }
+
+        public static Query WhereNotInStr(this Query query, string columnName, string inStr)
+        {
+            var where = string.Empty;
+            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            {
+                where = $"INSTR([{columnName}], ?) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            {
+                where = $"CHARINDEX(?, [{columnName}]) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            {
+                where = $"POSITION(? IN [{columnName}]) = 0";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            {
+                where = $"INSTR([{columnName}], ?) = 0";
+            }
+
+            query.WhereRaw(where, inStr);
+            return query;
         }
     }
 }

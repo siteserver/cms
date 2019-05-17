@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
@@ -9,9 +10,9 @@ using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
-	public class ChannelAuxiliaryControl : Control
-	{
-        public AttributesImpl Attributes { get; set; }
+    public class ChannelAuxiliaryControl : Control
+    {
+        public IDictionary<string, object> Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 
@@ -19,24 +20,24 @@ namespace SiteServer.BackgroundPages.Controls
 
         public string AdditionalAttributes { get; set; }
 
-		protected override void Render(HtmlTextWriter output)
-		{
+        protected override void Render(HtmlTextWriter output)
+        {
             if (Attributes == null) return;
 
-		    var channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
+            var channelInfo = ChannelManager.GetChannelInfo(SiteInfo.Id, ChannelId);
             var styleInfoList = TableStyleManager.GetChannelStyleInfoList(channelInfo);
 
-		    if (styleInfoList == null) return;
+            if (styleInfoList == null) return;
 
             var builder = new StringBuilder();
-		    var pageScripts = new NameValueCollection();
-		    foreach (var styleInfo in styleInfoList)
-		    {
-		        var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
+            var pageScripts = new NameValueCollection();
+            foreach (var styleInfo in styleInfoList)
+            {
+                var value = BackgroundInputTypeParser.Parse(SiteInfo, ChannelId, styleInfo, Attributes, pageScripts, out var extra);
 
-		        if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
+                if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (styleInfo.Type == InputType.TextEditor)
                 {
                     builder.Append($@"
 <div class=""form-group form-row"">
@@ -64,12 +65,12 @@ namespace SiteServer.BackgroundPages.Controls
                 }
             }
 
-		    output.Write(builder.ToString());
+            output.Write(builder.ToString());
 
-		    foreach (string key in pageScripts.Keys)
-		    {
-		        output.Write(pageScripts[key]);
-		    }
-		}
-	}
+            foreach (string key in pageScripts.Keys)
+            {
+                output.Write(pageScripts[key]);
+            }
+        }
+    }
 }

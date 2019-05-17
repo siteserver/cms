@@ -8,6 +8,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -107,8 +108,8 @@ yArrayUpdate.push('{yValueUpdate}');";
         public void BindGrid()
         {
             var siteIdList = SiteManager.GetSiteIdList();
-            
-            foreach(var siteId in siteIdList)
+
+            foreach (var siteId in siteIdList)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
 
@@ -116,8 +117,8 @@ yArrayUpdate.push('{yValueUpdate}');";
                 //x轴信息
                 SetXHashtable(key, siteInfo.SiteName);
                 //y轴信息
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentAdd(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
-                SetYHashtable(key, DataProvider.ContentDao.GetCountOfContentUpdate(siteInfo.TableName, siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
+                SetYHashtable(key, siteInfo.ContentDao.GetCountOfContentAdd(siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty, ETriState.All), YTypeNew);
+                SetYHashtable(key, siteInfo.ContentDao.GetCountOfContentUpdate(siteInfo.Id, siteInfo.Id, EScopeType.All, _begin, _end, string.Empty), YTypeUpdate);
             }
 
             RptContents.DataSource = siteIdList;
@@ -129,7 +130,7 @@ yArrayUpdate.push('{yValueUpdate}');";
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var siteId = (int) e.Item.DataItem;
+            var siteId = (int)e.Item.DataItem;
             var siteInfo = SiteManager.GetSiteInfo(siteId);
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
@@ -148,12 +149,12 @@ yArrayUpdate.push('{yValueUpdate}');";
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
             if (siteId > 0)
             {
-                PageUtilsEx.Redirect(PageAnalysisSiteChannels.GetRedirectUrl(siteId, TbStartDate.Text,
+                FxUtils.Page.Redirect(PageAnalysisSiteChannels.GetRedirectUrl(siteId, TbStartDate.Text,
                     TbEndDate.Text));
             }
             else
             {
-                PageUtilsEx.Redirect(GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
+                FxUtils.Page.Redirect(GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
             }
         }
 

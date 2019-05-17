@@ -45,7 +45,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckUserName))
             {
-                var checkUserName = contentInfo.GetString(ContentAttribute.CheckUserName);
+                var checkUserName = contentInfo.Get<string>(ContentAttribute.CheckUserName);
                 if (!string.IsNullOrEmpty(checkUserName))
                 {
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
@@ -58,15 +58,15 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckDate))
             {
-                var checkDate = contentInfo.GetDateTime(ContentAttribute.CheckDate, DateTime.MinValue);
-                if (checkDate != DateTime.MinValue)
+                var checkDate = contentInfo.Get<DateTime?>(ContentAttribute.CheckDate, DateTime.MinValue);
+                if (checkDate.HasValue && checkDate.Value != DateTime.MinValue)
                 {
                     value = DateUtils.GetDateAndTimeString(checkDate);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.CheckReasons))
             {
-                value = contentInfo.GetString(ContentAttribute.CheckReasons);
+                value = contentInfo.Get<string>(ContentAttribute.CheckReasons);
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.AddDate))
             {
@@ -114,11 +114,11 @@ namespace SiteServer.BackgroundPages.Core
             }
             else if (StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsTop) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsColor) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsHot) || StringUtils.EqualsIgnoreCase(styleInfo.AttributeName, ContentAttribute.IsRecommend))
             {
-                value = StringUtils.GetTrueImageHtml(contentInfo.GetString(styleInfo.AttributeName));
+                value = StringUtils.GetTrueImageHtml(contentInfo.Get<string>(styleInfo.AttributeName));
             }
             else
             {
-                value = InputParserUtility.GetContentByTableStyle(contentInfo.GetString(styleInfo.AttributeName), siteInfo, styleInfo);
+                value = InputParserUtility.GetContentByTableStyle(contentInfo.Get<string>(styleInfo.AttributeName), siteInfo, styleInfo);
             }
             return value;
         }

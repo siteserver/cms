@@ -4,6 +4,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.CMS.StlParser.StlEntity
 {
@@ -88,7 +89,7 @@ namespace SiteServer.CMS.StlParser.StlEntity
                 }
                 else
                 {
-                    parsedContent = pageInfo.UserInfo.Get<string>(attributeName);
+                    parsedContent = ((UserInfo)pageInfo.UserInfo).Get<string>(attributeName);
                 }
             }
 	        catch

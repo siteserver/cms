@@ -6,9 +6,9 @@ using SiteServer.CMS.DataCache;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageSiteUrlWeb : BasePageCms
+    public class PageSiteUrlWeb : BasePageCms
     {
-		public Repeater RptContents;
+        public Repeater RptContents;
 
         public static string GetRedirectUrl()
         {
@@ -43,9 +43,9 @@ namespace SiteServer.BackgroundPages.Settings
             ltlName.Text = SiteManager.GetSiteName(siteInfo);
             ltlDir.Text = siteInfo.SiteDir;
 
-            ltlWebUrl.Text = $@"<a href=""{siteInfo.Additional.WebUrl}"" target=""_blank"">{siteInfo.Additional.WebUrl}</a>";
+            ltlWebUrl.Text = $@"<a href=""{siteInfo.WebUrl}"" target=""_blank"">{siteInfo.WebUrl}</a>";
 
             ltlEditUrl.Text = $@"<a href=""{PageSiteUrlWebConfig.GetRedirectUrl(siteId)}"">修改</a>";
         }
-	}
+    }
 }

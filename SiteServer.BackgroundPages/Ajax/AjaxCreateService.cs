@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Web;
 using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
@@ -52,13 +53,13 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new AuthenticatedRequest();
+            var request = new Request(HttpContext.Current.Request);
 
             if (type == TypeGetCountArray)
             {
                 retval = GetCountArray(userKeyPrefix);
             }
-            
+
             if (type == TypeCreateSite)
             {
                 var siteId = TranslateUtils.ToInt(Request.Form["siteId"]);
@@ -165,7 +166,7 @@ namespace SiteServer.BackgroundPages.Ajax
                 var filePath = PathUtility.GetSiteTemplatesPath($"T_{onlineTemplateName}.zip");
                 FileUtils.DeleteFileIfExists(filePath);
                 var downloadUrl = OnlineTemplateManager.GetDownloadUrl(onlineTemplateName);
-                WebClientUtils.SaveRemoteFileToLocal(downloadUrl, filePath);
+                FileUtility.SaveRemoteFileToLocal(downloadUrl, filePath);
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");
                 CacheUtils.Insert(cacheMessageKey, "模板压缩包下载成功，开始解压缩，可能需要几分钟，请耐心等待...");

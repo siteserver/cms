@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -143,7 +145,7 @@ namespace SiteServer.Cli.Updater
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            columns.AddRange(DataProvider.ContentDao.TableColumns);
+            columns.AddRange(ContentDao.TableColumnsDefault);
 
             if (oldColumns != null && oldColumns.Count > 0)
             {

@@ -7,6 +7,7 @@ using Datory;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -91,16 +92,16 @@ namespace SiteServer.CMS.Core
 
         public static void SyncContentTables()
         {
-            var tableNameList = SiteManager.GetAllTableNameList();
-            foreach (var tableName in tableNameList)
+            var contentDaoList = ContentDao.GetContentDaoList();
+            foreach (var contentDao in contentDaoList)
             {
-                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, contentDao.TableName))
                 {
-                    TableColumnManager.CreateTable(tableName, DataProvider.ContentDao.TableColumns, string.Empty, true, out _);
+                    TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
                 }
                 else
                 {
-                    TableColumnManager.AlterTable(tableName, DataProvider.ContentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
+                    TableColumnManager.AlterTable(contentDao.TableName, contentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
                 }
             }
         }

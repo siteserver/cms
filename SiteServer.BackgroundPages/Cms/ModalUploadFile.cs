@@ -37,11 +37,11 @@ namespace SiteServer.BackgroundPages.Cms
             }), 550, 250);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _uploadType = EUploadTypeUtils.GetEnumType(AuthRequest.GetQueryString("uploadType"));
             _realtedPath = AuthRequest.GetQueryString("realtedPath");
             _textBoxClientId = AuthRequest.GetQueryString("TextBoxClientID");
@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (IsPostBack) return;
 
             FxUtils.AddListItems(DdlIsFileUploadChangeFileName, "采用系统生成文件名", "采用原有文件名");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.Additional.IsFileUploadChangeFileName.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsFileUploadChangeFileName, SiteInfo.IsFileUploadChangeFileName.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -57,7 +57,7 @@ namespace SiteServer.BackgroundPages.Cms
             if (HifUpload.PostedFile == null || "" == HifUpload.PostedFile.FileName) return;
 
             var filePath = HifUpload.PostedFile.FileName;
-                
+
             try
             {
                 var fileExtName = PathUtils.GetExtension(filePath).ToLower();
@@ -86,7 +86,7 @@ namespace SiteServer.BackgroundPages.Cms
                     FailMessage("此格式不允许上传，请选择有效的文件！");
                     return;
                 }
-                    
+
                 if (!PathUtility.IsFileSizeAllowed(SiteInfo, HifUpload.PostedFile.ContentLength))
                 {
                     FailMessage("上传失败，上传文件超出规定文件大小！");
@@ -116,11 +116,11 @@ namespace SiteServer.BackgroundPages.Cms
 </script>";
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 FailMessage(ex, "文件上传失败");
             }
         }
 
-	}
+    }
 }

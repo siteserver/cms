@@ -3,6 +3,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Provider;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -40,7 +41,7 @@ namespace SiteServer.CMS.DataCache.Content
                 dict.TryGetValue(tableName, out var countList);
                 if (countList != null) return countList;
 
-                countList = DataProvider.ContentDao.GetContentCountInfoList(tableName);
+                countList = ContentDao.Instance(tableName).GetContentCountInfoList();
                 dict[tableName] = countList;
 
                 return countList;
@@ -66,7 +67,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var countInfoList = GetContentCountInfoList(tableName);
                     var countInfo = countInfoList.FirstOrDefault(x =>
                         x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                        x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                        x.IsChecked == contentInfo.Checked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
                     if (countInfo != null)
                     {
                         countInfo.Count++;
@@ -77,7 +78,7 @@ namespace SiteServer.CMS.DataCache.Content
                         {
                             SiteId = contentInfo.SiteId,
                             ChannelId = contentInfo.ChannelId,
-                            IsChecked = contentInfo.IsChecked.ToString(),
+                            IsChecked = contentInfo.Checked.ToString(),
                             CheckedLevel = contentInfo.CheckedLevel,
                             AdminId = contentInfo.AdminId,
                             Count = 1
@@ -93,7 +94,7 @@ namespace SiteServer.CMS.DataCache.Content
 
                 return contentInfo1.SiteId != contentInfo2.SiteId ||
                        contentInfo1.ChannelId != contentInfo2.ChannelId ||
-                       contentInfo1.IsChecked != contentInfo2.IsChecked ||
+                       contentInfo1.Checked != contentInfo2.Checked ||
                        contentInfo1.CheckedLevel != contentInfo2.CheckedLevel ||
                        contentInfo1.AdminId != contentInfo2.AdminId;
             }
@@ -107,7 +108,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var countInfoList = GetContentCountInfoList(tableName);
                     var countInfo = countInfoList.FirstOrDefault(x =>
                         x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                        x.IsChecked == contentInfo.IsChecked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                        x.IsChecked == contentInfo.Checked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
                     if (countInfo != null && countInfo.Count > 0)
                     {
                         countInfo.Count--;

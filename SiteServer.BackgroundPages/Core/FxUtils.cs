@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using Datory;
 using SiteServer.CMS.Core;
@@ -13,8 +14,76 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Core
 {
-    public static class FxUtils
+    public static partial class FxUtils
     {
+        public static void CheckRequestParameter(params string[] parameters)
+        {
+            foreach (var parameter in parameters)
+            {
+                if (!string.IsNullOrEmpty(parameter) && HttpContext.Current.Request.QueryString[parameter] == null)
+                {
+                    FxUtils.Page.Redirect(FxUtils.Page.GetErrorPageUrl(MessageUtils.PageErrorParameterIsNotCorrect));
+                    return;
+                }
+            }
+        }
+
+        private static object Eval(object dataItem, string name)
+        {
+            object o = null;
+            try
+            {
+                o = DataBinder.Eval(dataItem, name);
+            }
+            catch
+            {
+                // ignored
+            }
+            if (o == DBNull.Value)
+            {
+                o = null;
+            }
+            return o;
+        }
+
+        public static int EvalInt(object dataItem, string name)
+        {
+            var o = Eval(dataItem, name);
+            return o == null ? 0 : Convert.ToInt32(o);
+        }
+
+        public static string EvalString(object dataItem, string name)
+        {
+            var o = Eval(dataItem, name);
+            var value = o?.ToString() ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                value = AttackUtils.UnFilterSql(value);
+            }
+            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            {
+                value = string.Empty;
+            }
+            return value;
+        }
+
+        public static DateTime EvalDateTime(object dataItem, string name)
+        {
+            var o = Eval(dataItem, name);
+            if (o == null)
+            {
+                return DateUtils.SqlMinValue;
+            }
+            return (DateTime)o;
+        }
+
+        public static bool EvalBool(object dataItem, string name)
+        {
+            var o = Eval(dataItem, name);
+            return o != null && TranslateUtils.ToBool(o.ToString());
+        }
+
         public static HorizontalAlign ToHorizontalAlign(string typeStr)
         {
             return (HorizontalAlign)ToEnum(typeof(HorizontalAlign), typeStr, HorizontalAlign.Left);
@@ -449,7 +518,7 @@ namespace SiteServer.BackgroundPages.Core
 
         public static void LoadContentLevelToEdit(ListControl listControl, SiteInfo siteInfo, ContentInfo contentInfo, bool isChecked, int checkedLevel)
         {
-            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+            var checkContentLevel = siteInfo.CheckContentLevel;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;
@@ -460,7 +529,7 @@ namespace SiteServer.BackgroundPages.Core
             var isCheckable = false;
             if (contentInfo != null)
             {
-                isCheckable = CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+                isCheckable = CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isChecked, checkedLevel);
                 if (isCheckable)
                 {
                     listItem = new ListItem(CheckManager.Level.NotChange, CheckManager.LevelInt.NotChange.ToString());
@@ -577,7 +646,7 @@ namespace SiteServer.BackgroundPages.Core
 
         public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)
         {
-            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+            var checkContentLevel = siteInfo.CheckContentLevel;
 
             if (isChecked)
             {
@@ -765,7 +834,7 @@ namespace SiteServer.BackgroundPages.Core
 
         public static void LoadContentLevelToCheck(ListControl listControl, SiteInfo siteInfo, bool isChecked, int checkedLevel)
         {
-            var checkContentLevel = siteInfo.Additional.CheckContentLevel;
+            var checkContentLevel = siteInfo.CheckContentLevel;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;

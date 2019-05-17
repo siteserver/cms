@@ -5,12 +5,13 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
     public class ModalCreateChannels : BasePageCms
     {
-		protected DropDownList DdlIsIncludeChildren;
+        protected DropDownList DdlIsIncludeChildren;
         protected DropDownList DdlIsCreateContents;
 
         private string _channelIdCollection;
@@ -20,14 +21,14 @@ namespace SiteServer.BackgroundPages.Cms
             return LayerUtils.GetOpenScriptWithCheckBoxValue("生成栏目页", PageUtilsEx.GetCmsUrl(siteId, nameof(ModalCreateChannels), null), "ChannelIDCollection", "请选择需要生成页面的栏目!", 550, 300);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "ChannelIDCollection");
+            FxUtils.CheckRequestParameter("siteId", "ChannelIDCollection");
 
             _channelIdCollection = AuthRequest.GetQueryString("ChannelIDCollection");
-		}
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
@@ -55,6 +56,6 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LayerUtils.CloseAndOpenPageCreateStatus(Page);
-		}
-	}
+        }
+    }
 }

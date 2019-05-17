@@ -1,35 +1,23 @@
+using Datory;
+
 namespace SiteServer.CMS.Model
 {
-	public class TagInfo
-	{
-	    public TagInfo()
-		{
-            Id = 0;
-            SiteId = 0;
-            ContentIdCollection = string.Empty;
-            Tag = string.Empty;
-            UseNum = 0;
-		}
+    [Table("siteserver_Tag")]
+    public class TagInfo : Entity
+    {
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public TagInfo(int id, int siteId, string contentIdCollection, string tag, int useNum) 
-		{
-            Id = id;
-            SiteId = siteId;
-            ContentIdCollection = contentIdCollection;
-            Tag = tag;
-            UseNum = useNum;
-		}
+        [TableColumn(Text = true)]
+        public string ContentIdCollection { get; set; }
 
-        public int Id { get; set; }
+        [TableColumn]
+        public string Tag { get; set; }
 
-	    public int SiteId { get; set; }
+        [TableColumn]
+        public int UseNum { get; set; }
 
-	    public string ContentIdCollection { get; set; }
-
-	    public string Tag { get; set; }
-
-	    public int UseNum { get; set; }
-
-	    public int Level { get; set; } = 0;
-	}
+        [TableColumn]
+        public int Level { get; set; }
+    }
 }

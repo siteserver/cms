@@ -18,49 +18,49 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "树状导航", Description = "通过 stl:tree 标签在模板中显示树状导航")]
     public class StlTree
-	{
+    {
         private StlTree() { }
         public const string ElementName = "stl:tree";
 
-		[StlAttribute(Title = "栏目索引")]
+        [StlAttribute(Title = "栏目索引")]
         private const string ChannelIndex = nameof(ChannelIndex);
-        
-		[StlAttribute(Title = "栏目名称")]
+
+        [StlAttribute(Title = "栏目名称")]
         private const string ChannelName = nameof(ChannelName);
-        
+
         [StlAttribute(Title = "上级栏目的级别")]
         private const string UpLevel = nameof(UpLevel);
-        
+
         [StlAttribute(Title = "从首页向下的栏目级别")]
         private const string TopLevel = nameof(TopLevel);
-        
+
         [StlAttribute(Title = "指定显示的栏目组")]
         private const string GroupChannel = nameof(GroupChannel);
-        
+
         [StlAttribute(Title = "指定不显示的栏目组")]
         private const string GroupChannelNot = nameof(GroupChannelNot);
-        
+
         [StlAttribute(Title = "根节点显示名称")]
         private const string Title = nameof(Title);
-        
+
         [StlAttribute(Title = "是否AJAX方式即时载入")]
         private const string IsLoading = nameof(IsLoading);
-        
+
         [StlAttribute(Title = "是否显示栏目内容数")]
         private const string IsShowContentNum = nameof(IsShowContentNum);
-        
+
         [StlAttribute(Title = "是否显示树状线")]
         private const string IsShowTreeLine = nameof(IsShowTreeLine);
-        
+
         [StlAttribute(Title = "当前项格式化字符串")]
         private const string CurrentFormatString = nameof(CurrentFormatString);
-        
+
         [StlAttribute(Title = "打开窗口目标")]
         private const string Target = nameof(Target);
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var channelIndex = string.Empty;
+        {
+            var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
@@ -128,7 +128,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return isLoading ? ParseImplAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString, pageInfo.IsLocal) : ParseImplNotAjax(pageInfo, contextInfo, channelIndex, channelName, upLevel, topLevel, groupChannel, groupChannelNot, title, isShowContentNum, isShowTreeLine, currentFormatString);
-		}
+        }
 
         private static string ParseImplNotAjax(PageInfo pageInfo, ContextInfo contextInfo, string channelIndex, string channelName, int upLevel, int topLevel, string groupChannel, string groupChannelNot, string title, bool isShowContentNum, bool isShowTreeLine, string currentFormatString)
         {
@@ -159,7 +159,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
-                var nodeInfo = new ChannelInfo(theChannelInfo);
+                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -260,9 +260,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_topChannelId == _nodeInfo.Id)
                     {
-                        _nodeInfo.IsLastNode = true;
+                        _nodeInfo.LastNode = true;
                     }
-                    if (_nodeInfo.IsLastNode == false)
+                    if (_nodeInfo.LastNode == false)
                     {
                         _isLastNodeArray[_level] = false;
                     }
@@ -289,7 +289,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_isShowTreeLine)
                     {
-                        if (_nodeInfo.IsLastNode)
+                        if (_nodeInfo.LastNode)
                         {
                             if (_hasChildren)
                             {
@@ -339,7 +339,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (_isShowTreeLine)
                     {
-                        if (_nodeInfo.IsLastNode)
+                        if (_nodeInfo.LastNode)
                         {
                             htmlBuilder.Append(
                                 _hasChildren
@@ -371,7 +371,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 htmlBuilder.Append("&nbsp;");
 
                 var nodeName = _nodeInfo.ChannelName;
-                if ((_pageInfo.TemplateInfo.TemplateType == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.TemplateType == TemplateType.ContentTemplate) && _pageInfo.PageChannelId == _nodeInfo.Id)
+                if ((_pageInfo.TemplateInfo.Type == TemplateType.ChannelTemplate || _pageInfo.TemplateInfo.Type == TemplateType.ContentTemplate) && _pageInfo.PageChannelId == _nodeInfo.Id)
                 {
                     nodeName = string.Format(_currentFormatString, nodeName);
                 }
@@ -599,7 +599,7 @@ var stltree_isNodeTree = {isNodeTree};
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
-                var nodeInfo = new ChannelInfo(theChannelInfo);
+                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == pageInfo.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -964,5 +964,5 @@ Event.observe(window,'load', function(){{
                 return string.Empty;
             }
         }
-	}
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API
@@ -49,7 +50,7 @@ namespace SiteServer.API
                     }
                     HttpContext.Current.Server.ClearError();
 
-                    LogUtils.AddErrorLogAndRedirect(lastError, "Server Error in Application");
+                    FxUtils.Page.AddErrorLogAndRedirect(lastError, "Server Error in Application");
                 }
 
 

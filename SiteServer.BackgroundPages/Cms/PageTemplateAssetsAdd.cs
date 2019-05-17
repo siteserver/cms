@@ -9,7 +9,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageTemplateAssetsAdd : BasePageCms
+    public class PageTemplateAssetsAdd : BasePageCms
     {
         public Literal LtlPageTitle;
         public TextBox TbRelatedFileName;
@@ -49,27 +49,27 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "type");
+            FxUtils.CheckRequestParameter("siteId", "type");
             _type = AuthRequest.GetQueryString("type");
             if (_type == PageTemplateAssets.TypeInclude)
             {
                 _name = PageTemplateAssets.NameInclude;
                 _ext = PageTemplateAssets.ExtInclude;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsIncludeDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsIncludeDir.Trim('/');
                 PhCodeMirrorInclude.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeJs)
             {
                 _name = PageTemplateAssets.NameJs;
                 _ext = PageTemplateAssets.ExtJs;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsJsDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsJsDir.Trim('/');
                 PhCodeMirrorJs.Visible = true;
             }
             else if (_type == PageTemplateAssets.TypeCss)
             {
                 _name = PageTemplateAssets.NameCss;
                 _ext = PageTemplateAssets.ExtCss;
-                _assetsDir = SiteInfo.Additional.TemplatesAssetsCssDir.Trim('/');
+                _assetsDir = SiteInfo.TemplatesAssetsCssDir.Trim('/');
                 PhCodeMirrorCss.Visible = true;
             }
 
@@ -89,7 +89,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlPageTitle.Text = string.IsNullOrEmpty(_fileName) ? $"添加{_name}" : $"编辑{_name}";
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
             PhCodeMirror.Visible = isCodeMirror;
 
@@ -99,7 +99,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(_fileName), _ext))
                 {
-                    PageUtilsEx.RedirectToErrorPage("对不起，此文件格式无法编辑！");
+                    FxUtils.Page.RedirectToErrorPage("对不起，此文件格式无法编辑！");
                 }
                 else
                 {
@@ -111,7 +111,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             else
             {
-                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Additional.Charset);
+                ControlUtils.SelectSingleItemIgnoreCase(DdlCharset, SiteInfo.Charset);
             }
         }
 
@@ -119,9 +119,9 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (!Page.IsPostBack || !Page.IsValid) return;
 
-            var isCodeMirror = SiteInfo.Additional.ConfigTemplateIsCodeMirror;
+            var isCodeMirror = SiteInfo.ConfigTemplateIsCodeMirror;
             isCodeMirror = !isCodeMirror;
-            SiteInfo.Additional.ConfigTemplateIsCodeMirror = isCodeMirror;
+            SiteInfo.ConfigTemplateIsCodeMirror = isCodeMirror;
             DataProvider.SiteDao.Update(SiteInfo);
 
             BtnEditorType.Text = isCodeMirror ? "采用纯文本编辑模式" : "采用代码编辑模式";
@@ -161,7 +161,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     previousFileName = _fileName;
                 }
-                
+
                 var charset = ECharsetUtils.GetEnumType(DdlCharset.SelectedValue);
                 FileUtils.WriteText(PathUtils.Combine(_directoryPath, relatedFileName), charset, TbContent.Text);
                 if (!string.IsNullOrEmpty(previousFileName))
@@ -194,7 +194,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
+            FxUtils.Page.Redirect(PageTemplateAssets.GetRedirectUrl(SiteId, _type));
         }
     }
 }

@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "ReturnUrl");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
 
             _idsDictionary = ContentUtility.GetIDsDictionary(Request.QueryString);
@@ -76,11 +76,11 @@ namespace SiteServer.BackgroundPages.Cms
             var titles = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 foreach (var contentId in contentIdList)
                 {
-                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var title = channelInfo.ContentDao.GetValue<string>(contentId, ContentAttribute.Title);
                     titles.Append(title + "<br />");
                 }
             }
@@ -113,14 +113,14 @@ namespace SiteServer.BackgroundPages.Cms
             var listItem = new ListItem("<保持原栏目不变>", "0");
             DdlTranslateChannelId.Items.Add(listItem);
 
-            ChannelManager.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.ChannelUI.AddListItemsForAddContent(DdlTranslateChannelId.Items, SiteInfo, true, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
             var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlCheckType.SelectedValue);
 
-            var isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+            var isChecked = checkedLevel >= SiteInfo.CheckContentLevel;
 
             var contentInfoListToCheck = new List<ContentInfo>();
             var idsDictionaryToCheck = new Dictionary<int, List<int>>();
@@ -138,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                     if (contentInfo != null)
                     {
-                        if (CheckManager.IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
+                        if (CheckManager.IsCheckable(contentInfo.Checked, contentInfo.CheckedLevel, isCheckedOfUser, checkedLevelOfUser))
                         {
                             contentInfoListToCheck.Add(contentInfo);
                             contentIdListToCheck.Add(contentId);
@@ -166,9 +166,9 @@ namespace SiteServer.BackgroundPages.Cms
 
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var contentIdList = idsDictionaryToCheck[channelId];
-                DataProvider.ContentDao.UpdateIsChecked(tableName, SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
+                channelInfo.ContentDao.UpdateIsChecked(SiteId, channelId, contentIdList, translateChannelId, AuthRequest.AdminName, isChecked, checkedLevel, TbCheckReasons.Text);
             }
 
             if (translateChannelId > 0)
@@ -177,8 +177,8 @@ namespace SiteServer.BackgroundPages.Cms
                 ContentManager.RemoveCache(tableName, translateChannelId);
             }
 
-            AuthRequest.AddSiteLog(SiteId, SiteId, 0, "设置内容状态为" + DdlCheckType.SelectedItem.Text, TbCheckReasons.Text);
-
+            var action = "设置内容状态为" + DdlCheckType.SelectedItem.Text;
+            var summary = TbCheckReasons.Text;
             foreach (var channelId in idsDictionaryToCheck.Keys)
             {
                 var contentIdList = _idsDictionary[channelId];
@@ -186,6 +186,7 @@ namespace SiteServer.BackgroundPages.Cms
                 {
                     foreach (var contentId in contentIdList)
                     {
+                        AuthRequest.AddContentLog(SiteId, channelId, contentId, action, summary);
                         CreateManager.CreateContent(SiteId, channelId, contentId);
                         CreateManager.TriggerContentChangedEvent(SiteId, channelId);
                     }

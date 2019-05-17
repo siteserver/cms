@@ -20,7 +20,7 @@ namespace SiteServer.CMS.DataCache
             foreach (var areaId in areaIdList)
             {
                 var areaInfo = GetAreaInfo(areaId);
-                list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, parentsCountDict)));
+                list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode, parentsCountDict)));
             }
 
             return list;

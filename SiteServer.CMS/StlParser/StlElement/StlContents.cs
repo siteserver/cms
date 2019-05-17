@@ -46,7 +46,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContainerContentList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return StlDataUtility.GetContainerContentList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
         public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Content> contentList)
@@ -234,7 +234,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         private static object ParseEntity(PageInfo pageInfo, List<Container.Content> contentList)
         {
-            var contentInfoList = new List<Dictionary<string, object>>();
+            var contentInfoList = new List<IDictionary<string, object>>();
 
             // var table = dataSource.Tables[0];
             // foreach (DataRow row in table.Rows)
@@ -252,7 +252,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, content.ChannelId, content.Id);
+                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, content.ChannelId);
+                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, content.Id);
 
                 if (contentInfo != null)
                 {

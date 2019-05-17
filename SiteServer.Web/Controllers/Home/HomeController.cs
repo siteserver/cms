@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -27,7 +29,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var pageName = request.GetQueryString("pageName");
 
                 if (pageName == PageNameRegister)
@@ -35,7 +37,7 @@ namespace SiteServer.API.Controllers.Home
                     return Ok(GetRegister(request));
                 }
                 if (pageName == PageNameIndex)
-                {   
+                {
                     return Ok(GetIndex(request));
                 }
                 if (pageName == PageNameProfile)
@@ -64,7 +66,7 @@ namespace SiteServer.API.Controllers.Home
             }
         }
 
-        public object GetRegister(AuthenticatedRequest request)
+        public object GetRegister(Request request)
         {
             return new
             {
@@ -75,7 +77,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetIndex(AuthenticatedRequest request)
+        public object GetIndex(Request request)
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
@@ -126,7 +128,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetProfile(AuthenticatedRequest request)
+        public object GetProfile(Request request)
         {
             return new
             {
@@ -136,7 +138,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContents(AuthenticatedRequest request)
+        public object GetContents(Request request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -217,7 +219,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContentAdd(AuthenticatedRequest request)
+        public object GetContentAdd(Request request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -314,13 +316,13 @@ namespace SiteServer.API.Controllers.Home
                     }
                     else
                     {
-                        contentInfo = new ContentInfo(new
+                        contentInfo = new ContentInfo
                         {
                             Id = 0,
                             SiteId = siteInfo.Id,
                             ChannelId = channelInfo.Id,
                             AddDate = DateTime.Now
-                        });
+                        };
                     }
                 }
             }

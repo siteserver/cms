@@ -13,6 +13,6 @@ namespace SiteServer.CMS.Pages
 
         public static string InnerApiUrl => ApiManager.InnerApiUrl.TrimEnd('/');
 
-        public static string RootUrl => PageUtilsEx.ApplicationPath.TrimEnd('/');
+        public static string RootUrl => WebConfigUtils.ApplicationPath;
     }
 }

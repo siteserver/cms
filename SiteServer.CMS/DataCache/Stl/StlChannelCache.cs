@@ -3,8 +3,10 @@ using System.Data;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Stl
 {
@@ -77,18 +79,18 @@ namespace SiteServer.CMS.DataCache.Stl
         //     return retval;
         // }
 
-        public static List<Container.Channel> GetContainerChannelListBySiteId(int siteId, int startNum, int totalNum, string whereString, string orderByString)
+        public static IList<Container.Channel> GetContainerChannelList(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, ETaxisType taxisType, EScopeType scopeType, bool isTotal)
         {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelListBySiteId), siteId.ToString(), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
+            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelList), siteId.ToString(), channelId.ToString(), group.ToString(), groupNot.ToString(), isImageExists.ToString(), isImage.ToString(), startNum.ToString(), totalNum.ToString(), ETaxisTypeUtils.GetValue(taxisType), EScopeTypeUtils.GetValue(scopeType), isTotal.ToString());
+            var retval = StlCacheManager.Get<IList<Container.Channel>>(cacheKey);
             if (retval != null) return retval;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
+                retval = StlCacheManager.Get<IList<Container.Channel>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetContainerChannelListBySiteId(siteId, startNum, totalNum, whereString, orderByString);
+                    retval = DataProvider.ChannelDao.GetContainerChannelList(siteId, channelId, group, groupNot, isImageExists, isImage, startNum, totalNum, taxisType, scopeType, isTotal);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }
@@ -116,25 +118,25 @@ namespace SiteServer.CMS.DataCache.Stl
         //     return retval;
         // }
 
-        public static List<Container.Channel> GetContainerChannelList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelList),
-                       TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
-            var retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
-            if (retval != null) return retval;
+        // public static List<Container.Channel> GetContainerChannelList(List<int> channelIdList, int startNum, int totalNum, string whereString, string orderByString)
+        // {
+        //     var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetContainerChannelList),
+        //                TranslateUtils.ObjectCollectionToString(channelIdList), startNum.ToString(), totalNum.ToString(), whereString, orderByString);
+        //     var retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
+        //     if (retval != null) return retval;
 
-            lock (LockObject)
-            {
-                retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetContainerChannelList(channelIdList, startNum, totalNum, whereString, orderByString);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
+        //     lock (LockObject)
+        //     {
+        //         retval = StlCacheManager.Get<List<Container.Channel>>(cacheKey);
+        //         if (retval == null)
+        //         {
+        //             retval = DataProvider.ChannelDao.GetContainerChannelList(channelIdList, startNum, totalNum, whereString, orderByString);
+        //             StlCacheManager.Set(cacheKey, retval);
+        //         }
+        //     }
 
-            return retval;
-        }
+        //     return retval;
+        // }
 
         //public static int GetIdByIndexName(int siteId, string channelIndex)
         //{
@@ -176,41 +178,19 @@ namespace SiteServer.CMS.DataCache.Stl
             return retval;
         }
 
-        public static string GetWhereString(int siteId, string groupContent, string groupContentNot, bool isImageExists, bool isImage, string where)
-        {
-            var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetWhereString),
-                       siteId.ToString(), groupContent, groupContentNot, isImageExists.ToString(),
-                       isImage.ToString(), where);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
-
-            lock (LockObject)
-            {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
-                {
-                    retval = DataProvider.ChannelDao.GetWhereString(groupContent, groupContentNot,
-                    isImageExists, isImage, where);
-                    StlCacheManager.Set(cacheKey, retval);
-                }
-            }
-
-            return retval;
-        }
-
-        public static List<int> GetIdListByTotalNum(List<int> channelIdList, int totalNum, string orderByString, string whereString)
+        public static IList<int> GetIdListByTotalNum(int siteId, int channelId, ETaxisType taxisType, EScopeType scopeType, string groupChannel, string groupChannelNot, bool isImageExists, bool isImage, int totalNum)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlChannelCache), nameof(GetIdListByTotalNum),
-                       TranslateUtils.ObjectCollectionToString(channelIdList), totalNum.ToString(), orderByString, whereString);
-            var retval = StlCacheManager.Get<List<int>>(cacheKey);
+                       siteId.ToString(), channelId.ToString(), ETaxisTypeUtils.GetValue(taxisType), EScopeTypeUtils.GetValue(scopeType), groupChannel, groupChannelNot, isImageExists.ToString(), isImage.ToString(), totalNum.ToString());
+            var retval = StlCacheManager.Get<IList<int>>(cacheKey);
             if (retval != null) return retval;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<List<int>>(cacheKey);
+                retval = StlCacheManager.Get<IList<int>>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.ChannelDao.GetIdListByTotalNum(channelIdList, totalNum, orderByString, whereString);
+                    retval = DataProvider.ChannelDao.GetIdListByTotalNum(siteId, channelId, taxisType, scopeType, groupChannel, groupChannelNot, isImageExists, isImage, totalNum);
                     StlCacheManager.Set(cacheKey, retval);
                 }
             }

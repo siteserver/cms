@@ -21,7 +21,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retval = StlCacheManager.Get<string>(cacheKey);
                 if (retval == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
+                    retval = DatabaseUtils.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
                     StlCacheManager.Set(cacheKey, retval);
                 }

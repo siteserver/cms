@@ -28,7 +28,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             // var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
 
-            var siteList = StlDataUtility.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
+            var siteList = StlDataUtility.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.OrderByString);
 
             if (contextInfo.IsStlEntity)
             {

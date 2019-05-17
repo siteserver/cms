@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -17,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -39,11 +42,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
                 if (contentInfo == null) return BadRequest("无法确定对应的内容");
 
-                contentInfo.Load(new
+                var dict = new Dictionary<string, object>(contentInfo.ToDictionary())
                 {
-                    CheckState =
-                        CheckManager.GetCheckState(siteInfo, contentInfo)
-                });
+                    {"checkState", CheckManager.GetCheckState(siteInfo, contentInfo)}
+                };
 
                 var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId);
 
@@ -51,7 +53,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = contentInfo,
+                    Value = dict,
                     ChannelName = channelName,
                     Attributes = attributes
                 });

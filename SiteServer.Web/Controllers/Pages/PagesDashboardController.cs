@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -23,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -52,7 +54,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -62,7 +64,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
-                    foreach(var siteInfo in SiteManager.GetSiteInfoList())
+                    foreach (var siteInfo in SiteManager.GetSiteInfoList())
                     {
                         var count = ContentManager.GetCount(siteInfo, false);
                         if (count > 0)

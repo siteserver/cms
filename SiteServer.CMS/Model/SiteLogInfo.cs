@@ -1,51 +1,33 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-	public class SiteLogInfo
+    [Table("siteserver_SiteLog")]
+    public class SiteLogInfo : Entity
     {
-	    public SiteLogInfo()
-		{
-            Id = 0;
-            SiteId = 0;
-            ChannelId = 0;
-            ContentId = 0;
-            UserName = string.Empty;
-            IpAddress = string.Empty;
-            AddDate = DateTime.Now;
-            Action = string.Empty;
-            Summary = string.Empty;
-		}
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public SiteLogInfo(int id, int site, int channelId, int contentId, string userName, string ipAddress, DateTime addDate, string action, string summary) 
-		{
-            Id = id;
-            SiteId = site;
-            ChannelId = channelId;
-            ContentId = contentId;
-            UserName = userName;
-            IpAddress = ipAddress;
-            AddDate = addDate;
-            Action = action;
-            Summary = summary;
-		}
+        [TableColumn]
+        public int ChannelId { get; set; }
 
-        public int Id { get; set; }
+        [TableColumn]
+        public int ContentId { get; set; }
 
-	    public int SiteId { get; set; }
+        [TableColumn]
+        public string UserName { get; set; }
 
-	    public int ChannelId { get; set; }
+        [TableColumn]
+        public string IpAddress { get; set; }
 
-	    public int ContentId { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
-	    public string UserName { get; set; }
+        [TableColumn]
+        public string Action { get; set; }
 
-	    public string IpAddress { get; set; }
-
-	    public DateTime AddDate { get; set; }
-
-	    public string Action { get; set; }
-
-	    public string Summary { get; set; }
-	}
+        [TableColumn]
+        public string Summary { get; set; }
+    }
 }

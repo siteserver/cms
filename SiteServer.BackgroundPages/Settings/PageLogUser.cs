@@ -113,16 +113,16 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlAction = (Literal)e.Item.FindControl("ltlAction");
             var ltlSummary = (Literal)e.Item.FindControl("ltlSummary");
 
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.UserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(UserLogInfo.AddDate)));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.IpAddress));
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Action));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Summary));
+            ltlUserName.Text = FxUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(FxUtils.EvalDateTime(e.Item.DataItem, nameof(UserLogInfo.AddDate)));
+            ltlIpAddress.Text = FxUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.IpAddress));
+            ltlAction.Text = FxUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Action));
+            ltlSummary.Text = FxUtils.EvalString(e.Item.DataItem, nameof(UserLogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogUser), new NameValueCollection
             {
                 {"UserName", TbUserName.Text},
                 {"Keyword", TbKeyword.Text},

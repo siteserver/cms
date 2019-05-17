@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
@@ -18,7 +19,7 @@ namespace SiteServer.API.Controllers.Admin.Create
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var siteId = request.GetQueryInt("siteId");
 
                 if (!request.IsAdminLoggin ||
@@ -45,7 +46,7 @@ namespace SiteServer.API.Controllers.Admin.Create
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var siteId = request.GetPostInt("siteId");
 
                 if (!request.IsAdminLoggin ||

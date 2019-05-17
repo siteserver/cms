@@ -4,14 +4,15 @@ using SiteServer.CMS.Api.Preview;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages
 {
-	public class PageRedirect : BasePage
+    public class PageRedirect : BasePage
     {
-	    protected override bool IsSinglePage => true;
+        protected override bool IsSinglePage => true;
 
-	    protected override bool IsAccessable => true;
+        protected override bool IsAccessable => true;
 
         public static string GetRedirectUrl(int siteId)
         {
@@ -93,7 +94,7 @@ namespace SiteServer.BackgroundPages
                 url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
             }
 
-            //if (siteInfo.Additional.IsSeparatedWeb)
+            //if (siteInfo.IsSeparatedWeb)
             //{
             //    if (siteId > 0 && channelId > 0 && contentId > 0)
             //    {
@@ -114,7 +115,7 @@ namespace SiteServer.BackgroundPages
             //}
             //else
             //{
-                
+
             //}
 
             if (string.IsNullOrEmpty(url) || StringUtils.EqualsIgnoreCase(url, PageUtils.UnclickedUrl))
@@ -123,7 +124,7 @@ namespace SiteServer.BackgroundPages
             }
             else
             {
-                PageUtilsEx.Redirect(url);
+                FxUtils.Page.Redirect(url);
             }
         }
 
@@ -136,15 +137,15 @@ namespace SiteServer.BackgroundPages
             if (siteId != 0)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                var url = siteInfo.Additional.IsSeparatedWeb
+                var url = siteInfo.IsSeparatedWeb
                     ? ApiRoutePreview.GetSiteUrl(siteId)
-                    : siteInfo.Additional.WebUrl;
-                PageUtilsEx.Redirect(url);
+                    : siteInfo.WebUrl;
+                FxUtils.Page.Redirect(url);
             }
             else
             {
-                var url = PageUtilsEx.ApplicationPath;
-                PageUtilsEx.Redirect(url);
+                var url = WebConfigUtils.ApplicationPath;
+                FxUtils.Page.Redirect(url);
             }
         }
     }

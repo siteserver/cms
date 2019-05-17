@@ -1,10 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Security;
-using System.Web;
-using SiteServer.CMS.Api;
+﻿using SiteServer.CMS.Api;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.DataCache;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -80,16 +75,6 @@ namespace SiteServer.CMS.Plugin.Apis
         public T JsonDeserialize<T>(string json, T defaultValue = default(T))
         {
             return TranslateUtils.JsonDeserialize(json, defaultValue);
-        }
-
-        public IAuthenticatedRequest GetAuthenticatedRequest(HttpRequestMessage request)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IAuthenticatedRequest GetAuthenticatedRequest()
-        {
-            return new AuthenticatedRequest(HttpContext.Current.Request);
         }
     }
 }

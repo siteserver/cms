@@ -47,28 +47,27 @@ namespace SiteServer.BackgroundPages.Cms
 
             _jsMethod = AuthRequest.GetQueryString("jsMethod");
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             var channelId = AuthRequest.GetQueryInt("channelId");
             if (channelId == 0)
             {
                 channelId = SiteId;
             }
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-            var tableName = ChannelManager.GetTableName(SiteInfo, _channelInfo);
             _tableStyleInfoList = TableStyleManager.GetContentStyleInfoList(SiteInfo, _channelInfo);
 
             SpContents.ControlToPaginate = RptContents;
             SpContents.SelectCommand = string.IsNullOrEmpty(AuthRequest.GetQueryString("channelId"))
-                ? DataProvider.ContentDao.GetSqlString(tableName, SiteId,
+                ? _channelInfo.ContentDao.GetSqlString(SiteId,
                     _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
                     AuthRequest.AdminPermissionsImpl.ChannelIdList, DdlSearchType.SelectedValue, TbKeyword.Text,
                     TbDateFrom.Text, TbDateTo.Text, true, ETriState.True, false)
-                : DataProvider.ContentDao.GetSqlString(tableName, SiteId,
+                : _channelInfo.ContentDao.GetSqlString(SiteId,
                     _channelInfo.Id, AuthRequest.AdminPermissionsImpl.IsSystemAdministrator,
                     AuthRequest.AdminPermissionsImpl.ChannelIdList, AuthRequest.GetQueryString("SearchType"),
                     AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"), true,
                     ETriState.True, true);
-            SpContents.ItemsPerPage = SiteInfo.Additional.PageSize;
+            SpContents.ItemsPerPage = SiteInfo.PageSize;
             SpContents.SortField = ContentAttribute.Id;
             SpContents.SortMode = SortMode.DESC;
             SpContents.OrderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc);
@@ -76,7 +75,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.ChannelUI.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
 
             if (_tableStyleInfoList != null)
             {
@@ -115,7 +114,8 @@ namespace SiteServer.BackgroundPages.Cms
                 var ltlTitle = (Literal)e.Item.FindControl("ltlTitle");
                 var ltlSelect = (Literal)e.Item.FindControl("ltlSelect");
 
-                var contentInfo = new ContentInfo((DataRowView)e.Item.DataItem);
+                var dataRowView = (DataRowView)e.Item.DataItem;
+                var contentInfo = new ContentInfo(TranslateUtils.ToDictionary(dataRowView));
 
                 var nodeName = _valueHashtable[contentInfo.ChannelId] as string;
                 if (nodeName == null)
@@ -134,7 +134,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void AddContent_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, PageUrl));
+            FxUtils.Page.Redirect(WebUtils.GetContentAddAddUrl(SiteId, _channelInfo.Id, PageUrl));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
@@ -152,8 +152,8 @@ namespace SiteServer.BackgroundPages.Cms
                     var channelId = TranslateUtils.ToInt(pair.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(pair.Split('_')[1]);
 
-                    var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
-                    var title = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
+                    var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                    var title = channelInfo.ContentDao.GetValue<string>(contentId, ContentAttribute.Title);
                     builder.Append($@"parent.{_jsMethod}('{title}', '{pair}');");
                 }
                 LayerUtils.CloseWithoutRefresh(Page, builder.ToString());

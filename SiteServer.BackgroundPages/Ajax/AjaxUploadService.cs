@@ -112,10 +112,10 @@ namespace SiteServer.BackgroundPages.Ajax
 
                     FileUtility.AddWaterMark(SiteInfo, filePath);
 
-                    var widthSmall = SiteInfo.Additional.PhotoSmallWidth;
+                    var widthSmall = SiteInfo.PhotoSmallWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathSamll, widthSmall, 0, true);
 
-                    var widthMiddle = SiteInfo.Additional.PhotoMiddleWidth;
+                    var widthMiddle = SiteInfo.PhotoMiddleWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
 
                     url = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, filePathSamll, true);
@@ -164,10 +164,10 @@ namespace SiteServer.BackgroundPages.Ajax
 
                     FileUtility.AddWaterMark(SiteInfo, filePath);
 
-                    var widthSmall = SiteInfo.Additional.PhotoSmallWidth;
+                    var widthSmall = SiteInfo.PhotoSmallWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathSmall, widthSmall, 0, true);
 
-                    var widthMiddle = SiteInfo.Additional.PhotoMiddleWidth;
+                    var widthMiddle = SiteInfo.PhotoMiddleWidth;
                     ImageUtils.MakeThumbnail(filePath, filePathMiddle, widthMiddle, 0, true);
 
                     url = PageUtility.GetSiteUrlByPhysicalPath(SiteInfo, filePathSmall, true);

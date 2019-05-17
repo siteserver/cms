@@ -9,10 +9,11 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalContentAttributes : BasePageCms
+    public class ModalContentAttributes : BasePageCms
     {
         protected CheckBox CbIsRecommend;
         protected CheckBox CbIsHot;
@@ -45,16 +46,16 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId");
+            FxUtils.CheckRequestParameter("siteId", "channelId");
 
             var channelId = AuthRequest.GetQueryInt("channelId");
             _channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
             _idList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
-		}
+        }
 
         public override void Submit_OnClick(object sender, EventArgs e)
         {
-			var isChanged = false;
+            var isChanged = false;
 
             switch (HihType.Value)
             {
@@ -68,21 +69,21 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = true;
+                                    contentInfo.Recommend = true;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = true;
+                                    contentInfo.Hot = true;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = true;
+                                    contentInfo.Color = true;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = true;
+                                    contentInfo.Top = true;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -103,21 +104,21 @@ namespace SiteServer.BackgroundPages.Cms
                             {
                                 if (CbIsRecommend.Checked)
                                 {
-                                    contentInfo.IsRecommend = false;
+                                    contentInfo.Recommend = false;
                                 }
                                 if (CbIsHot.Checked)
                                 {
-                                    contentInfo.IsHot = false;
+                                    contentInfo.Hot = false;
                                 }
                                 if (CbIsColor.Checked)
                                 {
-                                    contentInfo.IsColor = false;
+                                    contentInfo.Color = false;
                                 }
                                 if (CbIsTop.Checked)
                                 {
-                                    contentInfo.IsTop = false;
+                                    contentInfo.Top = false;
                                 }
-                                DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                                _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                             }
                         }
 
@@ -137,7 +138,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentInfo != null)
                         {
                             contentInfo.Hits = hits;
-                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                            _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                         }
                     }
 
@@ -155,7 +156,7 @@ namespace SiteServer.BackgroundPages.Cms
                         if (contentInfo != null)
                         {
                             contentInfo.Downloads = downloads;
-                            DataProvider.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
+                            _channelInfo.ContentDao.Update(SiteInfo, _channelInfo, contentInfo);
                         }
                     }
 
@@ -166,10 +167,10 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             if (isChanged)
-			{
+            {
                 LayerUtils.Close(Page);
-			}
-		}
+            }
+        }
 
-	}
+    }
 }

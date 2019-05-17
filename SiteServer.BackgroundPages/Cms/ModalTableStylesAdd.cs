@@ -62,28 +62,28 @@ namespace SiteServer.BackgroundPages.Cms
                 DdlIsHorizontal.Items[0].Value = true.ToString();
                 DdlIsHorizontal.Items[1].Value = false.ToString();
 
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Text, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.TextArea, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.TextEditor, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.CheckBox, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Radio, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.SelectOne, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.SelectMultiple, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Date, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.DateTime, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Image, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.Video, false));
-                DdlInputType.Items.Add(InputTypeUtils.GetListItem(InputType.File, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.Text, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.TextArea, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.TextEditor, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.CheckBox, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.Radio, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.SelectOne, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.SelectMultiple, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.Date, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.DateTime, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.Image, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.Video, false));
+                DdlInputType.Items.Add(ControlUtils.InputTypeUI.GetListItem(InputType.File, false));
 
                 var styleInfo = TableStyleManager.GetTableStyleInfo(_tableName, string.Empty, _relatedIdentities);
 
-                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.InputType.Value);
+                ControlUtils.SelectSingleItem(DdlInputType, styleInfo.Type.Value);
                 TbDefaultValue.Text = styleInfo.DefaultValue;
-                DdlIsHorizontal.SelectedValue = styleInfo.IsHorizontal.ToString();
-                TbColumns.Text = styleInfo.Additional.Columns.ToString();
+                DdlIsHorizontal.SelectedValue = styleInfo.Horizontal.ToString();
+                TbColumns.Text = styleInfo.Columns.ToString();
 
-                TbHeight.Text = styleInfo.Additional.Height == 0 ? string.Empty : styleInfo.Additional.Height.ToString();
-                TbWidth.Text = styleInfo.Additional.Width;
+                TbHeight.Text = styleInfo.Height == 0 ? string.Empty : styleInfo.Height.ToString();
+                TbWidth.Text = styleInfo.Width;
             }
 
             ReFresh(null, EventArgs.Empty);
@@ -179,10 +179,21 @@ namespace SiteServer.BackgroundPages.Cms
                     return false;
                 }
 
-                var styleInfo = new TableStyleInfo(0, relatedIdentity, _tableName, attributeName, 0, displayName, string.Empty, false, inputType, TbDefaultValue.Text, TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue), string.Empty);
-                styleInfo.Additional.Columns = TranslateUtils.ToInt(TbColumns.Text);
-                styleInfo.Additional.Height = TranslateUtils.ToInt(TbHeight.Text);
-                styleInfo.Additional.Width = TbWidth.Text;
+                var styleInfo = new TableStyleInfo
+                {
+                    RelatedIdentity = relatedIdentity,
+                    TableName = _tableName,
+                    AttributeName = attributeName,
+                    DisplayName = displayName,
+                    VisibleInList = false,
+                    Type = inputType,
+                    DefaultValue = TbDefaultValue.Text,
+                    Horizontal = TranslateUtils.ToBool(DdlIsHorizontal.SelectedValue)
+                };
+
+                styleInfo.Columns = TranslateUtils.ToInt(TbColumns.Text);
+                styleInfo.Height = TranslateUtils.ToInt(TbHeight.Text);
+                styleInfo.Width = TbWidth.Text;
 
                 if (inputType == InputType.CheckBox || inputType == InputType.Radio || inputType == InputType.SelectMultiple || inputType == InputType.SelectOne)
                 {
@@ -191,7 +202,13 @@ namespace SiteServer.BackgroundPages.Cms
                     var rapidValues = TranslateUtils.StringCollectionToStringList(TbRapidValues.Text);
                     foreach (var rapidValue in rapidValues)
                     {
-                        var itemInfo = new TableStyleItemInfo(0, styleInfo.Id, rapidValue, rapidValue, false);
+                        var itemInfo = new TableStyleItemInfo
+                        {
+                            TableStyleId = styleInfo.Id,
+                            ItemTitle = rapidValue,
+                            ItemValue = rapidValue,
+                            Selected = false
+                        };
                         styleInfo.StyleItems.Add(itemInfo);
                     }
                 }

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -27,7 +30,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -53,16 +56,15 @@ namespace SiteServer.API.Controllers.V1
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                if (!channelInfo.Additional.IsContentAddable) return BadRequest("此栏目不能添加内容");
+                if (!channelInfo.IsContentAddable) return BadRequest("此栏目不能添加内容");
 
                 var attributes = request.GetPostObject<Dictionary<string, object>>();
                 if (attributes == null) return BadRequest("无法从body中获取内容实体");
                 var checkedLevel = request.GetPostInt("checkedLevel");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var adminName = request.AdminName;
 
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
                 if (isChecked)
                 {
                     if (sourceId == SourceManager.User || request.IsUserLoggin)
@@ -87,11 +89,11 @@ namespace SiteServer.API.Controllers.V1
                     AdminId = request.AdminId,
                     UserId = request.UserId,
                     SourceId = sourceId,
-                    IsChecked = isChecked,
+                    Checked = isChecked,
                     CheckedLevel = checkedLevel
                 };
 
-                contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                contentInfo.Id = channelInfo.ContentDao.Insert(siteInfo, channelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -105,13 +107,13 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (contentInfo.IsChecked)
+                if (contentInfo.Checked)
                 {
                     CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
                 }
 
-                request.AddSiteLog(siteId, channelId, contentInfo.Id, "添加内容",
+                request.AddContentLog(siteId, channelId, contentInfo.Id, "添加内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
@@ -131,7 +133,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -164,34 +166,31 @@ namespace SiteServer.API.Controllers.V1
 
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
-                var isChecked = contentInfo.IsChecked;
+                var isChecked = contentInfo.Checked;
                 var checkedLevel = contentInfo.CheckedLevel;
 
-                contentInfo.Load(attributes);
-                contentInfo.Load(new
+                foreach (var attribute in attributes)
                 {
-                    SiteId = siteId,
-                    ChannelId = channelId,
-                    AddUserName = adminName,
-                    LastEditDate = DateTime.Now,
-                    LastEditUserName = adminName,
-                    SourceId = sourceId
-                });
+                    contentInfo.Set(attribute.Key, attribute.Value);
+                }
+                contentInfo.SiteId = siteId;
+                contentInfo.ChannelId = channelId;
+                contentInfo.AddUserName = adminName;
+                contentInfo.LastEditDate = DateTime.Now;
+                contentInfo.LastEditUserName = adminName;
+                contentInfo.SourceId = sourceId;
 
                 var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
                 if (postCheckedLevel != CheckManager.LevelInt.NotChange)
                 {
-                    isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
+                    isChecked = postCheckedLevel >= siteInfo.CheckContentLevel;
                     checkedLevel = postCheckedLevel;
                 }
 
-                contentInfo.Load(new
-                {
-                    IsChecked = isChecked,
-                    CheckedLevel = checkedLevel
-                });
+                contentInfo.Checked = isChecked;
+                contentInfo.CheckedLevel = checkedLevel;
 
-                DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                channelInfo.ContentDao.Update(siteInfo, channelInfo, contentInfo);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -205,13 +204,13 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                if (contentInfo.IsChecked)
+                if (contentInfo.Checked)
                 {
                     CreateManager.CreateContent(siteId, channelId, contentInfo.Id);
                     CreateManager.TriggerContentChangedEvent(siteId, channelId);
                 }
 
-                request.AddSiteLog(siteId, channelId, contentInfo.Id, "修改内容",
+                request.AddContentLog(siteId, channelId, contentInfo.Id, "修改内容",
                     $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, contentInfo.ChannelId)},内容标题:{contentInfo.Title}");
 
                 return Ok(new
@@ -231,7 +230,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -260,12 +259,10 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentDelete)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                ContentUtility.Delete(tableName, siteInfo, channelId, id);
+                ContentUtility.Delete(siteInfo, channelInfo, id);
 
                 //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
@@ -286,7 +283,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -335,7 +332,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -361,22 +358,21 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, siteId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var tableName = siteInfo.TableName;
-
                 var parameters = new ApiContentsParameters(request);
 
-                var tupleList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
-                var value = new List<Dictionary<string, object>>();
+                var tupleList = siteInfo.ContentDao.ApiGetContentIdListBySiteId(siteId, parameters, out var count);
+                var value = new List<IDictionary<string, object>>();
                 foreach (var tuple in tupleList)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
+                    var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, tuple.Item1);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, tuple.Item2);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());
                     }
                 }
 
-                return Ok(new PageResponse(value, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
+                return Ok(new PageResponse(value, parameters.Top, parameters.Skip, request.RawUrl) { Count = count });
             }
             catch (Exception ex)
             {
@@ -390,7 +386,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -419,25 +415,30 @@ namespace SiteServer.API.Controllers.V1
                 if (!request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
                     ConfigManager.ChannelPermissions.ContentView)) return Unauthorized();
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
                 var top = request.GetQueryInt("top", 20);
                 var skip = request.GetQueryInt("skip");
                 var like = request.GetQueryString("like");
                 var orderBy = request.GetQueryString("orderBy");
 
-                var list = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out var count);
-                var value = new List<Dictionary<string, object>>();
-                foreach(var (contentChannelId, contentId) in list)
+                var queryString = new NameValueCollection();
+                foreach (var key in request.QueryKeys)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
+                    queryString[key] = request.GetQueryString(key);
+                }
+
+                var list = channelInfo.ContentDao.ApiGetContentIdListByChannelId(siteId, channelId, top, skip, like, orderBy, queryString, out var count);
+                var value = new List<IDictionary<string, object>>();
+                foreach (var (contentChannelId, contentId) in list)
+                {
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, contentChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());
                     }
                 }
 
-                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) { Count = count });
+                return Ok(new PageResponse(value, top, skip, request.RawUrl) { Count = count });
             }
             catch (Exception ex)
             {

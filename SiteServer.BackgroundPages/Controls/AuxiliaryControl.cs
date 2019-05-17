@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Controls
 {
     public class AuxiliaryControl : Control
     {
-        public AttributesImpl Attributes { get; set; }
+        public IDictionary<string, object> Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 
@@ -43,7 +43,7 @@ namespace SiteServer.BackgroundPages.Controls
 
                 if (string.IsNullOrEmpty(value) && string.IsNullOrEmpty(extra)) continue;
 
-                if (styleInfo.InputType == InputType.TextEditor)
+                if (styleInfo.Type == InputType.TextEditor)
                 {
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
@@ -73,9 +73,10 @@ namespace SiteServer.BackgroundPages.Controls
     </div>
 </div>";
 
-                    if (styleInfo.InputType == InputType.Customize)
+                    if (styleInfo.Type == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes.ToDictionary(), styleInfo.AttributeName, html);
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes, styleInfo.AttributeName, html);
+
                         foreach (var service in PluginManager.Services)
                         {
                             try

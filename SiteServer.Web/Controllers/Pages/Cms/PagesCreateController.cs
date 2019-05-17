@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Provider;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -22,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -44,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 foreach (var channelId in channelIdList)
                 {
                     var enabled = request.AdminPermissionsImpl.IsOwningChannelId(channelId);
-                    
+
                     if (!enabled)
                     {
                         if (!request.AdminPermissionsImpl.IsDescendantOwningChannelId(siteId, channelId)) continue;
@@ -84,7 +87,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -126,41 +129,43 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (parameter.Scope == "1month" || parameter.Scope == "1day" || parameter.Scope == "2hours")
                 {
                     var siteInfo = SiteManager.GetSiteInfo(parameter.SiteId);
-                    var tableName = siteInfo.TableName;
 
-                    if (parameter.Scope == "1month")
+                    siteInfo.ContentDaoList.ForEach((contentDao) =>
                     {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 720);
-                        foreach (var channelId in lastEditList)
+                        if (parameter.Scope == "1month")
                         {
-                            if (selectedChannelIdList.Contains(channelId))
+                            var lastEditList = contentDao.GetChannelIdListCheckedByLastEditDateHour(parameter.SiteId, 720);
+                            foreach (var channelId in lastEditList)
                             {
-                                channelIdList.Add(channelId);
+                                if (selectedChannelIdList.Contains(channelId))
+                                {
+                                    channelIdList.Add(channelId);
+                                }
                             }
                         }
-                    }
-                    else if (parameter.Scope == "1day")
-                    {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 24);
-                        foreach (var channelId in lastEditList)
+                        else if (parameter.Scope == "1day")
                         {
-                            if (selectedChannelIdList.Contains(channelId))
+                            var lastEditList = contentDao.GetChannelIdListCheckedByLastEditDateHour(parameter.SiteId, 24);
+                            foreach (var channelId in lastEditList)
                             {
-                                channelIdList.Add(channelId);
+                                if (selectedChannelIdList.Contains(channelId))
+                                {
+                                    channelIdList.Add(channelId);
+                                }
                             }
                         }
-                    }
-                    else if (parameter.Scope == "2hours")
-                    {
-                        var lastEditList = DataProvider.ContentDao.GetChannelIdListCheckedByLastEditDateHour(tableName, parameter.SiteId, 2);
-                        foreach (var channelId in lastEditList)
+                        else if (parameter.Scope == "2hours")
                         {
-                            if (selectedChannelIdList.Contains(channelId))
+                            var lastEditList = contentDao.GetChannelIdListCheckedByLastEditDateHour(parameter.SiteId, 2);
+                            foreach (var channelId in lastEditList)
                             {
-                                channelIdList.Add(channelId);
+                                if (selectedChannelIdList.Contains(channelId))
+                                {
+                                    channelIdList.Add(channelId);
+                                }
                             }
                         }
-                    }
+                    });
                 }
                 else
                 {
@@ -192,7 +197,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {

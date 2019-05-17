@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Model.Attributes
         public const string ChildrenCount = nameof(ChannelInfo.ChildrenCount);
 
         [StlAttribute(Title = "是否最后一级栏目")]
-        public const string IsLastNode = nameof(ChannelInfo.IsLastNode);
+        public const string LastNode = nameof(ChannelInfo.LastNode);
 
         [StlAttribute(Title = "栏目索引")]
         public const string IndexName = nameof(ChannelInfo.IndexName);

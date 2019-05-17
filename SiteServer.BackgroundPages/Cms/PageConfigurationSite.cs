@@ -8,7 +8,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageConfigurationSite : BasePageCms
+    public class PageConfigurationSite : BasePageCms
     {
         public DropDownList DdlCharset;
         public TextBox TbPageSize;
@@ -23,44 +23,32 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySitePermissions(ConfigManager.WebSitePermissions.Configration);
 
             FxUtils.AddListItemsToECharset(DdlCharset);
-            ControlUtils.SelectSingleItem(DdlCharset, SiteInfo.Additional.Charset);
+            ControlUtils.SelectSingleItem(DdlCharset, SiteInfo.Charset);
 
-            TbPageSize.Text = SiteInfo.Additional.PageSize.ToString();
+            TbPageSize.Text = SiteInfo.PageSize.ToString();
 
             FxUtils.AddListItems(DdlIsCreateDoubleClick, "启用双击生成", "不启用");
-            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.Additional.IsCreateDoubleClick.ToString());
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsCreateDoubleClick, SiteInfo.IsCreateDoubleClick.ToString());
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
-		{
-		    if (!Page.IsPostBack || !Page.IsValid) return;
+        {
+            if (!Page.IsPostBack || !Page.IsValid) return;
 
-            if (SiteInfo.Additional.Charset != DdlCharset.SelectedValue)
-		    {
-		        SiteInfo.Additional.Charset = DdlCharset.SelectedValue;
-		    }
-
-		    SiteInfo.Additional.PageSize = TranslateUtils.ToInt(TbPageSize.Text, SiteInfo.Additional.PageSize);
-		    SiteInfo.Additional.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
-
-            //修改所有模板编码
-            var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(SiteId);
-            var charset = ECharsetUtils.GetEnumType(SiteInfo.Additional.Charset);
-            foreach (var templateInfo in templateInfoList)
+            if (SiteInfo.Charset != DdlCharset.SelectedValue)
             {
-                if (templateInfo.Charset == charset) continue;
-
-                var templateContent = TemplateManager.GetTemplateContent(SiteInfo, templateInfo);
-                templateInfo.Charset = charset;
-                DataProvider.TemplateDao.Update(SiteInfo, templateInfo, templateContent, AuthRequest.AdminName);
+                SiteInfo.Charset = DdlCharset.SelectedValue;
             }
+
+            SiteInfo.PageSize = TranslateUtils.ToInt(TbPageSize.Text, SiteInfo.PageSize);
+            SiteInfo.IsCreateDoubleClick = TranslateUtils.ToBool(DdlIsCreateDoubleClick.SelectedValue);
 
             DataProvider.SiteDao.Update(SiteInfo);
 
@@ -68,5 +56,5 @@ namespace SiteServer.BackgroundPages.Cms
 
             SuccessMessage("站点设置修改成功！");
         }
-	}
+    }
 }

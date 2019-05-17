@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -21,7 +23,7 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(AuthenticatedRequest request)
+        public NameValueCollection GetPostCollection(Request request)
         {
             var formCollection = new NameValueCollection();
             foreach (var item in request.PostData)
@@ -39,7 +41,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());
@@ -62,7 +64,16 @@ namespace SiteServer.API.Controllers.Sys
                 template = TranslateUtils.DecryptStringBySecretKey(request.GetPostString("template"));
                 var pageIndex = request.GetPostInt("page", 1) - 1;
 
-                var templateInfo = new TemplateInfo(0, siteId, string.Empty, TemplateType.FileTemplate, string.Empty, string.Empty, string.Empty, ECharset.utf_8, false);
+                var templateInfo = new TemplateInfo
+                {
+                    SiteId = siteId,
+                    TemplateName = string.Empty,
+                    Type = TemplateType.FileTemplate,
+                    RelatedFileName = string.Empty,
+                    CreatedFileFullName = string.Empty,
+                    CreatedFileExtName = string.Empty,
+                    Default = false
+                };
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 pageInfo = new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>())
                 {
@@ -79,9 +90,9 @@ namespace SiteServer.API.Controllers.Sys
                     var stlPageContentsElement = stlElement;
                     var stlPageContentsElementReplaceString = stlElement;
 
-                    var whereString = DataProvider.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
+                    var whereString = contextInfo.ChannelInfo.ContentDao.GetWhereStringByStlSearch(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, siteId, ApiRouteActionsSearch.ExlcudeAttributeNames, form);
 
-                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, siteInfo.TableName, whereString);
+                    var stlPageContents = new StlPageContents(stlPageContentsElement, pageInfo, contextInfo, pageNum, contextInfo.ChannelInfo, whereString);
                     var pageCount = stlPageContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
                     {
@@ -115,7 +126,7 @@ namespace SiteServer.API.Controllers.Sys
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
 
                     var stlPageSqlContents = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
-                    
+
                     var pageCount = stlPageSqlContents.GetPageCount(out var totalNum);
                     if (totalNum == 0)
                     {

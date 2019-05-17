@@ -32,10 +32,14 @@ namespace SiteServer.BackgroundPages.Cms
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
 
-            var form = AuthRequest.HttpRequest.Form;
+            //var form = AuthRequest.HttpRequest.Form;
+            var form = new NameValueCollection();
+            foreach (var key in AuthRequest.PostKeys)
+            {
+                form[key] = AuthRequest.GetPostString(key);
+            }
 
             var dict = BackgroundInputTypeParser.SaveAttributes(siteInfo, styleInfoList, form, ContentAttribute.AllAttributes.Value);
             var contentInfo = new ContentInfo(dict)
@@ -65,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
             //}
             //contentInfo.LinkUrl = TbLinkUrl.Text;
             contentInfo.AddDate = TranslateUtils.ToDateTime(form["TbAddDate"]);
-            contentInfo.IsChecked = false;
+            contentInfo.Checked = false;
             contentInfo.Tags = TranslateUtils.ObjectCollectionToString(tagCollection, " ");
 
             foreach (var service in PluginManager.Services)
@@ -80,7 +84,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            contentInfo.Id = DataProvider.ContentDao.InsertPreview(tableName, siteInfo, channelInfo, contentInfo);
+            contentInfo.Id = channelInfo.ContentDao.InsertPreview(siteInfo, channelInfo, contentInfo);
 
             return new
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
@@ -25,7 +26,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -64,7 +65,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -76,15 +77,15 @@ namespace SiteServer.API.Controllers.Home
                     return Unauthorized();
                 }
 
-                var fileName = request.HttpRequest["fileName"];
+                var fileName = request.GetPostString("fileName");
 
-                var fileCount = request.HttpRequest.Files.Count;
+                var fileCount = request.Files.Count;
 
                 string filePath = null;
 
                 if (fileCount > 0)
                 {
-                    var file = request.HttpRequest.Files[0];
+                    var file = request.Files[0];
 
                     if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(file.FileName);
 
@@ -129,7 +130,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -156,9 +157,8 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
                 var styleInfoList = TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo);
-                var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
+                var isChecked = checkedLevel >= siteInfo.CheckContentLevel;
 
                 var contentIdList = new List<int>();
 
@@ -177,7 +177,7 @@ namespace SiteServer.API.Controllers.Home
                         SourceId = SourceManager.User,
                         AdminId = request.AdminId,
                         UserId = request.UserId,
-                        IsChecked = isChecked,
+                        Checked = isChecked,
                         CheckedLevel = checkedLevel,
                         Title = title,
                         Content = content
@@ -186,7 +186,7 @@ namespace SiteServer.API.Controllers.Home
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.LastEditDate = contentInfo.AddDate;
 
-                    contentInfo.Id = DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = channelInfo.ContentDao.Insert(siteInfo, channelInfo, contentInfo);
 
                     contentIdList.Add(contentInfo.Id);
                 }

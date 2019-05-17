@@ -5,6 +5,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -38,16 +39,16 @@ namespace SiteServer.CMS.Plugin
             var tableName = service.ContentTableName;
 
             var tableColumns = new List<TableColumn>();
-            tableColumns.AddRange(DataProvider.ContentDao.TableColumns);
+            tableColumns.AddRange(ContentDao.TableColumnsDefault);
             tableColumns.AddRange(service.ContentTableColumns);
 
-            if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+            if (!DatabaseUtils.IsTableExists(tableName))
             {
-                DataProvider.ContentDao.CreateContentTable(tableName, tableColumns);
+                TableColumnManager.CreateContentTable(tableName, tableColumns);
             }
             else
             {
-                DataProvider.DatabaseDao.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                TableColumnManager.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             ContentTableCreateOrUpdateStyles(tableName, service.ContentInputStyles);
@@ -64,10 +65,10 @@ namespace SiteServer.CMS.Plugin
 
                 var isEquals = true;
 
-                if (styleInfo.InputType != inputStyle.InputType)
+                if (styleInfo.Type != inputStyle.InputType)
                 {
                     isEquals = false;
-                    styleInfo.InputType = inputStyle.InputType;
+                    styleInfo.Type = inputStyle.InputType;
                 }
 
                 if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
@@ -94,46 +95,46 @@ namespace SiteServer.CMS.Plugin
                     styleInfo.Taxis = columnTaxis;
                 }
 
-                if (styleInfo.Additional.IsRequired != inputStyle.IsRequired)
+                if (styleInfo.Required != inputStyle.IsRequired)
                 {
                     isEquals = false;
-                    styleInfo.Additional.IsRequired = inputStyle.IsRequired;
+                    styleInfo.Required = inputStyle.IsRequired;
                 }
 
-                if (styleInfo.Additional.ValidateType != inputStyle.ValidateType)
+                if (ValidateTypeUtils.Equals(styleInfo.ValidateType, inputStyle.ValidateType))
                 {
                     isEquals = false;
-                    styleInfo.Additional.ValidateType = inputStyle.ValidateType;
+                    styleInfo.ValidateType = inputStyle.ValidateType.Value;
                 }
 
-                if (styleInfo.Additional.MinNum != inputStyle.MinNum)
+                if (styleInfo.MinNum != inputStyle.MinNum)
                 {
                     isEquals = false;
-                    styleInfo.Additional.MinNum = inputStyle.MinNum;
+                    styleInfo.MinNum = inputStyle.MinNum;
                 }
 
-                if (styleInfo.Additional.MaxNum != inputStyle.MaxNum)
+                if (styleInfo.MaxNum != inputStyle.MaxNum)
                 {
                     isEquals = false;
-                    styleInfo.Additional.MaxNum = inputStyle.MaxNum;
+                    styleInfo.MaxNum = inputStyle.MaxNum;
                 }
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.RegExp, inputStyle.RegExp))
+                if (!StringUtils.EqualsIgnoreNull(styleInfo.RegExp, inputStyle.RegExp))
                 {
                     isEquals = false;
-                    styleInfo.Additional.RegExp = inputStyle.RegExp;
+                    styleInfo.RegExp = inputStyle.RegExp;
                 }
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.Width, inputStyle.Width))
+                if (!StringUtils.EqualsIgnoreNull(styleInfo.Width, inputStyle.Width))
                 {
                     isEquals = false;
-                    styleInfo.Additional.Width = inputStyle.Width;
+                    styleInfo.Width = inputStyle.Width;
                 }
 
-                if (!(styleInfo.Additional.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Additional.Height != TranslateUtils.ToInt(inputStyle.Height))
+                if (!(styleInfo.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Height != TranslateUtils.ToInt(inputStyle.Height))
                 {
                     isEquals = false;
-                    styleInfo.Additional.Height = TranslateUtils.ToInt(inputStyle.Height);
+                    styleInfo.Height = TranslateUtils.ToInt(inputStyle.Height);
                 }
 
                 if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
@@ -158,7 +159,7 @@ namespace SiteServer.CMS.Plugin
                                 TableStyleId = styleInfo.Id,
                                 ItemTitle = listItem.Text,
                                 ItemValue = listItem.Value,
-                                IsSelected = listItem.Selected
+                                Selected = listItem.Selected
                             });
                         }
                         else
@@ -177,10 +178,10 @@ namespace SiteServer.CMS.Plugin
                                 styleItem.ItemValue = listItem.Value;
                             }
 
-                            if (styleItem.IsSelected != listItem.Selected)
+                            if (styleItem.Selected != listItem.Selected)
                             {
                                 isEquals = false;
-                                styleItem.IsSelected = listItem.Selected;
+                                styleItem.Selected = listItem.Selected;
                             }
                         }
                     }
@@ -188,8 +189,8 @@ namespace SiteServer.CMS.Plugin
 
                 if (isEquals) continue;
 
-                styleInfo.IsVisibleInList = false;
-                styleInfo.Additional.IsValidate = true;
+                styleInfo.VisibleInList = false;
+                styleInfo.Validate = true;
                 styleInfoList.Add(styleInfo);
             }
 

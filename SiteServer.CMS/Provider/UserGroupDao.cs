@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Datory;
-using SiteServer.CMS.Data;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -25,24 +25,6 @@ namespace SiteServer.CMS.Provider
 
         public int Insert(UserGroupInfo groupInfo)
         {
-            //            var sqlString =
-            //                $@"
-            //INSERT INTO {TableName} (
-            //    {nameof(UserGroupInfo.GroupName)},
-            //    {nameof(UserGroupInfo.AdminName)}
-            //) VALUES (
-            //    @{nameof(UserGroupInfo.GroupName)},
-            //    @{nameof(UserGroupInfo.AdminName)}
-            //)";
-
-            //            IDataParameter[] parameters =
-            //            {
-            //                GetParameter($"@{nameof(UserGroupInfo.GroupName)}", groupInfo.GroupName),
-            //                GetParameter($"@{nameof(UserGroupInfo.AdminName)}", groupInfo.AdminName)
-            //            };
-
-            //            var groupId = DatabaseApi.ExecuteNonQueryAndReturnId(ConnectionString, TableName, nameof(UserGroupInfo.Id), sqlString, parameters);
-
             groupInfo.Id = _repository.Insert(groupInfo);
 
             UserGroupManager.ClearCache();
@@ -52,20 +34,6 @@ namespace SiteServer.CMS.Provider
 
         public bool Update(UserGroupInfo groupInfo)
         {
-            //var sqlString = $@"UPDATE {TableName} SET
-            //    {nameof(UserGroupInfo.GroupName)} = @{nameof(UserGroupInfo.GroupName)},  
-            //    {nameof(UserGroupInfo.AdminName)} = @{nameof(UserGroupInfo.AdminName)}
-            //WHERE {nameof(UserGroupInfo.Id)} = @{nameof(UserGroupInfo.Id)}";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter(nameof(UserGroupInfo.GroupName), groupInfo.GroupName),
-            //    GetParameter(nameof(UserGroupInfo.AdminName), groupInfo.AdminName),
-            //    GetParameter(nameof(UserGroupInfo.Id), groupInfo.Id)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             var updated = _repository.Update(groupInfo);
 
             UserGroupManager.ClearCache();
@@ -75,15 +43,6 @@ namespace SiteServer.CMS.Provider
 
         public bool Delete(int groupId)
         {
-            //var sqlString = $"DELETE FROM {TableName} WHERE Id = @Id";
-
-            //IDataParameter[] parameters =
-            //{
-            //    GetParameter("@Id", groupId)
-            //};
-
-            //DatabaseApi.ExecuteNonQuery(ConnectionString, sqlString, parameters);
-
             var deleted = _repository.Delete(groupId);
 
             UserGroupManager.ClearCache();
@@ -93,14 +52,6 @@ namespace SiteServer.CMS.Provider
 
         public IList<UserGroupInfo> GetUserGroupInfoList()
         {
-            //List<UserGroupInfo> list;
-
-            //var sqlString = $"SELECT * FROM {TableName} ORDER BY Id";
-            //using (var connection = GetConnection())
-            //{
-            //    list = connection.Query<UserGroupInfo>(sqlString).ToList();
-            //}
-
             return _repository.GetAll(Q.OrderBy(Attr.Id));
         }
     }
@@ -118,7 +69,7 @@ namespace SiteServer.CMS.Provider
 
 //namespace SiteServer.CMS.Database.Repositories
 //{
-//    public class UserGroup : DataProviderBase
+//    public class UserGroup
 //    {
 //        public const string DatabaseTableName = "siteserver_UserGroup";
 

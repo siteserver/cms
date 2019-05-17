@@ -4,6 +4,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -42,7 +43,7 @@ namespace SiteServer.CMS.DataCache
                 }
             }
 
-            public static void Remove(AdministratorInfo adminInfo)
+            public static void Remove(IAdministratorInfo adminInfo)
             {
                 if (adminInfo == null) return;
 
@@ -253,7 +254,7 @@ namespace SiteServer.CMS.DataCache
             AdminManagerCache.Update(adminInfo);
         }
 
-        public static void RemoveCache(AdministratorInfo adminInfo)
+        public static void RemoveCache(IAdministratorInfo adminInfo)
         {
             AdminManagerCache.Remove(adminInfo);
         }

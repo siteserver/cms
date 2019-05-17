@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
@@ -341,7 +342,7 @@ namespace SiteServer.CMS.DataCache
             return GetHomeUploadUrl(userId.ToString(), relatedUrl);
         }
 
-        public static string GetUserAvatarUrl(UserInfo userInfo)
+        public static string GetUserAvatarUrl(IUserInfo userInfo)
         {
             var imageUrl = userInfo?.AvatarUrl;
 

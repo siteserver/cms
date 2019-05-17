@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -30,7 +31,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 var redirect = LoginController.AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
@@ -56,7 +57,7 @@ namespace SiteServer.API.Controllers.Admin
                         RedirectUrl = $"{AdminPagesUtils.ErrorUrl}?message={PageUtils.UrlEncode("管理员账号已被锁定，请联系超级管理员协助解决")}"
                     });
                 }
-                
+
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 var permissions = (PermissionsImpl)request.AdminPermissions;
                 var isSuperAdmin = permissions.IsSuperAdmin();
@@ -232,7 +233,7 @@ namespace SiteServer.API.Controllers.Admin
                     new Tab {Href = PageUtility.GetSiteUrl(siteInfo, false), Target = "_blank", Text = "访问站点"},
                     new Tab {Href = ApiRoutePreview.GetSiteUrl(siteInfo.Id), Target = "_blank", Text = "预览站点"}
                 };
-                menus.Add(new Tab {Text = "站点链接", Children = linkMenus.ToArray()});
+                menus.Add(new Tab { Text = "站点链接", Children = linkMenus.ToArray() });
             }
 
             if (isSuperAdmin)
@@ -312,7 +313,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new AuthenticatedRequest(HttpContext.Current.Request);
+                var request = new Request(HttpContext.Current.Request);
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -356,7 +357,7 @@ namespace SiteServer.API.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new AuthenticatedRequest(HttpContext.Current.Request);
+            var request = new Request(HttpContext.Current.Request);
 
             if (!request.IsAdminLoggin)
             {

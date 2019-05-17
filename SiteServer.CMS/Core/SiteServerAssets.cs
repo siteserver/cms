@@ -3,8 +3,8 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core
 {
-	public class SiteServerAssets
-	{
+    public class SiteServerAssets
+    {
         public const string DirectoryName = "assets";
 
         public static string GetUrl(string relatedUrl)

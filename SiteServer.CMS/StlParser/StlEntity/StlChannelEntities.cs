@@ -156,13 +156,12 @@ namespace SiteServer.CMS.StlParser.StlEntity
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.ChannelDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(nodeInfo));
-                    // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        parsedContent = GetValue(attributeName, nodeInfo.Additional, false, styleInfo.DefaultValue);
+                        parsedContent = nodeInfo.Get(attributeName, styleInfo.DefaultValue);
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            if (InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
+                            if (InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
                             {
                                 parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                             }

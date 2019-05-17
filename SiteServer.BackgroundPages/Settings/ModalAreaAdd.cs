@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -8,7 +9,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class ModalAreaAdd : BasePage
+    public class ModalAreaAdd : BasePage
     {
         public TextBox TbAreaName;
         public PlaceHolder PhParentId;
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Settings
             }), 460, 360);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -58,7 +59,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var theAreaId in areaIdList)
                 {
                     var areaInfo = AreaManager.GetAreaInfo(theAreaId);
-                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode), theAreaId.ToString());
+                    var listitem = new ListItem(GetTitle(areaInfo.Id, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode), theAreaId.ToString());
                     DdlParentId.Items.Add(listitem);
                 }
             }
@@ -137,5 +138,5 @@ namespace SiteServer.BackgroundPages.Settings
                 LayerUtils.CloseAndRedirect(Page, _returnUrl);
             }
         }
-	}
+    }
 }

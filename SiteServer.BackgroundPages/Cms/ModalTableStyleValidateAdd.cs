@@ -12,7 +12,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalTableStyleValidateAdd : BasePageCms
+    public class ModalTableStyleValidateAdd : BasePageCms
     {
         public DropDownList DdlIsValidate;
         public PlaceHolder PhValidate;
@@ -44,7 +44,7 @@ namespace SiteServer.BackgroundPages.Cms
             }));
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
@@ -67,23 +67,23 @@ namespace SiteServer.BackgroundPages.Cms
             DdlIsValidate.Items[0].Value = true.ToString();
             DdlIsValidate.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Additional.IsValidate.ToString());
+            ControlUtils.SelectSingleItem(DdlIsValidate, _styleInfo.Validate.ToString());
 
             DdlIsRequired.Items[0].Value = true.ToString();
             DdlIsRequired.Items[1].Value = false.ToString();
 
-            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Additional.IsRequired.ToString());
+            ControlUtils.SelectSingleItem(DdlIsRequired, _styleInfo.Required.ToString());
 
-            PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.InputType, InputType.Text, InputType.TextArea);
+            PhNum.Visible = InputTypeUtils.EqualsAny(_styleInfo.Type, InputType.Text, InputType.TextArea);
 
-            TbMinNum.Text = _styleInfo.Additional.MinNum.ToString();
-            TbMaxNum.Text = _styleInfo.Additional.MaxNum.ToString();
+            TbMinNum.Text = _styleInfo.MinNum.ToString();
+            TbMaxNum.Text = _styleInfo.MaxNum.ToString();
 
             FxUtils.AddListItemsToValidateType(DdlValidateType);
-            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.Additional.ValidateType.Value);
+            ControlUtils.SelectSingleItem(DdlValidateType, _styleInfo.ValidateType);
 
-            TbRegExp.Text = _styleInfo.Additional.RegExp;
-            TbErrorMessage.Text = _styleInfo.Additional.ErrorMessage;
+            TbRegExp.Text = _styleInfo.RegExp;
+            TbErrorMessage.Text = _styleInfo.ErrorMessage;
 
             DdlValidate_SelectedIndexChanged(null, EventArgs.Empty);
         }
@@ -103,19 +103,19 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 LayerUtils.CloseAndRedirect(Page, _redirectUrl);
             }
-		}
+        }
 
         private bool InsertOrUpdateTableStyleInfo()
         {
             var isChanged = false;
 
-            _styleInfo.Additional.IsValidate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
-            _styleInfo.Additional.IsRequired = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
-            _styleInfo.Additional.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
-            _styleInfo.Additional.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
-            _styleInfo.Additional.ValidateType = ValidateTypeUtils.GetEnumType(DdlValidateType.SelectedValue);
-            _styleInfo.Additional.RegExp = TbRegExp.Text.Trim('/');
-            _styleInfo.Additional.ErrorMessage = TbErrorMessage.Text;
+            _styleInfo.Validate = TranslateUtils.ToBool(DdlIsValidate.SelectedValue);
+            _styleInfo.Required = TranslateUtils.ToBool(DdlIsRequired.SelectedValue);
+            _styleInfo.MinNum = TranslateUtils.ToInt(TbMinNum.Text);
+            _styleInfo.MaxNum = TranslateUtils.ToInt(TbMaxNum.Text);
+            _styleInfo.ValidateType = DdlValidateType.SelectedValue;
+            _styleInfo.RegExp = TbRegExp.Text.Trim('/');
+            _styleInfo.ErrorMessage = TbErrorMessage.Text;
 
             try
             {
@@ -144,5 +144,5 @@ namespace SiteServer.BackgroundPages.Cms
             }
             return isChanged;
         }
-	}
+    }
 }

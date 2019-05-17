@@ -1,17 +1,20 @@
 using System;
+using Datory;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Model
 {
-    public class RoleInfo
+    [Table("siteserver_Role")]
+    public class RoleInfo : Entity
     {
-        public int Id { get; set; }
+        [TableColumn]
+        public string RoleName { get; set; }
 
-        public string RoleName  { get; set; }
-
+        [TableColumn]
         public string CreatorUserName { get; set; }
 
+        [TableColumn]
         public string Description { get; set; }
     }
 }

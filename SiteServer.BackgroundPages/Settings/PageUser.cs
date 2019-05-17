@@ -200,18 +200,18 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (e.Item.DataItem == null) return;
 
-            var id = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.Id));
-            var userName = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.UserName));
-            var createDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(UserInfo.CreateDate));
-            var lastActivityDate = SqlUtils.EvalDateTime(e.Item.DataItem, nameof(UserInfo.LastActivityDate));
-            var countOfLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfLogin));
-            var countOfFailedLogin = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfFailedLogin));
-            var groupId = SqlUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.GroupId));
-            var isChecked = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Checked));
-            var isLockedOut = SqlUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Locked));
-            var displayName = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.DisplayName));
-            var email = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Email));
-            var mobile = SqlUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Mobile));
+            var id = FxUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.Id));
+            var userName = FxUtils.EvalString(e.Item.DataItem, nameof(UserInfo.UserName));
+            var createDate = FxUtils.EvalDateTime(e.Item.DataItem, nameof(UserInfo.CreateDate));
+            var lastActivityDate = FxUtils.EvalDateTime(e.Item.DataItem, nameof(UserInfo.LastActivityDate));
+            var countOfLogin = FxUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfLogin));
+            var countOfFailedLogin = FxUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.CountOfFailedLogin));
+            var groupId = FxUtils.EvalInt(e.Item.DataItem, nameof(UserInfo.GroupId));
+            var isChecked = FxUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Checked));
+            var isLockedOut = FxUtils.EvalBool(e.Item.DataItem, nameof(UserInfo.Locked));
+            var displayName = FxUtils.EvalString(e.Item.DataItem, nameof(UserInfo.DisplayName));
+            var email = FxUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Email));
+            var mobile = FxUtils.EvalString(e.Item.DataItem, nameof(UserInfo.Mobile));
 
             var ltlUserName = (Literal)e.Item.FindControl("ltlUserName");
             var ltlEmail = (Literal)e.Item.FindControl("ltlEmail");
@@ -266,7 +266,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUrl);
+            FxUtils.Page.Redirect(PageUrl);
         }
 
         private string _pageUrl;

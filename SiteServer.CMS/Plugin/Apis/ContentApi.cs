@@ -31,10 +31,9 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
+            var list = channelInfo.ContentDao.GetContentInfoList(whereString, orderString, offset, limit);
             var retval = new List<IContentInfo>();
             foreach (var contentInfo in list)
             {
@@ -47,10 +46,9 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0) return 0;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            return DataProvider.ContentDao.GetCount(tableName, whereString);
+            return channelInfo.ContentDao.GetCount(whereString);
         }
 
         public string GetTableName(int siteId, int channelId)
@@ -126,11 +124,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return null;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-
-            var tuple = DataProvider.ContentDao.GetValue(tableName, contentId, attributeName);
-            return tuple?.Item2;
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            return channelInfo.ContentDao.GetValue<string>(contentId, attributeName);
         }
 
         public IContentInfo NewInstance(int siteId, int channelId)
@@ -164,32 +159,29 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return DataProvider.ContentDao.Insert(tableName, siteInfo, channelInfo, (ContentInfo)contentInfo);
+            return channelInfo.ContentDao.Insert(siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Update(int siteId, int channelId, IContentInfo contentInfo)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            DataProvider.ContentDao.Update(siteInfo, channelInfo, (ContentInfo)contentInfo);
+            channelInfo.ContentDao.Update(siteInfo, channelInfo, (ContentInfo)contentInfo);
         }
 
         public void Delete(int siteId, int channelId, int contentId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var tableName = ChannelManager.GetTableName(siteInfo, nodeInfo);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             var contentIdList = new List<int> { contentId };
-            DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+            channelInfo.ContentDao.UpdateTrashContents(siteId, channelId, contentIdList);
         }
 
         public IList<int> GetContentIdList(int siteId, int channelId)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var tableName = ChannelManager.GetTableName(siteInfo, channelId);
-            return DataProvider.ContentDao.GetContentIdListCheckedByChannelId(tableName, siteId, channelId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            return channelInfo.ContentDao.GetContentIdListCheckedByChannelId(siteId, channelId);
         }
 
         public string GetContentUrl(int siteId, int channelId, int contentId)

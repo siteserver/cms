@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
                 }
             }
 
-            ChannelManager.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
+            ControlUtils.ChannelUI.AddListItems(DdlChannelId.Items, SiteInfo, false, true, AuthRequest.AdminPermissionsImpl);
             ControlUtils.SelectSingleItem(DdlChannelId, channelId.ToString());
 
             RptContents.DataSource = TableStyleManager.GetChannelStyleInfoList(_channelInfo);
@@ -81,7 +81,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Redirect(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(GetRedirectUrl(SiteId, TranslateUtils.ToInt(DdlChannelId.SelectedValue)));
+            FxUtils.Page.Redirect(GetRedirectUrl(SiteId, TranslateUtils.ToInt(DdlChannelId.SelectedValue)));
         }
 
         private void RptContents_ItemDataBound(object sender, RepeaterItemEventArgs e)
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Cms
             ltlAttributeName.Text = styleInfo.AttributeName;
 
             ltlDisplayName.Text = styleInfo.DisplayName;
-            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.InputType);
+            ltlInputType.Text = InputTypeUtils.GetText(styleInfo.Type);
 
             ltlValidate.Text = TableStyleManager.GetValidateInfo(styleInfo);
 

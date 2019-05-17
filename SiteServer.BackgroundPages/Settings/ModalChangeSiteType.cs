@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
         public static string GetOpenWindowString(int siteId)
         {
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var title = siteInfo.IsRoot ? "转移到子目录" : "转移到根目录";
+            var title = siteInfo.Root ? "转移到子目录" : "转移到根目录";
             return LayerUtils.GetOpenScript(title,
                 PageUtilsEx.GetSettingsUrl(nameof(ModalChangeSiteType),
                     new NameValueCollection
@@ -41,9 +41,9 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
-            _isHeadquarters = SiteInfo.IsRoot;
+            _isHeadquarters = SiteInfo.Root;
 
             var selectedList = new List<string>();
 
@@ -101,7 +101,7 @@ namespace SiteServer.BackgroundPages.Settings
                 foreach (var psId in siteIdList)
                 {
                     var psInfo = SiteManager.GetSiteInfo(psId);
-                    if (psInfo.IsRoot)
+                    if (psInfo.Root)
                     {
                         headquartersExists = true;
                         break;

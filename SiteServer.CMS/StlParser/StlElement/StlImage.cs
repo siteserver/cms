@@ -56,7 +56,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var type = BackgroundContentAttribute.ImageUrl;
+            var type = ContentAttribute.ImageUrl;
             var no = 0;
             var isOriginal = false;
             var src = string.Empty;
@@ -185,19 +185,19 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelId, contentId);
+                        contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, contextInfo.ChannelInfo, contentId);
                     }
 
                     if (contentInfo != null)
                     {
                         if (no <= 1)
                         {
-                            picUrl = contentInfo.GetString(type);
+                            picUrl = contentInfo.Get<string>(type);
                         }
                         else
                         {
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(type);
-                            var extendValues = contentInfo.GetString(extendAttributeName);
+                            var extendValues = contentInfo.Get<string>(extendAttributeName);
                             if (!string.IsNullOrEmpty(extendValues))
                             {
                                 var index = 2;

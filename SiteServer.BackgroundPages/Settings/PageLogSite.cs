@@ -10,7 +10,7 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
-	public class PageLogSite : BasePageCms
+    public class PageLogSite : BasePageCms
     {
         public DropDownList DdlSiteId;
         public DropDownList DdlLogType;
@@ -24,7 +24,7 @@ namespace SiteServer.BackgroundPages.Settings
         public Literal LtlSite;
         public Literal LtlState;
         public Button BtnDelete;
-		public Button BtnDeleteAll;
+        public Button BtnDeleteAll;
         public Button BtnSetting;
 
         public void Page_Load(object sender, EventArgs e)
@@ -76,7 +76,7 @@ namespace SiteServer.BackgroundPages.Settings
             var siteIdList = SiteManager.GetSiteIdListOrderByLevel();
             foreach (var psId in siteIdList)
             {
-                DdlSiteId.Items.Add(new ListItem(SiteManager.GetSiteInfo(psId).SiteName, psId.ToString())); 
+                DdlSiteId.Items.Add(new ListItem(SiteManager.GetSiteInfo(psId).SiteName, psId.ToString()));
             }
 
             DdlLogType.Items.Add(new ListItem("全部记录", "All"));
@@ -145,25 +145,25 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteId == 0)
             {
-                var siteInfo = SiteManager.GetSiteInfo(SqlUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId)));
+                var siteInfo = SiteManager.GetSiteInfo(FxUtils.EvalInt(e.Item.DataItem, nameof(SiteLogInfo.SiteId)));
                 var siteName = string.Empty;
                 if (siteInfo != null)
                 {
                     siteName =
-                        $"<a href='{siteInfo.Additional.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
+                        $"<a href='{siteInfo.WebUrl}' target='_blank'>{siteInfo.SiteName}</a>";
                 }
                 ltlSite.Text = $@"<td align=""text-center text-nowrap"">{siteName}</td>";
             }
-            ltlUserName.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.UserName));
-            ltlAddDate.Text = DateUtils.GetDateAndTimeString(SqlUtils.EvalDateTime(e.Item.DataItem, nameof(SiteLogInfo.AddDate)));
-            ltlIpAddress.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.IpAddress));
-            ltlAction.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Action));
-            ltlSummary.Text = SqlUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Summary));
+            ltlUserName.Text = FxUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.UserName));
+            ltlAddDate.Text = DateUtils.GetDateAndTimeString(FxUtils.EvalDateTime(e.Item.DataItem, nameof(SiteLogInfo.AddDate)));
+            ltlIpAddress.Text = FxUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.IpAddress));
+            ltlAction.Text = FxUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Action));
+            ltlSummary.Text = FxUtils.EvalString(e.Item.DataItem, nameof(SiteLogInfo.Summary));
         }
 
         public void Search_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageLogSite), new NameValueCollection
             {
                 {"UserName", TbUserName.Text},
                 {"Keyword", TbKeyword.Text},

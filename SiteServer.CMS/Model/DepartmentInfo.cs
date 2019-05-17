@@ -1,63 +1,48 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-	public class DepartmentInfo
-	{
-	    public DepartmentInfo()
-		{
-            Id = 0;
-			DepartmentName = string.Empty;
-            Code = string.Empty;
-			ParentId = 0;
-			ParentsPath = string.Empty;
-			ParentsCount = 0;
-			ChildrenCount = 0;
-			IsLastNode = false;
-			Taxis = 0;
-			AddDate = DateTime.Now;
-			Summary = string.Empty;
-            CountOfAdmin = 0;
-		}
+    [Table("siteserver_Department")]
+    public class DepartmentInfo : Entity
+    {
+        [TableColumn]
+        public string DepartmentName { get; set; }
 
-        public DepartmentInfo(int id, string departmentName, string code, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, int taxis, DateTime addDate, string summary, int countOfAdmin) 
-		{
-            Id = id;
-            DepartmentName = departmentName;
-            Code = code;
-            ParentId = parentId;
-            ParentsPath = parentsPath;
-            ParentsCount = parentsCount;
-            ChildrenCount = childrenCount;
-            IsLastNode = isLastNode;
-            Taxis = taxis;
-            AddDate = addDate;
-            Summary = summary;
-            CountOfAdmin = countOfAdmin;
-		}
+        [TableColumn]
+        public string Code { get; set; }
 
-        public int Id { get; set; }
+        [TableColumn]
+        public int ParentId { get; set; }
 
-	    public string DepartmentName { get; set; }
+        [TableColumn]
+        public string ParentsPath { get; set; }
 
-	    public string Code { get; set; }
+        [TableColumn]
+        public int ParentsCount { get; set; }
 
-	    public int ParentId { get; set; }
+        [TableColumn]
+        public int ChildrenCount { get; set; }
 
-	    public string ParentsPath { get; set; }
+        [TableColumn]
+        private string IsLastNode { get; set; }
 
-	    public int ParentsCount { get; set; }
+        public bool LastNode
+        {
+            get => IsLastNode == "True";
+            set => IsLastNode = value.ToString();
+        }
 
-	    public int ChildrenCount { get; set; }
+        [TableColumn]
+        public int Taxis { get; set; }
 
-	    public bool IsLastNode { get; set; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
 
-	    public int Taxis { get; set; }
+        [TableColumn]
+        public string Summary { get; set; }
 
-	    public DateTime AddDate { get; set; }
-
-	    public string Summary { get; set; }
-
-	    public int CountOfAdmin { get; set; }
-	}
+        [TableColumn]
+        public int CountOfAdmin { get; set; }
+    }
 }

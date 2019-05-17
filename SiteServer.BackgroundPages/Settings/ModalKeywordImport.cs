@@ -4,6 +4,7 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -23,7 +24,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
             if (!IsPostBack)
             {
-                EKeywordGradeUtils.AddListItems(DdlGrade);
+                ControlUtils.KeywordGradeUI.AddListItems(DdlGrade);
             }
         }
 
@@ -56,7 +57,12 @@ namespace SiteServer.BackgroundPages.Settings
 
                         if (!string.IsNullOrEmpty(keyword) && !DataProvider.KeywordDao.IsExists(keyword))
                         {
-                            var keywordInfo = new KeywordInfo(0, keyword, alternative, grade);
+                            var keywordInfo = new KeywordInfo
+                            {
+                                Keyword = keyword,
+                                Alternative = alternative,
+                                KeywordGrade = grade
+                            };
                             DataProvider.KeywordDao.Insert(keywordInfo);
                         }
                     }

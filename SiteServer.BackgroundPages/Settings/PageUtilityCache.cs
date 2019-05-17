@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Web.UI.WebControls;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
@@ -33,7 +34,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var key = (string) e.Item.DataItem;
+            var key = (string)e.Item.DataItem;
             var value = CacheUtils.Get(key);
 
             var valueType = value?.GetType().FullName;
@@ -47,7 +48,7 @@ namespace SiteServer.BackgroundPages.Settings
             var ltlValue = (Literal)e.Item.FindControl("ltlValue");
 
             ltlKey.Text = key;
-                
+
             if (valueType == "System.String")
             {
                 ltlValue.Text = $"String, Length:{value.ToString().Length}";
@@ -72,7 +73,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             CacheUtils.ClearAll();
             CacheDbUtils.Clear();
-            PageUtilsEx.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageUtilityCache), null));
+            FxUtils.Page.Redirect(PageUtilsEx.GetSettingsUrl(nameof(PageUtilityCache), null));
         }
 
     }

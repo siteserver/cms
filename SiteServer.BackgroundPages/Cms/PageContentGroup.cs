@@ -8,35 +8,35 @@ using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageContentGroup : BasePageCms
+    public class PageContentGroup : BasePageCms
     {
-		public Repeater RptContents;
-		public Button BtnAddGroup;
+        public Repeater RptContents;
+        public Button BtnAddGroup;
 
         public static string GetRedirectUrl(int siteId)
         {
             return PageUtilsEx.GetCmsUrl(siteId, nameof(PageContentGroup), null);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-			if (AuthRequest.IsQueryExists("Delete"))
-			{
+            if (AuthRequest.IsQueryExists("Delete"))
+            {
                 var groupName = AuthRequest.GetQueryString("GroupName");
-			
-				try
-				{
-					DataProvider.ContentGroupDao.Delete(groupName, SiteId);
+
+                try
+                {
+                    DataProvider.ContentGroupDao.Delete(SiteId, groupName);
                     AuthRequest.AddSiteLog(SiteId, "删除内容组", $"内容组:{groupName}");
-					SuccessDeleteMessage();
-				}
-				catch(Exception ex)
-				{
+                    SuccessDeleteMessage();
+                }
+                catch (Exception ex)
+                {
                     FailDeleteMessage(ex);
-				}
-			}
+                }
+            }
             if (AuthRequest.IsQueryExists("SetTaxis"))
             {
                 var groupName = AuthRequest.GetQueryString("GroupName");
@@ -71,7 +71,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (e.Item.ItemType != ListItemType.Item && e.Item.ItemType != ListItemType.AlternatingItem) return;
 
-            var groupInfo = (ContentGroupInfo) e.Item.DataItem;
+            var groupInfo = (ContentGroupInfo)e.Item.DataItem;
 
             var ltlContentGroupName = (Literal)e.Item.FindControl("ltlContentGroupName");
             var ltlDescription = (Literal)e.Item.FindControl("ltlDescription");
@@ -108,5 +108,5 @@ namespace SiteServer.BackgroundPages.Cms
                 {"Delete", true.ToString()}
             })}"" onClick=""javascript:return confirm('此操作将删除内容组“{groupInfo.GroupName}”，确认吗？');"">删除</a>";
         }
-	}
+    }
 }

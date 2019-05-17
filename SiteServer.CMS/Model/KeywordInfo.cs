@@ -1,31 +1,24 @@
-﻿using SiteServer.CMS.Model.Enumerations;
+﻿using Datory;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.Model
 {
-    public class KeywordInfo
+    [Table("siteserver_Keyword")]
+    public class KeywordInfo : Entity
     {
-        public KeywordInfo()
-        {
-            Id = 0;
-            Keyword = string.Empty;
-            Alternative = string.Empty;
-            Grade = EKeywordGrade.Normal;
-        }
-
-        public KeywordInfo(int id, string keyword, string alternative, EKeywordGrade grade)
-        {
-            Id = id;
-            Keyword = keyword;
-            Alternative = alternative;
-            Grade = grade;
-        }
-
-        public int Id { get; set; }
-
+        [TableColumn]
         public string Keyword { get; set; }
 
+        [TableColumn]
         public string Alternative { get; set; }
 
-        public EKeywordGrade Grade { get; set; }
+        [TableColumn]
+        private string Grade { get; set; }
+
+        public EKeywordGrade KeywordGrade
+        {
+            get => EKeywordGradeUtils.GetEnumType(Grade);
+            set => Grade = EKeywordGradeUtils.GetValue(value);
+        }
     }
 }

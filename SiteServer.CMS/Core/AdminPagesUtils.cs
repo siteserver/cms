@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Linq;
-using System.Web;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
@@ -16,11 +15,9 @@ namespace SiteServer.CMS.Core
         public static string UpgradeUrl => GetAdminUrl("upgrade");
         public static string LoadingUrl => GetAdminUrl("loading");
 
-        public static string ApplicationPath => HttpContext.Current != null && !string.IsNullOrEmpty(HttpContext.Current.Request.ApplicationPath) ? HttpContext.Current.Request.ApplicationPath : "/";
-
         public static string GetAdminUrl(string relatedUrl)
         {
-            return PageUtils.Combine(ApplicationPath, relatedUrl);
+            return PageUtils.Combine(WebConfigUtils.ApplicationPath, relatedUrl);
         }
 
         public static string GetIndexUrl(int siteId, string pageUrl)

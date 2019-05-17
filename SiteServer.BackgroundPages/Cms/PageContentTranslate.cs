@@ -12,7 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class PageContentTranslate : BasePageCms
+    public class PageContentTranslate : BasePageCms
     {
         public Literal LtlContents;
         public Button BtnTranslateAdd;
@@ -49,11 +49,11 @@ namespace SiteServer.BackgroundPages.Cms
             return PageUtils.GetRedirectStringWithCheckBoxValue(redirectUrl, "contentIdCollection", "contentIdCollection", "请选择需要转移的内容！");
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-			PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
             _returnUrl = StringUtils.ValueFromUrl(AuthRequest.GetQueryString("ReturnUrl"));
             if (string.IsNullOrEmpty(_returnUrl))
             {
@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
             //if (!base.HasChannelPermissions(this.channelId, AppManager.CMS.Permission.Channel.ContentTranslate))
             //{
-            //    PageUtilsEx.RedirectToErrorPage("您没有此栏目的内容转移权限！");
+            //    FxUtils.Page.RedirectToErrorPage("您没有此栏目的内容转移权限！");
             //    return;
             //}
 
@@ -74,12 +74,13 @@ namespace SiteServer.BackgroundPages.Cms
             var builder = new StringBuilder();
             foreach (var channelId in _idsDictionary.Keys)
             {
+                var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
                 var contentIdList = _idsDictionary[channelId];
                 if (contentIdList != null)
                 {
                     foreach (var contentId in contentIdList)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelId, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(SiteInfo, channelInfo, contentId);
                         if (contentInfo != null)
                         {
                             builder.Append(
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             BtnTranslateAdd.Attributes.Add("onclick", ModalChannelMultipleSelect.GetOpenWindowString(SiteId, true));
 
-            ETranslateContentTypeUtils.AddListItems(RblTranslateType, isCut);
+            ControlUtils.TranslateContentTypeUI.AddListItems(RblTranslateType, isCut);
             ControlUtils.SelectSingleItem(RblTranslateType, ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy));
         }
 
@@ -118,7 +119,7 @@ namespace SiteServer.BackgroundPages.Cms
                                 {
                                     ContentUtility.Translate(SiteInfo, channelId, contentId, Request.Form["translateCollection"], translateType, AuthRequest.AdminName);
 
-                                    AuthRequest.AddSiteLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
+                                    AuthRequest.AddContentLog(SiteInfo.Id, channelId, contentId, "转移内容", string.Empty);
                                 }
                             }
                         }
@@ -141,7 +142,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(_returnUrl);
+            FxUtils.Page.Redirect(_returnUrl);
         }
-	}
+    }
 }

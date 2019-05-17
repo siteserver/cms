@@ -10,6 +10,7 @@ using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils.Enumerations;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Provider;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -45,13 +46,13 @@ namespace SiteServer.BackgroundPages.Settings
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             if (IsPostBack) return;
 
             VerifySystemPermissions(ConfigManager.SettingsPermissions.Site);
 
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 PhParentId.Visible = false;
             }
@@ -67,7 +68,7 @@ namespace SiteServer.BackgroundPages.Settings
                 {
                     if (siteId == SiteId) continue;
                     var siteInfo = SiteManager.GetSiteInfo(siteId);
-                    if (siteInfo.IsRoot == false)
+                    if (siteInfo.Root == false)
                     {
                         if (siteInfo.ParentId == 0)
                         {
@@ -95,8 +96,8 @@ namespace SiteServer.BackgroundPages.Settings
             var tableNameList = SiteManager.GetSiteTableNames();
             if (tableNameList.Count > 0)
             {
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.Choose, true));
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.Choose, true));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.HandWrite, false));
 
                 PhTableChoose.Visible = true;
                 PhTableHandWrite.Visible = false;
@@ -108,7 +109,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
             else
             {
-                RblTableRule.Items.Add(ETableRuleUtils.GetListItem(ETableRule.HandWrite, false));
+                RblTableRule.Items.Add(ControlUtils.TableRuleUI.GetListItem(ETableRule.HandWrite, false));
 
                 PhTableChoose.Visible = false;
                 PhTableHandWrite.Visible = false;
@@ -121,14 +122,14 @@ namespace SiteServer.BackgroundPages.Settings
 
             if (SiteInfo == null)
             {
-                PageUtilsEx.RedirectToErrorPage("站点不存在，请确认后再试！");
+                FxUtils.Page.RedirectToErrorPage("站点不存在，请确认后再试！");
                 return;
             }
             TbSiteName.Text = SiteInfo.SiteName;
-            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.Additional.IsCheckContentLevel.ToString());
-            if (SiteInfo.Additional.IsCheckContentLevel)
+            ControlUtils.SelectSingleItem(RblIsCheckContentUseLevel, SiteInfo.IsCheckContentLevel.ToString());
+            if (SiteInfo.IsCheckContentLevel)
             {
-                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.Additional.CheckContentLevel.ToString());
+                ControlUtils.SelectSingleItem(DdlCheckContentLevel, SiteInfo.CheckContentLevel.ToString());
                 PhCheckContentLevel.Visible = true;
             }
             else
@@ -139,7 +140,7 @@ namespace SiteServer.BackgroundPages.Settings
             {
                 TbSiteDir.Text = PathUtils.GetDirectoryName(SiteInfo.SiteDir, false);
             }
-            if (SiteInfo.IsRoot)
+            if (SiteInfo.Root)
             {
                 PhSiteDir.Visible = false;
             }
@@ -203,10 +204,10 @@ namespace SiteServer.BackgroundPages.Settings
 
             SiteInfo.SiteName = TbSiteName.Text;
             SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
-            SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
-            if (SiteInfo.Additional.IsCheckContentLevel)
+            SiteInfo.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
+            if (SiteInfo.IsCheckContentLevel)
             {
-                SiteInfo.Additional.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
+                SiteInfo.CheckContentLevel = TranslateUtils.ToInt(DdlCheckContentLevel.SelectedValue);
             }
 
             var isTableChanged = false;
@@ -220,13 +221,13 @@ namespace SiteServer.BackgroundPages.Settings
             else if (tableRule == ETableRule.HandWrite)
             {
                 tableName = TbTableHandWrite.Text;
-                if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                if (!DatabaseUtils.IsTableExists(tableName))
                 {
-                    DataProvider.ContentDao.CreateContentTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                    TableColumnManager.CreateContentTable(tableName, ContentDao.TableColumnsDefault);
                 }
                 else
                 {
-                    DataProvider.DatabaseDao.AlterSystemTable(tableName, DataProvider.ContentDao.TableColumnsDefault);
+                    TableColumnManager.AlterSystemTable(tableName, ContentDao.TableColumnsDefault);
                 }
             }
 
@@ -236,7 +237,7 @@ namespace SiteServer.BackgroundPages.Settings
                 SiteInfo.TableName = tableName;
             }
 
-            if (SiteInfo.IsRoot == false)
+            if (SiteInfo.Root == false)
             {
                 if (!StringUtils.EqualsIgnoreCase(PathUtils.GetDirectoryName(SiteInfo.SiteDir, false), TbSiteDir.Text))
                 {
@@ -287,7 +288,7 @@ namespace SiteServer.BackgroundPages.Settings
 
         public void Return_OnClick(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageSite.GetRedirectUrl());
+            FxUtils.Page.Redirect(PageSite.GetRedirectUrl());
         }
     }
 }

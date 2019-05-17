@@ -1,195 +1,138 @@
 ﻿using System;
-using System.Collections.Generic;
+using Datory;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.Provider;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model
 {
-	public class ChannelInfo : IChannelInfo
+    [Table("siteserver_Channel")]
+    public partial class ChannelInfo : Entity, IChannelInfo, ICloneable
     {
-	    private string _extendValues;
+        [TableColumn]
+        public string ChannelName { get; set; }
 
-		public ChannelInfo()
-		{
-			Id = 0;
-			ChannelName = string.Empty;
-			SiteId = 0;
-            ContentModelPluginId = string.Empty;
-		    ContentRelatedPluginIds = string.Empty;
-			ParentId = 0;
-			ParentsPath = string.Empty;
-			ParentsCount = 0;
-			ChildrenCount = 0;
-			IsLastNode = false;
-			IndexName = string.Empty;
-			GroupNameCollection = string.Empty;
-			Taxis = 0;
-			AddDate = DateTime.Now;
-			ImageUrl = string.Empty;
-			Content = string.Empty;
-            FilePath = string.Empty;
-            ChannelFilePathRule = string.Empty;
-            ContentFilePathRule = string.Empty;
-            LinkUrl = string.Empty;
-            LinkType = string.Empty;
-            ChannelTemplateId = 0;
-            ContentTemplateId = 0;
-            Keywords = string.Empty;
-            Description = string.Empty;
-            _extendValues = string.Empty;
-		}
+        [TableColumn]
+        public int SiteId { get; set; }
 
-        public ChannelInfo(int id, string channelName, int siteId, string contentModelPluginId, string contentRelatedPluginIds, int parentId, string parentsPath, int parentsCount, int childrenCount, bool isLastNode, string indexName, string groupNameCollection, int taxis, DateTime addDate, string imageUrl, string content, string filePath, string channelFilePathRule, string contentFilePathRule, string linkUrl, ELinkType linkType, int channelTemplateId, int contentTemplateId, string keywords, string description, string extendValues) 
-		{
-			Id = id;
-			ChannelName = channelName;
-			SiteId = siteId;
-            ContentModelPluginId = contentModelPluginId;
-		    ContentRelatedPluginIds = contentRelatedPluginIds;
-			ParentId = parentId;
-			ParentsPath = parentsPath;
-			ParentsCount = parentsCount;
-			ChildrenCount = childrenCount;
-			IsLastNode = isLastNode;
-			IndexName = indexName;
-			GroupNameCollection = groupNameCollection;
-			Taxis = taxis;
-			AddDate = addDate;
-			ImageUrl = imageUrl;
-			Content = content;
-            FilePath = filePath;
-            ChannelFilePathRule = channelFilePathRule;
-            ContentFilePathRule = contentFilePathRule;
-            LinkUrl = linkUrl;
-            LinkType = ELinkTypeUtils.GetValue(linkType);
-            ChannelTemplateId = channelTemplateId;
-            ContentTemplateId = contentTemplateId;
-            Keywords = keywords;
-            Description = description;
-            _extendValues = extendValues;
-		}
-
-        public ChannelInfo(ChannelInfo channelInfo)
-        {
-            Id = channelInfo.Id;
-            ChannelName = channelInfo.ChannelName;
-            SiteId = channelInfo.SiteId;
-            ContentModelPluginId = channelInfo.ContentModelPluginId;
-            ContentRelatedPluginIds = channelInfo.ContentRelatedPluginIds;
-            ParentId = channelInfo.ParentId;
-            ParentsPath = channelInfo.ParentsPath;
-            ParentsCount = channelInfo.ParentsCount;
-            ChildrenCount = channelInfo.ChildrenCount;
-            IsLastNode = channelInfo.IsLastNode;
-            IndexName = channelInfo.IndexName;
-            GroupNameCollection = channelInfo.GroupNameCollection;
-            Taxis = channelInfo.Taxis;
-            AddDate = channelInfo.AddDate;
-            ImageUrl = channelInfo.ImageUrl;
-            Content = channelInfo.Content;
-            FilePath = channelInfo.FilePath;
-            ChannelFilePathRule = channelInfo.ChannelFilePathRule;
-            ContentFilePathRule = channelInfo.ContentFilePathRule;
-            LinkUrl = channelInfo.LinkUrl;
-            LinkType = channelInfo.LinkType;
-            ChannelTemplateId = channelInfo.ChannelTemplateId;
-            ContentTemplateId = channelInfo.ContentTemplateId;
-            Keywords = channelInfo.Keywords;
-            Description = channelInfo.Description;
-            _extendValues = channelInfo._extendValues;
-        }
-
-		public int Id { get; set; }
-
-	    public string ChannelName { get; set; }
-
-	    public int SiteId { get; set; }
-
+        [TableColumn]
         public string ContentModelPluginId { get; set; }
 
+        [TableColumn(Text = true)]
         public string ContentRelatedPluginIds { get; set; }
 
+        [TableColumn]
         public int ParentId { get; set; }
 
-	    public string ParentsPath { get; set; }
+        [TableColumn]
+        public string ParentsPath { get; set; }
 
-	    public int ParentsCount { get; set; }
+        [TableColumn]
+        public int ParentsCount { get; set; }
 
-	    public int ChildrenCount { get; set; }
-        public bool LastNode { get; set; }
+        [TableColumn]
+        public int ChildrenCount { get; set; }
 
-        public bool IsLastNode { get; set; }
+        [TableColumn]
+        private string IsLastNode { get; set; }
 
-	    public string IndexName { get; set; }
+        public bool LastNode
+        {
+            get => IsLastNode == "True";
+            set => IsLastNode = value.ToString();
+        }
 
-	    public string GroupNameCollection { get; set; }
+        [TableColumn]
+        public string IndexName { get; set; }
 
-	    public int Taxis { get; set; }
+        [TableColumn(Text = true)]
+        public string GroupNameCollection { get; set; }
 
+        [TableColumn]
+        public int Taxis { get; set; }
+
+        [TableColumn]
         public DateTime? AddDate { get; set; }
 
-	    public string ImageUrl { get; set; }
+        [TableColumn(Length = 1000)]
+        public string ImageUrl { get; set; }
 
-	    public string Content { get; set; }
+        [TableColumn(Text = true)]
+        public string Content { get; set; }
 
+        [TableColumn(Length = 1000)]
         public string FilePath { get; set; }
 
-	    public string ChannelFilePathRule { get; set; }
+        [TableColumn(Length = 1000)]
+        public string ChannelFilePathRule { get; set; }
 
-	    public string ContentFilePathRule { get; set; }
+        [TableColumn(Length = 1000)]
+        public string ContentFilePathRule { get; set; }
 
-	    public string LinkUrl { get; set; }
+        [TableColumn(Length = 1000)]
+        public string LinkUrl { get; set; }
 
-	    public string LinkType { get; set; }
+        [TableColumn]
+        public string LinkType { get; set; }
 
-	    public int ChannelTemplateId { get; set; }
+        [TableColumn]
+        public int ChannelTemplateId { get; set; }
 
-	    public int ContentTemplateId { get; set; }
+        [TableColumn]
+        public int ContentTemplateId { get; set; }
 
-	    public string Keywords { get; set; }
+        [TableColumn(Length = 2000)]
+        public string Keywords { get; set; }
 
-	    public string Description { get; set; }
+        [TableColumn(Length = 2000)]
+        public string Description { get; set; }
 
-        public void SetExtendValues(string extendValues)
+        [TableColumn(Text = true, Extend = true)]
+        public string ExtendValues { get; set; }
+
+        public object Clone()
         {
-            _extendValues = extendValues;
+            return (ChannelInfo)MemberwiseClone();
         }
 
-        private ChannelInfoExtend _additional;
-
         [JsonIgnore]
-        public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
+        public ContentDao ContentDao => ContentDao.Instance(this);
 
-        [JsonIgnore]
-        public AttributesImpl Attributes => Additional;
+        //是否可以添加栏目
+        public bool IsChannelAddable { get; set; } = true;
 
-        public Dictionary<string, object> ToDictionary()
-        {
-            var jObject = JObject.FromObject(this);
+        //是否可以添加内容
+        public bool IsContentAddable { get; set; } = true;
 
-            var styleInfoList = TableStyleManager.GetChannelStyleInfoList(this);
+        //是否可以生成栏目
+        public bool IsChannelCreatable { get; set; } = true;
 
-            foreach (var styleInfo in styleInfoList)
-            {
-                jObject[styleInfo.AttributeName] = Attributes.GetString(styleInfo.AttributeName);
-            }
+        //是否可以生成内容
+        public bool IsContentCreatable { get; set; } = true;
 
-            var siteInfo = SiteManager.GetSiteInfo(SiteId);
+        public bool IsCreateChannelIfContentChanged { get; set; } = true;
 
-            if (!string.IsNullOrEmpty(ImageUrl))
-            {
-                jObject[nameof(ImageUrl)] = PageUtility.ParseNavigationUrl(siteInfo, ImageUrl, false);
-            }
+        public string CreateChannelIdsIfContentChanged { get; set; }
 
-            jObject["NavigationUrl"] = PageUtility.GetChannelUrl(siteInfo, this, false);
+        public string ContentAttributesOfDisplay { get; set; }
 
-            return jObject.ToObject<Dictionary<string, object>>();
-        }
+        public string TransType { get; set; } = ECrossSiteTransTypeUtils.GetValue(ECrossSiteTransType.AllSite);
+
+        public int TransSiteId { get; set; }
+
+        public string TransChannelIds { get; set; }
+
+        public string TransChannelNames { get; set; }
+
+        public bool TransIsAutomatic { get; set; }
+
+        //跨站转发操作类型：复制 引用地址 引用内容
+        public string TransDoneType { get; set; } = ETranslateContentTypeUtils.GetValue(ETranslateContentType.Copy);
+
+        public bool IsPreviewContentsExists { get; set; }
+
+        public string DefaultTaxisType { get; set; } = ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc);
     }
 }

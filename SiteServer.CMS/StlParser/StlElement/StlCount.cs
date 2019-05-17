@@ -11,11 +11,11 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "显示数值", Description = "通过 stl:count 标签在模板中显示统计数字")]
     public class StlCount
-	{
+    {
         private StlCount() { }
-		public const string ElementName = "stl:count";
+        public const string ElementName = "stl:count";
 
-		[StlAttribute(Title = "需要获取值的类型")]
+        [StlAttribute(Title = "需要获取值的类型")]
         private const string Type = nameof(Type);
 
         [StlAttribute(Title = "栏目索引")]
@@ -47,8 +47,8 @@ namespace SiteServer.CMS.StlParser.StlElement
         };
 
         public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var type = string.Empty;
+        {
+            var type = string.Empty;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
@@ -56,9 +56,9 @@ namespace SiteServer.CMS.StlParser.StlElement
             var scope = EScopeType.Self;
             var since = string.Empty;
 
-		    foreach (var name in contextInfo.Attributes.AllKeys)
-		    {
-		        var value = contextInfo.Attributes[name];
+            foreach (var name in contextInfo.Attributes.AllKeys)
+            {
+                var value = contextInfo.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -91,7 +91,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
 
             return ParseImpl(pageInfo, contextInfo, type, channelIndex, channelName, upLevel, topLevel, scope, since);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string channelIndex, string channelName, int upLevel, int topLevel, EScopeType scope, string since)
         {
@@ -112,8 +112,8 @@ namespace SiteServer.CMS.StlParser.StlElement
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, theChannelId);
-                    count += StlContentCache.GetCountOfContentAdd(tableName, pageInfo.SiteId, theChannelId, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
+                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
+                    count += StlContentCache.GetCountOfContentAdd(pageInfo.SiteId, channelInfo, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
@@ -127,5 +127,5 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             return count.ToString();
         }
-	}
+    }
 }

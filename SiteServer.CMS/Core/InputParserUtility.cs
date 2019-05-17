@@ -24,7 +24,7 @@ namespace SiteServer.CMS.Core
         {
             var parsedContent = content;
 
-            var inputType = styleInfo.InputType;
+            var inputType = styleInfo.Type;
 
             if (inputType == InputType.Date)
             {
@@ -102,10 +102,10 @@ namespace SiteServer.CMS.Core
 
         public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
-            var value = contentInfo.GetString(styleInfo.AttributeName);
+            var value = contentInfo.Get<string>(styleInfo.AttributeName);
             var parsedContent = string.Empty;
 
-            var inputType = styleInfo.InputType;
+            var inputType = styleInfo.Type;
 
             if (inputType == InputType.Date)
             {
@@ -162,7 +162,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -187,7 +187,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;
@@ -212,7 +212,7 @@ namespace SiteServer.CMS.Core
                 else
                 {
                     var extendAttributeName = ContentAttribute.GetExtendAttributeName(styleInfo.AttributeName);
-                    var extendValues = contentInfo.GetString(extendAttributeName);
+                    var extendValues = contentInfo.Get<string>(extendAttributeName);
                     if (!string.IsNullOrEmpty(extendValues))
                     {
                         var index = 2;

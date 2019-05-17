@@ -13,9 +13,9 @@ namespace SiteServer.CMS.StlParser.StlElement
 {
     [StlElement(Title = "获取站点值", Description = "通过 stl:site 标签在模板中显示站点值")]
     public class StlSite
-	{
+    {
         private StlSite() { }
-		public const string ElementName = "stl:site";
+        public const string ElementName = "stl:site";
 
         [StlAttribute(Title = "站点名称")]
         private const string SiteName = nameof(SiteName);
@@ -23,72 +23,72 @@ namespace SiteServer.CMS.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-	    [StlAttribute(Title = "类型")]
+        [StlAttribute(Title = "类型")]
         private const string Type = nameof(Type);
 
-	    [StlAttribute(Title = "显示的格式")]
+        [StlAttribute(Title = "显示的格式")]
         private const string FormatString = nameof(FormatString);
 
-	    [StlAttribute(Title = "显示多项时的分割字符串")]
+        [StlAttribute(Title = "显示多项时的分割字符串")]
         private const string Separator = nameof(Separator);
 
-	    [StlAttribute(Title = "字符开始位置")]
+        [StlAttribute(Title = "字符开始位置")]
         private const string StartIndex = nameof(StartIndex);
 
-	    [StlAttribute(Title = "指定字符长度")]
+        [StlAttribute(Title = "指定字符长度")]
         private const string Length = nameof(Length);
 
-	    [StlAttribute(Title = "显示字符的数目")]
+        [StlAttribute(Title = "显示字符的数目")]
         private const string WordNum = nameof(WordNum);
 
-	    [StlAttribute(Title = "文字超出部分显示的文字")]
+        [StlAttribute(Title = "文字超出部分显示的文字")]
         private const string Ellipsis = nameof(Ellipsis);
 
-	    [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
+        [StlAttribute(Title = "需要替换的文字，可以是正则表达式")]
         private const string Replace = nameof(Replace);
 
-	    [StlAttribute(Title = "替换replace的文字信息")]
+        [StlAttribute(Title = "替换replace的文字信息")]
         private const string To = nameof(To);
 
-	    [StlAttribute(Title = "是否清除标签信息")]
+        [StlAttribute(Title = "是否清除标签信息")]
         private const string IsClearTags = nameof(IsClearTags);
 
-	    [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
+        [StlAttribute(Title = "是否将回车替换为HTML换行标签")]
         private const string IsReturnToBr = nameof(IsReturnToBr);
 
-	    [StlAttribute(Title = "是否转换为小写")]
+        [StlAttribute(Title = "是否转换为小写")]
         private const string IsLower = nameof(IsLower);
 
-	    [StlAttribute(Title = "是否转换为大写")]
+        [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-	    public const string TypeSiteName = "SiteName";
-	    public const string TypeSiteUrl = "SiteUrl";
+        public const string TypeSiteName = "SiteName";
+        public const string TypeSiteUrl = "SiteUrl";
 
-	    public static SortedList<string, string> TypeList => new SortedList<string, string>
-	    {
-	        {TypeSiteName, "站点名称"},
-	        {TypeSiteUrl, "站点的域名地址"}
-	    };
+        public static SortedList<string, string> TypeList => new SortedList<string, string>
+        {
+            {TypeSiteName, "站点名称"},
+            {TypeSiteUrl, "站点的域名地址"}
+        };
 
         internal static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-		    var siteName = string.Empty;
-		    var siteDir = string.Empty;
+        {
+            var siteName = string.Empty;
+            var siteDir = string.Empty;
 
             var type = string.Empty;
-		    var formatString = string.Empty;
-		    string separator = null;
-		    var startIndex = 0;
-		    var length = 0;
-		    var wordNum = 0;
-		    var ellipsis = Constants.Ellipsis;
-		    var replace = string.Empty;
-		    var to = string.Empty;
-		    var isClearTags = false;
-		    var isReturnToBr = false;
-		    var isLower = false;
-		    var isUpper = false;
+            var formatString = string.Empty;
+            string separator = null;
+            var startIndex = 0;
+            var length = 0;
+            var wordNum = 0;
+            var ellipsis = Constants.Ellipsis;
+            var replace = string.Empty;
+            var to = string.Empty;
+            var isClearTags = false;
+            var isReturnToBr = false;
+            var isLower = false;
+            var isUpper = false;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -156,24 +156,24 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
             }
 
-		    var siteInfo = contextInfo.SiteInfo;
+            var siteInfo = contextInfo.SiteInfo;
 
-		    if (!string.IsNullOrEmpty(siteName))
-		    {
-		        siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
-		    }
-		    else if (!string.IsNullOrEmpty(siteDir))
-		    {
-		        siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
-		    }
+            if (!string.IsNullOrEmpty(siteName))
+            {
+                siteInfo = SiteManager.GetSiteInfoBySiteName(siteName);
+            }
+            else if (!string.IsNullOrEmpty(siteDir))
+            {
+                siteInfo = SiteManager.GetSiteInfoByDirectory(siteDir);
+            }
 
-		    if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
-		    {
-		        return siteInfo;
-		    }
+            if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            {
+                return siteInfo;
+            }
 
             return ParseImpl(pageInfo, contextInfo, siteInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
-		}
+        }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, SiteInfo siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
@@ -206,11 +206,11 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.Additional.WebUrl;
+                parsedContent = pageInfo.SiteInfo.WebUrl;
             }
-            else if (pageInfo.SiteInfo.Additional.GetString(type) != null)
+            else if (pageInfo.SiteInfo.Get<string>(type) != null)
             {
-                parsedContent = pageInfo.SiteInfo.Additional.GetString(type);
+                parsedContent = pageInfo.SiteInfo.Get<string>(type);
                 if (!string.IsNullOrEmpty(parsedContent))
                 {
                     var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
@@ -218,7 +218,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                     if (styleInfo.Id > 0)
                     {
-                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.InputType, InputType.Image, InputType.File))
+                        if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
                         {
                             parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
                         }
@@ -226,7 +226,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
 
-                            inputType = styleInfo.InputType;
+                            inputType = styleInfo.Type;
 
                             //parsedContent = StringUtils.ParseString(styleInfo.InputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
@@ -242,5 +242,5 @@ namespace SiteServer.CMS.StlParser.StlElement
 
             return InputTypeUtils.ParseString(inputType, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
         }
-	}
+    }
 }

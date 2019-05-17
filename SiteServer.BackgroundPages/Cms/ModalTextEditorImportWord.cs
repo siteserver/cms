@@ -8,10 +8,11 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.LitJson;
+using SiteServer.BackgroundPages.Core;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalTextEditorImportWord : BasePageCms
+    public class ModalTextEditorImportWord : BasePageCms
     {
         public CheckBox CbIsClearFormat;
         public CheckBox CbIsFirstLineIndent;
@@ -48,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             _attributeName = AuthRequest.GetQueryString("AttributeName");
-		}
+        }
 
         private Hashtable Upload()
         {
@@ -124,5 +125,5 @@ namespace SiteServer.BackgroundPages.Cms
                 FailMessage("请选择Word文件上传！");
             }
         }
-	}
+    }
 }

@@ -60,7 +60,7 @@ namespace SiteServer.Cli.Updater
 
         public static void LoadSites(TreeInfo oldTreeInfo, List<int> siteIdList, List<string> tableNameListForContent, List<string> tableNameListForGovPublic, List<string> tableNameListForGovInteract, List<string> tableNameListForJob)
         {
-            foreach(string oldSiteTableName in TableSite.OldTableNames)
+            foreach (string oldSiteTableName in TableSite.OldTableNames)
             {
                 var siteMetadataFilePath = oldTreeInfo.GetTableMetadataFilePath(oldSiteTableName);
                 if (FileUtils.IsFileExists(siteMetadataFilePath))
@@ -136,7 +136,7 @@ namespace SiteServer.Cli.Updater
                         if (dict.ContainsKey(nameof(SiteInfo.Id)))
                         {
                             var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = ContentDao.GetContentTableName(siteId);
+                            dict[nameof(SiteInfo.TableName)] = Constants.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);
@@ -150,7 +150,7 @@ namespace SiteServer.Cli.Updater
             //{
             //    var siteTableInfo = splitSiteTableDict[siteId];
             //    var siteTableName = UpdateUtils.GetSplitContentTableName(siteId);
-                
+
             //    siteTableInfo.Columns
             //}
 
@@ -160,7 +160,7 @@ namespace SiteServer.Cli.Updater
             //    var siteTableInfo = TranslateUtils.JsonDeserialize<TableInfo>(FileUtils.ReadText(tableFilePath, Encoding.UTF8));
             //    var filePath = newTreeInfo.GetTableContentFilePath(DataProvider.SiteDao.TableName, siteTableInfo.RowFiles[siteTableInfo.RowFiles.Count]);
             //    var tableInfoList = TranslateUtils.JsonDeserialize<List<CMS.Model.TableInfo>>(FileUtils.ReadText(filePath, Encoding.UTF8));
-                
+
 
 
             //    await FileUtils.WriteTextAsync(filePath, Encoding.UTF8, TranslateUtils.JsonSerialize(tableInfoList));

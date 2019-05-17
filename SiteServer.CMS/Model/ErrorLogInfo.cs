@@ -1,33 +1,28 @@
 using System;
+using Datory;
 
 namespace SiteServer.CMS.Model
 {
-    public class ErrorLogInfo
+    [Table("siteserver_ErrorLog")]
+    [Serializable]
+    public class ErrorLogInfo : Entity
     {
-        public ErrorLogInfo(int id, string category, string pluginId, string message, string stacktrace, string summary,
-            DateTime addDate)
-        {
-            Id = id;
-            Category = category;
-            PluginId = pluginId;
-            Message = message;
-            Stacktrace = stacktrace;
-            Summary = summary;
-            AddDate = addDate;
-        }
+        [TableColumn]
+        public string Category { get; set; }
 
-        public int Id { get; }
+        [TableColumn]
+        public string PluginId { get; set; }
 
-        public string Category { get; }
+        [TableColumn]
+        public string Message { get; set; }
 
-        public string PluginId { get; }
+        [TableColumn(Text = true)]
+        public string Stacktrace { get; set; }
 
-        public string Message { get; }
+        [TableColumn(Text = true)]
+        public string Summary { get; set; }
 
-        public string Stacktrace { get; }
-
-        public string Summary { get; }
-
-        public DateTime AddDate { get; }
+        [TableColumn]
+        public DateTime? AddDate { get; set; }
     }
 }

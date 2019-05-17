@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -22,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&
@@ -53,7 +54,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
                     departments.Add(new KeyValuePair<int, string>(departmentId,
                         GetDepartment(isLastNodeArrayOfDepartment, departmentInfo.DepartmentName,
-                            departmentInfo.ParentsCount, departmentInfo.IsLastNode)));
+                            departmentInfo.ParentsCount, departmentInfo.LastNode)));
                 }
 
                 var areas = new List<KeyValuePair<int, string>>
@@ -66,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     var areaInfo = AreaManager.GetAreaInfo(areaId);
                     areas.Add(new KeyValuePair<int, string>(areaId,
-                        GetArea(isLastNodeArrayOfArea, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode)));
+                        GetArea(isLastNodeArrayOfArea, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode)));
                 }
 
                 return Ok(new
@@ -128,7 +129,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
@@ -180,7 +181,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new AuthenticatedRequest();
+                var request = new Request(HttpContext.Current.Request);
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&

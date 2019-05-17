@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
@@ -10,31 +11,10 @@ namespace SiteServer.CMS.Core
     {
         private const string SplitChar = " "; //分隔符
 
-        /// <summary>
-        /// 数据缓存函数
-        /// </summary>
-        /// <param name="key">索引键</param>
-        /// <param name="val">缓存的数据</param>
-        private static void SetCache(string key, object val)
-        {
-            if (val == null)
-                val = " ";
-            System.Web.HttpContext.Current.Application.Lock();
-            System.Web.HttpContext.Current.Application.Set(key, val);
-            System.Web.HttpContext.Current.Application.UnLock();
-        }
-        /// <summary>
-        /// 读取缓存
-        /// </summary>
-        private static object GetCache(string key)
-        {
-            return System.Web.HttpContext.Current.Application.Get(key);
-        }
-
         private static SortedList ReadContent(int siteId)
         {
-            var cacheKey = "BaiRong.Core.WordSpliter." + siteId;
-            if (GetCache(cacheKey) == null)
+            var cacheKey = "SiteServer.CMS.Core.WordSpliter." + siteId;
+            if (!CacheUtils.Exists(cacheKey))
             {
                 var arrText = new SortedList();
 
@@ -49,9 +29,9 @@ namespace SiteServer.CMS.Core
                         }
                     }
                 }
-                SetCache(cacheKey, arrText);
+                CacheUtils.InsertHours(cacheKey, arrText, 1);
             }
-            return (SortedList)GetCache(cacheKey);
+            return (SortedList)CacheUtils.Get(cacheKey);
         }
 
         private static bool IsMatch(string str, string reg)

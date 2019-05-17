@@ -32,7 +32,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId");
+            FxUtils.CheckRequestParameter("siteId");
 
             _templateId = AuthRequest.GetQueryInt("templateID");
             _includeUrl = AuthRequest.GetQueryString("includeUrl");
@@ -40,7 +40,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (IsPostBack) return;
 
-            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(SiteId, _templateId);
+            var logDictionary = DataProvider.TemplateLogDao.GetLogIdWithNameDictionary(_templateId);
             if (logDictionary.Count > 0)
             {
                 PhContent.Visible = true;
@@ -69,7 +69,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public void DdlLogId_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PageUtilsEx.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTemplateRestore), new NameValueCollection
+            FxUtils.Page.Redirect(PageUtilsEx.GetCmsUrl(SiteId, nameof(ModalTemplateRestore), new NameValueCollection
             {
                 {"templateID", _templateId.ToString()},
                 {"includeUrl", _includeUrl},

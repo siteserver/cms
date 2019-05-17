@@ -49,7 +49,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var isSubtract = AuthRequest.IsQueryExists("Subtract");
                 DataProvider.DepartmentDao.UpdateTaxis(departmentId, isSubtract);
 
-                PageUtilsEx.Redirect(GetRedirectUrl(departmentId));
+                FxUtils.Page.Redirect(GetRedirectUrl(departmentId));
                 return;
             }
 

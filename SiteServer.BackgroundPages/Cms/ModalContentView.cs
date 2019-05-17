@@ -46,7 +46,7 @@ namespace SiteServer.BackgroundPages.Cms
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "id", "ReturnUrl");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "id", "ReturnUrl");
 
             _channelId = AuthRequest.GetQueryInt("channelId");
             if (_channelId < 0) _channelId = -_channelId;
@@ -86,22 +86,22 @@ namespace SiteServer.BackgroundPages.Cms
 
             LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 
-            if (_contentInfo.ReferenceId > 0 && _contentInfo.GetString(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
+            if (_contentInfo.ReferenceId > 0 && _contentInfo.Get<string>(ContentAttribute.TranslateContentType) != ETranslateContentType.ReferenceContent.ToString())
             {
                 var referenceSiteId = DataProvider.ChannelDao.GetSiteId(_contentInfo.SourceId);
                 var referenceSiteInfo = SiteManager.GetSiteInfo(referenceSiteId);
-                var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, _contentInfo.SourceId, _contentInfo.ReferenceId);
+                var referenceChannelInfo = ChannelManager.GetChannelInfo(referenceSiteId, _contentInfo.SourceId);
+                var referenceContentInfo = ContentManager.GetContentInfo(referenceSiteInfo, referenceChannelInfo, _contentInfo.ReferenceId);
 
                 if (referenceContentInfo != null)
                 {
                     var pageUrl = PageUtility.GetContentUrl(referenceSiteInfo, referenceContentInfo, true);
-                    var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
                         WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
-                            referenceNodeInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
+                            referenceChannelInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
-<div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
+<div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceChannelInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 
             var styleInfo = (TableStyleInfo)e.Item.DataItem;
 
-            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.GetString(styleInfo.AttributeName), SiteInfo, styleInfo);
+            var inputHtml = InputParserUtility.GetContentByTableStyle(_contentInfo.Get<string>(styleInfo.AttributeName), SiteInfo, styleInfo);
 
             var ltlHtml = (Literal)e.Item.FindControl("ltlHtml");
 

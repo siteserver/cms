@@ -1,4 +1,6 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
@@ -8,8 +10,8 @@ using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages.Controls
 {
-	public class TextEditorControl : Control
-	{
+    public class TextEditorControl : Control
+    {
         private string _value;
         private SiteInfo _siteInfo;
         private string _attributeName;
@@ -21,24 +23,26 @@ namespace SiteServer.BackgroundPages.Controls
             _value = value;
         }
 
-		protected override void Render(HtmlTextWriter output)
-		{
-		    if (Page.IsPostBack) return;
+        protected override void Render(HtmlTextWriter output)
+        {
+            if (Page.IsPostBack) return;
 
-		    var pageScripts = new NameValueCollection();
+            var pageScripts = new NameValueCollection();
 
-		    var attributes = new AttributesImpl();
-		    attributes.Set(_attributeName, _value);
+            var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                [_attributeName] = _value
+            };
 
-		    var extraBuilder = new StringBuilder();
-		    var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _siteInfo, pageScripts, extraBuilder);
+            var extraBuilder = new StringBuilder();
+            var inputHtml = BackgroundInputTypeParser.ParseTextEditor(attributes, _attributeName, _siteInfo, pageScripts, extraBuilder);
 
-		    output.Write(inputHtml + extraBuilder);
+            output.Write(inputHtml + extraBuilder);
 
-		    foreach (string key in pageScripts.Keys)
-		    {
-		        output.Write(pageScripts[key]);
-		    }
-		}
+            foreach (string key in pageScripts.Keys)
+            {
+                output.Write(pageScripts[key]);
+            }
+        }
     }
 }

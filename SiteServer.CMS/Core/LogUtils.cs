@@ -45,28 +45,34 @@ namespace SiteServer.CMS.Core
             return 0;
         }
 
-        public static void AddErrorLogAndRedirect(Exception ex, string summary = "")
-        {
-            if (ex == null || ex.StackTrace.Contains("System.Web.HttpResponse.set_StatusCode(Int32 value)")) return;
-
-            var logId = AddErrorLog(ex, summary);
-            if (logId > 0)
-            {
-                PageUtilsEx.RedirectToErrorPage(logId);
-            }
-            else
-            {
-                PageUtilsEx.RedirectToErrorPage(ex.Message);
-            }
-        }
-
         public static int AddErrorLog(Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            var logInfo = new ErrorLogInfo
+            {
+                Category = CategoryAdmin,
+                PluginId = string.Empty,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            };
+
+            return AddErrorLog(logInfo);
         }
+
         public static int AddErrorLog(string pluginId, Exception ex, string summary = "")
         {
-            return AddErrorLog(new ErrorLogInfo(0, CategoryAdmin, pluginId, ex.Message, ex.StackTrace, summary, DateTime.Now));
+            var logInfo = new ErrorLogInfo
+            {
+                Category = CategoryAdmin,
+                PluginId = pluginId,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            };
+
+            return AddErrorLog(logInfo);
         }
 
         public static string AddStlErrorLog(PageInfo pageInfo, string elementName, string stlContent, Exception ex)
@@ -75,13 +81,24 @@ namespace SiteServer.CMS.Core
             if (pageInfo != null)
             {
                 summary = $@"站点名称：{pageInfo.SiteInfo.SiteName}，
-模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.TemplateType)}，
+模板类型：{TemplateTypeUtils.GetText(pageInfo.TemplateInfo.Type)}，
 模板名称：{pageInfo.TemplateInfo.TemplateName}
 <br />";
             }
 
             summary += $@"STL标签：{StringUtils.HtmlEncode(stlContent)}";
-            AddErrorLog(new ErrorLogInfo(0, CategoryStl, string.Empty, ex.Message, ex.StackTrace, summary, DateTime.Now));
+
+            var logInfo = new ErrorLogInfo
+            {
+                Category = CategoryStl,
+                PluginId = string.Empty,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary,
+                AddDate = DateTime.Now
+            };
+
+            AddErrorLog(logInfo);
 
             return $@"
 <!--
@@ -91,7 +108,7 @@ stl: {stlContent}
 -->";
         }
 
-        public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
+        public static void AddSiteLog(int siteId, int channelId, int contentId, string ipAddress, string adminName, string action, string summary)
         {
             if (!ConfigManager.Instance.IsLogSite) return;
 
@@ -117,8 +134,18 @@ stl: {stlContent}
                     {
                         channelId = -channelId;
                     }
-                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtilsEx.GetIpAddress(), DateTime.Now, action, summary);
 
+                    var siteLogInfo = new SiteLogInfo
+                    {
+                        SiteId = siteId,
+                        ChannelId = channelId,
+                        ContentId = contentId,
+                        UserName = adminName,
+                        IpAddress = ipAddress,
+                        AddDate = DateTime.Now,
+                        Action = action,
+                        Summary = summary
+                    };
                     DataProvider.SiteLogDao.Insert(siteLogInfo);
                 }
                 catch (Exception ex)
@@ -128,7 +155,7 @@ stl: {stlContent}
             }
         }
 
-        public static void AddAdminLog(string adminName, string action, string summary = "")
+        public static void AddAdminLog(string ipAddress, string adminName, string action, string summary = "")
         {
             if (!ConfigManager.Instance.IsLogAdmin) return;
 
@@ -144,7 +171,15 @@ stl: {stlContent}
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                var logInfo = new LogInfo(0, adminName, PageUtilsEx.GetIpAddress(), DateTime.Now, action, summary);
+
+                var logInfo = new LogInfo
+                {
+                    UserName = adminName,
+                    IpAddress = ipAddress,
+                    AddDate = DateTime.Now,
+                    Action = action,
+                    Summary = summary
+                };
 
                 DataProvider.LogDao.Insert(logInfo);
             }
@@ -154,12 +189,7 @@ stl: {stlContent}
             }
         }
 
-        public static void AddUserLoginLog(string userName)
-        {
-            AddUserLog(userName, "用户登录", string.Empty);
-        }
-
-        public static void AddUserLog(string userName, string actionType, string summary)
+        public static void AddUserLog(string ipAddress, string userName, string actionType, string summary)
         {
             if (!ConfigManager.Instance.IsLogUser) return;
 
@@ -175,7 +205,7 @@ stl: {stlContent}
                 var userLogInfo = new UserLogInfo
                 {
                     UserName = userName,
-                    IpAddress = PageUtilsEx.GetIpAddress(),
+                    IpAddress = ipAddress,
                     AddDate = DateTime.Now,
                     Action = actionType,
                     Summary = summary

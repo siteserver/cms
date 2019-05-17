@@ -18,13 +18,13 @@ namespace SiteServer.Utils
         //    return string.Empty;
         //}
 
-        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, ValidateType validateType, string regExp, string errorMessage)
+        public static string GetValidateAttributes(bool isValidate, string displayName, bool isRequire, int minNum, int maxNum, string validateType, string regExp, string errorMessage)
         {
             if (isValidate)
             {
                 return
                     $@"isValidate=""{true.ToString().ToLower()}"" displayName=""{displayName}"" isRequire=""{isRequire
-                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType.Value}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
+                        .ToString().ToLower()}"" minNum=""{minNum}"" maxNum=""{maxNum}"" validateType=""{validateType}"" regExp=""{regExp}"" errorMessage=""{errorMessage}""";
             }
             return string.Empty;
         }

@@ -6,16 +6,18 @@ using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
+using SiteServer.BackgroundPages.Core;
+using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Cms
 {
-	public class ModalContentCrossSiteTrans : BasePageCms
+    public class ModalContentCrossSiteTrans : BasePageCms
     {
-	    protected DropDownList DdlSiteId;
+        protected DropDownList DdlSiteId;
         protected ListBox LbChannelId;
 
-        private int _channelId;
-	    private List<int> _contentIdList;
+        private ChannelInfo _channelInfo;
+        private List<int> _contentIdList;
 
         public static string GetOpenWindowString(int siteId, int channelId)
         {
@@ -25,18 +27,18 @@ namespace SiteServer.BackgroundPages.Cms
             }), "contentIdCollection", "请选择需要转发的内容！", 400, 410);
         }
 
-		public void Page_Load(object sender, EventArgs e)
+        public void Page_Load(object sender, EventArgs e)
         {
             if (IsForbidden) return;
 
-            PageUtilsEx.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
+            FxUtils.CheckRequestParameter("siteId", "channelId", "contentIdCollection");
 
-            _channelId = AuthRequest.GetQueryInt("channelId");
+            _channelInfo = ChannelManager.GetChannelInfo(SiteId, AuthRequest.GetQueryInt("channelId"));
             _contentIdList = TranslateUtils.StringCollectionToIntList(AuthRequest.GetQueryString("contentIdCollection"));
 
             if (IsPostBack) return;
 
-            CrossSiteTransUtility.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelId);
+            ControlUtils.CrossSiteTransUI.LoadSiteIdDropDownList(DdlSiteId, SiteInfo, _channelInfo.Id);
 
             if (DdlSiteId.Items.Count > 0)
             {
@@ -47,7 +49,7 @@ namespace SiteServer.BackgroundPages.Cms
         public void DdlSiteId_SelectedIndexChanged(object sender, EventArgs e)
         {
             var psId = int.Parse(DdlSiteId.SelectedValue);
-            CrossSiteTransUtility.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, ChannelManager.GetChannelInfo(SiteId, _channelId), AuthRequest.AdminPermissionsImpl);
+            ControlUtils.CrossSiteTransUI.LoadChannelIdListBox(LbChannelId, SiteInfo, psId, _channelInfo, AuthRequest.AdminPermissionsImpl);
         }
 
         public override void Submit_OnClick(object sender, EventArgs e)
@@ -64,25 +66,24 @@ namespace SiteServer.BackgroundPages.Cms
                         if (targetChannelId != 0)
                         {
                             var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
-                            var targetTableName = ChannelManager.GetTableName(targetSiteInfo, targetChannelId);
                             foreach (var contentId in _contentIdList)
                             {
-                                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelId, contentId);
+                                var contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
                                 FileUtility.MoveFileByContentInfo(SiteInfo, targetSiteInfo, contentInfo);
                                 contentInfo.SiteId = targetSiteId;
                                 contentInfo.SourceId = contentInfo.ChannelId;
                                 contentInfo.ChannelId = targetChannelId;
-                                
-                                contentInfo.IsChecked = targetSiteInfo.Additional.IsCrossSiteTransChecked;
+
+                                contentInfo.Checked = targetSiteInfo.IsCrossSiteTransChecked;
                                 contentInfo.CheckedLevel = 0;
 
-                                DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
+                                targetChannelInfo.ContentDao.Insert(targetSiteInfo, targetChannelInfo, contentInfo);
                             }
                         }
                     }
                 }
 
-                AuthRequest.AddSiteLog(SiteId, _channelId, 0, "跨站转发", string.Empty);
+                AuthRequest.AddChannelLog(SiteId, _channelInfo.Id, "跨站转发", string.Empty);
 
                 SuccessMessage("内容转发成功，请选择后续操作。");
             }
@@ -92,7 +93,7 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LayerUtils.Close(Page);
-		}
+        }
 
-	}
+    }
 }

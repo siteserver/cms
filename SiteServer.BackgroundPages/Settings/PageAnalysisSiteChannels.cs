@@ -114,12 +114,11 @@ yArrayUpdate.push('{yValueUpdate}');";
             foreach (var channelId in channelIdList)
             {
                 var nodeInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                var tableName = ChannelManager.GetTableName(SiteInfo, channelId);
 
                 SetXHashtable(channelId, nodeInfo.ChannelName);
 
-                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentAdd(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty, ETriState.All), YTypeNew);
-                SetYHashtable(channelId, DataProvider.ContentDao.GetCountOfContentUpdate(tableName, SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
+                SetYHashtable(channelId, nodeInfo.ContentDao.GetCountOfContentAdd(SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty, ETriState.All), YTypeNew);
+                SetYHashtable(channelId, nodeInfo.ContentDao.GetCountOfContentUpdate(SiteId, nodeInfo.Id, EScopeType.All, TranslateUtils.ToDateTime(_additional["StartDate"]), TranslateUtils.ToDateTime(_additional["EndDate"]), string.Empty), YTypeUpdate);
             }
 
             RptChannels.DataSource = channelIdList;
@@ -147,7 +146,7 @@ yArrayUpdate.push('{yValueUpdate}');";
         public void Analysis_OnClick(object sender, EventArgs e)
         {
             var siteId = TranslateUtils.ToInt(DdlSiteId.SelectedValue);
-            PageUtilsEx.Redirect(siteId > 0
+            FxUtils.Page.Redirect(siteId > 0
                 ? GetRedirectUrl(siteId, TbStartDate.Text, TbEndDate.Text)
                 : PageAnalysisSite.GetRedirectUrl(TbStartDate.Text, TbEndDate.Text));
         }
