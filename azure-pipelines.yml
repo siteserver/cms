@@ -11,23 +11,27 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
+  displayName: install dotnet
   inputs:
     version: '3.0.100-preview5-011568' # replace this value with the version that you need for your project
 
 - script: dotnet restore $(solution)
 
 - task: DotNetCoreCLI@2
+  displayName: dotnet restore
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
+  displayName: dotnet build
   inputs:
     command: 'build'
     projects: '$(solution)'
     arguments: '--configuration $(buildConfiguration)' # Update this to match your need
 
 - task: DotNetCoreCLI@2
+  displayName: dotnet test
   inputs:
     command: 'test'
     projects: '**/*Tests/*.csproj'
@@ -35,7 +39,16 @@ steps:
 
 - script: dotnet pack /p:PackageVersion=$(version)  # define version variable elsewhere in your pipeline
 
+# Node install
+- task: NodeTool@0
+  displayName: install nodejs
+  inputs:
+    versionSpec: '6.x' # The version we're installing
+# Write the installed version to the command line
+- script: which node
+
 - task: Gulp@1
+  displayName: gulp build
   inputs:
     gulpFile: 'gulpfile.js'
     targets: 'build'
