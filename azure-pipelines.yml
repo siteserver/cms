@@ -7,7 +7,7 @@ variables:
   solution: 'siteserver-all.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  version: 6.10.$(rev:r)-beta
+  version: 6.10.$(Build.BuildNumber)
 
 steps:
 - task: DotNetCoreInstaller@0
@@ -16,6 +16,7 @@ steps:
     version: '3.0.100-preview5-011568'
 
 - task: NuGetToolInstaller@1
+  displayName: install nuget
   inputs:
     versionSpec: 
     checkLatest: true
@@ -44,6 +45,7 @@ steps:
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
 - script: dotnet pack /p:PackageVersion=$(version)
+  displayName: dotnet pack
 
 - task: NodeTool@0
   displayName: install nodejs
