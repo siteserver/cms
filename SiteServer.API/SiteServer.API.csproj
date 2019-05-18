@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <ProjectUISubcaption>Swashbuckle - ASP.NET Core 2.2</ProjectUISubcaption>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <!-- <snippet_SuppressWarnings> -->

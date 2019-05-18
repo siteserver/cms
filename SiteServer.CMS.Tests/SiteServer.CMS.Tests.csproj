@@ -5,6 +5,7 @@
     <RuntimeIdentifiers>win7-x64;win-7x86</RuntimeIdentifiers>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

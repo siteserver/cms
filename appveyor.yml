@@ -36,8 +36,8 @@
 
   before_build:
     - dotnet restore siteserver-all.sln
-    - nuget restore SiteServer.Cli/packages.config -PackagesDirectory ..\packages
-    - nuget restore SiteServer.Web/packages.config -PackagesDirectory ..\packages
+    - nuget restore SiteServer.Cli/packages.config -PackagesDirectory .\packages
+    - nuget restore SiteServer.Web/packages.config -PackagesDirectory .\packages
 
   build:
     project: siteserver-all.sln # path to Visual Studio solution or project
