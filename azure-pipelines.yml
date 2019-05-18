@@ -24,11 +24,11 @@ steps:
 - script: dotnet restore $(solution)
   displayName: dotnet restore
 
-- task: NuGetCommand@2
-  displayName: nuget restore
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
+- script: nuget restore SiteServer.Cli/packages.config
+  displayName: nuget restore SiteServer.Cli
+
+- script: nuget restore SiteServer.Web/packages.config
+  displayName: nuget restore SiteServer.Web
 
 - task: DotNetCoreCLI@2
   displayName: dotnet build
