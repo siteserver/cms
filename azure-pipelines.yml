@@ -7,28 +7,34 @@ variables:
   solution: 'siteserver-all.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  version: 6.10.$(Build.BuildNumber)-beta
+  version: 6.10.$(rev:r)-beta
 
 steps:
 - task: DotNetCoreInstaller@0
   displayName: install dotnet
   inputs:
-    version: '3.0.100-preview5-011568' # replace this value with the version that you need for your project
+    version: '3.0.100-preview5-011568'
+
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: 
+    checkLatest: true
 
 - script: dotnet restore $(solution)
-
-- task: DotNetCoreCLI@2
   displayName: dotnet restore
+
+- task: NuGetCommand@2
+  displayName: nuget restore
   inputs:
     command: 'restore'
-    projects: '**/*.csproj'
+    restoreSolution: '**/*.sln'
 
 - task: DotNetCoreCLI@2
   displayName: dotnet build
   inputs:
     command: 'build'
     projects: '$(solution)'
-    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: dotnet test
@@ -37,22 +43,24 @@ steps:
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
-- script: dotnet pack /p:PackageVersion=$(version)  # define version variable elsewhere in your pipeline
+- script: dotnet pack /p:PackageVersion=$(version)
 
-# Node install
 - task: NodeTool@0
   displayName: install nodejs
   inputs:
-    versionSpec: '6.x' # The version we're installing
-# Write the installed version to the command line
-- script: which node
+    versionSpec: '6.x'
 
-- task: Gulp@1
+- script: npm install gulp -g
+  displayName: install gulp
+
+- script: npm install
+  displayName: npm install
+
+- script: gulp build
   displayName: gulp build
-  inputs:
-    gulpFile: 'gulpfile.js'
-    targets: 'build'
-    enableCodeCoverage: false
 
+- script: nuget pack build/SS.CMS.nuspec
+  displayName: nuget pack
 
-
+- script: gulp zip
+  displayName: gulp zip
