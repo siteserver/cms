@@ -24,10 +24,10 @@ steps:
 - script: dotnet restore $(solution)
   displayName: dotnet restore
 
-- script: nuget restore SiteServer.Cli/packages.config -PackagesDirectory ..\packages
+- script: nuget restore SiteServer.Cli/packages.config -PackagesDirectory ./packages
   displayName: nuget restore SiteServer.Cli
 
-- script: nuget restore SiteServer.Web/packages.config -PackagesDirectory ..\packages
+- script: nuget restore SiteServer.Web/packages.config -PackagesDirectory ./packages
   displayName: nuget restore SiteServer.Web
 
 - task: DotNetCoreCLI@2
