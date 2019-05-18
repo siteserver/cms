@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj" />
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

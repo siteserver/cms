@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- <TargetFramework>netstandard2.0</TargetFramework> -->
+    <TargetFramework>net461</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0.0</Version>
+    <AssemblyName>SiteServer.BackgroundPages</AssemblyName>
+    <RootNamespace>SiteServer.BackgroundPages</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj" />
+    <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+</Project>
