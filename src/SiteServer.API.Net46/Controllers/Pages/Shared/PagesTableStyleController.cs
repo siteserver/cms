@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
     [RoutePrefix("pages/shared/tableStyle")]
-    public class PagesTableStyleController : ApiController
+    public class PagesTableStyleController : ControllerBase
     {
         private const string Route = "";
 
@@ -22,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -90,7 +88,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");

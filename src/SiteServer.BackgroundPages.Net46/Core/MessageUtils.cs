@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.UI;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Core
 {
@@ -10,9 +12,9 @@ namespace SiteServer.BackgroundPages.Core
         {
         }
 
-        public static void SaveMessage(Message.EMessageType messageType, string message)
+        public static void SaveMessage(Request request, Message.EMessageType messageType, string message)
         {
-            CookieUtils.SetCookie(Message.GetCookieName(messageType), message, DateTime.MaxValue);
+            request.SetCookie(Message.GetCookieName(messageType), message, DateTime.MaxValue);
         }
 
         private static string DecodeMessage(string message)
@@ -47,27 +49,27 @@ namespace SiteServer.BackgroundPages.Core
             return messageHtml;
         }
 
-        public static string GetMessageHtml(Control control)
+        public static string GetMessageHtml(Request request, Control control)
         {
             var messageType = Message.EMessageType.None;
             var message = string.Empty;
-            if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Success)))
+            if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Success), out message))
             {
                 messageType = Message.EMessageType.Success;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Success));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Success));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Success));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Success));
             }
-            else if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Error)))
+            else if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Error), out message))
             {
                 messageType = Message.EMessageType.Error;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Error));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Error));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Error));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Error));
             }
-            else if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Info)))
+            else if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Info), out message))
             {
                 messageType = Message.EMessageType.Info;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Info));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Info));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Info));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Info));
             }
             return GetMessageHtml(messageType, message, control);
         }
@@ -109,27 +111,27 @@ namespace SiteServer.BackgroundPages.Core
             return messageHtml;
         }
 
-        public static string GetAlertHtml(Control control, string text)
+        public static string GetAlertHtml(Request request, Control control, string text)
         {
             var messageType = Message.EMessageType.None;
             var message = string.Empty;
-            if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Success)))
+            if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Success), out message))
             {
                 messageType = Message.EMessageType.Success;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Success));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Success));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Success));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Success));
             }
-            else if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Error)))
+            else if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Error), out message))
             {
                 messageType = Message.EMessageType.Error;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Error));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Error));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Error));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Error));
             }
-            else if (CookieUtils.IsExists(Message.GetCookieName(Message.EMessageType.Info)))
+            else if (request.TryGetCookie(Message.GetCookieName(Message.EMessageType.Info), out message))
             {
                 messageType = Message.EMessageType.Info;
-                message = CookieUtils.GetCookie(Message.GetCookieName(Message.EMessageType.Info));
-                CookieUtils.Erase(Message.GetCookieName(Message.EMessageType.Info));
+                //message = request.GetCookie(Message.GetCookieName(Message.EMessageType.Info));
+                request.RemoveCookie(Message.GetCookieName(Message.EMessageType.Info));
             }
             else if (!string.IsNullOrEmpty(text))
             {

@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ErrorLogInfo> _repository;
         public ErrorLogDao()
         {
-            _repository = new Repository<ErrorLogInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ErrorLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

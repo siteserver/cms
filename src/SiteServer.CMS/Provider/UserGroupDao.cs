@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<UserGroupInfo> _repository;
         public UserGroupDao()
         {
-            _repository = new Repository<UserGroupInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<UserGroupInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

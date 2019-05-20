@@ -146,7 +146,7 @@ namespace SiteServer.CMS.Provider
             var contentId = 0;
             var sqlString = SqlUtils.ToTopSqlString(TableName, "Id", $"WHERE (ChannelId = {channelId})", orderByString, 1);
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {

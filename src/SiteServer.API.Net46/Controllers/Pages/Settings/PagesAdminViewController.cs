@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -11,7 +9,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/adminView")]
-    public class PagesAdminViewController : ApiController
+    public class PagesAdminViewController : ControllerBase
     {
         private const string Route = "";
 
@@ -20,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);

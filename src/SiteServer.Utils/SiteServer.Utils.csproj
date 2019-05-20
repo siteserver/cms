@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.1.0" />
-    <PackageReference Include="SiteServer.Plugin" Version="2.3.10" />
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SiteServer.Plugin\SiteServer.Plugin.csproj" />
   </ItemGroup>
 
 </Project>

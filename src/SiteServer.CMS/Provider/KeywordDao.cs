@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<KeywordInfo> _repository;
         public KeywordDao()
         {
-            _repository = new Repository<KeywordInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<KeywordInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

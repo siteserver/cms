@@ -148,6 +148,22 @@ namespace SiteServer.Utils
             return boolean;
         }
 
+        private static readonly TimeSpan DefaultOffset = new TimeSpan();
+
+        public static DateTimeOffset ToDateTimeOffset(DateTime dateTime)
+        {
+            return new DateTimeOffset(dateTime, DefaultOffset);
+        }
+
+        public static DateTime ToDateTime(DateTimeOffset? dateTimeOffset)
+        {
+            if (!dateTimeOffset.HasValue)
+            {
+                return DateTime.MinValue;
+            }
+            return dateTimeOffset.Value.DateTime;
+        }
+
         public static DateTime ToDateTime(string dateTimeStr)
         {
             var datetime = DateUtils.SqlMinValue;
@@ -239,7 +255,7 @@ namespace SiteServer.Utils
                 var name = reader.GetName(i);
                 var value = reader.GetValue(i);
 
-                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
+                if (value is string s && AppSettings.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -280,7 +296,7 @@ namespace SiteServer.Utils
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
 
-                if (value is string s && WebConfigUtils.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
+                if (value is string s && AppSettings.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -314,6 +330,7 @@ namespace SiteServer.Utils
 
             if (string.IsNullOrEmpty(json)) return dict;
 
+            json = json.Trim();
             if (json.StartsWith("{") && json.EndsWith("}"))
             {
                 dict = JsonDeserialize<Dictionary<string, object>>(json);
@@ -750,11 +767,16 @@ namespace SiteServer.Utils
             return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
         }
 
+        public static Dictionary<string, object> JsonGetDictionaryIgnorecase(Dictionary<string, object> dict)
+        {
+            return new Dictionary<string, object>(dict, StringComparer.CurrentCultureIgnoreCase);
+        }
+
         public const string EncryptStingIndicator = "0secret0";
 
         public static string EncryptStringBySecretKey(string inputString)
         {
-            return EncryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
+            return EncryptStringBySecretKey(inputString, AppSettings.SecretKey);
         }
 
         public static string EncryptStringBySecretKey(string inputString, string secretKey)
@@ -769,14 +791,17 @@ namespace SiteServer.Utils
             encryptor.DesEncrypt();
 
             var retval = encryptor.OutString;
-            retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+            if (!string.IsNullOrEmpty(retval))
+            {
+                retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0") + EncryptStingIndicator;
+            }
 
-            return retval + EncryptStingIndicator;
+            return retval;
         }
 
         public static string DecryptStringBySecretKey(string inputString)
         {
-            return DecryptStringBySecretKey(inputString, WebConfigUtils.SecretKey);
+            return DecryptStringBySecretKey(inputString, AppSettings.SecretKey);
         }
 
         private static string DecryptStringBySecretKey(string inputString, string secretKey)

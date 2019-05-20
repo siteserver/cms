@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
     [RoutePrefix("pages/plugins/view")]
-    public class PagesViewController : ApiController
+    public class PagesViewController : ControllerBase
     {
         private const string Route = "{pluginId}";
 
@@ -20,7 +18,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -31,7 +29,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
 
                 return Ok(new
                 {
-                    IsNightly = WebConfigUtils.IsNightlyUpdate,
+                    IsNightly = AppSettings.IsNightlyUpdate,
                     SystemManager.PluginVersion,
                     Installed = plugin != null,
                     InstalledVersion = plugin != null ? plugin.Version : string.Empty,

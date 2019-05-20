@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<TagInfo> _repository;
         public TagDao()
         {
-            _repository = new Repository<TagInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<TagInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

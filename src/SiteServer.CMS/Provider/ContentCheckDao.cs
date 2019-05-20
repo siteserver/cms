@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ContentCheckInfo> _repository;
         public ContentCheckDao()
         {
-            _repository = new Repository<ContentCheckInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ContentCheckInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

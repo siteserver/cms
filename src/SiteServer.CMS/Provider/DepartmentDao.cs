@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<DepartmentInfo> _repository;
         public DepartmentDao()
         {
-            _repository = new Repository<DepartmentInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<DepartmentInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

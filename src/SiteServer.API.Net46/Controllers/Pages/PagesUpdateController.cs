@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
 using SiteServer.Utils;
@@ -7,7 +8,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Pages
 {
     [RoutePrefix("pages/update")]
-    public class PagesUpdateController : ApiController
+    public class PagesUpdateController : ControllerBase
     {
         private const string Route = "";
 

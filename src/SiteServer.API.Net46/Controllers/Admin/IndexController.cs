@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
@@ -14,7 +13,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.Admin
 {
     [RoutePrefix("admin/index")]
-    public class IndexController : ApiController
+    public class IndexController : ControllerBase
     {
         private const string Route = "";
         private const string RouteUnCheckedList = "unCheckedList";
@@ -24,7 +23,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -53,7 +52,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();

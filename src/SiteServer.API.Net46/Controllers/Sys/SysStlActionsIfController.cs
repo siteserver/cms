@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Sys.Stl;
-using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsIfController : ApiController
+    public class SysStlActionsIfController : ControllerBase
     {
         [HttpPost, Route(ApiRouteActionsIf.Route)]
         public IHttpActionResult Main()
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

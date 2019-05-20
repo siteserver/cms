@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.StlElement;
@@ -9,7 +10,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsLoadingChannelsController : ApiController
+    public class SysStlActionsLoadingChannelsController : ControllerBase
     {
         [HttpPost, Route(ApiRouteActionsLoadingChannels.Route)]
         public void Main()

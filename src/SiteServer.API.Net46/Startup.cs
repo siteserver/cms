@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
@@ -10,10 +8,8 @@ using System.Web.Routing;
 using Microsoft.Owin;
 using Owin;
 using SiteServer.API;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Apis;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -44,25 +40,14 @@ namespace SiteServer.API
 
             var applicationPath = HostingEnvironment.ApplicationVirtualPath;
             var applicationPhysicalPath = HostingEnvironment.ApplicationPhysicalPath;
-            WebConfigUtils.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
-            PluginManager.Load(() =>
-            {
-                if (HttpContext.Current == null) return null;
-
-                var context = HttpContext.Current.GetOwinContext();
-                var request = context.Get<Request>("SiteServer.API.Request");
-                if (request != null) return request;
-
-                request = new Request(HttpContext.Current.Request);
-                context.Set("SiteServer.API.Request", request);
-                return request;
-            });
+            AppSettings.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, AppSettings.WebConfigFileName));
+            PluginManager.Load(() => Request.Current);
 
             //GlobalConfiguration.Configure(WebApiConfig.Register);
 
             var config = GlobalConfiguration.Configuration;
 
-            config.MapHttpAttributeRoutes(new CentralizedPrefixProvider(WebConfigUtils.ApiPrefix));
+            config.MapHttpAttributeRoutes(new CentralizedPrefixProvider(AppSettings.ApiPrefix));
 
             config.Services.Replace(typeof(IHttpControllerSelector),
                 new NamespaceHttpControllerSelector(config));

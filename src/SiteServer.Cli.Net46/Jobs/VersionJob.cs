@@ -49,7 +49,7 @@ namespace SiteServer.Cli.Jobs
 
             if (FileUtils.IsFileExists(webConfigPath))
             {
-                WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
+                AppSettings.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
                 try
                 {
@@ -61,9 +61,9 @@ namespace SiteServer.Cli.Jobs
                     // ignored
                 }
 
-                await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
-                await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
-                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(WebConfigUtils.ConnectionString, WebConfigUtils.SecretKey)}");
+                await Console.Out.WriteLineAsync($"数据库类型: {AppSettings.DatabaseType.Value}");
+                await Console.Out.WriteLineAsync($"连接字符串: {AppSettings.ConnectionString}");
+                await Console.Out.WriteLineAsync($"连接字符串（加密）: {TranslateUtils.EncryptStringBySecretKey(AppSettings.ConnectionString, AppSettings.SecretKey)}");
             }
         }
     }

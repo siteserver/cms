@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<SiteLogInfo> _repository;
         public SiteLogDao()
         {
-            _repository = new Repository<SiteLogInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<SiteLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

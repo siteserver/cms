@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<UserInfo> _repository;
         public UserDao()
         {
-            _repository = new Repository<UserInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<UserInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;
@@ -620,7 +620,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {

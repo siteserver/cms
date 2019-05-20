@@ -53,7 +53,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            if (string.IsNullOrEmpty(AppSettings.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
@@ -83,13 +83,13 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
+            AppSettings.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
-            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
-            await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+            await Console.Out.WriteLineAsync($"数据库类型: {AppSettings.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"连接字符串: {AppSettings.ConnectionString}");
             await Console.Out.WriteLineAsync($"系统文件夹: {CliUtils.PhysicalApplicationPath}");
 
-            if (!DatabaseUtils.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseUtils.IsConnectionStringWork(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync("系统无法连接到 web.config 中设置的数据库");
                 return;
@@ -101,7 +101,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.UpdateWebConfig(WebConfigUtils.IsProtectData, WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory, StringUtils.GetShortGuid(), false);
+            AppSettings.UpdateWebConfig(AppSettings.IsProtectData, AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.ApiPrefix, AppSettings.AdminDirectory, AppSettings.HomeDirectory, StringUtils.GetShortGuid(), false);
 
             DataProvider.Reset();
 

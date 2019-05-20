@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/userConfig")]
-    public class PagesUserConfigController : ApiController
+    public class PagesUserConfigController : ControllerBase
     {
         private const string Route = "";
 
@@ -18,7 +16,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
@@ -41,7 +39,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {

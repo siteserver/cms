@@ -313,10 +313,10 @@ namespace SiteServer.CMS.StlParser.Model
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionStringName))
                 {
-                    listInfo.ConnectionString = WebConfigUtils.GetConnectionStringByName(value);
+                    listInfo.ConnectionString = AppSettings.GetConnectionStringByName(value);
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
-                        listInfo.ConnectionString = WebConfigUtils.ConnectionString;
+                        listInfo.ConnectionString = AppSettings.ConnectionString;
                     }
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.QueryString))

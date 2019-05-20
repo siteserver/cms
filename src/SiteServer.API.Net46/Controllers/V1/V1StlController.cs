@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Http;
-using SiteServer.API.Utils;
-using SiteServer.CMS.Api.V1;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -9,7 +8,7 @@ using SiteServer.CMS.StlParser.Parsers;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/stl")]
-    public class V1StlController : ApiController
+    public class V1StlController : ControllerBase
     {
         private const string Route = "{elementName}";
 

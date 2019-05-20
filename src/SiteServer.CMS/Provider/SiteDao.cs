@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<SiteInfo> _repository;
         public SiteDao()
         {
-            _repository = new Repository<SiteInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<SiteInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;
@@ -220,7 +220,7 @@ namespace SiteServer.CMS.Provider
             var list = new List<Container.Site>();
             var itemIndex = 0;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {

@@ -13,6 +13,7 @@ using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using System.Web;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -77,7 +78,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new Request(HttpContext.Current.Request);
+            var request = Common.Request.Current;
 
             if (type == TypeBackup)
             {
@@ -107,7 +108,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
-            var request = new Request(Request);
+            var request = Common.Request.Current;
 
             try
             {

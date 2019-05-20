@@ -6,6 +6,6 @@ namespace SiteServer.BackgroundPages
 	{
         protected override bool IsAccessable => true;
 
-	    protected string AdminDirectoryName => WebConfigUtils.AdminDirectory;
+	    protected string AdminDirectoryName => AppSettings.AdminDirectory;
 	}
 }

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
     [RoutePrefix("pages/plugins/install")]
-    public class PagesInstallController : ApiController
+    public class PagesInstallController : ControllerBase
     {
         private const string RouteConfig = "config";
         private const string RouteDownload = "download";
@@ -24,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -33,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
 
                 return Ok(new
                 {
-                    IsNightly = WebConfigUtils.IsNightlyUpdate,
+                    IsNightly = AppSettings.IsNightlyUpdate,
                     SystemManager.PluginVersion,
                     DownloadPlugins = PluginManager.PackagesIdAndVersionList
                 });
@@ -49,7 +47,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -84,7 +82,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -119,7 +117,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {

@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Core
         // 系统根目录访问地址
         public static string GetRootUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, relatedUrl);
         }
 
         public static string GetMainUrl(int siteId)
@@ -22,27 +22,27 @@ namespace SiteServer.CMS.Core
 
         public static string GetAdminUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, WebConfigUtils.AdminDirectory, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, AppSettings.AdminDirectory, relatedUrl);
         }
 
         public static string GetHomeUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, WebConfigUtils.HomeDirectory, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, AppSettings.HomeDirectory, relatedUrl);
         }
 
         public static string GetSiteFilesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
         }
 
         public static string GetTemporaryFilesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
         }
 
         public static string GetSiteTemplatesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
         }
 
         public static string GetSiteTemplateMetadataUrl(string siteTemplateUrl, string relatedUrl)
@@ -128,7 +128,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)
         {
-            var requestPath = PathUtils.GetPathDifference(WebConfigUtils.PhysicalApplicationPath, physicalPath);
+            var requestPath = PathUtils.GetPathDifference(AppSettings.PhysicalApplicationPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
             return GetRootUrl(requestPath);
         }
@@ -142,7 +142,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            url = url.StartsWith("~") ? PageUtils.Combine(WebConfigUtils.ApplicationPath, url.Substring(1)) : url;
+            url = url.StartsWith("~") ? PageUtils.Combine(AppSettings.ApplicationPath, url.Substring(1)) : url;
             url = url.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
             return url;
         }

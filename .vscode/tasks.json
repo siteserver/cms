@@ -7,7 +7,18 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/siteserver-all.sln"
+                "${workspaceFolder}\\siteserver.sln"
+            ],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "run",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +28,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/siteserver-all.sln"
+                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -27,8 +38,9 @@
             "type": "process",
             "args": [
                 "watch",
-                "run",
-                "${workspaceFolder}/siteserver-all.sln"
+                "--project",
+                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj",
+                "run"
             ],
             "problemMatcher": "$tsc"
         }

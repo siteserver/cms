@@ -79,7 +79,7 @@ namespace SiteServer.CMS.Core
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, repository.TableName))
+                if (!DatoryUtils.IsTableExists(AppSettings.DatabaseType, AppSettings.ConnectionString, repository.TableName))
                 {
                     TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
                 }
@@ -95,7 +95,7 @@ namespace SiteServer.CMS.Core
             var contentDaoList = ContentDao.GetContentDaoList();
             foreach (var contentDao in contentDaoList)
             {
-                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, contentDao.TableName))
+                if (!DatoryUtils.IsTableExists(AppSettings.DatabaseType, AppSettings.ConnectionString, contentDao.TableName))
                 {
                     TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
                 }

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -17,11 +16,10 @@ using SiteServer.CMS.StlParser.StlEntity;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsSearchController : ApiController
+    public class SysStlActionsSearchController : ControllerBase
     {
         public NameValueCollection GetPostCollection(Request request)
         {
@@ -41,7 +39,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());

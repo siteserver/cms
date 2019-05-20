@@ -4,65 +4,29 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Admin
 {
     [RoutePrefix("admin/login")]
-    public class LoginController : ApiController
+    public class LoginController : ControllerBase
     {
         private const string Route = "";
         private const string RouteCaptcha = "captcha";
 
         private static readonly Color[] Colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
-        public static object AdminRedirectCheck(IRequest request, bool checkInstall = false, bool checkDatabaseVersion = false,
-            bool checkLogin = false)
-        {
-            var redirect = false;
-            var redirectUrl = string.Empty;
-
-            if (checkInstall && string.IsNullOrWhiteSpace(WebConfigUtils.ConnectionString))
-            {
-                redirect = true;
-                redirectUrl = PageUtilsEx.GetAdminUrl("installer/default.aspx");
-            }
-            else if (checkDatabaseVersion && ConfigManager.Instance.Initialized &&
-                     ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
-            {
-                redirect = true;
-                redirectUrl = AdminPagesUtils.UpdateUrl;
-            }
-            else if (checkLogin && !request.IsAdminLoggin)
-            {
-                redirect = true;
-                redirectUrl = AdminPagesUtils.LoginUrl;
-            }
-
-            if (redirect)
-            {
-                return new
-                {
-                    Value = false,
-                    RedirectUrl = redirectUrl
-                };
-            }
-
-            return null;
-        }
-
         [HttpGet, Route(Route)]
         public IHttpActionResult GetStatus()
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
-                var redirect = AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
+                var request = GetRequest();
+                var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
                 return Ok(new
@@ -79,15 +43,16 @@ namespace SiteServer.API.Controllers.Admin
         [HttpGet, Route(RouteCaptcha)]
         public void GetCaptcha()
         {
+            var request = GetRequest();
             var response = HttpContext.Current.Response;
 
-            var code = VcManager.CreateValidateCode();
+            var code = CaptchaManager.CreateValidateCode();
             if (CacheUtils.Exists($"SiteServer.API.Controllers.Admin.LoginController.{code}"))
             {
-                code = VcManager.CreateValidateCode();
+                code = CaptchaManager.CreateValidateCode();
             }
 
-            CookieUtils.SetCookie("SS-" + nameof(LoginController), code, TimeSpan.FromMinutes(10));
+            request.SetCookie("SS-" + nameof(LoginController), code, TimeSpan.FromMinutes(10));
 
             response.BufferOutput = true;  //特别注意
             response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意
@@ -147,21 +112,21 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
                 var captcha = request.GetPostString("captcha");
                 var isAutoLogin = request.GetPostBool("isAutoLogin");
 
-                var code = CookieUtils.GetCookie("SS-" + nameof(LoginController));
+                request.TryGetCookie("SS-" + nameof(LoginController), out var code);
 
                 if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.Admin.LoginController.{code}"))
                 {
                     return BadRequest("验证码已超时，请点击刷新验证码！");
                 }
 
-                CookieUtils.Erase("SS-" + nameof(LoginController));
+                request.RemoveCookie("SS-" + nameof(LoginController));
                 CacheUtils.InsertMinutes($"SiteServer.API.Controllers.Admin.LoginController.{code}", true, 10);
 
                 if (!StringUtils.EqualsIgnoreCase(code, captcha))

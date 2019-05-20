@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/userHome")]
-    public class PagesUserHomeController : ApiController
+    public class PagesUserHomeController : ControllerBase
     {
         private const string Route = "";
         private const string RouteUpload = "upload";
@@ -21,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
@@ -31,7 +30,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 return Ok(new
                 {
                     Value = ConfigManager.Instance,
-                    WebConfigUtils.HomeDirectory,
+                    AppSettings.HomeDirectory,
                     request.AdminToken,
                     Styles = TableStyleManager.GetUserStyleInfoList()
                 });
@@ -47,7 +46,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {
@@ -91,7 +90,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
                 {

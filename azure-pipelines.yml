@@ -4,7 +4,7 @@ pool:
   vmImage: 'windows-2019'
 
 variables:
-  solution: 'siteserver-all.sln'
+  solution: 'siteserver.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   version: 6.10.$(Build.BuildNumber)
@@ -24,10 +24,10 @@ steps:
 - script: dotnet restore $(solution)
   displayName: dotnet restore
 
-- script: nuget restore SiteServer.Cli/packages.config -PackagesDirectory ./packages
+- script: nuget restore src/SiteServer.Cli/packages.config -PackagesDirectory ./packages
   displayName: nuget restore SiteServer.Cli
 
-- script: nuget restore SiteServer.Web/packages.config -PackagesDirectory ./packages
+- script: nuget restore src/SiteServer.Web/packages.config -PackagesDirectory ./packages
   displayName: nuget restore SiteServer.Web
 
 - task: DotNetCoreCLI@2
@@ -48,9 +48,9 @@ steps:
   displayName: dotnet pack
 
 - task: NodeTool@0
-  displayName: install nodejs
+  displayName: install node.js
   inputs:
-    versionSpec: '6.x'
+    versionSpec: '8.x'
 
 - script: npm install gulp -g
   displayName: install gulp

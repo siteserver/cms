@@ -366,7 +366,7 @@ namespace SiteServer.Utils
             if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, Bin.DirectoryName)
                 || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, WebConfigUtils.AdminDirectory))
+                || StringUtils.EqualsIgnoreCase(directoryName, AppSettings.AdminDirectory))
             {
                 return true;
             }
@@ -389,7 +389,7 @@ namespace SiteServer.Utils
                 AspnetClient.DirectoryName.ToLower(),
                 Bin.DirectoryName.ToLower(),
                 SiteFiles.DirectoryName.ToLower(),
-                WebConfigUtils.AdminDirectory.ToLower(),
+                AppSettings.AdminDirectory.ToLower(),
                 SiteTemplates.SiteTemplateMetadata.ToLower()
             };
         }

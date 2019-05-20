@@ -86,7 +86,7 @@ namespace SiteServer.Cli
 
             var applicationPath = "/";
             var applicationPhysicalPath = CliUtils.PhysicalApplicationPath;
-            WebConfigUtils.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
+            AppSettings.Load(applicationPath, applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, AppSettings.WebConfigFileName));
             PluginManager.Load(null);
 
             var pluginJobs = PluginJobManager.GetJobs();

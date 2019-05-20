@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
@@ -16,7 +14,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/siteAdd")]
-    public class PagesSiteAddController : ApiController
+    public class PagesSiteAddController : ControllerBase
     {
         private const string Route = "";
 
@@ -25,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {
@@ -120,7 +118,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.SiteAdd))
                 {

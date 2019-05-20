@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -10,7 +11,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsUploadController : ApiController
+    public class SysStlActionsUploadController : ControllerBase
     {
         [HttpPost, Route(ApiRouteActionsUpload.Route)]
         public IHttpActionResult Main(int siteId)

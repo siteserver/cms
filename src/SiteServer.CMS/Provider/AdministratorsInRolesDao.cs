@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<AdministratorsInRolesInfo> _repository;
         public AdministratorsInRolesDao()
         {
-            _repository = new Repository<AdministratorsInRolesInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<AdministratorsInRolesInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

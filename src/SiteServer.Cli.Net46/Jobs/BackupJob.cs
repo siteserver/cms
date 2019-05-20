@@ -69,19 +69,19 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            WebConfigUtils.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
+            AppSettings.Load("/", CliUtils.PhysicalApplicationPath, webConfigPath);
 
-            if (string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            if (string.IsNullOrEmpty(AppSettings.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"{webConfigPath} 中数据库连接字符串 connectionString 未设置");
                 return;
             }
 
-            await Console.Out.WriteLineAsync($"数据库类型: {WebConfigUtils.DatabaseType.Value}");
-            await Console.Out.WriteLineAsync($"连接字符串: {WebConfigUtils.ConnectionString}");
+            await Console.Out.WriteLineAsync($"数据库类型: {AppSettings.DatabaseType.Value}");
+            await Console.Out.WriteLineAsync($"连接字符串: {AppSettings.ConnectionString}");
             await Console.Out.WriteLineAsync($"备份文件夹: {treeInfo.DirectoryPath}");
 
-            if (!DatabaseUtils.IsConnectionStringWork(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            if (!DatabaseUtils.IsConnectionStringWork(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 await CliUtils.PrintErrorAsync($"系统无法连接到 {webConfigPath} 中设置的数据库");
                 return;
@@ -97,7 +97,7 @@ namespace SiteServer.Cli.Jobs
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = DatoryUtils.GetTableNames(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var allTableNames = DatoryUtils.GetTableNames(AppSettings.DatabaseType, AppSettings.ConnectionString);
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -118,7 +118,7 @@ namespace SiteServer.Cli.Jobs
             {
                 var tableInfo = new TableInfo
                 {
-                    Columns = DatabaseUtils.GetTableColumnInfoList(WebConfigUtils.ConnectionString, tableName),
+                    Columns = DatabaseUtils.GetTableColumnInfoList(AppSettings.ConnectionString, tableName),
                     TotalCount = DatabaseUtils.GetCount(tableName),
                     RowFiles = new List<string>()
                 };

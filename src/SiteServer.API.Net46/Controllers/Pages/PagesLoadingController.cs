@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -10,14 +10,14 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Pages
 {
     [RoutePrefix("pages/loading")]
-    public class PagesLoadingController : ApiController
+    public class PagesLoadingController : ControllerBase
     {
         private const string Route = "";
 
         [HttpGet, Route(Route)]
         public void Redirect()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = GetRequest();
 
             var redirectUrl = request.GetQueryString("redirectUrl");
             var encryptedUrl = request.GetQueryString("encryptedUrl");
@@ -82,7 +82,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 if (siteId == 0)
                 {
-                    redirectUrl = WebConfigUtils.ApplicationPath;
+                    redirectUrl = AppSettings.ApplicationPath;
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var redirectUrl = request.GetPostString("redirectUrl");
                 var encryptedUrl = request.GetPostString("encryptedUrl");

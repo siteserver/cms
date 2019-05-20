@@ -62,7 +62,7 @@ namespace SiteServer.BackgroundPages.Editor
             {
                 var siteInfo = SiteManager.GetSiteInfo(SiteId);
                 var sitePath = PathUtility.GetSitePath(siteInfo); // 本站点物理路径
-                var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
+                var applicationPath = AppSettings.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\'); // 系统物理路径
                 if (UploadType == EUploadType.Image)
                 {
                     PathToList = siteInfo.ImageUploadDirectoryName;

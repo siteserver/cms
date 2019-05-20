@@ -5,9 +5,10 @@ using Datory;
 
 namespace SiteServer.Utils
 {
-    public static class WebConfigUtils
+    public static class AppSettings
     {
         public const string WebConfigFileName = "Web.config";
+        public const string AppSettingsFileName = "appSettings.json";
         /// <summary>
         /// 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
         /// </summary>
@@ -21,7 +22,6 @@ namespace SiteServer.Utils
         private static string _connectionString;
 
         public static string ConnectionStringUserId { get; private set; }
-
         public static string ConnectionString
         {
             get => _connectionString;
@@ -31,13 +31,106 @@ namespace SiteServer.Utils
                 ConnectionStringUserId = GetConnectionStringUserId(_connectionString);
             }
         }
-
         public static string ApiPrefix { get; private set; }
         public static string AdminDirectory { get; private set; }
         public static string HomeDirectory { get; private set; }
         public static string SecretKey { get; private set; }
 
         public static bool IsNightlyUpdate { get; private set; }
+
+        public static void LoadJson(string applicationPath, string physicalApplicationPath, string appSettingsPath)
+        {
+            if (string.IsNullOrEmpty(applicationPath) || StringUtils.Equals(applicationPath, "/"))
+            {
+                ApplicationPath = "/";
+            }
+            else
+            {
+                ApplicationPath = applicationPath.TrimEnd('/');
+            }
+
+            PhysicalApplicationPath = physicalApplicationPath;
+
+            var isProtectData = false;
+            var databaseType = string.Empty;
+            var connectionString = string.Empty;
+            try
+            {
+                var json = FileUtils.ReadText(appSettingsPath);
+
+                var dict = TranslateUtils.JsonGetDictionaryIgnorecase(TranslateUtils.ToDictionary(json));
+
+                foreach (var attrKey in dict.Keys)
+                {
+                    if (string.IsNullOrEmpty(attrKey)) continue;
+                    var value = dict[attrKey];
+
+                    if (StringUtils.EqualsIgnoreCase(attrKey, nameof(IsProtectData)))
+                    {
+                        isProtectData = TranslateUtils.Cast<bool>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(DatabaseType)))
+                    {
+                        databaseType = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(ConnectionString)))
+                    {
+                        connectionString = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(ApiPrefix)))
+                    {
+                        ApiPrefix = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(AdminDirectory)))
+                    {
+                        AdminDirectory = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(HomeDirectory)))
+                    {
+                        HomeDirectory = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(SecretKey)))
+                    {
+                        SecretKey = TranslateUtils.Cast<string>(value);
+                    }
+                    else if (StringUtils.EqualsIgnoreCase(attrKey, nameof(IsNightlyUpdate)))
+                    {
+                        IsNightlyUpdate = TranslateUtils.Cast<bool>(value);
+                    }
+                }
+
+                if (isProtectData)
+                {
+                    databaseType = TranslateUtils.DecryptStringBySecretKey(databaseType);
+                    connectionString = TranslateUtils.DecryptStringBySecretKey(connectionString);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            IsProtectData = isProtectData;
+            DatabaseType = DatabaseTypeUtils.GetEnumType(databaseType);
+            ConnectionString = GetConnectionString(DatabaseType, connectionString);
+            if (ApiPrefix == null)
+            {
+                ApiPrefix = "api";
+            }
+            if (AdminDirectory == null)
+            {
+                AdminDirectory = "SiteServer";
+            }
+            if (HomeDirectory == null)
+            {
+                HomeDirectory = "Home";
+            }
+            if (string.IsNullOrEmpty(SecretKey))
+            {
+                SecretKey = StringUtils.GetShortGuid();
+                //SecretKey = "vEnfkn16t8aeaZKG3a4Gl9UUlzf4vgqU9xwh8ZV5";
+            }
+        }
 
         public static void Load(string applicationPath, string physicalApplicationPath, string webConfigPath)
         {

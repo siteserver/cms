@@ -9,6 +9,12 @@ namespace SiteServer.Utils
         public const string FormatStringDateTime = "yyyy-MM-dd HH:mm:ss";
         public const string FormatStringDateOnly = "yyyy-MM-dd";
 
+        public static DateTimeOffset AddExpiresAt(TimeSpan expiresAt)
+        {
+            return DateTimeOffset.UtcNow.Add(expiresAt);
+        }
+
+        [Obsolete]
         public static DateTime GetExpiresAt(TimeSpan expiresAt)
         {
             return DateTime.UtcNow.Add(expiresAt);

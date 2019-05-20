@@ -23,7 +23,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ChannelInfo> _repository;
         public ChannelDao()
         {
-            _repository = new Repository<ChannelInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ChannelInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

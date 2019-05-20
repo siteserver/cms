@@ -20,7 +20,7 @@ namespace SiteServer.CMS.ImportExport
         public ExportObject(int siteId, string adminName)
         {
             _siteInfo = SiteManager.GetSiteInfo(siteId);
-            _sitePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, _siteInfo.SiteDir);
+            _sitePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, _siteInfo.SiteDir);
             _adminName = adminName;
         }
 

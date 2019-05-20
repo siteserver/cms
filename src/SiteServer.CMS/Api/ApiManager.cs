@@ -10,7 +10,7 @@ namespace SiteServer.CMS.Api
 
         public static string ApiUrl => ConfigManager.Instance.ApiUrl;
 
-        public static string RootUrl => WebConfigUtils.ApplicationPath;
+        public static string RootUrl => AppSettings.ApplicationPath;
 
         private static string _innerApiUrl;
 
@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtilsEx.ParseNavigationUrl($"~/{WebConfigUtils.ApiPrefix}");
+                    _innerApiUrl = PageUtilsEx.ParseNavigationUrl($"~/{AppSettings.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }

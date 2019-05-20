@@ -138,19 +138,19 @@ namespace SiteServer.Utils
         public static string GetBinDirectoryPath(string relatedPath)
         {
             relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName, relatedPath);
+            return Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.Bin.DirectoryName, relatedPath);
         }
 
         public static string GetAdminDirectoryPath(string relatedPath)
         {
             relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory, relatedPath);
+            return Combine(AppSettings.PhysicalApplicationPath, AppSettings.AdminDirectory, relatedPath);
         }
 
         public static string GetHomeDirectoryPath(string relatedPath)
         {
             relatedPath = RemoveParentPath(relatedPath);
-            return Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.HomeDirectory, relatedPath);
+            return Combine(AppSettings.PhysicalApplicationPath, AppSettings.HomeDirectory, relatedPath);
         }
 
         public static string RemovePathInvalidChar(string filePath)
@@ -175,11 +175,11 @@ namespace SiteServer.Utils
 
         public static string GetTemporaryFilesPath(string relatedPath)
         {
-            return Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
+            return Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
-        public static string PhysicalSiteServerPath => Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.AdminDirectory);
+        public static string PhysicalSiteServerPath => Combine(AppSettings.PhysicalApplicationPath, AppSettings.AdminDirectory);
 
-        public static string PhysicalSiteFilesPath => Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
+        public static string PhysicalSiteFilesPath => Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
     }
 }

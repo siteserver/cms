@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<SitePermissionsInfo> _repository;
         public SitePermissionsDao()
         {
-            _repository = new Repository<SitePermissionsInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<SitePermissionsInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

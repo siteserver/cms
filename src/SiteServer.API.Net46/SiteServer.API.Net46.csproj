@@ -25,15 +25,17 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <FileUpgradeFlags>40</FileUpgradeFlags>
-    <UpgradeBackupLocation>D:\cms\cms-staging\Backup2\</UpgradeBackupLocation>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
     <OldToolsVersion>12.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>Bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -105,9 +107,6 @@
     </Reference>
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
-    </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.3.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SiteServer.Plugin.2.3.10\lib\netstandard2.0\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -315,13 +314,18 @@
     <Compile Include="Controllers\V1\V1UsersController.cs" />
     <Compile Include="Controllers\V1\V1PingController.cs" />
     <Compile Include="Controllers\V1\V1StlController.cs" />
-    <Compile Include="Utils\StlRequest.cs" />
+    <Compile Include="Common\ControllerBase.cs" />
+    <Compile Include="Common\StlRequest.cs" />
     <Compile Include="ErrorRedirectModule.cs" />
     <Compile Include="NamespaceHttpControllerSelector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{64f75a9e-0880-4c2f-b981-6e93a26c59f6}</Project>
+      <Name>SiteServer.Plugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiteServer.BackgroundPages.Net46\SiteServer.BackgroundPages.Net46.csproj">
       <Project>{6aa1713a-3b77-4b20-b8c7-fcb6de556f64}</Project>
       <Name>SiteServer.BackgroundPages.Net46</Name>

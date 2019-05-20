@@ -1,4 +1,6 @@
+using System.Web;
 using System.Web.UI;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
@@ -36,7 +38,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             else // 没有直接显示的消息则去cookies中检查是否有消息需要显示
             {
-                writer.Write(MessageUtils.GetMessageHtml(this));
+                writer.Write(MessageUtils.GetMessageHtml(Request.Current, this));
             }
         }
     }

@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<TemplateInfo> _repository;
         public TemplateDao()
         {
-            _repository = new Repository<TemplateInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<TemplateInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ContentGroupInfo> _repository;
         public ContentGroupDao()
         {
-            _repository = new Repository<ContentGroupInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ContentGroupInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<RoleInfo> _repository;
         public RoleDao()
         {
-            _repository = new Repository<RoleInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<RoleInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

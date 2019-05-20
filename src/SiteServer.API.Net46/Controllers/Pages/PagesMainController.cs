@@ -4,8 +4,8 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -14,15 +14,13 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
     [RoutePrefix("pages/main")]
-    public class PagesMainController : ApiController
+    public class PagesMainController : ControllerBase
     {
         private const string Route = "";
         private const string RouteActionsCreate = "actions/create";
@@ -33,7 +31,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true, checkLogin: true);
                 if (redirect != null) return Ok(redirect);
 
@@ -123,7 +121,7 @@ namespace SiteServer.API.Controllers.Pages
                 {
                     Value = true,
                     DefaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId) ?? "dashboard.cshtml",
-                    IsNightly = WebConfigUtils.IsNightlyUpdate,
+                    IsNightly = AppSettings.IsNightlyUpdate,
                     SystemManager.ProductVersion,
                     SystemManager.PluginVersion,
                     SystemManager.TargetFramework,
@@ -279,7 +277,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -328,7 +326,7 @@ namespace SiteServer.API.Controllers.Pages
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = GetRequest();
 
             if (!request.IsAdminLoggin)
             {

@@ -8,6 +8,7 @@ using System.Web.UI;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages
 {
@@ -27,9 +28,9 @@ namespace SiteServer.BackgroundPages
         {
             var cookieName = Request.QueryString["cookieName"];
 
-            var validateCode = VcManager.CreateValidateCode();
+            var validateCode = CaptchaManager.CreateValidateCode();
 
-            CookieUtils.SetCookie(cookieName, validateCode, DateTime.Now.AddDays(1));
+            Common.Request.Current.SetCookie(cookieName, validateCode, DateTime.Now.AddDays(1));
 
             Response.BufferOutput = true;  //特别注意
             Response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意

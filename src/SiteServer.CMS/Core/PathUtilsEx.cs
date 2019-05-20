@@ -25,7 +25,7 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "~/";
             }
-            var rootPath = WebConfigUtils.PhysicalApplicationPath;
+            var rootPath = AppSettings.PhysicalApplicationPath;
 
             virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
             retval = PathUtils.Combine(rootPath, virtualPath);

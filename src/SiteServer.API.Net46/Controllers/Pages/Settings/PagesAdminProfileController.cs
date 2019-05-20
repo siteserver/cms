@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/adminProfile")]
-    public class PagesAdminProfileController : ApiController
+    public class PagesAdminProfileController : ControllerBase
     {
         private const string Route = "";
         private const string RouteUpload = "upload";
@@ -23,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&
@@ -129,7 +128,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
@@ -181,7 +180,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var userId = request.GetQueryInt("userId");
                 if (!request.IsAdminLoggin) return Unauthorized();
                 if (request.AdminId != userId &&

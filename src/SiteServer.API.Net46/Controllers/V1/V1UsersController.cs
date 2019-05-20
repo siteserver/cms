@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -13,7 +14,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/users")]
-    public class V1UsersController : ApiController
+    public class V1UsersController : ControllerBase
     {
         private const string Route = "";
         private const string RouteActionsLogin = "actions/login";
@@ -28,7 +29,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var dict = request.GetPostObject<Dictionary<string, object>>();
 
                 var userInfo = new UserInfo();
@@ -66,7 +67,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -104,7 +105,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -135,7 +136,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -178,7 +179,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -231,7 +232,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsAdminLoggin &&
                              request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.User);
@@ -257,7 +258,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -291,7 +292,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var userInfo = UserManager.GetUserInfoByUserId(request.UserId);
                 request.UserLogout();
 
@@ -312,7 +313,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -342,7 +343,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||
@@ -372,7 +373,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isAuth = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeUsers) ||
                              request.IsUserLoggin &&
                              request.UserId == id ||

@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Home
 {
     [RoutePrefix("home/contentsLayerTaxis")]
-    public class HomeContentsLayerTaxisController : ApiController
+    public class HomeContentsLayerTaxisController : ControllerBase
     {
         private const string Route = "";
 
@@ -23,7 +20,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

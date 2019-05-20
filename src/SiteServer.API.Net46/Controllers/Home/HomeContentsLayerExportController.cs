@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
@@ -10,13 +9,12 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
     [RoutePrefix("home/contentsLayerExport")]
-    public class HomeContentsLayerExportController : ApiController
+    public class HomeContentsLayerExportController : ControllerBase
     {
         private const string Route = "";
 
@@ -25,7 +23,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -67,7 +65,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var downloadUrl = string.Empty;
 

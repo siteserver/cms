@@ -15,13 +15,13 @@ namespace SiteServer.CMS.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName))
+                if (!DatoryUtils.IsTableExists(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName))
                 {
-                    DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
+                    DatoryUtils.CreateTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns);
                 }
                 else
                 {
-                    DatoryUtils.AlterTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns, null);
+                    DatoryUtils.AlterTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns, null);
                 }
             }
         }

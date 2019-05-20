@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
     [RoutePrefix("pages/plugins/addLayerUpload")]
-    public class PagesAddLayerUploadController : ApiController
+    public class PagesAddLayerUploadController : ControllerBase
     {
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
@@ -24,7 +20,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -48,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {
@@ -108,7 +104,7 @@ namespace SiteServer.API.Controllers.Pages.Plugins
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.PluginsPermissions.Add))
                 {

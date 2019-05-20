@@ -3,16 +3,16 @@ using System.Web.Http;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
-using System.Web;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Common;
+using SiteServer.API.Common;
 
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/administrators")]
-    public class V1AdministratorsController : ApiController
+    public class V1AdministratorsController : ControllerBase
     {
         private const string Route = "";
         private const string RouteMe = "me";
@@ -26,7 +26,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -70,7 +70,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -142,7 +142,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -168,7 +168,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
@@ -193,7 +193,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!request.IsAdminLoggin) return Unauthorized();
 
@@ -216,7 +216,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
@@ -242,7 +242,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var account = request.GetPostString("account");
                 var password = request.GetPostString("password");
@@ -284,7 +284,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var adminInfo = AdminManager.GetAdminInfoByUserId(request.AdminId);
 
@@ -305,7 +305,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var isApiAuthorized = AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 

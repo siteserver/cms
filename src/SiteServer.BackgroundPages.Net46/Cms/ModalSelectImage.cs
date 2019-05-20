@@ -37,7 +37,7 @@ namespace SiteServer.BackgroundPages.Cms
 
         public string SiteUrl => SiteInfo.WebUrl;
 
-        public string RootUrl => WebConfigUtils.ApplicationPath;
+        public string RootUrl => AppSettings.ApplicationPath;
 
         public static string GetOpenWindowString(SiteInfo siteInfo, string textBoxClientId)
         {

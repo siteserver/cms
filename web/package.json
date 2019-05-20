@@ -5,7 +5,7 @@
   "author": "siteserver",
   "private": true,
   "scripts": {
-    "dev": "cross-env API_URL=http://staging.cms.com/api/admin nuxt",
+    "dev": "cross-env API_URL=https://localhost:5001/api/admin nuxt",
     "build": "nuxt build",
     "build:check": "nuxt build --analyze",
     "start": "nuxt start",

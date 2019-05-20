@@ -32,7 +32,7 @@ namespace SiteServer.CMS.Model
         public string SeparatedApiUrl { get; set; }
 
         public string ApiUrl =>
-            IsSeparatedApi ? SeparatedApiUrl : PageUtils.Combine($"{WebConfigUtils.ApplicationPath}/{WebConfigUtils.ApiPrefix}");
+            IsSeparatedApi ? SeparatedApiUrl : PageUtils.Combine($"{AppSettings.ApplicationPath}/{AppSettings.ApiPrefix}");
 
         public bool IsLogSite { get; set; } = true;
 

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -21,7 +20,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.Admin
 {
     [RoutePrefix("admin")]
-    public class DefaultLayoutController : ApiController
+    public class DefaultLayoutController : ControllerBase
     {
         private const string Route = "";
         private const string RouteActionsDownload = "actions/download";
@@ -31,8 +30,8 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
-                var redirect = LoginController.AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
+                var request = GetRequest();
+                var redirect = request.AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
                 if (redirect != null) return Ok(redirect);
 
                 var siteId = request.GetQueryInt("siteId");
@@ -160,7 +159,7 @@ namespace SiteServer.API.Controllers.Admin
                 {
                     Value = true,
                     DefaultPageUrl = defaultPageUrl,
-                    WebConfigUtils.IsNightlyUpdate,
+                    AppSettings.IsNightlyUpdate,
                     SystemManager.ProductVersion,
                     SystemManager.PluginVersion,
                     SystemManager.TargetFramework,
@@ -168,9 +167,9 @@ namespace SiteServer.API.Controllers.Admin
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,
-                    WebConfigUtils.ApiPrefix,
-                    WebConfigUtils.AdminDirectory,
-                    WebConfigUtils.HomeDirectory,
+                    AppSettings.ApiPrefix,
+                    AppSettings.AdminDirectory,
+                    AppSettings.HomeDirectory,
                     TopMenus = topMenus,
                     SiteMenus = siteMenus,
                     PluginMenus = pluginMenus,
@@ -313,7 +312,7 @@ namespace SiteServer.API.Controllers.Admin
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
@@ -357,7 +356,7 @@ namespace SiteServer.API.Controllers.Admin
         [HttpPost, Route(RouteActionsDownload)]
         public IHttpActionResult Download()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = GetRequest();
 
             if (!request.IsAdminLoggin)
             {

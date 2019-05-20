@@ -5,7 +5,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using System.Web;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages.Editor
 {
@@ -17,7 +17,7 @@ namespace SiteServer.BackgroundPages.Editor
         private static bool noCache = true;
         private static JObject BuildItems()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = Request.Current;
             if (!request.IsAdminLoggin) return new JObject();
 
             var json = @"/* 前后端通信相关的配置,注释只允许使用多行方式 */

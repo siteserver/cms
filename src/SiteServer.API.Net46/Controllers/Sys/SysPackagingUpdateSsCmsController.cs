@@ -1,20 +1,18 @@
-﻿using System.Web;
-using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+﻿using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysPackagesUpdateSsCmsController : ApiController
+    public class SysPackagesUpdateSsCmsController : ControllerBase
     {
         [HttpPost, Route(ApiRouteUpdateSsCms.Route)]
         public IHttpActionResult Main()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = GetRequest();
 
             var isDownload = TranslateUtils.ToBool(CacheDbUtils.GetValueAndRemove(PackageUtils.CacheKeySsCmsIsDownload));
 
@@ -27,22 +25,22 @@ namespace SiteServer.API.Controllers.Sys
 
             var idWithVersion = $"{PackageUtils.PackageIdSsCms}.{version}";
             var packagePath = PathUtilsEx.GetPackagesPath(idWithVersion);
-            var packageWebConfigPath = PathUtils.Combine(packagePath, WebConfigUtils.WebConfigFileName);
+            var packageWebConfigPath = PathUtils.Combine(packagePath, AppSettings.WebConfigFileName);
 
             if (!FileUtils.IsFileExists(packageWebConfigPath))
             {
-                return BadRequest($"升级包 {WebConfigUtils.WebConfigFileName} 文件不存在");
+                return BadRequest($"升级包 {AppSettings.WebConfigFileName} 文件不存在");
             }
 
-            WebConfigUtils.UpdateWebConfig(packageWebConfigPath, WebConfigUtils.IsProtectData,
-                WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.ApiPrefix, WebConfigUtils.AdminDirectory, WebConfigUtils.HomeDirectory,
-                WebConfigUtils.SecretKey, WebConfigUtils.IsNightlyUpdate);
+            AppSettings.UpdateWebConfig(packageWebConfigPath, AppSettings.IsProtectData,
+                AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.ApiPrefix, AppSettings.AdminDirectory, AppSettings.HomeDirectory,
+                AppSettings.SecretKey, AppSettings.IsNightlyUpdate);
 
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName), PathUtilsEx.GetSiteFilesPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteServer.DirectoryName), PathUtils.GetAdminDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Home.DirectoryName), PathUtils.GetHomeDirectoryPath(string.Empty), true);
             DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.Bin.DirectoryName), PathUtils.GetBinDirectoryPath(string.Empty), true);
-            var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.WebConfigFileName), true);
+            var isCopyFiles = FileUtils.CopyFile(packageWebConfigPath, PathUtils.Combine(AppSettings.PhysicalApplicationPath, AppSettings.WebConfigFileName), true);
 
             //SystemManager.SyncDatabase();
 

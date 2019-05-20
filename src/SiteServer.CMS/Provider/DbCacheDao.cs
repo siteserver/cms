@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<DbCacheInfo> _repository;
         public DbCacheDao()
         {
-            _repository = new Repository<DbCacheInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<DbCacheInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

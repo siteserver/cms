@@ -1,18 +1,18 @@
 ﻿using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsDownloadController : ApiController
+    public class SysStlActionsDownloadController : ControllerBase
     {
         [HttpGet]
         [Route(ApiRouteActionsDownload.Route)]
@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {

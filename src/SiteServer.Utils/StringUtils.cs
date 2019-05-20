@@ -80,6 +80,11 @@ namespace SiteServer.Utils
 
         //------------------------------//
 
+        public static bool IsEncrypted(string val)
+        {
+            return EndsWith(val, TranslateUtils.EncryptStingIndicator);
+        }
+
         public static bool IsMobile(string val)
         {
             return Regex.IsMatch(val, @"^1[3456789]\d{9}$", RegexOptions.IgnoreCase);

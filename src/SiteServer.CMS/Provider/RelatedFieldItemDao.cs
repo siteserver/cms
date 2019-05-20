@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<RelatedFieldItemInfo> _repository;
         public RelatedFieldItemDao()
         {
-            _repository = new Repository<RelatedFieldItemInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<RelatedFieldItemInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

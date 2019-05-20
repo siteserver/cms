@@ -49,7 +49,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 var name = reader.GetName(i);
                 var value = reader.GetValue(i);
 
-                if (value is string && WebConfigUtils.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
+                if (value is string && AppSettings.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -71,7 +71,7 @@ namespace SiteServer.CMS.Plugin.Impl
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
 
-                if (value is string && WebConfigUtils.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
+                if (value is string && AppSettings.DatabaseType == DatabaseType.Oracle && (string)value == SqlUtils.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }

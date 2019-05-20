@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.CMS.Provider;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
     [RoutePrefix("pages/cms/create")]
-    public class PagesCreateController : ApiController
+    public class PagesCreateController : ControllerBase
     {
         private const string Route = "";
         private const string RouteAll = "all";
@@ -25,7 +21,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -87,7 +83,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -197,7 +193,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(parameter.SiteId, ConfigManager.WebSitePermissions.Create))
                 {

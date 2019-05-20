@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<SpecialInfo> _repository;
         public SpecialDao()
         {
-            _repository = new Repository<SpecialInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<SpecialInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

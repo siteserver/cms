@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview5-19227-01" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj" />
+  </ItemGroup>
+
 </Project>

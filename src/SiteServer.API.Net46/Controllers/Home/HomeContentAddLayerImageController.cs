@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
-using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Home
 {
     [RoutePrefix("home/contentAddLayerImage")]
-    public class HomeContentAddLayerImageController : ApiController
+    public class HomeContentAddLayerImageController : ControllerBase
     {
         private const string Route = "";
         private const string RouteUpload = "actions/upload";
@@ -23,7 +20,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -58,7 +55,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -122,7 +119,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

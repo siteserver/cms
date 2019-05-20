@@ -275,15 +275,15 @@ namespace SiteServer.CMS.DataCache
             string filePath;
             if (templateInfo.Type == TemplateType.IndexPageTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
             }
             else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, DirectoryUtils.PublishmentSytem.Content, templateInfo.RelatedFileName);
             }
             else
             {
-                filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.PublishmentSytem.Template, templateInfo.RelatedFileName);
             }
             return filePath;
         }

@@ -61,7 +61,7 @@ namespace SiteServer.BackgroundPages.Core
             {
                 value = AttackUtils.UnFilterSql(value);
             }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            if (AppSettings.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
             {
                 value = string.Empty;
             }
@@ -397,7 +397,7 @@ namespace SiteServer.BackgroundPages.Core
             }
             else
             {
-                var rootPath = WebConfigUtils.PhysicalApplicationPath;
+                var rootPath = AppSettings.PhysicalApplicationPath;
 
                 virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
                 retVal = PathUtils.Combine(rootPath, virtualPath);

@@ -137,7 +137,7 @@ namespace SiteServer.Cli.Core
             return PathUtils.IsFilePath(configFile)
                 ? configFile
                 : PathUtils.Combine(PhysicalApplicationPath,
-                    !string.IsNullOrEmpty(configFile) ? configFile : WebConfigUtils.WebConfigFileName);
+                    !string.IsNullOrEmpty(configFile) ? configFile : AppSettings.WebConfigFileName);
         }
     }
 }

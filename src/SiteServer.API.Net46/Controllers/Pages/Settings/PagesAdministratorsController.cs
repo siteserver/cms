@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Datory;
 using System.Web.Http;
 using SiteServer.CMS.Core;
@@ -9,12 +8,12 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
     [RoutePrefix("pages/settings/administrators")]
-    public class PagesAdministratorsController : ApiController
+    public class PagesAdministratorsController : ControllerBase
     {
         private const string Route = "";
         private const string RouteActionsLock = "actions/lock";
@@ -26,7 +25,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -191,7 +190,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -227,7 +226,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
@@ -258,7 +257,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))

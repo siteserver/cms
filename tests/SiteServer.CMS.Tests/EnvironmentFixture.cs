@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Tests
 
             ApplicationPhysicalPath = PathUtils.Combine(DirectoryUtils.GetParentPath(testsDirectoryPath), "SiteServer.Web");
 
-            WebConfigUtils.Load("/", ApplicationPhysicalPath, PathUtils.Combine(ApplicationPhysicalPath, WebConfigUtils.WebConfigFileName));
+            AppSettings.Load("/", ApplicationPhysicalPath, PathUtils.Combine(ApplicationPhysicalPath, AppSettings.WebConfigFileName));
         }
 
         public void Dispose()

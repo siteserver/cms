@@ -209,9 +209,8 @@ namespace SiteServer.BackgroundPages.Cms
             if (!isSetCookie)
             {
                 var cookieExists = false;
-                if (CookieUtils.IsExists(cookieName))
+                if (AuthRequest.TryGetCookie(cookieName, out var cookieValue))
                 {
-                    var cookieValue = CookieUtils.GetCookie(cookieName);
                     foreach (ListItem item in DdlListType.Items)
                     {
                         if (string.Equals(item.Value, cookieValue))
@@ -223,12 +222,12 @@ namespace SiteServer.BackgroundPages.Cms
                 }
                 if (!cookieExists)
                 {
-                    CookieUtils.SetCookie(cookieName, DdlListType.SelectedValue, DateTime.MaxValue);
+                    AuthRequest.SetCookie(cookieName, DdlListType.SelectedValue, DateTime.MaxValue);
                 }
             }
             else
             {
-                CookieUtils.SetCookie(cookieName, AuthRequest.GetQueryString("ListType"), DateTime.MaxValue);
+                AuthRequest.SetCookie(cookieName, AuthRequest.GetQueryString("ListType"), DateTime.MaxValue);
             }
             if (DdlListType.SelectedValue == "List")
             {

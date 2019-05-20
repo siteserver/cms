@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
     [RoutePrefix("pages/cms/contentsLayerCopy")]
-    public class PagesContentsLayerCopyController : ApiController
+    public class PagesContentsLayerCopyController : ControllerBase
     {
         private const string Route = "";
         private const string RouteGetChannels = "actions/getChannels";
@@ -24,7 +22,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -101,7 +99,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetQueryInt("siteId");
 
@@ -135,7 +133,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

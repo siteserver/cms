@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ConfigInfo> _repository;
         public ConfigDao()
         {
-            _repository = new Repository<ConfigInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ConfigInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

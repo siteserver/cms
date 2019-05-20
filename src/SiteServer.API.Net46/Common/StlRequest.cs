@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Web;
-using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
-namespace SiteServer.API.Utils
+namespace SiteServer.API.Common
 {
     public class StlRequest
     {
@@ -26,7 +23,7 @@ namespace SiteServer.API.Utils
 
         public StlRequest()
         {
-            Request = new Request(HttpContext.Current.Request);
+            Request = Request.Current;
             IsApiAuthorized = Request.IsApiAuthenticated && AccessTokenManager.IsScope(Request.ApiToken, AccessTokenManager.ScopeStl);
 
             if (!IsApiAuthorized) return;

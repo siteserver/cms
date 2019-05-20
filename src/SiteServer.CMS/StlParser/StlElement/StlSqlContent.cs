@@ -97,7 +97,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        connectionString = WebConfigUtils.ConnectionString;
+                        connectionString = AppSettings.ConnectionString;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
@@ -226,7 +226,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             {
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = WebConfigUtils.ConnectionString;
+                    connectionString = AppSettings.ConnectionString;
                 }
 
                 //parsedContent = DatabaseUtils.GetString(connectionString, queryString);

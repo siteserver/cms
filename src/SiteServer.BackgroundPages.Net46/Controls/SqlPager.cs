@@ -732,7 +732,7 @@ namespace SiteServer.BackgroundPages.Controls
             }
             var cmdText = SqlUtils.GetPageSqlString(SelectCommand, orderString, ItemsPerPage, CurrentPageIndex, countInfo.PageCount, countInfo.RecordsInLastPage);
 
-            var conn = SqlUtils.GetIDbConnection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            var conn = SqlUtils.GetIDbConnection(AppSettings.DatabaseType, AppSettings.ConnectionString);
             var cmd = SqlUtils.GetIDbCommand();
             cmd.Connection = conn;
             cmd.CommandText = cmdText;

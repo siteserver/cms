@@ -17,19 +17,19 @@ namespace SiteServer.CMS.Core
     {
         public static void DeleteDbLog()
         {
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 Execute("PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY)");
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
-                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+                var databaseName = SqlUtils.GetDatabaseNameFormConnectionString(AppSettings.DatabaseType, AppSettings.ConnectionString);
 
                 const string sqlCheck = "SELECT SERVERPROPERTY('productversion')";
                 // var versions = ExecuteScalar(sqlCheck).ToString();
 
                 string versions;
-                using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
                 {
                     versions = connection.ExecuteScalar(sqlCheck).ToString();
                 }
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(sqlString)) return;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 connection.Execute(sqlString);
             }
@@ -70,7 +70,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(sqlString)) return;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 connection.Execute(sqlString, dbArgs);
             }
@@ -80,12 +80,12 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = WebConfigUtils.ConnectionString;
+                connectionString = AppSettings.ConnectionString;
             }
 
             var count = 0;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, connectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, connectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -103,7 +103,7 @@ namespace SiteServer.CMS.Core
         {
             var count = 0;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -122,12 +122,12 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = WebConfigUtils.ConnectionString;
+                connectionString = AppSettings.ConnectionString;
             }
 
             var retval = string.Empty;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, connectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, connectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -144,7 +144,7 @@ namespace SiteServer.CMS.Core
         public static string GetString(string sqlString)
         {
             var value = string.Empty;
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -163,13 +163,13 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = WebConfigUtils.ConnectionString;
+                connectionString = AppSettings.ConnectionString;
             }
 
             if (string.IsNullOrEmpty(sqlString)) return null;
 
             var dataTable = new DataTable();
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, connectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, connectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -182,7 +182,7 @@ namespace SiteServer.CMS.Core
 
         public static DataSet GetDataSet(string sqlString)
         {
-            return GetDataSet(WebConfigUtils.ConnectionString, sqlString);
+            return GetDataSet(AppSettings.ConnectionString, sqlString);
         }
 
         public static DataSet GetDataSet(string connectionString, string sqlString)
@@ -198,7 +198,7 @@ namespace SiteServer.CMS.Core
             if (pos > -1)
                 sqlString = sqlString.Substring(0, pos);
 
-            var cmdText = WebConfigUtils.DatabaseType == DatabaseType.Oracle
+            var cmdText = AppSettings.DatabaseType == DatabaseType.Oracle
                 ? $"SELECT COUNT(*) FROM ({sqlString})"
                 : $"SELECT COUNT(*) FROM ({sqlString}) AS T0";
             return GetIntResult(cmdText);
@@ -223,7 +223,7 @@ namespace SiteServer.CMS.Core
 
         public static bool IsTableExists(string tableName)
         {
-            return DatoryUtils.IsTableExists(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
+            return DatoryUtils.IsTableExists(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName);
         }
 
         public static bool CreateTable(string tableName, List<TableColumn> tableColumns, out Exception ex)
@@ -232,7 +232,7 @@ namespace SiteServer.CMS.Core
 
             try
             {
-                DatoryUtils.CreateTable(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName, tableColumns);
+                DatoryUtils.CreateTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns);
                 TableColumnManager.ClearCache();
                 return true;
             }
@@ -262,7 +262,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionStringWithoutDatabaseName))
             {
-                connectionStringWithoutDatabaseName = WebConfigUtils.ConnectionString;
+                connectionStringWithoutDatabaseName = AppSettings.ConnectionString;
             }
 
             var list = new List<string>();
@@ -368,10 +368,10 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = WebConfigUtils.ConnectionString;
+                connectionString = AppSettings.ConnectionString;
             }
 
-            return DatoryUtils.GetTableColumns(WebConfigUtils.DatabaseType, connectionString, tableName);
+            return DatoryUtils.GetTableColumns(AppSettings.DatabaseType, connectionString, tableName);
         }
 
         public static string GetOracleSequence(string tableName, string idColumnName)
@@ -380,9 +380,9 @@ namespace SiteServer.CMS.Core
             var sequence = CacheUtils.Get<string>(cacheKey);
             if (string.IsNullOrEmpty(sequence))
             {
-                using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
                 {
-                    using (var rdr = connection.ExecuteReader($"SELECT DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{WebConfigUtils.ConnectionStringUserId.ToUpper()}' and table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'"))
+                    using (var rdr = connection.ExecuteReader($"SELECT DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{AppSettings.ConnectionStringUserId.ToUpper()}' and table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'"))
                     {
                         if (rdr.Read())
                         {
@@ -410,7 +410,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetSelectSqlString(string tableName, int totalNum, string columns, string whereString, string orderByString)
         {
-            return GetSelectSqlString(WebConfigUtils.ConnectionString, tableName, totalNum, columns, whereString, orderByString);
+            return GetSelectSqlString(AppSettings.ConnectionString, tableName, totalNum, columns, whereString, orderByString);
         }
 
         public static string GetSelectSqlString(string connectionString, string tableName, int totalNum, string columns, string whereString, string orderByString)
@@ -461,7 +461,7 @@ namespace SiteServer.CMS.Core
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                connectionString = WebConfigUtils.ConnectionString;
+                connectionString = AppSettings.ConnectionString;
             }
 
             if (startNum == 1 && totalNum == 0 && string.IsNullOrEmpty(orderByString))
@@ -508,7 +508,7 @@ namespace SiteServer.CMS.Core
 
             var retval = string.Empty;
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -517,7 +517,7 @@ SELECT * FROM (
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $@"
 SELECT *
@@ -528,7 +528,7 @@ FROM (SELECT TOP {totalNum} *
 {orderByString}
 ";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -537,7 +537,7 @@ SELECT * FROM (
     ) AS tmp {orderByStringOpposite} LIMIT {totalNum}
 ) AS tmp {orderByString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $@"
 SELECT *
@@ -588,7 +588,7 @@ FROM (SELECT TOP {totalNum} *
             IEnumerable<dynamic> objects;
             var sqlString = $"select * from {tableName}";
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 objects = connection.Query(sqlString, null, null, false).ToList();
             }
@@ -633,7 +633,7 @@ FROM (SELECT TOP {totalNum} *
             IEnumerable<dynamic> objects;
             var sqlString = GetPageSqlString(tableName, "*", string.Empty, $"ORDER BY {identityColumnName} ASC", offset, limit);
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 objects = connection.Query(sqlString, null, null, false).ToList();
             }
@@ -720,7 +720,7 @@ FROM (SELECT TOP {totalNum} *
 
         private static void InsertRows(string tableName, string columnNames, List<string> valuesList, Dictionary<string, object> parameters)
         {
-            if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
                 foreach (var values in valuesList)
@@ -743,7 +743,7 @@ SET IDENTITY_INSERT {tableName} OFF
 
                 Execute(sqlString, parameters);
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 var sqlStringBuilder = new StringBuilder("INSERT ALL");
                 foreach (var values in valuesList)
@@ -776,7 +776,7 @@ SET IDENTITY_INSERT {tableName} OFF
             {
                 if (_sqlServerVersionState != ETriState.All) return _sqlServerVersionState == ETriState.True;
 
-                if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
+                if (AppSettings.DatabaseType != DatabaseType.SqlServer)
                 {
                     _sqlServerVersionState = ETriState.False;
                 }
@@ -806,7 +806,7 @@ SET IDENTITY_INSERT {tableName} OFF
         {
             int totalCount;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 totalCount = connection.QueryFirstOrDefault<int>($@"SELECT COUNT(*) FROM {tableName} {whereSqlString}", parameters);
             }
@@ -844,7 +844,7 @@ SET IDENTITY_INSERT {tableName} OFF
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -853,7 +853,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $@"
 SELECT * FROM (
@@ -862,7 +862,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -871,7 +871,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $@"
 SELECT * FROM (
@@ -898,7 +898,7 @@ SELECT * FROM (
                 return $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
             }
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 if (limit == 0)
                 {
@@ -906,13 +906,13 @@ SELECT * FROM (
                 }
                 retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
                 retval = limit == 0
                     ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
                     : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
             {
                 if (offset == 0)
                 {
@@ -929,13 +929,13 @@ SELECT * FROM (
 ) as T {rowWhere}";
                 }
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = limit == 0
                     ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
                     : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 retval = limit == 0
                     ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
@@ -952,7 +952,7 @@ SELECT * FROM (
             {
                 value = AttackUtils.UnFilterSql(value);
             }
-            if (WebConfigUtils.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
+            if (AppSettings.DatabaseType == DatabaseType.Oracle && value == SqlUtils.OracleEmptyValue)
             {
                 value = string.Empty;
             }

@@ -111,15 +111,15 @@ namespace SiteServer.BackgroundPages
                 LtlDomain.Text = AuthRequest.Host;
                 LtlVersion.Text = SystemManager.ProductVersion;
                 LtlNetVersion.Text = $"{Environment.Version.Major}.{Environment.Version.Minor}";
-                LtlPhysicalApplicationPath.Text = WebConfigUtils.PhysicalApplicationPath;
+                LtlPhysicalApplicationPath.Text = AppSettings.PhysicalApplicationPath;
 
                 var isRootWritable = false;
                 try
                 {
-                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "version.txt");
+                    var filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, "version.txt");
                     FileUtils.WriteText(filePath, ECharset.utf_8, SystemManager.ProductVersion);
 
-                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, WebConfigUtils.PhysicalApplicationPath);
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, AppSettings.PhysicalApplicationPath);
                     ioPermission.Demand();
 
                     isRootWritable = true;
@@ -132,10 +132,10 @@ namespace SiteServer.BackgroundPages
                 var isSiteFilesWritable = false;
                 try
                 {
-                    var filePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
+                    var filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, "index.htm");
                     FileUtils.WriteText(filePath, ECharset.utf_8, Constants.Html5Empty);
 
-                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
+                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName));
                     ioPermission.Demand();
 
                     isSiteFilesWritable = true;
@@ -317,7 +317,7 @@ namespace SiteServer.BackgroundPages
             {
                 databaseName = databaseType == DatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
+            return AppSettings.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
         }
 
         private bool CheckLoginValid(out string errorMessage)
@@ -385,7 +385,7 @@ namespace SiteServer.BackgroundPages
                 var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
                 var connectionString = GetConnectionString(true);
 
-                WebConfigUtils.UpdateWebConfig(isProtectData, databaseType, connectionString, "api", "SiteServer", "Home", StringUtils.GetShortGuid(), false);
+                AppSettings.UpdateWebConfig(isProtectData, databaseType, connectionString, "api", "SiteServer", "Home", StringUtils.GetShortGuid(), false);
 
                 DataProvider.Reset();
 

@@ -1,12 +1,13 @@
 ﻿using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Editor;
 using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysUEditorController : ApiController
+    public class SysUEditorController : ControllerBase
     {
         [HttpGet, Route(ApiRouteUEditor.Route)]
         public void GetMain(int siteId)

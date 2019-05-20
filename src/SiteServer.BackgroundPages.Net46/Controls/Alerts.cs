@@ -1,5 +1,6 @@
 ﻿using System.Web.UI;
 using System.Web.UI.HtmlControls;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
@@ -35,7 +36,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             writer.Write(IsShowImmidiatary
                 ? MessageUtils.GetAlertHtml(MessageType, Content, this)
-                : MessageUtils.GetAlertHtml(this, string.IsNullOrEmpty(Text) ? InnerHtml : Text));
+                : MessageUtils.GetAlertHtml(Request.Current, this, string.IsNullOrEmpty(Text) ? InnerHtml : Text));
 
             writer.Write(@"<div id=""alert"" class=""alert"" style=""display:none""><button type=""button"" class=""close"" data-dismiss=""alert"">&times;</button><strong>提示!</strong>&nbsp;&nbsp; <span id=""alertMessage""></span></div>");
         }

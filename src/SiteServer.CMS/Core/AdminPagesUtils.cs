@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetAdminUrl(string relatedUrl)
         {
-            return PageUtils.Combine(WebConfigUtils.ApplicationPath, relatedUrl);
+            return PageUtils.Combine(AppSettings.ApplicationPath, relatedUrl);
         }
 
         public static string GetIndexUrl(int siteId, string pageUrl)

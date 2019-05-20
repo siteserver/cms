@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<AccessTokenInfo> _repository;
         public AccessTokenDao()
         {
-            _repository = new Repository<AccessTokenInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<AccessTokenInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

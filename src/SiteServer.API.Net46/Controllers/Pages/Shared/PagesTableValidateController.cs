@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Shared
 {
     [RoutePrefix("pages/shared/tableValidate")]
-    public class PagesTableValidateController : ApiController
+    public class PagesTableValidateController : ControllerBase
     {
         private const string Route = "";
 
@@ -19,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -50,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");

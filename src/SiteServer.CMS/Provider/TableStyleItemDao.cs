@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<TableStyleItemInfo> _repository;
         public TableStyleItemDao()
         {
-            _repository = new Repository<TableStyleItemInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<TableStyleItemInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

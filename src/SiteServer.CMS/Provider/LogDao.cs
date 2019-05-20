@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<LogInfo> _repository;
         public LogDao()
         {
-            _repository = new Repository<LogInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<LogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;
@@ -180,7 +180,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlSelectTrackingDay))
                 {
@@ -244,7 +244,7 @@ SELECT COUNT(*) AS AddNum, UserName FROM (
 
 
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlSelectTrackingDay))
                 {

@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -53,7 +54,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new Request(HttpContext.Current.Request);
+            var request = Common.Request.Current;
 
             if (type == TypeGetCountArray)
             {

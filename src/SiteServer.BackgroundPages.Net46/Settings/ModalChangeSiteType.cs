@@ -55,7 +55,7 @@ namespace SiteServer.BackgroundPages.Settings
 
                 PhChangeToSite.Visible = true;
                 PhChangeToHeadquarters.Visible = false;
-                var fileSystems = FileManager.GetFileSystemInfoExtendCollection(WebConfigUtils.PhysicalApplicationPath, true);
+                var fileSystems = FileManager.GetFileSystemInfoExtendCollection(AppSettings.PhysicalApplicationPath, true);
                 var siteDirList = DataProvider.SiteDao.GetLowerSiteDirListThatNotIsRoot();
                 foreach (FileSystemInfoExtend fileSystem in fileSystems)
                 {

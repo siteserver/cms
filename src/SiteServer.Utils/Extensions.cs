@@ -26,19 +26,19 @@ namespace SiteServer.Utils
         public static Query WhereInStr(this Query query, string columnName, string inStr)
         {
             var where = string.Empty;
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 where = $"CHARINDEX(?, [{columnName}]) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 where = $"POSITION(? IN [{columnName}]) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
@@ -50,19 +50,19 @@ namespace SiteServer.Utils
         public static Query WhereInStrReverse(this Query query, string columnName, string inStr)
         {
             var where = string.Empty;
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 where = $"CHARINDEX([{columnName}], ?) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 where = $"POSITION([{columnName}] IN ?) > 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
@@ -74,19 +74,19 @@ namespace SiteServer.Utils
         public static Query WhereNotInStr(this Query query, string columnName, string inStr)
         {
             var where = string.Empty;
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 where = $"INSTR([{columnName}], ?) = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 where = $"CHARINDEX(?, [{columnName}]) = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 where = $"POSITION(? IN [{columnName}]) = 0";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 where = $"INSTR([{columnName}], ?) = 0";
             }

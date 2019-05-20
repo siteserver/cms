@@ -144,7 +144,7 @@ namespace SiteServer.BackgroundPages
             }
             else
             {
-                var url = WebConfigUtils.ApplicationPath;
+                var url = AppSettings.ApplicationPath;
                 FxUtils.Page.Redirect(url);
             }
         }

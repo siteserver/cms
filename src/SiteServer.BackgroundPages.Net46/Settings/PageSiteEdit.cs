@@ -248,7 +248,7 @@ namespace SiteServer.BackgroundPages.Settings
                         return;
                     }
 
-                    var parentPsPath = WebConfigUtils.PhysicalApplicationPath;
+                    var parentPsPath = AppSettings.PhysicalApplicationPath;
                     if (SiteInfo.ParentId > 0)
                     {
                         var parentSiteInfo = SiteManager.GetSiteInfo(SiteInfo.ParentId);

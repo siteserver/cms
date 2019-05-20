@@ -4,14 +4,14 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/captcha")]
-    public class V1CaptchaController : ApiController
+    public class V1CaptchaController : ControllerBase
     {
         private const string ApiRoute = "{name}";
         private const string ApiRouteActionsCheck = "{name}/actions/check";
@@ -26,15 +26,16 @@ namespace SiteServer.API.Controllers.V1
         [HttpGet, Route(ApiRoute)]
         public void Get(string name)
         {
+            var request = GetRequest();
             var response = HttpContext.Current.Response;
 
-            var code = VcManager.CreateValidateCode();
+            var code = CaptchaManager.CreateValidateCode();
             if (CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
             {
-                code = VcManager.CreateValidateCode();
+                code = CaptchaManager.CreateValidateCode();
             }
 
-            CookieUtils.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));
+            request.SetCookie("SS-" + name, code, DateTime.Now.AddMinutes(10));
 
             response.BufferOutput = true;  //特别注意
             response.Cache.SetExpires(DateTime.Now.AddMilliseconds(-1));//特别注意
@@ -94,14 +95,15 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var code = CookieUtils.GetCookie("SS-" + name);
+                var request = GetRequest();
+                request.TryGetCookie("SS-" + name, out var code);
 
                 if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.API.Controllers.V1.CaptchaController.{code}"))
                 {
                     return BadRequest("验证码已超时，请点击刷新验证码！");
                 }
 
-                CookieUtils.Erase("SS-" + name);
+                request.RemoveCookie("SS-" + name);
                 CacheUtils.InsertMinutes($"SiteServer.API.Controllers.V1.CaptchaController.{code}", true, 10);
 
                 if (!StringUtils.EqualsIgnoreCase(code, captchaInfo.Captcha))

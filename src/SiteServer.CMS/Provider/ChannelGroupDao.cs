@@ -14,7 +14,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<ChannelGroupInfo> _repository;
         public ChannelGroupDao()
         {
-            _repository = new Repository<ChannelGroupInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<ChannelGroupInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

@@ -39,9 +39,9 @@ namespace SiteServer.CMS.DataCache
             }
             for (var i = 0; i < parentsCount; i++)
             {
-                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "¡¡" : "©¦");
+                str = string.Concat(str, TranslateUtils.DictGetValue(parentsCountDict, i) ? "ï¿½ï¿½" : "ï¿½ï¿½");
             }
-            str = string.Concat(str, isLastNode ? "©¸" : "©À");
+            str = string.Concat(str, isLastNode ? "ï¿½ï¿½" : "ï¿½ï¿½");
             str = string.Concat(str, name);
             return str;
         }

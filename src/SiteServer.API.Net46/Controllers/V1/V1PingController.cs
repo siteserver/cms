@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using SiteServer.API.Common;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
@@ -6,7 +7,7 @@ using System.Web.Http;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/ping")]
-    public class V1PingController : ApiController
+    public class V1PingController : ControllerBase
     {
         private const string Route = "";
 

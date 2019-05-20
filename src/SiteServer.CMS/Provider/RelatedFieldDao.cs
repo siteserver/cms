@@ -12,7 +12,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<RelatedFieldInfo> _repository;
         public RelatedFieldDao()
         {
-            _repository = new Repository<RelatedFieldInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<RelatedFieldInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

@@ -5,6 +5,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.Plugin;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages
 {
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages
 
         protected virtual bool IsInstallerPage => false; // 是否为系统安装页面
 
-        public string IsNightly => WebConfigUtils.IsNightlyUpdate.ToString().ToLower(); // 系统是否允许升级到最新的开发版本
+        public string IsNightly => AppSettings.IsNightlyUpdate.ToString().ToLower(); // 系统是否允许升级到最新的开发版本
 
         public string Version => SystemManager.PluginVersion; // 系统采用的插件API版本号
 
@@ -38,7 +39,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new Request(Request);
+            AuthRequest = Common.Request.Current;
 
             if (!IsInstallerPage)
             {
@@ -69,7 +70,7 @@ namespace SiteServer.BackgroundPages
         {
             if (!string.IsNullOrEmpty(_message))
             {
-                MessageUtils.SaveMessage(_messageType, _message);
+                MessageUtils.SaveMessage(AuthRequest, _messageType, _message);
             }
 
             base.Render(writer);
@@ -245,7 +246,7 @@ setTimeout(function() {{
         public static string GetShowImageScript(string objString, string imageClientId, string siteUrl)
         {
             return
-                $"showImage({objString}, '{imageClientId}', '{WebConfigUtils.ApplicationPath}', '{siteUrl}')";
+                $"showImage({objString}, '{imageClientId}', '{AppSettings.ApplicationPath}', '{siteUrl}')";
         }
     }
 }

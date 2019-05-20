@@ -2,25 +2,25 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysStlActionsTriggerController : ApiController
+    public class SysStlActionsTriggerController : ControllerBase
     {
         [HttpGet]
         [Route(ApiRouteActionsTrigger.Route)]
         public async Task Main()
         {
-            var request = new Request(HttpContext.Current.Request);
+            var request = GetRequest();
 
             var siteId = request.GetQueryInt("siteId");
             var siteInfo = SiteManager.GetSiteInfo(siteId);

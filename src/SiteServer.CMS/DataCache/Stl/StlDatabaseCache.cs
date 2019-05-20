@@ -109,11 +109,11 @@ namespace SiteServer.CMS.DataCache.Stl
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        connectionString = WebConfigUtils.ConnectionString;
+                        connectionString = AppSettings.ConnectionString;
                     }
                     var rows = new List<Container.Sql>();
                     var itemIndex = 0;
-                    using (var connection = new Connection(WebConfigUtils.DatabaseType, connectionString))
+                    using (var connection = new Connection(AppSettings.DatabaseType, connectionString))
                     {
                         using (var reader = connection.ExecuteReader(queryString))
                         {

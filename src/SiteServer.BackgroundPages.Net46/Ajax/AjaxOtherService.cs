@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 using System.Web;
+using SiteServer.BackgroundPages.Common;
 
 namespace SiteServer.BackgroundPages.Ajax
 {
@@ -129,7 +130,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var request = new Request(HttpContext.Current.Request);
+            var request = Common.Request.Current;
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)

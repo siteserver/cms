@@ -20,7 +20,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<AdministratorInfo> _repository;
         public AdministratorDao()
         {
-            _repository = new Repository<AdministratorInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<AdministratorInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

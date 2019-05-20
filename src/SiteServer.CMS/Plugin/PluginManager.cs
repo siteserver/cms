@@ -118,7 +118,7 @@ namespace SiteServer.CMS.Plugin
                     if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
 
                     var fileName = PathUtils.GetFileName(filePath);
-                    var binFilePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", fileName);
+                    var binFilePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, "Bin", fileName);
 
                     if (!FileUtils.IsFileExists(binFilePath))
                     {
@@ -185,7 +185,7 @@ namespace SiteServer.CMS.Plugin
 
         public static void Load(Func<IRequest> requestFunc)
         {
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, WebConfigUtils.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.PhysicalApplicationPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,

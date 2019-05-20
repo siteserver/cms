@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<UserMenuInfo> _repository;
         public UserMenuDao()
         {
-            _repository = new Repository<UserMenuInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<UserMenuInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

@@ -9,8 +9,8 @@ using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.DataCache
 {
-	public static class AccessTokenManager
-	{
+    public static class AccessTokenManager
+    {
         private static class AccessTokenManagerCache
         {
             private static readonly object LockObject = new object();
@@ -51,31 +51,31 @@ namespace SiteServer.CMS.DataCache
 
         public const string ScopeContents = "Contents";
         public const string ScopeAdministrators = "Administrators";
-	    public const string ScopeUsers = "Users";
+        public const string ScopeUsers = "Users";
         public const string ScopeStl = "STL";
 
-	    public static List<string> ScopeList => new List<string>
-	    {
-	        ScopeContents,
+        public static List<string> ScopeList => new List<string>
+        {
+            ScopeContents,
             ScopeAdministrators,
             ScopeUsers,
             ScopeStl
         };
 
-	    public static void ClearCache()
-	    {
-	        AccessTokenManagerCache.Clear();
-	    }
+        public static void ClearCache()
+        {
+            AccessTokenManagerCache.Clear();
+        }
 
-	    public static bool IsScope(string token, string scope)
-	    {
-	        if (string.IsNullOrEmpty(token)) return false;
+        public static bool IsScope(string token, string scope)
+        {
+            if (string.IsNullOrEmpty(token)) return false;
 
-	        var tokenInfo = GetAccessTokenInfo(token);
-	        if (tokenInfo == null) return false;
+            var tokenInfo = GetAccessTokenInfo(token);
+            if (tokenInfo == null) return false;
 
-	        return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
-	    }
+            return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
+        }
 
         public static AccessTokenInfo GetAccessTokenInfo(string token)
         {
@@ -97,10 +97,10 @@ namespace SiteServer.CMS.DataCache
             {
                 UserId = userId,
                 UserName = userName,
-                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
+                ExpiresAt = DateTime.Now.Add(expiresAt)
             };
 
-            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(userToken, AppSettings.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public static string GetAccessToken(int userId, string userName, DateTime expiresAt)
@@ -114,7 +114,7 @@ namespace SiteServer.CMS.DataCache
                 ExpiresAt = expiresAt
             };
 
-            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+            return JsonWebToken.Encode(userToken, AppSettings.SecretKey, JwtHashAlgorithm.HS256);
         }
 
         public static AccessTokenImpl ParseAccessToken(string accessToken)
@@ -123,7 +123,7 @@ namespace SiteServer.CMS.DataCache
 
             try
             {
-                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, WebConfigUtils.SecretKey);
+                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, AppSettings.SecretKey);
 
                 if (tokenObj?.ExpiresAt.AddDays(Constants.AccessTokenExpireDays) > DateTime.Now)
                 {

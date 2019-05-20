@@ -2,6 +2,7 @@
 using System.Text;
 using System.Web;
 using System.Web.UI;
+using SiteServer.BackgroundPages.Common;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -20,7 +21,7 @@ namespace SiteServer.BackgroundPages.Controls
         {
             var builder = new StringBuilder();
 
-            var request = new Request(HttpContext.Current.Request);
+            var request = Request.Current;
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
             var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];

@@ -39,6 +39,11 @@ namespace SiteServer.Utils
             return File.ReadAllText(filePath, encoding);
         }
 
+        public static string ReadText(string filePath)
+        {
+            return File.ReadAllText(filePath, Encoding.UTF8);
+        }
+
         public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
         {
             using (var sr = new StreamReader(filePath, encoding))

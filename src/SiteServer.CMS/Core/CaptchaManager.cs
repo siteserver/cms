@@ -1,18 +1,20 @@
 ﻿using System;
-using SiteServer.CMS.Core;
+using SiteServer.Plugin;
 using SiteServer.Utils;
 
-namespace SiteServer.BackgroundPages.Core
+namespace SiteServer.CMS.Core
 {
-    public class VcManager
+    public class CaptchaManager
     {
-        private const string AdminLoginCookieName = "SITESERVER.VC.ADMINLOGIN";
+        private const string AdminLoginCookieName = "SITESERVER.CAPTCHA.ADMINLOGIN";
 
         private string _cookieName;
 
-        public static VcManager GetInstance()
+        private CaptchaManager() { }
+
+        public static CaptchaManager GetInstance()
         {
-            var vc = new VcManager {_cookieName = AdminLoginCookieName};
+            var vc = new CaptchaManager { _cookieName = AdminLoginCookieName};
             return vc;
         }
 
@@ -35,17 +37,20 @@ namespace SiteServer.BackgroundPages.Core
             return validateCode;
         }
 
-        public bool IsCodeValid(string validateCode)
+        public bool IsCodeValid(IRequest request, string validateCode)
         {
-            var code = CookieUtils.GetCookie(_cookieName);
-            var isValid = StringUtils.EqualsIgnoreCase(code, validateCode);
-
-            if (isValid)
+            if (request.TryGetCookie(_cookieName, out var code))
             {
-                CacheUtils.Remove(_cookieName);
-            }
+                var isValid = StringUtils.EqualsIgnoreCase(code, validateCode);
 
-            return isValid;
+                if (isValid)
+                {
+                    CacheUtils.Remove(_cookieName);
+                }
+
+                return isValid;
+            }
+            return false;
         }
     }
 }

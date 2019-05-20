@@ -4,12 +4,13 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Plugin;
 
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/test")]
-    public class V1TestController : ApiController
+    public class V1TestController : ControllerBase
     {
         [HttpGet]
         public IHttpActionResult Get()

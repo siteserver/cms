@@ -17,7 +17,7 @@ namespace SiteServer.CMS.Core
     {
         public static string GetSitePath(SiteInfo siteInfo)
         {
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteInfo.SiteDir);
+            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir);
         }
 
         public static string GetSitePath(int siteId, params string[] paths)
@@ -216,7 +216,7 @@ namespace SiteServer.CMS.Core
         public static SiteInfo GetSiteInfo(string path)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppSettings.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
@@ -245,7 +245,7 @@ namespace SiteServer.CMS.Core
         {
             var siteDir = string.Empty;
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = WebConfigUtils.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppSettings.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty)
             {
@@ -354,7 +354,7 @@ namespace SiteServer.CMS.Core
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, WebConfigUtils.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, AppSettings.ApplicationPath) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, siteInfo.WebUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);
@@ -388,13 +388,13 @@ namespace SiteServer.CMS.Core
         public static string GetTemporaryFilesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
+            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
         }
 
         public static string GetSiteTemplatesPath(string relatedPath)
         {
             relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedPath);
+            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedPath);
         }
 
         public static string GetSiteTemplateMetadataPath(string siteTemplatePath, string relatedPath)

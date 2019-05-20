@@ -155,7 +155,7 @@ namespace SiteServer.CMS.Provider
 
             //{ContentAttribute.Id}, {ContentAttribute.ChannelId}, {ContentAttribute.IsTop}, {ContentAttribute.AddDate}, {ContentAttribute.LastEditDate}, {ContentAttribute.Taxis}, {ContentAttribute.Hits}, {ContentAttribute.HitsByDay}, {ContentAttribute.HitsByWeek}, {ContentAttribute.HitsByMonth}
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -193,7 +193,7 @@ namespace SiteServer.CMS.Provider
             //var sqlSelect = DatabaseUtils.GetSelectSqlString(tableName, startNum, totalNum, MinListColumns, whereString, orderByString);
             var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderByString, startNum - 1, totalNum);
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -253,7 +253,7 @@ namespace SiteServer.CMS.Provider
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
+            if (AppSettings.DatabaseType == DatabaseType.MySql)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -262,7 +262,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
+            else if (AppSettings.DatabaseType == DatabaseType.SqlServer)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -271,7 +271,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppSettings.DatabaseType == DatabaseType.PostgreSql)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -280,7 +280,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
+            else if (AppSettings.DatabaseType == DatabaseType.Oracle)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -293,7 +293,7 @@ SELECT {Container.Content.SqlColumns} FROM (
             var list = new List<Container.Content>();
             var itemIndex = 0;
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(pageSqlString))
                 {

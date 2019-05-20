@@ -13,7 +13,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<AreaInfo> _repository;
         public AreaDao()
         {
-            _repository = new Repository<AreaInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<AreaInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

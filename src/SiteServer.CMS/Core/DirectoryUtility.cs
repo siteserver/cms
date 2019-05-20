@@ -127,7 +127,7 @@ namespace SiteServer.CMS.Core
             }
             else
             {
-                newPsPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, siteDir);
+                newPsPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteDir);
             }
 
             if (DirectoryUtils.IsDirectoryExists(newPsPath))
@@ -158,7 +158,7 @@ namespace SiteServer.CMS.Core
                 DataProvider.SiteDao.Update(siteInfo);
                 if (isMoveFiles)
                 {
-                    DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
+                    DirectoryUtils.MoveDirectory(sitePath, AppSettings.PhysicalApplicationPath, false);
                     DirectoryUtils.DeleteDirectoryIfExists(sitePath);
                 }
             }
@@ -173,13 +173,13 @@ namespace SiteServer.CMS.Core
 
                 DataProvider.SiteDao.Update(siteInfo);
 
-                var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, psDir);
+                var psPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, psDir);
                 DirectoryUtils.CreateDirectoryIfNotExists(psPath);
                 if (fileSystemNameArrayList != null && fileSystemNameArrayList.Count > 0)
                 {
                     foreach (string fileSystemName in fileSystemNameArrayList)
                     {
-                        var srcPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, fileSystemName);
+                        var srcPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, fileSystemName);
                         if (DirectoryUtils.IsDirectoryExists(srcPath))
                         {
                             var destDirectoryPath = PathUtils.Combine(psPath, fileSystemName);

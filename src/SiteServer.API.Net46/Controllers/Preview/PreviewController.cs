@@ -17,10 +17,11 @@ using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Plugin;
 using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 
 namespace SiteServer.API.Controllers.Preview
 {
-    public class PreviewController : ApiController
+    public class PreviewController : ControllerBase
     {
         [HttpGet, Route(ApiRoutePreview.Route)]
         public HttpResponseMessage Get(int siteId)

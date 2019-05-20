@@ -15,7 +15,7 @@ namespace SiteServer.Utils.IO
 
         public FileWatcherClass(string cacheName)
         {
-            _cacheFilePath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
+            _cacheFilePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, "Cache", $"{cacheName}.txt");
 
             FileDependency();
         }

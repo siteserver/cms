@@ -11,7 +11,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<PluginConfigInfo> _repository;
         public PluginConfigDao()
         {
-            _repository = new Repository<PluginConfigInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<PluginConfigInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

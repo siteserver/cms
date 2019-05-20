@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
-using SiteServer.CMS.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
     [RoutePrefix("pages/cms/createStatus")]
-    public class PagesCreateStatusController : ApiController
+    public class PagesCreateStatusController : ControllerBase
     {
         private const string Route = "";
         private const string RouteActionsCancel = "actions/cancel";
@@ -20,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(request.SiteId, ConfigManager.WebSitePermissions.Create))
                 {
@@ -47,7 +44,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 var siteId = request.GetPostInt("siteId");
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))

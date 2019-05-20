@@ -16,7 +16,7 @@ namespace SiteServer.CMS.Provider
         private readonly Repository<UserLogInfo> _repository;
         public UserLogDao()
         {
-            _repository = new Repository<UserLogInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString);
+            _repository = new Repository<UserLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
         }
 
         public string TableName => _repository.TableName;

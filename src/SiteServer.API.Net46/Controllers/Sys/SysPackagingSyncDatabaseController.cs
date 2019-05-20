@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using SiteServer.API.Common;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
@@ -6,7 +7,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
-    public class SysPackagesSyncDatabaseController : ApiController
+    public class SysPackagesSyncDatabaseController : ControllerBase
     {
         [HttpPost, Route(ApiRouteSyncDatabase.Route)]
         public IHttpActionResult Main()

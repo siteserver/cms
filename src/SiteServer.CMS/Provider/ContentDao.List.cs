@@ -118,7 +118,7 @@ namespace SiteServer.CMS.Provider
                     : $"SELECT Id FROM {TableName} WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString}) {orderString}";
             }
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -201,7 +201,7 @@ namespace SiteServer.CMS.Provider
             {
                 var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, parameters.Skip, parameters.Top);
 
-                using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
                 {
                     list = connection.Query<ContentInfo>(sqlString, dbArgs).ToList();
                 }
@@ -263,7 +263,7 @@ namespace SiteServer.CMS.Provider
             {
                 var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, skip, top);
 
-                using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
                 {
                     retVal = connection.Query<ContentInfo>(sqlString, dbArgs).Select(o => (o.ChannelId, o.Id)).ToList();
                 }
@@ -307,7 +307,7 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, offset, limit);
 
-            using (var conneciton = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var conneciton = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = conneciton.ExecuteReader(sqlString))
                 {
@@ -341,7 +341,7 @@ namespace SiteServer.CMS.Provider
 
             var sqlString = DatabaseUtils.GetPageSqlString(TableName, SqlUtils.Asterisk, whereString, orderString, offset, limit);
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -365,7 +365,7 @@ namespace SiteServer.CMS.Provider
             var sqlString =
                 $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}";
 
-            using (var connection = new Connection(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString))
+            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
             {
                 list = connection.Query<ContentCountInfo>(sqlString).ToList();
             }

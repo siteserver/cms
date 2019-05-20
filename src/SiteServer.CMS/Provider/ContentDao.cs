@@ -19,7 +19,7 @@ namespace SiteServer.CMS.Provider
 
         private ContentDao(string tableName)
         {
-            _repository = new Repository<ContentInfo>(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, tableName);
+            _repository = new Repository<ContentInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName);
         }
 
         public string TableName => _repository.TableName;

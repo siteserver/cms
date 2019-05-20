@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Web;
 using System.Web.Http;
-using SiteServer.BackgroundPages.Core;
+using SiteServer.API.Common;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Pages
 {
     [RoutePrefix("pages/error")]
-    public class PagesErrorController : ApiController
+    public class PagesErrorController : ControllerBase
     {
         private const string Route = "";
 
@@ -16,7 +15,7 @@ namespace SiteServer.API.Controllers.Pages
         {
             try
             {
-                var request = new Request(HttpContext.Current.Request);
+                var request = GetRequest();
                 if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
