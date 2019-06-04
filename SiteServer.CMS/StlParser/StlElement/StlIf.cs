@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.StlParser.Model;
+using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
 
 namespace SiteServer.CMS.StlParser.StlElement
@@ -30,6 +31,18 @@ namespace SiteServer.CMS.StlParser.StlElement
 
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
+
+        [StlAttribute(Title = "动态请求发送前执行的JS代码")]
+        private const string OnBeforeSend = nameof(OnBeforeSend);
+
+        [StlAttribute(Title = "动态请求成功后执行的JS代码")]
+        private const string OnSuccess = nameof(OnSuccess);
+
+        [StlAttribute(Title = "动态请求结束后执行的JS代码")]
+        private const string OnComplete = nameof(OnComplete);
+
+        [StlAttribute(Title = "动态请求失败后执行的JS代码")]
+        private const string OnError = nameof(OnError);
 
         public const string TypeIsUserLoggin = "IsUserLoggin";                                      //用户是否已登录
         public const string TypeIsAdministratorLoggin = "IsAdministratorLoggin";                    //管理员是否已登录
@@ -97,6 +110,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             var testTypeStr = string.Empty;
             var testOperate = string.Empty;
             var testValue = string.Empty;
+            var onBeforeSend = string.Empty;
+            var onSuccess = string.Empty;
+            var onComplete = string.Empty;
+            var onError = string.Empty;
 
             foreach (var name in contextInfo.Attributes.AllKeys)
             {
@@ -122,6 +139,22 @@ namespace SiteServer.CMS.StlParser.StlElement
                 {
                     contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
+                else if (StringUtils.EqualsIgnoreCase(name, OnBeforeSend))
+                {
+                    onBeforeSend = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnSuccess))
+                {
+                    onSuccess = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnComplete))
+                {
+                    onComplete = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
+                else if (StringUtils.EqualsIgnoreCase(name, OnError))
+                {
+                    onError = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                }
             }
 
             if (string.IsNullOrEmpty(testOperate))
@@ -129,25 +162,23 @@ namespace SiteServer.CMS.StlParser.StlElement
                 testOperate = OperateNotEmpty;
             }
 
-            return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue);
+            return ParseImpl(pageInfo, contextInfo, testTypeStr, testOperate, testValue, onBeforeSend, onSuccess, onComplete, onError);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue)
+        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testOperate, string testValue, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            string successTemplateString;
-            string failureTemplateString;
+            string loading;
+            string yes;
+            string no;
 
-            StlParserUtility.GetYesNo(contextInfo.InnerHtml, out successTemplateString, out failureTemplateString);
+            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
 
             if (StringUtils.EqualsIgnoreCase(testType, TypeIsUserLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsAdministratorLoggin) ||
                 StringUtils.EqualsIgnoreCase(testType, TypeIsUserOrAdministratorLoggin))
             {
-                StlParserManager.ParseInnerContent(new StringBuilder(successTemplateString), pageInfo, contextInfo);
-                StlParserManager.ParseInnerContent(new StringBuilder(failureTemplateString), pageInfo, contextInfo);
-
-                return TestTypeDynamic(pageInfo, contextInfo, testType, testValue, testOperate, successTemplateString,
-                    failureTemplateString);
+                return ParseDynamic(pageInfo, contextInfo, testType, testValue, testOperate, loading,
+                    yes, no, onBeforeSend, onSuccess, onComplete, onError);
             }
 
             var isSuccess = false;
@@ -228,7 +259,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 isSuccess = TestTypeDefault(pageInfo, contextInfo, testType, testOperate, testValue);
             }
 
-            var parsedContent = isSuccess ? successTemplateString : failureTemplateString;
+            var parsedContent = isSuccess ? yes : no;
 
             if (string.IsNullOrEmpty(parsedContent)) return string.Empty;
 
@@ -384,43 +415,51 @@ namespace SiteServer.CMS.StlParser.StlElement
             return isSuccess;
         }
 
-        private static string TestTypeDynamic(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testValue, string testOperate, string successTemplateString, string failureTemplateString)
+        private static string ParseDynamic(PageInfo pageInfo, ContextInfo contextInfo, string testType, string testValue, string testOperate, string loading, string yes, string no, string onBeforeSend, string onSuccess, string onComplete, string onError)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
-
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-
-            var functionName = $"stlIf_{ajaxDivId}";
-
-            if (string.IsNullOrEmpty(successTemplateString) && string.IsNullOrEmpty(failureTemplateString))
+            if (string.IsNullOrEmpty(yes) && string.IsNullOrEmpty(no))
             {
                 return string.Empty;
             }
 
-            var pageUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.TemplateType, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
-            var ifApiUrl = ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl);
-            var ifApiParms = ApiRouteActionsIf.GetParameters(pageInfo.SiteId, contextInfo.ChannelId, contextInfo.ContentId, pageInfo.TemplateInfo.Id, ajaxDivId, pageUrl, testType, testValue, testOperate, successTemplateString, failureTemplateString);
+            //运行解析以便为页面生成所需JS引用
+            if (!string.IsNullOrEmpty(yes))
+            {
+                StlParserManager.ParseInnerContent(new StringBuilder(yes), pageInfo, contextInfo);
+            }
+            if (!string.IsNullOrEmpty(no))
+            {
+                StlParserManager.ParseInnerContent(new StringBuilder(no), pageInfo, contextInfo);
+            }
 
-            var builder = new StringBuilder();
-            builder.Append($@"<span id=""{ajaxDivId}""></span>");
+            var dynamicInfo = new DynamicInfo
+            {
+                ElementName = ElementName,
+                SiteId = pageInfo.SiteId,
+                ChannelId = contextInfo.ChannelId,
+                ContentId = contextInfo.ContentId,
+                TemplateId = pageInfo.TemplateInfo.Id,
+                AjaxDivId = ajaxDivId,
+                LoadingTemplate = loading,
+                SuccessTemplate = yes,
+                FailureTemplate = no,
+                OnBeforeSend = onBeforeSend,
+                OnSuccess = onSuccess,
+                OnComplete = onComplete,
+                OnError = onError
+            };
+            var ifInfo = new DynamicInfo.IfInfo
+            {
+                Type = testType,
+                Op = testOperate,
+                Value = testValue
+            };
+            dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            builder.Append($@"
-<script type=""text/javascript"" language=""javascript"">
-function {functionName}(pageNum)
-{{
-    var url = ""{ifApiUrl}"";
-    var data = {ifApiParms};
-
-    stlClient.post(url, data, function (err, data, status) {{
-        if (!err) document.getElementById(""{ajaxDivId}"").innerHTML = data.html;
-    }});
-}}
-{functionName}(0);
-</script>
-");
-
-            return builder.ToString();
+            return dynamicInfo.GetScript(ApiRouteActionsIf.GetUrl(pageInfo.ApiUrl));
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)
@@ -430,30 +469,26 @@ function {functionName}(pageNum)
             if (StringUtils.EqualsIgnoreCase(testOperate, OperateEquals) ||
                 StringUtils.EqualsIgnoreCase(testOperate, OperateIn))
             {
-                var stringArrayList = TranslateUtils.StringCollectionToStringList(testValue);
+                var stringList = TranslateUtils.StringCollectionToStringList(testValue);
 
-                foreach (string str in stringArrayList)
+                foreach (var str in stringList)
                 {
-                    if (actualValues.Contains(str))
-                    {
-                        isSuccess = true;
-                        break;
-                    }
+                    if (!actualValues.Contains(str)) continue;
+                    isSuccess = true;
+                    break;
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(testOperate, OperateNotEquals) ||
                      StringUtils.EqualsIgnoreCase(testOperate, OperateNotIn))
             {
-                var stringArrayList = TranslateUtils.StringCollectionToStringList(testValue);
+                var stringList = TranslateUtils.StringCollectionToStringList(testValue);
 
                 var isIn = false;
-                foreach (string str in stringArrayList)
+                foreach (var str in stringList)
                 {
-                    if (actualValues.Contains(str))
-                    {
-                        isIn = true;
-                        break;
-                    }
+                    if (!actualValues.Contains(str)) continue;
+                    isIn = true;
+                    break;
                 }
                 if (!isIn)
                 {
@@ -476,11 +511,9 @@ function {functionName}(pageNum)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
-                    if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
-                    {
-                        isIn = true;
-                        break;
-                    }
+                    if (!ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId)) continue;
+                    isIn = true;
+                    break;
                 }
                 if (isIn)
                 {
@@ -494,7 +527,7 @@ function {functionName}(pageNum)
                 foreach (var channelIndex in channelIndexes)
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    var parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
+                    int parentId = ChannelManager.GetChannelIdByIndexName(pageInfo.SiteId, channelIndex);
                     if (ChannelManager.IsAncestorOrSelf(pageInfo.SiteId, parentId, pageInfo.PageChannelId))
                     {
                         isIn = true;

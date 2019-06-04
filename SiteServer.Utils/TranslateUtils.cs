@@ -16,6 +16,25 @@ namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
+        public static T Cast<T>(object value, T defaultValue = default(T))
+        {
+            switch (value)
+            {
+                case null:
+                    return defaultValue;
+                case T variable:
+                    return variable;
+                default:
+                    try
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T));
+                    }
+                    catch (InvalidCastException)
+                    {
+                        return defaultValue;
+                    }
+            }
+        }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
 
