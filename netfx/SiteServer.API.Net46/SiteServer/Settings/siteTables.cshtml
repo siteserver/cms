@@ -1,0 +1,98 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active show" href="siteTables.cshtml">内容表管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageSiteKeyword.aspx">敏感词管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
+</li>
+}
+
+<template v-if="pageType === 'columns'">
+
+  <h5 class="card-title">表名称：{{ tableName }}</h5>
+  <h5 class="card-title">
+    关联的站点：
+    <span v-for="siteName in nameDict[tableName]" class="mr-3">
+      {{ siteName }}
+    </span>
+  </h5>
+  <h5 class="card-title">
+    内容数：
+    {{ count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}
+  </h5>
+
+  <div class="alert alert-secondary" role="alert">
+    可以直接在数据库管理工具中修改表 {{ tableName }} 的字段，修改字段后需要<a v-on:click="btnRemoveCacheClick" href="javascript:;" class="btn btn-sm btn-success m-l-5 m-r-5">清除缓存</a>才能体现在系统内容表中。
+  </div>
+
+  <hr />
+
+  <table class="table tablesaw table-hover m-0">
+    <thead>
+      <tr class="thead">
+        <th>字段名称</th>
+        <th>字段类型</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="column in columns">
+        <td class="text-nowrap">
+          {{ column.attributeName }}
+        </td>
+        <td class="text-nowrap">
+          {{ column.dataType + (column.dataType === 'VarChar' ? '(' + column.dataLength + ')' : '') }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <button class="btn" v-on:click="btnCancelClick">返 回</button>
+
+</template>
+<template v-else>
+
+  <table class="table tablesaw table-hover m-0">
+    <thead>
+      <tr class="thead">
+        <th>表名称</th>
+        <th>关联的站点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="tableName in tableNames">
+        <td class="text-nowrap">
+          <a href="javascript:;" v-on:click="btnColumnsClick(tableName)">{{ tableName }}</a>
+        </td>
+        <td>
+          <span v-for="siteName in nameDict[tableName]" class="mr-3">
+            {{ siteName }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</template>
+
+@section Scripts{
+<script src="siteTables.js" type="text/javascript"></script> }

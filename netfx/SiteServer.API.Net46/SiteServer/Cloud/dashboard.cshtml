@@ -1,0 +1,59 @@
+@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="page-title-box">
+        <div class="btn-group pull-right">
+          <ol class="breadcrumb hide-phone p-0 m-0">
+            <li class="breadcrumb-item">欢迎，<a href="#">{{ pageConfig.userName }}</a></li>
+          </ol>
+        </div>
+        <h4 class="page-title">CMS 云服务</h4>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="portlet">
+        <div class="portlet-heading bg-primary">
+          <h3 class="portlet-title"> 文件实时同步 </h3>
+          <div class="portlet-widgets"> &nbsp; </div>
+          <div class="clearfix"></div>
+        </div>
+        <div id="bg-primary" class="panel-collapse collapse show">
+          <div class="portlet-body"> 将系统内的所有文件夹及文件实时同步上传至SiteServer CMS云端，在其他服务器通过
+            siteserver.exe命令行工具实时监测更新并下载文件到本机。
+            <hr />
+            <a href="javascript:;" class="mr-2">配 置</a>
+            <a href="javascript:;" class="text-danger">禁 用</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-6">
+      <div class="portlet">
+        <div class="portlet-heading bg-inverse">
+          <h3 class="portlet-title"> 文件实时同步 </h3>
+          <div class="portlet-widgets"> &nbsp; </div>
+          <div class="clearfix"></div>
+        </div>
+        <div id="bg-default" class="panel-collapse collapse show">
+          <div class="portlet-body"> 文件实时同步功能能够将站点内的所有文件夹及文件同步至中。
+            <hr />
+            <button class="btn btn-sm btn-primary">启用</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts{
+<script src="lib/js.cookie-2.2.0.js" type="text/javascript"></script>
+<script src="js/ss.js" type="text/javascript"></script>
+<script src="dashboard.js" type="text/javascript"></script>
+}

@@ -1,0 +1,234 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+
+<li class="nav-item">
+  <a class="nav-link" href="pageUser.aspx">用户管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userGroup.cshtml">用户组管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userStyle.cshtml">用户字段</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userConfig.cshtml">用户设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="userHome.cshtml">用户中心设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="userMenu.cshtml">用户中心菜单</a>
+</li>
+}
+
+<template v-if="pageType === 'list'">
+  <p class="text-muted font-14">
+    请点击链接更改用户中心设置
+  </p>
+
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr>
+        <td width="35%">用户中心状态</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'isHomeClosed'" class="editable">
+            <span v-show="config.isHomeClosed">禁用用户中心</span>
+            <span v-show="!config.isHomeClosed">启用用户中心</span>
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td>用户中心名称</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'homeTitle'" class="editable">
+            {{ config.homeTitle }}
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td>用户中心Logo</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'homeLogo'">
+            <span v-show="!config.isHomeLogo" class="editable">使用文字作为Logo</span>
+            <span v-show="config.isHomeLogo">
+              <img style="max-height: 50px;" :src="config.homeLogoUrl" class="img-responsive" />
+            </span>
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td>默认用户头像</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'homeDefaultAvatarUrl'">
+            <img style="max-height: 50px;" :src="config.homeDefaultAvatarUrl ? config.homeDefaultAvatarUrl : '../../' + homeDirectory + '/assets/images/default_avatar.png'"
+              class="img-responsive rounded-circle" />
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td width="35%">用户注册表单字段</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'userRegistrationAttributes'" class="editable">
+            {{ getUserRegistrationAttributes(config.userRegistrationAttributes) }}
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td width="35%">用户注册用户组</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'isUserRegistrationGroup'" class="editable">
+            {{ config.isUserRegistrationGroup ? '注册时可选择用户组' : '注册时不可选择用户组' }}
+          </a>
+        </td>
+      </tr>
+      <tr v-show="!config.isHomeClosed">
+        <td>用户协议</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'homeAgreement'" class="editable">
+            <span v-show="config.isHomeAgreement">显示用户协议</span>
+            <span v-show="!config.isHomeAgreement">不显示用户协议</span>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+<template v-else>
+
+  <template v-if="pageType === 'isHomeClosed'">
+
+    <div class="form-group">
+      <label>用户中心状态</label>
+      <select v-model="isHomeClosed" class="form-control">
+        <option v-bind:value="false">启用用户中心</option>
+        <option v-bind:value="true">禁用用户中心</option>
+      </select>
+      <small class="form-text text-muted">选择禁用将导致用户无法使用中户中心</small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'homeTitle'">
+
+    <div class="form-group">
+      <label>
+        用户中心名称
+        <small v-show="errors.has('homeTitle')" class="text-danger">{{
+          errors.first('homeTitle') }}</small>
+      </label>
+      <input v-model="homeTitle" name="homeTitle" data-vv-as="用户中心名称" v-validate="'required'" :class="{'is-invalid': errors.has('homeTitle') }"
+        type="text" class="form-control" />
+      <small class="form-text text-muted">设置用户中心访问地址</small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'homeLogo'">
+
+    <div class="form-group">
+      <label>用户中心Logo</label>
+      <select v-model="isHomeLogo" class="form-control">
+        <option v-bind:value="false">使用文字作为Logo</option>
+        <option v-bind:value="true">使用图片作为Logo</option>
+      </select>
+    </div>
+
+    <div v-show="isHomeLogo" class="form-group">
+      <label>用户中心图片Logo</label>
+      <div>
+        <img style="max-height: 50px;" v-show="homeLogoUrl" :src="homeLogoUrl" class="img-responsive" />
+        <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
+          accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputLogo"
+          ref="logo">
+          上 传
+        </file-upload>
+      </div>
+    </div>
+  </template>
+  <template v-else-if="pageType === 'homeDefaultAvatarUrl'">
+
+    <div class="form-group">
+      <label>默认用户头像</label>
+      <div>
+        <img style="max-height: 50px;" :src="homeDefaultAvatarUrl ? homeDefaultAvatarUrl : '../../' + homeDirectory + '/assets/images/default_avatar.png'"
+          class="img-responsive rounded-circle" />
+        <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
+          accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputAvatar"
+          ref="avatar">
+          上 传
+        </file-upload>
+      </div>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'userRegistrationAttributes'">
+
+    <div class="form-group">
+      <label>用户注册表单字段</label>
+
+      <div class="m-2">
+        <div class="checkbox checkbox-primary form-check-inline">
+          <input type="checkbox" id="userName" checked disabled>
+          <label for="userName"> 用户名 </label>
+        </div>
+        <div class="checkbox checkbox-primary form-check-inline">
+          <input type="checkbox" id="password" checked disabled>
+          <label for="password"> 密码 </label>
+        </div>
+        <div v-for="style in styles" class="checkbox checkbox-primary form-check-inline">
+          <input type="checkbox" v-model="userRegistrationAttributes" :value="style.attributeName" :id="style.attributeName">
+          <label :for="style.attributeName"> {{ style.displayName }} </label>
+        </div>
+      </div>
+
+      <small class="form-text text-muted">
+        字段名称及验证方式请进入<a href="userStyle.cshtml">用户字段</a>界面进行设置。
+      </small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'isUserRegistrationGroup'">
+
+    <div class="form-group">
+      <label>用户注册是否选择用户组</label>
+      <select v-model="isUserRegistrationGroup" class="form-control">
+        <option v-bind:value="true">注册时可选择用户组</option>
+        <option v-bind:value="false">注册时不可选择用户组</option>
+      </select>
+      <small class="form-text text-muted">如果设置为可选择，用户注册界面将显示用户组列表。</small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'homeAgreement'">
+
+    <div class="form-group">
+      <label>是否显示用户协议</label>
+      <select v-model="isHomeAgreement" class="form-control">
+        <option v-bind:value="true">显示用户协议</option>
+        <option v-bind:value="false">不显示用户协议</option>
+      </select>
+      <small class="form-text text-muted">设置显示用户协议后，新用户注册时必须勾选阅读并接受《用户协议》。</small>
+    </div>
+
+    <div v-show="isHomeAgreement" class="form-group">
+      <label>
+        用户协议
+        <small v-show="errors.has('homeAgreementHtml')" class="text-danger">{{
+          errors.first('homeAgreementHtml') }}</small>
+      </label>
+      <textarea v-model="homeAgreementHtml" name="homeAgreementHtml" data-vv-as="用户协议" v-validate="'required'" :class="{'is-invalid': errors.has('homeAgreement') }"
+        style="height: 100px" class="form-control"></textarea>
+      <small class="form-text text-muted">请在用户协议中填写显示在勾选框后面的文字，支持HTML格式。</small>
+    </div>
+
+  </template>
+
+  <hr />
+
+  <div class="text-center">
+    <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">保 存</button>
+    <button class="btn m-r-5" v-on:click="pageType = 'list'">返 回</button>
+  </div>
+
+</template>
+
+@section Scripts{
+<script src="../assets/js/vue-upload-component-2.8.14.js" type="text/javascript"></script>
+<script src="userHome.js" type="text/javascript"></script> }

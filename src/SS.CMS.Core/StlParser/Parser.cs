@@ -1,0 +1,165 @@
+﻿using System;
+using System.Text;
+using SS.CMS.Core.Api.Sys.Stl;
+using SS.CMS.Core.Common;
+using SS.CMS.Core.Plugin;
+using SS.CMS.Core.StlParser.Models;
+using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Plugin;
+using SS.CMS.Utils;
+using SS.CMS.Utils.Enumerations;
+
+namespace SS.CMS.Core.StlParser
+{
+    public static class Parser
+    {
+        public static void Parse(PageInfo pageInfo, ContextInfo contextInfo, StringBuilder contentBuilder, string filePath, bool isDynamic)
+        {
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnBeforeStlParse(new ParseEventArgs
+                    (
+                        pageInfo.SiteId,
+                        pageInfo.PageChannelId,
+                        pageInfo.PageContentId,
+                        contextInfo.ContentInfo,
+                        pageInfo.TemplateInfo.Type,
+                        pageInfo.TemplateInfo.Id,
+                        filePath,
+                        pageInfo.HeadCodes,
+                        pageInfo.BodyCodes,
+                        pageInfo.FootCodes,
+                        contentBuilder
+                    ));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddStlErrorLog(pageInfo, service.PluginId, nameof(service.OnBeforeStlParse), ex);
+                }
+            }
+
+            if (contentBuilder.Length > 0)
+            {
+                StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
+            }
+
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnAfterStlParse(new ParseEventArgs(pageInfo.SiteId, pageInfo.PageChannelId, pageInfo.PageContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, filePath, pageInfo.HeadCodes, pageInfo.BodyCodes, pageInfo.FootCodes, contentBuilder));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddStlErrorLog(pageInfo, service.PluginId, nameof(service.OnAfterStlParse), ex);
+                }
+            }
+
+            if (EFileSystemTypeUtils.IsHtml(PathUtils.GetExtension(filePath)))
+            {
+                if (isDynamic)
+                {
+                    var pageUrl = PageUtilsEx.AddProtocolToUrl(PageUtilsEx.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(AppSettings.PhysicalApplicationPath, filePath)}"));
+                    string templateString = $@"
+<base href=""{pageUrl}"" />";
+                    StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
+                }
+
+                if (pageInfo.SiteInfo.IsCreateBrowserNoCache)
+                {
+                    const string templateString = @"
+<META HTTP-EQUIV=""Pragma"" CONTENT=""no-cache"">
+<META HTTP-EQUIV=""Expires"" CONTENT=""-1"">";
+                    StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
+                }
+
+                if (pageInfo.SiteInfo.IsCreateIe8Compatible)
+                {
+                    const string templateString = @"
+<META HTTP-EQUIV=""x-ua-compatible"" CONTENT=""ie=7"" />";
+                    StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
+                }
+
+                if (pageInfo.SiteInfo.IsCreateJsIgnoreError)
+                {
+                    const string templateString = @"
+<script type=""text/javascript"">window.onerror=function(){return true;}</script>";
+                    StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);
+                }
+
+                var isShowPageInfo = pageInfo.SiteInfo.IsCreateShowPageInfo;
+
+                if (!pageInfo.IsLocal)
+                {
+                    if (pageInfo.SiteInfo.IsCreateDoubleClick)
+                    {
+                        var fileTemplateId = 0;
+                        if (pageInfo.TemplateInfo.Type == TemplateType.FileTemplate)
+                        {
+                            fileTemplateId = pageInfo.TemplateInfo.Id;
+                        }
+
+                        var apiUrl = pageInfo.ApiUrl;
+                        var ajaxUrl = ApiRouteActionsTrigger.GetUrl(apiUrl, pageInfo.SiteId, contextInfo.ChannelId,
+                            contextInfo.ContentId, fileTemplateId, true);
+                        if (!pageInfo.FootCodes.ContainsKey("CreateDoubleClick"))
+                        {
+                            pageInfo.FootCodes.Add("CreateDoubleClick", $@"
+<script type=""text/javascript"" language=""javascript"">document.ondblclick=function(x){{location.href = '{ajaxUrl}&returnUrl=' + encodeURIComponent(location.search);}}</script>");
+                        }
+                    }
+                }
+                else
+                {
+                    isShowPageInfo = true;
+                }
+
+                if (isShowPageInfo)
+                {
+                    contentBuilder.Append($@"
+<!-- {pageInfo.TemplateInfo.RelatedFileName}({TemplateTypeUtils.GetText(pageInfo.TemplateInfo.Type)}) -->");
+                }
+
+                var headCodesHtml = pageInfo.HeadCodesHtml;
+                if (!string.IsNullOrEmpty(headCodesHtml))
+                {
+                    if (contentBuilder.ToString().IndexOf("</head>", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("</HEAD>", StringComparison.Ordinal) != -1)
+                    {
+                        StringUtils.InsertBefore(new[] { "</head>", "</HEAD>" }, contentBuilder, headCodesHtml);
+                    }
+                    else
+                    {
+                        contentBuilder.Insert(0, headCodesHtml);
+                    }
+                }
+
+                var bodyCodesHtml = pageInfo.BodyCodesHtml;
+                if (!string.IsNullOrEmpty(bodyCodesHtml))
+                {
+                    if (contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal) != -1 || contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal) != -1)
+                    {
+                        var index = contentBuilder.ToString().IndexOf("<body", StringComparison.Ordinal);
+                        if (index == -1)
+                        {
+                            index = contentBuilder.ToString().IndexOf("<BODY", StringComparison.Ordinal);
+                        }
+                        index = contentBuilder.ToString().IndexOf(">", index, StringComparison.Ordinal);
+                        contentBuilder.Insert(index + 1, Constants.ReturnAndNewline + bodyCodesHtml + Constants.ReturnAndNewline);
+                    }
+                    else
+                    {
+                        contentBuilder.Insert(0, bodyCodesHtml);
+                    }
+                }
+
+                var footCodesHtml = pageInfo.FootCodesHtml;
+                if (!string.IsNullOrEmpty(footCodesHtml))
+                {
+                    contentBuilder.Append(footCodesHtml + Constants.ReturnAndNewline);
+                }
+            }
+        }
+    }
+}

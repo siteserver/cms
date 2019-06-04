@@ -1,0 +1,99 @@
+﻿@{ Layout = "./Shared/_Layout.cshtml"; } <template v-if="pageAlert">
+  <div class="alert" :class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+    <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+    <span v-html="pageAlert.html"></span>
+  </div>
+</template>
+<div class="card-box">
+  <h4 class="text-dark header-title m-t-0"> SiteServer CMS 升级向导 </h4>
+  <p class="text-muted m-b-25 font-13"> 欢迎来到SiteServer CMS 升级向导！ </p>
+  <ul class="nav nav-rounded nav-pills nav-fill bg-muted m-b-20">
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:;" :class="{ active: step == 1 }">检查更新</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:;" :class="{ active: step == 2 }">升级系统</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:;" :class="{ active: step == 3 }">升级完成</a>
+    </li>
+  </ul>
+  <!-- step 1 place -->
+  <div v-if="step == 1">
+    <div class="panel panel-border panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">检查更新</h3>
+        <p class="panel-sub-title font-13 text-muted">检查 SiteServer CMS 新版本</p>
+      </div>
+      <div class="panel-body">
+        <div v-if="!package || !package.version" class="jumbotron text-center">
+          <img src="assets/images/loading.gif" />
+          <br />
+          <br />
+          <p class="lead">正在检查系统更新，请稍后...</p>
+        </div>
+        <div v-else-if="package && !isShouldUpdate" class="jumbotron">
+          <h4 class="display-5">当前版本已经是最新版本 <a class="btn btn-success m-l-5" href="main.cshtml">进入后台</a>
+          </h4>
+        </div>
+        <div v-else-if="package && isShouldUpdate" class="table-responsive">
+          <div class="alert alert-warning"> 发现 SiteServer CMS 新版本，请选中复选框后点击下一步开始升级 </div>
+          <table class="table tablesaw table-hover m-0">
+            <thead>
+              <tr class="thead">
+                <th class="text-nowrap">选择</th>
+                <th class="text-nowrap">已安装版本</th>
+                <th class="text-nowrap">新版本</th>
+                <th>更新说明</th>
+                <th class="text-center">发布时间</th>
+                <th class="text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="checkbox checkbox-primary text-nowrap">
+                  <input type="checkbox" id="all" value="all" v-on:change="check" />
+                  <label for="all">选择</label>
+                </td>
+                <td class="text-nowrap"> {{ installedVersion }} </td>
+                <td class="text-nowrap"> {{ package.version }} </td>
+                <td> {{ package.releaseNotes }} </td>
+                <td class="text-center text-nowrap"> {{ package.published }} </td>
+                <td class="text-center text-nowrap">
+                  <a class="card-link" :href="updatesUrl" target="_blank">查看发行说明</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <hr />
+          <div class="text-center">
+            <input class="btn" v-on:click="updateSsCms" :disabled="!isCheck" :class="{ 'btn-primary': isCheck }" type="button"
+              value="下一步">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- step 2 place -->
+  <div v-if="step == 2">
+    <div class="jumbotron text-center">
+      <img src="assets/images/loading.gif" />
+      <br />
+      <br />
+      <p class="lead">正在升级系统，可能需要几分钟，请稍后...</p>
+    </div>
+  </div>
+  <!-- step 3 place -->
+  <div v-if="step == 3">
+    <div class="alert alert-success" role="alert">
+      <h4 class="alert-heading">升级完成！</h4>
+      <p> 恭喜，您已经完成了 SiteServer CMS 系统的升级，请点击按钮进入数据库升级向导 <a class="btn btn-success m-l-5" href="update.cshtml">进入数据库升级向导</a>
+      </p>
+      <hr>
+      <p class="mb-0"> 获取更多使用帮助请访问 <a href="https://www.siteserver.cn/docs" target="_blank">SiteServer CMS 文档中心</a>
+      </p>
+    </div>
+  </div>
+</div> @section Scripts{ <script src="assets/lib/compareversion.js" type="text/javascript"></script>
+<script src="assets/js/ss.js" type="text/javascript"></script>
+<script src="upgrade.js" type="text/javascript"></script> }

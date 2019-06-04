@@ -1,0 +1,156 @@
+﻿@{ Layout = "_LayoutLayer.cshtml"; }
+
+<div class="form-row">
+  <div class="form-group col-md-4">
+    <label class="col-form-label">
+      字段名称
+      <small v-show="errors.has('attributeName')" class="text-danger">{{ errors.first('attributeName') }}</small>
+    </label>
+    <input :disabled="(attributeName && attributeName.length > 0 ? true : false)" v-model="styleInfo.attributeName"
+      name="attributeName" data-vv-as="字段名称" v-validate="'required|alpha_dash'" :class="{'is-invalid':
+errors.has('attributeName') }"
+      type="text" class="form-control">
+  </div>
+  <div class=" form-group col-md-4">
+    <label class="col-form-label">
+      显示名称
+      <small v-show="errors.has('displayName')" class="text-danger">{{ errors.first('displayName') }}</small>
+    </label>
+    <input v-model="styleInfo.displayName" name="displayName" data-vv-as="显示名称" v-validate="'required'" :class="{'is-invalid':
+errors.has('displayName') }"
+      type="text" class="form-control">
+  </div>
+  <div class="form-group col-md-4">
+    <label class="col-form-label">提示信息</label>
+    <input v-model="styleInfo.helpText" type="text" class="form-control">
+  </div>
+</div>
+<div class="form-row">
+  <div class="form-group col-md-4">
+    <label class="col-form-label">表单提交类型</label>
+    <select v-model="styleInfo.inputType" class="form-control">
+      <option v-for="inputType in inputTypes" :value="inputType.key">{{ inputType.value }}</option>
+    </select>
+  </div>
+  <div class="form-group col-md-4">
+    <label class="col-form-label">
+      排序（0代表不设置）
+      <small v-show="errors.has('taxis')" class="text-danger">{{ errors.first('taxis') }}</small>
+    </label>
+    <input v-model="styleInfo.taxis" name="taxis" data-vv-as="排序" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('taxis') }"
+      type="text" class="form-control">
+  </div>
+  <div class="form-group col-md-4">
+    <label class="col-form-label">默认值</label>
+    <input v-model="styleInfo.defaultValue" type="text" class="form-control">
+  </div>
+</div>
+
+<template v-if="styleInfo.inputType === 'TextArea' || styleInfo.inputType === 'TextEditor'">
+  <div class="form-group">
+    <label class="col-form-label">
+      高度（单位：px，0代表默认高度）
+      <small v-show="errors.has('height')" class="text-danger">{{ errors.first('height') }}</small>
+    </label>
+    <input v-model="styleInfo.additional.height" name="height" data-vv-as="高度" v-validate="'required|numeric'" :class="{'is-invalid':
+errors.has('height') }"
+      type="text" class="form-control">
+  </div>
+</template>
+<template v-else-if="styleInfo.inputType === 'CheckBox' || styleInfo.inputType === 'Radio' || styleInfo.inputType === 'SelectOne' || styleInfo.inputType === 'SelectMultiple'">
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label class="col-form-label">设置选项</label>
+      <select v-model="isRapid" class="form-control">
+        <option :value="true">快速设置</option>
+        <option :value="false">详细设置</option>
+      </select>
+    </div>
+    <div v-show="styleInfo.inputType==='CheckBox' || styleInfo.inputType==='Radio'" class="form-group col-md-6">
+      <label class="col-form-label">
+        列数（0代表水平方向显示）
+        <small v-show="errors.has('columns')" class="text-danger">{{ errors.first('columns') }}</small>
+      </label>
+      <input v-model="styleInfo.additional.columns" name="columns" data-vv-as="列数" v-validate="'required|numeric'"
+        :class="{'is-invalid':errors.has('columns') }" type="text" class="form-control">
+    </div>
+  </div>
+  <div v-if="isRapid" class="form-group">
+    <label class="col-form-label">
+      选项可选值（多个选项使用英文","分隔）
+      <small v-show="errors.has('rapidValues')" class="text-danger">{{ errors.first('rapidValues') }}</small>
+    </label>
+    <textarea style="height: 150px" v-model="rapidValues" name="rapidValues" data-vv-as="选项可选值" v-validate="'required'"
+      :class="{'is-invalid':errors.has('rapidValues') }" type="text" class="form-control"></textarea>
+  </div>
+  <div v-if="!isRapid" v-for="(styleItem, index) in styleInfo.styleItems" class="form-row">
+    <div class="form-group col-md-3">
+      <label class="col-form-label">&nbsp;</label>
+      <div class="text-right form-text">第 {{ index + 1 }} 项</div>
+    </div>
+    <div class="form-group col-md-3">
+      <label class="col-form-label">
+        选项标题
+        <small v-show="errors.has('itemTitle_' + index)" class="text-danger">{{ errors.first('itemTitle_' + index) }}</small>
+      </label>
+      <input type="text" v-model="styleItem.itemTitle" :name="'itemTitle_' + index" data-vv-as="选项标题" v-validate="'required'"
+        :class="{'is-invalid':errors.has('itemTitle_' + index) }" class="form-control">
+    </div>
+    <div class="form-group col-md-3">
+      <label class="col-form-label">
+        选项值
+        <small v-show="errors.has('itemValue' + index)" class="text-danger">{{ errors.first('itemValue' + index) }}</small>
+      </label>
+      <input type="text" v-model="styleItem.itemValue" :name="'itemValue' + index" data-vv-as="选项值" v-validate="'required'"
+        :class="{'is-invalid':errors.has('itemValue' + index) }" class="form-control">
+    </div>
+    <div class="form-group col-md-3">
+      <label class="col-form-label">&nbsp;</label>
+      <div>
+        <span v-show="styleInfo.inputType==='CheckBox' || styleInfo.inputType==='SelectMultiple'" class="checkbox checkbox-primary mt-2">
+          <input type="checkbox" v-model="styleItem.isSelected">
+          <label v-on:click="styleItem.isSelected = !styleItem.isSelected">默认选择</label>
+        </span>
+        <span v-show="styleInfo.inputType==='Radio' || styleInfo.inputType==='SelectOne'" class="radio radio-primary mt-2">
+          <input type="radio" :value="true" v-model="styleItem.isSelected">
+          <label v-on:click="btnRadioClick(index)">默认选择</label>
+        </span>
+        <button type="button" class="btn btn-sm btn-default m-l-5" v-on:click="btnStyleItemRemoveClick(index)">删 除</button>
+        <button v-if="index + 1 === styleInfo.styleItems.length" type="button" class="btn btn-sm btn-primary m-l-5"
+          v-on:click="btnStyleItemAddClick">新
+          增</button>
+      </div>
+
+    </div>
+  </div>
+</template>
+<template v-if="styleInfo.inputType === 'Customize'">
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label class="col-form-label">
+        左侧代码
+        <small v-show="errors.has('customizeLeft')" class="text-danger">{{ errors.first('customizeLeft') }}</small>
+      </label>
+      <textarea style="height: 150px" v-model="styleInfo.additional.customizeLeft" name="customizeLeft" data-vv-as="列数"
+        v-validate="'required'" :class="{'is-invalid':errors.has('customizeLeft') }" type="text" class="form-control"></textarea>
+      <small class="text-muted">左侧代码（Html）为包含字段名称的表单项，必填
+        {Value}代表表单项的值</small>
+    </div>
+    <div class=" form-group col-md-6">
+      <label class="col-form-label">右侧代码</label>
+      <textarea style="height: 150px" v-model="styleInfo.additional.customizeRight" type="text" class="form-control"></textarea>
+      <small class="text-muted">右侧代码（Html、Css、Js）为按钮、说明等其他元素，可选</small>
+    </div>
+  </div>
+</template>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button type="button" class="btn btn-primary m-l-5" v-on:click="btnSubmitClick">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="tableStyle.js" type="text/javascript"></script> }

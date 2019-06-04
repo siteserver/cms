@@ -84,7 +84,7 @@
           </div>
           <div class="col-6">
             <a href="javascript:;" @click="reload">
-              <img v-show="captchaUrl" style="display: none" class="float-right rounded" :src="captchaUrl" align="absmiddle">
+              <img v-show="captchaUrl" class="float-right rounded" :src="captchaUrl" align="absmiddle">
             </a>
           </div>
         </div>
@@ -92,8 +92,7 @@
         <div class="form-group row">
           <div class="col-12">
             <button style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit" @click="btnLoginClick">
-              登
-              录
+              登 录
             </button>
           </div>
         </div>
@@ -134,17 +133,27 @@ export default {
     }
   },
   mounted() {
-    if (this.$store.state.user) {
-      if (this.$route.query.redirectUrl) {
-        location.href = this.$route.query.redirectUrl
-      } else {
-        this.$router.push(`/${this.$store.state.user.userName}`)
-      }
-    } else {
-      this.reload()
-    }
+    this.apiStatus()
   },
   methods: {
+    async apiStatus() {
+      this.$store.commit('loading', true)
+      const data = await this.$api.login.get()
+      const user = data.value
+      if (user === null) {
+        this.$store.commit('logout')
+        this.reload()
+      } else {
+        this.$store.commit('login', user)
+        if (this.$route.query.redirectUrl) {
+          location.href = this.$route.query.redirectUrl
+        } else {
+          this.$router.push('/')
+        }
+      }
+      this.$store.commit('loading', false)
+    },
+
     async apiLogin() {
       this.$store.commit('clearNotify')
       this.$store.commit('loading', true)

@@ -35,8 +35,7 @@ module.exports = {
 
   css: [
     // SCSS file in the project
-    '@/assets/scss/cms.scss',
-    '@/assets/css/menu.css'
+    '@/assets/scss/cms.scss'
   ],
 
   router: {

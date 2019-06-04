@@ -1,0 +1,26 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<div class="form-group form-row">
+  <label class="col-1 text-right col-form-label"></label>
+  <div class="col-10">
+
+    <div class="row checkbox checkbox-primary">
+      <div class="col-4" v-for="(attribute, index) in attributes">
+        <input :id="'attr_' + index" type="checkbox" :value="attribute.value" :checked="attribute.selected" v-model="attributeNames">
+        <label :for="'attr_' + index">{{ attribute.text }}({{ attribute.value }})</label>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-1"></div>
+</div>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="contentsLayerColumns.js" type="text/javascript"></script> }

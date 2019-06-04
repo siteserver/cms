@@ -75,7 +75,10 @@
 </template>
 
 <script>
+import '@/assets/css/menu.css'
+
 export default {
+  layout: 'admin',
   data() {
     return {
       version: null,

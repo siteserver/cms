@@ -1,0 +1,83 @@
+@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="wrapper-page">
+  <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20">
+
+    <ul class="nav nav-tabs tabs-bordered nav-justified mb-3">
+      <li class="nav-item"><a href="javascript:;" class="nav-link active">SiteServer CMS 云服务登录</a></li>
+    </ul>
+
+    <div class="form-group row">
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-user-circle-o"></i></span>
+          </div>
+          <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text"
+            v-focus placeholder="请输入用户名/手机号/邮箱">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-key"></i></span>
+          </div>
+          <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
+            type="password" placeholder="请输入密码">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-picture-o"></i></span>
+          </div>
+          <input v-model="captcha" v-bind:class="{ 'is-invalid': pageSubmit && !captcha }" class="form-control" type="text"
+            placeholder="请输入验证码">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-6">
+        <div class="checkbox checkbox-primary" style="margin-top: 25px">
+          <input id="autoLogin" type="checkbox" v-model="isAutoLogin">
+          <label for="autoLogin">
+            下次自动登录
+          </label>
+        </div>
+      </div>
+      <div class="col-6">
+        <a href="javascript:;" v-on:click="reload">
+          <img v-show="captchaUrl" style="display: none" class="float-right rounded" v-bind:src="captchaUrl" align="absmiddle">
+        </a>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="col-12">
+        <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">登
+          录</button>
+      </div>
+    </div>
+
+    <div class="form-group row m-t-30">
+      <!-- <div class="col-sm-6">
+          <a href="recoverpw.html" class="text-muted"><i class="fa fa-lock m-r-5"></i> 忘记密码？</a>
+        </div> -->
+      <a href="register.html" class="text-danger">新用户注册</a>
+    </div>
+
+  </form>
+</div>
+
+@section Scripts{
+<script src="../assets/js/md5-2.10.0.min.js" type="text/javascript"></script>
+<script src="lib/js.cookie-2.2.0.js" type="text/javascript"></script>
+<script src="js/ss.js" type="text/javascript"></script>
+<script src="login.js" type="text/javascript"></script> }

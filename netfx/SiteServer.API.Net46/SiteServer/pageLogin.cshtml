@@ -1,0 +1,107 @@
+@{ Layout = "./Shared/_LayoutRoot.cshtml"; }
+
+<style>
+  .ion-person:before,
+  .ion-locked:before,
+  .ion-image:before {
+    width: 20px;
+    font-size: 18px;
+  }
+</style>
+
+<div class="wrapper-page">
+  <div class="card-box">
+
+    <h4 class="m-l-5">管理员登录</h4>
+
+    <form v-on:submit="btnLoginClick" class="form-horizontal m-t-20">
+
+      <template v-if="pageAlert">
+        <div class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+          <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+          <span v-html="pageAlert.html"></span>
+        </div>
+      </template>
+
+      <div class="form-group row">
+        <div class="col-12">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-user-circle-o"></i>
+              </span>
+            </div>
+            <input v-model="account" v-bind:class="{ 'is-invalid': pageSubmit && !account }" class="form-control" type="text"
+              v-focus placeholder="请输入用户名/手机号/邮箱">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-12">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-key"></i>
+              </span>
+            </div>
+            <input v-model="password" v-bind:class="{ 'is-invalid': pageSubmit && !password }" class="form-control"
+              type="password" placeholder="请输入密码">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-12">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-picture-o"></i>
+              </span>
+            </div>
+            <input v-model="captcha" v-bind:class="{ 'is-invalid': pageSubmit && !captcha }" class="form-control" type="text"
+              placeholder="请输入验证码">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-6">
+          <div class="checkbox checkbox-primary" style="margin-top: 25px">
+            <input id="autoLogin" type="checkbox" v-model="isAutoLogin">
+            <label for="autoLogin">
+              下次自动登录
+            </label>
+          </div>
+        </div>
+        <div class="col-6">
+          <a href="javascript:;" v-on:click="reload">
+            <img v-show="captchaUrl" style="display: none" class="float-right rounded" v-bind:src="captchaUrl" align="absmiddle">
+          </a>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <div class="col-12">
+          <button v-on:click="btnLoginClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md" type="submit">登
+            录
+          </button>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="text-muted text-center">
+        <a href="https://www.siteserver.cn" target="_blank">
+          <small>Copyright &copy; SiteServer CMS</small>
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+@section Scripts{
+<script src="assets/js/md5-2.10.0.min.js" type="text/javascript"></script>
+<script src="pageLogin.js" type="text/javascript"></script> }

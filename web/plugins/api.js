@@ -10,6 +10,7 @@ export default (ctx, inject) => {
     logout: apiWithAxios('logout'),
     main: apiWithAxios(''),
     index: apiWithAxios('index'),
+    sync: apiWithAxios('sync'),
     cmsCreateStatus: apiWithAxios('cms/createStatus')
   }
 
