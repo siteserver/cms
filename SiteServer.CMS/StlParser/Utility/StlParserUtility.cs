@@ -422,6 +422,34 @@ namespace SiteServer.CMS.StlParser.Utility
             return currentUrl;
         }
 
+        public static void GetLoading(string innerHtml, out string loading, out string template)
+        {
+            loading = string.Empty;
+            template = string.Empty;
+            if (string.IsNullOrEmpty(innerHtml)) return;
+
+            var stlElementList = GetStlElementList(innerHtml);
+            if (stlElementList.Count > 0)
+            {
+                foreach (var stlElement in stlElementList)
+                {
+                    if (IsSpecifiedStlElement(stlElement, StlLoading.ElementName))
+                    {
+                        loading = GetInnerHtml(stlElement);
+                        template = innerHtml.Replace(stlElement, string.Empty);
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(loading) && string.IsNullOrEmpty(template))
+            {
+                template = innerHtml;
+            }
+
+            loading = StringUtils.Trim(loading);
+            template = StringUtils.Trim(template);
+        }
+
         public static void GetYesNo(string innerHtml, out string yes, out string no)
         {
             yes = string.Empty;

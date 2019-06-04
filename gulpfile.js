@@ -157,7 +157,7 @@ gulp.task("build-home-min-js", function () {
 });
 
 gulp.task("build-docs", function () {
-  return gulp.src(["./SiteServer.Web/安装向导.html", "./SiteServer.Web/favicon.ico"]).pipe(gulp.dest("./build"));
+  return gulp.src(["./SiteServer.Web/安装向导.html", "./SiteServer.Web/favicon.ico", "./SiteServer.Web/404.html"]).pipe(gulp.dest("./build"));
 });
 
 gulp.task("build-webconfig", function () {

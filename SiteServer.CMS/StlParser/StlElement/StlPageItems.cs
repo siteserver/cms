@@ -94,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             string parsedContent;
             try
@@ -117,7 +117,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     stlElement = stlElement.Substring(index, length);
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItemsInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                parsedContent = StlPageElementParser.ParseStlPageItemsInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
             }
             catch (Exception ex)
             {

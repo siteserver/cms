@@ -89,13 +89,13 @@ namespace SiteServer.CMS.StlParser.Utility
             }
             else if (type.ToLower().Equals(StlPageItem.TypePageSelect.ToLower()))
             {
-                clickString = $"stlJump{ajaxDivId}(this)";
+                clickString = $"stlRedirect{ajaxDivId}(this.options[this.selectedIndex].value)";
             }
 
             return clickString;
         }
 
-        public static string GetJsMethodInDynamicPage(string type, SiteInfo siteInfo, int channelId, int contentId, string pageUrl, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
+        public static string GetJsMethodInDynamicPage(string type, SiteInfo siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
         {
             var jsMethod = string.Empty;
             var pageIndex = 0;
@@ -124,27 +124,27 @@ namespace SiteServer.CMS.StlParser.Utility
             {
                 if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', {1})";
+                    jsMethod = $"stlRedirect{ajaxDivId}({1})";
                 }
                 else if (type.ToLower().Equals(StlPageItem.TypeLastPage.ToLower()))//末页
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', {pageCount})";
+                    jsMethod = $"stlRedirect{ajaxDivId}({pageCount})";
                 }
                 else if (type.ToLower().Equals(StlPageItem.TypePreviousPage.ToLower()))//上一页
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', {currentPageIndex})";
+                    jsMethod = $"stlRedirect{ajaxDivId}({currentPageIndex})";
                 }
                 else if (type.ToLower().Equals(StlPageItem.TypeNextPage.ToLower()))//下一页
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', {currentPageIndex + 2})";
+                    jsMethod = $"stlRedirect{ajaxDivId}({currentPageIndex + 2})";
                 }
                 else if (type.ToLower().Equals(StlPageItem.TypePageNavigation.ToLower()))
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', {index})";
+                    jsMethod = $"stlRedirect{ajaxDivId}({index})";
                 }
                 else if (type.ToLower().Equals(StlPageItem.TypePageSelect.ToLower()))
                 {
-                    jsMethod = $"stlRedirectPage('{pageUrl}', this.options[this.selectedIndex].value)";
+                    jsMethod = $"stlRedirect{ajaxDivId}(this.options[this.selectedIndex].value)";
                 }
             }
             else
@@ -153,27 +153,27 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}({1})";
+                        jsMethod = $"stlDynamic{ajaxDivId}({1})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypeLastPage.ToLower()))//末页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}({pageCount})";
+                        jsMethod = $"stlDynamic{ajaxDivId}({pageCount})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePreviousPage.ToLower()))//上一页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}({currentPageIndex})";
+                        jsMethod = $"stlDynamic{ajaxDivId}({currentPageIndex})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypeNextPage.ToLower()))//下一页
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}({currentPageIndex + 2})";
+                        jsMethod = $"stlDynamic{ajaxDivId}({currentPageIndex + 2})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePageNavigation.ToLower()))
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}({index})";
+                        jsMethod = $"stlDynamic{ajaxDivId}({index})";
                     }
                     else if (type.ToLower().Equals(StlPageItem.TypePageSelect.ToLower()))
                     {
-                        jsMethod = $"stlDynamic_{ajaxDivId}(this.options[this.selectedIndex].value)";
+                        jsMethod = $"stlDynamic{ajaxDivId}(this.options[this.selectedIndex].value)";
                     }
                 }
                 else

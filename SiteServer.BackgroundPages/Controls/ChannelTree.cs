@@ -22,19 +22,20 @@ namespace SiteServer.BackgroundPages.Controls
             var request = new AuthenticatedRequest();
 
             var siteId = TranslateUtils.ToInt(Page.Request.QueryString["siteId"]);
-            var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];
-            var linkUrl = Page.Request.QueryString["linkUrl"];
-            var additional = new NameValueCollection();
-            if (!string.IsNullOrEmpty(linkUrl))
-            {
-                additional["linkUrl"] = linkUrl;
-            }
 
             if (siteId > 0)
             {
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo != null)
                 {
+                    var contentModelPluginId = Page.Request.QueryString["contentModelPluginId"];
+                    var linkUrl = Page.Request.QueryString["linkUrl"];
+                    var additional = new NameValueCollection();
+                    if (!string.IsNullOrEmpty(linkUrl))
+                    {
+                        additional["linkUrl"] = linkUrl;
+                    }
+
                     var scripts = ChannelLoading.GetScript(siteInfo, contentModelPluginId, ELoadingType.ContentTree, additional);
                     builder.Append(scripts);
 
