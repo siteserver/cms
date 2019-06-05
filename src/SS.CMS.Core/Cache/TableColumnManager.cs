@@ -4,7 +4,7 @@ using System.Linq;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Cache

@@ -1,5 +1,5 @@
 ﻿using SqlKata;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 
 namespace SS.CMS.Utils
 {

@@ -8,7 +8,7 @@ using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;

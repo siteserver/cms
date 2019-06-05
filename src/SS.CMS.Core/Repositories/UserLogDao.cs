@@ -5,8 +5,8 @@ using System.Text;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories

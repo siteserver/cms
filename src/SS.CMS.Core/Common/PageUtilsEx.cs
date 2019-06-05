@@ -8,14 +8,14 @@ namespace SS.CMS.Core.Common
     public static class PageUtilsEx
     {
         // 系统根目录访问地址
-        
+
 
         public static string GetMainUrl(int siteId)
         {
             return PageUtils.GetAdminUrl($"main.cshtml?siteId={siteId}");
         }
 
-        
+
 
         public static string GetSiteFilesUrl(string relatedUrl)
         {
@@ -115,7 +115,7 @@ namespace SS.CMS.Core.Common
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)
         {
-            var requestPath = PathUtils.GetPathDifference(AppSettings.PhysicalApplicationPath, physicalPath);
+            var requestPath = PathUtils.GetPathDifference(AppSettings.WebRootPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
             return PageUtils.GetRootUrl(requestPath);
         }

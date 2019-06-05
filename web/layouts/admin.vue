@@ -35,6 +35,7 @@
                         >
                           {{ childMenu.text }}
                         </a>
+                        <nuxt-link :to="{ path: getHref(childMenu), query: $route.query }">{{ childMenu.text }}</nuxt-link>
                       </li>
                     </ul>
                   </li>
@@ -490,14 +491,6 @@ export default {
           this.create()
         }
       }, 60000)
-
-      // $('#sidebar').slimScroll({
-      //   height: 'auto',
-      //   position: 'right',
-      //   size: '5px',
-      //   color: '#495057',
-      //   wheelStep: 5
-      // })
 
       this.connect()
     },

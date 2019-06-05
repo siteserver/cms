@@ -19,7 +19,7 @@ namespace SS.CMS.Api.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2", _request.UserName, AppSettings.PhysicalApplicationPath, AppSettings.ConnectionString };
+            return new string[] { "value1", "value2", _request.UserName, AppSettings.ContentRootPath, AppSettings.ConnectionString };
         }
 
         // GET api/values/5

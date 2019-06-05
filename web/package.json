@@ -5,8 +5,7 @@
   "author": "siteserver",
   "private": true,
   "scripts": {
-    "dev-fx": "cross-env API_URL=http://staging.cms.com/api/admin nuxt",
-    "dev-core": "cross-env API_URL=https://localhost:44360/api/admin nuxt",
+    "dev": "cross-env API_URL=https://localhost:5001/api/admin nuxt",
     "build": "nuxt build",
     "build:check": "nuxt build --analyze",
     "start": "nuxt start",
@@ -15,7 +14,7 @@
     "precommit": "npm run lint",
     "test": "jest",
     "post-update": "yarn upgrade --latest",
-    "dev-debug": "cross-env API_URL=https://localhost:44360/api/admin node --inspect node_modules/nuxt/bin/nuxt"
+    "dev-debug": "cross-env API_URL=https://localhost:5001/api/admin node --inspect node_modules/nuxt/bin/nuxt"
   },
   "repository": {
     "type": "git",

@@ -7,7 +7,7 @@ namespace SS.CMS.Core.Tests
 {
     public class EnvironmentFixture : IDisposable
     {
-        public string ApplicationPhysicalPath { get; }
+        public string ContentRootPath { get; }
 
         public EnvironmentFixture()
         {
@@ -15,9 +15,11 @@ namespace SS.CMS.Core.Tests
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
 
-            ApplicationPhysicalPath = PathUtils.Combine(DirectoryUtils.GetParentPath(testsDirectoryPath), "SiteServer.Web");
+            ContentRootPath = PathUtils.Combine(DirectoryUtils.GetParentPath(testsDirectoryPath), "SS.CMS.Api");
+            var webRootPath = PathUtils.Combine(ContentRootPath, DirectoryUtils.WwwRoot.DirectoryName);
+            var appSettingsPath = PathUtils.Combine(ContentRootPath, AppSettings.AppSettingsFileName);
 
-            AppSettings.Load("/", ApplicationPhysicalPath, PathUtils.Combine(ApplicationPhysicalPath, AppSettings.WebConfigFileName));
+            AppSettings.LoadJson(ContentRootPath, webRootPath, appSettingsPath);
         }
 
         public void Dispose()

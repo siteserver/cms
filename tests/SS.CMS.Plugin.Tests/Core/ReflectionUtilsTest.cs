@@ -1,4 +1,4 @@
-﻿using SS.CMS.Plugin.Data.Utils;
+﻿using SS.CMS.Data.Utils;
 using Xunit;
 
 namespace SS.CMS.Plugin.Tests.Core

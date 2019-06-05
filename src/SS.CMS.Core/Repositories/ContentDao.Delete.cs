@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Common;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
 namespace SS.CMS.Core.Repositories

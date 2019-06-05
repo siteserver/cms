@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
 using SS.CMS.Core.Models;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 using FileUtils = SS.CMS.Utils.FileUtils;
@@ -24,7 +25,7 @@ namespace SS.CMS.Core.Common.Office
             public bool IsClearFormat { get; set; }
             public bool IsFirstLineIndent { get; set; }
             public bool IsClearFontSize { get; set; }
-            public bool IsClearFontFamily{ get; set; }
+            public bool IsClearFontFamily { get; set; }
             public bool IsClearImages { get; set; }
             public bool IsSaveHtml { get; set; }
             public string HtmlDirectoryPath { get; set; }
@@ -34,7 +35,7 @@ namespace SS.CMS.Core.Common.Office
 
         public static (string title, string content) GetWord(SiteInfo siteInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
-            var docsFilePath = PathUtils.GetTemporaryFilesPath(fileName);
+            var docsFilePath = EnvManager.GetTemporaryFilesPath(fileName);
             var imageDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, EUploadType.Image);
             var imageDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, imageDirectoryPath, true);
 

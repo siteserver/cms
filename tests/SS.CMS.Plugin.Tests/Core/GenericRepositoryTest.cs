@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Linq;
 using SqlKata;
-using SS.CMS.Plugin.Data;
-using SS.CMS.Plugin.Data.Utils;
+using SS.CMS.Data;
+using SS.CMS.Data.Utils;
 using SS.CMS.Plugin.Tests.Mocks;
 using Xunit;
 using Xunit.Abstractions;

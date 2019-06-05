@@ -25,6 +25,22 @@ namespace SS.CMS.Utils
             return retval;
         }
 
+        public static string Add(string rootPath, params string[] paths)
+        {
+            if (paths != null && paths.Length > 0)
+            {
+                foreach (var path in paths)
+                {
+                    var cleanPath = RemoveParentPath(path);
+                    if (!string.IsNullOrWhiteSpace(cleanPath))
+                    {
+                        rootPath = Combine(rootPath, cleanPath);
+                    }
+                }
+            }
+            return rootPath;
+        }
+
         /// <summary>
         /// 根据路径扩展名判断是否为文件夹路径
         /// </summary>
@@ -139,17 +155,7 @@ namespace SS.CMS.Utils
             return Combine(assemblyFolder, RemoveParentPath(relatedPath));
         }
 
-        public static string GetAdminDirectoryPath(string relatedPath)
-        {
-            relatedPath = RemoveParentPath(relatedPath);
-            return Combine(AppSettings.PhysicalApplicationPath, AppSettings.AdminDirectory, relatedPath);
-        }
 
-        public static string GetHomeDirectoryPath(string relatedPath)
-        {
-            relatedPath = RemoveParentPath(relatedPath);
-            return Combine(AppSettings.PhysicalApplicationPath, AppSettings.HomeDirectory, relatedPath);
-        }
 
         public static string RemovePathInvalidChar(string filePath)
         {
@@ -171,13 +177,6 @@ namespace SS.CMS.Utils
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
 
-        public static string GetTemporaryFilesPath(string relatedPath)
-        {
-            return Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
-        }
 
-        public static string PhysicalSiteServerPath => Combine(AppSettings.PhysicalApplicationPath, AppSettings.AdminDirectory);
-
-        public static string PhysicalSiteFilesPath => Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName);
     }
 }

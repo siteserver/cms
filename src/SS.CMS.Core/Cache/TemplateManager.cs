@@ -275,15 +275,15 @@ namespace SS.CMS.Core.Cache
             string filePath;
             if (templateInfo.Type == TemplateType.IndexPageTemplate)
             {
-                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
             }
             else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, DirectoryUtils.Site.Content, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, DirectoryUtils.Site.Content, templateInfo.RelatedFileName);
             }
             else
             {
-                filePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, templateInfo.RelatedFileName);
             }
             return filePath;
         }

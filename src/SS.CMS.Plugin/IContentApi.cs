@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 
 namespace SS.CMS.Plugin
 {

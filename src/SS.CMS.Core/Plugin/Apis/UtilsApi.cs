@@ -1,4 +1,5 @@
 ﻿using SS.CMS.Core.Api;
+using SS.CMS.Core.Settings;
 using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
@@ -33,7 +34,7 @@ namespace SS.CMS.Core.Plugin.Apis
 
         public string GetTemporaryFilesPath(string relatedPath)
         {
-            return PathUtils.GetTemporaryFilesPath(relatedPath);
+            return EnvManager.GetTemporaryFilesPath(relatedPath);
         }
 
         public string GetRootUrl(string relatedUrl = "")

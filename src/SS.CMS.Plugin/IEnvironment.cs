@@ -1,4 +1,4 @@
-﻿using SS.CMS.Plugin.Data;
+﻿using SS.CMS.Data;
 
 namespace SS.CMS.Plugin
 {
@@ -27,10 +27,9 @@ namespace SS.CMS.Plugin
         /// </summary>
         string AdminDirectory { get; }
 
-        /// <summary>
-        /// 网站根目录文件夹地址。
-        /// </summary>
-        string PhysicalApplicationPath { get; }
+        string ContentRootPath { get; }
+
+        string WebRootPath { get; }
 
         /// <summary>
         /// 网站根目录访问地址。

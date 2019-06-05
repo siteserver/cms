@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -77,7 +78,7 @@ namespace SS.CMS.Core.Serialization
             if (isZip)
             {
                 //解压文件
-                siteTemplatePath = PathUtils.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.Site));
+                siteTemplatePath = EnvManager.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.Site));
                 DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 

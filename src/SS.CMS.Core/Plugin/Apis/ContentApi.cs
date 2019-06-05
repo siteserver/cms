@@ -5,8 +5,8 @@ using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 
 namespace SS.CMS.Core.Plugin.Apis
 {

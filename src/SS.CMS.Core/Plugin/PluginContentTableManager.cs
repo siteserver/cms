@@ -5,8 +5,8 @@ using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Plugin.Impl;
 using SS.CMS.Core.Repositories;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin

@@ -6,7 +6,7 @@ using System.Text;
 using Dapper;
 using Newtonsoft.Json.Linq;
 using SS.CMS.Core.Cache;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -371,35 +371,6 @@ namespace SS.CMS.Core.Common
             }
 
             return DatoryUtils.GetTableColumns(AppSettings.DatabaseType, connectionString, tableName);
-        }
-
-        public static string GetOracleSequence(string tableName, string idColumnName)
-        {
-            var cacheKey = $"SiteServer.CMS.Core.{nameof(DatabaseUtils)}.{nameof(GetOracleSequence)}.{tableName}.{idColumnName}";
-            var sequence = CacheUtils.Get<string>(cacheKey);
-            if (string.IsNullOrEmpty(sequence))
-            {
-                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
-                {
-                    using (var rdr = connection.ExecuteReader($"SELECT DATA_DEFAULT FROM all_tab_cols WHERE OWNER = '{AppSettings.ConnectionStringUserId.ToUpper()}' and table_name = '{tableName.ToUpper()}' AND column_name = '{idColumnName.ToUpper()}'"))
-                    {
-                        if (rdr.Read())
-                        {
-                            var dataDefault = rdr.GetValue(0).ToString();
-
-                            if (dataDefault.Contains(".nextval"))
-                            {
-                                sequence = dataDefault.Replace(".nextval", string.Empty);
-                            }
-                        }
-                        rdr.Close();
-                    }
-                }
-
-                CacheUtils.Insert(cacheKey, sequence);
-            }
-
-            return sequence;
         }
 
         public static string GetSelectSqlString(string tableName, string columns, string whereString)

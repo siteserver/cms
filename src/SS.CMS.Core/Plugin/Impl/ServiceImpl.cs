@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 using Menu = SS.CMS.Plugin.Menu;
 
 namespace SS.CMS.Core.Plugin.Impl

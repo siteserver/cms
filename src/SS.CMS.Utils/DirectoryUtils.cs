@@ -13,6 +13,11 @@ namespace SS.CMS.Utils
             public const string DirectoryName = "aspnet_client";
         }
 
+        public static class WwwRoot
+        {
+            public const string DirectoryName = "wwwroot";
+        }
+
         public static class Site
         {
             public const string Include = "Include";
@@ -35,7 +40,9 @@ namespace SS.CMS.Utils
             public const string DirectoryName = "SiteFiles";
 
             public const string BackupFiles = "BackupFiles";
+            public const string Menus = "Menus";
             public const string TemporaryFiles = "TemporaryFiles";
+            public const string SiteTemplates = "SiteTemplates";
             public const string Plugins = "Plugins";
             public const string Packages = "packages";
             public const string Home = "Home";

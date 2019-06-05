@@ -1,5 +1,5 @@
 using System;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 

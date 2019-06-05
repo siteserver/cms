@@ -18,7 +18,7 @@
             "args": [
                 "run",
                 "--project",
-                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj"
+                "${workspaceFolder}\\src\\SS.CMS.Api\\SS.CMS.Api.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj"
+                "${workspaceFolder}\\src\\SS.CMS.Api\\SS.CMS.Api.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -39,7 +39,7 @@
             "args": [
                 "watch",
                 "--project",
-                "${workspaceFolder}\\src\\SiteServer.API\\SiteServer.API.csproj",
+                "${workspaceFolder}\\src\\SS.CMS.Api\\SS.CMS.Api.csproj",
                 "run"
             ],
             "problemMatcher": "$tsc"

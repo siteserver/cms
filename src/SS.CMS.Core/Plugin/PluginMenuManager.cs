@@ -5,6 +5,7 @@ using SS.CMS.Core.Api;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
+using SS.CMS.Core.Settings.Menus;
 using SS.CMS.Plugin;
 using SS.CMS.Utils;
 

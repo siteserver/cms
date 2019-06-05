@@ -1,6 +1,6 @@
 using System;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 
 namespace SS.CMS.Core.Models
 {

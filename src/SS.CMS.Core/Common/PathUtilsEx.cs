@@ -9,7 +9,7 @@ namespace SS.CMS.Core.Common
     public static class PathUtilsEx
     {
 
-        public static string MapPath(string virtualPath)
+        public static string MapContentRootPath(string virtualPath)
         {
             virtualPath = PathUtils.RemovePathInvalidChar(virtualPath);
             string retval;
@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Common
             {
                 virtualPath = "~/";
             }
-            var rootPath = AppSettings.PhysicalApplicationPath;
+            var rootPath = AppSettings.ContentRootPath;
 
             virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
             retval = PathUtils.Combine(rootPath, virtualPath);
@@ -33,9 +33,35 @@ namespace SS.CMS.Core.Common
             if (retval == null) retval = string.Empty;
             return retval.Replace("/", "\\");
         }
+
+        public static string MapWebRootPath(string virtualPath)
+        {
+            virtualPath = PathUtils.RemovePathInvalidChar(virtualPath);
+            string retval;
+            if (!string.IsNullOrEmpty(virtualPath))
+            {
+                if (virtualPath.StartsWith("~"))
+                {
+                    virtualPath = virtualPath.Substring(1);
+                }
+                virtualPath = PageUtils.Combine("~", virtualPath);
+            }
+            else
+            {
+                virtualPath = "~/";
+            }
+            var rootPath = AppSettings.WebRootPath;
+
+            virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
+            retval = PathUtils.Combine(rootPath, virtualPath);
+
+            if (retval == null) retval = string.Empty;
+            return retval.Replace("/", "\\");
+        }
+
         public static string GetSiteFilesPath(params string[] paths)
         {
-            return MapPath(PathUtils.Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, PathUtils.Combine(paths)));
+            return MapContentRootPath(PathUtils.Combine("~/" + DirectoryUtils.SiteFiles.DirectoryName, PathUtils.Combine(paths)));
         }
 
         public static string PluginsPath => GetSiteFilesPath(DirectoryUtils.SiteFiles.Plugins);
@@ -98,11 +124,6 @@ namespace SS.CMS.Core.Common
             var packagesPath = GetSiteFilesPath(DirectoryUtils.SiteFiles.Packages, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(packagesPath);
             return packagesPath;
-        }
-
-        public static string GetMenusPath(params string[] paths)
-        {
-            return PathUtils.Combine(SiteServerAssets.GetPath("menus"), PathUtils.Combine(paths));
         }
     }
 }

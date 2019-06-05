@@ -7,7 +7,7 @@ using SS.CMS.Core.Models;
 using SS.CMS.Core.Plugin;
 using SS.CMS.Core.Plugin.Impl;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 

@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using SS.CMS.Core.Common;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin.Impl

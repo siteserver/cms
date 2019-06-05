@@ -1,5 +1,5 @@
 ﻿using System;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 
 namespace SS.CMS.Plugin
 {
@@ -8,7 +8,7 @@ namespace SS.CMS.Plugin
     /// </summary>
     public static class Context
     {
-        public static IEnvironment Environment { get; private set; }
+        private static IEnvironment _environment;
         public static IApiCollection ApiCollection { get; private set; }
         private static Func<IRequest> _requestFunc;
         private static Func<IResponse> _responseFunc;
@@ -20,9 +20,9 @@ namespace SS.CMS.Plugin
         /// <param name="apiCollection">API类集合接口。</param>
         public static void Initialize(IEnvironment environment, IApiCollection apiCollection, Func<IRequest> requestFunc, Func<IResponse> responseFunc)
         {
-            if (Environment == null)
+            if (_environment == null)
             {
-                Environment = environment;
+                _environment = environment;
             }
 
             if (ApiCollection == null)
@@ -44,37 +44,39 @@ namespace SS.CMS.Plugin
         /// <summary>
         /// 系统使用的数据库类型。
         /// </summary>
-        public static DatabaseType DatabaseType => Environment.DatabaseType;
+        public static DatabaseType DatabaseType => _environment.DatabaseType;
 
         /// <summary>
         /// 系统使用的数据库连接字符串。
         /// </summary>
-        public static string ConnectionString => Environment.ConnectionString;
+        public static string ConnectionString => _environment.ConnectionString;
 
         /// <summary>
         /// 用户中心文件夹名称。
         /// </summary>
-        public static string HomeDirectory => Environment.HomeDirectory;
+        public static string HomeDirectory => _environment.HomeDirectory;
 
         /// <summary>
         /// 管理后台文件夹名称。
         /// </summary>
-        public static string AdminDirectory => Environment.AdminDirectory;
+        public static string AdminDirectory => _environment.AdminDirectory;
 
         /// <summary>
         /// 网站根目录文件夹地址。
         /// </summary>
-        public static string PhysicalApplicationPath => Environment.PhysicalApplicationPath;
+        public static string ContentRootPath => _environment.ContentRootPath;
+
+        public static string WebRootPath => _environment.WebRootPath;
 
         /// <summary>
         /// 网站根目录访问地址。
         /// </summary>
-        public static string ApplicationPath => Environment.ApplicationPath;
+        public static string ApplicationPath => _environment.ApplicationPath;
 
         /// <summary>
         /// API访问地址。
         /// </summary>
-        public static string ApiUrl => Environment.ApiUrl;
+        public static string ApiUrl => _environment.ApiUrl;
 
         /// <summary>
         /// 管理员及权限Api接口。

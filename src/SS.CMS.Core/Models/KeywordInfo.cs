@@ -1,5 +1,5 @@
 ﻿using SS.CMS.Core.Models.Enumerations;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 
 namespace SS.CMS.Core.Models
 {

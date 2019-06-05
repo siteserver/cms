@@ -127,7 +127,7 @@ namespace SS.CMS.Core.Common
             }
             else
             {
-                newPsPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteDir);
+                newPsPath = PathUtils.Combine(AppSettings.WebRootPath, siteDir);
             }
 
             if (DirectoryUtils.IsDirectoryExists(newPsPath))
@@ -158,7 +158,7 @@ namespace SS.CMS.Core.Common
                 DataProvider.SiteDao.Update(siteInfo);
                 if (isMoveFiles)
                 {
-                    DirectoryUtils.MoveDirectory(sitePath, AppSettings.PhysicalApplicationPath, false);
+                    DirectoryUtils.MoveDirectory(sitePath, AppSettings.WebRootPath, false);
                     DirectoryUtils.DeleteDirectoryIfExists(sitePath);
                 }
             }
@@ -173,13 +173,13 @@ namespace SS.CMS.Core.Common
 
                 DataProvider.SiteDao.Update(siteInfo);
 
-                var psPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, psDir);
+                var psPath = PathUtils.Combine(AppSettings.WebRootPath, psDir);
                 DirectoryUtils.CreateDirectoryIfNotExists(psPath);
                 if (fileSystemNameArrayList != null && fileSystemNameArrayList.Count > 0)
                 {
                     foreach (string fileSystemName in fileSystemNameArrayList)
                     {
-                        var srcPath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, fileSystemName);
+                        var srcPath = PathUtils.Combine(AppSettings.WebRootPath, fileSystemName);
                         if (DirectoryUtils.IsDirectoryExists(srcPath))
                         {
                             var destDirectoryPath = PathUtils.Combine(psPath, fileSystemName);

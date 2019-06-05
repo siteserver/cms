@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Core.Common;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 
 namespace SS.CMS.Core.Models
 {

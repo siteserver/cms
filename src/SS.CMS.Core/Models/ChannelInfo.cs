@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Repositories;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 
 namespace SS.CMS.Core.Models
 {

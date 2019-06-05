@@ -118,7 +118,7 @@ namespace SS.CMS.Core.Plugin
                     if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
 
                     var fileName = PathUtils.GetFileName(filePath);
-                    var binFilePath = PathUtils.Combine(AppSettings.PhysicalApplicationPath, "Bin", fileName);
+                    var binFilePath = PathUtils.Combine(AppSettings.ContentRootPath, fileName);
 
                     if (!FileUtils.IsFileExists(binFilePath))
                     {
@@ -185,7 +185,7 @@ namespace SS.CMS.Core.Plugin
 
         public static void Load(Func<IRequest> requestFunc, Func<IResponse> responseFunc)
         {
-            Context.Initialize(new EnvironmentImpl(AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.PhysicalApplicationPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.ContentRootPath, AppSettings.WebRootPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,

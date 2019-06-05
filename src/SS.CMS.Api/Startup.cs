@@ -29,6 +29,8 @@ namespace SS.CMS.Api
                 options.AllowSynchronousIO = true;
             });
 
+            services.AddMemoryCache();
+
             services.AddCors(options =>
                 {
                     options.AddPolicy(
@@ -103,9 +105,7 @@ namespace SS.CMS.Api
             //    endpoints.MapControllers();
             //});
 
-            var applicationPath = "/";
-            var applicationPhysicalPath = env.WebRootPath;
-            AppSettings.LoadJson(applicationPath, applicationPhysicalPath, PathUtils.Combine(env.ContentRootPath, AppSettings.AppSettingsFileName));
+            AppSettings.LoadJson(env.ContentRootPath, env.WebRootPath, PathUtils.Combine(env.ContentRootPath, AppSettings.AppSettingsFileName));
 
             // PluginManager.Load(() =>
             // {
@@ -138,7 +138,7 @@ namespace SS.CMS.Api
 
             app.UseStaticFiles();
 
-            
+
         }
     }
 }

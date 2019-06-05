@@ -153,16 +153,16 @@ namespace SS.CMS.Core.Packaging
 
                 if (packageType == PackageType.SsCms)
                 {
-                    var packageWebConfigPath = PathUtils.Combine(packagePath, AppSettings.WebConfigFileName);
-                    if (!FileUtils.IsFileExists(packageWebConfigPath))
-                    {
-                        errorMessage = $"升级包 {AppSettings.WebConfigFileName} 文件不存在";
-                        return false;
-                    }
+                    // var packageWebConfigPath = PathUtils.Combine(packagePath, AppSettings.WebConfigFileName);
+                    // if (!FileUtils.IsFileExists(packageWebConfigPath))
+                    // {
+                    //     errorMessage = $"升级包 {AppSettings.WebConfigFileName} 文件不存在";
+                    //     return false;
+                    // }
 
-                    AppSettings.UpdateWebConfig(packageWebConfigPath, AppSettings.IsProtectData,
-                        AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.ApiPrefix, AppSettings.AdminDirectory, AppSettings.HomeDirectory,
-                        AppSettings.SecretKey, AppSettings.IsNightlyUpdate);
+                    // AppSettings.UpdateWebConfig(packageWebConfigPath, AppSettings.IsProtectData,
+                    //     AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.ApiPrefix, AppSettings.AdminDirectory, AppSettings.HomeDirectory,
+                    //     AppSettings.SecretKey, AppSettings.IsNightlyUpdate);
 
                     //DirectoryUtils.Copy(PathUtils.Combine(packagePath, DirectoryUtils.SiteFiles.DirectoryName),
                     //    PathUtils.GetSiteFilesPath(string.Empty), true);

@@ -1,3 +1,4 @@
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -14,7 +15,7 @@ namespace SS.CMS.Core.Common
 
         public static string GetPath(params string[] paths)
         {
-            return PathUtils.Combine(PathUtils.PhysicalSiteServerPath, DirectoryName, PathUtils.Combine(paths));
+            return EnvManager.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
         }
 
         public const string DirectoryIcons = "icons";

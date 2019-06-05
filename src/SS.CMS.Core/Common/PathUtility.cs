@@ -7,6 +7,7 @@ using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Settings;
 using SS.CMS.Plugin;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
@@ -17,7 +18,7 @@ namespace SS.CMS.Core.Common
     {
         public static string GetSitePath(SiteInfo siteInfo)
         {
-            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, siteInfo.SiteDir);
+            return PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir);
         }
 
         public static string GetSitePath(int siteId, params string[] paths)
@@ -83,7 +84,7 @@ namespace SS.CMS.Core.Common
             {
                 extention = ".xml";
             }
-            return PathUtils.Combine(PathUtils.PhysicalSiteFilesPath, DirectoryUtils.SiteFiles.BackupFiles, siteInfo.SiteDir, DateTime.Now.ToString("yyyy-MM"), EBackupTypeUtils.GetValue(backupType) + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
+            return EnvManager.GetBackupFilesPath(siteInfo.SiteDir, DateTime.Now.ToString("yyyy-MM"), EBackupTypeUtils.GetValue(backupType) + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
         }
 
         public static string GetUploadDirectoryPath(SiteInfo siteInfo, string fileExtension)
@@ -216,7 +217,7 @@ namespace SS.CMS.Core.Common
         public static SiteInfo GetSiteInfo(string path)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = AppSettings.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppSettings.WebRootPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
@@ -245,7 +246,7 @@ namespace SS.CMS.Core.Common
         {
             var siteDir = string.Empty;
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = AppSettings.PhysicalApplicationPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppSettings.WebRootPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty)
             {
@@ -291,13 +292,13 @@ namespace SS.CMS.Core.Common
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapWebRootPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtilsEx.MapPath(resolvedPath);
+            return PathUtilsEx.MapWebRootPath(resolvedPath);
         }
 
         public static string MapPath(SiteInfo siteInfo, string virtualPath, bool isCopyToSite)
@@ -313,13 +314,13 @@ namespace SS.CMS.Core.Common
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapPath(resolvedPath);
+            if (!virtualPath.StartsWith("@")) return PathUtilsEx.MapWebRootPath(resolvedPath);
 
             if (siteInfo != null)
             {
                 resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
-            return PathUtilsEx.MapPath(resolvedPath);
+            return PathUtilsEx.MapWebRootPath(resolvedPath);
         }
 
         public static string MapPath(string directoryPath, string virtualPath)
@@ -344,7 +345,7 @@ namespace SS.CMS.Core.Common
                     return PageUtils.Combine(directoryPath, virtualPath.Substring(1));
                 }
             }
-            return PathUtilsEx.MapPath(resolvedPath);
+            return PathUtilsEx.MapWebRootPath(resolvedPath);
         }
 
         //将编辑器中图片上传至本机
@@ -383,18 +384,6 @@ namespace SS.CMS.Core.Common
                 }
             }
             return content;
-        }
-
-        public static string GetTemporaryFilesPath(string relatedPath)
-        {
-            relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedPath);
-        }
-
-        public static string GetSiteTemplatesPath(string relatedPath)
-        {
-            relatedPath = PathUtils.RemoveParentPath(relatedPath);
-            return PathUtils.Combine(AppSettings.PhysicalApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedPath);
         }
 
         public static string GetSiteTemplateMetadataPath(string siteTemplatePath, string relatedPath)

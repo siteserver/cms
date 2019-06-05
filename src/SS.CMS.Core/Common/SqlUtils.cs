@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 using Npgsql;
 using NpgsqlTypes;
 using Oracle.ManagedDataAccess.Client;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common

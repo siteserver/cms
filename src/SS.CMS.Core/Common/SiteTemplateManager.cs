@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Serialization;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -16,7 +17,7 @@ namespace SS.CMS.Core.Common
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
         }
 
-        public static SiteTemplateManager Instance => new SiteTemplateManager(PathUtility.GetSiteTemplatesPath(string.Empty));
+        public static SiteTemplateManager Instance => new SiteTemplateManager(EnvManager.GetSiteTemplatesPath(string.Empty));
 
 
         public void DeleteSiteTemplate(string siteTemplateDir)
@@ -97,7 +98,7 @@ namespace SS.CMS.Core.Common
 
         public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
-            var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = EnvManager.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
             {
                 var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
@@ -133,7 +134,7 @@ namespace SS.CMS.Core.Common
         {
             var exportObject = new ExportObject(siteInfo.Id, adminName);
 
-            var siteTemplatePath = PathUtility.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = EnvManager.GetSiteTemplatesPath(siteTemplateDir);
 
             //导出模板
             var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);

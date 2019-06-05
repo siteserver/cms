@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
+using SS.CMS.Data;
 using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 

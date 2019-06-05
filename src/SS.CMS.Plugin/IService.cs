@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SS.CMS.Plugin.Data;
+using SS.CMS.Data;
 
 namespace SS.CMS.Plugin
 {

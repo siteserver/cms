@@ -1,17 +1,18 @@
-﻿using SS.CMS.Plugin;
-using SS.CMS.Plugin.Data;
+﻿using SS.CMS.Data;
+using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Plugin.Impl
 {
-    public class EnvironmentImpl: IEnvironment
+    public class EnvironmentImpl : IEnvironment
     {
-        public EnvironmentImpl(DatabaseType databaseType, string connectionString, string homeDirectory, string adminDirectory, string physicalApplicationPath, string applicationPath, string apiUrl)
+        public EnvironmentImpl(DatabaseType databaseType, string connectionString, string homeDirectory, string adminDirectory, string contentRootPath, string webRootPath, string applicationPath, string apiUrl)
         {
             DatabaseType = databaseType;
             ConnectionString = connectionString;
             HomeDirectory = homeDirectory;
             AdminDirectory = adminDirectory;
-            PhysicalApplicationPath = physicalApplicationPath;
+            ContentRootPath = contentRootPath;
+            WebRootPath = webRootPath;
             ApplicationPath = applicationPath;
             ApiUrl = apiUrl;
         }
@@ -24,7 +25,9 @@ namespace SS.CMS.Core.Plugin.Impl
 
         public string AdminDirectory { get; }
 
-        public string PhysicalApplicationPath { get; }
+        public string ContentRootPath { get; }
+
+        public string WebRootPath { get; }
 
         public string ApplicationPath { get; }
 
