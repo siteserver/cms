@@ -13,7 +13,7 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'http://plugins.siteserver.cn/' + url;
+    return 'https://www.siteserver.cn/plugins/' + url;
   },
 
   getTagNames: function (pluginInfo) {

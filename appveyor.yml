@@ -1,7 +1,7 @@
-# configuration for "master" branch
+# configuration for "netfx-master" branch
 - branches:
     only:
-      - master
+      - netfx-master
 
   version: 6.10.{build}
   image: Visual Studio 2017
@@ -76,10 +76,10 @@
       on_build_success: true
       on_build_failure: true
 
-# configuration for "staging" branch
+# configuration for "netfx-staging" branch
 - branches:
     only:
-      - staging
+      - netfx-staging
 
   version: 6.10.{build}-beta
   image: Visual Studio 2017

@@ -148,7 +148,7 @@ var methods = {
 
       if (res.value) {
         $this.newVersion = {
-          updatesUrl: 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
+          updatesUrl: 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
           version: releaseInfo.version,
           published: releaseInfo.published,
           releaseNotes: releaseInfo.releaseNotes
