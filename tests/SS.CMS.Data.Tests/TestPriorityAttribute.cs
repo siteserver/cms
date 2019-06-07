@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS.Plugin.Tests
+namespace SS.CMS.Data.Tests
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class TestPriorityAttribute : Attribute

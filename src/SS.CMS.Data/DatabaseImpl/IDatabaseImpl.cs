@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Data;
+using System.Collections.Generic;
+using System.Data.Common;
 using SqlKata.Compilers;
 
-namespace SS.CMS.Data.Database
+namespace SS.CMS.Data.DatabaseImpl
 {
-    internal interface IDatabase
+    public interface IDatabaseImpl
     {
-        IDbConnection GetConnection(string connectionString);
+        DbConnection GetConnection(string connectionString);
 
         Compiler GetCompiler(string connectionString);
+
+        bool IsUseLegacyPagination(string connectionString);
 
         List<TableColumn> GetTableColumns(string connectionString, string tableName);
 

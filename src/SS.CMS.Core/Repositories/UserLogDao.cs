@@ -16,7 +16,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<UserLogInfo> _repository;
         public UserLogDao()
         {
-            _repository = new Repository<UserLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<UserLogInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -139,7 +139,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.UserName, userName)
                 .Offset(offset)
                 .Limit(limit)
-                .OrderByDesc(Attr.Id));
+                .OrderByDesc(Attr.Id)).ToList();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Dapper;
@@ -8,24 +9,24 @@ using MySql.Data.MySqlClient;
 using SqlKata.Compilers;
 using SS.CMS.Data.Utils;
 
-[assembly: InternalsVisibleTo("SS.CMS.Plugin.Tests")]
+[assembly: InternalsVisibleTo("SS.CMS.Data.Tests")]
 
-namespace SS.CMS.Data.Database
+namespace SS.CMS.Data.DatabaseImpl
 {
-    internal class MySql : IDatabase
+    internal class MySqlImpl : IDatabaseImpl
     {
-        private static IDatabase _instance;
-        public static IDatabase Instance
+        private static IDatabaseImpl _instance;
+        public static IDatabaseImpl Instance
         {
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new MySql();
+                _instance = new MySqlImpl();
                 return _instance;
             }
         }
 
-        public IDbConnection GetConnection(string connectionString)
+        public DbConnection GetConnection(string connectionString)
         {
             return new MySqlConnection(connectionString);
         }
@@ -33,6 +34,11 @@ namespace SS.CMS.Data.Database
         public Compiler GetCompiler(string connectionString)
         {
             return new MySqlCompiler();
+        }
+
+        public bool IsUseLegacyPagination(string connectionString)
+        {
+            return false;
         }
 
         public List<string> GetTableNames(string connectionString)

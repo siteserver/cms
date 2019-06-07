@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<SpecialInfo> _repository;
         public SpecialDao()
         {
-            _repository = new Repository<SpecialInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<SpecialInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -66,7 +66,7 @@ namespace SS.CMS.Core.Repositories
 
         public IList<SpecialInfo> GetSpecialInfoList(int siteId)
         {
-            return _repository.GetAll(Q.Where(Attr.SiteId, siteId).OrderByDesc(Attr.Id));
+            return _repository.GetAll(Q.Where(Attr.SiteId, siteId).OrderByDesc(Attr.Id)).ToList();
         }
 
         public IList<SpecialInfo> GetSpecialInfoList(int siteId, string keyword)
@@ -75,7 +75,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.SiteId, siteId)
                 .OrWhereContains(Attr.Title, keyword)
                 .OrWhereContains(Attr.Url, keyword)
-                .OrderByDesc(Attr.Id));
+                .OrderByDesc(Attr.Id)).ToList();
         }
 
         public Dictionary<int, SpecialInfo> GetSpecialInfoDictionaryBySiteId(int siteId)

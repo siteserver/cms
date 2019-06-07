@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Data;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<RelatedFieldInfo> _repository;
         public RelatedFieldDao()
         {
-            _repository = new Repository<RelatedFieldInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<RelatedFieldInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -63,7 +64,7 @@ namespace SS.CMS.Core.Repositories
         {
             return _repository.GetAll(Q
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.Id));
+                .OrderBy(Attr.Id)).ToList();
         }
 
         public IList<string> GetTitleList(int siteId)
@@ -71,7 +72,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(Attr.Title)
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.Id));
+                .OrderBy(Attr.Id)).ToList();
         }
 
         public string GetImportTitle(int siteId, string relatedFieldName)

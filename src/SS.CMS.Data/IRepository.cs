@@ -4,9 +4,7 @@ namespace SS.CMS.Data
 {
     public interface IRepository
     {
-        DatabaseType DatabaseType { get; }
-
-        string ConnectionString { get; }
+        DbContext DbContext { get; }
 
         string TableName { get; }
 

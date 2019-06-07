@@ -14,7 +14,7 @@ namespace SS.CMS.Core.Services
             var redirect = false;
             var redirectUrl = string.Empty;
 
-            if (checkInstall && string.IsNullOrWhiteSpace(AppSettings.ConnectionString))
+            if (checkInstall && string.IsNullOrWhiteSpace(AppSettings.DbContext.ConnectionString))
             {
                 redirect = true;
                 redirectUrl = AdminUrl.InstallUrl;

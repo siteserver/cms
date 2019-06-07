@@ -42,7 +42,7 @@ namespace SS.CMS.Api.Common
                     ex.Message
                 })
                 {
-                    StatusCode = (int) HttpStatusCode.InternalServerError,
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
                     ContentTypes = new MediaTypeCollection
                     {
                         ContentTypeUtils.ContentTypeJson
@@ -51,7 +51,7 @@ namespace SS.CMS.Api.Common
             }
         }
 
-        public static async Task<ActionResult> Run<T>(this ServiceBase service, IRequest request, IResponse response, Func<IRequest, IResponse, Task<ResponseResult<T>>> func)
+        public static async Task<ActionResult> RunAsync<T>(this ServiceBase service, IRequest request, IResponse response, Func<IRequest, IResponse, Task<ResponseResult<T>>> func)
         {
             try
             {

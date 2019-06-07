@@ -5,15 +5,15 @@ using SS.CMS.Utils.Enumerations;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SS.CMS.Core.Tests.Database.Repositories
+namespace SS.CMS.Core.Tests.Repositories
 {
     [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
-    public class AdministratorRepositoryTest : IClassFixture<EnvironmentFixture>
+    public class AdministratorDaoTest : IClassFixture<EnvironmentFixture>
     {
         public EnvironmentFixture Fixture { get; }
         private readonly ITestOutputHelper _output;
 
-        public AdministratorRepositoryTest(EnvironmentFixture fixture, ITestOutputHelper output)
+        public AdministratorDaoTest(EnvironmentFixture fixture, ITestOutputHelper output)
         {
             Fixture = fixture;
             _output = output;

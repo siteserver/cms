@@ -30,7 +30,7 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpPost(RootService.Route)]
         public async Task<ActionResult> Create()
         {
-            return await _service.Run(_request, _response, _service.Create);
+            return await _service.RunAsync(_request, _response, _service.Create);
         }
 
         [HttpPost(RootService.RouteActionsDownload)]

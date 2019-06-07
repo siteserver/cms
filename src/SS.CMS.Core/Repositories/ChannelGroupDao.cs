@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<ChannelGroupInfo> _repository;
         public ChannelGroupDao()
         {
-            _repository = new Repository<ChannelGroupInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<ChannelGroupInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

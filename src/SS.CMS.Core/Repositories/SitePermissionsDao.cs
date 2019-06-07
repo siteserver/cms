@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Plugin.Impl;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<SitePermissionsInfo> _repository;
         public SitePermissionsDao()
         {
-            _repository = new Repository<SitePermissionsInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<SitePermissionsInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -51,7 +52,7 @@ namespace SS.CMS.Core.Repositories
 
         public IList<SitePermissionsInfo> GetSystemPermissionsInfoList(string roleName)
         {
-            return _repository.GetAll(Q.Where(Attr.RoleName, roleName).OrderByDesc(Attr.SiteId));
+            return _repository.GetAll(Q.Where(Attr.RoleName, roleName).OrderByDesc(Attr.SiteId)).ToList();
         }
 
         public Dictionary<int, List<string>> GetWebsitePermissionSortedList(IEnumerable<string> roles)

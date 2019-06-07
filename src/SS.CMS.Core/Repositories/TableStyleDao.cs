@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<TableStyleInfo> _repository;
         public TableStyleDao()
         {
-            _repository = new Repository<TableStyleInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<TableStyleInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

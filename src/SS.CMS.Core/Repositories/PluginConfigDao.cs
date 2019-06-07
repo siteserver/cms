@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<PluginConfigInfo> _repository;
         public PluginConfigDao()
         {
-            _repository = new Repository<PluginConfigInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<PluginConfigInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

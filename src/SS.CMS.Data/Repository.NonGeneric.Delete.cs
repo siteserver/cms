@@ -1,4 +1,5 @@
-﻿using SqlKata;
+﻿using System.Threading.Tasks;
+using SqlKata;
 using SS.CMS.Data.Utils;
 
 namespace SS.CMS.Data
@@ -21,7 +22,26 @@ namespace SS.CMS.Data
 
         public virtual int Delete(Query query = null)
         {
-            return RepositoryUtils.DeleteAll(DatabaseType, ConnectionString, TableName, query);
+            return RepositoryUtils.DeleteAll(DbContext, TableName, query);
+        }
+
+        public virtual async Task<bool> DeleteAsync(int id)
+        {
+            if (id <= 0) return false;
+
+            return await DeleteAsync(Q.Where(nameof(Entity.Id), id)) > 0;
+        }
+
+        public virtual async Task<bool> DeleteAsync(string guid)
+        {
+            if (!Utilities.IsGuid(guid)) return false;
+
+            return await DeleteAsync(Q.Where(nameof(Entity.Guid), guid)) > 0;
+        }
+
+        public virtual async Task<int> DeleteAsync(Query query = null)
+        {
+            return await RepositoryUtils.DeleteAllAsync(DbContext, TableName, query);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<UserMenuInfo> _repository;
         public UserMenuDao()
         {
-            _repository = new Repository<UserMenuInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<UserMenuInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -54,7 +54,7 @@ namespace SS.CMS.Core.Repositories
 
         public List<UserMenuInfo> GetUserMenuInfoList()
         {
-            var list = _repository.GetAll();
+            var list = _repository.GetAll().ToList();
 
             var systemMenus = UserMenuManager.SystemMenus.Value;
             foreach (var kvp in systemMenus)

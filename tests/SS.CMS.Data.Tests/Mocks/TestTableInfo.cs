@@ -1,8 +1,7 @@
 ﻿using System;
-using SS.CMS.Data;
 using SS.CMS.Data.Utils;
 
-namespace SS.CMS.Plugin.Tests.Mocks
+namespace SS.CMS.Data.Tests.Mocks
 {
     [Table("TestTable")]
     public class TestTableInfo : Entity

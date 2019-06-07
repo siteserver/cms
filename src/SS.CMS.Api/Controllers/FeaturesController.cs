@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace SS.CMS.Api.Controllers
 {
-    [Produces("application/json")]
     [Route("features")]
     [ApiController]
     public class FeaturesController : ControllerBase
@@ -39,6 +38,8 @@ namespace SS.CMS.Api.Controllers
         /// <returns>A newly created TodoItem</returns>
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>
+        [Produces("application/json")]
+        [Consumes("application/json")]
         [ProducesResponseType(201)]     // Created
         [ProducesResponseType(400)]     // BadRequest
         [HttpGet(Route), ActionName("Get Index")]

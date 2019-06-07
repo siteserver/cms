@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Plugin.Tests.Mocks
+﻿namespace SS.CMS.Data.Tests.Mocks
 {
     public class Attr
     {

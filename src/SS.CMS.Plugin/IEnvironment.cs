@@ -10,12 +10,7 @@ namespace SS.CMS.Plugin
         /// <summary>
         /// 系统使用的数据库类型。
         /// </summary>
-        DatabaseType DatabaseType { get; }
-
-        /// <summary>
-        /// 系统使用的数据库连接字符串。
-        /// </summary>
-        string ConnectionString { get; }
+        DbContext DbContext { get; }
 
         /// <summary>
         /// 用户中心文件夹名称。

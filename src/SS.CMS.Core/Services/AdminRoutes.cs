@@ -7,6 +7,7 @@ namespace SS.CMS.Core.Services
     public static class AdminRoutes
     {
         public const string Prefix = "admin";
+        public const string PrefixSettingsAdmin = "admin/settings/admin";
 
         public static void AddSingleton(IServiceCollection services)
         {

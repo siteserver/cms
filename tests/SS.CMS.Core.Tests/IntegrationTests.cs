@@ -3,7 +3,7 @@ using SS.CMS.Core.Common;
 using SS.CMS.Utils;
 using Xunit;
 
-namespace SS.CMS.Core.Tests.Database
+namespace SS.CMS.Core.Tests
 {
     [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
     public class IntegrationTests : IClassFixture<EnvironmentFixture>

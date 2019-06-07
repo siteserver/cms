@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<PermissionsInRolesInfo> _repository;
         public PermissionsInRolesDao()
         {
-            _repository = new Repository<PermissionsInRolesInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<PermissionsInRolesInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

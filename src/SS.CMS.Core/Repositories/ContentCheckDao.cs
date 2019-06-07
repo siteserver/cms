@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Data;
@@ -11,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<ContentCheckInfo> _repository;
         public ContentCheckDao()
         {
-            _repository = new Repository<ContentCheckInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<ContentCheckInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -35,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(Q
                 .Where(Attr.TableName, tableName)
                 .Where(Attr.ChannelId, contentId)
-                .OrderByDesc(Attr.Id));
+                .OrderByDesc(Attr.Id)).ToList();
         }
     }
 }

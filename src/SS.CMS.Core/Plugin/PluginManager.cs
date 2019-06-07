@@ -185,7 +185,7 @@ namespace SS.CMS.Core.Plugin
 
         public static void Load(Func<IRequest> requestFunc, Func<IResponse> responseFunc)
         {
-            Context.Initialize(new EnvironmentImpl(AppSettings.DatabaseType, AppSettings.ConnectionString, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.ContentRootPath, AppSettings.WebRootPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(AppSettings.DbContext, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.ContentRootPath, AppSettings.WebRootPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,

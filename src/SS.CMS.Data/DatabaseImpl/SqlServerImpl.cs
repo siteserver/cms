@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,24 +10,24 @@ using Dapper;
 using SqlKata.Compilers;
 using SS.CMS.Data.Utils;
 
-[assembly: InternalsVisibleTo("SS.CMS.Plugin.Tests")]
+[assembly: InternalsVisibleTo("SS.CMS.Data.Tests")]
 
-namespace SS.CMS.Data.Database
+namespace SS.CMS.Data.DatabaseImpl
 {
-    internal class SqlServer : IDatabase
+    internal class SqlServerImpl : IDatabaseImpl
     {
-        private static IDatabase _instance;
-        public static IDatabase Instance
+        private static IDatabaseImpl _instance;
+        public static IDatabaseImpl Instance
         {
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new SqlServer();
+                _instance = new SqlServerImpl();
                 return _instance;
             }
         }
 
-        public IDbConnection GetConnection(string connectionString)
+        public DbConnection GetConnection(string connectionString)
         {
             return new SqlConnection(connectionString);
         }
@@ -34,8 +36,37 @@ namespace SS.CMS.Data.Database
         {
             return new SqlServerCompiler
             {
-                UseLegacyPagination = DatoryUtils.IsUseLegacyPagination(DatabaseType.SqlServer, connectionString)
+                UseLegacyPagination = IsUseLegacyPagination(connectionString)
             };
+        }
+
+        private static readonly ConcurrentDictionary<string, bool> UseLegacyPagination = new ConcurrentDictionary<string, bool>();
+
+        public bool IsUseLegacyPagination(string connectionString)
+        {
+            if (UseLegacyPagination.TryGetValue(connectionString, out var useLegacyPagination)) return useLegacyPagination;
+            useLegacyPagination = false;
+
+            const string sqlString = "select left(cast(serverproperty('productversion') as varchar), 4)";
+
+            try
+            {
+                var dbContext = new DbContext(DatabaseType.SqlServer, connectionString);
+                using (var connection = dbContext.GetConnection())
+                {
+                    var version = connection.ExecuteScalar<string>(sqlString);
+
+                    useLegacyPagination = Utilities.ToDecimal(version) < 11;
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            UseLegacyPagination[connectionString] = useLegacyPagination;
+
+            return useLegacyPagination;
         }
 
         public List<string> GetTableNames(string connectionString)

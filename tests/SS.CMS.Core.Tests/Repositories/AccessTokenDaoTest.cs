@@ -1,55 +1,56 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Utils;
 using Xunit;
 
-namespace SS.CMS.Core.Tests.Database.Repositories
+namespace SS.CMS.Core.Tests.Repositories
 {
     [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
-    public class AccessTokenRepositoryTest: IClassFixture<EnvironmentFixture>
+    public class AccessTokenDaoTest : IClassFixture<EnvironmentFixture>
     {
         public EnvironmentFixture Fixture { get; }
 
-        public AccessTokenRepositoryTest(EnvironmentFixture fixture)
+        public AccessTokenDaoTest(EnvironmentFixture fixture)
         {
             Fixture = fixture;
         }
 
         [SkippableFact, TestPriority(0)]
-        public void BasicTest()
+        public async Task TestBasic()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var accessTokenInfo = new AccessTokenInfo();
 
-            DataProvider.AccessTokenDao.Insert(accessTokenInfo);
+            await DataProvider.AccessTokenDao.InsertAsync(accessTokenInfo);
             Assert.True(accessTokenInfo.Id > 0);
             var token = accessTokenInfo.Token;
             Assert.False(string.IsNullOrWhiteSpace(token));
 
-            accessTokenInfo = DataProvider.AccessTokenDao.Get(accessTokenInfo.Id);
+            accessTokenInfo = await DataProvider.AccessTokenDao.GetAsync(accessTokenInfo.Id);
             Assert.NotNull(accessTokenInfo);
 
             accessTokenInfo.Title = "title";
-            var updated = DataProvider.AccessTokenDao.Update(accessTokenInfo);
+            var updated = await DataProvider.AccessTokenDao.UpdateAsync(accessTokenInfo);
             Assert.True(updated);
 
-            DataProvider.AccessTokenDao.Regenerate(accessTokenInfo);
+            await DataProvider.AccessTokenDao.RegenerateAsync(accessTokenInfo);
             Assert.NotEqual(token, accessTokenInfo.Token);
 
-            var deleted = DataProvider.AccessTokenDao.Delete(accessTokenInfo.Id);
+            var deleted = await DataProvider.AccessTokenDao.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
 
         [SkippableFact, TestPriority(0)]
-        public void IsTitleExists()
+        public async Task TestIsTitleExists()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             const string testTitle = "IsTitleExists";
 
-            var exists = DataProvider.AccessTokenDao.IsTitleExists(testTitle);
+            var exists = await DataProvider.AccessTokenDao.IsTitleExistsAsync(testTitle);
 
             Assert.False(exists);
 
@@ -57,18 +58,18 @@ namespace SS.CMS.Core.Tests.Database.Repositories
             {
                 Title = testTitle
             };
-            DataProvider.AccessTokenDao.Insert(accessTokenInfo);
+            await DataProvider.AccessTokenDao.InsertAsync(accessTokenInfo);
 
-            exists = DataProvider.AccessTokenDao.IsTitleExists(testTitle);
+            exists = await DataProvider.AccessTokenDao.IsTitleExistsAsync(testTitle);
 
             Assert.True(exists);
 
-            var deleted = DataProvider.AccessTokenDao.Delete(accessTokenInfo.Id);
+            var deleted = await DataProvider.AccessTokenDao.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
 
         [SkippableFact, TestPriority(0)]
-        public void GetAccessTokenInfoList()
+        public async Task TestGetAccessTokenInfoList()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
@@ -76,13 +77,13 @@ namespace SS.CMS.Core.Tests.Database.Repositories
             {
                 Title = "title"
             };
-            DataProvider.AccessTokenDao.Insert(accessTokenInfo);
+            await DataProvider.AccessTokenDao.InsertAsync(accessTokenInfo);
 
             var list = DataProvider.AccessTokenDao.GetAll();
 
             Assert.True(list.Any());
 
-            var deleted = DataProvider.AccessTokenDao.Delete(accessTokenInfo.Id);
+            var deleted = await DataProvider.AccessTokenDao.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
     }

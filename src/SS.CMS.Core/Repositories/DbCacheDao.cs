@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<DbCacheInfo> _repository;
         public DbCacheDao()
         {
-            _repository = new Repository<DbCacheInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<DbCacheInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

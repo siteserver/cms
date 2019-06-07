@@ -5,10 +5,9 @@ namespace SS.CMS.Core.Plugin.Impl
 {
     public class EnvironmentImpl : IEnvironment
     {
-        public EnvironmentImpl(DatabaseType databaseType, string connectionString, string homeDirectory, string adminDirectory, string contentRootPath, string webRootPath, string applicationPath, string apiUrl)
+        public EnvironmentImpl(DbContext dbContext, string homeDirectory, string adminDirectory, string contentRootPath, string webRootPath, string applicationPath, string apiUrl)
         {
-            DatabaseType = databaseType;
-            ConnectionString = connectionString;
+            DbContext = dbContext;
             HomeDirectory = homeDirectory;
             AdminDirectory = adminDirectory;
             ContentRootPath = contentRootPath;
@@ -17,9 +16,7 @@ namespace SS.CMS.Core.Plugin.Impl
             ApiUrl = apiUrl;
         }
 
-        public DatabaseType DatabaseType { get; }
-
-        public string ConnectionString { get; }
+        public DbContext DbContext { get; }
 
         public string HomeDirectory { get; }
 

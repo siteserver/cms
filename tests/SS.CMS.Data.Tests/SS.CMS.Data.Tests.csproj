@@ -7,14 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Web.config" />
+    <None Remove="appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Web.config" />
+    <Content Include="appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview5.19227.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview5.19227.9" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.console" Version="2.4.1">
@@ -30,12 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SS.CMS.Data\SS.CMS.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
+    <ProjectReference Include="..\..\src\SS.CMS.Utils\SS.CMS.Utils.csproj" />
   </ItemGroup>
 
 </Project>

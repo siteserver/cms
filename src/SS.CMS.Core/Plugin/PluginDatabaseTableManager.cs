@@ -15,13 +15,13 @@ namespace SS.CMS.Core.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!DatoryUtils.IsTableExists(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName))
+                if (!AppSettings.DbContext.IsTableExists(tableName))
                 {
-                    DatoryUtils.CreateTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns);
+                    AppSettings.DbContext.CreateTable(tableName, tableColumns);
                 }
                 else
                 {
-                    DatoryUtils.AlterTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns, null);
+                    AppSettings.DbContext.AlterTable(tableName, tableColumns, null);
                 }
             }
         }

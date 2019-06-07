@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Data;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<RoleInfo> _repository;
         public RoleDao()
         {
-            _repository = new Repository<RoleInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<RoleInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -37,7 +38,7 @@ namespace SS.CMS.Core.Repositories
         {
             return _repository.GetAll<string>(Q
                 .Select(Attr.RoleName)
-                .OrderBy(Attr.RoleName));
+                .OrderBy(Attr.RoleName)).ToList();
         }
 
         public IList<string> GetRoleNameListByCreatorUserName(string creatorUserName)
@@ -47,7 +48,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(Attr.RoleName)
                 .Where(Attr.CreatorUserName, creatorUserName)
-                .OrderBy(Attr.RoleName));
+                .OrderBy(Attr.RoleName)).ToList();
         }
 
         public void InsertRole(RoleInfo roleInfo)

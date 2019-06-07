@@ -2,9 +2,8 @@
 using System.Globalization;
 using System.Linq;
 using SqlKata;
+using SS.CMS.Data.Tests.Mocks;
 using SS.CMS.Data.Utils;
-using SS.CMS.Plugin.Tests;
-using SS.CMS.Plugin.Tests.Mocks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,13 +20,13 @@ namespace SS.CMS.Data.Tests.Core
         {
             Fixture = fixture;
             _output = output;
-            _repository = new Repository<TestTableInfo>(EnvUtils.DatabaseType, EnvUtils.ConnectionString);
+            _repository = new Repository<TestTableInfo>(EnvUtils.DbContext);
         }
 
         [SkippableFact, TestPriority(0)]
         public void Start()
         {
-             Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
             var tableName = _repository.TableName;
             var tableColumns = _repository.TableColumns;
@@ -44,7 +43,7 @@ namespace SS.CMS.Data.Tests.Core
             var varCharDefaultColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.TypeVarCharDefault));
             Assert.NotNull(varCharDefaultColumn);
             Assert.Equal(DataType.VarChar, varCharDefaultColumn.DataType);
-            Assert.Equal(DatoryUtils.VarCharDefaultLength, varCharDefaultColumn.DataLength);
+            Assert.Equal(DbUtils.VarCharDefaultLength, varCharDefaultColumn.DataLength);
 
             var boolColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.TypeBool));
             Assert.NotNull(boolColumn);
@@ -60,13 +59,13 @@ namespace SS.CMS.Data.Tests.Core
             var lockedColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.Locked));
             Assert.Null(lockedColumn);
 
-            var isExists = DatoryUtils.IsTableExists(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
+            var isExists = EnvUtils.DbContext.IsTableExists(tableName);
             if (isExists)
             {
-                DatoryUtils.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName);
+                EnvUtils.DbContext.DropTable(tableName);
             }
 
-            DatoryUtils.CreateTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, tableName, tableColumns);
+            EnvUtils.DbContext.CreateTable(tableName, tableColumns);
         }
 
         [SkippableFact, TestPriority(1)]
@@ -346,7 +345,7 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.False(dataInfo.Date.HasValue);
             Assert.True(dataInfo.Date == null);
-            
+
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
             updated = _repository.Update(new Query());
@@ -421,7 +420,7 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(EnvUtils.IntegrationTestMachine);
 
-            DatoryUtils.DropTable(EnvUtils.DatabaseType, EnvUtils.ConnectionString, _repository.TableName);
+            EnvUtils.DbContext.DropTable(_repository.TableName);
         }
     }
 }

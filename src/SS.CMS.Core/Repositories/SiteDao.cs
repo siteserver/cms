@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<SiteInfo> _repository;
         public SiteDao()
         {
-            _repository = new Repository<SiteInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<SiteInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -133,7 +133,7 @@ namespace SS.CMS.Core.Repositories
 
         private IList<SiteInfo> GetSiteInfoList()
         {
-            return _repository.GetAll(Q.OrderBy(Attr.Taxis, Attr.Id));
+            return _repository.GetAll(Q.OrderBy(Attr.Taxis, Attr.Id)).ToList();
         }
 
         public bool IsTableUsed(string tableName)
@@ -219,7 +219,7 @@ namespace SS.CMS.Core.Repositories
             var list = new List<Container.Site>();
             var itemIndex = 0;
 
-            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var connection = _repository.DbContext.GetConnection())
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {

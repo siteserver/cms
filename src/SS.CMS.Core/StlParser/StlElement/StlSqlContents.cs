@@ -12,8 +12,11 @@ namespace SS.CMS.Core.StlParser.StlElement
     {
         public const string ElementName = "stl:sqlContents";
 
-        [StlAttribute(Title = "数据库链接字符串名称")]
-        public const string ConnectionStringName = nameof(ConnectionStringName);
+        [StlAttribute(Title = "数据库名称")]
+        public const string ConfigName = nameof(ConfigName);
+
+        [StlAttribute(Title = "数据库类型")]
+        public const string DatabaseType = nameof(DatabaseType);
 
         [StlAttribute(Title = "数据库链接字符串")]
         public const string ConnectionString = nameof(ConnectionString);

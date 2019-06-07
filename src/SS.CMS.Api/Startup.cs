@@ -80,7 +80,7 @@ namespace SS.CMS.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration config)
         {
             if (env.IsDevelopment())
             {
@@ -105,7 +105,7 @@ namespace SS.CMS.Api
             //    endpoints.MapControllers();
             //});
 
-            AppSettings.LoadJson(env.ContentRootPath, env.WebRootPath, PathUtils.Combine(env.ContentRootPath, AppSettings.AppSettingsFileName));
+            AppSettings.Load(env.ContentRootPath, env.WebRootPath, config);
 
             // PluginManager.Load(() =>
             // {

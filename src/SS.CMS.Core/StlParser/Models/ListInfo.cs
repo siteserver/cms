@@ -5,6 +5,7 @@ using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -306,17 +307,24 @@ namespace SS.CMS.Core.StlParser.Models
                 {
                     listInfo.Layout = ELayoutUtils.GetEnumType(value);
                 }
+                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConfigName))
+                {
+                    listInfo.DatabaseType =
+                        DatabaseType.GetDatabaseType(AppSettings.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.DatabaseType}"]);
+                    listInfo.ConnectionString = AppSettings.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.ConnectionString}"];
+                    if (string.IsNullOrEmpty(listInfo.ConnectionString))
+                    {
+                        listInfo.DatabaseType = AppSettings.DbContext.DatabaseType;
+                        listInfo.ConnectionString = AppSettings.DbContext.ConnectionString;
+                    }
+                }
+                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseType))
+                {
+                    listInfo.DatabaseType = DatabaseType.GetDatabaseType(value);
+                }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionString))
                 {
                     listInfo.ConnectionString = value;
-                }
-                else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionStringName))
-                {
-                    listInfo.ConnectionString = AppSettings.GetConnectionStringByName(value);
-                    if (string.IsNullOrEmpty(listInfo.ConnectionString))
-                    {
-                        listInfo.ConnectionString = AppSettings.ConnectionString;
-                    }
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.QueryString))
                 {
@@ -448,6 +456,8 @@ namespace SS.CMS.Core.StlParser.Models
         public bool IsRelatedContents { get; set; }
 
         public ELayout Layout { get; set; } = ELayout.None;
+
+        public DatabaseType DatabaseType { get; set; }
 
         public string ConnectionString { get; set; } = string.Empty;
 

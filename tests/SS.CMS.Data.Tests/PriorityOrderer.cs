@@ -4,7 +4,7 @@ using System.Linq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace SS.CMS.Plugin.Tests
+namespace SS.CMS.Data.Tests
 {
     public class PriorityOrderer : ITestCaseOrderer
     {

@@ -139,9 +139,16 @@ namespace SS.CMS.Utils
             return directoryPath;
         }
 
-        public static string GetParentPath(string path)
+        public static string GetParentPath(string path, int upLevel = 1)
         {
-            return Directory.GetParent(path).FullName;
+            if (upLevel < 1) return path;
+
+            for (var i = 0; i < upLevel; i++)
+            {
+                path = Directory.GetParent(path).FullName;
+            }
+
+            return path;
         }
 
         public static bool IsDirectoryExists(string directoryPath)

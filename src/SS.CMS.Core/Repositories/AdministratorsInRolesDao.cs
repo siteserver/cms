@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<AdministratorsInRolesInfo> _repository;
         public AdministratorsInRolesDao()
         {
-            _repository = new Repository<AdministratorsInRolesInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<AdministratorsInRolesInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -34,7 +34,7 @@ namespace SS.CMS.Core.Repositories
                 .Distinct());
         }
 
-        public IList<string> GetRolesForUser(string userName)
+        public IEnumerable<string> GetRolesForUser(string userName)
         {
             return _repository.GetAll<string>(Q
                 .Select(Attr.RoleName)

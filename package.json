@@ -22,8 +22,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run-dotnet": "dotnet watch --project src/SS.CMS.Api run",
-    "run-nuxt": "cd web && yarn dev"
+    "dotnet": "dotnet watch --project src/SS.CMS.Api run",
+    "nuxt": "cd web && yarn dev"
   },
   "author": "",
   "license": "ISC"

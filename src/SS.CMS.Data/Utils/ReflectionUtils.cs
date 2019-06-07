@@ -134,7 +134,7 @@ namespace SS.CMS.Data.Utils
                         dataLength = attribute.Length;
                         if (dataLength <= 0)
                         {
-                            dataLength = DatoryUtils.VarCharDefaultLength;
+                            dataLength = DbUtils.VarCharDefaultLength;
                         }
                     }
                 }

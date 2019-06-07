@@ -54,14 +54,6 @@ namespace SS.CMS.Plugin
         IAdministratorInfo GetAdminInfoByAccount(string account);
 
         /// <summary>
-        /// 获取管理员用户名列表。
-        /// </summary>
-        /// <returns>
-        /// 管理员用户名列表。
-        /// </returns>
-        List<string> GetUserNameList();
-
-        /// <summary>
         /// 获取管理员权限。
         /// </summary>
         /// <param name="userName">用户名。</param>

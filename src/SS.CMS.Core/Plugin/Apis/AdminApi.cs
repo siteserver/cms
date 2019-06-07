@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin.Impl;
@@ -38,11 +39,6 @@ namespace SS.CMS.Core.Plugin.Apis
         public IAdministratorInfo GetAdminInfoByAccount(string account)
         {
             return AdminManager.GetAdminInfoByAccount(account);
-        }
-
-        public List<string> GetUserNameList()
-        {
-            return DataProvider.AdministratorDao.GetUserNameList().ToList();
         }
 
         public IPermissions GetPermissions(string userName)

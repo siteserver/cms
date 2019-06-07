@@ -14,7 +14,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<SiteLogInfo> _repository;
         public SiteLogDao()
         {
-            _repository = new Repository<SiteLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<SiteLogInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

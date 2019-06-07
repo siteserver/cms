@@ -14,7 +14,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<ErrorLogInfo> _repository;
         public ErrorLogDao()
         {
-            _repository = new Repository<ErrorLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<ErrorLogInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

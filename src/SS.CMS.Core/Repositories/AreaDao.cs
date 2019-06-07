@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<AreaInfo> _repository;
         public AreaDao()
         {
-            _repository = new Repository<AreaInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<AreaInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -257,7 +257,7 @@ namespace SS.CMS.Core.Repositories
                 IList<int> areaIdList = new List<int>();
                 if (areaInfo.ChildrenCount > 0)
                 {
-                    areaIdList = GetIdListForDescendant(areaId);
+                    areaIdList = GetIdListForDescendant(areaId).ToList();
                 }
                 areaIdList.Add(areaId);
 
@@ -279,13 +279,13 @@ namespace SS.CMS.Core.Repositories
             return true;
         }
 
-        private IList<AreaInfo> GetAreaInfoList()
+        private IEnumerable<AreaInfo> GetAreaInfoList()
         {
             return _repository.GetAll(Q
                 .OrderBy(Attr.Taxis));
         }
 
-        public IList<int> GetIdListByParentId(int parentId)
+        public IEnumerable<int> GetIdListByParentId(int parentId)
         {
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)
@@ -293,7 +293,7 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.Taxis));
         }
 
-        private IList<int> GetIdListForDescendant(int areaId)
+        private IEnumerable<int> GetIdListForDescendant(int areaId)
         {
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)

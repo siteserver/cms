@@ -22,7 +22,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
-            );
+            ).ToList();
         }
 
         public IList<int> GetContentIdList(int channelId, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)
@@ -49,7 +49,7 @@ namespace SS.CMS.Core.Repositories
                 query.Where(Attr.IsChecked, ETriStateUtils.GetValue(checkedState));
             }
 
-            return _repository.GetAll<int>(query);
+            return _repository.GetAll<int>(query).ToList();
         }
 
         public IList<int> GetContentIdListCheckedByChannelId(int siteId, int channelId)
@@ -59,7 +59,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.IsChecked, true.ToString())
-            );
+            ).ToList();
         }
 
         public IList<(int, int)> GetContentIdListByTrash(int siteId)
@@ -117,7 +117,7 @@ namespace SS.CMS.Core.Repositories
                     : $"SELECT Id FROM {TableName} WHERE (ChannelId IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND IsChecked = '{true}' {whereString}) {orderString}";
             }
 
-            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var connection = _repository.DbContext.GetConnection())
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.Repositories
             {
                 var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, parameters.Skip, parameters.Top);
 
-                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+                using (var connection = _repository.DbContext.GetConnection())
                 {
                     list = connection.Query<ContentInfo>(sqlString, dbArgs).ToList();
                 }
@@ -262,7 +262,7 @@ namespace SS.CMS.Core.Repositories
             {
                 var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, skip, top);
 
-                using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+                using (var connection = _repository.DbContext.GetConnection())
                 {
                     retVal = connection.Query<ContentInfo>(sqlString, dbArgs).Select(o => (o.ChannelId, o.Id)).ToList();
                 }
@@ -277,7 +277,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, ">", 0)
                 .WhereIn(Attr.ReferenceId, contentIdList)
-            );
+            ).ToList();
         }
 
         public IList<int> GetIdListBySameTitle(int channelId, string title)
@@ -286,7 +286,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Title, title)
-            );
+            ).ToList();
         }
 
         public IList<int> GetChannelIdListCheckedByLastEditDateHour(int siteId, int hour)
@@ -297,7 +297,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.IsChecked, true.ToString())
                 .WhereBetween(Attr.LastEditDate, DateTime.Now.AddHours(-hour), DateTime.Now)
                 .Distinct()
-            );
+            ).ToList();
         }
 
         public List<int> GetCacheContentIdList(string whereString, string orderString, int offset, int limit)
@@ -306,7 +306,7 @@ namespace SS.CMS.Core.Repositories
 
             var sqlString = DatabaseUtils.GetPageSqlString(TableName, Container.Content.SqlColumns, whereString, orderString, offset, limit);
 
-            using (var conneciton = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var conneciton = _repository.DbContext.GetConnection())
             {
                 using (var rdr = conneciton.ExecuteReader(sqlString))
                 {
@@ -328,10 +328,10 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(name)
                 .Where(Attr.ChannelId, channelId)
-                .WhereInStr(name, startString)
+                .WhereInStr(_repository.DbContext.DatabaseType, name, startString)
                 .Distinct()
                 .Limit(totalNum)
-            );
+            ).ToList();
         }
 
         public List<ContentInfo> GetContentInfoList(string whereString, string orderString, int offset, int limit)
@@ -340,7 +340,7 @@ namespace SS.CMS.Core.Repositories
 
             var sqlString = DatabaseUtils.GetPageSqlString(TableName, SqlUtils.Asterisk, whereString, orderString, offset, limit);
 
-            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var connection = _repository.DbContext.GetConnection())
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -364,7 +364,7 @@ namespace SS.CMS.Core.Repositories
             var sqlString =
                 $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}";
 
-            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var connection = _repository.DbContext.GetConnection())
             {
                 list = connection.Query<ContentCountInfo>(sqlString).ToList();
             }

@@ -260,7 +260,7 @@ namespace SS.CMS.Core.Plugin.Impl
                 _roles = DataCacheManager.Get<List<string>>(_rolesKey);
                 if (_roles == null)
                 {
-                    _roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_adminInfo.UserName);
+                    _roles = DataProvider.AdministratorsInRolesDao.GetRolesForUser(_adminInfo.UserName).ToList();
                     DataCacheManager.InsertMinutes(_rolesKey, _roles, 30);
                 }
 

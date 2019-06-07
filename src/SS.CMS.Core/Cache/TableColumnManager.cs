@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Cache
 
                 if (list != null) return list;
 
-                list = DatabaseUtils.GetTableColumnInfoList(AppSettings.ConnectionString, tableName);
+                list = AppSettings.DbContext.GetTableColumns(tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
@@ -133,7 +133,7 @@ namespace SS.CMS.Core.Cache
 
             try
             {
-                DatoryUtils.CreateTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns);
+                AppSettings.DbContext.CreateTable(tableName, tableColumns);
             }
             catch (Exception e)
             {
@@ -146,7 +146,7 @@ namespace SS.CMS.Core.Cache
             {
                 try
                 {
-                    DatoryUtils.CreateIndex(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+                    AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
 
 
                     //sqlString =
@@ -163,7 +163,7 @@ namespace SS.CMS.Core.Cache
 
                 try
                 {
-                    DatoryUtils.CreateIndex(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
@@ -186,7 +186,7 @@ namespace SS.CMS.Core.Cache
         {
             try
             {
-                DatoryUtils.AlterTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName,
+                AppSettings.DbContext.AlterTable(tableName,
                     GetRealTableColumns(tableColumns), dropColumnNames);
 
                 ClearCache();
@@ -244,9 +244,9 @@ namespace SS.CMS.Core.Cache
             var isDbExists = DatabaseUtils.IsTableExists(tableName);
             if (isDbExists) return;
 
-            DatoryUtils.CreateTable(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, tableColumns);
-            DatoryUtils.CreateIndex(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            DatoryUtils.CreateIndex(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
+            AppSettings.DbContext.CreateTable(tableName, tableColumns);
+            AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
 
             ClearCache();
         }

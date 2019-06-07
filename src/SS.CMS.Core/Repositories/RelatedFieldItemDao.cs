@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Data;
@@ -11,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<RelatedFieldItemInfo> _repository;
         public RelatedFieldItemDao()
         {
-            _repository = new Repository<RelatedFieldItemInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<RelatedFieldItemInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -48,7 +49,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(Q
                 .Where(Attr.RelatedFieldId, relatedFieldId)
                 .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis));
+                .OrderBy(Attr.Taxis)).ToList();
         }
 
         public void UpdateTaxisToUp(int id, int parentId)

@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<ConfigInfo> _repository;
         public ConfigDao()
         {
-            _repository = new Repository<ConfigInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<ConfigInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

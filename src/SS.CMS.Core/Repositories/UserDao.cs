@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Dapper;
@@ -19,7 +20,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<UserInfo> _repository;
         public UserDao()
         {
-            _repository = new Repository<UserInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<UserInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -490,7 +491,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.IsChecked, isChecked.ToString())
-                .OrderByDesc(Attr.Id));
+                .OrderByDesc(Attr.Id)).ToList();
         }
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbPassword, EPasswordFormat passwordFormat, string passwordSalt)
@@ -620,7 +621,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
 ";//添加年统计
             }
 
-            using (var connection = new Connection(AppSettings.DatabaseType, AppSettings.ConnectionString))
+            using (var connection = _repository.DbContext.GetConnection())
             {
                 using (var rdr = connection.ExecuteReader(sqlString))
                 {
@@ -667,7 +668,7 @@ SELECT COUNT(*) AS AddNum, AddYear FROM (
             return _repository.GetAll(Q
                 .Offset(offset)
                 .Limit(limit)
-                .OrderBy(Attr.Id));
+                .OrderBy(Attr.Id)).ToList();
         }
 
         public bool IsExists(int id)

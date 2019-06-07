@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
@@ -20,7 +21,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<AdministratorInfo> _repository;
         public AdministratorDao()
         {
-            _repository = new Repository<AdministratorInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<AdministratorInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -42,7 +43,7 @@ namespace SS.CMS.Core.Repositories
             public const string IsLockedOut = "IsLockedOut";
         }
 
-        public IList<AdministratorInfo> GetAll(Query query)
+        public IEnumerable<AdministratorInfo> GetAll(Query query)
         {
             return _repository.GetAll(query);
         }
@@ -296,12 +297,18 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.DepartmentId, departmentId));
         }
 
-        public IList<string> GetUserNameList()
+        /// <summary>
+        /// 获取管理员用户名列表。
+        /// </summary>
+        /// <returns>
+        /// 管理员用户名列表。
+        /// </returns>
+        public async Task<IEnumerable<string>> GetUserNameListAsync()
         {
-            return _repository.GetAll<string>(Q.Select(Attr.UserName));
+            return await _repository.GetAllAsync<string>(Q.Select(Attr.UserName));
         }
 
-        public IList<string> GetUserNameList(int departmentId)
+        public IEnumerable<string> GetUserNameList(int departmentId)
         {
             return _repository.GetAll<string>(Q
                 .Select(Attr.UserName)

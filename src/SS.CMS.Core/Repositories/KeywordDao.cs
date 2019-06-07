@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Data;
@@ -11,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<KeywordInfo> _repository;
         public KeywordDao()
         {
-            _repository = new Repository<KeywordInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<KeywordInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -63,7 +64,7 @@ namespace SS.CMS.Core.Repositories
 
         public IList<KeywordInfo> GetKeywordInfoList()
         {
-            return _repository.GetAll();
+            return _repository.GetAll().ToList();
         }
 
         public IList<KeywordInfo> GetKeywordInfoList(IList<string> keywords)
@@ -71,7 +72,7 @@ namespace SS.CMS.Core.Repositories
             if (keywords == null || keywords.Count == 0) return new List<KeywordInfo>();
 
             return _repository.GetAll(Q
-                .WhereIn(Attr.Keyword, keywords));
+                .WhereIn(Attr.Keyword, keywords)).ToList();
         }
 
         //todo: 实现INSTR函数
@@ -82,7 +83,7 @@ namespace SS.CMS.Core.Repositories
 
             return _repository.GetAll<string>(Q
                 .Select(Attr.Keyword)
-                .WhereContains(Attr.Keyword, content));
+                .WhereContains(Attr.Keyword, content)).ToList();
         }
 
         //public GenericQuery InStr(string name, string value, bool reverse = false)

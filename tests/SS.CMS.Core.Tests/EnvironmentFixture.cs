@@ -1,25 +1,25 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Tests
 {
     public class EnvironmentFixture : IDisposable
     {
-        public string ContentRootPath { get; }
-
         public EnvironmentFixture()
         {
-            var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
+            var rootDirectoryPath = DirectoryUtils.GetParentPath(Directory.GetCurrentDirectory(), 5);
+            var apiDirectoryPath = PathUtils.Combine(rootDirectoryPath, "src", "SS.CMS.Api");
 
-            ContentRootPath = PathUtils.Combine(DirectoryUtils.GetParentPath(testsDirectoryPath), "SS.CMS.Api");
-            var webRootPath = PathUtils.Combine(ContentRootPath, DirectoryUtils.WwwRoot.DirectoryName);
-            var appSettingsPath = PathUtils.Combine(ContentRootPath, AppSettings.AppSettingsFileName);
+            var config = new ConfigurationBuilder()
+                .SetBasePath(apiDirectoryPath)
+                .AddJsonFile("appSettings.json")
+                .Build();
 
-            AppSettings.LoadJson(ContentRootPath, webRootPath, appSettingsPath);
+            AppSettings.Load(apiDirectoryPath, PathUtils.Combine(apiDirectoryPath, DirectoryUtils.WwwRoot.DirectoryName), config);
         }
 
         public void Dispose()

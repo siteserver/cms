@@ -17,13 +17,13 @@ namespace SS.CMS.Core.Repositories
 
         private ContentDao(string tableName)
         {
-            _repository = new Repository<ContentInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString, tableName);
+            _repository = new Repository<ContentInfo>(AppSettings.DbContext, tableName);
         }
 
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public static readonly List<TableColumn> TableColumnsDefault = DatoryUtils.GetTableColumns<ContentInfo>();
+        public static readonly List<TableColumn> TableColumnsDefault = AppSettings.DbContext.GetTableColumns<ContentInfo>();
 
         private static readonly ConcurrentDictionary<string, ContentDao> ContentDaos = new ConcurrentDictionary<string, ContentDao>();
 

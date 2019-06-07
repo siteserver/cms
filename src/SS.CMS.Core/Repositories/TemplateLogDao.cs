@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<TemplateLogInfo> _repository;
         public TemplateLogDao()
         {
-            _repository = new Repository<TemplateLogInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<TemplateLogInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;

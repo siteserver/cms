@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<DepartmentInfo> _repository;
         public DepartmentDao()
         {
-            _repository = new Repository<DepartmentInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<DepartmentInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -288,7 +289,7 @@ namespace SS.CMS.Core.Repositories
         private IList<DepartmentInfo> GetDepartmentInfoList()
         {
             return _repository.GetAll(Q
-                .OrderBy(Attr.Taxis));
+                .OrderBy(Attr.Taxis)).ToList();
         }
 
         public IList<int> GetIdListByParentId(int parentId)
@@ -296,7 +297,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis));
+                .OrderBy(Attr.Taxis)).ToList();
         }
 
         private IList<int> GetIdListForDescendant(int id)
@@ -306,7 +307,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.ParentId, id)
                 .OrWhereStarts(Attr.ParentsPath, $"{id},")
                 .OrWhereContains(Attr.ParentsPath, $",{id},")
-                .OrWhereEnds(Attr.ParentsPath, $",{id}"));
+                .OrWhereEnds(Attr.ParentsPath, $",{id}")).ToList();
         }
 
         public List<KeyValuePair<int, DepartmentInfo>> GetDepartmentInfoKeyValuePair()

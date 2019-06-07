@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<UserGroupInfo> _repository;
         public UserGroupDao()
         {
-            _repository = new Repository<UserGroupInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<UserGroupInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -52,7 +53,7 @@ namespace SS.CMS.Core.Repositories
 
         public IList<UserGroupInfo> GetUserGroupInfoList()
         {
-            return _repository.GetAll(Q.OrderBy(Attr.Id));
+            return _repository.GetAll(Q.OrderBy(Attr.Id)).ToList();
         }
     }
 }

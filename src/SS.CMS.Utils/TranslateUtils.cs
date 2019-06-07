@@ -243,7 +243,7 @@ namespace SS.CMS.Utils
             return list;
         }
 
-        public static IDictionary<string, object> ToDictionary(IDataReader reader)
+        public static IDictionary<string, object> ToDictionary(DatabaseType databaseType, IDataReader reader)
         {
             var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             if (reader == null) return dict;
@@ -253,7 +253,7 @@ namespace SS.CMS.Utils
                 var name = reader.GetName(i);
                 var value = reader.GetValue(i);
 
-                if (value is string s && AppSettings.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
+                if (value is string s && databaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }
@@ -284,7 +284,7 @@ namespace SS.CMS.Utils
                 .ToDictionary(c => c.ColumnName, c => row[c]);
         }
 
-        public static IDictionary<string, object> ToDictionary(IDataRecord record)
+        public static IDictionary<string, object> ToDictionary(DatabaseType databaseType, IDataRecord record)
         {
             var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             if (record == null) return dict;
@@ -294,7 +294,7 @@ namespace SS.CMS.Utils
                 var name = record.GetName(i);
                 var value = record.GetValue(i);
 
-                if (value is string s && AppSettings.DatabaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
+                if (value is string s && databaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
                 {
                     value = string.Empty;
                 }

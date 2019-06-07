@@ -19,6 +19,9 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Connection.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />

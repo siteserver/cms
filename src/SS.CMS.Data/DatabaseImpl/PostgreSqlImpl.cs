@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Dapper;
@@ -7,24 +8,24 @@ using Npgsql;
 using SqlKata.Compilers;
 using SS.CMS.Data.Utils;
 
-[assembly: InternalsVisibleTo("SS.CMS.Plugin.Tests")]
+[assembly: InternalsVisibleTo("SS.CMS.Data.Tests")]
 
-namespace SS.CMS.Data.Database
+namespace SS.CMS.Data.DatabaseImpl
 {
-    internal class PostgreSql : IDatabase
+    internal class PostgreSqlImpl : IDatabaseImpl
     {
-        private static IDatabase _instance;
-        public static IDatabase Instance
+        private static IDatabaseImpl _instance;
+        public static IDatabaseImpl Instance
         {
             get
             {
                 if (_instance != null) return _instance;
-                _instance = new PostgreSql();
+                _instance = new PostgreSqlImpl();
                 return _instance;
             }
         }
 
-        public IDbConnection GetConnection(string connectionString)
+        public DbConnection GetConnection(string connectionString)
         {
             return new NpgsqlConnection(connectionString);
         }
@@ -32,6 +33,11 @@ namespace SS.CMS.Data.Database
         public Compiler GetCompiler(string connectionString)
         {
             return new PostgresCompiler();
+        }
+
+        public bool IsUseLegacyPagination(string connectionString)
+        {
+            return false;
         }
 
         public List<string> GetTableNames(string connectionString)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using Newtonsoft.Json;
 
 namespace SS.CMS.Data
@@ -35,6 +36,30 @@ namespace SS.CMS.Data
         /// </summary>
         public static readonly DatabaseType SQLite = new DatabaseType(nameof(SQLite));
 
+        public static DatabaseType GetDatabaseType(string databaseType)
+        {
+            var retVal = DatabaseType.MySql;
+
+            if (string.Equals(databaseType, nameof(SqlServer), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DatabaseType.SqlServer;
+            }
+            else if (string.Equals(databaseType, nameof(PostgreSql), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DatabaseType.PostgreSql;
+            }
+            else if (string.Equals(databaseType, nameof(Oracle), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DatabaseType.Oracle;
+            }
+            else if (string.Equals(databaseType, nameof(SQLite), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DatabaseType.SQLite;
+            }
+
+            return retVal;
+        }
+
         internal DatabaseType(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -69,7 +94,7 @@ namespace SS.CMS.Data
                 return true;
             }
 
-            if ((object) a == null || (object) b == null)
+            if ((object)a == null || (object)b == null)
             {
                 return false;
             }

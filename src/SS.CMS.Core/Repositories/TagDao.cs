@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SqlKata;
 using SS.CMS.Core.Common;
@@ -13,7 +14,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<TagInfo> _repository;
         public TagDao()
         {
-            _repository = new Repository<TagInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<TagInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -45,7 +46,7 @@ namespace SS.CMS.Core.Repositories
         public IList<TagInfo> GetTagInfoList(int siteId, int contentId)
         {
             var query = GetQuery(null, siteId, contentId);
-            return _repository.GetAll(query);
+            return _repository.GetAll(query).ToList();
         }
 
         public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
@@ -75,7 +76,7 @@ namespace SS.CMS.Core.Repositories
                 query.OrderByDesc(Attr.UseNum);
             }
 
-            return _repository.GetAll(query);
+            return _repository.GetAll(query).ToList();
         }
 
         public IList<string> GetTagListByStartString(int siteId, string startString, int totalNum)
@@ -86,7 +87,7 @@ namespace SS.CMS.Core.Repositories
                 .WhereContains(Attr.Tag, startString)
                 .OrderByDesc(Attr.UseNum)
                 .Distinct()
-                .Limit(totalNum));
+                .Limit(totalNum)).ToList();
         }
 
         public IList<string> GetTagList(int siteId)
@@ -95,7 +96,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.Tag)
                 .Where(Attr.SiteId, siteId)
                 .Distinct()
-                .OrderByDesc(Attr.UseNum));
+                .OrderByDesc(Attr.UseNum)).ToList();
         }
 
         public void DeleteTags(int siteId)

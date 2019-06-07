@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using SS.CMS.Utils;
 
-namespace SS.CMS.Plugin.Tests
+namespace SS.CMS.Data.Tests
 {
     public class EnvironmentFixture : IDisposable
     {
@@ -10,17 +12,15 @@ namespace SS.CMS.Plugin.Tests
 
         public EnvironmentFixture()
         {
-            var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var dirPath = Path.GetDirectoryName(codeBasePath);
-            ApplicationPhysicalPath = GetParentPath(GetParentPath(GetParentPath(dirPath)));
+            var projDirectoryPath = DirectoryUtils.GetParentPath(Directory.GetCurrentDirectory(), 3);
 
-            EnvUtils.Load(Path.Combine(ApplicationPhysicalPath, "Web.config"));
-        }
-
-        private static string GetParentPath(string path)
-        {
-            return Directory.GetParent(path).FullName;
+            var config = new ConfigurationBuilder()
+                .SetBasePath(projDirectoryPath)
+                .AddJsonFile("appSettings.json")
+                .Build();
+            var databaseType = DatabaseType.GetDatabaseType(config["ss:databaseType"]);
+            var connectionString = config["ss:connectionString"];
+            EnvUtils.DbContext = new DbContext(databaseType, connectionString);
         }
 
         public void Dispose()

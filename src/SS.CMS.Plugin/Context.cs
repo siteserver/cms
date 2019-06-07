@@ -44,12 +44,7 @@ namespace SS.CMS.Plugin
         /// <summary>
         /// 系统使用的数据库类型。
         /// </summary>
-        public static DatabaseType DatabaseType => _environment.DatabaseType;
-
-        /// <summary>
-        /// 系统使用的数据库连接字符串。
-        /// </summary>
-        public static string ConnectionString => _environment.ConnectionString;
+        public static DbContext DbContext => _environment.DbContext;
 
         /// <summary>
         /// 用户中心文件夹名称。

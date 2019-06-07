@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
@@ -13,7 +15,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<AccessTokenInfo> _repository;
         public AccessTokenDao()
         {
-            _repository = new Repository<AccessTokenInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<AccessTokenInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -24,12 +26,12 @@ namespace SS.CMS.Core.Repositories
             public const string Title = nameof(AccessTokenInfo.Title);
         }
 
-        public int Insert(AccessTokenInfo accessTokenInfo)
+        public async Task<int> InsertAsync(AccessTokenInfo accessTokenInfo)
         {
             accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid());
             accessTokenInfo.AddDate = DateTime.Now;
 
-            accessTokenInfo.Id = _repository.Insert(accessTokenInfo);
+            accessTokenInfo.Id = await _repository.InsertAsync(accessTokenInfo);
             if (accessTokenInfo.Id > 0)
             {
                 AccessTokenManager.ClearCache();
@@ -37,9 +39,9 @@ namespace SS.CMS.Core.Repositories
             return accessTokenInfo.Id;
         }
 
-        public bool Update(AccessTokenInfo accessTokenInfo)
+        public async Task<bool> UpdateAsync(AccessTokenInfo accessTokenInfo)
         {
-            var updated = _repository.Update(accessTokenInfo);
+            var updated = await _repository.UpdateAsync(accessTokenInfo);
             if (updated)
             {
                 AccessTokenManager.ClearCache();
@@ -47,9 +49,9 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var deleted = _repository.Delete(id);
+            var deleted = await _repository.DeleteAsync(id);
             if (deleted)
             {
                 AccessTokenManager.ClearCache();
@@ -57,28 +59,33 @@ namespace SS.CMS.Core.Repositories
             return deleted;
         }
 
-        public string Regenerate(AccessTokenInfo accessTokenInfo)
+        public async Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo)
         {
             accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid());
 
-            Update(accessTokenInfo);
+            await UpdateAsync(accessTokenInfo);
 
             return accessTokenInfo.Token;
         }
 
-        public bool IsTitleExists(string title)
+        public async Task<bool> IsTitleExistsAsync(string title)
         {
-            return _repository.Exists(Q.Where(Attr.Title, title));
+            return await _repository.ExistsAsync(Q.Where(Attr.Title, title));
         }
 
         public IList<AccessTokenInfo> GetAll()
         {
-            return _repository.GetAll();
+            return _repository.GetAll().ToList();
         }
 
-        public AccessTokenInfo Get(int id)
+        public async Task<IEnumerable<AccessTokenInfo>> GetAllAsync()
         {
-            return _repository.Get(id);
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<AccessTokenInfo> GetAsync(int id)
+        {
+            return await _repository.GetAsync(id);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<ChannelInfo> _repository;
         public ChannelDao()
         {
-            _repository = new Repository<ChannelInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<ChannelInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -290,7 +290,7 @@ namespace SS.CMS.Core.Repositories
             var idList = _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis));
+                .OrderBy(Attr.Taxis)).ToList();
 
             for (var i = 0; i < idList.Count; i++)
             {
@@ -583,7 +583,7 @@ namespace SS.CMS.Core.Repositories
             var idList = _repository.GetAll<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis));
+                .OrderBy(Attr.Taxis)).ToList();
 
             return idList.IndexOf(channelId) + 1;
         }
@@ -594,7 +594,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.IndexName)
                 .Where(Attr.SiteId, siteId)
                 .OrWhere(Attr.Id, siteId)
-                .Distinct());
+                .Distinct()).ToList();
         }
 
         private static void QueryOrder(Query query, ETaxisType taxisType)
@@ -867,7 +867,7 @@ namespace SS.CMS.Core.Repositories
                 query.Limit(totalNum);
             }
 
-            return _repository.GetAll<int>(query.Select(Attr.Id));
+            return _repository.GetAll<int>(query.Select(Attr.Id)).ToList();
         }
 
         public Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
@@ -925,7 +925,7 @@ namespace SS.CMS.Core.Repositories
             QueryOrder(query, taxisType);
             QueryWhereScope(query, siteId, channelId, isTotal, scopeType);
 
-            var list = _repository.GetAll<Container.Channel>(query);
+            var list = _repository.GetAll<Container.Channel>(query).ToList();
 
             var i = 0;
             foreach (var channel in list)
@@ -940,7 +940,7 @@ namespace SS.CMS.Core.Repositories
         {
             return _repository.GetAll<string>(Q
                 .Select(Attr.ContentModelPluginId)
-                .Distinct());
+                .Distinct()).ToList();
         }
 
         public IList<string> GetAllFilePathBySiteId(int siteId)
@@ -949,7 +949,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.FilePath)
                 .Where(Attr.SiteId, siteId)
                 .WhereNotNull(Attr.FilePath)
-                .WhereNot(Attr.FilePath, string.Empty));
+                .WhereNot(Attr.FilePath, string.Empty)).ToList();
         }
 
         public int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault)
@@ -1018,13 +1018,13 @@ namespace SS.CMS.Core.Repositories
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ChannelTemplateId, templateInfo.Id)
                         .OrWhere(Attr.ChannelTemplateId, 0)
-                        .OrWhereNull(Attr.ChannelTemplateId));
+                        .OrWhereNull(Attr.ChannelTemplateId)).ToList();
                 }
 
                 return _repository.GetAll<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
-                    .Where(Attr.ChannelTemplateId, templateInfo.Id));
+                    .Where(Attr.ChannelTemplateId, templateInfo.Id)).ToList();
             }
 
             if (templateInfo.Type == TemplateType.ContentTemplate)
@@ -1036,13 +1036,13 @@ namespace SS.CMS.Core.Repositories
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ContentTemplateId, templateInfo.Id)
                         .OrWhere(Attr.ContentTemplateId, 0)
-                        .OrWhereNull(Attr.ContentTemplateId));
+                        .OrWhereNull(Attr.ContentTemplateId)).ToList();
                 }
 
                 return _repository.GetAll<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
-                    .Where(Attr.ContentTemplateId, templateInfo.Id));
+                    .Where(Attr.ContentTemplateId, templateInfo.Id)).ToList();
             }
 
             return list;

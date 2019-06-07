@@ -15,7 +15,7 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<TemplateInfo> _repository;
         public TemplateDao()
         {
-            _repository = new Repository<TemplateInfo>(AppSettings.DatabaseType, AppSettings.ConnectionString);
+            _repository = new Repository<TemplateInfo>(AppSettings.DbContext);
         }
 
         public string TableName => _repository.TableName;
@@ -203,7 +203,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, type.Value)
-                .OrderBy(Attr.RelatedFileName));
+                .OrderBy(Attr.RelatedFileName)).ToList();
         }
 
         public IList<TemplateInfo> GetTemplateInfoListOfFile(int siteId)
@@ -211,14 +211,14 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, TemplateType.FileTemplate.Value)
-                .OrderBy(Attr.RelatedFileName));
+                .OrderBy(Attr.RelatedFileName)).ToList();
         }
 
         public IList<TemplateInfo> GetTemplateInfoListBySiteId(int siteId)
         {
             return _repository.GetAll(Q
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.TemplateType, Attr.RelatedFileName));
+                .OrderBy(Attr.TemplateType, Attr.RelatedFileName)).ToList();
         }
 
         public IList<string> GetTemplateNameList(int siteId, TemplateType templateType)
@@ -226,7 +226,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(Attr.TemplateName)
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.TemplateType, templateType.Value));
+                .Where(Attr.TemplateType, templateType.Value)).ToList();
         }
 
         public IList<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType)
@@ -234,7 +234,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(Attr.RelatedFileName)
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.TemplateType, templateType.Value));
+                .Where(Attr.TemplateType, templateType.Value)).ToList();
         }
 
         public void CreateDefaultTemplateInfo(int siteId, string administratorName)
