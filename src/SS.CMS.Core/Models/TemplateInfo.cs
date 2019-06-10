@@ -1,6 +1,6 @@
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Models
 {

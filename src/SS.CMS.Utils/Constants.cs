@@ -2,8 +2,18 @@
 {
     public static class Constants
     {
-        
-        
+        public const string CookieAdminToken = "SS-ADMIN-TOKEN";
+        public const string CookieUserToken = "SS-USER-TOKEN";
+        public const string CookieApiKey = "SS-API-KEY";
+
+        public const string HeaderUserToken = "X-SS-USER-TOKEN";
+        public const string HeaderAdminToken = "X-SS-ADMIN-TOKEN";
+        public const string HeaderApiKey = "X-SS-API-KEY";
+
+        public const string QueryUserToken = "userToken";
+        public const string QueryAdminToken = "adminToken";
+        public const string QueryApiKey = "apiKey";
+
         public const int AccessTokenExpireDays = 7;
 
         public const string ReturnAndNewline = "\r\n";//回车换行

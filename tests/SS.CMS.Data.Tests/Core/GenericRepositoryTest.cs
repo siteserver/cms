@@ -4,6 +4,7 @@ using System.Linq;
 using SqlKata;
 using SS.CMS.Data.Tests.Mocks;
 using SS.CMS.Data.Utils;
+using SS.CMS.Utils;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,21 +13,21 @@ namespace SS.CMS.Data.Tests.Core
     [TestCaseOrderer("SS.CMS.Data.Tests.PriorityOrderer", "SS.CMS.Data.Tests")]
     public class GenericRepositoryTest : IClassFixture<EnvironmentFixture>
     {
-        public EnvironmentFixture Fixture { get; }
+        private readonly EnvironmentFixture _fixture;
         private readonly ITestOutputHelper _output;
         private readonly Repository<TestTableInfo> _repository;
 
         public GenericRepositoryTest(EnvironmentFixture fixture, ITestOutputHelper output)
         {
-            Fixture = fixture;
+            _fixture = fixture;
             _output = output;
-            _repository = new Repository<TestTableInfo>(EnvUtils.DbContext);
+            _repository = new Repository<TestTableInfo>(_fixture.Db);
         }
 
         [SkippableFact, TestPriority(0)]
         public void Start()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var tableName = _repository.TableName;
             var tableColumns = _repository.TableColumns;
@@ -59,19 +60,19 @@ namespace SS.CMS.Data.Tests.Core
             var lockedColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.Locked));
             Assert.Null(lockedColumn);
 
-            var isExists = EnvUtils.DbContext.IsTableExists(tableName);
+            var isExists = _fixture.Db.IsTableExists(tableName);
             if (isExists)
             {
-                EnvUtils.DbContext.DropTable(tableName);
+                _fixture.Db.DropTable(tableName);
             }
 
-            EnvUtils.DbContext.CreateTable(tableName, tableColumns);
+            _fixture.Db.CreateTable(tableName, tableColumns);
         }
 
         [SkippableFact, TestPriority(1)]
         public void TestInsert()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var id = _repository.Insert(null);
             Assert.Equal(0, id);
@@ -117,7 +118,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestGet()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var dataInfo = _repository.Get(1);
             Assert.NotNull(dataInfo);
@@ -151,7 +152,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestGetWithParameters()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "string"));
             Assert.NotNull(dataInfo);
@@ -199,7 +200,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestExists()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var exists = _repository.Exists(new Query()
                 .Where(nameof(TestTableInfo.TypeVarChar100), "string"));
@@ -215,7 +216,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestCount()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var count = _repository.Count();
             Assert.Equal(2, count);
@@ -227,7 +228,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestGetValue()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var guid = _repository.Get<string>(new Query()
                 .Select(nameof(Entity.Guid)).Where("Id", 1));
@@ -247,7 +248,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestGetValues()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var guidList = _repository.GetAll<string>(new Query()
                 .Select(nameof(TestTableInfo.Guid))
@@ -270,7 +271,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(2)]
         public void TestGetAll()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var allList = _repository.GetAll().ToList();
             Assert.Equal(2, allList.Count);
@@ -284,7 +285,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(3)]
         public void TestUpdate()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var dataInfo = _repository.Get(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
@@ -319,7 +320,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(3)]
         public void TestUpdateWithParameters()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var lastModified = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate)).Where("Id", 1));
@@ -355,7 +356,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(3)]
         public void TestUpdateAll()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var lastModified = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate))
@@ -385,7 +386,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(3)]
         public void TestIncrementAll()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var dataInfo = _repository.Get(1);
             Assert.Equal(0, dataInfo.Num);
@@ -406,7 +407,7 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(4)]
         public void TestDelete()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var deleted = _repository.Delete(1);
             Assert.True(deleted);
@@ -418,9 +419,9 @@ namespace SS.CMS.Data.Tests.Core
         [SkippableFact, TestPriority(5)]
         public void End()
         {
-            Skip.IfNot(EnvUtils.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            EnvUtils.DbContext.DropTable(_repository.TableName);
+            _fixture.Db.DropTable(_repository.TableName);
         }
     }
 }

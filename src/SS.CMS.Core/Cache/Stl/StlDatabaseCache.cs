@@ -94,10 +94,10 @@ namespace SS.CMS.Core.Cache.Stl
             return retval;
         }
 
-        public static List<Container.Sql> GetContainerSqlList(DbContext dbContext, string queryString)
+        public static List<Container.Sql> GetContainerSqlList(IDb db, string queryString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetContainerSqlList),
-                dbContext.DatabaseType.Value, dbContext.ConnectionString, queryString);
+                db.DatabaseType.Value, db.ConnectionString, queryString);
             var retval = StlCacheManager.Get<List<Container.Sql>>(cacheKey);
             if (retval != null) return retval;
 
@@ -108,7 +108,7 @@ namespace SS.CMS.Core.Cache.Stl
                 {
                     var rows = new List<Container.Sql>();
                     var itemIndex = 0;
-                    using (var connection = dbContext.GetConnection())
+                    using (var connection = db.GetConnection())
                     {
                         using (var reader = connection.ExecuteReader(queryString))
                         {

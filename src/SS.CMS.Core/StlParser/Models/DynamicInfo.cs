@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using Newtonsoft.Json;
-using SS.CMS.Plugin;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core.StlParser.Models
 {

@@ -1,6 +1,6 @@
-﻿using SS.CMS.Core.Api;
+﻿using SS.CMS.Abstractions;
+using SS.CMS.Core.Api;
 using SS.CMS.Core.Settings;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin.Apis
@@ -14,12 +14,12 @@ namespace SS.CMS.Core.Plugin.Apis
 
         public string Encrypt(string inputString)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString);
+            return AppContext.Encrypt(inputString);
         }
 
         public string Decrypt(string inputString)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString);
+            return AppContext.Decrypt(inputString);
         }
 
         public string FilterXss(string html)
@@ -34,22 +34,22 @@ namespace SS.CMS.Core.Plugin.Apis
 
         public string GetTemporaryFilesPath(string relatedPath)
         {
-            return EnvManager.GetTemporaryFilesPath(relatedPath);
+            return AppContext.GetTemporaryFilesPath(relatedPath);
         }
 
         public string GetRootUrl(string relatedUrl = "")
         {
-            return PageUtils.GetRootUrl(relatedUrl);
+            return AppContext.GetRootUrl(relatedUrl);
         }
 
         public string GetAdminUrl(string relatedUrl = "")
         {
-            return PageUtils.GetAdminUrl(relatedUrl);
+            return AppContext.GetAdminUrl(relatedUrl);
         }
 
         public string GetHomeUrl(string relatedUrl = "")
         {
-            return PageUtils.GetHomeUrl(relatedUrl);
+            return AppContext.GetHomeUrl(relatedUrl);
         }
 
         public string GetApiUrl(string relatedUrl = "")

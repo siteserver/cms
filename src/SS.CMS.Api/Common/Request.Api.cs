@@ -1,4 +1,5 @@
 ﻿using SS.CMS.Core.Common;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Common
@@ -25,7 +26,7 @@ namespace SS.CMS.Api.Common
                     accessToken = cookie;
                 }
 
-                return StringUtils.IsEncrypted(accessToken) ? TranslateUtils.DecryptStringBySecretKey(accessToken) : accessToken;
+                return StringUtils.IsEncrypted(accessToken) ? AppContext.Decrypt(accessToken) : accessToken;
             }
         }
     }

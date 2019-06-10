@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Models;
-using SS.CMS.Core.Plugin.Impl;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Plugin.Apis
 {

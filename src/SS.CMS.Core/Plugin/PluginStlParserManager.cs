@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Core.Plugin.Impl;
+using SS.CMS.Core.Components;
 
 namespace SS.CMS.Core.Plugin
 {

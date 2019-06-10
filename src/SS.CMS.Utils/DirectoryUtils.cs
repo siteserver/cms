@@ -368,26 +368,5 @@ namespace SS.CMS.Utils
             }
             return size;
         }
-
-        public static bool IsSystemDirectory(string directoryName)
-        {
-            if (StringUtils.EqualsIgnoreCase(directoryName, AspnetClient.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, "Bin")
-                || StringUtils.EqualsIgnoreCase(directoryName, SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, AppSettings.AdminDirectory))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static bool IsWebSiteDirectory(string directoryName)
-        {
-            return StringUtils.EqualsIgnoreCase(directoryName, "channels")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "contents")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "Template")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "include")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "upload");
-        }
     }
 }

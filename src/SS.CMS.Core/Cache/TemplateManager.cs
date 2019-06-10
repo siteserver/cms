@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
-using SS.CMS.Plugin;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Cache
 {
@@ -275,15 +277,15 @@ namespace SS.CMS.Core.Cache
             string filePath;
             if (templateInfo.Type == TemplateType.IndexPageTemplate)
             {
-                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppContext.WebRootPath, siteInfo.SiteDir, templateInfo.RelatedFileName);
             }
             else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, DirectoryUtils.Site.Content, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppContext.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, DirectoryUtils.Site.Content, templateInfo.RelatedFileName);
             }
             else
             {
-                filePath = PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, templateInfo.RelatedFileName);
+                filePath = PathUtils.Combine(AppContext.WebRootPath, siteInfo.SiteDir, DirectoryUtils.Site.Template, templateInfo.RelatedFileName);
             }
             return filePath;
         }

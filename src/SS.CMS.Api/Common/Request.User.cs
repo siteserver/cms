@@ -1,6 +1,7 @@
 ﻿using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin.Impl;
+using SS.CMS.Core.Settings;
 using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
@@ -29,7 +30,7 @@ namespace SS.CMS.Api.Common
                     accessToken = query;
                 }
 
-                return StringUtils.IsEncrypted(accessToken) ? TranslateUtils.DecryptStringBySecretKey(accessToken) : accessToken;
+                return StringUtils.IsEncrypted(accessToken) ? AppContext.Decrypt(accessToken) : accessToken;
             }
         }
 

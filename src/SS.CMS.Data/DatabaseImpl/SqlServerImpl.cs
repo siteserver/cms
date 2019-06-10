@@ -51,8 +51,8 @@ namespace SS.CMS.Data.DatabaseImpl
 
             try
             {
-                var dbContext = new DbContext(DatabaseType.SqlServer, connectionString);
-                using (var connection = dbContext.GetConnection())
+                var db = new Db(DatabaseType.SqlServer, connectionString);
+                using (var connection = db.GetConnection())
                 {
                     var version = connection.ExecuteScalar<string>(sqlString);
 

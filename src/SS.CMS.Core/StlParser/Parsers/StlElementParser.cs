@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Plugin;
-using SS.CMS.Core.Plugin.Impl;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;

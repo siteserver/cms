@@ -3,6 +3,7 @@ using System.IO;
 using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Cache.Core
 {
@@ -17,7 +18,7 @@ namespace SS.CMS.Core.Cache.Core
 
         public FileWatcherClass(string cacheName)
         {
-            _cacheFilePath = EnvManager.GetTemporaryFilesPath("Cache", $"{cacheName}.txt");
+            _cacheFilePath = AppContext.GetTemporaryFilesPath("Cache", $"{cacheName}.txt");
 
             FileDependency();
         }

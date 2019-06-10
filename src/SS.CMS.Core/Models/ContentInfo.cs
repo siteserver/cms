@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Models
 {

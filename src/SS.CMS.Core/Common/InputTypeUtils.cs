@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Plugin;
+using SS.CMS.Abstractions;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common

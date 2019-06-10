@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Plugin.Impl;
-using SS.CMS.Plugin;
+using SS.CMS.Core.Components;
 
 namespace SS.CMS.Core.Plugin.Apis
 {
@@ -59,21 +59,6 @@ namespace SS.CMS.Core.Plugin.Apis
         public bool IsMobileExists(string mobile)
         {
             return DataProvider.AdministratorDao.IsMobileExists(mobile);
-        }
-
-        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
-        {
-            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
-        }
-
-        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
-        {
-            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
-        }
-
-        public IAccessToken ParseAccessToken(string accessToken)
-        {
-            return AccessTokenManager.ParseAccessToken(accessToken);
         }
 
         public void Log(string userName, int siteId, string action, string summary = "")

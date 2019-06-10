@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers
@@ -8,18 +10,18 @@ namespace SS.CMS.Api.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private Common.Request _request;
+        private readonly AppSettings _appSettings;
 
-        public ValuesController(Common.Request request)
+        public ValuesController(AppSettings appSettings)
         {
-            _request = request;
+            _appSettings = appSettings;
         }
 
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { "value1", "value2", _request.UserName, AppSettings.ContentRootPath };
+            return new string[] { "value1", "value2", _appSettings.IsNightlyUpdate, _appSettings.SecretKey, _appSettings.Database.Type, AppContext.ContentRootPath };
         }
 
         // GET api/values/5

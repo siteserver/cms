@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Cache
@@ -294,9 +294,11 @@ namespace SS.CMS.Core.Cache
             {
                 builder.Append($"最多{styleInfo.MaxNum}个字符;");
             }
-            if (ValidateTypeUtils.Equals(styleInfo.ValidateType, ValidateType.None))
+
+            var validateType = ValidateType.GetValidateType(styleInfo.ValidateType);
+            if (validateType != ValidateType.None)
             {
-                builder.Append($"验证:{ValidateTypeUtils.GetText(ValidateTypeUtils.GetEnumType(styleInfo.ValidateType))};");
+                builder.Append($"验证:{ValidateType.GetText(validateType)};");
             }
 
             if (builder.Length > 0)

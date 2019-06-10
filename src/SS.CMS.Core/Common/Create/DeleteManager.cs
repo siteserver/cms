@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common.Create

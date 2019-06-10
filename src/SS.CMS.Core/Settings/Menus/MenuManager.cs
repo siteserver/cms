@@ -2,37 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Settings.Menus
 {
     public static class MenuManager
     {
-        public static TabCollection GetTabs(string filePath)
+        public static MenuCollection GetTabs(string filePath)
         {
             if (filePath.StartsWith("/") || filePath.StartsWith("~"))
             {
                 filePath = PathUtilsEx.MapContentRootPath(filePath);
             }
 
-            var tc = CacheUtils.Get(filePath) as TabCollection;
+            var tc = CacheUtils.Get(filePath) as MenuCollection;
             if (tc != null) return tc;
 
-            tc = (TabCollection)Serializer.ConvertFileToObject(filePath, typeof(TabCollection));
+            tc = (MenuCollection)Serializer.ConvertFileToObject(filePath, typeof(MenuCollection));
             CacheUtils.Insert(filePath, tc, filePath);
             return tc;
         }
 
-        public static List<Tab> GetTopMenuTabs()
+        public static List<Menu> GetTopMenuTabs()
         {
-            var list = new List<Tab>();
+            var list = new List<Menu>();
 
-            var menuPath = EnvManager.GetMenusPath("Top.config");
+            var menuPath = AppContext.GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
-            foreach (var parent in tabs.Tabs)
+            foreach (var parent in tabs.Menus)
             {
                 list.Add(parent);
             }
@@ -40,15 +39,15 @@ namespace SS.CMS.Core.Settings.Menus
             return list;
         }
 
-        public static List<Tab> GetTopMenuTabsWithChildren()
+        public static List<Menu> GetTopMenuTabsWithChildren()
         {
-            var list = new List<Tab>();
+            var list = new List<Menu>();
 
-            var menuPath = EnvManager.GetMenusPath("Top.config");
+            var menuPath = AppContext.GetMenusPath("Top.config");
             if (!FileUtils.IsFileExists(menuPath)) return list;
 
             var tabs = GetTabs(menuPath);
-            foreach (var parent in tabs.Tabs)
+            foreach (var parent in tabs.Menus)
             {
                 if (parent.HasChildren)
                 {
@@ -60,13 +59,13 @@ namespace SS.CMS.Core.Settings.Menus
             return list;
         }
 
-        public static bool IsValid(Tab tab, IList permissionList)
+        public static bool IsValid(Menu menu, IList permissionList)
         {
-            if (tab.HasPermissions)
+            if (menu.HasPermissions)
             {
                 if (permissionList != null && permissionList.Count > 0)
                 {
-                    var tabPermissions = tab.Permissions.Split(',');
+                    var tabPermissions = menu.Permissions.Split(',');
                     foreach (var tabPermission in tabPermissions)
                     {
                         if (permissionList.Contains(tabPermission))
@@ -82,9 +81,9 @@ namespace SS.CMS.Core.Settings.Menus
             return true;
         }
 
-        private static Tab GetPluginTab(Menu menu, string permission)
+        private static Menu GetPluginTab(Abstractions.Menu menu, string permission)
         {
-            var tab = new Tab
+            var tab = new Menu
             {
                 Id = menu.Id,
                 Text = menu.Text,
@@ -96,7 +95,7 @@ namespace SS.CMS.Core.Settings.Menus
             };
             if (menu.Menus != null && menu.Menus.Count > 0)
             {
-                tab.Children = new Tab[menu.Menus.Count];
+                tab.Children = new Menu[menu.Menus.Count];
                 for (var i = 0; i < menu.Menus.Count; i++)
                 {
                     tab.Children[i] = GetPluginTab(menu.Menus[i], permission);
@@ -105,17 +104,17 @@ namespace SS.CMS.Core.Settings.Menus
             return tab;
         }
 
-        public static List<Tab> GetTabList(string topId, int siteId)
+        public static List<Menu> GetTabList(string topId, int siteId)
         {
-            var tabs = new List<Tab>();
+            var tabs = new List<Menu>();
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var filePath = EnvManager.GetMenusPath($"{topId}.config");
+                var filePath = AppContext.GetMenusPath($"{topId}.config");
                 var tabCollection = GetTabs(filePath);
-                if (tabCollection?.Tabs != null)
+                if (tabCollection?.Menus != null)
                 {
-                    foreach (var tabCollectionTab in tabCollection.Tabs)
+                    foreach (var tabCollectionTab in tabCollection.Menus)
                     {
                         tabs.Add(tabCollectionTab.Clone());
                     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using Newtonsoft.Json;
 
 namespace SS.CMS.Data
@@ -38,23 +37,23 @@ namespace SS.CMS.Data
 
         public static DatabaseType GetDatabaseType(string databaseType)
         {
-            var retVal = DatabaseType.MySql;
+            var retVal = MySql;
 
             if (string.Equals(databaseType, nameof(SqlServer), StringComparison.OrdinalIgnoreCase))
             {
-                retVal = DatabaseType.SqlServer;
+                retVal = SqlServer;
             }
             else if (string.Equals(databaseType, nameof(PostgreSql), StringComparison.OrdinalIgnoreCase))
             {
-                retVal = DatabaseType.PostgreSql;
+                retVal = PostgreSql;
             }
             else if (string.Equals(databaseType, nameof(Oracle), StringComparison.OrdinalIgnoreCase))
             {
-                retVal = DatabaseType.Oracle;
+                retVal = Oracle;
             }
             else if (string.Equals(databaseType, nameof(SQLite), StringComparison.OrdinalIgnoreCase))
             {
-                retVal = DatabaseType.SQLite;
+                retVal = SQLite;
             }
 
             return retVal;

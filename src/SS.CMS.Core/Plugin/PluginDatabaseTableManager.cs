@@ -1,4 +1,5 @@
-﻿using SS.CMS.Core.Plugin.Impl;
+﻿using SS.CMS.Core.Components;
+using SS.CMS.Core.Settings;
 using SS.CMS.Data;
 using SS.CMS.Utils;
 
@@ -15,13 +16,13 @@ namespace SS.CMS.Core.Plugin
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!AppSettings.DbContext.IsTableExists(tableName))
+                if (!AppContext.Db.IsTableExists(tableName))
                 {
-                    AppSettings.DbContext.CreateTable(tableName, tableColumns);
+                    AppContext.Db.CreateTable(tableName, tableColumns);
                 }
                 else
                 {
-                    AppSettings.DbContext.AlterTable(tableName, tableColumns, null);
+                    AppContext.Db.AlterTable(tableName, tableColumns, null);
                 }
             }
         }

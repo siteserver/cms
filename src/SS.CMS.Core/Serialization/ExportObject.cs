@@ -22,7 +22,7 @@ namespace SS.CMS.Core.Serialization
         public ExportObject(int siteId, string adminName)
         {
             _siteInfo = SiteManager.GetSiteInfo(siteId);
-            _sitePath = PathUtils.Combine(AppSettings.WebRootPath, _siteInfo.SiteDir);
+            _sitePath = PathUtils.Combine(AppContext.WebRootPath, _siteInfo.SiteDir);
             _adminName = adminName;
         }
 
@@ -57,7 +57,7 @@ namespace SS.CMS.Core.Serialization
                                 }
                             }
                         }
-                        if (!isSiteDirectory && !DirectoryUtils.IsSystemDirectory(fileSystem.Name))
+                        if (!isSiteDirectory && !AppContext.IsSystemDirectory(fileSystem.Name))
                         {
                             DirectoryUtils.CreateDirectoryIfNotExists(destPath);
                             DirectoryUtils.MoveDirectory(srcPath, destPath, false);
@@ -96,8 +96,8 @@ namespace SS.CMS.Core.Serialization
 
         public string ExportSingleTableStyle(string tableName, int relatedIdentity)
         {
-            var filePath = EnvManager.GetTemporaryFilesPath("tableStyle.zip");
-            var styleDirectoryPath = EnvManager.GetTemporaryFilesPath("TableStyle");
+            var filePath = AppContext.GetTemporaryFilesPath("tableStyle.zip");
+            var styleDirectoryPath = AppContext.GetTemporaryFilesPath("TableStyle");
             TableStyleIe.SingleExportTableStyles(tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
@@ -108,8 +108,8 @@ namespace SS.CMS.Core.Serialization
 
         public static string ExportRootSingleTableStyle(string tableName)
         {
-            var filePath = EnvManager.GetTemporaryFilesPath("tableStyle.zip");
-            var styleDirectoryPath = EnvManager.GetTemporaryFilesPath("TableStyle");
+            var filePath = AppContext.GetTemporaryFilesPath("tableStyle.zip");
+            var styleDirectoryPath = AppContext.GetTemporaryFilesPath("TableStyle");
             TableStyleIe.SingleExportTableStyles(tableName, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
@@ -154,8 +154,8 @@ namespace SS.CMS.Core.Serialization
 
         public string ExportRelatedField(int relatedFieldId)
         {
-            var directoryPath = EnvManager.GetTemporaryFilesPath("relatedField");
-            var filePath = EnvManager.GetTemporaryFilesPath("relatedField.zip");
+            var directoryPath = AppContext.GetTemporaryFilesPath("relatedField");
+            var filePath = AppContext.GetTemporaryFilesPath("relatedField.zip");
 
             FileUtils.DeleteFileIfExists(filePath);
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
@@ -249,7 +249,7 @@ namespace SS.CMS.Core.Serialization
 
         public string ExportChannels(List<int> channelIdList)
         {
-            var filePath = EnvManager.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.ChannelsAndContents) + ".zip");
+            var filePath = AppContext.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.ChannelsAndContents) + ".zip");
             return ExportChannels(channelIdList, filePath);
         }
 

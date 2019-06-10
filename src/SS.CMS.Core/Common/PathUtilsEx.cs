@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -25,7 +27,7 @@ namespace SS.CMS.Core.Common
             {
                 virtualPath = "~/";
             }
-            var rootPath = AppSettings.ContentRootPath;
+            var rootPath = AppContext.ContentRootPath;
 
             virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
             retval = PathUtils.Combine(rootPath, virtualPath);
@@ -50,7 +52,7 @@ namespace SS.CMS.Core.Common
             {
                 virtualPath = "~/";
             }
-            var rootPath = AppSettings.WebRootPath;
+            var rootPath = AppContext.WebRootPath;
 
             virtualPath = !string.IsNullOrEmpty(virtualPath) ? virtualPath.Substring(2) : string.Empty;
             retval = PathUtils.Combine(rootPath, virtualPath);

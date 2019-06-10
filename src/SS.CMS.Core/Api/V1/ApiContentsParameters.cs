@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using SS.CMS.Plugin;
+using Microsoft.AspNetCore.Http;
+using SS.CMS.Abstractions;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Api.V1
 {
     public class ApiContentsParameters
     {
-        public ApiContentsParameters(IRequest request)
+        public ApiContentsParameters(HttpRequest request)
         {
             ChannelIds = TranslateUtils.StringCollectionToIntList(request.GetQueryString("channelIds"));
             ChannelGroup = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("channelGroup")));
@@ -18,7 +19,7 @@ namespace SS.CMS.Core.Api.V1
             Likes = TranslateUtils.StringCollectionToStringList(StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("like"))));
             OrderBy = StringUtils.Trim(AttackUtils.FilterSql(request.GetQueryString("orderBy")));
             QueryString = new NameValueCollection();
-            foreach (var key in request.QueryKeys)
+            foreach (var key in request.Query.Keys)
             {
                 QueryString[key] = request.GetQueryString(key);
             }

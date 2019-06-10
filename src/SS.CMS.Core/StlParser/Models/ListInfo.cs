@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Text;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
@@ -310,12 +311,12 @@ namespace SS.CMS.Core.StlParser.Models
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConfigName))
                 {
                     listInfo.DatabaseType =
-                        DatabaseType.GetDatabaseType(AppSettings.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.DatabaseType}"]);
-                    listInfo.ConnectionString = AppSettings.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.ConnectionString}"];
+                        DatabaseType.GetDatabaseType(AppContext.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.DatabaseType}"]);
+                    listInfo.ConnectionString = AppContext.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.ConnectionString}"];
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
-                        listInfo.DatabaseType = AppSettings.DbContext.DatabaseType;
-                        listInfo.ConnectionString = AppSettings.DbContext.ConnectionString;
+                        listInfo.DatabaseType = AppContext.Db.DatabaseType;
+                        listInfo.ConnectionString = AppContext.Db.ConnectionString;
                     }
                 }
                 else if (contextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseType))

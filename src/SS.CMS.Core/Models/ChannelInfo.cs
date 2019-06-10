@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Models
 {
@@ -97,7 +97,7 @@ namespace SS.CMS.Core.Models
         }
 
         [JsonIgnore]
-        public ContentDao ContentDao => ContentDao.Instance(this);
+        public ContentDao ContentDao => ContentDao.Instance(Settings.AppContext.Db, this);
 
         //是否可以添加栏目
         public bool IsChannelAddable { get; set; } = true;

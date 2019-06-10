@@ -1,5 +1,5 @@
-﻿using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
+﻿using SS.CMS.Core.Models;
+using SS.CMS.Core.Repositories;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 using Xunit;
@@ -10,12 +10,12 @@ namespace SS.CMS.Core.Tests.Repositories
     [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
     public class AdministratorDaoTest : IClassFixture<EnvironmentFixture>
     {
-        public EnvironmentFixture Fixture { get; }
+        private readonly EnvironmentFixture _fixture;
         private readonly ITestOutputHelper _output;
 
         public AdministratorDaoTest(EnvironmentFixture fixture, ITestOutputHelper output)
         {
-            Fixture = fixture;
+            _fixture = fixture;
             _output = output;
         }
 
@@ -25,10 +25,10 @@ namespace SS.CMS.Core.Tests.Repositories
         public void TestInsert()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
+            var administratorDao = new AdministratorDao(_fixture.Db);
 
             var adminInfo = new AdministratorInfo();
-
-            var id = DataProvider.AdministratorDao.Insert(adminInfo, out _);
+            var id = administratorDao.Insert(adminInfo, out _);
 
             Assert.True(id == 0);
 
@@ -38,7 +38,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest"
             };
 
-            id = DataProvider.AdministratorDao.Insert(adminInfo, out var errorMessage);
+            id = administratorDao.Insert(adminInfo, out var errorMessage);
             _output.WriteLine(errorMessage);
 
             Assert.True(id == 0);
@@ -49,7 +49,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest@2"
             };
 
-            id = DataProvider.AdministratorDao.Insert(adminInfo, out errorMessage);
+            id = administratorDao.Insert(adminInfo, out errorMessage);
             _output.WriteLine(errorMessage);
 
             Assert.True(id > 0);
@@ -62,8 +62,9 @@ namespace SS.CMS.Core.Tests.Repositories
         public void TestUpdate()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
+            var administratorDao = new AdministratorDao(_fixture.Db);
 
-            var adminInfo = DataProvider.AdministratorDao.GetByUserName(TestUserName);
+            var adminInfo = administratorDao.GetByUserName(TestUserName);
 
             var password = adminInfo.Password;
             var passwordFormat = adminInfo.PasswordFormat;
@@ -71,7 +72,7 @@ namespace SS.CMS.Core.Tests.Repositories
 
             adminInfo.Password = "cccc@d";
 
-            var updated = DataProvider.AdministratorDao.Update(adminInfo, out _);
+            var updated = administratorDao.Update(adminInfo, out _);
             Assert.True(updated);
             Assert.True(adminInfo.Password == password);
             Assert.True(adminInfo.PasswordFormat == passwordFormat);
@@ -82,14 +83,15 @@ namespace SS.CMS.Core.Tests.Repositories
         public void TestUpdateLastActivityDateAndCountOfFailedLogin()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
+            var administratorDao = new AdministratorDao(_fixture.Db);
 
-            var adminInfo = DataProvider.AdministratorDao.GetByUserName(TestUserName);
+            var adminInfo = administratorDao.GetByUserName(TestUserName);
             Assert.NotNull(adminInfo);
             Assert.Equal(TestUserName, adminInfo.UserName);
 
             var countOfFailedLogin = adminInfo.CountOfFailedLogin;
 
-            var updated = DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo);
+            var updated = administratorDao.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo);
             Assert.True(updated);
             Assert.Equal(countOfFailedLogin, adminInfo.CountOfFailedLogin - 1);
         }
@@ -98,12 +100,13 @@ namespace SS.CMS.Core.Tests.Repositories
         public void TestDelete()
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
+            var administratorDao = new AdministratorDao(_fixture.Db);
 
-            var adminInfo = DataProvider.AdministratorDao.GetByUserName(TestUserName);
+            var adminInfo = administratorDao.GetByUserName(TestUserName);
             Assert.NotNull(adminInfo);
             Assert.Equal(TestUserName, adminInfo.UserName);
 
-            var deleted = DataProvider.AdministratorDao.Delete(adminInfo);
+            var deleted = administratorDao.Delete(adminInfo);
 
             Assert.True(deleted);
         }

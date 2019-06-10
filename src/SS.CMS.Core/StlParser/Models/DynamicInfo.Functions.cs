@@ -1,23 +1,26 @@
-﻿using SS.CMS.Plugin;
+﻿using System.Collections.Specialized;
+using AngleSharp.Common;
+using Microsoft.AspNetCore.Http;
+using SS.CMS.Abstractions;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.Models
 {
     public partial class DynamicInfo
     {
-        public static DynamicInfo GetDynamicInfo(IRequest request, IUserInfo userInfo)
+        public static DynamicInfo GetDynamicInfo(NameValueCollection queryString, string value, int page, IUserInfo userInfo)
         {
-            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(TranslateUtils.DecryptStringBySecretKey(request.GetPostString("value")));
+            var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(AppContext.Decrypt(value));
             if (dynamicInfo.ChannelId == 0)
             {
                 dynamicInfo.ChannelId = dynamicInfo.SiteId;
             }
             dynamicInfo.UserInfo = userInfo;
-            dynamicInfo.QueryString =
-                PageUtils.GetQueryStringFilterXss(PageUtils.UrlDecode(request.RawUrl));
+            dynamicInfo.QueryString = queryString;
             dynamicInfo.QueryString.Remove("siteId");
 
-            dynamicInfo.Page = request.GetPostInt("page");
+            dynamicInfo.Page = page;
 
             return dynamicInfo;
         }
@@ -31,7 +34,7 @@ namespace SS.CMS.Core.StlParser.Models
                 return string.Empty;
             }
 
-            var values = TranslateUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this));
+            var values = AppContext.Encrypt(TranslateUtils.JsonSerialize(this));
 
             return $@"
 <div id=""{AjaxDivId}_loading"">{LoadingTemplate}</div>

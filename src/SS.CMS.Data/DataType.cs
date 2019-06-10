@@ -40,6 +40,38 @@ namespace SS.CMS.Data
         /// </summary>
         public static readonly DataType VarChar = new DataType(nameof(VarChar));
 
+        public static DataType GetDataType(string dataType)
+        {
+            var retVal = VarChar;
+
+            if (string.Equals(dataType, nameof(Boolean), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = Boolean;
+            }
+            else if (string.Equals(dataType, nameof(DateTime), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DateTime;
+            }
+            else if (string.Equals(dataType, nameof(Decimal), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = Decimal;
+            }
+            else if (string.Equals(dataType, nameof(Integer), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = Integer;
+            }
+            else if (string.Equals(dataType, nameof(Text), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = Text;
+            }
+            else if (string.Equals(dataType, nameof(VarChar), StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = DataType.VarChar;
+            }
+
+            return retVal;
+        }
+
         internal DataType(string value)
         {
             if (string.IsNullOrEmpty(value))

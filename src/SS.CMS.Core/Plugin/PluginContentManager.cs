@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Models;
-using SS.CMS.Core.Plugin.Impl;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin

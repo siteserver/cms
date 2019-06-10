@@ -8,8 +8,10 @@ using MySql.Data.MySqlClient;
 using Npgsql;
 using NpgsqlTypes;
 using Oracle.ManagedDataAccess.Client;
+using SS.CMS.Core.Settings;
 using SS.CMS.Data;
 using SS.CMS.Utils;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -24,19 +26,19 @@ namespace SS.CMS.Core.Common
             var retval = string.Empty;
             inStr = AttackUtils.FilterSql(inStr);
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"INSTR({columnName}, '{inStr}') > 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"CHARINDEX('{inStr}', {columnName}) > 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"INSTR({columnName}, '{inStr}') > 0";
             }
@@ -101,19 +103,19 @@ namespace SS.CMS.Core.Common
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"INSTR({columnName}, '{inStr}') = 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"CHARINDEX('{inStr}', {columnName}) = 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"POSITION('{inStr}' IN {columnName}) = 0";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"INSTR({columnName}, '{inStr}') = 0";
             }
@@ -126,19 +128,19 @@ namespace SS.CMS.Core.Common
             string retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retval;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
@@ -151,19 +153,19 @@ namespace SS.CMS.Core.Common
             string retval = $"SELECT * FROM ({sqlString}) {orderString}";
             if (topN <= 0) return retval;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $@"SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
@@ -186,7 +188,7 @@ namespace SS.CMS.Core.Common
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -195,7 +197,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $@"
 SELECT * FROM (
@@ -204,7 +206,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $@"
 SELECT * FROM (
@@ -213,7 +215,7 @@ SELECT * FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $@"
 SELECT * FROM (
@@ -231,19 +233,19 @@ SELECT * FROM (
             var retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString}";
             if (topN <= 0) return retval;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
@@ -276,12 +278,12 @@ SELECT * FROM (
 
         public static string GetQuotedIdentifier(string identifier)
         {
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 return $"`{identifier}`";
             }
 
-            return AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer ? $"[{identifier}]" : identifier;
+            return AppContext.Db.DatabaseType == DatabaseType.SqlServer ? $"[{identifier}]" : identifier;
         }
 
         public static string GetColumnSqlString(TableColumn tableColumn)
@@ -296,22 +298,22 @@ SELECT * FROM (
                 return GetAutoIncrementDataType();
             }
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 return ToMySqlColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 return ToSqlServerColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 return ToPostgreColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 return ToOracleColumnTypeString(tableColumn.DataType, tableColumn.DataLength);
             }
@@ -321,7 +323,7 @@ SELECT * FROM (
 
         public static string GetPrimaryKeySqlString(string tableName, string attributeName)
         {
-            return AppSettings.DbContext.DatabaseType == DatabaseType.MySql
+            return AppContext.Db.DatabaseType == DatabaseType.MySql
                 ? $@"PRIMARY KEY ({attributeName})"
                 : $@"CONSTRAINT PK_{tableName}_{attributeName} PRIMARY KEY ({attributeName})";
         }
@@ -354,19 +356,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
             }
@@ -378,19 +380,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"ALTER TABLE `{tableName}` MODIFY {columnName} {columnTypeString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"ALTER TABLE [{tableName}] ALTER COLUMN {columnName} {columnTypeString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} TYPE {columnTypeString}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"ALTER TABLE {tableName} MODIFY {columnName} {columnTypeString}";
             }
@@ -402,19 +404,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
@@ -430,19 +432,19 @@ SELECT * FROM (
             //{
             //    retval = "INT AUTO_INCREMENT PRIMARY KEY";
             //}
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = alterTable ? "INT AUTO_INCREMENT UNIQUE KEY" : "INT AUTO_INCREMENT";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = "int IDENTITY (1, 1)";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = "SERIAL";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = "NUMBER GENERATED BY DEFAULT ON NULL AS IDENTITY";
             }
@@ -456,7 +458,7 @@ SELECT * FROM (
 
             var dataType = DataType.VarChar;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 dataTypeStr = dataTypeStr.ToLower().Trim();
                 switch (dataTypeStr)
@@ -487,7 +489,7 @@ SELECT * FROM (
                         break;
                 }
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 dataTypeStr = dataTypeStr.ToLower().Trim();
                 switch (dataTypeStr)
@@ -521,7 +523,7 @@ SELECT * FROM (
                         break;
                 }
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 dataTypeStr = dataTypeStr.ToLower().Trim();
                 switch (dataTypeStr)
@@ -546,7 +548,7 @@ SELECT * FROM (
                         break;
                 }
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 dataTypeStr = dataTypeStr.ToUpper().Trim();
                 if (dataTypeStr.StartsWith("TIMESTAMP("))
@@ -842,19 +844,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
@@ -871,19 +873,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"DATEDIFF({unit}, {fieldName}, getdate()) > {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} > {fieldValue}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) > {fieldValue}";
             }
@@ -895,19 +897,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"DATE_FORMAT({fieldName}, '%Y')";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"DATEPART([YEAR], {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"date_part('year', {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT(year from {fieldName})";
             }
@@ -919,19 +921,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"DATE_FORMAT({fieldName}, '%c')";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"DATEPART([MONTH], {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"date_part('month', {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT(month from {fieldName})";
             }
@@ -943,19 +945,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"DATE_FORMAT({fieldName}, '%e')";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"DATEPART([DAY], {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"date_part('day', {fieldName})";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"EXTRACT(day from {fieldName})";
             }
@@ -967,19 +969,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = "now()";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = "getdate()";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = "current_timestamp";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = "sysdate";
             }
@@ -991,19 +993,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"'{dateTime:yyyy-MM-dd}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
             }
@@ -1015,19 +1017,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
             }
@@ -1039,19 +1041,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
             }
@@ -1063,19 +1065,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
             }
@@ -1087,19 +1089,19 @@ SELECT * FROM (
         {
             var retval = string.Empty;
 
-            if (AppSettings.DbContext.DatabaseType == DatabaseType.MySql)
+            if (AppContext.Db.DatabaseType == DatabaseType.MySql)
             {
                 retval = "ORDER BY RAND()";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.SqlServer)
+            else if (AppContext.Db.DatabaseType == DatabaseType.SqlServer)
             {
                 retval = "ORDER BY NEWID() DESC";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.PostgreSql)
+            else if (AppContext.Db.DatabaseType == DatabaseType.PostgreSql)
             {
                 retval = "ORDER BY random()";
             }
-            else if (AppSettings.DbContext.DatabaseType == DatabaseType.Oracle)
+            else if (AppContext.Db.DatabaseType == DatabaseType.Oracle)
             {
                 retval = "ORDER BY dbms_random.value()";
             }

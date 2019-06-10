@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -12,24 +14,24 @@ namespace SS.CMS.Core.Common
 
         public static string GetMainUrl(int siteId)
         {
-            return PageUtils.GetAdminUrl($"main.cshtml?siteId={siteId}");
+            return AppContext.GetAdminUrl($"main.cshtml?siteId={siteId}");
         }
 
 
 
         public static string GetSiteFilesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
+            return PageUtils.Combine(AppContext.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
         }
 
         public static string GetTemporaryFilesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
+            return PageUtils.Combine(AppContext.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles, relatedUrl);
         }
 
         public static string GetSiteTemplatesUrl(string relatedUrl)
         {
-            return PageUtils.Combine(AppSettings.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
+            return PageUtils.Combine(AppContext.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteTemplates.DirectoryName, relatedUrl);
         }
 
         public static string GetSiteTemplateMetadataUrl(string siteTemplateUrl, string relatedUrl)
@@ -45,12 +47,12 @@ namespace SS.CMS.Core.Common
 
             if (StringUtils.StartsWith(url, "~/"))
             {
-                return PageUtils.GetRootUrl(url.Substring(1));
+                return AppContext.GetRootUrl(url.Substring(1));
             }
 
             if (StringUtils.StartsWith(url, "@/"))
             {
-                return PageUtils.GetAdminUrl(url.Substring(1));
+                return AppContext.GetAdminUrl(url.Substring(1));
             }
 
             return GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
@@ -58,37 +60,37 @@ namespace SS.CMS.Core.Common
 
         public static string GetSiteServerUrl(string className)
         {
-            return PageUtils.GetAdminUrl(className.ToCamelCase() + ".cshtml");
+            return AppContext.GetAdminUrl(className.ToCamelCase() + ".cshtml");
         }
 
         public static string GetSiteServerUrl(string className, NameValueCollection queryString)
         {
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl(className.ToCamelCase() + ".aspx"), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl(className.ToCamelCase() + ".aspx"), queryString);
         }
 
         public static string GetPluginsUrl(string className)
         {
-            return PageUtils.GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".cshtml"));
+            return AppContext.GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetPluginsUrl(string className, NameValueCollection queryString)
         {
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".aspx")), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".aspx")), queryString);
         }
 
         public static string GetSettingsUrl(string className)
         {
-            return PageUtils.GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".cshtml"));
+            return AppContext.GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".cshtml"));
         }
 
         public static string GetSettingsUrl(string className, NameValueCollection queryString)
         {
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".aspx")), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".aspx")), queryString);
         }
 
         public static string GetCmsUrl(string pageName, int siteId, object param = null)
         {
-            var url = PageUtils.GetAdminUrl(PageUtils.Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
+            var url = AppContext.GetAdminUrl(PageUtils.Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
             return param == null ? url : param.GetType().GetProperties().Aggregate(url, (current, p) => current + $"&{p.Name.ToCamelCase()}={p.GetValue(param)}");
         }
 
@@ -96,40 +98,40 @@ namespace SS.CMS.Core.Common
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl($"cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl($"cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
         }
 
         public static string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
         {
             queryString = queryString ?? new NameValueCollection();
             queryString.Remove("siteId");
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl($"cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl($"cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
         }
 
         public static string GetAjaxUrl(string className, NameValueCollection queryString)
         {
-            return PageUtils.AddQueryString(PageUtils.GetAdminUrl(PageUtils.Combine("ajax", className.ToLower() + ".aspx")), queryString);
+            return PageUtils.AddQueryString(AppContext.GetAdminUrl(PageUtils.Combine("ajax", className.ToLower() + ".aspx")), queryString);
         }
 
 
 
         public static string GetRootUrlByPhysicalPath(string physicalPath)
         {
-            var requestPath = PathUtils.GetPathDifference(AppSettings.WebRootPath, physicalPath);
+            var requestPath = PathUtils.GetPathDifference(AppContext.WebRootPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
-            return PageUtils.GetRootUrl(requestPath);
+            return AppContext.GetRootUrl(requestPath);
         }
 
         public static string GetLoadingUrl(string url)
         {
-            return PageUtils.GetAdminUrl($"loading.aspx?redirectUrl={TranslateUtils.EncryptStringBySecretKey(url)}");
+            return AppContext.GetAdminUrl($"loading.aspx?redirectUrl={AppContext.Encrypt(url)}");
         }
 
         public static string ParseNavigationUrl(string url)
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
-            url = url.StartsWith("~") ? PageUtils.Combine(AppSettings.ApplicationPath, url.Substring(1)) : url;
+            url = url.StartsWith("~") ? PageUtils.Combine(AppContext.ApplicationPath, url.Substring(1)) : url;
             url = url.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
             return url;
         }

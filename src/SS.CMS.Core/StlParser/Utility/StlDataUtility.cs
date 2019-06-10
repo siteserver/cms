@@ -8,6 +8,7 @@ using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Plugin;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Data;
 using SS.CMS.Utils;
@@ -474,14 +475,14 @@ namespace SS.CMS.Core.StlParser.Utility
         public static List<Container.Sql> GetContainerSqlList(string connectionString, string queryString, int startNum, int totalNum, string orderByString)
         {
             var sqlString = StlSqlContentsCache.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, orderByString);
-            var dbContext = new DbContext(AppSettings.DbContext.DatabaseType, connectionString);
-            return StlDatabaseCache.GetContainerSqlList(dbContext, sqlString);
+            var db = new Db(AppContext.Db.DatabaseType, connectionString);
+            return StlDatabaseCache.GetContainerSqlList(db, sqlString);
         }
 
         public static List<Container.Sql> GetPageContainerSqlList(string connectionString, string pageSqlString)
         {
-            var dbContext = new DbContext(AppSettings.DbContext.DatabaseType, connectionString);
-            return StlDatabaseCache.GetContainerSqlList(dbContext, pageSqlString);
+            var db = new Db(AppContext.Db.DatabaseType, connectionString);
+            return StlDatabaseCache.GetContainerSqlList(db, pageSqlString);
         }
 
         public static DataSet GetSqlContentsDataSource(string connectionString, string queryString, int startNum, int totalNum, string orderByString)

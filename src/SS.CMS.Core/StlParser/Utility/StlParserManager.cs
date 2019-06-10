@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Models;
-using SS.CMS.Core.Plugin.Impl;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.StlElement;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.Utility
@@ -88,7 +89,7 @@ namespace SS.CMS.Core.StlParser.Utility
 
         public static string StlEncrypt(string stlElement)
         {
-            return $"<!-- {TranslateUtils.EncryptStringBySecretKey(stlElement)} -->";
+            return $"<!-- {AppContext.Encrypt(stlElement)} -->";
         }
 
         public static void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int channelId, int contentId, int currentPageIndex, int pageCount)

@@ -7,6 +7,7 @@ using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Plugin.Apis;
+using SS.CMS.Core.Repositories;
 using SS.CMS.Plugin;
 
 namespace SS.CMS.Api.Common
@@ -17,36 +18,36 @@ namespace SS.CMS.Api.Common
         private AdministratorInfo _adminInfo;
         private readonly UserInfo _userInfo;
 
-        public Request(HttpContext context)
+        public Request(HttpContext context, IAccessTokenRepository accessTokenRepository)
         {
             _context = context;
 
             try
             {
                 var apiToken = ApiToken;
-                if (!string.IsNullOrEmpty(apiToken))
-                {
-                    var tokenInfo = AccessTokenManager.GetAccessTokenInfo(apiToken);
-                    if (tokenInfo != null)
-                    {
-                        if (!string.IsNullOrEmpty(tokenInfo.AdminName))
-                        {
-                            var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
-                            if (adminInfo != null && !adminInfo.Locked)
-                            {
-                                _adminInfo = adminInfo;
-                                IsAdminLoggin = true;
-                            }
-                        }
+                //if (!string.IsNullOrEmpty(apiToken))
+                //{
+                //    var tokenInfo = await cacheService.GetAccessTokenInfoAsync(apiToken);
+                //    if (tokenInfo != null)
+                //    {
+                //        if (!string.IsNullOrEmpty(tokenInfo.AdminName))
+                //        {
+                //            var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
+                //            if (adminInfo != null && !adminInfo.Locked)
+                //            {
+                //                _adminInfo = adminInfo;
+                //                IsAdminLoggin = true;
+                //            }
+                //        }
 
-                        IsApiAuthenticated = true;
-                    }
-                }
+                //        IsApiAuthenticated = true;
+                //    }
+                //}
 
                 var userToken = UserToken;
                 if (!string.IsNullOrEmpty(userToken))
                 {
-                    var tokenImpl = UserApi.Instance.ParseAccessToken(userToken);
+                    var tokenImpl = accessTokenRepository.ParseAccessToken(userToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
@@ -61,7 +62,7 @@ namespace SS.CMS.Api.Common
                 var adminToken = AdminToken;
                 if (!string.IsNullOrEmpty(adminToken))
                 {
-                    var tokenImpl = AdminApi.Instance.ParseAccessToken(adminToken);
+                    var tokenImpl = accessTokenRepository.ParseAccessToken(adminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);

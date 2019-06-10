@@ -1,9 +1,10 @@
-﻿using SS.CMS.Core.Cache.Stl;
+﻿using SS.CMS.Abstractions;
+using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -97,7 +98,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        connectionString = AppSettings.DbContext.ConnectionString;
+                        connectionString = AppContext.Db.ConnectionString;
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
@@ -226,7 +227,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = AppSettings.DbContext.ConnectionString;
+                    connectionString = AppContext.Db.ConnectionString;
                 }
 
                 //parsedContent = DatabaseUtils.GetString(connectionString, queryString);

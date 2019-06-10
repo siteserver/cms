@@ -8,7 +8,7 @@ namespace SS.CMS.Data.Tests
 {
     public class EnvironmentFixture : IDisposable
     {
-        public string ApplicationPhysicalPath { get; }
+        public IDb Db { get; }
 
         public EnvironmentFixture()
         {
@@ -18,9 +18,10 @@ namespace SS.CMS.Data.Tests
                 .SetBasePath(projDirectoryPath)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            var databaseType = DatabaseType.GetDatabaseType(config["ss:databaseType"]);
-            var connectionString = config["ss:connectionString"];
-            EnvUtils.DbContext = new DbContext(databaseType, connectionString);
+            var databaseType = DatabaseType.GetDatabaseType(config["ss:database:type"]);
+            var connectionString = config["ss:database:connectionString"];
+
+            Db = new Db(databaseType, connectionString);
         }
 
         public void Dispose()

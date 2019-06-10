@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using SS.CMS.Data;
 using SS.CMS.Utils.Auth;
 
 namespace SS.CMS.Utils
@@ -241,71 +240,6 @@ namespace SS.CMS.Utils
                 }
             }
             return list;
-        }
-
-        public static IDictionary<string, object> ToDictionary(DatabaseType databaseType, IDataReader reader)
-        {
-            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            if (reader == null) return dict;
-
-            for (var i = 0; i < reader.FieldCount; i++)
-            {
-                var name = reader.GetName(i);
-                var value = reader.GetValue(i);
-
-                if (value is string s && databaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
-                {
-                    value = string.Empty;
-                }
-
-                if (!string.IsNullOrEmpty(name))
-                {
-                    dict[name] = value;
-                }
-            }
-
-            return dict;
-        }
-
-        public static IDictionary<string, object> ToDictionary(DataRowView rowView)
-        {
-            if (rowView == null) return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-            return ToDictionary(rowView.Row);
-        }
-
-        public static IDictionary<string, object> ToDictionary(DataRow row)
-        {
-            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            if (row == null) return dict;
-
-            return row.Table.Columns
-                .Cast<DataColumn>()
-                .ToDictionary(c => c.ColumnName, c => row[c]);
-        }
-
-        public static IDictionary<string, object> ToDictionary(DatabaseType databaseType, IDataRecord record)
-        {
-            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            if (record == null) return dict;
-
-            for (var i = 0; i < record.FieldCount; i++)
-            {
-                var name = record.GetName(i);
-                var value = record.GetValue(i);
-
-                if (value is string s && databaseType == DatabaseType.Oracle && s == Constants.OracleEmptyValue)
-                {
-                    value = string.Empty;
-                }
-
-                if (!string.IsNullOrEmpty(name))
-                {
-                    dict[name] = value;
-                }
-            }
-
-            return dict;
         }
 
         public static IDictionary<string, object> ToDictionary<T>(T o)
@@ -772,11 +706,6 @@ namespace SS.CMS.Utils
 
         public const string EncryptStingIndicator = "0secret0";
 
-        public static string EncryptStringBySecretKey(string inputString)
-        {
-            return EncryptStringBySecretKey(inputString, AppSettings.SecretKey);
-        }
-
         public static string EncryptStringBySecretKey(string inputString, string secretKey)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
@@ -797,12 +726,7 @@ namespace SS.CMS.Utils
             return retval;
         }
 
-        public static string DecryptStringBySecretKey(string inputString)
-        {
-            return DecryptStringBySecretKey(inputString, AppSettings.SecretKey);
-        }
-
-        private static string DecryptStringBySecretKey(string inputString, string secretKey)
+        public static string DecryptStringBySecretKey(string inputString, string secretKey)
         {
             if (string.IsNullOrEmpty(inputString)) return string.Empty;
 

@@ -12,6 +12,7 @@ using SS.CMS.Core.Serialization.Components;
 using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Serialization
 {
@@ -24,7 +25,7 @@ namespace SS.CMS.Core.Serialization
         public ImportObject(int siteId, string adminName)
         {
             _siteInfo = SiteManager.GetSiteInfo(siteId);
-            _sitePath = PathUtils.Combine(AppSettings.WebRootPath, _siteInfo.SiteDir);
+            _sitePath = PathUtils.Combine(AppContext.WebRootPath, _siteInfo.SiteDir);
             _adminName = adminName;
         }
 
@@ -116,7 +117,7 @@ namespace SS.CMS.Core.Serialization
 
         public void ImportRelatedFieldByZipFile(string zipFilePath, bool overwrite)
         {
-            var directoryPath = EnvManager.GetTemporaryFilesPath("RelatedField");
+            var directoryPath = AppContext.GetTemporaryFilesPath("RelatedField");
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
@@ -137,7 +138,7 @@ namespace SS.CMS.Core.Serialization
 
         public static void ImportTableStyleByZipFile(string tableName, int channelId, string zipFilePath)
         {
-            var styleDirectoryPath = EnvManager.GetTemporaryFilesPath("TableStyle");
+            var styleDirectoryPath = AppContext.GetTemporaryFilesPath("TableStyle");
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
@@ -155,7 +156,7 @@ namespace SS.CMS.Core.Serialization
 
         public void ImportChannelsAndContentsByZipFile(int parentId, string zipFilePath, bool isOverride)
         {
-            var siteContentDirectoryPath = EnvManager.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.ChannelsAndContents));
+            var siteContentDirectoryPath = AppContext.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.ChannelsAndContents));
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
@@ -247,7 +248,7 @@ namespace SS.CMS.Core.Serialization
 
         public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var siteContentDirectoryPath = EnvManager.GetTemporaryFilesPath("contents");
+            var siteContentDirectoryPath = AppContext.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
@@ -260,7 +261,7 @@ namespace SS.CMS.Core.Serialization
 
         public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            var siteContentDirectoryPath = EnvManager.GetTemporaryFilesPath("contents");
+            var siteContentDirectoryPath = AppContext.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
@@ -378,7 +379,7 @@ namespace SS.CMS.Core.Serialization
 
         public void ImportContentsByTxtZipFile(int channelId, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var directoryPath = EnvManager.GetTemporaryFilesPath("contents");
+            var directoryPath = AppContext.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 

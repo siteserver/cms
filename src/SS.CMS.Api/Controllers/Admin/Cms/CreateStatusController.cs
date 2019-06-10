@@ -1,34 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Api.Common;
-using SS.CMS.Core.Services;
-using SS.CMS.Core.Services.Admin.Cms;
+using SS.CMS.Abstractions;
+using SS.CMS.Core.Cache;
+using SS.CMS.Core.Common.Create;
 
 namespace SS.CMS.Api.Controllers.Admin.Cms
 {
-    [Route(AdminRoutes.Prefix)]
+    [Route("admin")]
     public class CreateStatusController : ControllerBase
     {
-        private readonly Request _request;
-        private readonly Response _response;
-        private readonly CreateStatusService _service;
+        public const string Route = "cms/createStatus";
+        public const string RouteActionsCancel = "cms/createStatus/actions/cancel";
 
-        public CreateStatusController(Request request, Response response, CreateStatusService service)
+        private readonly IIdentity _identity;
+
+        public CreateStatusController(IIdentity identity)
         {
-            _request = request;
-            _response = response;
-            _service = service;
+            _identity = identity;
         }
 
-        [HttpGet(CreateStatusService.Route)]
-        public ActionResult Get()
+        [HttpGet(Route)]
+        public ActionResult Get([FromQuery] int siteId)
         {
-            return _service.Run(_request, _response, _service.Get);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+            {
+                return Unauthorized();
+            }
+
+            var summary = CreateTaskManager.GetTaskSummary(siteId);
+
+            return Ok(new
+            {
+                Value = summary
+            });
         }
 
-        [HttpPost(CreateStatusService.RouteActionsCancel)]
-        public ActionResult Cancel()
+        [HttpPost(RouteActionsCancel)]
+        public ActionResult Cancel([FromBody] int siteId)
         {
-            return _service.Run(_request, _response, _service.Cancel);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+            {
+                return Unauthorized();
+            }
+
+            CreateTaskManager.ClearAllTask(siteId);
+
+            return Ok(new
+            {
+                Value = true
+            });
         }
     }
 }

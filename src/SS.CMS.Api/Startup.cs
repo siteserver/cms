@@ -5,21 +5,28 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using NSwag;
-using SS.CMS.Api.Common;
-using SS.CMS.Core.Services;
+using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Core.Components;
+using SS.CMS.Core.Repositories;
+using SS.CMS.Core.Settings;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        private readonly IWebHostEnvironment _env;
+        private readonly IConfiguration _config;
 
-        public IConfiguration Configuration { get; }
+        public Startup(IWebHostEnvironment env, IConfiguration config)
+        {
+            _env = env;
+            _config = config;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -28,8 +35,6 @@ namespace SS.CMS.Api
             {
                 options.AllowSynchronousIO = true;
             });
-
-            services.AddMemoryCache();
 
             services.AddCors(options =>
                 {
@@ -48,19 +53,18 @@ namespace SS.CMS.Api
                 .AddNewtonsoftJson();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped(provider =>
-            {
-                var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                return new Request(httpContext);
-            });
-            services.AddScoped(provider =>
-            {
-                var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                return new Response(httpContext);
-            });
+            //services.AddScoped(provider =>
+            //{
+            //    var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            //    return new Request(httpContext, null);
+            //});
+            //services.AddScoped(provider =>
+            //{
+            //    var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            //    return new Response(httpContext);
+            //});
 
-            AdminRoutes.AddSingleton(services);
-            V2Routes.AddSingleton(services);
+            services.AddMemoryCache();
 
             services.AddOpenApiDocument(config =>
             {
@@ -77,12 +81,46 @@ namespace SS.CMS.Api
                     };
                 };
             });
+
+            services.Configure<AppSettings>(_config.GetSection("SS"));
+            services.AddScoped(sp => sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value);
+            services.AddScoped<IDb>(sp =>
+            {
+                var appSettings = sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
+
+                if (string.IsNullOrEmpty(appSettings.SecretKey))
+                {
+                    appSettings.SecretKey = StringUtils.GetShortGuid();
+                }
+
+                DatabaseType databaseType;
+                string connectionString;
+                if (appSettings.IsProtectData)
+                {
+                    databaseType = DatabaseType.GetDatabaseType(TranslateUtils.DecryptStringBySecretKey(appSettings.Database.Type, appSettings.SecretKey));
+                    connectionString = TranslateUtils.DecryptStringBySecretKey(appSettings.Database.ConnectionString, appSettings.SecretKey);
+                }
+                else
+                {
+                    databaseType = DatabaseType.GetDatabaseType(appSettings.Database.Type);
+                    connectionString = appSettings.Database.ConnectionString;
+                }
+
+                return new Db(databaseType, connectionString);
+            });
+
+            //AppContext.Load(_env.ContentRootPath, _env.WebRootPath, _config);
+            //AppContext.Db = db;
+
+            services.AddScoped<IAccessTokenRepository, AccessTokenRepository>();
+
+            services.AddScoped<IIdentity, Identity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration config)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -105,15 +143,13 @@ namespace SS.CMS.Api
             //    endpoints.MapControllers();
             //});
 
-            AppSettings.Load(env.ContentRootPath, env.WebRootPath, config);
-
             // PluginManager.Load(() =>
             // {
             //     var httpContext = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>().HttpContext;
             //     return new Request(httpContext);
             // });
 
-            app.Map("/" + AppSettings.ApiPrefix.Trim('/'), mainApp =>
+            app.Map("/" + AppContext.ApiPrefix.Trim('/'), mainApp =>
             {
                 mainApp.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));
@@ -137,8 +173,6 @@ namespace SS.CMS.Api
             });
 
             app.UseStaticFiles();
-
-
         }
     }
 }

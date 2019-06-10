@@ -17,7 +17,7 @@ namespace SS.CMS.Data.Utils
             return query != null ? query.Clone().From(tableName) : new Query(tableName);
         }
 
-        private static (string sql, Dictionary<string, object> namedBindings) Compile(DbContext dbContext, string tableName, Query query)
+        private static (string sql, Dictionary<string, object> namedBindings) Compile(IDb db, string tableName, Query query)
         {
             var method = query.Method;
             if (method == "update")
@@ -28,7 +28,7 @@ namespace SS.CMS.Data.Utils
             string sql;
             Dictionary<string, object> namedBindings;
 
-            var compiler = dbContext.GetCompiler();
+            var compiler = DbUtils.GetCompiler(db.DatabaseType, db.ConnectionString);
             var compiled = compiler.Compile(query);
 
             if (method == "update")
@@ -98,7 +98,7 @@ namespace SS.CMS.Data.Utils
             return (sql, namedBindings);
         }
 
-        public static void SyncAndCheckGuid(DbContext dbContext, string tableName, Entity dataInfo)
+        public static void SyncAndCheckGuid(IDb db, string tableName, Entity dataInfo)
         {
             if (dataInfo == null || dataInfo.Id <= 0) return;
 
@@ -112,13 +112,13 @@ namespace SS.CMS.Data.Utils
             dataInfo.Guid = Utilities.GetGuid();
             dataInfo.LastModifiedDate = DateTime.Now;
 
-            UpdateAll(dbContext, tableName, new Query()
+            UpdateAll(db, tableName, new Query()
                 .Set(nameof(Entity.Guid), dataInfo.Guid)
                 .Where(nameof(Entity.Id), dataInfo.Id)
             );
         }
 
-        public static async Task SyncAndCheckGuidAsync(DbContext dbContext, string tableName, Entity dataInfo)
+        public static async Task SyncAndCheckGuidAsync(IDb db, string tableName, Entity dataInfo)
         {
             if (dataInfo == null || dataInfo.Id <= 0) return;
 
@@ -132,55 +132,55 @@ namespace SS.CMS.Data.Utils
             dataInfo.Guid = Utilities.GetGuid();
             dataInfo.LastModifiedDate = DateTime.Now;
 
-            await UpdateAllAsync(dbContext, tableName, new Query()
+            await UpdateAllAsync(db, tableName, new Query()
                 .Set(nameof(Entity.Guid), dataInfo.Guid)
                 .Where(nameof(Entity.Id), dataInfo.Id)
             );
         }
 
-        public static bool Exists(DbContext dbContext, string tableName, Query query = null)
+        public static bool Exists(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("COUNT(1)").ClearComponent("order");
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.ExecuteScalar<bool>(sql, bindings);
             }
         }
 
-        public static async Task<bool> ExistsAsync(DbContext dbContext, string tableName, Query query = null)
+        public static async Task<bool> ExistsAsync(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("COUNT(1)").ClearComponent("order");
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.ExecuteScalarAsync<bool>(sql, bindings);
             }
         }
 
-        public static int Count(DbContext dbContext, string tableName, Query query = null)
+        public static int Count(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("order").AsCount();
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.ExecuteScalar<int>(sql, bindings);
             }
         }
 
-        public static async Task<int> CountAsync(DbContext dbContext, string tableName, Query query = null)
+        public static async Task<int> CountAsync(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("order").AsCount();
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.ExecuteScalarAsync<int>(sql, bindings);
             }
@@ -203,179 +203,179 @@ namespace SS.CMS.Data.Utils
         //    return column;
         //}
 
-        public static int Sum(DbContext dbContext, string tableName, string columnName, Query query = null)
+        public static int Sum(IDb db, string tableName, string columnName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.AsSum(columnName);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.ExecuteScalar<int>(sql, bindings);
             }
         }
 
-        public static async Task<int> SumAsync(DbContext dbContext, string tableName, string columnName, Query query = null)
+        public static async Task<int> SumAsync(IDb db, string tableName, string columnName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.AsSum(columnName);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.ExecuteScalarAsync<int>(sql, bindings);
             }
         }
 
-        public static TValue GetValue<TValue>(DbContext dbContext, string tableName, Query query)
+        public static TValue GetValue<TValue>(IDb db, string tableName, Query query)
         {
             if (query == null) return default;
 
             var xQuery = NewQuery(tableName, query);
             xQuery.Limit(1);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.QueryFirstOrDefault<TValue>(sql, bindings);
             }
         }
 
-        public static async Task<TValue> GetValueAsync<TValue>(DbContext dbContext, string tableName, Query query)
+        public static async Task<TValue> GetValueAsync<TValue>(IDb db, string tableName, Query query)
         {
             if (query == null) return default;
 
             var xQuery = NewQuery(tableName, query);
             xQuery.Limit(1);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.QueryFirstOrDefaultAsync<TValue>(sql, bindings);
             }
         }
 
-        public static IEnumerable<TValue> GetValueList<TValue>(DbContext dbContext, string tableName, Query query = null)
+        public static IEnumerable<TValue> GetValueList<TValue>(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.Query<TValue>(sql, bindings);
             }
         }
 
-        public static async Task<IEnumerable<TValue>> GetValueListAsync<TValue>(DbContext dbContext, string tableName, Query query = null)
+        public static async Task<IEnumerable<TValue>> GetValueListAsync<TValue>(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.QueryAsync<TValue>(sql, bindings);
             }
         }
 
-        public static int? Max(DbContext dbContext, string tableName, string columnName, Query query = null)
+        public static int? Max(IDb db, string tableName, string columnName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.AsMax(columnName);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.QueryFirstOrDefault<int?>(sql, bindings);
             }
         }
 
-        public static async Task<int?> MaxAsync(DbContext dbContext, string tableName, string columnName, Query query = null)
+        public static async Task<int?> MaxAsync(IDb db, string tableName, string columnName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.AsMax(columnName);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.QueryFirstOrDefaultAsync<int?>(sql, bindings);
             }
         }
 
-        public static T GetObject<T>(DbContext dbContext, string tableName, Query query = null) where T : Entity
+        public static T GetObject<T>(IDb db, string tableName, Query query = null) where T : Entity
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("*").Limit(1);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
             T value;
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 value = connection.QueryFirstOrDefault<T>(sql, bindings);
             }
 
-            SyncAndCheckGuid(dbContext, tableName, value);
+            SyncAndCheckGuid(db, tableName, value);
             return value;
         }
 
-        public static async Task<T> GetObjectAsync<T>(DbContext dbContext, string tableName, Query query = null) where T : Entity
+        public static async Task<T> GetObjectAsync<T>(IDb db, string tableName, Query query = null) where T : Entity
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("*").Limit(1);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
             T value;
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 value = await connection.QueryFirstOrDefaultAsync<T>(sql, bindings);
             }
 
-            await SyncAndCheckGuidAsync(dbContext, tableName, value);
+            await SyncAndCheckGuidAsync(db, tableName, value);
             return value;
         }
 
-        public static IEnumerable<T> GetObjectList<T>(DbContext dbContext, string tableName, Query query = null) where T : Entity
+        public static IEnumerable<T> GetObjectList<T>(IDb db, string tableName, Query query = null) where T : Entity
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("*");
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
             IEnumerable<T> values;
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 values = connection.Query<T>(sql, bindings);
             }
 
             foreach (var dataInfo in values)
             {
-                SyncAndCheckGuid(dbContext, tableName, dataInfo);
+                SyncAndCheckGuid(db, tableName, dataInfo);
             }
             return values;
         }
 
-        public static async Task<IEnumerable<T>> GetObjectListAsync<T>(DbContext dbContext, string tableName, Query query = null) where T : Entity
+        public static async Task<IEnumerable<T>> GetObjectListAsync<T>(IDb db, string tableName, Query query = null) where T : Entity
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.ClearComponent("select").SelectRaw("*");
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
             IEnumerable<T> values;
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 values = await connection.QueryAsync<T>(sql, bindings);
             }
 
             foreach (var dataInfo in values)
             {
-                await SyncAndCheckGuidAsync(dbContext, tableName, dataInfo);
+                await SyncAndCheckGuidAsync(db, tableName, dataInfo);
             }
             return values;
         }
 
-        public static int InsertObject<T>(DbContext dbContext, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
+        public static int InsertObject<T>(IDb db, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
@@ -395,9 +395,9 @@ namespace SS.CMS.Data.Utils
 
             var xQuery = NewQuery(tableName);
             xQuery.AsInsert(dictionary, true);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 dataInfo.Id = connection.QueryFirst<int>(sql, bindings);
             }
@@ -405,7 +405,7 @@ namespace SS.CMS.Data.Utils
             return dataInfo.Id;
         }
 
-        public static async Task<int> InsertObjectAsync<T>(DbContext dbContext, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
+        public static async Task<int> InsertObjectAsync<T>(IDb db, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
@@ -425,9 +425,9 @@ namespace SS.CMS.Data.Utils
 
             var xQuery = NewQuery(tableName);
             xQuery.AsInsert(dictionary, true);
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 dataInfo.Id = await connection.QueryFirstAsync<int>(sql, bindings);
             }
@@ -435,102 +435,102 @@ namespace SS.CMS.Data.Utils
             return dataInfo.Id;
         }
 
-        public static int DeleteAll(DbContext dbContext, string tableName, Query query = null)
+        public static int DeleteAll(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.AsDelete();
 
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.Execute(sql, bindings);
             }
         }
 
-        public static async Task<int> DeleteAllAsync(DbContext dbContext, string tableName, Query query = null)
+        public static async Task<int> DeleteAllAsync(IDb db, string tableName, Query query = null)
         {
             var xQuery = NewQuery(tableName, query);
             xQuery.AsDelete();
 
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.ExecuteAsync(sql, bindings);
             }
         }
 
-        public static int UpdateAll(DbContext dbContext, string tableName, Query query)
+        public static int UpdateAll(IDb db, string tableName, Query query)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.Method = "update";
 
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return connection.Execute(sql, bindings);
             }
         }
 
-        public static async Task<int> UpdateAllAsync(DbContext dbContext, string tableName, Query query)
+        public static async Task<int> UpdateAllAsync(IDb db, string tableName, Query query)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.Method = "update";
 
-            var (sql, bindings) = Compile(dbContext, tableName, xQuery);
+            var (sql, bindings) = Compile(db, tableName, xQuery);
 
-            using (var connection = dbContext.GetConnection())
+            using (var connection = db.GetConnection())
             {
                 return await connection.ExecuteAsync(sql, bindings);
             }
         }
 
-        public static int IncrementAll(DbContext dbContext, string tableName, string columnName, Query query, int num = 1)
+        public static int IncrementAll(IDb db, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {dbContext.ColumnIncrement(columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(db.DatabaseType, columnName, num)}");
 
-            return UpdateAll(dbContext, tableName, xQuery);
+            return UpdateAll(db, tableName, xQuery);
         }
 
-        public static async Task<int> IncrementAllAsync(DbContext dbContext, string tableName, string columnName, Query query, int num = 1)
+        public static async Task<int> IncrementAllAsync(IDb db, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {dbContext.ColumnIncrement(columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(db.DatabaseType, columnName, num)}");
 
-            return await UpdateAllAsync(dbContext, tableName, xQuery);
+            return await UpdateAllAsync(db, tableName, xQuery);
         }
 
-        public static int DecrementAll(DbContext dbContext, string tableName, string columnName, Query query, int num = 1)
+        public static int DecrementAll(IDb db, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {dbContext.ColumnDecrement(columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(db.DatabaseType, columnName, num)}");
 
-            return UpdateAll(dbContext, tableName, xQuery);
+            return UpdateAll(db, tableName, xQuery);
         }
 
-        public static async Task<int> DecrementAllAsync(DbContext dbContext, string tableName, string columnName, Query query, int num = 1)
+        public static async Task<int> DecrementAllAsync(IDb db, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {dbContext.ColumnDecrement(columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(db.DatabaseType, columnName, num)}");
 
-            return await UpdateAllAsync(dbContext, tableName, xQuery);
+            return await UpdateAllAsync(db, tableName, xQuery);
         }
     }
 }

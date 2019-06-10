@@ -1,7 +1,4 @@
-﻿using SqlKata;
-using SS.CMS.Data;
-
-namespace SS.CMS.Utils
+﻿namespace SS.CMS.Utils
 {
     public static class Extensions
     {

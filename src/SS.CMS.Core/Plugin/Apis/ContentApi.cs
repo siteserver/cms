@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Plugin.Apis
 {

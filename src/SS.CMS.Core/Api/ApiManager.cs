@@ -1,5 +1,6 @@
 ﻿using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Api
@@ -10,7 +11,7 @@ namespace SS.CMS.Core.Api
 
         public static string ApiUrl => ConfigManager.Instance.ApiUrl;
 
-        public static string RootUrl => AppSettings.ApplicationPath;
+        public static string RootUrl => AppContext.ApplicationPath;
 
         private static string _innerApiUrl;
 
@@ -20,7 +21,7 @@ namespace SS.CMS.Core.Api
             {
                 if (string.IsNullOrEmpty(_innerApiUrl))
                 {
-                    _innerApiUrl = PageUtilsEx.ParseNavigationUrl($"~/{AppSettings.ApiPrefix}");
+                    _innerApiUrl = PageUtilsEx.ParseNavigationUrl($"~/{AppContext.ApiPrefix}");
                 }
                 return _innerApiUrl;
             }

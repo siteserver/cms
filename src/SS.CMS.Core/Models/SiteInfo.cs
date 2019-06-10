@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -42,7 +42,7 @@ namespace SS.CMS.Core.Models
         public string SettingsXml { get; set; }
 
         [JsonIgnore]
-        public ContentDao ContentDao => ContentDao.Instance(this);
+        public ContentDao ContentDao => ContentDao.Instance(Settings.AppContext.Db, this);
 
         [JsonIgnore]
         public List<ContentDao> ContentDaoList
@@ -53,7 +53,7 @@ namespace SS.CMS.Core.Models
 
                 foreach (var tableName in SiteManager.GetTableNameList(this))
                 {
-                    list.Add(ContentDao.Instance(tableName));
+                    list.Add(ContentDao.Instance(Settings.AppContext.Db, tableName));
                 }
 
                 return list;

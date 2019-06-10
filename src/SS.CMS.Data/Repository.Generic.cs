@@ -5,27 +5,27 @@ namespace SS.CMS.Data
 {
     public partial class Repository<T> : IRepository where T : Entity, new()
     {
-        public DbContext DbContext { get; }
+        public IDb Db { get; }
         public string TableName { get; }
         public List<TableColumn> TableColumns { get; }
 
-        public Repository(DbContext dbContext)
+        public Repository(IDb db)
         {
-            DbContext = dbContext;
+            Db = db;
             TableName = ReflectionUtils.GetTableName(typeof(T));
             TableColumns = ReflectionUtils.GetTableColumns(typeof(T));
         }
 
-        public Repository(DbContext dbContext, string tableName)
+        public Repository(IDb db, string tableName)
         {
-            DbContext = dbContext;
+            Db = db;
             TableName = tableName;
             TableColumns = ReflectionUtils.GetTableColumns(typeof(T));
         }
 
-        public Repository(DbContext dbContext, string tableName, List<TableColumn> tableColumns)
+        public Repository(IDb db, string tableName, List<TableColumn> tableColumns)
         {
-            DbContext = dbContext;
+            Db = db;
             TableName = tableName;
             TableColumns = tableColumns;
         }

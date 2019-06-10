@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement

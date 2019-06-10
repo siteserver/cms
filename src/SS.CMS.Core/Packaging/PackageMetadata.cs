@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet.Packaging;
 using NuGet.Versioning;
-using SS.CMS.Plugin;
+using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core.Packaging
 {

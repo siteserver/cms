@@ -7,12 +7,12 @@ namespace SS.CMS.Data
     {
         public virtual int Insert<T>(T dataInfo) where T : Entity
         {
-            return RepositoryUtils.InsertObject(DbContext, TableName, TableColumns, dataInfo);
+            return RepositoryUtils.InsertObject(Db, TableName, TableColumns, dataInfo);
         }
 
         public virtual async Task<int> InsertAsync<T>(T dataInfo) where T : Entity
         {
-            return await RepositoryUtils.InsertObjectAsync(DbContext, TableName, TableColumns, dataInfo);
+            return await RepositoryUtils.InsertObjectAsync(Db, TableName, TableColumns, dataInfo);
         }
     }
 }

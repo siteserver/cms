@@ -10,12 +10,12 @@ namespace SS.CMS.Core.Common
 
         public static string GetUrl(string relatedUrl)
         {
-            return PageUtils.Combine(PageUtils.GetAdminUrl(DirectoryName), relatedUrl);
+            return PageUtils.Combine(AppContext.GetAdminUrl(DirectoryName), relatedUrl);
         }
 
         public static string GetPath(params string[] paths)
         {
-            return EnvManager.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
+            return AppContext.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
         }
 
         public const string DirectoryIcons = "icons";

@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -862,7 +864,7 @@ function stltree_displayChildren(img){
 }
 ";
                 var loadingUrl = ApiRouteActionsLoadingChannels.GetUrl(pageInfo.ApiUrl);
-                var formatString = TranslateUtils.EncryptStringBySecretKey(currentFormatString);
+                var formatString = AppContext.Encrypt(currentFormatString);
 
                 script += $@"
 function loadingChannels(tr, img, div, channelId){{

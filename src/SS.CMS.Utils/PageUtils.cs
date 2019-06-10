@@ -14,21 +14,6 @@ namespace SS.CMS.Utils
 
         public const string UnclickedUrl = "javascript:;";
 
-        public static string GetRootUrl(string relatedUrl)
-        {
-            return Combine(AppSettings.ApplicationPath, relatedUrl);
-        }
-
-        public static string GetAdminUrl(string relatedUrl)
-        {
-            return Combine(AppSettings.ApplicationPath, AppSettings.AdminDirectory, relatedUrl);
-        }
-
-        public static string GetHomeUrl(string relatedUrl)
-        {
-            return Combine(AppSettings.ApplicationPath, AppSettings.HomeDirectory, relatedUrl);
-        }
-
         public static string AddEndSlashToUrl(string url)
         {
             if (string.IsNullOrEmpty(url) || !url.EndsWith("/"))

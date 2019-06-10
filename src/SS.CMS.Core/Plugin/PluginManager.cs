@@ -5,13 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Packaging;
 using SS.CMS.Core.Plugin.Apis;
-using SS.CMS.Core.Plugin.Impl;
-using SS.CMS.Plugin;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Plugin
 {
@@ -118,7 +120,7 @@ namespace SS.CMS.Core.Plugin
                     if (!StringUtils.EqualsIgnoreCase(PathUtils.GetExtension(filePath), ".dll")) continue;
 
                     var fileName = PathUtils.GetFileName(filePath);
-                    var binFilePath = PathUtils.Combine(AppSettings.ContentRootPath, fileName);
+                    var binFilePath = PathUtils.Combine(AppContext.ContentRootPath, fileName);
 
                     if (!FileUtils.IsFileExists(binFilePath))
                     {
@@ -183,9 +185,9 @@ namespace SS.CMS.Core.Plugin
 
         private static List<PluginInstance> _pluginInfoListRunnable;
 
-        public static void Load(Func<IRequest> requestFunc, Func<IResponse> responseFunc)
+        public static void Load()
         {
-            Context.Initialize(new EnvironmentImpl(AppSettings.DbContext, AppSettings.HomeDirectory, AppSettings.AdminDirectory, AppSettings.ContentRootPath, AppSettings.WebRootPath, AppSettings.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(AppContext.Db, AppContext.HomeDirectory, AppContext.AdminDirectory, AppContext.ContentRootPath, AppContext.WebRootPath, AppContext.ApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
@@ -196,7 +198,7 @@ namespace SS.CMS.Core.Plugin
                 SiteApi = SiteApi.Instance,
                 UserApi = UserApi.Instance,
                 UtilsApi = UtilsApi.Instance
-            }, requestFunc, responseFunc);
+            });
 
             _pluginInfoListRunnable = PluginInfoListRunnable;
         }

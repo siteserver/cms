@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.StlParser
 {
@@ -61,7 +63,7 @@ namespace SS.CMS.Core.StlParser
             {
                 if (isDynamic)
                 {
-                    var pageUrl = PageUtilsEx.AddProtocolToUrl(PageUtilsEx.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(AppSettings.WebRootPath, filePath)}"));
+                    var pageUrl = PageUtilsEx.AddProtocolToUrl(PageUtilsEx.ParseNavigationUrl($"~/{PathUtils.GetPathDifference(AppContext.WebRootPath, filePath)}"));
                     string templateString = $@"
 <base href=""{pageUrl}"" />";
                     StringUtils.InsertAfter(new[] { "<head>", "<HEAD>" }, contentBuilder, templateString);

@@ -1,25 +1,28 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Api.Common;
-using SS.CMS.Core.Services;
-using SS.CMS.Core.Services.Admin;
-using SS.CMS.Core.Services.Admin.Settings.Admin;
+using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Core.Cache;
+using SS.CMS.Core.Common;
+using SS.CMS.Core.Plugin;
 
 namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 {
-    [Route(AdminRoutes.PrefixSettingsAdmin)]
+    [Route("admin/settings/admin")]
     [ApiController]
     public class AccessTokenController : ControllerBase
     {
-        private readonly Request _request;
-        private readonly Response _response;
-        private readonly AccessTokenService _service;
+        private const string Route = "access-token";
 
-        public AccessTokenController(Request request, Response response, AccessTokenService service)
+        private readonly IIdentity _identity;
+        private readonly IAccessTokenRepository _accessTokenRepository;
+
+        public AccessTokenController(IIdentity identity, IAccessTokenRepository accessTokenRepository)
         {
-            _request = request;
-            _response = response;
-            _service = service;
+            _identity = identity;
+            _accessTokenRepository = accessTokenRepository;
         }
 
         /// <summary>
@@ -45,28 +48,121 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         [ProducesResponseType(200)]     // Ok
         [ProducesResponseType(400)]     // BadRequest
         [ProducesResponseType(401)]     // Unauthorized
-        [HttpGet(AccessTokenService.Route)]
+        [HttpGet(Route)]
         public async Task<ActionResult> List()
         {
-            return await _service.RunAsync(_request, _response, _service.ListAsync);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+            {
+                return Unauthorized();
+            }
+
+            IEnumerable<string> adminNames;
+
+            if (_identity.AdminPermissions.IsSuperAdmin())
+            {
+                adminNames = await DataProvider.AdministratorDao.GetUserNameListAsync();
+            }
+            else
+            {
+                adminNames = new List<string> { _identity.AdminName };
+            }
+
+            var scopes = new List<string>(_accessTokenRepository.ScopeList);
+
+            foreach (var service in PluginManager.Services)
+            {
+                if (service.IsApiAuthorization)
+                {
+                    scopes.Add(service.PluginId);
+                }
+            }
+
+            return Ok(new
+            {
+                Value = await _accessTokenRepository.GetAllAsync(),
+                adminNames,
+                scopes,
+                _identity.AdminName
+            });
         }
 
-        [HttpPost(AccessTokenService.Route)]
-        public async Task<ActionResult> Create()
+        [HttpPost(Route)]
+        public async Task<ActionResult> Create([FromBody] AccessTokenInfo accessTokenInfo)
         {
-            return await _service.RunAsync(_request, _response, _service.CreateAsync);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+            {
+                return Unauthorized();
+            }
+
+            if (await _accessTokenRepository.IsTitleExistsAsync(accessTokenInfo.Title))
+            {
+                return BadRequest("保存失败，已存在相同标题的API密钥！");
+            }
+
+            var tokenInfo = new AccessTokenInfo
+            {
+                Title = accessTokenInfo.Title,
+                AdminName = accessTokenInfo.AdminName,
+                Scopes = accessTokenInfo.Scopes
+            };
+
+            await _accessTokenRepository.InsertAsync(tokenInfo);
+
+            LogUtils.AddAdminLog(_identity.IpAddress, _identity.AdminName, "新增API密钥", $"Access Token:{tokenInfo.Title}");
+
+            return Ok(new
+            {
+                Value = await _accessTokenRepository.GetAllAsync()
+            });
         }
 
-        [HttpPut(AccessTokenService.Route)]
-        public async Task<ActionResult> Update()
+        [HttpPut(Route)]
+        public async Task<ActionResult> Update([FromBody] AccessTokenInfo accessTokenInfo)
         {
-            return await _service.RunAsync(_request, _response, _service.UpdateAsync);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+            {
+                return Unauthorized();
+            }
+
+            var tokenInfo = await _accessTokenRepository.GetAsync(accessTokenInfo.Id);
+
+            if (tokenInfo.Title != accessTokenInfo.Title && await _accessTokenRepository.IsTitleExistsAsync(accessTokenInfo.Title))
+            {
+                return BadRequest("保存失败，已存在相同标题的API密钥！");
+            }
+
+            tokenInfo.Title = accessTokenInfo.Title;
+            tokenInfo.AdminName = accessTokenInfo.AdminName;
+            tokenInfo.Scopes = accessTokenInfo.Scopes;
+
+            await _accessTokenRepository.UpdateAsync(tokenInfo);
+
+            LogUtils.AddAdminLog(_identity.IpAddress, _identity.AdminName, "修改API密钥", $"Access Token:{tokenInfo.Title}");
+
+            return Ok(new
+            {
+                Value = await _accessTokenRepository.GetAllAsync()
+            });
         }
 
-        [HttpDelete(AccessTokenService.Route)]
-        public async Task<ActionResult> Delete()
+        [HttpDelete(Route)]
+        public async Task<ActionResult> Delete([FromBody] int id)
         {
-            return await _service.RunAsync(_request, _response, _service.DeleteAsync);
+            if (!_identity.IsAdminLoggin ||
+                !_identity.AdminPermissions.HasSystemPermissions(ConfigManager.SettingsPermissions.Admin))
+            {
+                return Unauthorized();
+            }
+
+            await _accessTokenRepository.DeleteAsync(id);
+
+            return Ok(new
+            {
+                Value = await _accessTokenRepository.GetAllAsync()
+            });
         }
     }
 }

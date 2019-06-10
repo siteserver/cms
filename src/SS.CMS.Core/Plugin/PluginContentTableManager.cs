@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Plugin.Impl;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin
@@ -39,7 +39,7 @@ namespace SS.CMS.Core.Plugin
             var tableName = service.ContentTableName;
 
             var tableColumns = new List<TableColumn>();
-            tableColumns.AddRange(ContentDao.TableColumnsDefault);
+            tableColumns.AddRange(ContentDao.GetDefaultTableColumns(Settings.AppContext.Db));
             tableColumns.AddRange(service.ContentTableColumns);
 
             if (!DatabaseUtils.IsTableExists(tableName))
@@ -101,7 +101,8 @@ namespace SS.CMS.Core.Plugin
                     styleInfo.Required = inputStyle.IsRequired;
                 }
 
-                if (ValidateTypeUtils.Equals(styleInfo.ValidateType, inputStyle.ValidateType))
+                var validateType = ValidateType.GetValidateType(styleInfo.ValidateType);
+                if (validateType == inputStyle.ValidateType)
                 {
                     isEquals = false;
                     styleInfo.ValidateType = inputStyle.ValidateType.Value;

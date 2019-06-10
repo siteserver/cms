@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Core.Cache;
+using SS.CMS.Core.Components;
 using SS.CMS.Core.Models;
-using SS.CMS.Core.Plugin.Impl;
 
 namespace SS.CMS.Core.Common
 {

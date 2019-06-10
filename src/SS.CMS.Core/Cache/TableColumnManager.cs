@@ -4,8 +4,10 @@ using System.Linq;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Core.Settings;
 using SS.CMS.Data;
 using SS.CMS.Utils;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Cache
 {
@@ -62,7 +64,7 @@ namespace SS.CMS.Core.Cache
 
                 if (list != null) return list;
 
-                list = AppSettings.DbContext.GetTableColumns(tableName);
+                list = AppContext.Db.GetTableColumns(tableName);
                 Update(allDict, list, tableName);
                 return list;
             }
@@ -133,7 +135,7 @@ namespace SS.CMS.Core.Cache
 
             try
             {
-                AppSettings.DbContext.CreateTable(tableName, tableColumns);
+                AppContext.Db.CreateTable(tableName, tableColumns);
             }
             catch (Exception e)
             {
@@ -146,7 +148,7 @@ namespace SS.CMS.Core.Cache
             {
                 try
                 {
-                    AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+                    AppContext.Db.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
 
 
                     //sqlString =
@@ -163,7 +165,7 @@ namespace SS.CMS.Core.Cache
 
                 try
                 {
-                    AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    AppContext.Db.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
@@ -186,7 +188,7 @@ namespace SS.CMS.Core.Cache
         {
             try
             {
-                AppSettings.DbContext.AlterTable(tableName,
+                AppContext.Db.AlterTable(tableName,
                     GetRealTableColumns(tableColumns), dropColumnNames);
 
                 ClearCache();
@@ -244,9 +246,9 @@ namespace SS.CMS.Core.Cache
             var isDbExists = DatabaseUtils.IsTableExists(tableName);
             if (isDbExists) return;
 
-            AppSettings.DbContext.CreateTable(tableName, tableColumns);
-            AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            AppSettings.DbContext.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
+            AppContext.Db.CreateTable(tableName, tableColumns);
+            AppContext.Db.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            AppContext.Db.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
 
             ClearCache();
         }

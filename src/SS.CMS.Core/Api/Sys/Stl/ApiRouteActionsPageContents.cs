@@ -1,4 +1,5 @@
-﻿using SS.CMS.Utils;
+﻿using SS.CMS.Core.Settings;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Api.Sys.Stl
 {
@@ -22,7 +23,7 @@ namespace SS.CMS.Core.Api.Sys.Stl
     totalNum: {totalNum},
     pageCount: {pageCount},
     currentPageIndex: {currentPageIndex},
-    stlPageContentsElement: '{TranslateUtils.EncryptStringBySecretKey(stlPageContentsElement)}'
+    stlPageContentsElement: '{AppContext.Encrypt(stlPageContentsElement)}'
 }}";
         }
     }

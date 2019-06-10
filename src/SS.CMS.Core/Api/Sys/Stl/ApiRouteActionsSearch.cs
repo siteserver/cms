@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Utils;
 
@@ -34,7 +35,7 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {StlSearch.IsHighlight.ToLower()}: {isHighlight.ToString().ToLower()},
     siteid: '{siteId}',
     ajaxdivid: '{ajaxDivId}',
-    template: '{TranslateUtils.EncryptStringBySecretKey(template)}',
+    template: '{AppContext.Encrypt(template)}',
 }}";
         }
 

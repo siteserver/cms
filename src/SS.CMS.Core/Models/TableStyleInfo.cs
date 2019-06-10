@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Models
 {
@@ -85,7 +85,7 @@ namespace SS.CMS.Core.Models
 
         public int MaxNum { get; set; }
 
-        public string ValidateType { get; set; } = SS.CMS.Plugin.ValidateType.None.Value;
+        public string ValidateType { get; set; } = Abstractions.ValidateType.None.Value;
 
         public string RegExp { get; set; }
 

@@ -6,8 +6,8 @@ using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Settings.Menus;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
+using Menu = SS.CMS.Abstractions.Menu;
 
 namespace SS.CMS.Core.Plugin
 {
@@ -283,30 +283,30 @@ namespace SS.CMS.Core.Plugin
             return menu;
         }
 
-        public static List<PermissionConfigManager.PermissionConfig> GetTopPermissions()
+        public static List<Permission> GetTopPermissions()
         {
-            var permissions = new List<PermissionConfigManager.PermissionConfig>();
+            var permissions = new List<Permission>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.SystemMenuFuncs != null)
                 {
-                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
+                    permissions.Add(new Permission(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
                 }
             }
 
             return permissions;
         }
 
-        public static List<PermissionConfigManager.PermissionConfig> GetSitePermissions(int siteId)
+        public static List<Permission> GetSitePermissions(int siteId)
         {
-            var permissions = new List<PermissionConfigManager.PermissionConfig>();
+            var permissions = new List<Permission>();
 
             foreach (var service in PluginManager.Services)
             {
                 if (service.SiteMenuFuncs != null)
                 {
-                    permissions.Add(new PermissionConfigManager.PermissionConfig(service.PluginId, $"{service.Metadata.Title}"));
+                    permissions.Add(new Permission(service.PluginId, $"{service.Metadata.Title}"));
                 }
             }
 

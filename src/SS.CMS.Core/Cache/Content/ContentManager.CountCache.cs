@@ -41,7 +41,7 @@ namespace SS.CMS.Core.Cache.Content
                 dict.TryGetValue(tableName, out var countList);
                 if (countList != null) return countList;
 
-                countList = ContentDao.Instance(tableName).GetContentCountInfoList();
+                countList = ContentDao.Instance(Settings.AppContext.Db, tableName).GetContentCountInfoList();
                 dict[tableName] = countList;
 
                 return countList;

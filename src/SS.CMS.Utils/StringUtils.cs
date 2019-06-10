@@ -9,6 +9,13 @@ namespace SS.CMS.Utils
 {
     public static class StringUtils
     {
+        public static string GetCacheKey(string nameofClass, params string[] values)
+        {
+            var key = $"SS.Caching.{nameofClass}";
+            if (values == null || values.Length <= 0) return key;
+            return values.Aggregate(key, (current, t) => current + ("." + t));
+        }
+
         public static bool Equals(string s1, string s2)
         {
             return s1 == s2 || string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2);

@@ -1,6 +1,7 @@
-﻿using SS.CMS.Core.Api;
+﻿using SS.CMS.Abstractions;
+using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
-using SS.CMS.Plugin;
+using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Plugin.Apis
@@ -18,12 +19,12 @@ namespace SS.CMS.Core.Plugin.Apis
 
             if (StringUtils.StartsWith(relatedUrl, "~/"))
             {
-                return PageUtils.GetRootUrl(relatedUrl.Substring(1));
+                return AppContext.GetRootUrl(relatedUrl.Substring(1));
             }
 
             if (StringUtils.StartsWith(relatedUrl, "@/"))
             {
-                return PageUtils.GetAdminUrl(relatedUrl.Substring(1));
+                return AppContext.GetAdminUrl(relatedUrl.Substring(1));
             }
 
             return PageUtility.GetSiteFilesUrl(ApiManager.ApiUrl, PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, relatedUrl));

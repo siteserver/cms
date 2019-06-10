@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.StlParser.Models
 {

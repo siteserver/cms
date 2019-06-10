@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Cache

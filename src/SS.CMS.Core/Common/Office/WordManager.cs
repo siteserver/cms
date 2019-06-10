@@ -12,6 +12,7 @@ using SS.CMS.Core.Models;
 using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 using FileUtils = SS.CMS.Utils.FileUtils;
 
 namespace SS.CMS.Core.Common.Office
@@ -35,7 +36,7 @@ namespace SS.CMS.Core.Common.Office
 
         public static (string title, string content) GetWord(SiteInfo siteInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
-            var docsFilePath = EnvManager.GetTemporaryFilesPath(fileName);
+            var docsFilePath = AppContext.GetTemporaryFilesPath(fileName);
             var imageDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, EUploadType.Image);
             var imageDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, imageDirectoryPath, true);
 

@@ -2,20 +2,21 @@
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin.Apis;
+using SS.CMS.Core.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Common
 {
     public partial class Response
     {
-        public string AdminLogin(string userName, bool isAutoLogin)
+        public string AdminLogin(string userName, bool isAutoLogin, IAccessTokenRepository accessTokenRepository)
         {
             if (string.IsNullOrEmpty(userName)) return null;
             var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
             if (adminInfo == null || adminInfo.Locked) return null;
 
             var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
-            var accessToken = AdminApi.Instance.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(Constants.AccessTokenExpireDays));
+            var accessToken = accessTokenRepository.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(Constants.AccessTokenExpireDays));
 
             AdminApi.Instance.Log(adminInfo.UserName, "管理员登录");
 

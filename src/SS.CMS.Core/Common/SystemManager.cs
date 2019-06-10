@@ -7,9 +7,11 @@ using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Repositories;
+using SS.CMS.Core.Settings;
 using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -79,7 +81,7 @@ namespace SS.CMS.Core.Common
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!AppSettings.DbContext.IsTableExists(repository.TableName))
+                if (!AppContext.Db.IsTableExists(repository.TableName))
                 {
                     TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
                 }
@@ -95,7 +97,7 @@ namespace SS.CMS.Core.Common
             var contentDaoList = ContentDao.GetContentDaoList();
             foreach (var contentDao in contentDaoList)
             {
-                if (!AppSettings.DbContext.IsTableExists(contentDao.TableName))
+                if (!AppContext.Db.IsTableExists(contentDao.TableName))
                 {
                     TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
                 }

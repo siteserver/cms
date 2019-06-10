@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
+using SS.CMS.Abstractions;
 using SS.CMS.Data;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Models
 {

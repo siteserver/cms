@@ -1,7 +1,7 @@
-﻿using SS.CMS.Core.Cache;
+﻿using SS.CMS.Abstractions;
+using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Common
 {

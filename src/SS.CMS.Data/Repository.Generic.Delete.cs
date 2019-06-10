@@ -22,7 +22,7 @@ namespace SS.CMS.Data
 
         public virtual int Delete(Query query = null)
         {
-            return RepositoryUtils.DeleteAll(DbContext, TableName, query);
+            return RepositoryUtils.DeleteAll(Db, TableName, query);
         }
 
         public virtual async Task<bool> DeleteAsync(int id)
@@ -41,7 +41,7 @@ namespace SS.CMS.Data
 
         public virtual async Task<int> DeleteAsync(Query query = null)
         {
-            return await RepositoryUtils.DeleteAllAsync(DbContext, TableName, query);
+            return await RepositoryUtils.DeleteAllAsync(Db, TableName, query);
         }
     }
 }

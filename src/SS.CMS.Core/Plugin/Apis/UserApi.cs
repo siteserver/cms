@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
-using SS.CMS.Plugin;
 
 namespace SS.CMS.Core.Plugin.Apis
 {
@@ -96,19 +96,19 @@ namespace SS.CMS.Core.Plugin.Apis
             return DataProvider.UserLogDao.List(userName, totalNum, action);
         }
 
-        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
-        {
-            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
-        }
+        // public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
+        // {
+        //     return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
+        // }
 
-        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
-        {
-            return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
-        }
+        // public string GetAccessToken(int userId, string userName, DateTime expiresAt)
+        // {
+        //     return AccessTokenManager.GetAccessToken(userId, userName, expiresAt);
+        // }
 
-        public IAccessToken ParseAccessToken(string accessToken)
-        {
-            return AccessTokenManager.ParseAccessToken(accessToken);
-        }
+        // public IAccessToken ParseAccessToken(string accessToken)
+        // {
+        //     return AccessTokenManager.ParseAccessToken(accessToken);
+        // }
     }
 }

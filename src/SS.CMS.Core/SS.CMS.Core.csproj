@@ -7,16 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\Admin\DefaultLayoutController.cs" />
-    <Compile Remove="Services\Admin\IndexController.cs" />
-    <Compile Remove="Services\Admin\LoginController.cs" />
-    <Compile Remove="Services\V2\UsersService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.13.0-alpha-748" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.7" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0-preview5.19227.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0-preview5.19227.9" />
     <PackageReference Include="NuGet.Common" Version="5.1.0" />
     <PackageReference Include="NuGet.Packaging" Version="5.1.0" />
@@ -27,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
+    <ProjectReference Include="..\SS.CMS.Data\SS.CMS.Data.csproj" />
     <ProjectReference Include="..\SS.CMS.Utils\SS.CMS.Utils.csproj" />
   </ItemGroup>
 

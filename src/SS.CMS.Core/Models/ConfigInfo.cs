@@ -1,7 +1,9 @@
 using System;
+using SS.CMS.Core.Settings;
 using SS.CMS.Data;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Models
 {
@@ -31,7 +33,7 @@ namespace SS.CMS.Core.Models
         public string SeparatedApiUrl { get; set; }
 
         public string ApiUrl =>
-            IsSeparatedApi ? SeparatedApiUrl : PageUtils.Combine($"{AppSettings.ApplicationPath}/{AppSettings.ApiPrefix}");
+            IsSeparatedApi ? SeparatedApiUrl : PageUtils.Combine($"{AppContext.ApplicationPath}/{AppContext.ApiPrefix}");
 
         public bool IsLogSite { get; set; } = true;
 

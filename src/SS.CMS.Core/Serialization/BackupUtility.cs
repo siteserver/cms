@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Serialization
             if (isZip)
             {
                 //解压文件
-                siteTemplatePath = EnvManager.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.Site));
+                siteTemplatePath = AppContext.GetTemporaryFilesPath(EBackupTypeUtils.GetValue(EBackupType.Site));
                 DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
                 DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 

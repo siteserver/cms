@@ -2,15 +2,16 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Settings;
-using SS.CMS.Plugin;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
+using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -18,7 +19,7 @@ namespace SS.CMS.Core.Common
     {
         public static string GetSitePath(SiteInfo siteInfo)
         {
-            return PathUtils.Combine(AppSettings.WebRootPath, siteInfo.SiteDir);
+            return PathUtils.Combine(AppContext.WebRootPath, siteInfo.SiteDir);
         }
 
         public static string GetSitePath(int siteId, params string[] paths)
@@ -84,7 +85,7 @@ namespace SS.CMS.Core.Common
             {
                 extention = ".xml";
             }
-            return EnvManager.GetBackupFilesPath(siteInfo.SiteDir, DateTime.Now.ToString("yyyy-MM"), EBackupTypeUtils.GetValue(backupType) + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
+            return AppContext.GetBackupFilesPath(siteInfo.SiteDir, DateTime.Now.ToString("yyyy-MM"), EBackupTypeUtils.GetValue(backupType) + "_" + siteName + DateTime.Now.ToString("yyyy-MM-dd-HH-mm") + extention);
         }
 
         public static string GetUploadDirectoryPath(SiteInfo siteInfo, string fileExtension)
@@ -217,7 +218,7 @@ namespace SS.CMS.Core.Common
         public static SiteInfo GetSiteInfo(string path)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = AppSettings.WebRootPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppContext.WebRootPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
@@ -246,7 +247,7 @@ namespace SS.CMS.Core.Common
         {
             var siteDir = string.Empty;
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
-            var applicationPath = AppSettings.WebRootPath.ToLower().Trim(' ', '/', '\\');
+            var applicationPath = AppContext.WebRootPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty)
             {
@@ -355,7 +356,7 @@ namespace SS.CMS.Core.Common
             foreach (var originalImageSrc in originalImageSrcs)
             {
                 if (!PageUtils.IsProtocolUrl(originalImageSrc) ||
-                    StringUtils.StartsWithIgnoreCase(originalImageSrc, AppSettings.ApplicationPath) ||
+                    StringUtils.StartsWithIgnoreCase(originalImageSrc, AppContext.ApplicationPath) ||
                     StringUtils.StartsWithIgnoreCase(originalImageSrc, siteInfo.WebUrl))
                     continue;
                 var fileExtName = PageUtils.GetExtensionFromUrl(originalImageSrc);

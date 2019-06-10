@@ -19,11 +19,11 @@ namespace SS.CMS.Data
 
         public virtual T Get<T>(Query query = null)
         {
-            var value = RepositoryUtils.GetValue<T>(DbContext, TableName, query);
+            var value = RepositoryUtils.GetValue<T>(Db, TableName, query);
 
             if (typeof(T).IsAssignableFrom(typeof(Entity)))
             {
-                RepositoryUtils.SyncAndCheckGuid(DbContext, TableName, value as Entity);
+                RepositoryUtils.SyncAndCheckGuid(Db, TableName, value as Entity);
             }
 
             return value;
@@ -31,13 +31,13 @@ namespace SS.CMS.Data
 
         public virtual IEnumerable<T> GetAll<T>(Query query = null)
         {
-            var list = RepositoryUtils.GetValueList<T>(DbContext, TableName, query);
+            var list = RepositoryUtils.GetValueList<T>(Db, TableName, query);
 
             if (typeof(T).IsAssignableFrom(typeof(Entity)))
             {
                 foreach (var value in list)
                 {
-                    RepositoryUtils.SyncAndCheckGuid(DbContext, TableName, value as Entity);
+                    RepositoryUtils.SyncAndCheckGuid(Db, TableName, value as Entity);
                 }
             }
 
@@ -56,22 +56,22 @@ namespace SS.CMS.Data
 
         public virtual bool Exists(Query query = null)
         {
-            return RepositoryUtils.Exists(DbContext, TableName, query);
+            return RepositoryUtils.Exists(Db, TableName, query);
         }
 
         public virtual int Count(Query query = null)
         {
-            return RepositoryUtils.Count(DbContext, TableName, query);
+            return RepositoryUtils.Count(Db, TableName, query);
         }
 
         public virtual int Sum(string columnName, Query query = null)
         {
-            return RepositoryUtils.Sum(DbContext, TableName, columnName, query);
+            return RepositoryUtils.Sum(Db, TableName, columnName, query);
         }
 
         public virtual int? Max(string columnName, Query query = null)
         {
-            return RepositoryUtils.Max(DbContext, TableName, columnName, query);
+            return RepositoryUtils.Max(Db, TableName, columnName, query);
         }
 
         public virtual async Task<T> GetAsync<T>(int id) where T : Entity
@@ -86,11 +86,11 @@ namespace SS.CMS.Data
 
         public virtual async Task<T> GetAsync<T>(Query query = null)
         {
-            var value = await RepositoryUtils.GetValueAsync<T>(DbContext, TableName, query);
+            var value = await RepositoryUtils.GetValueAsync<T>(Db, TableName, query);
 
             if (typeof(T).IsAssignableFrom(typeof(Entity)))
             {
-                await RepositoryUtils.SyncAndCheckGuidAsync(DbContext, TableName, value as Entity);
+                await RepositoryUtils.SyncAndCheckGuidAsync(Db, TableName, value as Entity);
             }
 
             return value;
@@ -98,13 +98,13 @@ namespace SS.CMS.Data
 
         public virtual async Task<IEnumerable<T>> GetAllAsync<T>(Query query = null)
         {
-            var list = await RepositoryUtils.GetValueListAsync<T>(DbContext, TableName, query);
+            var list = await RepositoryUtils.GetValueListAsync<T>(Db, TableName, query);
 
             if (typeof(T).IsAssignableFrom(typeof(Entity)))
             {
                 foreach (var value in list)
                 {
-                    await RepositoryUtils.SyncAndCheckGuidAsync(DbContext, TableName, value as Entity);
+                    await RepositoryUtils.SyncAndCheckGuidAsync(Db, TableName, value as Entity);
                 }
             }
 
@@ -123,22 +123,22 @@ namespace SS.CMS.Data
 
         public virtual async Task<bool> ExistsAsync(Query query = null)
         {
-            return await RepositoryUtils.ExistsAsync(DbContext, TableName, query);
+            return await RepositoryUtils.ExistsAsync(Db, TableName, query);
         }
 
         public virtual async Task<int> CountAsync(Query query = null)
         {
-            return await RepositoryUtils.CountAsync(DbContext, TableName, query);
+            return await RepositoryUtils.CountAsync(Db, TableName, query);
         }
 
         public virtual async Task<int> SumAsync(string columnName, Query query = null)
         {
-            return await RepositoryUtils.SumAsync(DbContext, TableName, columnName, query);
+            return await RepositoryUtils.SumAsync(Db, TableName, columnName, query);
         }
 
         public virtual async Task<int?> MaxAsync(string columnName, Query query = null)
         {
-            return await RepositoryUtils.MaxAsync(DbContext, TableName, columnName, query);
+            return await RepositoryUtils.MaxAsync(Db, TableName, columnName, query);
         }
     }
 }
