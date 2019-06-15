@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions;
-using SS.CMS.Core.Cache;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Common.Create;
-using SS.CMS.Core.Components;
+using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Core.Packaging;
-using SS.CMS.Core.Plugin;
-using SS.CMS.Core.Settings;
-using SS.CMS.Core.StlParser;
+using SS.CMS.Core.Security;
 using SS.CMS.Utils;
-using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Api.Controllers.Admin
 {
@@ -23,41 +20,65 @@ namespace SS.CMS.Api.Controllers.Admin
         public const string Route = "";
         public const string RouteActionsDownload = "actions/download";
 
-        private readonly IIdentity _identity;
+        private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
+        private readonly IUrlManager _urlManager;
+        private readonly IPathManager _pathManager;
+        private readonly IIdentityManager _identityManager;
+        private readonly ICreateManager _createManager;
+        private readonly IFileManager _fileManager;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly ISiteRepository _siteRepository;
+        private readonly ISpecialRepository _specialRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly ITemplateRepository _templateRepository;
 
-        public RootController(IIdentity identity)
+        public RootController(ISettingsManager settingsManager, IPluginManager pluginManager, IUrlManager urlManager, IPathManager pathManager, IIdentityManager identityManager, ICreateManager createManager, IFileManager fileManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
         {
-            _identity = identity;
+            _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
+            _urlManager = urlManager;
+            _pathManager = pathManager;
+            _identityManager = identityManager;
+            _createManager = createManager;
+            _fileManager = fileManager;
+            _administratorRepository = administratorRepository;
+            _siteRepository = siteRepository;
+            _specialRepository = specialRepository;
+            _userRepository = userRepository;
+            _tableStyleRepository = tableStyleRepository;
+            _templateRepository = templateRepository;
         }
 
         [HttpGet(Route)]
-        public ActionResult Get([FromQuery] int siteId, [FromQuery] string pageUrl)
+        public ActionResult Get([FromQuery] int? siteId, string pageUrl)
         {
-            if (!_identity.IsAdminLoggin)
+            if (!_identityManager.IsAdminLoggin)
             {
                 return Ok(new
                 {
                     Value = false,
-                    RedirectUrl = $"{AdminUrl.LoginUrl}?redirectUrl={PageUtils.UrlEncode(AdminUrl.GetIndexUrl(siteId, pageUrl))}"
+                    RedirectUrl = $"{_urlManager.AdminLoginUrl}?redirectUrl={PageUtils.UrlEncode(_urlManager.GetAdminIndexUrl(siteId, pageUrl))}"
                 });
             }
 
-            var adminInfo = AdminManager.GetAdminInfoByUserId(_identity.AdminId);
+            var adminInfo = _administratorRepository.GetAdminInfoByUserId(_identityManager.AdminId);
 
             if (adminInfo.Locked)
             {
                 return Ok(new
                 {
                     Value = false,
-                    RedirectUrl = $"{AdminUrl.ErrorUrl}?message={PageUtils.UrlEncode("管理员账号已被锁定，请联系超级管理员协助解决")}"
+                    RedirectUrl = $"{_urlManager.AdminErrorUrl}?message={PageUtils.UrlEncode("管理员账号已被锁定，请联系超级管理员协助解决")}"
                 });
             }
 
-            var redirect = AdminRedirectCheck(_identity, checkInstall: true, checkDatabaseVersion: true);
+            var redirect = AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
             if (redirect != null) return Ok(redirect);
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            var permissions = (PermissionsImpl)_identity.AdminPermissions;
+            var siteInfo = siteId.HasValue ? _siteRepository.GetSiteInfo(siteId.Value) : null;
+            var permissions = (Permissions)_identityManager.AdminPermissions;
             var isSuperAdmin = permissions.IsSuperAdmin();
             var siteIdListWithPermissions = permissions.GetSiteIdList();
 
@@ -68,7 +89,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = AdminUrl.GetIndexUrl(adminInfo.SiteId, pageUrl)
+                        RedirectUrl = _urlManager.GetAdminIndexUrl(adminInfo.SiteId, pageUrl)
                     });
                 }
 
@@ -77,7 +98,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     return Ok(new
                     {
                         Value = false,
-                        RedirectUrl = AdminUrl.GetIndexUrl(siteIdListWithPermissions[0], pageUrl)
+                        RedirectUrl = _urlManager.GetAdminIndexUrl(siteIdListWithPermissions[0], pageUrl)
                     });
                 }
 
@@ -94,7 +115,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 return Ok(new
                 {
                     Value = false,
-                    RedirectUrl = $"{AdminUrl.ErrorUrl}?message={PageUtils.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
+                    RedirectUrl = $"{_urlManager.AdminErrorUrl}?message={PageUtils.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
                 });
             }
 
@@ -103,7 +124,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     PackageUtils.PackageIdSsCms
                 };
             var packageList = new List<object>();
-            var dict = PluginManager.GetPluginIdAndVersionDict();
+            var dict = _pluginManager.GetPluginIdAndVersionDict();
             foreach (var id in dict.Keys)
             {
                 packageIds.Add(id);
@@ -115,7 +136,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 });
             }
 
-            var siteIdListLatestAccessed = DataProvider.AdministratorDao.UpdateSiteId(adminInfo, siteInfo.Id);
+            var siteIdListLatestAccessed = _administratorRepository.UpdateSiteId(adminInfo, siteInfo.Id);
 
             var permissionList = new List<string>(permissions.PermissionList);
             if (permissions.HasSitePermissions(siteInfo.Id))
@@ -132,10 +153,12 @@ namespace SS.CMS.Api.Controllers.Admin
                 permissionList.AddRange(channelPermissions);
             }
 
-            var topMenus = GetTopMenus(siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
+            var menuManager = new MenuManager(_pluginManager, _pathManager, _urlManager);
+
+            var topMenus = GetTopMenus(menuManager, siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
             var siteMenus =
-                GetLeftMenus(siteInfo, ConfigManager.TopMenu.IdSite, isSuperAdmin, permissionList);
-            var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
+                GetLeftMenus(menuManager, siteInfo, MenuManager.TopMenu.IdSite, isSuperAdmin, permissionList);
+            var pluginMenus = GetLeftMenus(menuManager, siteInfo, string.Empty, isSuperAdmin, permissionList);
 
             var adminInfoToReturn = new
             {
@@ -148,18 +171,18 @@ namespace SS.CMS.Api.Controllers.Admin
             var defaultPageUrl = PageUtils.UrlDecode(pageUrl);
             if (string.IsNullOrEmpty(defaultPageUrl))
             {
-                defaultPageUrl = PluginMenuManager.GetSystemDefaultPageUrl(siteId);
+                defaultPageUrl = _urlManager.GetSystemDefaultPageUrl(siteId ?? 0);
             }
             if (string.IsNullOrEmpty(defaultPageUrl))
             {
-                defaultPageUrl = AdminUrl.DashboardUrl;
+                defaultPageUrl = _urlManager.AdminDashboardUrl;
             }
 
             return Ok(new
             {
                 Value = true,
                 DefaultPageUrl = defaultPageUrl,
-                AppContext.IsNightlyUpdate,
+                _settingsManager.IsNightlyUpdate,
                 SystemManager.ProductVersion,
                 SystemManager.PluginVersion,
                 SystemManager.TargetFramework,
@@ -167,9 +190,9 @@ namespace SS.CMS.Api.Controllers.Admin
                 IsSuperAdmin = isSuperAdmin,
                 PackageList = packageList,
                 PackageIds = packageIds,
-                AppContext.ApiPrefix,
-                AppContext.AdminDirectory,
-                AppContext.HomeDirectory,
+                _settingsManager.ApiPrefix,
+                _settingsManager.AdminDirectory,
+                _settingsManager.HomeDirectory,
                 TopMenus = topMenus,
                 SiteMenus = siteMenus,
                 PluginMenus = pluginMenus,
@@ -180,7 +203,7 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpPost(Route)]
         public async Task<ActionResult> Create()
         {
-            if (!_identity.IsAdminLoggin)
+            if (!_identityManager.IsAdminLoggin)
             {
                 return Unauthorized();
             }
@@ -193,7 +216,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 try
                 {
                     var start = DateTime.Now;
-                    await FileSystemObjectAsync.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
+                    await _createManager.ExecuteAsync(pendingTask.SiteId, pendingTask.CreateType,
                         pendingTask.ChannelId,
                         pendingTask.ContentId, pendingTask.FileTemplateId, pendingTask.SpecialId);
                     var timeSpan = DateUtils.GetRelatedDateTimeString(start);
@@ -216,20 +239,20 @@ namespace SS.CMS.Api.Controllers.Admin
         }
 
         [HttpPost(RouteActionsDownload)]
-        public ActionResult Download([FromBody] string packageId, [FromBody] string version)
+        public ActionResult Download([FromBody] string packageId, string version)
         {
-            if (!_identity.IsAdminLoggin)
+            if (!_identityManager.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
             try
             {
-                PackageUtils.DownloadPackage(packageId, version);
+                _pluginManager.DownloadPackage(packageId, version);
             }
             catch
             {
-                PackageUtils.DownloadPackage(packageId, version);
+                _pluginManager.DownloadPackage(packageId, version);
             }
 
             if (StringUtils.EqualsIgnoreCase(packageId, PackageUtils.PackageIdSsCms))

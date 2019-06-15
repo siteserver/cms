@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using Newtonsoft.Json;
-using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Models;
 
 namespace SS.CMS.Core.StlParser.Models
 {
@@ -28,6 +28,6 @@ namespace SS.CMS.Core.StlParser.Models
         public NameValueCollection QueryString { get; set; }
 
         [JsonIgnore]
-        public IUserInfo UserInfo { get; set; }
+        public UserInfo UserInfo { get; set; }
     }
 }

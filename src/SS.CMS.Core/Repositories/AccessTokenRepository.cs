@@ -3,33 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Components;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Settings;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
 using SS.CMS.Utils;
-using SS.CMS.Utils.Auth;
 
 namespace SS.CMS.Core.Repositories
 {
-    
-
     public class AccessTokenRepository : IAccessTokenRepository
     {
-        private readonly string _cacheKey;
+        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(AccessTokenRepository));
         private readonly Repository<AccessTokenInfo> _repository;
-        private readonly AppSettings _settings;
-        private readonly IMemoryCache _memoryCache;
-        public AccessTokenRepository(IDb db, AppSettings settings, IMemoryCache memoryCache)
+        private readonly ISettingsManager _settingsManager;
+        private readonly ICacheManager _cacheManager;
+        public AccessTokenRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
-            _cacheKey = StringUtils.GetCacheKey(nameof(AccessTokenRepository));
-            _repository = new Repository<AccessTokenInfo>(db);
-            _settings = settings;
-            _memoryCache = memoryCache;
+            _repository = new Repository<AccessTokenInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
         }
 
         public IDb Db => _repository.Db;
@@ -44,13 +36,13 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(AccessTokenInfo accessTokenInfo)
         {
-            accessTokenInfo.Token = Settings.AppContext.Encrypt(StringUtils.GetGuid());
+            accessTokenInfo.Token = _settingsManager.Encrypt(StringUtils.GetGuid());
             accessTokenInfo.AddDate = DateTime.Now;
 
             accessTokenInfo.Id = await _repository.InsertAsync(accessTokenInfo);
             if (accessTokenInfo.Id > 0)
             {
-                _memoryCache.Remove(_cacheKey);
+                _cacheManager.Remove(CacheKey);
             }
             return accessTokenInfo.Id;
         }
@@ -60,7 +52,7 @@ namespace SS.CMS.Core.Repositories
             var updated = await _repository.UpdateAsync(accessTokenInfo);
             if (updated)
             {
-                _memoryCache.Remove(_cacheKey);
+                _cacheManager.Remove(CacheKey);
             }
             return updated;
         }
@@ -70,14 +62,14 @@ namespace SS.CMS.Core.Repositories
             var deleted = await _repository.DeleteAsync(id);
             if (deleted)
             {
-                _memoryCache.Remove(_cacheKey);
+                _cacheManager.Remove(CacheKey);
             }
             return deleted;
         }
 
         public async Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo)
         {
-            accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid(), _settings.SecretKey);
+            accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid(), _settingsManager.SecretKey);
 
             await UpdateAsync(accessTokenInfo);
 
@@ -125,14 +117,14 @@ namespace SS.CMS.Core.Repositories
         private async Task<Dictionary<string, AccessTokenInfo>> GetAccessTokenDictionaryAsync()
         {
             return await
-                _memoryCache.GetOrCreateAsync(_cacheKey, async entry =>
+                _cacheManager.GetOrCreateAsync(CacheKey, async entry =>
                 {
                     entry.SlidingExpiration = TimeSpan.FromHours(1);
 
                     var retVal = new Dictionary<string, AccessTokenInfo>();
                     foreach (var accessTokenInfo in await _repository.GetAllAsync())
                     {
-                        var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token, _settings.SecretKey);
+                        var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token, _settingsManager.SecretKey);
                         if (!string.IsNullOrEmpty(token))
                         {
                             retVal[token] = accessTokenInfo;
@@ -155,54 +147,5 @@ namespace SS.CMS.Core.Repositories
             ScopeUsers,
             ScopeStl
         };
-
-        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
-        {
-            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
-
-            var userToken = new AccessTokenImpl
-            {
-                UserId = userId,
-                UserName = userName,
-                ExpiresAt = DateTime.Now.Add(expiresAt)
-            };
-
-            return JsonWebToken.Encode(userToken, _settings.SecretKey, JwtHashAlgorithm.HS256);
-        }
-
-        public string GetAccessToken(int userId, string userName, DateTime expiresAt)
-        {
-            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
-
-            var userToken = new AccessTokenImpl
-            {
-                UserId = userId,
-                UserName = userName,
-                ExpiresAt = expiresAt
-            };
-
-            return JsonWebToken.Encode(userToken, _settings.SecretKey, JwtHashAlgorithm.HS256);
-        }
-
-        public IAccessToken ParseAccessToken(string accessToken)
-        {
-            if (string.IsNullOrEmpty(accessToken)) return new AccessTokenImpl();
-
-            try
-            {
-                var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, _settings.SecretKey);
-
-                if (tokenObj?.ExpiresAt.AddDays(Constants.AccessTokenExpireDays) > DateTime.Now)
-                {
-                    return tokenObj;
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new AccessTokenImpl();
-        }
     }
 }

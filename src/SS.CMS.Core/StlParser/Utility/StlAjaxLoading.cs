@@ -1,9 +1,11 @@
-﻿using SS.CMS.Core.Common;
+﻿using SS.CMS.Abstractions.Services;
+using SS.CMS.Core.Common;
 
 namespace SS.CMS.Core.StlParser.Utility
 {
-	public class StlAjaxLoading
-	{
+    public class StlAjaxLoading
+    {
+        private readonly IUrlManager _urlManager;
         private string containerID;
         private string ajaxUrl;
         private string scriptName;
@@ -40,8 +42,9 @@ namespace SS.CMS.Core.StlParser.Utility
             set { theEvent = value; }
         }
 
-        public StlAjaxLoading(string containerID, string ajaxUrl, string scriptName)
+        public StlAjaxLoading(IUrlManager urlManager, string containerID, string ajaxUrl, string scriptName)
         {
+            _urlManager = urlManager;
             this.containerID = containerID;
             this.ajaxUrl = ajaxUrl;
             this.scriptName = scriptName;
@@ -56,7 +59,7 @@ namespace SS.CMS.Core.StlParser.Utility
         {
             if (!string.IsNullOrEmpty(AjaxUrl))
             {
-                var ajaxUrl = PageUtilsEx.ParseNavigationUrl(AjaxUrl);
+                var ajaxUrl = _urlManager.ParseNavigationUrl(AjaxUrl);
 
                 string updateScript = $"{ScriptName}();";
                 if (!string.IsNullOrEmpty(Updater) && !string.IsNullOrEmpty(Event))
@@ -106,5 +109,5 @@ function {ScriptName}(ajaxUrl) {{
 
             return string.Empty;
         }
-	}
+    }
 }

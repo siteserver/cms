@@ -48,7 +48,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             PlayByJwPlayer
         };
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -58,9 +58,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var height = 350;
             var isAutoPlay = true;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -92,33 +92,33 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
+            return ParseImpl(parseContext, playUrl, imageUrl, playBy, width, height, type, isAutoPlay);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
+        private static string ParseImpl(ParseContext parseContext, string playUrl, string imageUrl, string playBy, int width, int height, string type, bool isAutoPlay)
         {
             if (string.IsNullOrEmpty(playUrl))
             {
-                var contentId = contextInfo.ContentId;
+                var contentId = parseContext.ContentId;
                 if (contentId != 0)//获取内容视频
                 {
-                    if (contextInfo.ContentInfo == null)
+                    if (parseContext.ContentInfo == null)
                     {
-                        playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
+                        playUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
-                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
+                                playUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.Get<string>(type);
+                        playUrl = parseContext.ContentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.Get<string>(ContentAttribute.VideoUrl);
+                            playUrl = parseContext.ContentInfo.Get<string>(ContentAttribute.VideoUrl);
                         }
                     }
                 }
@@ -126,22 +126,22 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, playUrl, pageInfo.IsLocal);
-            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal);
+            playUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, playUrl, parseContext.IsLocal);
+            imageUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal);
 
             var extension = PathUtils.GetExtension(playUrl);
-            var uniqueId = pageInfo.UniqueId;
+            var uniqueId = parseContext.UniqueId;
 
             var fileType = EFileSystemTypeUtils.GetEnumType(extension);
 
             if (EFileSystemTypeUtils.IsFlash(extension))
             {
-                return StlFlash.Parse(pageInfo, contextInfo);
+                return StlFlash.Parse(parseContext);
             }
 
             if (EFileSystemTypeUtils.IsImage(extension))
             {
-                return StlImage.Parse(pageInfo, contextInfo);
+                return StlImage.Parse(parseContext);
             }
 
             if (fileType == EFileSystemType.Avi)
@@ -156,7 +156,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (fileType == EFileSystemType.Rm || fileType == EFileSystemType.Rmb || fileType == EFileSystemType.Rmvb)
             {
-                return ParseRm(contextInfo, uniqueId, width, height, isAutoPlay, playUrl);
+                return ParseRm(parseContext, uniqueId, width, height, isAutoPlay, playUrl);
             }
 
             if (fileType == EFileSystemType.Wmv)
@@ -171,8 +171,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByJwPlayer))
             {
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcJwPlayer6);
-                var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+                parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcJwPlayer6);
+                var ajaxElementId = StlParserUtility.GetAjaxDivId(parseContext.UniqueId);
                 return $@"
 <div id='{ajaxElementId}'></div>
 <script type='text/javascript'>
@@ -189,8 +189,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (StringUtils.EqualsIgnoreCase(playBy, PlayByFlowPlayer))
             {
-                var ajaxElementId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcFlowPlayer);
+                var ajaxElementId = StlParserUtility.GetAjaxDivId(parseContext.UniqueId);
+                parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcFlowPlayer);
 
                 var imageHtml = string.Empty;
                 if (!string.IsNullOrEmpty(imageUrl))
@@ -198,7 +198,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     imageHtml = $@"<img src=""{imageUrl}"" style=""{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" />";
                 }
 
-                var swfUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
+                var swfUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
                 return $@"
 <a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""player_{ajaxElementId}"">{imageHtml}</a>
 <script language=""javascript"">
@@ -211,7 +211,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 ";
             }
 
-            return StlVideo.Parse(pageInfo, contextInfo);
+            return StlVideo.Parse(parseContext);
         }
 
         private static string ParseAvi(int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
@@ -272,48 +272,48 @@ namespace SS.CMS.Core.StlParser.StlElement
 ";
         }
 
-        private static string ParseRm(ContextInfo contextInfo, int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
+        private static string ParseRm(ParseContext parseContext, int uniqueId, int width, int height, bool isAutoPlay, string playUrl)
         {
-            if (string.IsNullOrEmpty(contextInfo.Attributes["ShowDisplay"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["ShowDisplay"]))
             {
-                contextInfo.Attributes["ShowDisplay"] = "0";
+                parseContext.Attributes["ShowDisplay"] = "0";
             }
-            if (string.IsNullOrEmpty(contextInfo.Attributes["ShowControls"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["ShowControls"]))
             {
-                contextInfo.Attributes["ShowControls"] = "1";
+                parseContext.Attributes["ShowControls"] = "1";
             }
-            contextInfo.Attributes["AutoStart"] = isAutoPlay ? "1" : "0";
-            if (string.IsNullOrEmpty(contextInfo.Attributes["AutoRewind"]))
+            parseContext.Attributes["AutoStart"] = isAutoPlay ? "1" : "0";
+            if (string.IsNullOrEmpty(parseContext.Attributes["AutoRewind"]))
             {
-                contextInfo.Attributes["AutoRewind"] = "0";
+                parseContext.Attributes["AutoRewind"] = "0";
             }
-            if (string.IsNullOrEmpty(contextInfo.Attributes["PlayCount"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["PlayCount"]))
             {
-                contextInfo.Attributes["PlayCount"] = "0";
+                parseContext.Attributes["PlayCount"] = "0";
             }
-            if (string.IsNullOrEmpty(contextInfo.Attributes["Appearance"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["Appearance"]))
             {
-                contextInfo.Attributes["Appearance"] = "0";
+                parseContext.Attributes["Appearance"] = "0";
             }
-            if (string.IsNullOrEmpty(contextInfo.Attributes["BorderStyle"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["BorderStyle"]))
             {
-                contextInfo.Attributes["BorderStyle"] = "0";
+                parseContext.Attributes["BorderStyle"] = "0";
             }
-            if (string.IsNullOrEmpty(contextInfo.Attributes["Controls"]))
+            if (string.IsNullOrEmpty(parseContext.Attributes["Controls"]))
             {
-                contextInfo.Attributes["ImageWindow"] = "0";
+                parseContext.Attributes["ImageWindow"] = "0";
             }
-            contextInfo.Attributes["moviewindowheight"] = height.ToString();
-            contextInfo.Attributes["moviewindowwidth"] = width.ToString();
-            contextInfo.Attributes["filename"] = playUrl;
-            contextInfo.Attributes["src"] = playUrl;
+            parseContext.Attributes["moviewindowheight"] = height.ToString();
+            parseContext.Attributes["moviewindowwidth"] = width.ToString();
+            parseContext.Attributes["filename"] = playUrl;
+            parseContext.Attributes["src"] = playUrl;
 
             var paramBuilder = new StringBuilder();
             var embedBuilder = new StringBuilder();
-            foreach (string key in contextInfo.Attributes.Keys)
+            foreach (string key in parseContext.Attributes.Keys)
             {
-                paramBuilder.Append($@"<param name=""{key}"" value=""{contextInfo.Attributes[key]}"">").Append(Constants.ReturnAndNewline);
-                embedBuilder.Append($@" {key}=""{contextInfo.Attributes[key]}""");
+                paramBuilder.Append($@"<param name=""{key}"" value=""{parseContext.Attributes[key]}"">").Append(Constants.ReturnAndNewline);
+                embedBuilder.Append($@" {key}=""{parseContext.Attributes[key]}""");
             }
 
             return $@"

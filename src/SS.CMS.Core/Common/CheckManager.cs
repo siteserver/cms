@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Components;
-using SS.CMS.Core.Models;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Core.Common.Serialization;
+using SS.CMS.Core.Security;
 
 namespace SS.CMS.Core.Common
 {
@@ -497,9 +497,9 @@ namespace SS.CMS.Core.Common
             return false;
         }
 
-        public static KeyValuePair<bool, int> GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId)
+        public static KeyValuePair<bool, int> GetUserCheckLevel(Permissions permissions, SiteInfo siteInfo, int channelId)
         {
-            if (permissionsImpl.IsSystemAdministrator)
+            if (permissions.IsSystemAdministrator)
             {
                 return new KeyValuePair<bool, int>(true, siteInfo.CheckContentLevel);
             }
@@ -508,18 +508,18 @@ namespace SS.CMS.Core.Common
             var checkedLevel = 0;
             if (siteInfo.IsCheckContentLevel == false)
             {
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheck))
+                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel5))
+                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel4))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel4))
                 {
                     if (siteInfo.CheckContentLevel <= 4)
                     {
@@ -530,7 +530,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 4;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel3))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel3))
                 {
                     if (siteInfo.CheckContentLevel <= 3)
                     {
@@ -541,7 +541,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 3;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel2))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel2))
                 {
                     if (siteInfo.CheckContentLevel <= 2)
                     {
@@ -552,7 +552,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 2;
                     }
                 }
-                else if (permissionsImpl.HasChannelPermissions(siteInfo.Id, channelId, ConfigManager.ChannelPermissions.ContentCheckLevel1))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel1))
                 {
                     if (siteInfo.CheckContentLevel <= 1)
                     {
@@ -571,11 +571,11 @@ namespace SS.CMS.Core.Common
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(PermissionsImpl permissionsImpl, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
+        public static bool GetUserCheckLevel(Permissions permissions, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
         {
             var checkContentLevel = siteInfo.CheckContentLevel;
 
-            var pair = GetUserCheckLevel(permissionsImpl, siteInfo, channelId);
+            var pair = GetUserCheckLevel(permissions, siteInfo, channelId);
             var isChecked = pair.Key;
             var checkedLevel = pair.Value;
             if (isChecked)

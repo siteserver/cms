@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SS.CMS.Abstractions
 {
@@ -6,7 +7,7 @@ namespace SS.CMS.Abstractions
     /// 插件菜单。
     /// 插件菜单可显示在系统头部、左侧或者内容列表中。
     /// </summary>
-    public class Menu
+    public class Menu : ICloneable
     {
         /// <summary>
         /// 获取或设置菜单Id。
@@ -33,9 +34,20 @@ namespace SS.CMS.Abstractions
         /// </summary>
         public string Target { get; set; }
 
+        public string PluginId { get; set; }
+
         /// <summary>
         /// 获取或设置菜单的下级菜单列表。
         /// </summary>
         public List<Menu> Menus { get; set; }
+
+        public bool Selected { get; set; }
+
+        public List<string> Permissions { get; set; }
+
+        public object Clone()
+        {
+            return (Menu)MemberwiseClone();
+        }
     }
 }

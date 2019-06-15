@@ -166,7 +166,7 @@ namespace SS.CMS.Utils
             return Regex.Replace(filePath, invalidReStr, "");
         }
 
-        public static bool IsFileExtenstionAllowed(string sAllowedExt, string sExt)
+        public static bool IsFileExtensionAllowed(string sAllowedExt, string sExt)
         {
             if (sExt != null && sExt.StartsWith("."))
             {
@@ -176,7 +176,5 @@ namespace SS.CMS.Utils
             var aExt = sAllowedExt.Split(',');
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
-
-
     }
 }

@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Models;
@@ -11,16 +14,16 @@ namespace SS.CMS.Core.Common
 {
     public static class InputParserUtility
     {
-        public static string GetContentByTableStyle(string content, SiteInfo siteInfo, TableStyleInfo styleInfo)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, SiteInfo siteInfo, TableStyleInfo styleInfo)
         {
             if (!string.IsNullOrEmpty(content))
             {
-                return GetContentByTableStyle(content, ",", siteInfo, styleInfo, string.Empty, null, string.Empty, false);
+                return GetContentByTableStyle(fileManager, urlManager, settingsManager, content, ",", siteInfo, styleInfo, string.Empty, null, string.Empty, false);
             }
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -82,25 +85,25 @@ namespace SS.CMS.Core.Common
             //}
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(siteInfo, parsedContent, true);
+                parsedContent = fileManager.TextEditorContentDecode(siteInfo, parsedContent, true);
             }
             else if (inputType == InputType.Image)
             {
-                parsedContent = GetImageOrFlashHtml(siteInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = GetImageOrFlashHtml(urlManager, siteInfo, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.Video)
             {
-                parsedContent = GetVideoHtml(siteInfo, parsedContent, attributes, isStlEntity);
+                parsedContent = GetVideoHtml(urlManager, settingsManager, siteInfo, parsedContent, attributes, isStlEntity);
             }
             else if (inputType == InputType.File)
             {
-                parsedContent = GetFileHtmlWithoutCount(siteInfo, parsedContent, attributes, innerHtml, isStlEntity, false, false);
+                parsedContent = GetFileHtmlWithoutCount(urlManager, settingsManager, siteInfo, parsedContent, attributes, innerHtml, isStlEntity, false, false);
             }
 
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = contentInfo.Get<string>(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -151,13 +154,13 @@ namespace SS.CMS.Core.Common
             }
             else if (inputType == InputType.TextEditor)
             {
-                parsedContent = ContentUtility.TextEditorContentDecode(siteInfo, value, true);
+                parsedContent = fileManager.TextEditorContentDecode(siteInfo, value, true);
             }
             else if (inputType == InputType.Image)
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetImageOrFlashHtml(siteInfo, value, attributes, isStlEntity);
+                    parsedContent = GetImageOrFlashHtml(urlManager, siteInfo, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -170,7 +173,7 @@ namespace SS.CMS.Core.Common
                         {
                             if (index == no)
                             {
-                                parsedContent = GetImageOrFlashHtml(siteInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = GetImageOrFlashHtml(urlManager, siteInfo, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -182,7 +185,7 @@ namespace SS.CMS.Core.Common
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetVideoHtml(siteInfo, value, attributes, isStlEntity);
+                    parsedContent = GetVideoHtml(urlManager, settingsManager, siteInfo, value, attributes, isStlEntity);
                 }
                 else
                 {
@@ -195,7 +198,7 @@ namespace SS.CMS.Core.Common
                         {
                             if (index == no)
                             {
-                                parsedContent = GetVideoHtml(siteInfo, extendValue, attributes, isStlEntity);
+                                parsedContent = GetVideoHtml(urlManager, settingsManager, siteInfo, extendValue, attributes, isStlEntity);
                                 break;
                             }
                             index++;
@@ -207,7 +210,7 @@ namespace SS.CMS.Core.Common
             {
                 if (no <= 1)
                 {
-                    parsedContent = GetFileHtmlWithoutCount(siteInfo, value, attributes, innerHtml, isStlEntity, false, false);
+                    parsedContent = GetFileHtmlWithoutCount(urlManager, settingsManager, siteInfo, value, attributes, innerHtml, isStlEntity, false, false);
                 }
                 else
                 {
@@ -220,7 +223,7 @@ namespace SS.CMS.Core.Common
                         {
                             if (index == no)
                             {
-                                parsedContent = GetFileHtmlWithoutCount(siteInfo, extendValue, attributes, innerHtml, isStlEntity, false, false);
+                                parsedContent = GetFileHtmlWithoutCount(urlManager, settingsManager, siteInfo, extendValue, attributes, innerHtml, isStlEntity, false, false);
                                 break;
                             }
                             index++;
@@ -236,12 +239,12 @@ namespace SS.CMS.Core.Common
             return parsedContent;
         }
 
-        public static string GetImageOrFlashHtml(SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetImageOrFlashHtml(IUrlManager urlManager, SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
             {
-                imageUrl = PageUtility.ParseNavigationUrl(siteInfo, imageUrl, false);
+                imageUrl = urlManager.ParseNavigationUrl(siteInfo, imageUrl, false);
                 if (isStlEntity)
                 {
                     retVal = imageUrl;
@@ -298,12 +301,12 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetVideoHtml(SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetVideoHtml(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
             {
-                videoUrl = PageUtility.ParseNavigationUrl(siteInfo, videoUrl, false);
+                videoUrl = urlManager.ParseNavigationUrl(siteInfo, videoUrl, false);
                 if (isStlEntity)
                 {
                     retVal = videoUrl;
@@ -311,7 +314,7 @@ namespace SS.CMS.Core.Common
                 else
                 {
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(ApiManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
+<embed src=""{SiteFilesAssets.GetUrl(urlManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
                         .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
@@ -319,14 +322,14 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetFileHtmlWithCount(SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithCount(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId, contentId,
+                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, channelId, contentId,
                     fileUrl);
             }
             else
@@ -334,7 +337,7 @@ namespace SS.CMS.Core.Common
                 var linkAttributes = new NameValueCollection();
 
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, channelId,
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -355,21 +358,21 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetFileHtmlWithoutCount(SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithoutCount(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
 
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(ApiManager.ApiUrl, siteInfo.Id, fileUrl);
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

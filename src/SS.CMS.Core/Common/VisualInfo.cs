@@ -1,4 +1,8 @@
 ﻿using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
@@ -23,11 +27,11 @@ namespace SS.CMS.Core.Common
 
         public int PageIndex { get; private set; }
 
-        public static VisualInfo GetInstance(int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId)
+        public static VisualInfo GetInstance(int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId, IPathManager pathManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
         {
             var visualInfo = new VisualInfo
             {
-                SiteInfo = SiteManager.GetSiteInfo(siteId),
+                SiteInfo = siteRepository.GetSiteInfo(siteId),
                 ChannelId = channelId,
                 ContentId = contentId,
                 TemplateInfo = null,
@@ -71,27 +75,27 @@ namespace SS.CMS.Core.Common
 
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                visualInfo.TemplateInfo = TemplateManager.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
+                visualInfo.TemplateInfo = templateRepository.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = PathUtility.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.Root, visualInfo.PageIndex);
+                visualInfo.FilePath = pathManager.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.Root, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                visualInfo.TemplateInfo = TemplateManager.GetChannelTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
+                visualInfo.TemplateInfo = templateRepository.GetChannelTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = PathUtility.GetChannelPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.PageIndex);
+                visualInfo.FilePath = pathManager.GetChannelPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
-                visualInfo.TemplateInfo = TemplateManager.GetContentTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
+                visualInfo.TemplateInfo = templateRepository.GetContentTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Content;
-                visualInfo.FilePath = PathUtility.GetContentPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
+                visualInfo.FilePath = pathManager.GetContentPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                visualInfo.TemplateInfo = TemplateManager.GetFileTemplateInfo(visualInfo.SiteInfo.Id, fileTemplateId);
+                visualInfo.TemplateInfo = templateRepository.GetFileTemplateInfo(visualInfo.SiteInfo.Id, fileTemplateId);
                 visualInfo.ContextType = EContextType.Undefined;
-                visualInfo.FilePath = PathUtility.MapPath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName);
+                visualInfo.FilePath = pathManager.MapPath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName);
             }
 
             return visualInfo;

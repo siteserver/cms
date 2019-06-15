@@ -7,7 +7,7 @@ using SS.CMS.Abstractions;
 
 namespace SS.CMS.Core.Packaging
 {
-    public class PackageMetadata : IMetadata
+    public class PackageMetadata : SS.CMS.Abstractions.IPackageMetadata
     {
         private readonly Dictionary<string, string> _metadata;
         private readonly IReadOnlyCollection<PackageDependencyGroup> _dependencyGroups;

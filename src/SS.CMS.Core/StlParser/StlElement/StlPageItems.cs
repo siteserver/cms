@@ -1,7 +1,7 @@
 ﻿using System;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -16,16 +16,16 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string Context = nameof(Context);
 
         //对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static string Parse(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, EContextType contextType)
+        public static string Parse(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
             string parsedContent;
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlElement);
                 if (stlElementInfo.Attributes[Context] != null)
                 {
-                    contextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context]);
+                    parseContext.ContextType = EContextTypeUtils.GetEnumType(stlElementInfo.Attributes[Context]);
                 }
 
                 if (pageCount <= 1)
@@ -47,18 +47,18 @@ namespace SS.CMS.Core.StlParser.StlElement
                     isXmlContent = false;
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItems(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+                parsedContent = parseContext.ParseStlPageItems(stlElement, currentPageIndex, pageCount, totalNum, isXmlContent);
             }
             catch (Exception ex)
             {
                 parsedContent =
-                    LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
+                    LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static string ParseInSearchPage(string stlElement, PageInfo pageInfo, string ajaxDivId, int channelId, int currentPageIndex, int pageCount, int totalNum)
+        public static string ParseInSearchPage(ParseContext parseContext, string stlElement, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
             string parsedContent;
             try
@@ -84,17 +84,17 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //isXmlContent = false;
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItemsInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
+                parsedContent = parseContext.ParseStlPageItemsInSearchPage(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static string ParseInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseInDynamicPage(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             string parsedContent;
             try
@@ -117,11 +117,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     stlElement = stlElement.Substring(index, length);
                 }
 
-                parsedContent = StlPageElementParser.ParseStlPageItemsInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                parsedContent = parseContext.ParseStlPageItemsInDynamicPage(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(pageInfo, ElementName, stlElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
             }
 
             return parsedContent;

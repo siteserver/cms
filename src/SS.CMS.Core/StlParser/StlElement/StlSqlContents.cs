@@ -24,21 +24,22 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "数据库查询语句")]
         public const string QueryString = nameof(QueryString);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.SqlContent);
+            var context = parseContext.Clone(EContextType.SqlContent);
+            var listInfo = ListInfo.GetListInfo(context);
             // var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
-            var sqlList = StlDataUtility.GetContainerSqlList(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
+            var sqlList = StlDataUtility.GetContainerSqlList(context.SettingsManager, listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
 
-            if (contextInfo.IsStlEntity)
+            if (context.IsStlEntity)
             {
                 return ParseEntity(sqlList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, sqlList);
+            return ParseElement(context, listInfo, sqlList);
         }
 
-        public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Sql> sqlList)
+        public static string ParseElement(ParseContext context, ListInfo listInfo, List<Container.Sql> sqlList)
         {
             if (sqlList == null || sqlList.Count == 0) return string.Empty;
 
@@ -71,9 +72,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     var sql = sqlList[i];
 
-                    pageInfo.SqlItems.Push(sql);
+                    context.PageInfo.SqlItems.Push(sql);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.SqlContent, contextInfo));
+                    builder.Append(TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -120,9 +121,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     var sql = sqlList[itemIndex];
 
-                                    pageInfo.SqlItems.Push(sql);
+                                    context.PageInfo.SqlItems.Push(sql);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.SqlContent, contextInfo);
+                                    cellHtml = TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

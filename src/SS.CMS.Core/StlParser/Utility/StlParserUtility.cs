@@ -4,10 +4,16 @@ using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Core.Repositories;
+using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Utils;
@@ -339,9 +345,9 @@ namespace SS.CMS.Core.StlParser.Utility
 
         public const string ItemIndex = "ItemIndex";
 
-        public static int ParseItemIndex(int dbItemIndex, string attributeName, ContextInfo contextInfo)
+        public static int ParseItemIndex(int dbItemIndex, string attributeName, ParseContext parseContext)
         {
-            var itemIndex = contextInfo.PageItemIndex + dbItemIndex + 1;
+            var itemIndex = parseContext.PageItemIndex + dbItemIndex + 1;
             if (attributeName.IndexOf('+') == -1 && attributeName.IndexOf('-') == -1) return itemIndex;
 
             var array = attributeName.Split('+');
@@ -358,31 +364,31 @@ namespace SS.CMS.Core.StlParser.Utility
             return itemIndex - substractNum;
         }
 
-        public static int GetItemIndex(ContextInfo contextInfo)
+        public static int GetItemIndex(ParseContext parseContext)
         {
             var dbItemIndex = 0;
-            if (contextInfo.ContextType == EContextType.Channel)
+            if (parseContext.ContextType == EContextType.Channel)
             {
-                dbItemIndex = contextInfo.Container.ChannelItem.ItemIndex;
+                dbItemIndex = parseContext.Container.ChannelItem.Key;
             }
-            else if (contextInfo.ContextType == EContextType.Content)
+            else if (parseContext.ContextType == EContextType.Content)
             {
-                dbItemIndex = contextInfo.Container.ContentItem.ItemIndex;
+                dbItemIndex = parseContext.Container.ContentItem.Key;
             }
-            else if (contextInfo.ContextType == EContextType.SqlContent)
+            else if (parseContext.ContextType == EContextType.SqlContent)
             {
-                dbItemIndex = contextInfo.Container.SqlItem.ItemIndex;
+                dbItemIndex = parseContext.Container.SqlItem.ItemIndex;
             }
-            else if (contextInfo.ContextType == EContextType.Site)
+            else if (parseContext.ContextType == EContextType.Site)
             {
-                dbItemIndex = contextInfo.Container.SiteItem.ItemIndex;
+                dbItemIndex = parseContext.Container.SiteItem.Key;
             }
-            else if (contextInfo.ContextType == EContextType.Each)
+            else if (parseContext.ContextType == EContextType.Each)
             {
-                dbItemIndex = contextInfo.Container.EachItem.ItemIndex;
+                dbItemIndex = parseContext.Container.EachItem.ItemIndex;
             }
 
-            return contextInfo.PageItemIndex + dbItemIndex + 1;
+            return parseContext.PageItemIndex + dbItemIndex + 1;
         }
 
         public static string GetAjaxDivId(int updaterId)
@@ -390,32 +396,32 @@ namespace SS.CMS.Core.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal, IUrlManager urlManager)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                currentUrl = siteInfo.WebUrl;
+                currentUrl = urlManager.GetWebUrl(siteInfo);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
                 if (contentInfo == null)
                 {
                     var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    currentUrl = PageUtility.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
+                    currentUrl = urlManager.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
                 }
                 else
                 {
-                    currentUrl = PageUtility.GetContentUrl(siteInfo, contentInfo, isLocal);
+                    currentUrl = urlManager.GetContentUrl(siteInfo, contentInfo, isLocal);
                 }
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                currentUrl = PageUtility.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
+                currentUrl = urlManager.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                currentUrl = PageUtility.GetFileUrl(siteInfo, templateId, isLocal);
+                currentUrl = urlManager.GetFileUrl(siteInfo, templateId, isLocal);
             }
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);

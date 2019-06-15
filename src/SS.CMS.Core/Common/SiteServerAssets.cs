@@ -1,4 +1,4 @@
-using SS.CMS.Core.Settings;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -8,29 +8,29 @@ namespace SS.CMS.Core.Common
     {
         public const string DirectoryName = "assets";
 
-        public static string GetUrl(string relatedUrl)
+        public static string GetUrl(IUrlManager urlManager, string relatedUrl)
         {
-            return PageUtils.Combine(AppContext.GetAdminUrl(DirectoryName), relatedUrl);
+            return PageUtils.Combine(urlManager.GetAdminUrl(DirectoryName), relatedUrl);
         }
 
-        public static string GetPath(params string[] paths)
+        public static string GetPath(IPathManager pathManager, params string[] paths)
         {
-            return AppContext.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
+            return pathManager.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
         }
 
         public const string DirectoryIcons = "icons";
         public const string DirectoryFileSystem = "icons/filesystem";
 
-        public static string GetFileSystemIconUrl(EFileSystemType fileSystemType, bool isLargeIcon)
+        public static string GetFileSystemIconUrl(IUrlManager urlManager, EFileSystemType fileSystemType, bool isLargeIcon)
         {
             string urlFormat =
                 $"{DirectoryFileSystem}/{(isLargeIcon ? "large" : "small")}{(fileSystemType != EFileSystemType.Directory ? EFileSystemTypeUtils.GetValue(fileSystemType) : ".directory")}.gif";
-            return GetUrl(urlFormat);
+            return GetUrl(urlManager, urlFormat);
         }
 
-        public static string GetIconUrl(string iconName)
+        public static string GetIconUrl(IUrlManager urlManager, string iconName)
         {
-            return GetUrl(PageUtils.Combine(DirectoryIcons, iconName));
+            return GetUrl(urlManager, PageUtils.Combine(DirectoryIcons, iconName));
         }
 
         public class Default

@@ -2,6 +2,7 @@
 {
     public static class Constants
     {
+        public const string ApplicationPath = "/";
         public const string CookieAdminToken = "SS-ADMIN-TOKEN";
         public const string CookieUserToken = "SS-USER-TOKEN";
         public const string CookieApiKey = "SS-API-KEY";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
@@ -31,11 +32,11 @@ namespace SS.CMS.Core.Common
         {
             try
             {
-                if (!ConfigManager.Instance.IsLogError) return 0;
+                // if (!ConfigManager.Instance.IsLogError) return 0;
 
-                DataProvider.ErrorLogDao.DeleteIfThreshold();
+                // DataProvider.ErrorLogRepository.DeleteIfThreshold();
 
-                return DataProvider.ErrorLogDao.Insert(logInfo);
+                // return DataProvider.ErrorLogRepository.Insert(logInfo);
             }
             catch
             {
@@ -110,7 +111,7 @@ stl: {stlContent}
 
         public static void AddSiteLog(int siteId, int channelId, int contentId, string ipAddress, string adminName, string action, string summary)
         {
-            if (!ConfigManager.Instance.IsLogSite) return;
+            // if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
@@ -120,7 +121,7 @@ stl: {stlContent}
             {
                 try
                 {
-                    DataProvider.SiteLogDao.DeleteIfThreshold();
+                    DataProvider.SiteLogRepository.DeleteIfThreshold();
 
                     if (!string.IsNullOrEmpty(action))
                     {
@@ -146,7 +147,7 @@ stl: {stlContent}
                         Action = action,
                         Summary = summary
                     };
-                    DataProvider.SiteLogDao.Insert(siteLogInfo);
+                    DataProvider.SiteLogRepository.Insert(siteLogInfo);
                 }
                 catch (Exception ex)
                 {
@@ -157,11 +158,11 @@ stl: {stlContent}
 
         public static void AddAdminLog(string ipAddress, string adminName, string action, string summary = "")
         {
-            if (!ConfigManager.Instance.IsLogAdmin) return;
+            // if (!ConfigManager.Instance.IsLogAdmin) return;
 
             try
             {
-                DataProvider.LogDao.DeleteIfThreshold();
+                DataProvider.LogRepository.DeleteIfThreshold();
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -181,37 +182,7 @@ stl: {stlContent}
                     Summary = summary
                 };
 
-                DataProvider.LogDao.Insert(logInfo);
-            }
-            catch (Exception ex)
-            {
-                AddErrorLog(ex);
-            }
-        }
-
-        public static void AddUserLog(string ipAddress, string userName, string actionType, string summary)
-        {
-            if (!ConfigManager.Instance.IsLogUser) return;
-
-            try
-            {
-                DataProvider.UserLogDao.DeleteIfThreshold();
-
-                if (!string.IsNullOrEmpty(summary))
-                {
-                    summary = StringUtils.MaxLengthText(summary, 250);
-                }
-
-                var userLogInfo = new UserLogInfo
-                {
-                    UserName = userName,
-                    IpAddress = ipAddress,
-                    AddDate = DateTime.Now,
-                    Action = actionType,
-                    Summary = summary
-                };
-
-                DataProvider.UserLogDao.Insert(userName, userLogInfo);
+                DataProvider.LogRepository.Insert(logInfo);
             }
             catch (Exception ex)
             {

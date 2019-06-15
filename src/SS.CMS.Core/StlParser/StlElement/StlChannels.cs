@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Models.Enumerations;
@@ -22,19 +24,20 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示所有级别的子栏目")]
         public const string IsAllChildren = nameof(IsAllChildren);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Channel);
+            parseContext.ContextType = EContextType.Channel;
+            var listInfo = ListInfo.GetListInfo(parseContext);
 
             // var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
-            var channelList = GetContainerChannelList(pageInfo, contextInfo, listInfo);
+            var channelList = GetContainerChannelList(parseContext, listInfo);
 
-            if (contextInfo.IsStlEntity)
+            if (parseContext.IsStlEntity)
             {
-                return ParseEntity(pageInfo, channelList);
+                return ParseEntity(parseContext, channelList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, channelList);
+            return ParseElement(parseContext, listInfo, channelList);
         }
 
         // public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -53,25 +56,25 @@ namespace SS.CMS.Core.StlParser.StlElement
         //     return StlDataUtility.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         // }
 
-        public static IList<Container.Channel> GetContainerChannelList(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        public static IList<KeyValuePair<int, ChannelInfo>> GetContainerChannelList(ParseContext parseContext, ListInfo listInfo)
         {
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
 
             if (TranslateUtils.ToBool(listInfo.Others.Get(IsAllChildren)))
             {
-                listInfo.Scope = EScopeType.Descendant;
+                listInfo.Scope = ScopeType.Descendant;
             }
 
-            var taxisType = StlDataUtility.GetChannelTaxisType(listInfo.Order, ETaxisType.OrderByTaxis);
+            var taxisType = StlDataUtility.GetChannelTaxisType(listInfo.Order, TaxisType.OrderByTaxis);
 
-            return StlChannelCache.GetContainerChannelList(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+            return StlChannelCache.GetContainerChannelList(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
         }
 
-        public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, IList<Container.Channel> channelList)
+        public static string ParseElement(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)
         {
             if (channelList == null || channelList.Count == 0) return string.Empty;
 
@@ -104,9 +107,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     var channel = channelList[i];
 
-                    pageInfo.ChannelItems.Push(channel);
+                    parseContext.PageInfo.ChannelItems.Push(channel);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetChannelsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Channel, contextInfo));
+                    builder.Append(TemplateUtility.GetChannelsItemTemplateString(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -153,9 +156,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     var channel = channelList[itemIndex];
 
-                                    pageInfo.ChannelItems.Push(channel);
+                                    parseContext.PageInfo.ChannelItems.Push(channel);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetChannelsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Channel, contextInfo);
+                                    cellHtml = TemplateUtility.GetChannelsItemTemplateString(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
@@ -181,7 +184,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return builder.ToString();
         }
 
-        private static object ParseEntity(PageInfo pageInfo, IList<Container.Channel> channelList)
+        private static object ParseEntity(ParseContext parseContext, IList<KeyValuePair<int, ChannelInfo>> channelList)
         {
             // var table = dataSource.Tables[0];
             // foreach (DataRow row in table.Rows)
@@ -198,7 +201,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var channelInfoList = new List<IDictionary<string, object>>();
             foreach (var channel in channelList)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(channel.SiteId, channel.Id);
+                var channelInfo = ChannelManager.GetChannelInfo(channel.Value.SiteId, channel.Value.Id);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

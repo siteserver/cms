@@ -5,7 +5,7 @@ namespace SS.CMS.Core.StlParser.Models
 {
     public partial class Container
     {
-        public class Channel
+        public static class Channel
         {
             public static readonly string SqlColumns = $"{ChannelAttribute.Id}, {ChannelAttribute.SiteId}, {ChannelAttribute.AddDate}, {ChannelAttribute.Taxis}";
 
@@ -16,17 +16,6 @@ namespace SS.CMS.Core.StlParser.Models
                 ChannelAttribute.AddDate,
                 ChannelAttribute.Taxis
             };
-
-            public int ItemIndex { get; set; }
-
-            public int Id { get; set; }
-
-            public int SiteId { get; set; }
-
-            public DateTime? AddDate { get; set; }
-
-            public int Taxis { get; set; }
         }
-
     }
 }

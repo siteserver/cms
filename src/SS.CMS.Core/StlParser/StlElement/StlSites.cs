@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Enumerations;
@@ -20,25 +22,26 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Site);
+            var context = parseContext.Clone(EContextType.Site);
+            var listInfo = ListInfo.GetListInfo(context);
             var siteName = listInfo.Others.Get(SiteName);
             var siteDir = listInfo.Others.Get(SiteDir);
 
             // var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
 
-            var siteList = StlDataUtility.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.OrderByString);
+            var siteList = StlDataUtility.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.Order);
 
-            if (contextInfo.IsStlEntity)
+            if (context.IsStlEntity)
             {
-                return ParseEntity(siteList);
+                return ParseEntity(context, siteList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, siteList);
+            return ParseElement(context, listInfo, siteList);
         }
 
-        private static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Site> siteList)
+        private static string ParseElement(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, SiteInfo>> siteList)
         {
             if (siteList == null || siteList.Count == 0) return string.Empty;
 
@@ -71,9 +74,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     var site = siteList[i];
 
-                    pageInfo.SiteItems.Push(site);
+                    context.PageInfo.SiteItems.Push(site);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetSitesTemplateString(templateString, string.Empty, pageInfo, EContextType.Site, contextInfo));
+                    builder.Append(TemplateUtility.GetSitesTemplateString(templateString, string.Empty, context));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -120,9 +123,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     var site = siteList[itemIndex];
 
-                                    pageInfo.SiteItems.Push(site);
+                                    context.PageInfo.SiteItems.Push(site);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetSitesTemplateString(templateString, string.Empty, pageInfo, EContextType.Site, contextInfo);
+                                    cellHtml = TemplateUtility.GetSitesTemplateString(templateString, string.Empty, context);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
@@ -220,13 +223,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static List<SiteInfo> ParseEntity(List<Container.Site> siteList)
+        private static List<SiteInfo> ParseEntity(ParseContext context, List<KeyValuePair<int, SiteInfo>> siteList)
         {
             var siteInfoList = new List<SiteInfo>();
 
             foreach (var site in siteList)
             {
-                var siteInfo = SiteManager.GetSiteInfo(site.Id);
+                var siteInfo = context.SiteRepository.GetSiteInfo(site.Value.Id);
                 if (siteInfo != null)
                 {
                     siteInfoList.Add(siteInfo);

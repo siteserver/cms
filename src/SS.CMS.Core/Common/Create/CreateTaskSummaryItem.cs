@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Common.Create
             contentId = taskInfo.ContentId;
             fileTemplateId = taskInfo.FileTemplateId;
             specialId = taskInfo.SpecialId;
-            type = ECreateTypeUtils.GetText(taskInfo.CreateType);
+            type = CreateTypeUtils.GetText(taskInfo.CreateType);
             name = taskInfo.Name;
             this.timeSpan = timeSpan;
             this.isPending = isPending;
@@ -26,7 +26,7 @@ namespace SS.CMS.Core.Common.Create
             contentId = logInfo.ContentId;
             fileTemplateId = logInfo.FileTemplateId;
             specialId = logInfo.SpecialId;
-            type = ECreateTypeUtils.GetText(logInfo.CreateType);
+            type = CreateTypeUtils.GetText(logInfo.CreateType);
             name = logInfo.TaskName;
             timeSpan = logInfo.TimeSpan;
             isPending = false;

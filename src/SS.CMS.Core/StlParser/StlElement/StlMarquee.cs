@@ -8,20 +8,20 @@ namespace SS.CMS.Core.StlParser.StlElement
 {
     [StlElement(Title = "无间隔滚动", Description = "通过 stl:marquee 标签在模板中创建一个能够无间隔滚动的内容块")]
     public class StlMarquee
-	{
-		private StlMarquee(){}
-		public const string ElementName = "stl:marquee";
+    {
+        private StlMarquee() { }
+        public const string ElementName = "stl:marquee";
 
-		[StlAttribute(Title = "滚动延迟时间（毫秒）")]
+        [StlAttribute(Title = "滚动延迟时间（毫秒）")]
         private const string ScrollDelay = nameof(ScrollDelay);
 
-		[StlAttribute(Title = "滚动方向")]
+        [StlAttribute(Title = "滚动方向")]
         private const string Direction = nameof(Direction);
 
-		[StlAttribute(Title = "宽度")]
+        [StlAttribute(Title = "宽度")]
         private const string Width = nameof(Width);
 
-		[StlAttribute(Title = "高度")]
+        [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
         public const string DirectionVertical = "vertical";         //垂直
@@ -33,12 +33,12 @@ namespace SS.CMS.Core.StlParser.StlElement
             {DirectionHorizontal, "水平"}
         };
 
-        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
-		{
-            if (string.IsNullOrEmpty(contextInfo.InnerHtml)) return string.Empty;
+        internal static string Parse(ParseContext parseContext)
+        {
+            if (string.IsNullOrEmpty(parseContext.InnerHtml)) return string.Empty;
 
-            var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            var innerBuilder = new StringBuilder(parseContext.InnerHtml);
+            parseContext.ParseInnerContent(innerBuilder);
             var scrollHtml = innerBuilder.ToString();
 
             var scrollDelay = 40;
@@ -46,9 +46,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var width = "width:100%;";
             var height = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ScrollDelay))
                 {
@@ -93,10 +93,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, scrollHtml, scrollDelay, direction, width, height);
-		}
+            return ParseImpl(parseContext, scrollHtml, scrollDelay, direction, width, height);
+        }
 
-        private static string ParseImpl(PageInfo pageInfo, string scrollHtml, int scrollDelay, string direction, string width, string height)
+        private static string ParseImpl(ParseContext parseContext, string scrollHtml, int scrollDelay, string direction, string width, string height)
         {
             string topHtml;
             string bottomHtml;
@@ -107,7 +107,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 height = "height:120px;";
             }
 
-            var uniqueId = "Marquee_" + pageInfo.UniqueId;
+            var uniqueId = "Marquee_" + parseContext.UniqueId;
             if (direction.Equals(DirectionVertical))
             {
                 topHtml = $@"
@@ -179,12 +179,12 @@ if (uniqueID_isMar){{
 </script>";
             }
 
-            if (!pageInfo.FootCodes.ContainsKey(ElementName + uniqueId))
+            if (!parseContext.FootCodes.ContainsKey(ElementName + uniqueId))
             {
-                pageInfo.FootCodes.Add(ElementName + uniqueId, scripts.Replace("uniqueID", uniqueId));
+                parseContext.FootCodes.Add(ElementName + uniqueId, scripts.Replace("uniqueID", uniqueId));
             }
 
             return topHtml.Replace("uniqueID", uniqueId) + scrollHtml + bottomHtml.Replace("uniqueID", uniqueId);
         }
-	}
+    }
 }

@@ -19,21 +19,12 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="IRequest.Admin.cs" />
-    <Compile Remove="IRequest.cs" />
-    <Compile Remove="IRequest.Post.cs" />
-    <Compile Remove="IRequest.Query.cs" />
-    <Compile Remove="IRequest.User.cs" />
-    <Compile Remove="IResponse.Admin.cs" />
-    <Compile Remove="IResponse.cs" />
-    <Compile Remove="IResponse.User.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.0.0-preview5-19227-01" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.0.0-preview5.19227.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="3.0.0-preview6.19307.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 

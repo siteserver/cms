@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.StlParser.Models;
@@ -46,19 +47,19 @@ namespace SS.CMS.Core.StlParser.StlElement
             {TypeContents, "内容数"}
         };
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = string.Empty;
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var scope = EScopeType.Self;
+            var scope = ScopeType.Self;
             var since = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -82,7 +83,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Scope))
                 {
-                    scope = EScopeTypeUtils.GetEnumType(value);
+                    scope = ScopeType.Parse(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Since))
                 {
@@ -90,10 +91,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, channelIndex, channelName, upLevel, topLevel, scope, since);
+            return ParseImpl(parseContext, type, channelIndex, channelName, upLevel, topLevel, scope, since);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string channelIndex, string channelName, int upLevel, int topLevel, EScopeType scope, string since)
+        private static string ParseImpl(ParseContext parseContext, string type, string channelIndex, string channelName, int upLevel, int topLevel, ScopeType scope, string since)
         {
             var count = 0;
 
@@ -105,23 +106,23 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(type) || StringUtils.EqualsIgnoreCase(type, TypeContents))
             {
-                var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
                 var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, theChannelId);
-                    count += StlContentCache.GetCountOfContentAdd(pageInfo.SiteId, channelInfo, EScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, ETriState.True);
+                    var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, theChannelId);
+                    count += channelInfo.ContentRepository.StlGetCountOfContentAdd(parseContext.SiteId, channelInfo, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, true);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
             {
-                var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
-                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+                var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+                channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
                 count = nodeInfo.ChildrenCount;
             }
 

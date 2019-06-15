@@ -4,11 +4,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin
@@ -20,13 +18,13 @@ namespace SS.CMS.Api.Controllers.Admin
         public const string Route = "login";
         public const string RouteCaptcha = "login/captcha";
 
-        private readonly IIdentity _identity;
-        private readonly IAccessTokenRepository _accessTokenRepository;
+        private readonly IIdentityManager _identityManager;
+        private readonly IAdministratorRepository _administratorRepository;
 
-        public LoginController(IIdentity identity, IAccessTokenRepository accessTokenRepository)
+        public LoginController(IIdentityManager identityManager, IAdministratorRepository administratorRepository)
         {
-            _identity = identity;
-            _accessTokenRepository = accessTokenRepository;
+            _identityManager = identityManager;
+            _administratorRepository = administratorRepository;
         }
 
         [HttpGet(Route)]
@@ -35,7 +33,7 @@ namespace SS.CMS.Api.Controllers.Admin
             // var redirect = AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
             // if (redirect != null) return Response<object>.Ok(redirect);
 
-            var adminInfo = _identity.IsAdminLoggin ? _identity.AdminInfo : null;
+            var adminInfo = _identityManager.IsAdminLoggin ? _identityManager.AdminInfo : null;
 
             return Ok(new
             {
@@ -47,18 +45,12 @@ namespace SS.CMS.Api.Controllers.Admin
         public ActionResult GetCaptcha()
         {
             var code = CreateValidateCode();
-            if (CacheUtils.Exists($"SiteServer.CMS.Services.Admin.LoginService.{code}"))
-            {
-                code = CreateValidateCode();
-            }
 
             Response.Cookies.Delete(_cookieName);
             Response.Cookies.Append(_cookieName, code, new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddMinutes(10)
             });
-
-            //request.SetCookie("SS-" + nameof(LoginService), code, TimeSpan.FromMinutes(10));
 
             byte[] buffer;
 
@@ -111,39 +103,37 @@ namespace SS.CMS.Api.Controllers.Admin
         }
 
         [HttpPost(Route)]
-        public ActionResult Login([FromBody] string account, [FromBody] string password, [FromBody] string captcha, [FromBody] bool isAutoLogin)
+        public ActionResult Login([FromBody] LoginContext context)
         {
             Request.Cookies.TryGetValue(_cookieName, out var code);
 
-            if (string.IsNullOrEmpty(code) || CacheUtils.Exists($"SiteServer.CMS.Services.Admin.LoginService.{code}"))
+            if (string.IsNullOrEmpty(code))
             {
                 return BadRequest("验证码已超时，请点击刷新验证码！");
             }
 
             Response.Cookies.Delete(_cookieName);
 
-            CacheUtils.InsertMinutes($"SiteServer.CMS.Services.Admin.LoginService.{code}", true, 10);
-
-            if (!StringUtils.EqualsIgnoreCase(code, captcha))
+            if (!StringUtils.EqualsIgnoreCase(code, context.Captcha))
             {
                 return BadRequest("验证码不正确，请重新输入！");
             }
 
             AdministratorInfo adminInfo;
 
-            if (!DataProvider.AdministratorDao.Validate(account, password, true, out var userName, out var errorMessage))
+            if (!_administratorRepository.Validate(context.Account, context.Password, true, out var userName, out var errorMessage))
             {
-                adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+                adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
                 if (adminInfo != null)
                 {
-                    DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo); // 记录最后登录时间、失败次数+1
+                    _administratorRepository.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo); // 记录最后登录时间、失败次数+1
                 }
                 return BadRequest(errorMessage);
             }
 
-            adminInfo = AdminManager.GetAdminInfoByUserName(userName);
-            DataProvider.AdministratorDao.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
-            var accessToken = AdminLogin(adminInfo.UserName, isAutoLogin);
+            adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
+            _administratorRepository.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
+            var accessToken = AdminLogin(adminInfo.UserName, context.IsAutoLogin);
             var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
             return Ok(new

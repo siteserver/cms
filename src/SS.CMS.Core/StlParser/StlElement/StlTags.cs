@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
@@ -31,17 +32,17 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string Context = nameof(Context);
 
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var tagLevel = 1;
             var totalNum = 0;
             var isOrderByCount = false;
             var theme = "default";
-            var isInnerHtml = !string.IsNullOrEmpty(contextInfo.InnerHtml);
+            var isInnerHtml = !string.IsNullOrEmpty(parseContext.InnerHtml);
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TagLevel))
                 {
@@ -61,46 +62,46 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Context))
                 {
-                    contextInfo.ContextType = EContextTypeUtils.GetEnumType(value);
+                    parseContext.ContextType = EContextTypeUtils.GetEnumType(value);
                 }
             }
 
-            return ParseImpl(isInnerHtml, pageInfo, contextInfo, tagLevel, totalNum, isOrderByCount, theme);
+            return ParseImpl(parseContext, isInnerHtml, tagLevel, totalNum, isOrderByCount, theme);
         }
 
-        private static string ParseImpl(bool isInnerHtml, PageInfo pageInfo, ContextInfo contextInfo, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static string ParseImpl(ParseContext parseContext, bool isInnerHtml, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
             var innerHtml = string.Empty;
             if (isInnerHtml)
             {
-                innerHtml = StringUtils.StripTags(contextInfo.OuterHtml, ElementName);
+                innerHtml = StringUtils.StripTags(parseContext.OuterHtml, ElementName);
             }
 
             var tagsBuilder = new StringBuilder();
             if (!isInnerHtml)
             {
                 tagsBuilder.Append($@"
-<link rel=""stylesheet"" href=""{SiteFilesAssets.Tags.GetStyleUrl(pageInfo.ApiUrl, theme)}"" type=""text/css"" />
+<link rel=""stylesheet"" href=""{SiteFilesAssets.Tags.GetStyleUrl(parseContext.ApiUrl, theme)}"" type=""text/css"" />
 ");
                 tagsBuilder.Append(@"<ul class=""tagCloud"">");
             }
 
-            if (contextInfo.ContextType == EContextType.Undefined)
+            if (parseContext.ContextType == EContextType.Undefined)
             {
-                contextInfo.ContextType = contextInfo.ContentId != 0 ? EContextType.Content : EContextType.Channel;
+                parseContext.ContextType = parseContext.ContentId != 0 ? EContextType.Content : EContextType.Channel;
             }
             var contentId = 0;
-            if (contextInfo.ContextType == EContextType.Content)
+            if (parseContext.ContextType == EContextType.Content)
             {
-                contentId = contextInfo.ContentId;
+                contentId = parseContext.ContentId;
             }
 
-            var tagInfoList = StlTagCache.GetTagInfoList(pageInfo.SiteId, contentId, isOrderByCount, totalNum);
+            var tagInfoList = StlTagCache.GetTagInfoList(parseContext.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
-            if (contextInfo.ContextType == EContextType.Content && contextInfo.ContentInfo != null)
+            if (parseContext.ContextType == EContextType.Content && parseContext.ContentInfo != null)
             {
                 var tagInfoList2 = new List<TagInfo>();
-                var tagNameList = TranslateUtils.StringCollectionToStringList(contextInfo.ContentInfo.Tags.Trim().Replace(" ", ","));
+                var tagNameList = TranslateUtils.StringCollectionToStringList(parseContext.ContentInfo.Tags.Trim().Replace(" ", ","));
                 foreach (var tagName in tagNameList)
                 {
                     if (!string.IsNullOrEmpty(tagName))
@@ -119,7 +120,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             var tagInfo = new TagInfo
                             {
-                                SiteId = pageInfo.SiteId,
+                                SiteId = parseContext.SiteId,
                                 ContentIdCollection = contentId.ToString(),
                                 Tag = tagName,
                                 UseNum = 1
@@ -140,13 +141,13 @@ namespace SS.CMS.Core.StlParser.StlElement
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
                     var innerBuilder = new StringBuilder(tagHtml);
-                    StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                    parseContext.ParseInnerContent(innerBuilder);
                     tagsBuilder.Append(innerBuilder);
                 }
                 else
                 {
-                    var url = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
-                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", pageInfo.IsLocal);
+                    var url = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo,
+                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", parseContext.IsLocal);
                     tagsBuilder.Append($@"
 <li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>
 ");

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Utils;

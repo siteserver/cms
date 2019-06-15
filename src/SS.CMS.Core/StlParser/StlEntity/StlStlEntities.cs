@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Settings;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -49,7 +48,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
             {LogoutUrl, "退出登录页地址"}
         };
 
-        internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static string Parse(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
             try
@@ -63,7 +62,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(RootUrl, attributeName))//系统根目录地址
                 {
-                    parsedContent = PageUtilsEx.ParseConfigRootUrl("~");
+                    parsedContent = parseContext.UrlManager.ParseConfigRootUrl("~");
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
                         parsedContent = parsedContent.TrimEnd('/');
@@ -71,85 +70,85 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ApiUrl, attributeName))//API地址
                 {
-                    parsedContent = pageInfo.ApiUrl.TrimEnd('/');
+                    parsedContent = parseContext.PageInfo.ApiUrl.TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteId, attributeName))//ID
                 {
-                    parsedContent = pageInfo.SiteId.ToString();
+                    parsedContent = parseContext.SiteInfo.Id.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteName, attributeName))//名称
                 {
-                    parsedContent = pageInfo.SiteInfo.SiteName;
+                    parsedContent = parseContext.SiteInfo.SiteName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteUrl, attributeName))//域名地址
                 {
-                    parsedContent = PageUtility.GetSiteUrl(pageInfo.SiteInfo, pageInfo.IsLocal).TrimEnd('/');
+                    parsedContent = parseContext.UrlManager.GetSiteUrl(parseContext.SiteInfo, parseContext.PageInfo.IsLocal).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteDir, attributeName))//文件夹
                 {
-                    parsedContent = pageInfo.SiteInfo.SiteDir;
+                    parsedContent = parseContext.SiteInfo.SiteDir;
                 }
                 else if (StringUtils.EqualsIgnoreCase(CurrentUrl, attributeName))//当前页地址
                 {
-                    parsedContent = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
+                    parsedContent = StlParserUtility.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal, parseContext.UrlManager);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = PageUtility.GetChannelUrl(pageInfo.SiteInfo, ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId), pageInfo.IsLocal);
+                    parsedContent = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, ChannelManager.GetChannelInfo(parseContext.SiteInfo.Id, parseContext.ChannelId), parseContext.PageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
-                    parsedContent = AppContext.GetHomeUrl(string.Empty).TrimEnd('/');
+                    parsedContent = parseContext.UrlManager.GetHomeUrl(string.Empty).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
                 {
-                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = AppContext.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal, parseContext.UrlManager);
+                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
                 {
-                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = AppContext.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal, parseContext.UrlManager);
+                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
                 {
-                    var returnUrl = StlParserUtility.GetStlCurrentUrl(pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, contextInfo.ContentInfo, pageInfo.TemplateInfo.Type, pageInfo.TemplateInfo.Id, pageInfo.IsLocal);
-                    parsedContent = AppContext.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    var returnUrl = StlParserUtility.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal, parseContext.UrlManager);
+                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
                 {
                     if (StringUtils.EqualsIgnoreCase(attributeName, "TableForContent"))
                     {
-                        parsedContent = pageInfo.SiteInfo.TableName;
+                        parsedContent = parseContext.SiteInfo.TableName;
                     }
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "Site"))//
                 {
-                    parsedContent = pageInfo.SiteInfo.Get<string>(attributeName.Substring(4));
+                    parsedContent = parseContext.SiteInfo.Get<string>(attributeName.Substring(4));
                 }
-                else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(attributeName))
+                else if (parseContext.PageInfo.Parameters != null && parseContext.PageInfo.Parameters.ContainsKey(attributeName))
                 {
-                    pageInfo.Parameters.TryGetValue(attributeName, out parsedContent);
+                    parseContext.PageInfo.Parameters.TryGetValue(attributeName, out parsedContent);
                 }
                 else
                 {
-                    if (pageInfo.SiteInfo.ContainsKey(attributeName))
+                    if (parseContext.SiteInfo.ContainsKey(attributeName))
                     {
-                        parsedContent = pageInfo.SiteInfo.Get<string>(attributeName);
+                        parsedContent = parseContext.SiteInfo.Get<string>(attributeName);
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, attributeName, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                            var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(DataProvider.SiteRepository.TableName, attributeName, parseContext.TableStyleRepository.GetRelatedIdentities(parseContext.SiteInfo.Id));
 
                             // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                             if (styleInfo.Id > 0)
                             {
                                 parsedContent = InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image,
                                     InputType.File)
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent,
-                                        pageInfo.IsLocal)
-                                    : InputParserUtility.GetContentByTableStyle(parsedContent, string.Empty,
-                                        pageInfo.SiteInfo, styleInfo, string.Empty, null, string.Empty,
+                                    ? parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, parsedContent,
+                                        parseContext.PageInfo.IsLocal)
+                                    : InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, parsedContent, string.Empty,
+                                        parseContext.SiteInfo, styleInfo, string.Empty, null, string.Empty,
                                         true);
                             }
                             else

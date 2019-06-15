@@ -1,12 +1,11 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
@@ -82,7 +81,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "选择是否新窗口打开链接")]
         private const string OpenWin = nameof(OpenWin);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var attributes = new NameValueCollection();
             var isChannel = true;
@@ -101,21 +100,17 @@ namespace SS.CMS.Core.StlParser.StlElement
             var titleWordNum = 0;
             var queryString = string.Empty;
 
-            var isTop = false;
-            var isTopExists = false;
-            var isRecommend = false;
-            var isRecommendExists = false;
-            var isHot = false;
-            var isHotExists = false;
-            var isColor = false;
-            var isColorExists = false;
+            bool? isTop = null;
+            bool? isRecommend = null;
+            bool? isHot = null;
+            bool? isColor = null;
 
             var displayTitle = string.Empty;
             var openWin = true;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, IsChannel))
                 {
@@ -123,11 +118,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, UpLevel))
                 {
@@ -143,23 +138,23 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupChannel))
                 {
-                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannel = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupChannelNot))
                 {
-                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannelNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupContent))
                 {
-                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContent = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, GroupContentNot))
                 {
-                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContentNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Tags))
                 {
-                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    tags = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Order))
                 {
@@ -171,26 +166,22 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, QueryString))
                 {
-                    queryString = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    queryString = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsTop))
                 {
-                    isTopExists = true;
                     isTop = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsRecommend))
                 {
-                    isRecommendExists = true;
                     isRecommend = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsHot))
                 {
-                    isHotExists = true;
                     isHot = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsColor))
                 {
-                    isColorExists = true;
                     isColor = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, TitleWordNum))
@@ -199,7 +190,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Title))
                 {
-                    displayTitle = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    displayTitle = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, OpenWin))
                 {
@@ -211,30 +202,30 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, queryString, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, displayTitle, openWin);
+            return ParseImpl(parseContext, attributes, isChannel, channelIndex, channelName, upLevel, topLevel, scopeTypeString, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, order, totalNum, titleWordNum, queryString, isTop, isRecommend, isHot, isColor, displayTitle, openWin);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string queryString, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string displayTitle, bool openWin)
+        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, bool isChannel, string channelIndex, string channelName, int upLevel, int topLevel, string scopeTypeString, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string order, int totalNum, int titleWordNum, string queryString, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, string displayTitle, bool openWin)
         {
-            EScopeType scopeType;
+            ScopeType scopeType;
             if (!string.IsNullOrEmpty(scopeTypeString))
             {
-                scopeType = EScopeTypeUtils.GetEnumType(scopeTypeString);
+                scopeType = ScopeType.Parse(scopeTypeString);
             }
             else
             {
-                scopeType = isChannel ? EScopeType.Children : EScopeType.Self;
+                scopeType = isChannel ? ScopeType.Children : ScopeType.Self;
             }
 
-            var orderByString = isChannel ? StlDataUtility.GetChannelOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxis) : StlDataUtility.GetContentOrderByString(pageInfo.SiteId, order, ETaxisType.OrderByTaxisDesc);
+            var orderByString = isChannel ? StlDataUtility.GetChannelTaxisType(order, TaxisType.OrderByTaxis) : StlDataUtility.GetContentTaxisType(parseContext.SiteId, order, TaxisType.OrderByTaxisDesc);
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+            var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
 
-            var uniqueId = "Select_" + pageInfo.UniqueId;
+            var uniqueId = "Select_" + parseContext.UniqueId;
             attributes["id"] = uniqueId;
 
             string scriptHtml;
@@ -270,19 +261,19 @@ selObj.selectedIndex=0;
 
                 if (isChannel)
                 {
-                    var taxisType = StlDataUtility.GetChannelTaxisType(order, ETaxisType.OrderByTaxis);
-                    var channelIdList = StlChannelCache.GetIdListByTotalNum(pageInfo.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, false, false, totalNum);
+                    var taxisType = StlDataUtility.GetChannelTaxisType(order, TaxisType.OrderByTaxis);
+                    var channelIdList = StlChannelCache.GetIdListByTotalNum(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
 
                     if (channelIdList != null && channelIdList.Count > 0)
                     {
                         foreach (var channelIdInSelect in channelIdList)
                         {
-                            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelIdInSelect);
+                            var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, channelIdInSelect);
 
                             if (nodeInfo != null)
                             {
                                 var title = StringUtils.MaxLengthText(nodeInfo.ChannelName, titleWordNum);
-                                var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal);
+                                var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, nodeInfo, parseContext.IsLocal);
                                 if (!string.IsNullOrEmpty(queryString))
                                 {
                                     url = PageUtils.AddQueryString(url, queryString);
@@ -295,16 +286,16 @@ selObj.selectedIndex=0;
                 }
                 else
                 {
-                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, 1, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(parseContext.PluginManager, parseContext.SiteInfo, channelId, parseContext.ContentId, groupContent, groupContentNot, tags, null, null, null, false, 1, totalNum, orderByString, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
 
                     if (minContentInfoList != null)
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
-                            var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
-                            var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                            var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                            var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                            var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false);
+                            var url = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))
                             {
                                 url = PageUtils.AddQueryString(url, queryString);
@@ -318,7 +309,7 @@ selObj.selectedIndex=0;
                         //    if (contentInfo != null)
                         //    {
                         //        var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
-                        //        var url = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo);
+                        //        var url = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo);
                         //        if (!string.IsNullOrEmpty(queryString))
                         //        {
                         //            url = PageUtils.AddQueryString(url, queryString);

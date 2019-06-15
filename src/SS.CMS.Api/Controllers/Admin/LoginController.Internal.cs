@@ -1,15 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using SS.CMS.Core.Cache;
+using SS.CMS.Abstractions;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Plugin.Apis;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin
 {
     public partial class LoginController
     {
+        public class LoginContext
+        {
+            public string Account { get; set; }
+            public string Password { get; set; }
+            public string Captcha { get; set; }
+            public bool IsAutoLogin { get; set; }
+        }
+
         private readonly Color[] _colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
         private readonly string _cookieName = "SS-" + nameof(LoginController);
@@ -28,16 +39,43 @@ namespace SS.CMS.Api.Controllers.Admin
             return validateCode;
         }
 
-        public string AdminLogin(string userName, bool isAutoLogin)
+        public async Task<string> AdminLogin(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = AdminManager.GetAdminInfoByUserName(userName);
+            var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
             if (adminInfo == null || adminInfo.Locked) return null;
 
             var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
-            var accessToken = _accessTokenRepository.GetAccessToken(adminInfo.Id, adminInfo.UserName, TimeSpan.FromDays(Constants.AccessTokenExpireDays));
+            var identityToken = new Token
+            {
+                UserId = adminInfo.Id,
+                UserName = adminInfo.UserName,
+                ExpiresAt = expiresAt
+            };
+            var accessToken = _identityManager.GetToken(identityToken);
 
-            AdminApi.Instance.Log(adminInfo.UserName, "管理员登录");
+            const string Issuer = "https://gov.uk";
+
+            var claims = new List<Claim> {
+                new Claim(ClaimTypes.Name, "Andrew", ClaimValueTypes.String, Issuer),
+                new Claim(ClaimTypes.Surname, "Lock", ClaimValueTypes.String, Issuer),
+                new Claim(ClaimTypes.Country, "UK", ClaimValueTypes.String, Issuer),
+                new Claim("ChildhoodHero", "Ronnie James Dio", ClaimValueTypes.String)
+            };
+
+            var userIdentity = new ClaimsIdentity(claims, "Passport");
+
+            var userPrincipal = new ClaimsPrincipal(userIdentity);
+
+            await HttpContext.SignInAsync("Cookie", userPrincipal,
+                new AuthenticationProperties
+                {
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
+                    IsPersistent = false,
+                    AllowRefresh = false
+                });
+
+            LogUtils.AddAdminLog(_identityManager.IpAddress, adminInfo.UserName, "管理员登录");
 
             if (isAutoLogin)
             {

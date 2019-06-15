@@ -2,7 +2,6 @@
 using System.Collections.Specialized;
 using System.Text;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -21,37 +20,37 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "动作类型")]
         private const string Type = nameof(Type);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
                     type = value;
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type);
+            return ParseImpl(parseContext, type);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type)
+        private static string ParseImpl(ParseContext parseContext, string type)
         {
             var attributes = new NameValueCollection();
 
-            foreach (var attributeName in contextInfo.Attributes.AllKeys)
+            foreach (var attributeName in parseContext.Attributes.AllKeys)
             {
-                attributes[attributeName] = contextInfo.Attributes[attributeName];
+                attributes[attributeName] = parseContext.Attributes[attributeName];
             }
 
             string htmlId = attributes["id"];
             var url = PageUtils.UnclickedUrl;
             var onclick = string.Empty;
 
-            var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            var innerBuilder = new StringBuilder(parseContext.InnerHtml);
+            parseContext.ParseInnerContent(innerBuilder);
             var innerHtml = innerBuilder.ToString();
 
             //计算动作开始
@@ -59,7 +58,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (StringUtils.EqualsIgnoreCase(type, TypeTranslate))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAhTranslate);
+                    parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAhTranslate);
 
                     var msgToTraditionalChinese = "繁體";
                     var msgToSimplifiedChinese = "简体";
@@ -82,7 +81,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         htmlId = "translateLink";
                     }
 
-                    pageInfo.FootCodes[TypeTranslate] = $@"
+                    parseContext.FootCodes[TypeTranslate] = $@"
 <script type=""text/javascript""> 
 var defaultEncoding = 0;
 var translateDelay = 0;
@@ -113,7 +112,7 @@ translateInitilization();
             }
 
             // 如果是实体标签，则只返回url
-            return contextInfo.IsStlEntity
+            return parseContext.IsStlEntity
                 ? url
                 : $@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>";
         }

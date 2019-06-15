@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
@@ -73,74 +75,6 @@ namespace SS.CMS.Core.Common
             throw new Exception();
         }
 
-        public static InputType GetEnumType(string typeStr)
-        {
-            var retval = InputType.Text;
-
-            if (Equals(InputType.CheckBox, typeStr))
-            {
-                retval = InputType.CheckBox;
-            }
-            else if (Equals(InputType.Radio, typeStr))
-            {
-                retval = InputType.Radio;
-            }
-            else if (Equals(InputType.SelectOne, typeStr))
-            {
-                retval = InputType.SelectOne;
-            }
-            else if (Equals(InputType.SelectMultiple, typeStr))
-            {
-                retval = InputType.SelectMultiple;
-            }
-            else if (Equals(InputType.SelectCascading, typeStr))
-            {
-                retval = InputType.SelectCascading;
-            }
-            else if (Equals(InputType.Date, typeStr))
-            {
-                retval = InputType.Date;
-            }
-            else if (Equals(InputType.DateTime, typeStr))
-            {
-                retval = InputType.DateTime;
-            }
-            else if (Equals(InputType.Image, typeStr))
-            {
-                retval = InputType.Image;
-            }
-            else if (Equals(InputType.Video, typeStr))
-            {
-                retval = InputType.Video;
-            }
-            else if (Equals(InputType.File, typeStr))
-            {
-                retval = InputType.File;
-            }
-            else if (Equals(InputType.Text, typeStr))
-            {
-                retval = InputType.Text;
-            }
-            else if (Equals(InputType.TextArea, typeStr))
-            {
-                retval = InputType.TextArea;
-            }
-            else if (Equals(InputType.TextEditor, typeStr))
-            {
-                retval = InputType.TextEditor;
-            }
-            else if (Equals(InputType.Customize, typeStr))
-            {
-                retval = InputType.Customize;
-            }
-            else if (Equals(InputType.Hidden, typeStr))
-            {
-                retval = InputType.Hidden;
-            }
-
-            return retval;
-        }
-
         public static bool Equals(InputType type, string typeStr)
         {
             if (string.IsNullOrEmpty(typeStr)) return false;
@@ -188,9 +122,9 @@ namespace SS.CMS.Core.Common
             return true;
         }
 
-        public static List<KeyValuePair<InputType, string>> GetInputTypes(string tableName)
+        public static List<KeyValuePair<InputType, string>> GetInputTypes(IUserRepository userRepository, string tableName)
         {
-            if (tableName == DataProvider.UserDao.TableName)
+            if (tableName == userRepository.TableName)
             {
                 return new List<KeyValuePair<InputType, string>>
                 {

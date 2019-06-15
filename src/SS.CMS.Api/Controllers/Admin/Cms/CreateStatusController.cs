@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions;
-using SS.CMS.Core.Cache;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common.Create;
+using SS.CMS.Core.Common.Serialization;
 
 namespace SS.CMS.Api.Controllers.Admin.Cms
 {
@@ -11,18 +11,18 @@ namespace SS.CMS.Api.Controllers.Admin.Cms
         public const string Route = "cms/createStatus";
         public const string RouteActionsCancel = "cms/createStatus/actions/cancel";
 
-        private readonly IIdentity _identity;
+        private readonly IIdentityManager _identityManager;
 
-        public CreateStatusController(IIdentity identity)
+        public CreateStatusController(IIdentityManager identityManager)
         {
-            _identity = identity;
+            _identityManager = identityManager;
         }
 
         [HttpGet(Route)]
         public ActionResult Get([FromQuery] int siteId)
         {
-            if (!_identity.IsAdminLoggin ||
-                !_identity.AdminPermissions.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+            if (!_identityManager.IsAdminLoggin ||
+                !_identityManager.AdminPermissions.HasSitePermissions(siteId, MenuManager.WebSitePermissions.Create))
             {
                 return Unauthorized();
             }
@@ -38,8 +38,8 @@ namespace SS.CMS.Api.Controllers.Admin.Cms
         [HttpPost(RouteActionsCancel)]
         public ActionResult Cancel([FromBody] int siteId)
         {
-            if (!_identity.IsAdminLoggin ||
-                !_identity.AdminPermissions.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Create))
+            if (!_identityManager.IsAdminLoggin ||
+                !_identityManager.AdminPermissions.HasSitePermissions(siteId, MenuManager.WebSitePermissions.Create))
             {
                 return Unauthorized();
             }

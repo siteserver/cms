@@ -22,7 +22,7 @@ namespace SS.CMS.Api.Tests
 
             Console.WriteLine("test!!");
 
-            SystemManager.SyncDatabase();
+            SystemManager.SyncDatabase(_fixture.ConfigRepository);
 
             Assert.True(true);
         }

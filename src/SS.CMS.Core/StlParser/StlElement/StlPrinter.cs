@@ -25,7 +25,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "页面当前位置的 Id 属性")]
         private const string LocationId = nameof(LocationId);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var attributes = new NameValueCollection();
             var titleId = string.Empty;
@@ -33,9 +33,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var logoId = string.Empty;
             var locationId = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TitleId))
                 {
@@ -59,17 +59,17 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, titleId, bodyId, logoId, locationId);
+            return ParseImpl(parseContext, attributes, titleId, bodyId, logoId, locationId);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
+        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
-            var jsUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.JsUtf8);
+            var jsUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Print.JsUtf8);
 
-            var iconUrl = SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Print.IconUrl);
-            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAfStlPrinter))
+            var iconUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Print.IconUrl);
+            if (!parseContext.BodyCodes.ContainsKey(PageInfo.Const.JsAfStlPrinter))
             {
-                pageInfo.BodyCodes.Add(PageInfo.Const.JsAfStlPrinter, $@"
+                parseContext.BodyCodes.Add(PageInfo.Const.JsAfStlPrinter, $@"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlLoadPrintJsCallBack()
 {{
@@ -137,10 +137,10 @@ function stlLoadPrintJs()
             }
 
             var innerHtml = "打印";
-            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
+            if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                var innerBuilder = new StringBuilder(parseContext.InnerHtml);
+                parseContext.ParseInnerContent(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
             attributes["href"] = "javascript:stlLoadPrintJs();";

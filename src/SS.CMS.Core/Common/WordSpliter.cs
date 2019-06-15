@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Common
             {
                 var arrText = new SortedList();
 
-                var tagList = DataProvider.TagDao.GetTagList(siteId);
+                var tagList = DataProvider.TagRepository.GetTagList(siteId);
                 if (tagList.Count > 0)
                 {
                     foreach (var line in tagList)

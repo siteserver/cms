@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -7,6 +8,7 @@ namespace SS.CMS.Api
     {
         public static void Main(string[] args)
         {
+            Console.Title = "SS CMS";
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -6,14 +6,14 @@ namespace SS.CMS.Abstractions
     /// <summary>
     /// 插件父类，所有插件必须继承此类并实现Startup方法。
     /// </summary>
-    public abstract class PluginBase : Initializer, IMetadata
+    public abstract class PluginBase : Initializer, IPackageMetadata
     {
         /// <summary>
         /// 初始化插件。
         /// 此方法将由 SiteServer CMS 系统载入插件时调用。
         /// </summary>
         /// <param name="metadata">插件元数据接口。</param>
-        public sealed override void Initialize(IMetadata metadata)
+        public sealed override void Initialize(IPackageMetadata metadata)
         {
             Id = metadata.Id;
             Version = metadata.Version;

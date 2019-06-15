@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 
 namespace SS.CMS.Core.StlParser.Models
 {
@@ -16,14 +16,14 @@ namespace SS.CMS.Core.StlParser.Models
         public Dictionary<string, string> Parameters { get; set; }
         public string ApiUrl { get; }
         public TemplateInfo TemplateInfo { get; }
-        public IUserInfo UserInfo { get; set; }
+        public UserInfo UserInfo { get; set; }
         public int SiteId { get; private set; }
         public int PageChannelId { get; private set; }
         public int PageContentId { get; private set; }
         public bool IsLocal { get; set; }
-        public Stack<Container.Site> SiteItems { get; }
-        public Stack<Container.Channel> ChannelItems { get; }
-        public Stack<Container.Content> ContentItems { get; }
+        public Stack<KeyValuePair<int, SiteInfo>> SiteItems { get; }
+        public Stack<KeyValuePair<int, ChannelInfo>> ChannelItems { get; }
+        public Stack<KeyValuePair<int, ContentInfo>> ContentItems { get; }
         public Stack<Container.Each> EachItems { get; }
         public Stack<Container.Sql> SqlItems { get; }
         public Dictionary<string, object> PluginItems { get; }
@@ -37,10 +37,10 @@ namespace SS.CMS.Core.StlParser.Models
 
         public PageInfo Clone()
         {
-            return new PageInfo(PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
+            return new PageInfo(ApiUrl, PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
         }
 
-        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
+        public PageInfo(string apiUrl, int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
         {
             TemplateInfo = templateInfo;
             SiteId = siteInfo.Id;
@@ -53,102 +53,101 @@ namespace SS.CMS.Core.StlParser.Models
             SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = ApiManager.ApiUrl;
+            ApiUrl = apiUrl;
 
-            SiteItems = new Stack<Container.Site>(5);
-            ChannelItems = new Stack<Container.Channel>(5);
-            ContentItems = new Stack<Container.Content>(5);
+            SiteItems = new Stack<KeyValuePair<int, SiteInfo>>(5);
+            ChannelItems = new Stack<KeyValuePair<int, ChannelInfo>>(5);
+            ContentItems = new Stack<KeyValuePair<int, ContentInfo>>(5);
             EachItems = new Stack<Container.Each>(5);
             SqlItems = new Stack<Container.Sql>(5);
             PluginItems = pluginItems;
         }
 
-        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ContextInfo contextInfo)
+        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ParseContext parseContext)
         {
             SiteId = siteInfo.Id;
             SiteInfo = siteInfo;
             PageChannelId = pageChannelId;
             PageContentId = pageContentId;
 
-            contextInfo.SiteInfo = siteInfo;
-            contextInfo.ChannelId = pageChannelId;
-            contextInfo.ContentId = pageContentId;
+            parseContext.ChannelId = pageChannelId;
+            parseContext.ContentId = pageContentId;
         }
 
-        public void AddPageBodyCodeIfNotExists(string pageJsName)
+        public void AddPageBodyCodeIfNotExists(IUrlManager urlManager, string pageJsName)
         {
             if (!BodyCodes.ContainsKey(pageJsName))
             {
-                BodyCodes.Add(pageJsName, GetJsCode(pageJsName));
+                BodyCodes.Add(pageJsName, GetJsCode(urlManager, pageJsName));
             }
         }
 
-        public void AddPageAfterHtmlCodeIfNotExists(string pageJsName)
+        public void AddPageAfterHtmlCodeIfNotExists(IUrlManager urlManager, string pageJsName)
         {
             if (!FootCodes.ContainsKey(pageJsName))
             {
-                FootCodes.Add(pageJsName, GetJsCode(pageJsName));
+                FootCodes.Add(pageJsName, GetJsCode(urlManager, pageJsName));
             }
         }
 
-        public void AddPageHeadCodeIfNotExists(string pageJsName)
+        public void AddPageHeadCodeIfNotExists(IUrlManager urlManager, string pageJsName)
         {
             if (!HeadCodes.ContainsKey(pageJsName))
             {
-                HeadCodes.Add(pageJsName, GetJsCode(pageJsName));
+                HeadCodes.Add(pageJsName, GetJsCode(urlManager, pageJsName));
             }
         }
 
-        public void AddLastPageScript(PageInfo lastPageInfo)
-        {
-            foreach (var key in lastPageInfo.BodyCodes.Keys)
-            {
-                if (!BodyCodes.ContainsKey(key))
-                {
-                    BodyCodes.Add(key, lastPageInfo.BodyCodes[key]);
-                }
-            }
-            foreach (var key in lastPageInfo.FootCodes.Keys)
-            {
-                if (!FootCodes.ContainsKey(key))
-                {
-                    FootCodes.Add(key, lastPageInfo.FootCodes[key]);
-                }
-            }
-            foreach (var key in lastPageInfo.HeadCodes.Keys)
-            {
-                if (!HeadCodes.ContainsKey(key))
-                {
-                    HeadCodes.Add(key, lastPageInfo.HeadCodes[key]);
-                }
-            }
-        }
+        // public void AddLastPageScript(PageInfo lastPageInfo)
+        // {
+        //     foreach (var key in lastPageInfo.BodyCodes.Keys)
+        //     {
+        //         if (!BodyCodes.ContainsKey(key))
+        //         {
+        //             BodyCodes.Add(key, lastPageInfo.BodyCodes[key]);
+        //         }
+        //     }
+        //     foreach (var key in lastPageInfo.FootCodes.Keys)
+        //     {
+        //         if (!FootCodes.ContainsKey(key))
+        //         {
+        //             FootCodes.Add(key, lastPageInfo.FootCodes[key]);
+        //         }
+        //     }
+        //     foreach (var key in lastPageInfo.HeadCodes.Keys)
+        //     {
+        //         if (!HeadCodes.ContainsKey(key))
+        //         {
+        //             HeadCodes.Add(key, lastPageInfo.HeadCodes[key]);
+        //         }
+        //     }
+        // }
 
-        public void ClearLastPageScript(PageInfo lastPageInfo)
-        {
-            foreach (var key in lastPageInfo.BodyCodes.Keys)
-            {
-                BodyCodes.Remove(key);
-            }
-            foreach (var key in lastPageInfo.FootCodes.Keys)
-            {
-                FootCodes.Remove(key);
-            }
-            foreach (var key in lastPageInfo.HeadCodes.Keys)
-            {
-                HeadCodes.Remove(key);
-            }
-        }
+        // public void ClearLastPageScript(PageInfo lastPageInfo)
+        // {
+        //     foreach (var key in lastPageInfo.BodyCodes.Keys)
+        //     {
+        //         BodyCodes.Remove(key);
+        //     }
+        //     foreach (var key in lastPageInfo.FootCodes.Keys)
+        //     {
+        //         FootCodes.Remove(key);
+        //     }
+        //     foreach (var key in lastPageInfo.HeadCodes.Keys)
+        //     {
+        //         HeadCodes.Remove(key);
+        //     }
+        // }
 
-        /// <summary>
-        /// 清理本页面的js
-        /// </summary>
-        public void ClearLastPageScript()
-        {
-            HeadCodes.Clear();
-            BodyCodes.Clear();
-            FootCodes.Clear();
-        }
+        // /// <summary>
+        // /// 清理本页面的js
+        // /// </summary>
+        // public void ClearLastPageScript()
+        // {
+        //     HeadCodes.Clear();
+        //     BodyCodes.Clear();
+        //     FootCodes.Clear();
+        // }
 
         public class Const
         {
@@ -186,7 +185,7 @@ namespace SS.CMS.Core.StlParser.Models
             public const string JsStaticAdFloating = "Js_Static_AdFloating";      //漂浮广告
         }
 
-        private string GetJsCode(string pageJsName)
+        private string GetJsCode(IUrlManager urlManager, string pageJsName)
         {
             var retval = string.Empty;
 
@@ -312,7 +311,7 @@ wnd_frame.src=url;}}
             {
                 retval = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.WebUrl.TrimEnd('/')}');</script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {urlManager.GetWebUrl(SiteInfo).TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)

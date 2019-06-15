@@ -48,7 +48,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示在信息后的文字")]
         private const string RightText = nameof(RightText);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = ContentAttribute.FileUrl;
             var no = 0;
@@ -63,9 +63,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var rightText = string.Empty;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -117,16 +117,16 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
+            return ParseImpl(parseContext, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
+        private static string ParseImpl(ParseContext parseContext, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
         {
-            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
+            if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
-                contextInfo.InnerHtml = innerBuilder.ToString();
+                var innerBuilder = new StringBuilder(parseContext.InnerHtml);
+                parseContext.ParseInnerContent(innerBuilder);
+                parseContext.InnerHtml = innerBuilder.ToString();
             }
 
             var fileUrl = string.Empty;
@@ -136,15 +136,15 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else
             {
-                if (contextInfo.ContextType == EContextType.Undefined)
+                if (parseContext.ContextType == EContextType.Undefined)
                 {
-                    contextInfo.ContextType = EContextType.Content;
+                    parseContext.ContextType = EContextType.Content;
                 }
-                if (contextInfo.ContextType == EContextType.Content)
+                if (parseContext.ContextType == EContextType.Content)
                 {
-                    if (contextInfo.ContentId != 0)
+                    if (parseContext.ContentId != 0)
                     {
-                        var contentInfo = contextInfo.ContentInfo;
+                        var contentInfo = parseContext.ContentInfo;
 
                         if (!string.IsNullOrEmpty(contentInfo?.Get<string>(type)))
                         {
@@ -174,9 +174,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                     }
                 }
-                else if (contextInfo.ContextType == EContextType.Each)
+                else if (parseContext.ContextType == EContextType.Each)
                 {
-                    fileUrl = contextInfo.Container.EachItem.Value as string;
+                    fileUrl = parseContext.Container.EachItem.Value as string;
                 }
             }
 
@@ -196,7 +196,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (isFileType)
             {
-                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
+                var filePath = parseContext.PathManager.MapPath(parseContext.SiteInfo, fileUrl);
                 parsedContent = PathUtils.GetExtension(filePath).Trim('.');
                 if (isLower)
                 {
@@ -209,21 +209,21 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (isFileSize)
             {
-                var filePath = PathUtility.MapPath(pageInfo.SiteInfo, fileUrl);
+                var filePath = parseContext.PathManager.MapPath(parseContext.SiteInfo, fileUrl);
                 parsedContent = FileUtils.GetFileSizeByFilePath(filePath);
             }
             else if (isCount)
             {
-                parsedContent = (contextInfo.ContentInfo?.Downloads ?? 0).ToString();
+                parsedContent = (parseContext.ContentInfo?.Downloads ?? 0).ToString();
             }
             else
             {
-                parsedContent = contextInfo.ContentInfo != null
-                    ? InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contextInfo.ContentInfo.ChannelId,
-                        contextInfo.ContentInfo.Id, fileUrl, attributes, contextInfo.InnerHtml,
-                        contextInfo.IsStlEntity, isLower, isUpper)
-                    : InputParserUtility.GetFileHtmlWithoutCount(pageInfo.SiteInfo, fileUrl, attributes,
-                        contextInfo.InnerHtml, contextInfo.IsStlEntity, isLower, isUpper);
+                parsedContent = parseContext.ContentInfo != null
+                    ? InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, parseContext.ContentInfo.ChannelId,
+                        parseContext.ContentInfo.Id, fileUrl, attributes, parseContext.InnerHtml,
+                        parseContext.IsStlEntity, isLower, isUpper)
+                    : InputParserUtility.GetFileHtmlWithoutCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, fileUrl, attributes,
+                        parseContext.InnerHtml, parseContext.IsStlEntity, isLower, isUpper);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

@@ -1,7 +1,8 @@
 ﻿using System.Text;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
@@ -70,7 +71,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "如果是引用内容，是否获取所引用内容的值")]
         private const string IsOriginal = nameof(IsOriginal);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(ParseContext parseContext)
         {
             var leftText = string.Empty;
             var rightText = string.Empty;
@@ -90,9 +91,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isOriginal = true;//引用的时候，默认使用原来的数据
             var type = string.Empty;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -164,18 +165,18 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var contentId = contextInfo.ContentId;
-            var contentInfo = contextInfo.ContentInfo;
+            var contentId = parseContext.ContentId;
+            var contentInfo = parseContext.ContentInfo;
 
-            if (contextInfo.IsStlEntity && string.IsNullOrEmpty(type))
+            if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
             {
                 return contentInfo.ToDictionary();
             }
 
-            var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, contentInfo, contentId);
+            var parsedContent = ParseImpl(parseContext, leftText, rightText, formatString, no, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBrStr, isLower, isUpper, isOriginal, type, contentInfo, contentId);
 
             var innerBuilder = new StringBuilder(parsedContent);
-            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            parseContext.ParseInnerContent(innerBuilder);
             parsedContent = innerBuilder.ToString();
 
             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.PageContent))
@@ -186,7 +187,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, ContentInfo contentInfo, int contentId)
+        private static string ParseImpl(ParseContext parseContext, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, ContentInfo contentInfo, int contentId)
         {
             if (contentInfo == null) return string.Empty;
 
@@ -212,16 +213,16 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (isOriginal)
             {
-                if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.TranslateContentType == ETranslateContentType.Reference.ToString())
+                if (contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.TranslateContentType == TranslateContentType.Reference.Value)
                 {
                     var targetChannelId = contentInfo.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
                     var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
-                    var targetSiteInfo = SiteManager.GetSiteInfo(targetSiteId);
+                    var targetSiteInfo = parseContext.SiteRepository.GetSiteInfo(targetSiteId);
                     var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
 
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = ContentManager.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
+                    var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -248,12 +249,12 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentInfo.ChannelId);
-                    var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
-                    var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
+                    var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, contentInfo.ChannelId);
+                    var relatedIdentities = parseContext.TableStyleRepository.GetRelatedIdentities(nodeInfo);
+                    var tableName = ChannelManager.GetTableName(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
 
-                    var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
-                    parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo.Title, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                    var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(tableName, type, relatedIdentities);
+                    parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, contentInfo.Title, separator, parseContext.SiteInfo, styleInfo, formatString, parseContext.Attributes, parseContext.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
                     if (!isClearTags && !string.IsNullOrEmpty(contentInfo.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title))))
@@ -261,9 +262,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                         parsedContent = ContentUtility.FormatTitle(contentInfo.Get<string>(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)), parsedContent);
                     }
 
-                    if (pageInfo.SiteInfo.IsContentTitleBreakLine)
+                    if (parseContext.SiteInfo.IsContentTitleBreakLine)
                     {
-                        parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
+                        parsedContent = parsedContent.Replace("  ", !parseContext.IsInnerElement ? "<br />" : string.Empty);
                     }
                 }
                 else if (ContentAttribute.Summary.ToLower().Equals(type))
@@ -272,7 +273,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (ContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, contentInfo.Content, pageInfo.IsLocal);
+                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Content, parseContext.IsLocal);
 
                     if (isClearTags)
                     {
@@ -298,7 +299,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = ContentUtility.TextEditorContentDecode(pageInfo.SiteInfo, contentInfo.Content, pageInfo.IsLocal);
+                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Content, parseContext.IsLocal);
 
                     if (isClearTags)
                     {
@@ -334,12 +335,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(contextInfo.IsStlEntity
-                            ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
-                                contentInfo.ImageUrl, pageInfo.IsLocal)
-                            : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
+                        sbParsedContent.Append(parseContext.IsStlEntity
+                            ? parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo,
+                                contentInfo.ImageUrl, parseContext.IsLocal)
+                            : InputParserUtility.GetImageOrFlashHtml(parseContext.UrlManager, parseContext.SiteInfo,
                                 contentInfo.ImageUrl,
-                                contextInfo.Attributes, false));
+                                parseContext.Attributes, false));
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.ImageUrl);
                         var extendValues = contentInfo.Get<string>(extendAttributeName);
@@ -348,10 +349,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                             foreach (var extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
                                 var newExtendValue = extendValue;
-                                sbParsedContent.Append(contextInfo.IsStlEntity
-                                    ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal)
-                                    : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo,
-                                        newExtendValue, contextInfo.Attributes, false));
+                                sbParsedContent.Append(parseContext.IsStlEntity
+                                    ? parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, newExtendValue, parseContext.IsLocal)
+                                    : InputParserUtility.GetImageOrFlashHtml(parseContext.UrlManager, parseContext.SiteInfo,
+                                        newExtendValue, parseContext.Attributes, false));
                             }
                         }
 
@@ -362,7 +363,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.ImageUrl, contextInfo.Attributes, false);
+                            parsedContent = parseContext.IsStlEntity ? parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, contentInfo.ImageUrl, parseContext.IsLocal) : InputParserUtility.GetImageOrFlashHtml(parseContext.UrlManager, parseContext.SiteInfo, contentInfo.ImageUrl, parseContext.Attributes, false);
                         }
                         else
                         {
@@ -376,7 +377,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                                     var newExtendValue = extendValue;
                                     if (index == num)
                                     {
-                                        parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, newExtendValue, pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, newExtendValue, contextInfo.Attributes, false);
+                                        parsedContent = parseContext.IsStlEntity ? parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, newExtendValue, parseContext.IsLocal) : InputParserUtility.GetImageOrFlashHtml(parseContext.UrlManager, parseContext.SiteInfo, newExtendValue, parseContext.Attributes, false);
                                         break;
                                     }
                                     index++;
@@ -391,7 +392,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         var sbParsedContent = new StringBuilder();
                         //第一条
-                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity));
+                        sbParsedContent.Append(InputParserUtility.GetVideoHtml(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.VideoUrl, parseContext.Attributes, parseContext.IsStlEntity));
 
                         //第n条
                         var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.VideoUrl);
@@ -401,7 +402,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                             {
 
-                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity));
+                                sbParsedContent.Append(InputParserUtility.GetVideoHtml(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, extendValue, parseContext.Attributes, parseContext.IsStlEntity));
 
                             }
                         }
@@ -413,7 +414,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
-                            parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.VideoUrl, contextInfo.Attributes, contextInfo.IsStlEntity);
+                            parsedContent = InputParserUtility.GetVideoHtml(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.VideoUrl, parseContext.Attributes, parseContext.IsStlEntity);
                         }
                         else
                         {
@@ -426,7 +427,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     if (index == num)
                                     {
-                                        parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, extendValue, contextInfo.Attributes, contextInfo.IsStlEntity);
+                                        parsedContent = InputParserUtility.GetVideoHtml(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, extendValue, parseContext.Attributes, parseContext.IsStlEntity);
                                         break;
                                     }
                                     index++;
@@ -442,7 +443,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     if (no == "all")
                     {
                         var sbParsedContent = new StringBuilder();
-                        if (contextInfo.IsStlEntity)
+                        if (parseContext.IsStlEntity)
                         {
                             //第一条
                             sbParsedContent.Append(contentInfo.FileUrl);
@@ -460,7 +461,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         else
                         {
                             //第一条
-                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.FileUrl, parseContext.Attributes, parseContext.InnerHtml, false, isLower, isUpper));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(ContentAttribute.FileUrl);
                             var extendValues = contentInfo.Get<string>(extendAttributeName);
@@ -468,7 +469,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             {
                                 foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
+                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, parseContext.Attributes, parseContext.InnerHtml, false, isLower, isUpper));
                                 }
                             }
 
@@ -480,7 +481,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     else
                     {
                         var num = TranslateUtils.ToInt(no, 0);
-                        if (contextInfo.IsStlEntity)
+                        if (parseContext.IsStlEntity)
                         {
                             if (num <= 1)
                             {
@@ -507,14 +508,14 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                             if (!string.IsNullOrEmpty(parsedContent))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, parsedContent, parseContext.IsLocal);
                             }
                         }
                         else
                         {
                             if (num <= 1)
                             {
-                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.FileUrl, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                parsedContent = InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.FileUrl, parseContext.Attributes, parseContext.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -527,7 +528,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
+                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, parseContext.Attributes, parseContext.InnerHtml, false, isLower, isUpper);
                                             break;
                                         }
                                         index++;
@@ -541,15 +542,15 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (ContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
-                    parsedContent = PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal);
+                    parsedContent = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal);
                 }
                 else if (ContentAttribute.Tags.ToLower().Equals(type))
                 {
                     parsedContent = contentInfo.Tags;
                 }
-                else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && contextInfo.Container?.ContentItem != null)
+                else if (StringUtils.StartsWithIgnoreCase(type, StlParserUtility.ItemIndex) && parseContext.Container?.ContentItem != null)
                 {
-                    var itemIndex = StlParserUtility.ParseItemIndex(contextInfo.Container.ContentItem.ItemIndex, type, contextInfo);
+                    var itemIndex = StlParserUtility.ParseItemIndex(parseContext.Container.ContentItem.Key, type, parseContext);
                     parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
                 }
                 else if (ContentAttribute.AddUserName.ToLower().Equals(type))
@@ -561,19 +562,19 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contentInfo.ChannelId);
+                    var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, contentInfo.ChannelId);
 
                     if (contentInfo.ContainsKey(type))
                     {
                         if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
-                            var relatedIdentities = TableStyleManager.GetRelatedIdentities(nodeInfo);
-                            var tableName = ChannelManager.GetTableName(pageInfo.SiteInfo, nodeInfo);
-                            var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, type, relatedIdentities);
+                            var relatedIdentities = parseContext.TableStyleRepository.GetRelatedIdentities(nodeInfo);
+                            var tableName = ChannelManager.GetTableName(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
+                            var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);
-                            parsedContent = InputParserUtility.GetContentByTableStyle(contentInfo, separator, pageInfo.SiteInfo, styleInfo, formatString, num, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                            parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, contentInfo, separator, parseContext.SiteInfo, styleInfo, formatString, num, parseContext.Attributes, parseContext.InnerHtml, false);
                             parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                         }
                         else

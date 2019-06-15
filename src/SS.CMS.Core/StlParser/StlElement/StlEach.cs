@@ -23,14 +23,14 @@ namespace SS.CMS.Core.StlParser.StlElement
             {ContentAttribute.FileUrl, "遍历内容的附件字段"}
         };
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
+            var listInfo = ListInfo.GetListInfo(parseContext);
 
-            return ParseImpl(pageInfo, contextInfo, listInfo);
+            return ParseImpl(parseContext, listInfo);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static string ParseImpl(ParseContext parseContext, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
 
@@ -40,7 +40,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 type = ContentAttribute.ImageUrl;
             }
 
-            var contentInfo = contextInfo.ContentInfo;
+            var contentInfo = parseContext.ContentInfo;
             var valueList = new List<string>();
 
             if (contentInfo != null)
@@ -124,9 +124,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     var each = eachList[i];
 
-                    pageInfo.EachItems.Push(each);
+                    parseContext.PageInfo.EachItems.Push(each);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Each, contextInfo));
+                    builder.Append(TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -173,9 +173,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     var each = eachList[itemIndex];
 
-                                    pageInfo.EachItems.Push(each);
+                                    parseContext.PageInfo.EachItems.Push(each);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Each, contextInfo);
+                                    cellHtml = TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

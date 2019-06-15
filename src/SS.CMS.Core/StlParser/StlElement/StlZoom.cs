@@ -18,15 +18,15 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "缩放字体大小")]
         private const string FontSize = nameof(FontSize);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var zoomId = string.Empty;
             var fontSize = 16;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ZoomId))
                 {
@@ -42,19 +42,19 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, zoomId, fontSize);
+            return ParseImpl(parseContext, attributes, zoomId, fontSize);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string zoomId, int fontSize)
+        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string zoomId, int fontSize)
         {
             if (string.IsNullOrEmpty(zoomId))
             {
                 zoomId = "content";
             }
 
-            if (!pageInfo.BodyCodes.ContainsKey(PageInfo.Const.JsAeStlZoom))
+            if (!parseContext.BodyCodes.ContainsKey(PageInfo.Const.JsAeStlZoom))
             {
-                pageInfo.BodyCodes.Add(PageInfo.Const.JsAeStlZoom, @"
+                parseContext.BodyCodes.Add(PageInfo.Const.JsAeStlZoom, @"
 <script language=""JavaScript"" type=""text/javascript"">
 function stlDoZoom(zoomId, size){
     var artibody = document.getElementById(zoomId);
@@ -74,10 +74,10 @@ function stlDoZoom(zoomId, size){
             }
 
             var innerHtml = "缩放";
-            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
+            if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
-                var innerBuilder = new StringBuilder(contextInfo.InnerHtml);
-                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                var innerBuilder = new StringBuilder(parseContext.InnerHtml);
+                parseContext.ParseInnerContent(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
             attributes["href"] = $"javascript:stlDoZoom('{zoomId}', {fontSize});";

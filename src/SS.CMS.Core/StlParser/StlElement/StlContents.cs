@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Template;
@@ -17,18 +17,18 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示相关内容列表")]
         public const string IsRelatedContents = nameof(IsRelatedContents);
 
-        public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static object Parse(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(pageInfo, contextInfo, EContextType.Content);
-            // var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
-            var contentList = GetContainerContentList(pageInfo, contextInfo, listInfo);
+            parseContext.ContextType = EContextType.Content;
+            var listInfo = ListInfo.GetListInfo(parseContext);
+            var contentList = GetContainerContentList(parseContext, listInfo);
 
-            if (contextInfo.IsStlEntity)
+            if (parseContext.IsStlEntity)
             {
-                return ParseEntity(pageInfo, contentList);
+                return ParseEntity(parseContext, contentList);
             }
 
-            return ParseElement(pageInfo, contextInfo, listInfo, contentList);
+            return ParseElement(parseContext, listInfo, contentList);
         }
 
         // private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -40,16 +40,16 @@ namespace SS.CMS.Core.StlParser.StlElement
         //     return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         // }
 
-        private static List<Container.Content> GetContainerContentList(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
+        private static List<KeyValuePair<int, ContentInfo>> GetContainerContentList(ParseContext parseContext, ListInfo listInfo)
         {
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = ChannelManager.GetChannelId(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContainerContentList(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return StlDataUtility.GetContainerContentList(parseContext.PluginManager, parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
-        public static string ParseElement(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo, List<Container.Content> contentList)
+        public static string ParseElement(ParseContext parseContext, ListInfo listInfo, List<KeyValuePair<int, ContentInfo>> contentList)
         {
             if (contentList == null || contentList.Count == 0) return string.Empty;
 
@@ -82,9 +82,10 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     var content = contentList[i];
 
-                    pageInfo.ContentItems.Push(content);
+                    parseContext.PageInfo.ContentItems.Push(content);
+                    var context = parseContext.Clone(EContextType.Content);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetContentsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Content, contextInfo));
+                    builder.Append(TemplateUtility.GetContentsItemTemplateString(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -131,9 +132,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                                 {
                                     var content = contentList[itemIndex];
 
-                                    pageInfo.ContentItems.Push(content);
+                                    parseContext.PageInfo.ContentItems.Push(content);
+                                    var context = parseContext.Clone(EContextType.Content);
+
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetContentsItemTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, pageInfo, EContextType.Content, contextInfo);
+                                    cellHtml = TemplateUtility.GetContentsItemTemplateString(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
@@ -232,7 +235,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static object ParseEntity(PageInfo pageInfo, List<Container.Content> contentList)
+        private static object ParseEntity(ParseContext parseContext, List<KeyValuePair<int, ContentInfo>> contentList)
         {
             var contentInfoList = new List<IDictionary<string, object>>();
 
@@ -252,8 +255,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, content.ChannelId);
-                var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, content.Id);
+                var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, content.Value.ChannelId);
+                var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, content.Value.Id);
 
                 if (contentInfo != null)
                 {

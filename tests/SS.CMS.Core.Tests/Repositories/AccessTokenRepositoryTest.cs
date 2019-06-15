@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Repositories;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 using Xunit;
 
@@ -12,12 +10,10 @@ namespace SS.CMS.Core.Tests.Repositories
     public class AccessTokenRepositoryTest : IClassFixture<EnvironmentFixture>
     {
         private readonly EnvironmentFixture _fixture;
-        private readonly IAccessTokenRepository _accessTokenRepository;
 
         public AccessTokenRepositoryTest(EnvironmentFixture fixture)
         {
             _fixture = fixture;
-            _accessTokenRepository = new AccessTokenRepository(fixture.Db, fixture.AppSettings, fixture.MemoryCache);
         }
 
         [SkippableFact, TestPriority(0)]
@@ -25,9 +21,11 @@ namespace SS.CMS.Core.Tests.Repositories
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            _fixture.Db.CreateTableAsync(_accessTokenRepository.TableName, _accessTokenRepository.TableColumns).GetAwaiter().GetResult();
+            var db = new Db(_fixture.SettingsManager.DatabaseType, _fixture.SettingsManager.DatabaseConnectionString);
 
-            Assert.True(_fixture.Db.IsTableExistsAsync(_accessTokenRepository.TableName).GetAwaiter().GetResult());
+            db.CreateTableAsync(_fixture.AccessTokenRepository.TableName, _fixture.AccessTokenRepository.TableColumns).GetAwaiter().GetResult();
+
+            Assert.True(db.IsTableExistsAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult());
         }
 
         [SkippableFact, TestPriority(1)]
@@ -36,22 +34,22 @@ namespace SS.CMS.Core.Tests.Repositories
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
             var accessTokenInfo = new AccessTokenInfo();
-            _accessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
             Assert.True(accessTokenInfo.Id > 0);
             var token = accessTokenInfo.Token;
             Assert.False(string.IsNullOrWhiteSpace(token));
 
-            accessTokenInfo = _accessTokenRepository.GetAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            accessTokenInfo = _fixture.AccessTokenRepository.GetAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
             Assert.NotNull(accessTokenInfo);
 
             accessTokenInfo.Title = "title";
-            var updated = _accessTokenRepository.UpdateAsync(accessTokenInfo).GetAwaiter().GetResult();
+            var updated = _fixture.AccessTokenRepository.UpdateAsync(accessTokenInfo).GetAwaiter().GetResult();
             Assert.True(updated);
 
-            _accessTokenRepository.RegenerateAsync(accessTokenInfo).GetAwaiter().GetResult();
+            _fixture.AccessTokenRepository.RegenerateAsync(accessTokenInfo).GetAwaiter().GetResult();
             Assert.NotEqual(token, accessTokenInfo.Token);
 
-            var deleted = _accessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
             Assert.True(deleted);
         }
 
@@ -62,7 +60,7 @@ namespace SS.CMS.Core.Tests.Repositories
 
             const string testTitle = "IsTitleExists";
 
-            var exists = _accessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
+            var exists = _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
 
             Assert.False(exists);
 
@@ -70,13 +68,13 @@ namespace SS.CMS.Core.Tests.Repositories
             {
                 Title = testTitle
             };
-            _accessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
 
-            exists = _accessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
+            exists = _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
 
             Assert.True(exists);
 
-            var deleted = _accessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
             Assert.True(deleted);
         }
 
@@ -89,13 +87,13 @@ namespace SS.CMS.Core.Tests.Repositories
             {
                 Title = "title"
             };
-            _accessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
 
-            var list = _accessTokenRepository.GetAllAsync().GetAwaiter().GetResult();
+            var list = _fixture.AccessTokenRepository.GetAllAsync().GetAwaiter().GetResult();
 
             Assert.True(list.Any());
 
-            var deleted = _accessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
             Assert.True(deleted);
         }
 
@@ -104,9 +102,11 @@ namespace SS.CMS.Core.Tests.Repositories
         {
             Skip.IfNot(TestEnv.IntegrationTestMachine);
 
-            _fixture.Db.DropTableAsync(_accessTokenRepository.TableName).GetAwaiter().GetResult();
+            var db = new Db(_fixture.SettingsManager.DatabaseType, _fixture.SettingsManager.DatabaseConnectionString);
 
-            Assert.False(_fixture.Db.IsTableExistsAsync(_accessTokenRepository.TableName).GetAwaiter().GetResult());
+            db.DropTableAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult();
+
+            Assert.False(db.IsTableExistsAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult());
         }
     }
 }

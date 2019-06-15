@@ -27,7 +27,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -35,9 +35,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isPreLoad = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -61,27 +61,27 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, playUrl, isAutoPlay, isPreLoad, isLoop);
+            return ParseImpl(parseContext, type, playUrl, isAutoPlay, isPreLoad, isLoop);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
+        private static string ParseImpl(ParseContext parseContext, string type, string playUrl, bool isAutoPlay, bool isPreLoad, bool isLoop)
         {
-            var contentId = contextInfo.ContentId;
+            var contentId = parseContext.ContentId;
 
             if (string.IsNullOrEmpty(playUrl))
             {
                 if (contentId != 0)//获取内容视频
                 {
-                    if (contextInfo.ContentInfo == null)
+                    if (parseContext.ContentInfo == null)
                     {
                         //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
+                        playUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
+                                playUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
@@ -89,20 +89,20 @@ namespace SS.CMS.Core.StlParser.StlElement
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.FileUrl);
+                                playUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }
                     else
                     {
-                        playUrl = contextInfo.ContentInfo.Get<string>(type);
+                        playUrl = parseContext.ContentInfo.Get<string>(type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.VideoUrl;
+                            playUrl = parseContext.ContentInfo.VideoUrl;
                         }
                         if (string.IsNullOrEmpty(playUrl))
                         {
-                            playUrl = contextInfo.ContentInfo.FileUrl;
+                            playUrl = parseContext.ContentInfo.FileUrl;
                         }
                     }
                 }
@@ -110,22 +110,22 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
-            playUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, playUrl, pageInfo.IsLocal);
+            playUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, playUrl, parseContext.IsLocal);
 
             // 如果是实体标签，则只返回数字
-            if (contextInfo.IsStlEntity)
+            if (parseContext.IsStlEntity)
             {
                 return playUrl;
             }
             else
             {
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcMediaElement);
+                parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
+                parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcMediaElement);
 
                 return $@"
 <audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
-    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
-        <param name=""movie"" value=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
+    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
+        <param name=""movie"" value=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
         <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
     </object>
 </audio>

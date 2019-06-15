@@ -8,11 +8,10 @@ using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Settings;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Utils;
-using SS.CMS.Utils.Enumerations;
-using AppContext = SS.CMS.Core.Settings.AppContext;
 using FileUtils = SS.CMS.Utils.FileUtils;
 
 namespace SS.CMS.Core.Common.Office
@@ -34,11 +33,11 @@ namespace SS.CMS.Core.Common.Office
             public string ImageDirectoryUrl { get; set; }
         }
 
-        public static (string title, string content) GetWord(SiteInfo siteInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
+        public static (string title, string content) GetWord(IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, SiteInfo siteInfo, bool isFirstLineTitle, bool isFirstLineRemove, bool isClearFormat, bool isFirstLineIndent, bool isClearFontSize, bool isClearFontFamily, bool isClearImages, string fileName)
         {
-            var docsFilePath = AppContext.GetTemporaryFilesPath(fileName);
-            var imageDirectoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, EUploadType.Image);
-            var imageDirectoryUrl = PageUtility.GetSiteUrlByPhysicalPath(siteInfo, imageDirectoryPath, true);
+            var docsFilePath = pathManager.GetTemporaryFilesPath(fileName);
+            var imageDirectoryPath = pathManager.GetUploadDirectoryPath(siteInfo, UploadType.Image);
+            var imageDirectoryUrl = urlManager.GetSiteUrlByPhysicalPath(siteInfo, imageDirectoryPath, true);
 
             var settings = new ConverterSettings
             {
@@ -58,7 +57,7 @@ namespace SS.CMS.Core.Common.Office
 
             FileUtils.DeleteFileIfExists(docsFilePath);
 
-            content = ContentUtility.TextEditorContentDecode(siteInfo, content, true);
+            content = fileManager.TextEditorContentDecode(siteInfo, content, true);
 
             return (title, content);
         }

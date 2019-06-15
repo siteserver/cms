@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
@@ -20,36 +22,35 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string PageNum = nameof(PageNum);
 
         private readonly string _stlPageChannelsElement;
-        private readonly PageInfo _pageInfo;
-        private readonly ContextInfo _contextInfo;
+        private readonly ParseContext _parseContext;
         private readonly ListInfo _listInfo;
-        private readonly IList<Container.Channel> _channelList;
+        private readonly IList<KeyValuePair<int, ChannelInfo>> _channelList;
 
 
-        public StlPageChannels(string stlPageChannelsElement, PageInfo pageInfo, ContextInfo contextInfo)
+        public StlPageChannels(string stlPageChannelsElement, ParseContext parseContext)
         {
             _stlPageChannelsElement = stlPageChannelsElement;
             _stlPageChannelsElement = stlPageChannelsElement;
             var stlElementInfo = StlParserUtility.ParseStlElement(stlPageChannelsElement);
 
-            _pageInfo = pageInfo;
-            _contextInfo = contextInfo.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
-            _listInfo = ListInfo.GetListInfo(pageInfo, _contextInfo, EContextType.Channel);
+            _parseContext = parseContext.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+            _parseContext.ContextType = EContextType.Channel;
+            _listInfo = ListInfo.GetListInfo(_parseContext);
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, _contextInfo.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(_parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(_parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(_listInfo.Others.Get(IsTotal));
 
             if (TranslateUtils.ToBool(_listInfo.Others.Get(IsAllChildren)))
             {
-                _listInfo.Scope = EScopeType.Descendant;
+                _listInfo.Scope = ScopeType.Descendant;
             }
 
-            var taxisType = StlDataUtility.GetChannelTaxisType(_listInfo.Order, ETaxisType.OrderByTaxis);
+            var taxisType = StlDataUtility.GetChannelTaxisType(_listInfo.Order, TaxisType.OrderByTaxis);
 
-            _channelList = StlChannelCache.GetContainerChannelList(pageInfo.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImageExists, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
+            _channelList = StlChannelCache.GetContainerChannelList(_parseContext.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
         }
 
         public int GetPageCount(out int totalNum)
@@ -70,33 +71,33 @@ namespace SS.CMS.Core.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            _contextInfo.PageItemIndex = currentPageIndex * _listInfo.PageNum;
+            _parseContext.PageItemIndex = currentPageIndex * _listInfo.PageNum;
 
             try
             {
                 if (_channelList != null && _channelList.Count > 0)
                 {
-                    IList<Container.Channel> pageChannelList;
+                    IList<KeyValuePair<int, ChannelInfo>> pageChannelList;
 
                     if (pageCount > 1)
                     {
-                        pageChannelList = _channelList.Skip(_contextInfo.PageItemIndex).Take(_listInfo.PageNum).ToList();
+                        pageChannelList = _channelList.Skip(_parseContext.PageItemIndex).Take(_listInfo.PageNum).ToList();
                     }
                     else
                     {
                         pageChannelList = _channelList;
                     }
 
-                    parsedContent = StlChannels.ParseElement(_pageInfo, _contextInfo, _listInfo, pageChannelList);
+                    parsedContent = StlChannels.ParseElement(_parseContext, _listInfo, pageChannelList);
                 }
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageChannelsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, _stlPageChannelsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
-            _contextInfo.PageItemIndex = 0;
+            _parseContext.PageItemIndex = 0;
 
             return parsedContent;
         }

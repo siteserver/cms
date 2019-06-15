@@ -3,7 +3,6 @@ using System.Text;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 
@@ -18,42 +17,43 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "文件路径")]
         private const string File = nameof(File);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var file = string.Empty;
             var parameters = new Dictionary<string, string>();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, File))
                 {
-                    file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
-                    file = PageUtility.AddVirtualToUrl(file);
+                    file = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    file = parseContext.UrlManager.AddVirtualToUrl(file);
                 }
                 else
                 {
-                    parameters[name] = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    parameters[name] = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, file, parameters);
+            return ParseImpl(parseContext, file, parameters);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string file, Dictionary<string, string> parameters)
+        private static string ParseImpl(ParseContext parseContext, string file, Dictionary<string, string> parameters)
         {
             if (string.IsNullOrEmpty(file)) return string.Empty;
 
-            var pageParameters = pageInfo.Parameters;
-            pageInfo.Parameters = parameters;
+            var pageParameters = parseContext.PageInfo.Parameters;
+            parseContext.PageInfo.Parameters = parameters;
 
-            var content = TemplateManager.GetIncludeContent(pageInfo.SiteInfo, file);
+            var filePath = parseContext.PathManager.MapPath(parseContext.SiteInfo, parseContext.PathManager.AddVirtualToPath(file));
+            var content = parseContext.TemplateRepository.GetContentByFilePath(filePath);
             var contentBuilder = new StringBuilder(content);
-            StlParserManager.ParseTemplateContent(contentBuilder, pageInfo, contextInfo);
+            parseContext.ParseTemplateContent(contentBuilder);
             var parsedContent = contentBuilder.ToString();
 
-            pageInfo.Parameters = pageParameters;
+            parseContext.PageInfo.Parameters = pageParameters;
 
             return parsedContent;
         }

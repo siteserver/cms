@@ -1,4 +1,5 @@
 ﻿using System;
+using Npgsql.TypeHandlers;
 
 namespace SS.CMS.Data
 {

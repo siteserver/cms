@@ -1,5 +1,5 @@
-﻿using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
+﻿using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -8,95 +8,92 @@ using SS.CMS.Utils;
 namespace SS.CMS.Core.StlParser.StlEntity
 {
     [StlElement(Title = "用户实体", Description = "通过 {user.} 实体在模板中显示用户值")]
-    public class StlUserEntities
-	{
-        private StlUserEntities()
-		{
-		}
-
+    public static class StlUserEntities
+    {
         public const string EntityName = "user";
 
-	    internal static string Parse(string stlEntity, PageInfo pageInfo)
-	    {
-	        var parsedContent = string.Empty;
-	        if (pageInfo?.UserInfo == null) return string.Empty;
+        internal static string Parse(string stlEntity, ParseContext context, IUserRepository userRepository)
+        {
+            var parsedContent = string.Empty;
+            var userInfo = context.PageInfo.UserInfo;
+            if (userInfo == null) return string.Empty;
 
-	        try
-	        {
-	            var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
-	            var attributeName = entityName.Substring(6, entityName.Length - 7);
+            try
+            {
+                var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
+                var attributeName = entityName.Substring(6, entityName.Length - 7);
 
                 if (StringUtils.EqualsIgnoreCase(UserAttribute.Id, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Id.ToString();
+                    parsedContent = userInfo.Id.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.UserName, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.UserName;
+                    parsedContent = userInfo.UserName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.CreateDate, attributeName))
                 {
-                    parsedContent = DateUtils.Format(pageInfo.UserInfo.CreateDate, string.Empty);
+                    parsedContent = DateUtils.Format(userInfo.CreateDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.LastActivityDate, attributeName))
                 {
-                    parsedContent = DateUtils.Format(pageInfo.UserInfo.LastActivityDate, string.Empty);
+                    parsedContent = DateUtils.Format(userInfo.LastActivityDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.CountOfLogin, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.CountOfLogin.ToString();
+                    parsedContent = userInfo.CountOfLogin.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.DisplayName, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.DisplayName;
+                    parsedContent = userInfo.DisplayName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Email, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Email;
+                    parsedContent = userInfo.Email;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Mobile, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Mobile;
+                    parsedContent = userInfo.Mobile;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.AvatarUrl, attributeName))
                 {
-                    parsedContent = UserManager.GetUserAvatarUrl(pageInfo.UserInfo);
+                    parsedContent = context.UrlManager.GetUserAvatarUrl(userInfo);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Gender, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Gender;
+                    parsedContent = userInfo.Gender;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Birthday, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Birthday;
+                    parsedContent = userInfo.Birthday;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.WeiXin, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.WeiXin;
+                    parsedContent = userInfo.WeiXin;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Qq, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Qq;
+                    parsedContent = userInfo.Qq;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.WeiBo, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.WeiBo;
+                    parsedContent = userInfo.WeiBo;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Bio, attributeName))
                 {
-                    parsedContent = pageInfo.UserInfo.Bio;
+                    parsedContent = userInfo.Bio;
                 }
                 else
                 {
-                    parsedContent = ((UserInfo)pageInfo.UserInfo).Get<string>(attributeName);
+                    parsedContent = userInfo.Get<string>(attributeName);
                 }
             }
-	        catch
-	        {
-	            // ignored
-	        }
+            catch
+            {
+                // ignored
+            }
 
-	        return parsedContent;
-	    }
-	}
+            return parsedContent;
+        }
+    }
 }

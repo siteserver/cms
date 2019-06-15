@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}\\siteserver.sln"
+                "${workspaceFolder}\\SS.CMS.sln"
             ],
             "problemMatcher": "$tsc"
         },

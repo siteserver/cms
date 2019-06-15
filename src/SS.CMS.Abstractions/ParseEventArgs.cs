@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
 
 namespace SS.CMS.Abstractions
 {
@@ -23,7 +25,7 @@ namespace SS.CMS.Abstractions
         /// <param name="bodyCodes">生成的Html页面中包含在body标签内的代码。</param>
         /// <param name="footCodes">生成的Html页面中包含在页面最底部的代码。</param>
         /// <param name="contentBuilder">生成的Html页面代码。</param>
-        public ParseEventArgs(int siteId, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, string filePath, SortedDictionary<string, string> headCodes, SortedDictionary<string, string> bodyCodes, SortedDictionary<string, string> footCodes, StringBuilder contentBuilder)
+        public ParseEventArgs(int siteId, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, string filePath, SortedDictionary<string, string> headCodes, SortedDictionary<string, string> bodyCodes, SortedDictionary<string, string> footCodes, StringBuilder contentBuilder)
         {
             SiteId = siteId;
             ChannelId = channelId;
@@ -56,7 +58,7 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 内容实体。
         /// </summary>
-        IContentInfo ContentInfo { get; }
+        ContentInfo ContentInfo { get; }
 
         /// <summary>
         /// 模板类型。

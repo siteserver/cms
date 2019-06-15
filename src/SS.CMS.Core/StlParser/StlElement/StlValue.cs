@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
@@ -65,7 +66,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {TypeDateOfTraditional, "带农历的当前日期"}
         };
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = string.Empty;
             var formatString = string.Empty;
@@ -81,9 +82,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isLower = false;
             var isUpper = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -139,72 +140,72 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return ParseImpl(parseContext, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static string ParseImpl(ParseContext parseContext, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
             var parsedContent = string.Empty;
 
-            if (contextInfo.ContextType == EContextType.Each)
+            if (parseContext.ContextType == EContextType.Each)
             {
-                return contextInfo.Container.EachItem.Value as string;
+                return parseContext.Container.EachItem.Value as string;
             }
 
             if (type.ToLower().Equals(TypeSiteName.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.SiteName;
+                parsedContent = parseContext.SiteInfo.SiteName;
             }
             else if (type.ToLower().Equals(TypeSiteUrl.ToLower()))
             {
-                parsedContent = pageInfo.SiteInfo.WebUrl;
+                parsedContent = parseContext.UrlManager.GetWebUrl(parseContext.SiteInfo);
             }
             else if (type.ToLower().Equals(TypeDate.ToLower()))
             {
-                if (!pageInfo.BodyCodes.ContainsKey("datestring.js"))
+                if (!parseContext.BodyCodes.ContainsKey("datestring.js"))
                 {
-                    pageInfo.BodyCodes.Add("datestring.js", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        pageInfo.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    parseContext.BodyCodes.Add("datestring.js", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
+                        parseContext.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
             }
             else if (type.ToLower().Equals(TypeDateOfTraditional.ToLower()))
             {
-                if (!pageInfo.BodyCodes.ContainsKey("datestring"))
+                if (!parseContext.BodyCodes.ContainsKey("datestring"))
                 {
-                    pageInfo.BodyCodes.Add("datestring", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        pageInfo.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    parseContext.BodyCodes.Add("datestring", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
+                        parseContext.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(true);</script>";
             }
-            else if (pageInfo.Parameters != null && pageInfo.Parameters.ContainsKey(type))
+            else if (parseContext.PageInfo.Parameters != null && parseContext.PageInfo.Parameters.ContainsKey(type))
             {
-                pageInfo.Parameters.TryGetValue(type, out parsedContent);
+                parseContext.PageInfo.Parameters.TryGetValue(type, out parsedContent);
                 parsedContent = InputTypeUtils.ParseString(InputType.Text, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
             }
             else
             {
-                if (pageInfo.SiteInfo.Get<string>(type) != null)
+                if (parseContext.SiteInfo.Get<string>(type) != null)
                 {
-                    parsedContent = pageInfo.SiteInfo.Get<string>(type);
+                    parsedContent = parseContext.SiteInfo.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = TableStyleManager.GetTableStyleInfo(DataProvider.SiteDao.TableName, type, TableStyleManager.GetRelatedIdentities(pageInfo.SiteId));
+                        var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(DataProvider.SiteRepository.TableName, type, parseContext.TableStyleRepository.GetRelatedIdentities(parseContext.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)
                         {
                             if (isClearTags && InputTypeUtils.EqualsAny(styleInfo.Type, InputType.Image, InputType.File))
                             {
-                                parsedContent = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, parsedContent, pageInfo.IsLocal);
+                                parsedContent = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, parsedContent, parseContext.IsLocal);
                             }
                             else
                             {
-                                parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, separator, pageInfo.SiteInfo, styleInfo, formatString, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, parsedContent, separator, parseContext.SiteInfo, styleInfo, formatString, parseContext.Attributes, parseContext.InnerHtml, false);
                                 parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
                             }
                         }

@@ -1,11 +1,12 @@
 using System;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Models.Enumerations;
 
 namespace SS.CMS.Core.Common.Create
 {
     public class CreateTaskLogInfo
     {
-        public CreateTaskLogInfo(int id, ECreateType createType, int siteId, int channelId, int contentId, int fileTemplateId, int specialId, string taskName, string timeSpan, bool isSuccess, string errorMessage, DateTime addDate)
+        public CreateTaskLogInfo(int id, CreateType createType, int siteId, int channelId, int contentId, int fileTemplateId, int specialId, string taskName, string timeSpan, bool isSuccess, string errorMessage, DateTime addDate)
         {
             Id = id;
             CreateType = createType;
@@ -23,7 +24,7 @@ namespace SS.CMS.Core.Common.Create
 
         public int Id { get; set; }
 
-        public ECreateType CreateType { get; set; }
+        public CreateType CreateType { get; set; }
 
         public int SiteId { get; set; }
 

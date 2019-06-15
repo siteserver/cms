@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using SS.CMS.Abstractions.Models;
+
 namespace SS.CMS.Core.StlParser.Models
 {
     public partial class Container
@@ -70,11 +73,11 @@ namespace SS.CMS.Core.StlParser.Models
             return container;
         }
 
-        public Container.Site SiteItem { get; private set; }
+        public KeyValuePair<int, SiteInfo> SiteItem { get; private set; }
 
-        public Container.Channel ChannelItem { get; private set; }
+        public KeyValuePair<int, ChannelInfo> ChannelItem { get; private set; }
 
-        public Container.Content ContentItem { get; private set; }
+        public KeyValuePair<int, ContentInfo> ContentItem { get; private set; }
 
         public Container.Each EachItem { get; private set; }
 

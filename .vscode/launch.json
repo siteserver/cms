@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/SiteServer.API/bin/Debug/netcoreapp3.0/SiteServer.API.dll",
+            "program": "${workspaceFolder}/src/SS.CMS.Api/bin/Debug/netcoreapp3.0/SS.CMS.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/SiteServer.API/",
+            "cwd": "${workspaceFolder}/src/SS.CMS.Api/",
             "stopAtEntry": false,
             "launchBrowser": {
                 "enabled": true

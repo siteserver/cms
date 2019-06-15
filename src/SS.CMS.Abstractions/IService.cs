@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SS.CMS.Abstractions.Enums;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
 
 namespace SS.CMS.Abstractions
@@ -177,7 +179,7 @@ namespace SS.CMS.Abstractions
         /// </summary>
         /// <param name="menuFunc">插件菜单生成方法，可以根据内容上下文计算并返回菜单。</param>
         /// <returns>返回插件服务注册实例。</returns>
-        IService AddContentMenu(Func<IContentInfo, Menu> menuFunc);
+        IService AddContentMenu(Func<ContentInfo, Menu> menuFunc);
 
         /// <summary>
         /// 添加插件的内容模型，包含内容存储的表名称以及内容表的字段列表。
@@ -225,5 +227,48 @@ namespace SS.CMS.Abstractions
         /// <param name="job">可以执行的任务，可以根据第一个参数IJobContext（任务执行上下文）执行任务。</param>
         /// <returns>返回插件服务注册实例。</returns>
         IService AddJob(string command, Func<IJobContext, Task> job);
+
+        // added
+
+        string PluginId { get; }
+
+        IPackageMetadata Metadata { get; }
+
+        string SystemDefaultPageUrl { get; }
+        string HomeDefaultPageUrl { get; }
+
+        Dictionary<string, Func<IParseContext, string>> StlElementsToParse { get; }
+
+        Dictionary<string, Func<IJobContext, Task>> Jobs { get; }
+
+        Dictionary<string, Func<IContentContext, string>> ContentColumns { get; }
+
+        List<Func<Menu>> SystemMenuFuncs { get; }
+        List<Func<int, Menu>> SiteMenuFuncs { get; }
+        List<Func<Menu>> HomeMenuFuncs { get; }
+        List<Func<ContentInfo, Menu>> ContentMenuFuncs { get; }
+
+        string ContentTableName { get; }
+        bool IsApiAuthorization { get; }
+
+        List<TableColumn> ContentTableColumns { get; }
+
+        List<InputStyle> ContentInputStyles { get; }
+
+        Dictionary<string, List<TableColumn>> DatabaseTables { get; }
+
+        void OnContentAddCompleted(ContentEventArgs e);
+
+        void OnContentDeleteCompleted(ContentEventArgs e);
+
+        void OnContentTranslateCompleted(ContentTranslateEventArgs e);
+
+        string OnContentFormLoad(ContentFormLoadEventArgs e);
+
+        void OnContentFormSubmit(ContentFormSubmitEventArgs e);
+
+        void OnBeforeStlParse(ParseEventArgs e);
+
+        void OnAfterStlParse(ParseEventArgs e);
     }
 }

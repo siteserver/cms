@@ -3,7 +3,6 @@ using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
@@ -46,7 +45,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
@@ -59,13 +58,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             var width = "100%";
             var height = "180";
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                     if (!string.IsNullOrEmpty(channelIndex))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -73,7 +72,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                     if (!string.IsNullOrEmpty(channelName))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -125,10 +124,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
+            return ParseImpl(parseContext, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
+        private static string ParseImpl(ParseContext parseContext, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
         {
             var parsedContent = string.Empty;
 
@@ -136,9 +135,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             //判断是否图片地址由标签属性获得
             if (!isGetPicUrlFromAttribute)
             {
-                contentId = contextInfo.ContentId;
+                contentId = parseContext.ContentId;
             }
-            var contentInfo = contextInfo.ContentInfo;
+            var contentInfo = parseContext.ContentInfo;
 
             string flashUrl;
             if (!string.IsNullOrEmpty(src))
@@ -151,22 +150,22 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(contextInfo.SiteInfo.Id, contextInfo.ChannelId);
+                        var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteInfo.Id, parseContext.ChannelId);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = StlContentCache.GetValue(nodeInfo, contentId, type);
+                        flashUrl = nodeInfo.ContentRepository.StlGetValue(nodeInfo, contentId, type);
                     }
                     else
                     {
-                        flashUrl = contextInfo.ContentInfo.Get<string>(type);
+                        flashUrl = parseContext.ContentInfo.Get<string>(type);
                     }
                 }
                 else//获取栏目Flash
                 {
-                    var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+                    var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
-                    var channel = ChannelManager.GetChannelInfo(pageInfo.SiteId, channelId);
+                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
+                    var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
 
                     flashUrl = channel.ImageUrl;
                 }
@@ -178,7 +177,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
 
             // 如果是实体标签则返回空
-            if (contextInfo.IsStlEntity)
+            if (parseContext.IsStlEntity)
             {
                 return flashUrl;
             }
@@ -188,15 +187,15 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var extension = PathUtils.GetExtension(flashUrl);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    parsedContent = StlImage.Parse(pageInfo, contextInfo);
+                    parsedContent = StlImage.Parse(parseContext);
                 }
                 else if (EFileSystemTypeUtils.IsPlayer(extension))
                 {
-                    parsedContent = StlPlayer.Parse(pageInfo, contextInfo);
+                    parsedContent = StlPlayer.Parse(parseContext);
                 }
                 else
                 {
-                    flashUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, flashUrl, pageInfo.IsLocal);
+                    flashUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, flashUrl, parseContext.IsLocal);
 
                     parsedContent = $@"
 <embed src=""{flashUrl}"" allowfullscreen=""true"" width=""{width}"" height=""{height}"" align=""middle"" allowscriptaccess=""always"" type=""application/x-shockwave-flash"" />
@@ -239,7 +238,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 //        private static readonly Attr Width = new Attr("width", "宽度");
 //        private static readonly Attr Height = new Attr("height", "高度");
 
-//        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+//        public static string Parse(ContextInfo contextInfo)
 //        {
 //            var isGetPicUrlFromAttribute = false;
 //            var channelIndex = string.Empty;
@@ -321,7 +320,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 //            return ParseImpl(pageInfo, contextInfo, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
 //        }
 
-//        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
+//        private static string ParseImpl(ContextInfo contextInfo, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
 //        {
 //            var parsedContent = string.Empty;
 
@@ -392,7 +391,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 //                {
 //                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
 
-//                    picUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
+//                    picUrl = parseContext.UrlManager.ParseNavigationUrl(pageInfo.SiteInfo, picUrl, pageInfo.IsLocal);
 
 //                    if (string.IsNullOrEmpty(contextInfo.Attributes["quality"]))
 //                    {

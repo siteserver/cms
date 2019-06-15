@@ -473,12 +473,7 @@ namespace SS.CMS.Data
             return NewQuery().OrWhereNotTime(column, value);
         }
 
-        public static Query WhereInStr(DatabaseType databaseType, string columnName, string inStr)
-        {
-            return NewQuery().WhereInStr(databaseType, columnName, inStr);
-        }
-
-        public static Query WhereInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        private static string GetInStrWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
             if (databaseType == DatabaseType.MySql)
@@ -497,17 +492,32 @@ namespace SS.CMS.Data
             {
                 where = $"INSTR([{columnName}], ?) > 0";
             }
+            return where;
+        }
 
-            query.WhereRaw(where, inStr);
+        public static Query WhereInStr(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return NewQuery().WhereInStr(databaseType, columnName, inStr);
+        }
+
+        public static Query WhereInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.WhereRaw(GetInStrWhere(databaseType, columnName), inStr);
             return query;
         }
 
-        public static Query WhereInStrReverse(DatabaseType databaseType, string columnName, string inStr)
+        public static Query OrWhereInStr(DatabaseType databaseType, string columnName, string inStr)
         {
-            return NewQuery().WhereInStrReverse(databaseType, columnName, inStr);
+            return NewQuery().OrWhereInStr(databaseType, columnName, inStr);
         }
 
-        public static Query WhereInStrReverse(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        public static Query OrWhereInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.OrWhereRaw(GetInStrWhere(databaseType, columnName), inStr);
+            return query;
+        }
+
+        private static string GetInStrReverseWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
             if (databaseType == DatabaseType.MySql)
@@ -526,17 +536,32 @@ namespace SS.CMS.Data
             {
                 where = $"INSTR(?, [{columnName}]) > 0";
             }
+            return where;
+        }
 
-            query.WhereRaw(where, inStr);
+        public static Query WhereInStrReverse(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return NewQuery().WhereInStrReverse(databaseType, columnName, inStr);
+        }
+
+        public static Query WhereInStrReverse(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.WhereRaw(GetInStrReverseWhere(databaseType, columnName), inStr);
             return query;
         }
 
-        public static Query WhereNotInStr(DatabaseType databaseType, string columnName, string inStr)
+        public static Query OrWhereInStrReverse(DatabaseType databaseType, string columnName, string inStr)
         {
-            return NewQuery().WhereNotInStr(databaseType, columnName, inStr);
+            return NewQuery().OrWhereInStrReverse(databaseType, columnName, inStr);
         }
 
-        public static Query WhereNotInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        public static Query OrWhereInStrReverse(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.OrWhereRaw(GetInStrReverseWhere(databaseType, columnName), inStr);
+            return query;
+        }
+
+        private static string GetNotInStrWhere(DatabaseType databaseType, string columnName)
         {
             var where = string.Empty;
             if (databaseType == DatabaseType.MySql)
@@ -555,8 +580,28 @@ namespace SS.CMS.Data
             {
                 where = $"INSTR([{columnName}], ?) = 0";
             }
+            return where;
+        }
 
-            query.WhereRaw(where, inStr);
+        public static Query WhereNotInStr(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return NewQuery().WhereNotInStr(databaseType, columnName, inStr);
+        }
+
+        public static Query WhereNotInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.WhereRaw(GetNotInStrWhere(databaseType, columnName), inStr);
+            return query;
+        }
+
+        public static Query OrWhereNotInStr(DatabaseType databaseType, string columnName, string inStr)
+        {
+            return NewQuery().OrWhereNotInStr(databaseType, columnName, inStr);
+        }
+
+        public static Query OrWhereNotInStr(this Query query, DatabaseType databaseType, string columnName, string inStr)
+        {
+            query.OrWhereRaw(GetNotInStrWhere(databaseType, columnName), inStr);
             return query;
         }
     }

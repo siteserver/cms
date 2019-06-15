@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.V2
@@ -16,11 +16,11 @@ namespace SS.CMS.Api.Controllers.V2
         public const string Route = "captcha/{name}";
         public const string RouteActionsCheck = "captcha/{name}/actions/check";
 
-        private readonly IIdentity _identity;
+        private readonly IIdentityManager _identityManager;
 
-        public CaptchaController(IIdentity identity)
+        public CaptchaController(IIdentityManager identityManager)
         {
-            _identity = identity;
+            _identityManager = identityManager;
         }
 
         [HttpGet(Route)]
@@ -90,7 +90,7 @@ namespace SS.CMS.Api.Controllers.V2
         }
 
         [HttpPost(RouteActionsCheck)]
-        public ActionResult Check([FromBody] string name, [FromBody] string captcha)
+        public ActionResult Check([FromBody] string name, string captcha)
         {
             var cookieName = GetCookieName(name);
 

@@ -1,33 +1,11 @@
 ﻿using System;
 using SS.CMS.Abstractions;
+using SS.CMS.Abstractions.Enums;
 
 namespace SS.CMS.Core.Common
 {
     public static class TemplateTypeUtils
     {
-        public static TemplateType GetEnumType(string typeStr)
-        {
-            var retval = TemplateType.IndexPageTemplate;
-
-            if (Equals(TemplateType.ChannelTemplate, typeStr))
-            {
-                retval = TemplateType.ChannelTemplate;
-            }
-            else if (Equals(TemplateType.IndexPageTemplate, typeStr))
-            {
-                retval = TemplateType.IndexPageTemplate;
-            }
-            else if (Equals(TemplateType.ContentTemplate, typeStr))
-            {
-                retval = TemplateType.ContentTemplate;
-            }
-            else if (Equals(TemplateType.FileTemplate, typeStr))
-            {
-                retval = TemplateType.FileTemplate;
-            }
-            return retval;
-        }
-
         public static bool Equals(TemplateType type, string typeStr)
         {
             if (string.IsNullOrEmpty(typeStr)) return false;

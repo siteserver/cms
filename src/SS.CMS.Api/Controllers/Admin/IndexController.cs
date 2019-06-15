@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Content;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Packaging;
 using SS.CMS.Utils;
@@ -17,22 +16,30 @@ namespace SS.CMS.Api.Controllers.Admin
         private const string Route = "index";
         private const string RouteUnCheckedList = "index/unCheckedList";
 
-        private readonly IIdentity _identity;
+        private readonly ISettingsManager _settingsManager;
+        private readonly IPluginManager _pluginManager;
+        private readonly IIdentityManager _identityManager;
+        private readonly IAdministratorRepository _administratorRepository;
+        private readonly ISiteRepository _siteRepository;
 
-        public IndexController(IIdentity identity)
+        public IndexController(ISettingsManager settingsManager, IPluginManager pluginManager, IIdentityManager identityManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
         {
-            _identity = identity;
+            _settingsManager = settingsManager;
+            _pluginManager = pluginManager;
+            _identityManager = identityManager;
+            _administratorRepository = administratorRepository;
+            _siteRepository = siteRepository;
         }
 
         [HttpGet(Route)]
         public ActionResult Get()
         {
-            if (!_identity.IsAdminLoggin)
+            if (!_identityManager.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
-            var adminInfo = AdminManager.GetAdminInfoByUserId(_identity.AdminId);
+            var adminInfo = _administratorRepository.GetAdminInfoByUserId(_identityManager.AdminId);
 
             return Ok(new
             {
@@ -40,7 +47,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 {
                     Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
                     LastActivityDate = DateUtils.GetDateString(adminInfo.LastActivityDate, EDateFormatType.Chinese),
-                    UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
+                    UpdateDate = DateUtils.GetDateString(_settingsManager.ConfigInfo.UpdateDate, EDateFormatType.Chinese)
                 }
             });
         }
@@ -48,18 +55,18 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpGet(RouteUnCheckedList)]
         public ActionResult GetUnCheckedList()
         {
-            if (!_identity.IsAdminLoggin)
+            if (!_identityManager.IsAdminLoggin)
             {
                 return Unauthorized();
             }
 
             var unCheckedList = new List<object>();
 
-            foreach (var siteInfo in SiteManager.GetSiteInfoList())
+            foreach (var siteInfo in _siteRepository.GetSiteInfoList())
             {
-                if (!_identity.AdminPermissions.IsSiteAdmin(siteInfo.Id)) continue;
+                if (!_identityManager.AdminPermissions.IsSiteAdmin(siteInfo.Id)) continue;
 
-                var count = ContentManager.GetCount(siteInfo, false);
+                var count = siteInfo.ContentRepository.GetCount(_pluginManager, siteInfo, false);
                 if (count > 0)
                 {
                     unCheckedList.Add(new

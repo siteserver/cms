@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SS.CMS.Abstractions.Models;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using SS.CMS.Abstractions.Enums;
 
 namespace SS.CMS.Abstractions
 {
@@ -26,7 +28,7 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 内容实体。
         /// </summary>
-        IContentInfo ContentInfo { get; }
+        ContentInfo ContentInfo { get; }
 
         /// <summary>
         /// 模板类型。

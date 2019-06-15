@@ -8,19 +8,19 @@ namespace SS.CMS.Core.StlParser.StlEntity
 {
     [StlElement(Title = "请求实体", Description = "通过 {request.} 实体在模板中显示地址栏请求参数")]
     public static class StlRequestEntities
-	{
-        internal static string Parse(string stlEntity, PageInfo pageInfo)
+    {
+        internal static string Parse(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
             try
             {
-                pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+                parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
 
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var entityValue = StlParserUtility.GetValueFromEntity(stlEntity);
                 var attributeName = entityName.Substring(9, entityName.Length - 10);
 
-                var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
+                var ajaxDivId = StlParserUtility.GetAjaxDivId(parseContext.UniqueId);
                 var functionName = $"stlRequest_{ajaxDivId}";
                 parsedContent = $@"<span id=""{ajaxDivId}""></span>";
 
@@ -49,9 +49,9 @@ $(function(){{
 </script>
 ");
 
-                if (!pageInfo.FootCodes.ContainsKey(functionName))
+                if (!parseContext.FootCodes.ContainsKey(functionName))
                 {
-                    pageInfo.FootCodes.Add(functionName, builder.ToString());
+                    parseContext.FootCodes.Add(functionName, builder.ToString());
                 }
             }
             catch
@@ -73,5 +73,5 @@ $(function(){{
             }
             return RegexUtils.Replace("{Request.[^}]+}", templateContent, string.Empty);
         }
-	}
+    }
 }

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SS.CMS.Core.Models;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Serialization;
-using SS.CMS.Core.Settings;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -11,13 +12,20 @@ namespace SS.CMS.Core.Common
     public class SiteTemplateManager
     {
         private readonly string _rootPath;
+        private readonly IPluginManager _pluginManager;
+        private readonly IPathManager _pathManager;
+        private readonly ICreateManager _createManager;
+        private readonly IChannelGroupRepository _channelGroupRepository;
+        private readonly IContentGroupRepository _contentGroupRepository;
+        private readonly ISpecialRepository _specialRepository;
+        private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly ITemplateRepository _templateRepository;
+
         private SiteTemplateManager(string rootPath)
         {
             _rootPath = rootPath;
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
         }
-
-        public static SiteTemplateManager Instance => new SiteTemplateManager(AppContext.GetSiteTemplatesPath(string.Empty));
 
 
         public void DeleteSiteTemplate(string siteTemplateDir)
@@ -48,7 +56,7 @@ namespace SS.CMS.Core.Common
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
                 foreach (var siteTemplatePath in directoryPaths)
                 {
-                    var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
+                    var metadataXmlFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
                     if (FileUtils.IsFileExists(metadataXmlFilePath))
                     {
                         var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
@@ -68,7 +76,7 @@ namespace SS.CMS.Core.Common
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
             foreach (var siteTemplatePath in directoryPaths)
             {
-                var metadataXmlFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
+                var metadataXmlFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileMetadata);
                 if (FileUtils.IsFileExists(metadataXmlFilePath))
                 {
                     var siteTemplateInfo = Serializer.ConvertFileToObject(metadataXmlFilePath, typeof(SiteTemplateInfo)) as SiteTemplateInfo;
@@ -98,13 +106,13 @@ namespace SS.CMS.Core.Common
 
         public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
-            var siteTemplatePath = AppContext.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
             {
-                var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
-                var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-                var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-                var siteContentDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
+                var templateFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
+                var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
+                var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+                var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
                 var importObject = new ImportObject(siteId, administratorName);
 
@@ -130,23 +138,23 @@ namespace SS.CMS.Core.Common
             }
         }
 
-        public static void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir, string adminName)
+        public void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir, string adminName)
         {
             var exportObject = new ExportObject(siteInfo.Id, adminName);
 
-            var siteTemplatePath = AppContext.GetSiteTemplatesPath(siteTemplateDir);
+            var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
 
             //导出模板
-            var templateFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
+            var templateFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
             exportObject.ExportTemplates(templateFilePath);
             //导出辅助表及样式
-            var tableDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
+            var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
             exportObject.ExportTablesAndStyles(tableDirectoryPath);
             //导出站点属性以及站点属性表单
-            var configurationFilePath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
+            var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
             //导出关联字段
-            var relatedFieldDirectoryPath = PathUtility.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
+            var relatedFieldDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             exportObject.ExportRelatedField(relatedFieldDirectoryPath);
         }
     }

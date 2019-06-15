@@ -36,8 +36,9 @@ namespace SS.CMS.Core.Common
             return PageUtils.Combine(apiUrl, "sitefiles/assets", relatedUrl);
         }
 
-        public static string GetPath(params string[] paths) => PathUtilsEx.GetSiteFilesPath("assets", PathUtils.Combine(paths));
+        // public static string GetPath(params string[] paths) => PathUtilsEx.GetSiteFilesPath("assets", PathUtils.Combine(paths));
 
+        public static string GetPath(params string[] paths) => null;
         public class CommentInput
         {
             public static string CommentsTemplatePath => GetPath("commentInput/template.html");

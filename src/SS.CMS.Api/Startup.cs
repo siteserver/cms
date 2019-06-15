@@ -5,15 +5,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using NSwag;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Components;
-using SS.CMS.Core.Repositories;
-using SS.CMS.Core.Settings;
-using SS.CMS.Data;
-using SS.CMS.Utils;
+using SS.CMS.Abstractions.Services;
+using SS.CMS.Core.Services;
 
 namespace SS.CMS.Api
 {
@@ -65,6 +59,7 @@ namespace SS.CMS.Api
             //});
 
             services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
 
             services.AddOpenApiDocument(config =>
             {
@@ -82,43 +77,50 @@ namespace SS.CMS.Api
                 };
             });
 
-            services.Configure<AppSettings>(_config.GetSection("SS"));
-            services.AddScoped(sp => sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value);
-            services.AddScoped<IDb>(sp =>
-            {
-                var appSettings = sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
+            //services.Configure<AppSettings>(_config.GetSection("SS"));
+            //services.AddScoped(sp => sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value);
+            // services.AddScoped<IDb>(sp =>
+            // {
+            //     var appSettings = sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
 
-                if (string.IsNullOrEmpty(appSettings.SecretKey))
-                {
-                    appSettings.SecretKey = StringUtils.GetShortGuid();
-                }
+            //     if (string.IsNullOrEmpty(appSettings.SecretKey))
+            //     {
+            //         appSettings.SecretKey = StringUtils.GetShortGuid();
+            //     }
 
-                DatabaseType databaseType;
-                string connectionString;
-                if (appSettings.IsProtectData)
-                {
-                    databaseType = DatabaseType.GetDatabaseType(TranslateUtils.DecryptStringBySecretKey(appSettings.Database.Type, appSettings.SecretKey));
-                    connectionString = TranslateUtils.DecryptStringBySecretKey(appSettings.Database.ConnectionString, appSettings.SecretKey);
-                }
-                else
-                {
-                    databaseType = DatabaseType.GetDatabaseType(appSettings.Database.Type);
-                    connectionString = appSettings.Database.ConnectionString;
-                }
+            //     DatabaseType databaseType;
+            //     string connectionString;
+            //     if (appSettings.IsProtectData)
+            //     {
+            //         databaseType = DatabaseType.GetDatabaseType(TranslateUtils.DecryptStringBySecretKey(appSettings.Database.Type, appSettings.SecretKey));
+            //         connectionString = TranslateUtils.DecryptStringBySecretKey(appSettings.Database.ConnectionString, appSettings.SecretKey);
+            //     }
+            //     else
+            //     {
+            //         databaseType = DatabaseType.GetDatabaseType(appSettings.Database.Type);
+            //         connectionString = appSettings.Database.ConnectionString;
+            //     }
 
-                return new Db(databaseType, connectionString);
-            });
+            //     return new Db(databaseType, connectionString);
+            // });
 
             //AppContext.Load(_env.ContentRootPath, _env.WebRootPath, _config);
             //AppContext.Db = db;
 
-            services.AddScoped<IAccessTokenRepository, AccessTokenRepository>();
+            ServiceCollectionExtensions.ContentRootPath = _env.ContentRootPath;
+            ServiceCollectionExtensions.WebRootPath = _env.WebRootPath;
 
-            services.AddScoped<IIdentity, Identity>();
+            services.AddSettingsManager();
+            services.AddCacheManager();
+            services.AddUrlManager();
+            services.AddPathManager();
+            services.AddRepositories();
+            services.AddIdentityManager();
+            services.AddPluginManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ISettingsManager settingsManager)
         {
             if (_env.IsDevelopment())
             {
@@ -149,7 +151,7 @@ namespace SS.CMS.Api
             //     return new Request(httpContext);
             // });
 
-            app.Map("/" + AppContext.ApiPrefix.Trim('/'), mainApp =>
+            app.Map("/" + settingsManager.ApiPrefix.Trim('/'), mainApp =>
             {
                 mainApp.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));
@@ -162,6 +164,9 @@ namespace SS.CMS.Api
                 {
                     endpoints.MapControllers();
                 });
+
+                //mainApp.UseAuthentication();
+                //mainApp.UseAuthorization();
 
                 mainApp.UseOpenApi();
                 mainApp.UseSwaggerUi3();

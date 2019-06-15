@@ -3,15 +3,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Repositories;
-using SS.CMS.Core.Settings;
-using SS.CMS.Data;
+using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
-using AppContext = SS.CMS.Core.Settings.AppContext;
 
 namespace SS.CMS.Core.Common
 {
@@ -58,9 +53,9 @@ namespace SS.CMS.Core.Common
 
         public static string EnvironmentVersion { get; }
 
-        public static void InstallDatabase(string adminName, string adminPassword)
+        public static void InstallDatabase(string adminName, string adminPassword, IAdministratorRepository administratorRepository, IAdministratorsInRolesRepository administratorsInRolesRepository, IConfigRepository configRepository)
         {
-            SyncDatabase();
+            SyncDatabase(configRepository);
 
             if (!string.IsNullOrEmpty(adminName) && !string.IsNullOrEmpty(adminPassword))
             {
@@ -70,47 +65,47 @@ namespace SS.CMS.Core.Common
                     Password = adminPassword
                 };
 
-                DataProvider.AdministratorDao.Insert(administratorInfo, out _);
-                DataProvider.AdministratorsInRolesDao.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
+                administratorRepository.Insert(administratorInfo, out _);
+                administratorsInRolesRepository.AddUserToRole(adminName, EPredefinedRoleUtils.GetValue(EPredefinedRole.ConsoleAdministrator));
             }
         }
 
         public static void SyncSystemTables()
         {
-            foreach (var repository in DataProvider.AllProviders)
-            {
-                if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
+            //foreach (var repository in DataProvider.AllProviders)
+            //{
+            //    if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!AppContext.Db.IsTableExists(repository.TableName))
-                {
-                    TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
-                }
-                else
-                {
-                    TableColumnManager.AlterTable(repository.TableName, repository.TableColumns, string.Empty);
-                }
-            }
+            //    if (!AppContext.Db.IsTableExists(repository.TableName))
+            //    {
+            //        TableColumnManager.CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
+            //    }
+            //    else
+            //    {
+            //        TableColumnManager.AlterTable(repository.TableName, repository.TableColumns, string.Empty);
+            //    }
+            //}
         }
 
         public static void SyncContentTables()
         {
-            var contentDaoList = ContentDao.GetContentDaoList();
-            foreach (var contentDao in contentDaoList)
-            {
-                if (!AppContext.Db.IsTableExists(contentDao.TableName))
-                {
-                    TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
-                }
-                else
-                {
-                    TableColumnManager.AlterTable(contentDao.TableName, contentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
-                }
-            }
+            // var contentDaoList = ContentRepository.GetContentDaoList();
+            // foreach (var contentDao in contentDaoList)
+            // {
+            //     if (!AppContext.Db.IsTableExists(contentDao.TableName))
+            //     {
+            //         TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
+            //     }
+            //     else
+            //     {
+            //         TableColumnManager.AlterTable(contentDao.TableName, contentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
+            //     }
+            // }
         }
 
-        public static void UpdateConfigVersion()
+        public static void UpdateConfigVersion(IConfigRepository configRepository)
         {
-            var configInfo = DataProvider.ConfigDao.GetConfigInfo();
+            var configInfo = configRepository.GetConfigInfo();
             if (configInfo == null)
             {
                 configInfo = new ConfigInfo
@@ -119,18 +114,18 @@ namespace SS.CMS.Core.Common
                     DatabaseVersion = ProductVersion,
                     UpdateDate = DateTime.Now
                 };
-                DataProvider.ConfigDao.Insert(configInfo);
+                configRepository.Insert(configInfo);
             }
             else
             {
                 configInfo.DatabaseVersion = ProductVersion;
                 configInfo.Initialized = true;
                 configInfo.UpdateDate = DateTime.Now;
-                DataProvider.ConfigDao.Update(configInfo);
+                configRepository.Update(configInfo);
             }
         }
 
-        public static void SyncDatabase()
+        public static void SyncDatabase(IConfigRepository configRepository)
         {
             CacheUtils.ClearAll();
 
@@ -138,15 +133,15 @@ namespace SS.CMS.Core.Common
 
             SyncContentTables();
 
-            UpdateConfigVersion();
+            UpdateConfigVersion(configRepository);
         }
 
-        public static bool IsNeedInstall()
+        public static bool IsNeedInstall(IConfigRepository configRepository)
         {
-            var isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
+            var isNeedInstall = !configRepository.IsInitialized();
             if (isNeedInstall)
             {
-                isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
+                isNeedInstall = !configRepository.IsInitialized();
             }
             return isNeedInstall;
         }

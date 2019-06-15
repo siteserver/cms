@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SS.CMS.Abstractions.Enums;
 
 namespace SS.CMS.Abstractions
 {

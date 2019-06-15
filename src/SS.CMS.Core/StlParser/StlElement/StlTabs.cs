@@ -44,7 +44,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {ActionMouseOver, "鼠标移动"}
         };
 
-        internal static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        internal static string Parse(ParseContext parseContext)
         {
             var tabName = string.Empty;
             var type = string.Empty;
@@ -53,9 +53,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var classNormal = string.Empty;
             var current = 0;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, TabName))
                 {
@@ -83,19 +83,19 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, tabName, type, action, classActive, classNormal, current);
+            return ParseImpl(parseContext, tabName, type, action, classActive, classNormal, current);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string tabName, string type, string action, string classActive, string classNormal, int current)
+        private static string ParseImpl(ParseContext parseContext, string tabName, string type, string action, string classActive, string classNormal, int current)
         {
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
 
             var builder = new StringBuilder();
-            var uniqueId = pageInfo.UniqueId;
+            var uniqueId = parseContext.UniqueId;
             var isHeader = StringUtils.EqualsIgnoreCase(type, TypeHead);
 
             var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(contextInfo.InnerHtml);
+            htmlDoc.LoadHtml(parseContext.InnerHtml);
 
             var htmlNodes = htmlDoc.DocumentNode.ChildNodes;
             if (htmlNodes != null && htmlNodes.Count > 0)
@@ -187,7 +187,7 @@ function stl_tab_{uniqueId}(tabName, no){{
                     if (!string.IsNullOrEmpty(htmlNode.InnerHtml))
                     {
                         var innerBuilder = new StringBuilder(htmlNode.InnerHtml);
-                        StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                        parseContext.ParseInnerContent(innerBuilder);
                         innerHtml = innerBuilder.ToString();
                     }
 

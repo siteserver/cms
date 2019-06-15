@@ -20,47 +20,46 @@ namespace SS.CMS.Core.StlParser.StlElement
         public const string MaxPage = nameof(MaxPage);
 
         private readonly string _stlPageSqlContentsElement;
-        private readonly PageInfo _pageInfo;
-        private readonly ContextInfo _contextInfo;
+        private readonly ParseContext _parseContext;
         private readonly ListInfo _listInfo;
         private readonly string _sqlString;
         //private readonly DataSet _dataSet;
 
-        public StlPageSqlContents(string stlPageSqlContentsElement, PageInfo pageInfo, ContextInfo contextInfo)
+        public StlPageSqlContents(string stlPageSqlContentsElement, ParseContext parseContext)
         {
             _stlPageSqlContentsElement = stlPageSqlContentsElement;
-            _pageInfo = pageInfo;
             try
             {
                 var stlElementInfo = StlParserUtility.ParseStlElement(stlPageSqlContentsElement);
 
-                _contextInfo = contextInfo.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                _parseContext = parseContext.Clone(stlPageSqlContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
+                _parseContext.ContextType = EContextType.SqlContent;
 
-                _listInfo = ListInfo.GetListInfo(_pageInfo, _contextInfo, EContextType.SqlContent);
+                _listInfo = ListInfo.GetListInfo(_parseContext);
 
                 _sqlString = _listInfo.QueryString;
-                if (string.IsNullOrWhiteSpace(_listInfo.OrderByString))
+                if (string.IsNullOrWhiteSpace(_listInfo.Order))
                 {
                     var pos = _sqlString.LastIndexOf(" ORDER BY ", StringComparison.OrdinalIgnoreCase);
                     if (pos > -1)
                     {
                         _sqlString = _sqlString.Substring(0, pos);
-                        _listInfo.OrderByString = _sqlString.Substring(pos);
+                        _listInfo.Order = _sqlString.Substring(pos);
                     }
                 }
                 else
                 {
-                    if (_listInfo.OrderByString.IndexOf("ORDER BY", StringComparison.OrdinalIgnoreCase) == -1)
+                    if (_listInfo.Order.IndexOf("ORDER BY", StringComparison.OrdinalIgnoreCase) == -1)
                     {
-                        _listInfo.OrderByString = $"ORDER BY {_listInfo.OrderByString}";
+                        _listInfo.Order = $"ORDER BY {_listInfo.Order}";
                     }
                 }
 
-                //_dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.PageNum, _listInfo.OrderByString);
+                //_dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.PageNum, _listInfo.Order);
             }
             catch (Exception ex)
             {
-                LogUtils.AddStlErrorLog(pageInfo, ElementName, stlPageSqlContentsElement, ex);
+                LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, stlPageSqlContentsElement, ex);
                 _listInfo = new ListInfo();
             }
         }
@@ -106,7 +105,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var maxPage = _listInfo.MaxPage;
                 if (maxPage == 0)
                 {
-                    maxPage = _pageInfo.SiteInfo.CreateStaticMaxPage;
+                    maxPage = _parseContext.SiteInfo.CreateStaticMaxPage;
                 }
                 if (maxPage > 0 && currentPageIndex + 1 > maxPage)
                 {
@@ -116,18 +115,18 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var parsedContent = string.Empty;
 
-            _contextInfo.PageItemIndex = currentPageIndex * _listInfo.PageNum;
+            _parseContext.PageItemIndex = currentPageIndex * _listInfo.PageNum;
 
             try
             {
                 if (!string.IsNullOrEmpty(_sqlString))
                 {
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(_sqlString, _listInfo.OrderByString, totalNum, _listInfo.PageNum, currentPageIndex);
+                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(_sqlString, _listInfo.Order, totalNum, _listInfo.PageNum, currentPageIndex);
 
-                    var sqlList = StlDataUtility.GetPageContainerSqlList(_listInfo.ConnectionString, pageSqlString);
+                    var sqlList = StlDataUtility.GetPageContainerSqlList(_parseContext.SettingsManager, _listInfo.ConnectionString, pageSqlString);
 
-                    return StlSqlContents.ParseElement(_pageInfo, _contextInfo, _listInfo, sqlList);
+                    return StlSqlContents.ParseElement(_parseContext, _listInfo, sqlList);
 
                     // var dataSource = DatabaseUtils.GetDataSource(pageSqlString);
 
@@ -286,11 +285,11 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(_pageInfo, ElementName, _stlPageSqlContentsElement, ex);
+                parsedContent = LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, _stlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex
-            _contextInfo.PageItemIndex = 0;
+            _parseContext.PageItemIndex = 0;
 
             return parsedContent;
         }
@@ -310,11 +309,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 </div>";
             }
 
-            _pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            _parseContext.PageInfo.AddPageBodyCodeIfNotExists(_parseContext.UrlManager, PageInfo.Const.Jquery);
 
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(_pageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsPageContents.GetUrl(_pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsPageContents.GetParameters(_pageInfo.SiteId, _pageInfo.PageChannelId, _pageInfo.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageSqlContentsElement);
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(_parseContext.UniqueId);
+            var apiUrl = ApiRouteActionsPageContents.GetUrl(_parseContext.ApiUrl);
+            var apiParameters = ApiRouteActionsPageContents.GetParameters(_parseContext.SettingsManager, _parseContext.SiteId, _parseContext.PageChannelId, _parseContext.TemplateInfo.Id, totalNum, pageCount, currentPageIndex, _stlPageSqlContentsElement);
 
             var builder = new StringBuilder();
             builder.Append($@"<div id=""{ajaxDivId}"">");

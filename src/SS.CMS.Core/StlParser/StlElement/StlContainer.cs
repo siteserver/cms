@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 
@@ -30,27 +29,27 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
-            if (contextInfo.IsStlEntity || string.IsNullOrWhiteSpace(contextInfo.InnerHtml)) return string.Empty;
+            if (parseContext.IsStlEntity || string.IsNullOrWhiteSpace(parseContext.InnerHtml)) return string.Empty;
 
             var channelIndex = string.Empty;
             var channelName = string.Empty;
             var upLevel = 0;
             var topLevel = -1;
-            var context = contextInfo.ContextType;
+            var context = parseContext.ContextType;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
@@ -73,17 +72,17 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, upLevel, topLevel);
+            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, channelId, channelIndex, channelName);
+            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            contextInfo.ContextType = context;
-            contextInfo.ChannelId = channelId;
+            parseContext.ContextType = context;
+            parseContext.ChannelId = channelId;
 
-            var innerHtml = RegexUtils.GetInnerContent(ElementName, contextInfo.OuterHtml);
+            var innerHtml = RegexUtils.GetInnerContent(ElementName, parseContext.OuterHtml);
 
             var builder = new StringBuilder(innerHtml);
-            StlParserManager.ParseInnerContent(builder, pageInfo, contextInfo);
+            parseContext.ParseInnerContent(builder);
 
             return builder.ToString();
         }

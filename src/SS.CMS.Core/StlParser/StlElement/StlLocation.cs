@@ -29,7 +29,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string IsContainSelf = nameof(IsContainSelf);
 
         //对“当前位置”（stl:location）元素进行解析
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var separator = " - ";
             var target = string.Empty;
@@ -37,9 +37,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var wordNum = 0;
             var isContainSelf = true;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Separator))
                 {
@@ -63,17 +63,17 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, separator, target, linkClass, wordNum, isContainSelf);
+            return ParseImpl(parseContext, separator, target, linkClass, wordNum, isContainSelf);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static string ParseImpl(ParseContext parseContext, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
-            if (!string.IsNullOrEmpty(contextInfo.InnerHtml))
+            if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
-                separator = contextInfo.InnerHtml;
+                separator = parseContext.InnerHtml;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, contextInfo.ChannelId);
+            var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -84,14 +84,14 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var nodePath = parentsPath;
                 if (isContainSelf)
                 {
-                    nodePath = nodePath + "," + contextInfo.ChannelId;
+                    nodePath = nodePath + "," + parseContext.ChannelId;
                 }
                 var channelIdArrayList = TranslateUtils.StringCollectionToStringList(nodePath);
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, currentId);
-                    if (currentId == pageInfo.SiteId)
+                    var currentNodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, currentId);
+                    if (currentId == parseContext.SiteId)
                     {
                         var attributes = new NameValueCollection();
                         if (!string.IsNullOrEmpty(target))
@@ -102,7 +102,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = PageUtility.GetIndexPageUrl(pageInfo.SiteInfo, pageInfo.IsLocal);
+                        var url = parseContext.UrlManager.GetIndexPageUrl(parseContext.SiteInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -110,7 +110,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         attributes["href"] = url;
                         var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, parseContext.Attributes);
 
                         builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
 
@@ -119,7 +119,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             builder.Append(separator);
                         }
                     }
-                    else if (currentId == contextInfo.ChannelId)
+                    else if (currentId == parseContext.ChannelId)
                     {
                         var attributes = new NameValueCollection();
                         if (!string.IsNullOrEmpty(target))
@@ -130,7 +130,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -138,7 +138,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         attributes["href"] = url;
                         var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, parseContext.Attributes);
 
                         builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
                     }
@@ -153,7 +153,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = PageUtility.GetChannelUrl(pageInfo.SiteInfo, currentNodeInfo, pageInfo.IsLocal);
+                        var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnclickedUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -161,7 +161,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         attributes["href"] = url;
                         var innerHtml = StringUtils.MaxLengthText(currentNodeInfo.ChannelName, wordNum);
 
-                        TranslateUtils.AddAttributesIfNotExists(attributes, contextInfo.Attributes);
+                        TranslateUtils.AddAttributesIfNotExists(attributes, parseContext.Attributes);
 
                         builder.Append($@"<a {TranslateUtils.ToAttributesString(attributes)}>{innerHtml}</a>");
 

@@ -6,33 +6,33 @@ namespace SS.CMS.Core.Common
 		{
 			if (!string.IsNullOrEmpty(cacheKey))
 			{
-				DataProvider.DbCacheDao.RemoveAndInsert(cacheKey, cacheValue);
+				DataProvider.DbCacheRepository.RemoveAndInsert(cacheKey, cacheValue);
 			}
 		}
 
         public static void Clear()
         {
-            DataProvider.DbCacheDao.Clear();
+            DataProvider.DbCacheRepository.Clear();
         }
 
 		public static bool IsExists(string cacheKey)
 		{
-            return DataProvider.DbCacheDao.IsExists(cacheKey);
+            return DataProvider.DbCacheRepository.IsExists(cacheKey);
 		}
 
         public static string GetValue(string cacheKey)
         {
-            return DataProvider.DbCacheDao.GetValue(cacheKey);
+            return DataProvider.DbCacheRepository.GetValue(cacheKey);
         }
 
 		public static string GetValueAndRemove(string cacheKey)
 		{
-            return DataProvider.DbCacheDao.GetValueAndRemove(cacheKey);
+            return DataProvider.DbCacheRepository.GetValueAndRemove(cacheKey);
 		}
 
         public static int GetCount()
         {
-            return DataProvider.DbCacheDao.GetCount();
+            return DataProvider.DbCacheRepository.GetCount();
         }
 
 	}

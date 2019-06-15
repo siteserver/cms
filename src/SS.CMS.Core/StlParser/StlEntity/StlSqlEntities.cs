@@ -20,11 +20,11 @@ namespace SS.CMS.Core.StlParser.StlEntity
             {StlParserUtility.ItemIndex, "排序"}
         };
 
-        internal static string Parse(string stlEntity, PageInfo pageInfo, ContextInfo contextInfo)
+        internal static string Parse(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
 
-            if (contextInfo.Container?.SqlItem == null) return string.Empty;
+            if (parseContext.Container?.SqlItem == null) return string.Empty;
 
             try
             {
@@ -32,11 +32,11 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
                 if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex))
                 {
-                    parsedContent = StlParserUtility.ParseItemIndex(contextInfo.Container.SqlItem.ItemIndex, attributeName, contextInfo).ToString();
+                    parsedContent = StlParserUtility.ParseItemIndex(parseContext.Container.SqlItem.ItemIndex, attributeName, parseContext).ToString();
                 }
                 else
                 {
-                    if (contextInfo.Container.SqlItem.Dictionary.TryGetValue(attributeName, out var value))
+                    if (parseContext.Container.SqlItem.Dictionary.TryGetValue(attributeName, out var value))
                     {
                         parsedContent = Convert.ToString(value);
                     }

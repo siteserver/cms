@@ -1,11 +1,10 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Content;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Parsers;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
@@ -49,37 +48,33 @@ namespace SS.CMS.Core.StlParser.StlElement
         public const string ThemeStyle4 = "Style4";
 
         //对“flash滚动焦点图”（stl:focusViewer）元素进行解析
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             // 如果是实体标签则返回空
-            if (contextInfo.IsStlEntity)
+            if (parseContext.IsStlEntity)
             {
                 return string.Empty;
             }
 
             var channelIndex = string.Empty;
             var channelName = string.Empty;
-            var scopeType = EScopeType.Self;
+            var scopeType = ScopeType.Self;
             var groupChannel = string.Empty;
             var groupChannelNot = string.Empty;
             var groupContent = string.Empty;
             var groupContentNot = string.Empty;
             var tags = string.Empty;
-            var orderByString = ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByTaxisDesc);
+            var taxisType = TaxisType.OrderByTaxisDesc;
             var startNum = 1;
             var totalNum = 0;
             var isShowText = true;
             var isTopText = string.Empty;
             var titleWordNum = 0;
 
-            var isTop = false;
-            var isTopExists = false;
-            var isRecommend = false;
-            var isRecommendExists = false;
-            var isHot = false;
-            var isHotExists = false;
-            var isColor = false;
-            var isColorExists = false;
+            bool? isTop = null;
+            bool? isRecommend = null;
+            bool? isHot = null;
+            bool? isColor = null;
 
             var theme = string.Empty;
             var imageWidth = 260;
@@ -88,9 +83,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var bgColor = string.Empty;
             var attributes = new NameValueCollection();
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, AttributeChannelIndex))
                 {
@@ -102,31 +97,31 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeScope))
                 {
-                    scopeType = EScopeTypeUtils.GetEnumType(value);
+                    scopeType = ScopeType.Parse(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannel))
                 {
-                    groupChannel = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannel = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupChannelNot))
                 {
-                    groupChannelNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupChannelNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContent))
                 {
-                    groupContent = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContent = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeGroupContentNot))
                 {
-                    groupContentNot = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    groupContentNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeTags))
                 {
-                    tags = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    tags = parseContext.ReplaceStlEntitiesForAttributeValue(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    orderByString = StlDataUtility.GetContentOrderByString(pageInfo.SiteId, value, ETaxisType.OrderByTaxisDesc);
+                    taxisType = StlDataUtility.GetContentTaxisType(parseContext.SiteId, value, TaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
                 {
@@ -142,22 +137,18 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsTop))
                 {
-                    isTopExists = true;
                     isTop = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsRecommend))
                 {
-                    isRecommendExists = true;
                     isRecommend = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsHot))
                 {
-                    isHotExists = true;
                     isHot = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeIsColor))
                 {
-                    isColorExists = true;
                     isColor = TranslateUtils.ToBool(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeTheme))
@@ -198,22 +189,22 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, orderByString, startNum, totalNum, isShowText, isTopText, titleWordNum, isTop, isTopExists, isRecommend, isRecommendExists, isHot, isHotExists, isColor, isColorExists, theme, imageWidth, imageHeight, textHeight, bgColor);
+            return ParseImpl(parseContext, attributes, channelIndex, channelName, scopeType, groupChannel, groupChannelNot, groupContent, groupContentNot, tags, taxisType, startNum, totalNum, isShowText, isTopText, titleWordNum, isTop, isRecommend, isHot, isColor, theme, imageWidth, imageHeight, textHeight, bgColor);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, NameValueCollection attributes, string channelIndex, string channelName, EScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, string orderByString, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, bool isTop, bool isTopExists, bool isRecommend, bool isRecommendExists, bool isHot, bool isHotExists, bool isColor, bool isColorExists, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
+        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string channelIndex, string channelName, ScopeType scopeType, string groupChannel, string groupChannelNot, string groupContent, string groupContentNot, string tags, TaxisType taxisType, int startNum, int totalNum, bool isShowText, string isTopText, int titleWordNum, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, string theme, int imageWidth, int imageHeight, int textHeight, string bgColor)
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(pageInfo.SiteId, contextInfo.ChannelId, channelIndex, channelName);
+            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, parseContext.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, true, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(parseContext.PluginManager, parseContext.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, null, null, false, startNum, totalNum, taxisType, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
                 if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle2))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
@@ -221,8 +212,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -230,8 +221,8 @@ namespace SS.CMS.Core.StlParser.StlElement
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal)));
                             }
                         }
                     }
@@ -244,8 +235,8 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}
@@ -272,7 +263,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         isTopText = (TranslateUtils.ToBool(isTopText)) ? "0" : "1";
                     }
 
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    var uniqueId = "FocusViewer_" + parseContext.UniqueId;
                     var paramBuilder = new StringBuilder();
                     paramBuilder.Append(
                         $@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
@@ -290,7 +281,7 @@ var files_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var links_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
 var texts_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -301,7 +292,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                 }
                 else if (StringUtils.EqualsIgnoreCase(theme, ThemeStyle3))
                 {
-                    pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcSwfObject);
+                    parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcSwfObject);
 
                     var imageUrls = new StringCollection();
                     var navigationUrls = new StringCollection();
@@ -309,8 +300,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -318,8 +309,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg") || imageUrl.ToLower().EndsWith(".png") || imageUrl.ToLower().EndsWith(".pneg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal)));
                             }
                         }
                     }
@@ -332,13 +323,13 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg") || contentInfo.ImageUrl.ToLower().EndsWith(".png") || contentInfo.ImageUrl.ToLower().EndsWith(".pneg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}
 
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    var uniqueId = "FocusViewer_" + parseContext.UniqueId;
                     var paramBuilder = new StringBuilder();
                     paramBuilder.Append($@"so_{uniqueId}.addParam(""quality"", ""high"");").Append(Constants.ReturnAndNewline);
                     paramBuilder.Append($@"so_{uniqueId}.addParam(""wmode"", ""transparent"");").Append(Constants.ReturnAndNewline);
@@ -355,7 +346,7 @@ var urls_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")
 var imgs_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var titles_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -371,14 +362,14 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
                         {
-                            navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal));
-                            imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal));
+                            navigationUrls.Add(parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal));
+                            imageUrls.Add(parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal));
                         }
                     }
 
@@ -387,8 +378,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //    var contentInfo = new BackgroundContentInfo(dataItem);
                     //    if (!string.IsNullOrEmpty(contentInfo?.ImageUrl))
                     //    {
-                    //        navigationUrls.Add(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo));
-                    //        imageUrls.Add(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl));
+                    //        navigationUrls.Add(parseContext.UrlManager.GetContentUrl(pageInfo.SiteInfo, contentInfo));
+                    //        imageUrls.Add(parseContext.UrlManager.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl));
                     //    }
                     //}
 
@@ -423,8 +414,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                         }
                     }
 
-                    var bgUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo,
-                        "@/images/focusviewerbg.png", pageInfo.IsLocal);
+                    var bgUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo,
+                        "@/images/focusviewerbg.png", parseContext.IsLocal);
                     string scriptHtml = $@"
 <style type=""text/css"">
 .fv_adnum{{ position:absolute; z-index:1005; width:{imageWidth - 24}px; height:24px; padding:5px 3px 0 0; left:21px; top:{imageHeight -
@@ -481,7 +472,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
 ";
 
-                    parsedContent = scriptHtml.Replace("fv_", $"fv{pageInfo.UniqueId}_");
+                    parsedContent = scriptHtml.Replace("fv_", $"fv{parseContext.UniqueId}_");
                 }
                 else
                 {
@@ -491,8 +482,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(pageInfo.SiteId, minContentInfo.ChannelId);
-                        var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, channelInfo, minContentInfo.Id);
+                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -502,8 +493,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                             if (imageUrl.ToLower().EndsWith(".jpg") || imageUrl.ToLower().EndsWith(".jpeg"))
                             {
                                 titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                                navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, pageInfo.IsLocal)));
-                                imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal)));
+                                navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal)));
+                                imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal)));
                             }
                         }
                     }
@@ -518,8 +509,8 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     //        if (contentInfo.ImageUrl.ToLower().EndsWith(".jpg") || contentInfo.ImageUrl.ToLower().EndsWith(".jpeg"))
                     //        {
                     //            titleCollection.Add(StringUtils.ToJsString(PageUtils.UrlEncode(StringUtils.MaxLengthText(StringUtils.StripTags(contentInfo.Title), titleWordNum))));
-                    //            navigationUrls.Add(PageUtils.UrlEncode(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
-                    //            imageUrls.Add(PageUtils.UrlEncode(PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
+                    //            navigationUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
+                    //            imageUrls.Add(PageUtils.UrlEncode(parseContext.UrlManager.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.ImageUrl)));
                     //        }
                     //    }
                     //}
@@ -537,12 +528,12 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     {
                         titles = TranslateUtils.ObjectCollectionToString(titleCollection, "|");
                     }
-                    var uniqueId = "FocusViewer_" + pageInfo.UniqueId;
+                    var uniqueId = "FocusViewer_" + parseContext.UniqueId;
                     attributes["id"] = uniqueId;
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
                     string scriptHtml = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
+<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
 <script type=""text/javascript"">
 	var uniqueID_focus_width={imageWidth}
 	var uniqueID_focus_height={imageHeight}
@@ -553,7 +544,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	var uniqueID_links='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
-	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(pageInfo.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
+	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
 	uniqueID_FocusFlash.addParam(""allowScriptAccess"", ""sameDomain"");
 	uniqueID_FocusFlash.addParam(""menu"", ""false"");
 	uniqueID_FocusFlash.addParam(""wmode"", ""transparent"");

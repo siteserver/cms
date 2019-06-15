@@ -61,7 +61,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否关键字高亮")]
         public const string IsHighlight = nameof(IsHighlight);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var isAllSites = false;
             var siteName = string.Empty;
@@ -79,9 +79,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var pageNum = 0;
             var isHighlight = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, IsAllSites))
                 {
@@ -148,26 +148,26 @@ namespace SS.CMS.Core.StlParser.StlElement
             string loading;
             string yes;
             string no;
-            StlParserUtility.GetLoadingYesNo(contextInfo.InnerHtml, out loading, out yes, out no);
+            StlParserUtility.GetLoadingYesNo(parseContext.InnerHtml, out loading, out yes, out no);
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                loading = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                yes = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                no = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
             }
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
+            parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
 
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
-            var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);
-            var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(parseContext.UniqueId);
+            var apiUrl = ApiRouteActionsSearch.GetUrl(parseContext.ApiUrl);
+            var apiParameters = ApiRouteActionsSearch.GetParameters(parseContext.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, parseContext.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();
             builder.Append($@"

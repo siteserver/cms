@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Xml;
+using SS.CMS.Abstractions.Services;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -17,7 +19,7 @@ namespace SS.CMS.Core.Common
 
             try
             {
-                var content = FileUtility.GetRemoteFileSource(UrlTemplatesXml, ECharset.utf_8);
+                var content = HttpClientUtils.GetRemoteFileSource(UrlTemplatesXml);
 
                 var document = XmlUtils.GetXmlDocument(content);
                 var rootNode = XmlUtils.GetXmlNode(document, "//siteTemplates");

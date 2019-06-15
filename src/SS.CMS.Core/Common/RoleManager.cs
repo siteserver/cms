@@ -18,11 +18,11 @@ namespace SS.CMS.Core.Common
                     list.Add(new KeyValuePair<string, string>(predefinedRuleName, EPredefinedRoleUtils.GetText(EPredefinedRoleUtils.GetEnumType(predefinedRuleName))));
                 }
 
-                roleNames = DataProvider.RoleDao.GetRoleNameList();
+                roleNames = DataProvider.RoleRepository.GetRoleNameList();
             }
             else
             {
-                roleNames = DataProvider.RoleDao.GetRoleNameListByCreatorUserName(adminName);
+                roleNames = DataProvider.RoleRepository.GetRoleNameListByCreatorUserName(adminName);
             }
 
             foreach (var roleName in roleNames)

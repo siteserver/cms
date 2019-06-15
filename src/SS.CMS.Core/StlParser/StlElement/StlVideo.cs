@@ -37,7 +37,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-        public static string Parse(PageInfo pageInfo, ContextInfo contextInfo)
+        public static string Parse(ParseContext parseContext)
         {
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -48,9 +48,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isControls = true;
             var isLoop = false;
 
-            foreach (var name in contextInfo.Attributes.AllKeys)
+            foreach (var name in parseContext.Attributes.AllKeys)
             {
-                var value = contextInfo.Attributes[name];
+                var value = parseContext.Attributes[name];
 
                 if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -86,10 +86,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(pageInfo, contextInfo, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
+            return ParseImpl(parseContext, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
         }
 
-        private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static string ParseImpl(ParseContext parseContext, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
         {
 
 
@@ -100,44 +100,44 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else
             {
-                var contentId = contextInfo.ContentId;
-                if (contextInfo.ContextType == EContextType.Content)
+                var contentId = parseContext.ContentId;
+                if (parseContext.ContextType == EContextType.Content)
                 {
                     if (contentId != 0)//获取内容视频
                     {
-                        if (contextInfo.ContentInfo == null)
+                        if (parseContext.ContentInfo == null)
                         {
-                            videoUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, type);
+                            videoUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
                                 if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                                 {
-                                    videoUrl = StlContentCache.GetValue(contextInfo.ChannelInfo, contentId, ContentAttribute.VideoUrl);
+                                    videoUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, ContentAttribute.VideoUrl);
                                 }
                             }
                         }
                         else
                         {
-                            videoUrl = contextInfo.ContentInfo.Get<string>(type);
+                            videoUrl = parseContext.ContentInfo.Get<string>(type);
                             if (string.IsNullOrEmpty(videoUrl))
                             {
-                                videoUrl = contextInfo.ContentInfo.VideoUrl;
+                                videoUrl = parseContext.ContentInfo.VideoUrl;
                             }
                         }
                     }
                 }
-                else if (contextInfo.ContextType == EContextType.Each)
+                else if (parseContext.ContextType == EContextType.Each)
                 {
-                    videoUrl = contextInfo.Container.EachItem.Value as string;
+                    videoUrl = parseContext.Container.EachItem.Value as string;
                 }
             }
 
             if (string.IsNullOrEmpty(videoUrl)) return string.Empty;
 
-            videoUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, videoUrl, pageInfo.IsLocal);
-            imageUrl = PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, imageUrl, pageInfo.IsLocal);
+            videoUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, videoUrl, parseContext.IsLocal);
+            imageUrl = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo, imageUrl, parseContext.IsLocal);
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.JsAcVideoJs);
+            parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.JsAcVideoJs);
 
             var dict = new Dictionary<string, string>
             {
