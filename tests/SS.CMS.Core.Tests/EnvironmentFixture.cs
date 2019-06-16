@@ -64,7 +64,7 @@ namespace SS.CMS.Core.Tests
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var cacheManager = new CacheManager(memoryCache, null);
-            var settingsManager = new SettingsManager(config);
+            var settingsManager = new SettingsManager(config, projDirectoryPath, PathUtils.Combine(projDirectoryPath, "wwwroot"));
 
             var accessTokenRepository = new AccessTokenRepository(settingsManager, cacheManager);
 

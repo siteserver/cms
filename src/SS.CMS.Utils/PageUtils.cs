@@ -12,7 +12,7 @@ namespace SS.CMS.Utils
     {
         public const char SeparatorChar = '/';
 
-        public const string UnclickedUrl = "javascript:;";
+        public const string UnClickableUrl = "javascript:;";
 
         public static string AddEndSlashToUrl(string url)
         {

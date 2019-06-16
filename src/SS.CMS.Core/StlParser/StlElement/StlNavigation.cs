@@ -109,7 +109,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         var siblingNodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, siblingChannelId);
                         var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, siblingNodeInfo, parseContext.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
                         }
@@ -145,7 +145,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
                             var siblingContentInfo = parseContext.ChannelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, parseContext.ChannelInfo, siblingContentId);
                             var url = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, siblingContentInfo, parseContext.IsLocal);
-                            if (url.Equals(PageUtils.UnclickedUrl))
+                            if (url.Equals(PageUtils.UnClickableUrl))
                             {
                                 attributes["target"] = string.Empty;
                             }

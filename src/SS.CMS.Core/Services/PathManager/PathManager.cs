@@ -31,11 +31,6 @@ namespace SS.CMS.Core.Services
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.HomeDirectory), paths);
         }
 
-        public string GetMenusPath(params string[] paths)
-        {
-            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.Menus), paths);
-        }
-
         public string GetBackupFilesPath(params string[] paths)
         {
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.BackupFiles), paths);

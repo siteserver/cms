@@ -1,6 +1,6 @@
 ﻿namespace SS.CMS.Utils
 {
-    public static class Constants
+    public static partial class Constants
     {
         public const string ApplicationPath = "/";
         public const string CookieAdminToken = "SS-ADMIN-TOKEN";
@@ -30,10 +30,5 @@
 
         public const string TitleImageAppendix = "t_";
         public const string SmallImageAppendix = "s_";
-
-        public static string GetContentTableName(int siteId)
-        {
-            return $"siteserver_Content_{siteId}";
-        }
     }
 }

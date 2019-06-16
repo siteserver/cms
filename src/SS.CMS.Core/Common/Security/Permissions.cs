@@ -9,7 +9,6 @@ using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Cache;
 using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -43,6 +42,12 @@ namespace SS.CMS.Core.Security
         {
             if (adminInfo == null || adminInfo.Locked) return;
 
+            GeneralPermissions = new List<Permission>();
+            WebsitePermissions = new List<Permission>();
+            WebsiteSysPermissions = new List<Permission>();
+            WebsitePluginPermissions = new List<Permission>();
+            ChannelPermissions = new List<Permission>();
+
             _adminInfo = adminInfo;
             _pluginManager = pluginManager;
             _siteRepository = siteRepository;
@@ -57,13 +62,14 @@ namespace SS.CMS.Core.Security
             _channelPermissionListIgnoreChannelIdKey = GetChannelPermissionListIgnoreChannelIdCacheKey(adminInfo.UserName);
             _channelIdListKey = GetChannelIdListCacheKey(adminInfo.UserName);
 
-            var path = pathManager.GetMenusPath("Permissions.config");
-            if (FileUtils.IsFileExists(path))
-            {
-                var doc = new XmlDocument();
-                doc.Load(path);
-                LoadValuesFromConfigurationXml(doc);
-            }
+            GeneralPermissions.AddRange(_settingsManager.NavSettings.Permissions.App);
+            WebsitePermissions.AddRange(_settingsManager.NavSettings.Permissions.Site);
+            ChannelPermissions.AddRange(_settingsManager.NavSettings.Permissions.Channel);
+
+            GeneralPermissions.AddRange(_pluginManager.GetTopPermissions());
+            var pluginPermissions = _pluginManager.GetSitePermissions(0);
+            WebsitePluginPermissions.AddRange(pluginPermissions);
+            WebsitePermissions.AddRange(pluginPermissions);
         }
 
         public List<int> ChannelIdList
@@ -252,14 +258,14 @@ namespace SS.CMS.Core.Security
                         _permissionList = new List<string>();
                         foreach (var permission in GeneralPermissions)
                         {
-                            _permissionList.Add(permission.Key);
+                            _permissionList.Add(permission.Id);
                         }
                     }
                     else if (EPredefinedRoleUtils.IsSystemAdministrator(Roles))
                     {
                         _permissionList = new List<string>
                         {
-                            MenuManager.SettingsPermissions.Admin
+                            Constants.SettingsPermissions.Admin
                         };
                     }
                     else
@@ -308,7 +314,7 @@ namespace SS.CMS.Core.Security
                         var allWebsitePermissionList = new List<string>();
                         foreach (var permission in WebsitePermissions)
                         {
-                            allWebsitePermissionList.Add(permission.Key);
+                            allWebsitePermissionList.Add(permission.Id);
                         }
 
                         var siteIdList = GetSiteIdList();
@@ -345,7 +351,7 @@ namespace SS.CMS.Core.Security
                         var allChannelPermissionList = new List<string>();
                         foreach (var permission in ChannelPermissions)
                         {
-                            allChannelPermissionList.Add(permission.Key);
+                            allChannelPermissionList.Add(permission.Id);
                         }
 
                         _channelPermissionDict = new Dictionary<string, List<string>>();
@@ -383,7 +389,7 @@ namespace SS.CMS.Core.Security
                         _channelPermissionListIgnoreChannelId = new List<string>();
                         foreach (var permission in ChannelPermissions)
                         {
-                            _channelPermissionListIgnoreChannelId.Add(permission.Key);
+                            _channelPermissionListIgnoreChannelId.Add(permission.Id);
                         }
                     }
                     else
@@ -517,7 +523,7 @@ namespace SS.CMS.Core.Security
             if (!_settingsManager.ConfigInfo.IsViewContentOnlySelf
                 || IsConsoleAdministrator
                 || IsSystemAdministrator
-                || HasChannelPermissions(siteId, channelId, MenuManager.ChannelPermissions.ContentCheck))
+                || HasChannelPermissions(siteId, channelId, Constants.ChannelPermissions.ContentCheck))
             {
                 return null;
             }
@@ -571,65 +577,14 @@ namespace SS.CMS.Core.Security
             DataCacheManager.RemoveByClassName(nameof(Permissions));
         }
 
-        public List<KeyValuePair<string, string>> GeneralPermissions { get; } = new List<KeyValuePair<string, string>>();
+        public List<Permission> GeneralPermissions { get; }
 
-        public List<KeyValuePair<string, string>> WebsitePermissions { get; } = new List<KeyValuePair<string, string>>();
+        public List<Permission> WebsitePermissions { get; }
 
-        public List<KeyValuePair<string, string>> WebsiteSysPermissions { get; } = new List<KeyValuePair<string, string>>();
+        public List<Permission> WebsiteSysPermissions { get; }
 
-        public List<KeyValuePair<string, string>> WebsitePluginPermissions { get; } = new List<KeyValuePair<string, string>>();
+        public List<Permission> WebsitePluginPermissions { get; }
 
-        public List<KeyValuePair<string, string>> ChannelPermissions { get; } = new List<KeyValuePair<string, string>>();
-
-        private void LoadValuesFromConfigurationXml(XmlDocument doc)
-        {
-            var coreNode = doc.SelectSingleNode("Config");
-            if (coreNode != null)
-            {
-                var isMultiple = true;
-                foreach (XmlNode child in coreNode.ChildNodes)
-                {
-                    if (child.NodeType == XmlNodeType.Comment) continue;
-                    if (child.Name == "generalPermissions")
-                    {
-                        GetPermissions(child, GeneralPermissions);
-                    }
-                    else if (child.Name == "websitePermissions")
-                    {
-                        GetPermissions(child, WebsiteSysPermissions);
-                        GetPermissions(child, WebsitePermissions);
-                    }
-                    else if (child.Name == "channelPermissions")
-                    {
-                        GetPermissions(child, ChannelPermissions);
-                    }
-                    else
-                    {
-                        isMultiple = false;
-                        break;
-                    }
-                }
-                if (!isMultiple)
-                {
-                    GetPermissions(coreNode, GeneralPermissions);
-                }
-            }
-
-            GeneralPermissions.AddRange(_pluginManager.GetTopPermissions());
-            var pluginPermissions = _pluginManager.GetSitePermissions(0);
-            WebsitePluginPermissions.AddRange(pluginPermissions);
-            WebsitePermissions.AddRange(pluginPermissions);
-        }
-
-        private static void GetPermissions(XmlNode node, List<KeyValuePair<string, string>> list)
-        {
-            foreach (XmlNode permission in node.ChildNodes)
-            {
-                if (permission.Name == "add" && permission.Attributes != null)
-                {
-                    list.Add(new KeyValuePair<string, string>(permission.Attributes["name"].Value, permission.Attributes["text"].Value));
-                }
-            }
-        }
+        public List<Permission> ChannelPermissions { get; }
     }
 }

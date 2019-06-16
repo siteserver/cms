@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common.Create;
-using SS.CMS.Core.Common.Serialization;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin.Cms
 {
@@ -22,7 +22,7 @@ namespace SS.CMS.Api.Controllers.Admin.Cms
         public ActionResult Get([FromQuery] int siteId)
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSitePermissions(siteId, MenuManager.WebSitePermissions.Create))
+                !_identityManager.AdminPermissions.HasSitePermissions(siteId, Constants.WebSitePermissions.Create))
             {
                 return Unauthorized();
             }
@@ -39,7 +39,7 @@ namespace SS.CMS.Api.Controllers.Admin.Cms
         public ActionResult Cancel([FromBody] int siteId)
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSitePermissions(siteId, MenuManager.WebSitePermissions.Create))
+                !_identityManager.AdminPermissions.HasSitePermissions(siteId, Constants.WebSitePermissions.Create))
             {
                 return Unauthorized();
             }

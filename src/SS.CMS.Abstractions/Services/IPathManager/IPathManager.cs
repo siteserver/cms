@@ -6,8 +6,6 @@
 
         string GetHomePath(params string[] paths);
 
-        string GetMenusPath(params string[] paths);
-
         string GetBackupFilesPath(params string[] paths);
 
         string GetTemporaryFilesPath(params string[] paths);

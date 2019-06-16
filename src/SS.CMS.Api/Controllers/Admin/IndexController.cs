@@ -72,7 +72,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     unCheckedList.Add(new
                     {
                         //Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
-                        Url = PageUtils.UnclickedUrl,
+                        Url = PageUtils.UnClickableUrl,
                         siteInfo.SiteName,
                         Count = count
                     });

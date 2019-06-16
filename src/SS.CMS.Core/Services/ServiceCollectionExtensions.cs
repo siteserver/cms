@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SS.CMS.Abstractions.Repositories;
@@ -9,10 +10,7 @@ namespace SS.CMS.Core.Services
 {
     public static class ServiceCollectionExtensions
     {
-        public static string ContentRootPath{get;set;}
-        public static string WebRootPath{get;set;}
-        
-        public static IServiceCollection AddSettingsManager(this IServiceCollection services)
+        public static IServiceCollection AddSettingsManager(this IServiceCollection services, IConfiguration configuration, string contentRootPath, string webRootPath)
         {
             if (services == null)
             {
@@ -20,7 +18,7 @@ namespace SS.CMS.Core.Services
             }
 
             services.AddOptions();
-            services.TryAdd(ServiceDescriptor.Singleton<ISettingsManager, SettingsManager>());
+            services.TryAdd(ServiceDescriptor.Singleton<ISettingsManager>(new SettingsManager(configuration, contentRootPath, webRootPath)));
 
             return services;
         }
@@ -108,6 +106,45 @@ namespace SS.CMS.Core.Services
             return services;
         }
 
+        public static IServiceCollection AddMenuManager(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddOptions();
+            services.TryAdd(ServiceDescriptor.Singleton<IMenuManager, MenuManager>());
+
+            return services;
+        }
+
+        public static IServiceCollection AddFileManager(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddOptions();
+            services.TryAdd(ServiceDescriptor.Singleton<IFileManager, FileManager>());
+
+            return services;
+        }
+
+        public static IServiceCollection AddCreateManager(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddOptions();
+            services.TryAdd(ServiceDescriptor.Singleton<ICreateManager, CreateManager>());
+
+            return services;
+        }
+
         public static IServiceCollection AddIdentityManager(this IServiceCollection services)
         {
             if (services == null)
@@ -129,7 +166,7 @@ namespace SS.CMS.Core.Services
             }
 
             services.AddOptions();
-            services.TryAdd(ServiceDescriptor.Scoped<IPluginManager, PluginManager>());
+            services.TryAdd(ServiceDescriptor.Singleton<IPluginManager, PluginManager>());
 
             return services;
         }

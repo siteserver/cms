@@ -11,8 +11,8 @@ namespace SS.CMS.Abstractions.Services
 
         List<Menu> GetContentMenus(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo);
 
-        List<KeyValuePair<string, string>> GetTopPermissions();
+        List<Permission> GetTopPermissions();
 
-        List<KeyValuePair<string, string>> GetSitePermissions(int siteId);
+        List<Permission> GetSitePermissions(int siteId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SS.CMS.Abstractions.Models;
+using SS.CMS.Abstractions.Settings;
 using SS.CMS.Data;
 
 namespace SS.CMS.Abstractions.Services
@@ -8,6 +9,7 @@ namespace SS.CMS.Abstractions.Services
         string ContentRootPath { get; }
 
         string WebRootPath { get; }
+
         bool IsProtectData { get; }
         string ApiPrefix { get; }
 
@@ -25,6 +27,8 @@ namespace SS.CMS.Abstractions.Services
         DatabaseType DatabaseType { get; }
         string DatabaseConnectionString { get; }
         string RedisConnectionString { get; }
+
+        NavSettings NavSettings { get; }
         ConfigInfo ConfigInfo { get; }
 
         bool IsChanged { set; }

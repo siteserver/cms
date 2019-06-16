@@ -256,7 +256,7 @@ selObj.selectedIndex=0;
             {
                 if (!string.IsNullOrEmpty(displayTitle))
                 {
-                    htmlSelect.AddOption(displayTitle, PageUtils.UnclickedUrl, true);
+                    htmlSelect.AddOption(displayTitle, PageUtils.UnClickableUrl, true);
                 }
 
                 if (isChannel)

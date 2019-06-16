@@ -27,7 +27,7 @@ namespace SS.CMS.Abstractions
         /// <summary>
         /// 获取或设置菜单的链接地址。
         /// </summary>
-        public string Href { get; set; }
+        public string Link { get; set; }
 
         /// <summary>
         /// 获取或设置菜单的链接定位窗口。
@@ -36,14 +36,14 @@ namespace SS.CMS.Abstractions
 
         public string PluginId { get; set; }
 
+        public bool Selected { get; set; }
+
+        public IList<string> Permissions { get; set; }
+
         /// <summary>
         /// 获取或设置菜单的下级菜单列表。
         /// </summary>
-        public List<Menu> Menus { get; set; }
-
-        public bool Selected { get; set; }
-
-        public List<string> Permissions { get; set; }
+        public IList<Menu> Menus { get; set; }
 
         public object Clone()
         {

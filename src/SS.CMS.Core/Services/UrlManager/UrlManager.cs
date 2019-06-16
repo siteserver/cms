@@ -327,7 +327,7 @@ namespace SS.CMS.Core.Services
         /// </summary>
         private string GetContentUrlById(SiteInfo siteInfo, ContentInfo contentInfoCurrent, bool isLocal)
         {
-            if (contentInfoCurrent == null) return PageUtils.UnclickedUrl;
+            if (contentInfoCurrent == null) return PageUtils.UnClickableUrl;
 
             if (isLocal)
             {
@@ -351,7 +351,7 @@ namespace SS.CMS.Core.Services
                     var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
-                        return PageUtils.UnclickedUrl;
+                        return PageUtils.UnClickableUrl;
                     }
                     if (contentInfo.SiteId == targetSiteInfo.Id)
                     {
@@ -405,7 +405,7 @@ namespace SS.CMS.Core.Services
                     var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
-                        return PageUtils.UnclickedUrl;
+                        return PageUtils.UnClickableUrl;
                     }
                     if (contentInfo.SiteId == targetSiteInfo.Id)
                     {
@@ -480,14 +480,14 @@ namespace SS.CMS.Core.Services
                 }
                 else if (linkType == ELinkType.NoLink)
                 {
-                    url = PageUtils.UnclickedUrl;
+                    url = PageUtils.UnClickableUrl;
                 }
                 else
                 {
                     if (linkType == ELinkType.NoLinkIfContentNotExists)
                     {
                         var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
-                        url = count == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
+                        url = count == 0 ? PageUtils.UnClickableUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToOnlyOneContent)
                     {
@@ -507,7 +507,7 @@ namespace SS.CMS.Core.Services
                         var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
                         if (count == 0)
                         {
-                            url = PageUtils.UnclickedUrl;
+                            url = PageUtils.UnClickableUrl;
                         }
                         else if (count == 1)
                         {
@@ -544,12 +544,12 @@ namespace SS.CMS.Core.Services
                         }
                         else
                         {
-                            url = PageUtils.UnclickedUrl;
+                            url = PageUtils.UnClickableUrl;
                         }
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExists)
                     {
-                        url = channelInfo.ChildrenCount == 0 ? PageUtils.UnclickedUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
+                        url = channelInfo.ChildrenCount == 0 ? PageUtils.UnClickableUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToLastAddChannel)
                     {
@@ -564,12 +564,12 @@ namespace SS.CMS.Core.Services
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                     {
                         var lastAddChannelInfo = StlChannelCache.GetChannelInfoByLastAddDate(channelInfo.Id);
-                        url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, isLocal) : PageUtils.UnclickedUrl;
+                        url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                     {
                         var firstChannelInfo = StlChannelCache.GetChannelInfoByTaxis(channelInfo.Id);
-                        url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, isLocal) : PageUtils.UnclickedUrl;
+                        url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                 }
             }
@@ -593,7 +593,7 @@ namespace SS.CMS.Core.Services
 
             channelUrl = StringUtils.ReplaceStartsWith(channelUrl, GetWebUrl(siteInfo), string.Empty);
             channelUrl = channelUrl.Trim('/');
-            if (channelUrl != PageUtils.UnclickedUrl)
+            if (channelUrl != PageUtils.UnClickableUrl)
             {
                 channelUrl = "/" + channelUrl;
             }

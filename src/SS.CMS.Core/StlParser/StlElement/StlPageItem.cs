@@ -182,7 +182,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            pageUrl = PageUtils.UnclickedUrl;
+                            pageUrl = PageUtils.UnClickableUrl;
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(type, TypeLastPage))
@@ -197,7 +197,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            pageUrl = PageUtils.UnclickedUrl;
+                            pageUrl = PageUtils.UnClickableUrl;
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(type, TypePreviousPage))
@@ -212,7 +212,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            pageUrl = PageUtils.UnclickedUrl;
+                            pageUrl = PageUtils.UnClickableUrl;
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(type, TypeNextPage))
@@ -227,7 +227,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                         else
                         {
-                            pageUrl = PageUtils.UnclickedUrl;
+                            pageUrl = PageUtils.UnClickableUrl;
                         }
                     }
 
@@ -516,7 +516,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                     }
 
-                    parsedContent = isHyperlink ? pageUrl : PageUtils.UnclickedUrl;
+                    parsedContent = isHyperlink ? pageUrl : PageUtils.UnClickableUrl;
                 }
                 else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
                 {
@@ -716,7 +716,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             var linkAttributes = new NameValueCollection();
                             TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                            linkAttributes["href"] = PageUtils.UnclickedUrl;
+                            linkAttributes["href"] = PageUtils.UnClickableUrl;
                             linkAttributes["onclick"] = clickString;
                             if (!string.IsNullOrEmpty(linkClass))
                             {
@@ -729,7 +729,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(failureTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnclickedUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -835,7 +835,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         else
                         {
                             pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnclickedUrl}"" onclick=""{clickString}"" {TranslateUtils
+                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
                                     .ToAttributesString(attributes)}>{listEllipsis}</a>");
                         }
                     }
@@ -853,7 +853,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             else
                             {
                                 var linkAttributes = new NameValueCollection();
-                                linkAttributes["href"] = PageUtils.UnclickedUrl;
+                                linkAttributes["href"] = PageUtils.UnClickableUrl;
                                 linkAttributes["onclick"] = clickString;
                                 if (!string.IsNullOrEmpty(linkClass))
                                 {
@@ -866,7 +866,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (!string.IsNullOrEmpty(failureTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnclickedUrl, index.ToString()));
+                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, index.ToString()));
                             }
                             else
                             {
@@ -891,7 +891,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         else
                         {
                             pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnclickedUrl}"" onclick=""{clickString}"" {TranslateUtils
+                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{clickString}"" {TranslateUtils
                                     .ToAttributesString(attributes)}>{listEllipsis}</a>");
                         }
                     }
@@ -990,7 +990,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                     }
 
-                    parsedContent = isHyperlink ? $"javascript:{clickString}" : PageUtils.UnclickedUrl;
+                    parsedContent = isHyperlink ? $"javascript:{clickString}" : PageUtils.UnClickableUrl;
                 }
                 else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
                 {
@@ -1190,7 +1190,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             var linkAttributes = new NameValueCollection();
                             TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                            linkAttributes["href"] = PageUtils.UnclickedUrl;
+                            linkAttributes["href"] = PageUtils.UnClickableUrl;
                             linkAttributes["onclick"] = jsMethod + ";return false;";
                             if (!string.IsNullOrEmpty(linkClass))
                             {
@@ -1203,7 +1203,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(failureTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnclickedUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -1307,7 +1307,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         else
                         {
                             pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnclickedUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
+                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
                                     .ToAttributesString(attributes)}>{listEllipsis}</a>");
                         }
                     }
@@ -1326,7 +1326,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             else
                             {
                                 var linkAttributes = new NameValueCollection();
-                                linkAttributes["href"] = PageUtils.UnclickedUrl;
+                                linkAttributes["href"] = PageUtils.UnClickableUrl;
                                 linkAttributes["onclick"] = jsMethod + ";return false;";
                                 if (!string.IsNullOrEmpty(linkClass))
                                 {
@@ -1339,7 +1339,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (!string.IsNullOrEmpty(failureTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnclickedUrl, Convert.ToString(currentPageIndex + 1)));
+                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1)));
                             }
                             else
                             {
@@ -1363,7 +1363,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         else
                         {
                             pageBuilder.Append(
-                                $@"<a href=""{PageUtils.UnclickedUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
+                                $@"<a href=""{PageUtils.UnClickableUrl}"" onclick=""{jsMethod};return false;"" {TranslateUtils
                                     .ToAttributesString(attributes)}>{listEllipsis}</a>");
                         }
                     }
@@ -1455,7 +1455,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         }
                     }
 
-                    parsedContent = isHyperlink ? $"javascript:{jsMethod}" : PageUtils.UnclickedUrl;
+                    parsedContent = isHyperlink ? $"javascript:{jsMethod}" : PageUtils.UnClickableUrl;
                 }
                 else if (type.ToLower().Equals(TypeCurrentPageIndex.ToLower()))//当前页索引
                 {

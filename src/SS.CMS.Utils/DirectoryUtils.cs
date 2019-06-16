@@ -40,7 +40,6 @@ namespace SS.CMS.Utils
             public const string DirectoryName = "SiteFiles";
 
             public const string BackupFiles = "BackupFiles";
-            public const string Menus = "Menus";
             public const string TemporaryFiles = "TemporaryFiles";
             public const string SiteTemplates = "SiteTemplates";
             public const string Plugins = "Plugins";

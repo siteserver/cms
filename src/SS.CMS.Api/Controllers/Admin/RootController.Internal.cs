@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin
@@ -45,7 +44,7 @@ namespace SS.CMS.Api.Controllers.Admin
             return null;
         }
 
-        private List<Menu> GetTopMenus(MenuManager menuManager, SiteInfo siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
+        private List<Menu> GetTopMenus(SiteInfo siteInfo, bool isSuperAdmin, List<int> siteIdListLatestAccessed, List<int> siteIdListWithPermissions)
         {
             var menus = new List<Menu>();
 
@@ -71,7 +70,7 @@ namespace SS.CMS.Api.Controllers.Admin
 
                         siteMenus.Add(new Menu
                         {
-                            Href = _urlManager.GetAdminIndexUrl(site.Id, string.Empty),
+                            Link = _urlManager.GetAdminIndexUrl(site.Id, string.Empty),
                             Target = "_top",
                             Text = site.SiteName
                         });
@@ -79,7 +78,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     siteMenus.Add(new Menu
                     {
                         //Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
-                        Href = PageUtils.UnclickedUrl,
+                        Link = PageUtils.UnClickableUrl,
                         Target = "_layer",
                         Text = "全部站点..."
                     });
@@ -87,7 +86,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     {
                         Text = siteInfo.SiteName,
                         //Href = ModalSiteSelect.GetRedirectUrl(siteInfo.Id),
-                        Href = PageUtils.UnclickedUrl,
+                        Link = PageUtils.UnClickableUrl,
                         Target = "_layer",
                         Menus = siteMenus
                     });
@@ -95,17 +94,17 @@ namespace SS.CMS.Api.Controllers.Admin
 
                 var linkMenus = new List<Menu>
                 {
-                    new Menu {Href = _urlManager.GetSiteUrl(siteInfo, false), Target = "_blank", Text = "访问站点"},
-                    new Menu {Href = _urlManager.GetPreviewSiteUrl(siteInfo.Id), Target = "_blank", Text = "预览站点"}
+                    new Menu {Link = _urlManager.GetSiteUrl(siteInfo, false), Target = "_blank", Text = "访问站点"},
+                    new Menu {Link = _urlManager.GetPreviewSiteUrl(siteInfo.Id), Target = "_blank", Text = "预览站点"}
                 };
                 menus.Add(new Menu { Text = "站点链接", Menus = linkMenus });
             }
 
             if (isSuperAdmin)
             {
-                foreach (var tab in menuManager.GetTopMenuTabs())
+                foreach (var tab in _menuManager.GetTopMenuTabs())
                 {
-                    var tabs = menuManager.GetTabList(tab.Id, 0);
+                    var tabs = _menuManager.GetTabList(tab.Id, 0);
                     tab.Menus = tabs;
 
                     menus.Add(tab);
@@ -115,26 +114,26 @@ namespace SS.CMS.Api.Controllers.Admin
             return menus;
         }
 
-        private static List<Menu> GetLeftMenus(MenuManager menuManager, SiteInfo siteInfo, string topId, bool isSuperAdmin, List<string> permissionList)
+        private List<Menu> GetLeftMenus(SiteInfo siteInfo, string topId, bool isSuperAdmin, List<string> permissionList)
         {
             var menus = new List<Menu>();
 
-            var tabs = menuManager.GetTabList(topId, siteInfo.Id);
+            var tabs = _menuManager.GetTabList(topId, siteInfo.Id);
             foreach (var parent in tabs)
             {
-                if (!isSuperAdmin && !menuManager.IsValid(parent, permissionList)) continue;
+                if (!isSuperAdmin && !_menuManager.IsValid(parent, permissionList)) continue;
 
                 var children = new List<Menu>();
                 if (parent.Menus != null && parent.Menus.Count > 0)
                 {
                     foreach (var childTab in parent.Menus)
                     {
-                        if (!isSuperAdmin && !menuManager.IsValid(childTab, permissionList)) continue;
+                        if (!isSuperAdmin && !_menuManager.IsValid(childTab, permissionList)) continue;
 
                         children.Add(new Menu
                         {
                             Id = childTab.Id,
-                            Href = GetHref(childTab, siteInfo.Id),
+                            Link = GetHref(childTab, siteInfo.Id),
                             Text = childTab.Text,
                             Target = childTab.Target,
                             IconClass = childTab.IconClass
@@ -145,7 +144,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 menus.Add(new Menu
                 {
                     Id = parent.Id,
-                    Href = GetHref(parent, siteInfo.Id),
+                    Link = GetHref(parent, siteInfo.Id),
                     Text = parent.Text,
                     Target = parent.Target,
                     IconClass = parent.IconClass,
@@ -159,7 +158,7 @@ namespace SS.CMS.Api.Controllers.Admin
 
         private static string GetHref(Menu menu, int siteId)
         {
-            var href = menu.Href;
+            var href = menu.Link;
             if (!PageUtils.IsAbsoluteUrl(href))
             {
                 href = PageUtils.AddQueryString(href,

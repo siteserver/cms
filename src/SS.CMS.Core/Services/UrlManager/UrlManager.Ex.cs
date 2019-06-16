@@ -135,7 +135,7 @@ namespace SS.CMS.Core.Services
 
         public string AddProtocolToUrl(string url, string host)
         {
-            if (url == PageUtils.UnclickedUrl)
+            if (url == PageUtils.UnClickableUrl)
             {
                 return url;
             }

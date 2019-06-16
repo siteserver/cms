@@ -58,6 +58,11 @@ namespace SS.CMS.Core.Repositories
         //     return Instance(db, tableName);
         // }
 
+        public string GetContentTableName(int siteId)
+        {
+            return $"siteserver_Content_{siteId}";
+        }
+
         private Query MinColumnsQuery => Q
                 .Select(Attr.Id)
                 .Select(Attr.SiteId)

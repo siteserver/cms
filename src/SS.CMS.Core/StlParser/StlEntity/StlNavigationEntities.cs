@@ -74,7 +74,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
             if (string.IsNullOrEmpty(parsedContent))
             {
-                parsedContent = PageUtils.UnclickedUrl;
+                parsedContent = PageUtils.UnClickableUrl;
             }
 
             return parsedContent;

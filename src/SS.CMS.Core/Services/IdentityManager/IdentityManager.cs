@@ -11,7 +11,7 @@ using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
 {
-    public class IdentityManager : IIdentityManager
+    public partial class IdentityManager : IIdentityManager
     {
         private readonly HttpContext _context;
         private readonly ISettingsManager _settingsManager;
@@ -48,10 +48,10 @@ namespace SS.CMS.Core.Services
         {
             try
             {
-                var apiToken = ApiToken;
-                if (!string.IsNullOrEmpty(apiToken))
+                ApiToken = GetApiToken();
+                if (!string.IsNullOrEmpty(ApiToken))
                 {
-                    var tokenInfo = await _accessTokenRepository.GetAsync(apiToken);
+                    var tokenInfo = await _accessTokenRepository.GetAsync(ApiToken);
                     if (tokenInfo != null)
                     {
                         if (!string.IsNullOrEmpty(tokenInfo.AdminName))
@@ -68,10 +68,10 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var userToken = UserToken;
-                if (!string.IsNullOrEmpty(userToken))
+                UserToken = GetUserToken();
+                if (!string.IsNullOrEmpty(UserToken))
                 {
-                    var tokenImpl = ParseToken(userToken);
+                    var tokenImpl = ParseToken(UserToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var userInfo = _userRepository.GetUserInfoByUserId(tokenImpl.UserId);
@@ -83,10 +83,10 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var adminToken = AdminToken;
-                if (!string.IsNullOrEmpty(adminToken))
+                AdminToken = GetAdminToken();
+                if (!string.IsNullOrEmpty(AdminToken))
                 {
-                    var tokenImpl = ParseToken(adminToken);
+                    var tokenImpl = ParseToken(AdminToken);
                     if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
                     {
                         var adminInfo = _administratorRepository.GetAdminInfoByUserId(tokenImpl.UserId);
@@ -106,57 +106,15 @@ namespace SS.CMS.Core.Services
 
         // api start
 
-        public bool IsApiAuthenticated { get; set; }
+        public bool IsApiAuthenticated { get; private set; }
 
-        public string ApiToken
-        {
-            get
-            {
-                var accessToken = string.Empty;
-
-                if (_context.Request.Query.TryGetValue(Constants.QueryApiKey, out var query))
-                {
-                    accessToken = query;
-                }
-                else if (_context.Request.Headers.TryGetValue(Constants.HeaderApiKey, out var header))
-                {
-                    accessToken = header;
-                }
-                else if (_context.Request.Cookies.TryGetValue(Constants.CookieApiKey, out var cookie))
-                {
-                    accessToken = cookie;
-                }
-
-                return StringUtils.IsEncrypted(accessToken) ? TranslateUtils.DecryptStringBySecretKey(accessToken, _settingsManager.SecretKey) : accessToken;
-            }
-        }
+        public string ApiToken { get; private set; }
 
         // api end
 
         // admin start
 
-        public string AdminToken
-        {
-            get
-            {
-                var accessToken = string.Empty;
-
-                if (_context.Request.Query.TryGetValue(Constants.QueryAdminToken, out var query))
-                {
-                    accessToken = query;
-                }
-                else if (_context.Request.Headers.TryGetValue(Constants.HeaderAdminToken, out var header))
-                {
-                    accessToken = header;
-                }
-                else if (_context.Request.Cookies.TryGetValue(Constants.CookieAdminToken, out var cookie))
-                {
-                    accessToken = cookie;
-                }
-
-                return StringUtils.IsEncrypted(accessToken) ? TranslateUtils.DecryptStringBySecretKey(accessToken, _settingsManager.SecretKey) : accessToken;
-            }
-        }
+        public string AdminToken { get; private set; }
 
         public bool IsAdminLoggin { get; private set; }
 
@@ -243,31 +201,10 @@ namespace SS.CMS.Core.Services
 
         // user start
 
-        public bool IsUserLoggin { get; set; }
+        public bool IsUserLoggin { get; private set; }
 
 
-        public string UserToken
-        {
-            get
-            {
-                var accessToken = string.Empty;
-
-                if (_context.Request.Query.TryGetValue(Constants.QueryUserToken, out var query))
-                {
-                    accessToken = query;
-                }
-                else if (_context.Request.Headers.TryGetValue(Constants.HeaderUserToken, out var header))
-                {
-                    accessToken = header;
-                }
-                else if (_context.Request.Cookies.TryGetValue(Constants.CookieUserToken, out var cookie))
-                {
-                    accessToken = cookie;
-                }
-
-                return StringUtils.IsEncrypted(accessToken) ? TranslateUtils.DecryptStringBySecretKey(accessToken, _settingsManager.SecretKey) : accessToken;
-            }
-        }
+        public string UserToken { get; private set; }
 
         private IPermissions _userPermissions;
 

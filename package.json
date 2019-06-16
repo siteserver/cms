@@ -21,7 +21,11 @@
     "run-sequence": "^2.2.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:api": "dotnet test tests/SS.CMS.Api.Tests",
+    "test:cli": "dotnet test tests/SS.CMS.Cli.Tests",
+    "test:core": "dotnet test tests/SS.CMS.Core.Tests",
+    "test:data": "dotnet test tests/SS.CMS.Data.Tests",
+    "test:utils": "dotnet test tests/SS.CMS.Utils.Tests",
     "dotnet": "dotnet watch --project src/SS.CMS.Api run",
     "nuxt": "cd web && yarn dev"
   },

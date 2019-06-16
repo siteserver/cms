@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
-using SS.CMS.Utils;
-using Menu = SS.CMS.Abstractions.Menu;
 
 namespace SS.CMS.Core.Services
 {
@@ -140,7 +135,7 @@ namespace SS.CMS.Core.Services
             {
                 Id = metadataMenu.Id,
                 Text = metadataMenu.Text,
-                Href = metadataMenu.Href,
+                Link = metadataMenu.Link,
                 Target = metadataMenu.Target,
                 IconClass = metadataMenu.IconClass,
                 PluginId = pluginId
@@ -150,9 +145,9 @@ namespace SS.CMS.Core.Services
             {
                 menu.Id = pluginId + i;
             }
-            if (!string.IsNullOrEmpty(menu.Href))
+            if (!string.IsNullOrEmpty(menu.Link))
             {
-                menu.Href = urlManager.GetMenuUrl(pluginId, menu.Href, siteId, channelId, contentId);
+                menu.Link = urlManager.GetMenuUrl(pluginId, menu.Link, siteId, channelId, contentId);
             }
             if (channelId == 0 && contentId == 0 && string.IsNullOrEmpty(menu.Target))
             {
@@ -175,30 +170,38 @@ namespace SS.CMS.Core.Services
             return menu;
         }
 
-        public List<KeyValuePair<string, string>> GetTopPermissions()
+        public List<Permission> GetTopPermissions()
         {
-            var permissions = new List<KeyValuePair<string, string>>();
+            var permissions = new List<Permission>();
 
             foreach (var service in Services)
             {
                 if (service.SystemMenuFuncs != null)
                 {
-                    permissions.Add(new KeyValuePair<string, string>(service.PluginId, $"系统管理 -> {service.Metadata.Title}（插件）"));
+                    permissions.Add(new Permission
+                    {
+                        Id = service.PluginId,
+                        Text = $"系统管理 -> {service.Metadata.Title}（插件）"
+                    });
                 }
             }
 
             return permissions;
         }
 
-        public List<KeyValuePair<string, string>> GetSitePermissions(int siteId)
+        public List<Permission> GetSitePermissions(int siteId)
         {
-            var permissions = new List<KeyValuePair<string, string>>();
+            var permissions = new List<Permission>();
 
             foreach (var service in Services)
             {
                 if (service.SiteMenuFuncs != null)
                 {
-                    permissions.Add(new KeyValuePair<string, string>(service.PluginId, $"{service.Metadata.Title}"));
+                    permissions.Add(new Permission
+                    {
+                        Id = service.PluginId,
+                        Text = service.Metadata.Title
+                    });
                 }
             }
 

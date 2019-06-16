@@ -9,7 +9,6 @@ using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Security;
@@ -635,7 +634,7 @@ namespace SS.CMS.Core.Cache
                 var enabled = permissions.HasChannelPermissions(siteId, channelId, channelPermissions);
 
                 var channelInfo = GetChannelInfo(siteId, channelId);
-                if (enabled && channelPermissions.Contains(MenuManager.ChannelPermissions.ContentAdd))
+                if (enabled && channelPermissions.Contains(Constants.ChannelPermissions.ContentAdd))
                 {
                     if (channelInfo.IsContentAddable == false) enabled = false;
                 }

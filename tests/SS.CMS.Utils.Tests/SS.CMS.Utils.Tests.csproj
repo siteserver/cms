@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SS.CMS.Utils\SS.CMS.Utils.csproj" />
+    <ProjectReference Include="..\..\src\SS.CMS.Abstractions\SS.CMS.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

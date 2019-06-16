@@ -46,7 +46,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
 
             string htmlId = attributes["id"];
-            var url = PageUtils.UnclickedUrl;
+            var url = PageUtils.UnClickableUrl;
             var onclick = string.Empty;
 
             var innerBuilder = new StringBuilder(parseContext.InnerHtml);

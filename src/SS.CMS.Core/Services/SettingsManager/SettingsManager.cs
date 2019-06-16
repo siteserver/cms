@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Services;
+using SS.CMS.Abstractions.Settings;
 using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
@@ -13,8 +14,11 @@ namespace SS.CMS.Core.Services
         private readonly string CacheKey = StringUtils.GetCacheKey(nameof(SettingsManager));
         private readonly object _lockObject = new object();
 
-        public SettingsManager(IConfiguration config)
+        public SettingsManager(IConfiguration config, string contentRootPath, string webRootPath)
         {
+            ContentRootPath = contentRootPath;
+            WebRootPath = webRootPath;
+
             IsProtectData = config.GetValue<bool>("SS:IsProtectData");
             ApiPrefix = config.GetValue<string>("SS:ApiPrefix");
             AdminDirectory = config.GetValue<string>("SS:AdminDirectory");
@@ -39,11 +43,17 @@ namespace SS.CMS.Core.Services
                 DatabaseConnectionString = config.GetValue<string>("SS:Database:ConnectionString");
                 RedisConnectionString = config.GetValue<string>("SS:Redis:ConnectionString");
             }
+
+            var navFilePath = PathUtils.Combine(contentRootPath, "nav/zh.yml");
+            if (FileUtils.IsFileExists(navFilePath))
+            {
+                NavSettings = YamlUtils.FileToObject<NavSettings>(navFilePath);
+            }
         }
 
-        public string ContentRootPath => ServiceCollectionExtensions.ContentRootPath;
+        public string ContentRootPath { get; }
 
-        public string WebRootPath => ServiceCollectionExtensions.WebRootPath;
+        public string WebRootPath { get; }
 
         public bool IsProtectData { get; }
         public string ApiPrefix { get; }
@@ -54,6 +64,8 @@ namespace SS.CMS.Core.Services
         public DatabaseType DatabaseType { get; }
         public string DatabaseConnectionString { get; }
         public string RedisConnectionString { get; }
+
+        public NavSettings NavSettings { get; }
 
         public ConfigInfo ConfigInfo
         {

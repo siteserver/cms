@@ -213,7 +213,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            if (url.Equals(PageUtils.UnclickedUrl))
+            if (url.Equals(PageUtils.UnClickableUrl))
             {
                 removeTarget = true;
             }

@@ -6,7 +6,6 @@ using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Common.Create;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Core.Packaging;
 using SS.CMS.Core.Security;
 using SS.CMS.Utils;
@@ -26,7 +25,7 @@ namespace SS.CMS.Api.Controllers.Admin
         private readonly IPathManager _pathManager;
         private readonly IIdentityManager _identityManager;
         private readonly ICreateManager _createManager;
-        private readonly IFileManager _fileManager;
+        private readonly IMenuManager _menuManager;
         private readonly IAdministratorRepository _administratorRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly ISpecialRepository _specialRepository;
@@ -34,7 +33,7 @@ namespace SS.CMS.Api.Controllers.Admin
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public RootController(ISettingsManager settingsManager, IPluginManager pluginManager, IUrlManager urlManager, IPathManager pathManager, IIdentityManager identityManager, ICreateManager createManager, IFileManager fileManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
+        public RootController(ISettingsManager settingsManager, IPluginManager pluginManager, IUrlManager urlManager, IPathManager pathManager, IIdentityManager identityManager, ICreateManager createManager, IMenuManager menuManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository, ISpecialRepository specialRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
         {
             _settingsManager = settingsManager;
             _pluginManager = pluginManager;
@@ -42,7 +41,7 @@ namespace SS.CMS.Api.Controllers.Admin
             _pathManager = pathManager;
             _identityManager = identityManager;
             _createManager = createManager;
-            _fileManager = fileManager;
+            _menuManager = menuManager;
             _administratorRepository = administratorRepository;
             _siteRepository = siteRepository;
             _specialRepository = specialRepository;
@@ -52,8 +51,10 @@ namespace SS.CMS.Api.Controllers.Admin
         }
 
         [HttpGet(Route)]
-        public ActionResult Get([FromQuery] int? siteId, string pageUrl)
+        public async Task<ActionResult> Get([FromQuery] int? siteId, string pageUrl)
         {
+            await _identityManager.Sync();
+
             if (!_identityManager.IsAdminLoggin)
             {
                 return Ok(new
@@ -153,12 +154,10 @@ namespace SS.CMS.Api.Controllers.Admin
                 permissionList.AddRange(channelPermissions);
             }
 
-            var menuManager = new MenuManager(_pluginManager, _pathManager, _urlManager);
-
-            var topMenus = GetTopMenus(menuManager, siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
+            var topMenus = GetTopMenus(siteInfo, isSuperAdmin, siteIdListLatestAccessed, siteIdListWithPermissions);
             var siteMenus =
-                GetLeftMenus(menuManager, siteInfo, MenuManager.TopMenu.IdSite, isSuperAdmin, permissionList);
-            var pluginMenus = GetLeftMenus(menuManager, siteInfo, string.Empty, isSuperAdmin, permissionList);
+                GetLeftMenus(siteInfo, Constants.TopMenu.IdSite, isSuperAdmin, permissionList);
+            var pluginMenus = GetLeftMenus(siteInfo, string.Empty, isSuperAdmin, permissionList);
 
             var adminInfoToReturn = new
             {

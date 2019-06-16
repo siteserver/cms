@@ -5,8 +5,8 @@ using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Core.Services;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 {
@@ -56,7 +56,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         public async Task<ActionResult> List()
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(MenuManager.SettingsPermissions.Admin))
+                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
             {
                 return Unauthorized();
             }
@@ -95,7 +95,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         public async Task<ActionResult> Create([FromBody] AccessTokenInfo accessTokenInfo)
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(MenuManager.SettingsPermissions.Admin))
+                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
             {
                 return Unauthorized();
             }
@@ -126,7 +126,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         public async Task<ActionResult> Update([FromBody] AccessTokenInfo accessTokenInfo)
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(MenuManager.SettingsPermissions.Admin))
+                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
             {
                 return Unauthorized();
             }
@@ -156,7 +156,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         public async Task<ActionResult> Delete([FromBody] int id)
         {
             if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(MenuManager.SettingsPermissions.Admin))
+                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
             {
                 return Unauthorized();
             }

@@ -39,7 +39,7 @@ namespace SS.CMS.Api.Controllers.Admin
             return validateCode;
         }
 
-        public async Task<string> AdminLogin(string userName, bool isAutoLogin)
+        public string AdminLogin(string userName, bool isAutoLogin)
         {
             if (string.IsNullOrEmpty(userName)) return null;
             var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
@@ -54,26 +54,26 @@ namespace SS.CMS.Api.Controllers.Admin
             };
             var accessToken = _identityManager.GetToken(identityToken);
 
-            const string Issuer = "https://gov.uk";
+            // const string Issuer = "https://gov.uk";
 
-            var claims = new List<Claim> {
-                new Claim(ClaimTypes.Name, "Andrew", ClaimValueTypes.String, Issuer),
-                new Claim(ClaimTypes.Surname, "Lock", ClaimValueTypes.String, Issuer),
-                new Claim(ClaimTypes.Country, "UK", ClaimValueTypes.String, Issuer),
-                new Claim("ChildhoodHero", "Ronnie James Dio", ClaimValueTypes.String)
-            };
+            // var claims = new List<Claim> {
+            //     new Claim(ClaimTypes.Name, "Andrew", ClaimValueTypes.String, Issuer),
+            //     new Claim(ClaimTypes.Surname, "Lock", ClaimValueTypes.String, Issuer),
+            //     new Claim(ClaimTypes.Country, "UK", ClaimValueTypes.String, Issuer),
+            //     new Claim("ChildhoodHero", "Ronnie James Dio", ClaimValueTypes.String)
+            // };
 
-            var userIdentity = new ClaimsIdentity(claims, "Passport");
+            // var userIdentity = new ClaimsIdentity(claims, "Passport");
 
-            var userPrincipal = new ClaimsPrincipal(userIdentity);
+            // var userPrincipal = new ClaimsPrincipal(userIdentity);
 
-            await HttpContext.SignInAsync("Cookie", userPrincipal,
-                new AuthenticationProperties
-                {
-                    ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
-                    IsPersistent = false,
-                    AllowRefresh = false
-                });
+            // await HttpContext.SignInAsync("Cookie", userPrincipal,
+            //     new AuthenticationProperties
+            //     {
+            //         ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
+            //         IsPersistent = false,
+            //         AllowRefresh = false
+            //     });
 
             LogUtils.AddAdminLog(_identityManager.IpAddress, adminInfo.UserName, "管理员登录");
 

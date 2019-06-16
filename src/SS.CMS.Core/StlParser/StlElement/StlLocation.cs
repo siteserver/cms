@@ -103,7 +103,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             attributes["class"] = linkClass;
                         }
                         var url = parseContext.UrlManager.GetIndexPageUrl(parseContext.SiteInfo, parseContext.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
                         }
@@ -131,7 +131,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             attributes["class"] = linkClass;
                         }
                         var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
                         }
@@ -154,7 +154,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             attributes["class"] = linkClass;
                         }
                         var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
-                        if (url.Equals(PageUtils.UnclickedUrl))
+                        if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
                         }

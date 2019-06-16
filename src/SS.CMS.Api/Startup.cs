@@ -58,9 +58,6 @@ namespace SS.CMS.Api
             //    return new Response(httpContext);
             //});
 
-            services.AddMemoryCache();
-            services.AddDistributedMemoryCache();
-
             services.AddOpenApiDocument(config =>
             {
                 config.PostProcess = document =>
@@ -107,16 +104,20 @@ namespace SS.CMS.Api
             //AppContext.Load(_env.ContentRootPath, _env.WebRootPath, _config);
             //AppContext.Db = db;
 
-            ServiceCollectionExtensions.ContentRootPath = _env.ContentRootPath;
-            ServiceCollectionExtensions.WebRootPath = _env.WebRootPath;
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
 
-            services.AddSettingsManager();
+            services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
             services.AddCacheManager();
-            services.AddUrlManager();
-            services.AddPathManager();
             services.AddRepositories();
-            services.AddIdentityManager();
+            services.AddPathManager();
             services.AddPluginManager();
+            services.AddUrlManager();
+            services.AddMenuManager();
+            services.AddFileManager();
+            services.AddCreateManager();
+            services.AddIdentityManager();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -15,11 +15,6 @@ namespace SS.CMS.Api.Tests
         public IConfiguration Configuration { get; }
         public ISettingsManager SettingsManager { get; }
         public ICacheManager CacheManager { get; }
-        public IPathManager PathManager { get; }
-        public IUrlManager UrlManager { get; }
-        public IFileManager FileManager { get; }
-        public ICreateManager CreateManager { get; }
-        public IPluginManager PluginManager { get; }
         public IAccessTokenRepository AccessTokenRepository { get; }
         public IAdministratorRepository AdministratorRepository { get; }
         public IAdministratorsInRolesRepository AdministratorsInRolesRepository { get; }
@@ -52,6 +47,12 @@ namespace SS.CMS.Api.Tests
         public IUserLogRepository UserLogRepository { get; }
         public IUserMenuRepository UserMenuRepository { get; }
         public IUserRepository UserRepository { get; }
+        public IPathManager PathManager { get; }
+        public IPluginManager PluginManager { get; }
+        public IUrlManager UrlManager { get; }
+        public IFileManager FileManager { get; }
+        public ICreateManager CreateManager { get; }
+
 
         public EnvironmentFixture()
         {
@@ -64,7 +65,7 @@ namespace SS.CMS.Api.Tests
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var cacheManager = new CacheManager(memoryCache, null);
-            var settingsManager = new SettingsManager(config);
+            var settingsManager = new SettingsManager(config, projDirectoryPath, PathUtils.Combine(projDirectoryPath, "wwwroot"));
 
             var accessTokenRepository = new AccessTokenRepository(settingsManager, cacheManager);
 

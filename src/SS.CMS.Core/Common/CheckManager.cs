@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Common.Serialization;
 using SS.CMS.Core.Security;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
 {
@@ -508,18 +508,18 @@ namespace SS.CMS.Core.Common
             var checkedLevel = 0;
             if (siteInfo.IsCheckContentLevel == false)
             {
-                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheck))
+                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel5))
+                if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel4))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel4))
                 {
                     if (siteInfo.CheckContentLevel <= 4)
                     {
@@ -530,7 +530,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 4;
                     }
                 }
-                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel3))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel3))
                 {
                     if (siteInfo.CheckContentLevel <= 3)
                     {
@@ -541,7 +541,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 3;
                     }
                 }
-                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel2))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel2))
                 {
                     if (siteInfo.CheckContentLevel <= 2)
                     {
@@ -552,7 +552,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 2;
                     }
                 }
-                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, MenuManager.ChannelPermissions.ContentCheckLevel1))
+                else if (permissions.HasChannelPermissions(siteInfo.Id, channelId, Constants.ChannelPermissions.ContentCheckLevel1))
                 {
                     if (siteInfo.CheckContentLevel <= 1)
                     {

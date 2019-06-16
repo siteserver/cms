@@ -1,11 +1,14 @@
-﻿using SS.CMS.Abstractions.Models;
+﻿using System.Threading.Tasks;
+using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Repositories;
 
 namespace SS.CMS.Abstractions.Services
 {
     public interface IIdentityManager
     {
-        bool IsApiAuthenticated { get; set; }
+        Task Sync();
+
+        bool IsApiAuthenticated { get; }
 
         string ApiToken { get; }
 
@@ -33,7 +36,7 @@ namespace SS.CMS.Abstractions.Services
 
         // user start
 
-        bool IsUserLoggin { get; set; }
+        bool IsUserLoggin { get; }
 
         string UserToken { get; }
 
