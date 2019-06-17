@@ -62,24 +62,24 @@ namespace SS.CMS.Core.Services
         //     return retval;
         // }
 
-        public IList<Menu> GetTabs(string filePath)
-        {
-            if (filePath.StartsWith("/") || filePath.StartsWith("~"))
-            {
-                filePath = _pathManager.MapContentRootPath(filePath);
-            }
+        // public IList<Menu> GetTabs(string filePath)
+        // {
+        //     if (filePath.StartsWith("/") || filePath.StartsWith("~"))
+        //     {
+        //         filePath = _pathManager.MapContentRootPath(filePath);
+        //     }
 
-            var tc = CacheUtils.Get(filePath) as List<Menu>;
-            if (tc != null) return tc;
+        //     var tc = CacheUtils.Get(filePath) as List<Menu>;
+        //     if (tc != null) return tc;
 
-            tc = FileUtils.XmlFileToObject<List<Menu>>(filePath);
-            CacheUtils.Insert(filePath, tc, filePath);
-            return tc;
-        }
+        //     tc = FileUtils.XmlFileToObject<List<Menu>>(filePath);
+        //     CacheUtils.Insert(filePath, tc, filePath);
+        //     return tc;
+        // }
 
         public IList<Menu> GetTopMenuTabs()
         {
-            return _settingsManager.NavSettings.Menus;
+            return _settingsManager.Menus;
             // var list = new List<Menu>();
 
             // var menuPath = _pathManager.GetMenusPath("Top.config");
@@ -145,7 +145,7 @@ namespace SS.CMS.Core.Services
 
             if (!string.IsNullOrEmpty(topId))
             {
-                var topMenu = _settingsManager.NavSettings.Menus.FirstOrDefault(x => x.Id == topId);
+                var topMenu = _settingsManager.Menus.FirstOrDefault(x => x.Id == topId);
                 if (topMenu != null)
                 {
                     tabs = topMenu.Menus;

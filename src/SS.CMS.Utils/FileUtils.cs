@@ -4,7 +4,6 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Utils
@@ -415,35 +414,35 @@ namespace SS.CMS.Utils
             }
         }
 
-        public static void ObjectToXmlFile<T>(T objectToConvert, string path) where T : class
-        {
-            if (objectToConvert != null)
-            {
-                var ser = new XmlSerializer(typeof(T));
-                //will hold the xml
-                using (var writer = new StreamWriter(path))
-                {
-                    ser.Serialize(writer, objectToConvert);
-                    writer.Close();
-                }
-            }
-        }
+        // public static void ObjectToXmlFile<T>(T objectToConvert, string path) where T : class
+        // {
+        //     if (objectToConvert != null)
+        //     {
+        //         var ser = new XmlSerializer(typeof(T));
+        //         //will hold the xml
+        //         using (var writer = new StreamWriter(path))
+        //         {
+        //             ser.Serialize(writer, objectToConvert);
+        //             writer.Close();
+        //         }
+        //     }
+        // }
 
 
-        public static T XmlFileToObject<T>(string path) where T : class
-        {
-            T convertedObject = default(T);
+        // public static T XmlFileToObject<T>(string path) where T : class
+        // {
+        //     T convertedObject = default(T);
 
-            if (path != null && path.Length > 0)
-            {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    var ser = new XmlSerializer(typeof(T));
-                    convertedObject = ser.Deserialize(fs) as T;
-                    fs.Close();
-                }
-            }
-            return convertedObject;
-        }
+        //     if (path != null && path.Length > 0)
+        //     {
+        //         using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+        //         {
+        //             var ser = new XmlSerializer(typeof(T));
+        //             convertedObject = ser.Deserialize(fs) as T;
+        //             fs.Close();
+        //         }
+        //     }
+        //     return convertedObject;
+        // }
     }
 }

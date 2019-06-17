@@ -441,8 +441,6 @@ export default {
         params: this.$route.query
       })
 
-      debugger
-
       if (data.value) {
         this.defaultPageUrl = data.defaultPageUrl
         this.isNightlyUpdate = data.isNightlyUpdate

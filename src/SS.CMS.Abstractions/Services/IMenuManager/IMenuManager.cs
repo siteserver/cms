@@ -5,7 +5,7 @@ namespace SS.CMS.Abstractions.Services
 {
     public interface IMenuManager
     {
-        IList<Menu> GetTabs(string filePath);
+        // IList<Menu> GetTabs(string filePath);
 
         IList<Menu> GetTopMenuTabs();
 

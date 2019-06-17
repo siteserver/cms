@@ -118,6 +118,11 @@ namespace SS.CMS.Api
             services.AddCreateManager();
             services.AddIdentityManager();
 
+            // In production, the React files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -129,6 +134,7 @@ namespace SS.CMS.Api
             }
             else
             {
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -136,6 +142,9 @@ namespace SS.CMS.Api
             app.UseCors("AllowAny");
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             //app.UseRouting();
 
@@ -152,33 +161,50 @@ namespace SS.CMS.Api
             //     return new Request(httpContext);
             // });
 
-            app.Map("/" + settingsManager.ApiPrefix.Trim('/'), mainApp =>
+            app.Map("/" + settingsManager.ApiPrefix.Trim('/'), api =>
             {
-                mainApp.Map("/ping", map => map.Run(async
+                api.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));
 
-                mainApp.UseRouting();
+                api.UseRouting();
 
-                mainApp.UseAuthorization();
+                api.UseAuthorization();
 
-                mainApp.UseEndpoints(endpoints =>
+                api.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
                 });
 
-                //mainApp.UseAuthentication();
-                //mainApp.UseAuthorization();
+                //api.UseAuthentication();
+                //api.UseAuthorization();
 
-                mainApp.UseOpenApi();
-                mainApp.UseSwaggerUi3();
-                mainApp.UseReDoc(options =>
+                api.UseOpenApi();
+                api.UseSwaggerUi3();
+                api.UseReDoc(options =>
                 {
                     options.Path = "/docs";
                     options.DocumentPath = "/swagger/v1/swagger.json";
                 });
             });
 
-            app.UseStaticFiles();
+            app.Map("/" + settingsManager.AdminPrefix.Trim('/'), admin =>
+            {
+                admin.Map("/ping", map => map.Run(async
+                    ctx => await ctx.Response.WriteAsync("pong")));
+
+                admin.UseRouting();
+
+                admin.UseAuthorization();
+
+                admin.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp";
+                    if (_env.IsDevelopment())
+                    {
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000/admin");
+                    }
+                });
+            });
         }
     }
 }

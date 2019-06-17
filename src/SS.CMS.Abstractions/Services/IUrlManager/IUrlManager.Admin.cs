@@ -12,8 +12,6 @@ namespace SS.CMS.Abstractions.Services
         string AdminLoginUrl { get; }
         string AdminSyncUrl { get; }
 
-        string GetAdminUrl(string relatedUrl);
-
         string GetAdminIndexUrl(int? siteId, string pageUrl);
 
         string GetAdminContentsUrl(int siteId, int channelId);

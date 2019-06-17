@@ -32,6 +32,26 @@ namespace SS.CMS.Core.Services
             _templateRepository = templateRepository;
         }
 
+        public string GetRootUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(Constants.ApplicationPath, relatedUrl);
+        }
+
+        public string GetApiUrl(string route)
+        {
+            return PageUtils.Combine(ApiUrl, route);
+        }
+
+        public string GetAdminUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(Constants.ApplicationPath, _settingsManager.AdminPrefix, relatedUrl);
+        }
+
+        public string GetHomeUrl(string relatedUrl)
+        {
+            return PageUtils.Combine(Constants.ApplicationPath, _settingsManager.HomePrefix, relatedUrl);
+        }
+
         public string GetSystemDefaultPageUrl(int siteId)
         {
             string pageUrl = null;
@@ -157,11 +177,6 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public string GetApiUrl(string route)
-        {
-            return PageUtils.Combine(ApiUrl, route);
-        }
-
         public string GetInnerApiUrl(string route)
         {
             return PageUtils.Combine(InnerApiUrl, route);
@@ -179,16 +194,6 @@ namespace SS.CMS.Core.Services
             return siteInfo.IsSeparatedAssets
                 ? siteInfo.SeparatedAssetsUrl
                 : PageUtils.Combine(GetWebUrl(siteInfo), siteInfo.AssetsDir);
-        }
-
-        public string GetRootUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(Constants.ApplicationPath, relatedUrl);
-        }
-
-        public string GetHomeUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(Constants.ApplicationPath, _settingsManager.HomeDirectory, relatedUrl);
         }
 
         public string GetSiteUrl(SiteInfo siteInfo, bool isLocal)

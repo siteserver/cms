@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using SS.CMS.Abstractions;
 using SS.CMS.Abstractions.Models;
 using SS.CMS.Abstractions.Services;
 using SS.CMS.Abstractions.Settings;
@@ -21,10 +24,11 @@ namespace SS.CMS.Core.Services
 
             IsProtectData = config.GetValue<bool>("SS:IsProtectData");
             ApiPrefix = config.GetValue<string>("SS:ApiPrefix");
-            AdminDirectory = config.GetValue<string>("SS:AdminDirectory");
-            HomeDirectory = config.GetValue<string>("SS:HomeDirectory");
+            AdminPrefix = config.GetValue<string>("SS:AdminPrefix");
+            HomePrefix = config.GetValue<string>("SS:HomePrefix");
             SecretKey = config.GetValue<string>("SS:SecretKey");
             IsNightlyUpdate = config.GetValue<bool>("SS:IsNightlyUpdate");
+            Language = config.GetValue<string>("SS:Language");
 
             if (string.IsNullOrEmpty(SecretKey))
             {
@@ -44,11 +48,11 @@ namespace SS.CMS.Core.Services
                 RedisConnectionString = config.GetValue<string>("SS:Redis:ConnectionString");
             }
 
-            var navFilePath = PathUtils.Combine(contentRootPath, "nav/zh.yml");
-            if (FileUtils.IsFileExists(navFilePath))
-            {
-                NavSettings = YamlUtils.FileToObject<NavSettings>(navFilePath);
-            }
+            var menusPath = PathUtils.GetLangPath(contentRootPath, Language, "menus.yml");
+            var permissionsPath = PathUtils.GetLangPath(contentRootPath, Language, "permissions.yml");
+
+            Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
+            Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
         }
 
         public string ContentRootPath { get; }
@@ -57,15 +61,17 @@ namespace SS.CMS.Core.Services
 
         public bool IsProtectData { get; }
         public string ApiPrefix { get; }
-        public string AdminDirectory { get; }
-        public string HomeDirectory { get; }
+        public string AdminPrefix { get; }
+        public string HomePrefix { get; }
         public string SecretKey { get; }
         public bool IsNightlyUpdate { get; }
+        public string Language { get; }
         public DatabaseType DatabaseType { get; }
         public string DatabaseConnectionString { get; }
         public string RedisConnectionString { get; }
 
-        public NavSettings NavSettings { get; }
+        public IList<Menu> Menus { get; }
+        public PermissionsSettings Permissions { get; }
 
         public ConfigInfo ConfigInfo
         {

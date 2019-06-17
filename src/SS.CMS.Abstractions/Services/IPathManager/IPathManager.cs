@@ -12,10 +12,6 @@
 
         string GetSiteTemplatesPath(params string[] paths);
 
-        string PhysicalSiteServerPath { get; }
-
-        string PhysicalSiteFilesPath { get; }
-
         bool IsSystemDirectory(string directoryName);
 
         bool IsWebSiteDirectory(string directoryName);

@@ -1,4 +1,7 @@
 module.exports = {
+  router: {
+    base: '/app/'
+  },
   mode: 'spa',
   modern: 'client',
   head: {

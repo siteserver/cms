@@ -4,6 +4,14 @@ namespace SS.CMS.Abstractions.Services
 {
     public partial interface IUrlManager
     {
+        string GetRootUrl(string relatedUrl);
+
+        string GetApiUrl(string route);
+
+        string GetAdminUrl(string relatedUrl);
+
+        string GetHomeUrl(string relatedUrl);
+
         string GetSystemDefaultPageUrl(int siteId);
 
         string GetHomeDefaultPageUrl();
@@ -14,17 +22,11 @@ namespace SS.CMS.Abstractions.Services
 
         string InnerApiUrl { get; }
 
-        string GetApiUrl(string route);
-
         string GetInnerApiUrl(string route);
 
         string GetWebUrl(SiteInfo siteInfo);
 
         string GetAssetsUrl(SiteInfo siteInfo);
-
-        string GetRootUrl(string relatedUrl);
-
-        string GetHomeUrl(string relatedUrl);
 
         string GetSiteUrl(SiteInfo siteInfo, bool isLocal);
 

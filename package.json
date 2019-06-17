@@ -27,7 +27,7 @@
     "test:data": "dotnet test tests/SS.CMS.Data.Tests",
     "test:utils": "dotnet test tests/SS.CMS.Utils.Tests",
     "dotnet": "dotnet watch --project src/SS.CMS.Api run",
-    "nuxt": "cd web && yarn dev"
+    "nuxt": "cd ClientApp && yarn dev"
   },
   "author": "",
   "license": "ISC"

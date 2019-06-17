@@ -13,11 +13,6 @@ namespace SS.CMS.Core.Services
         public string AdminLoginUrl => GetAdminUrl("login");
         public string AdminSyncUrl => GetAdminUrl("sync");
 
-        public string GetAdminUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(Constants.ApplicationPath, relatedUrl);
-        }
-
         public string GetAdminIndexUrl(int? siteId, string pageUrl)
         {
             var queryString = new NameValueCollection();

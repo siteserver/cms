@@ -23,12 +23,12 @@ namespace SS.CMS.Core.Services
 
         public string GetAdminPath(params string[] paths)
         {
-            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.AdminDirectory), paths);
+            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.AdminPrefix), paths);
         }
 
         public string GetHomePath(params string[] paths)
         {
-            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.HomeDirectory), paths);
+            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.HomePrefix), paths);
         }
 
         public string GetBackupFilesPath(params string[] paths)
@@ -46,15 +46,11 @@ namespace SS.CMS.Core.Services
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates), paths);
         }
 
-        public string PhysicalSiteServerPath => PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.AdminDirectory);
-
-        public string PhysicalSiteFilesPath => PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName);
-
         public bool IsSystemDirectory(string directoryName)
         {
-            if (StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.AspnetClient.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, DirectoryUtils.SiteFiles.DirectoryName)
-                || StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.AdminDirectory))
+            if (StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.ApiPrefix)
+                || StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.AdminPrefix)
+                || StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.HomePrefix))
             {
                 return true;
             }

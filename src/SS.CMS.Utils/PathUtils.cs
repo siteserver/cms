@@ -176,5 +176,15 @@ namespace SS.CMS.Utils
             var aExt = sAllowedExt.Split(',');
             return aExt.Any(t => StringUtils.EqualsIgnoreCase(sExt, t));
         }
+
+        public static string GetLangPath(string contentRootPath, string language, string fileName)
+        {
+            var langPath = PathUtils.Combine(contentRootPath, $"lang/{language}/{fileName}");
+            if (!FileUtils.IsFileExists(langPath))
+            {
+                langPath = PathUtils.Combine(contentRootPath, $"lang/{Constants.DefaultLanguage}/{fileName}");
+            }
+            return langPath;
+        }
     }
 }

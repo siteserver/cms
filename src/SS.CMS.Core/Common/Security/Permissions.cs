@@ -49,6 +49,7 @@ namespace SS.CMS.Core.Security
             ChannelPermissions = new List<Permission>();
 
             _adminInfo = adminInfo;
+            _settingsManager = settingsManager;
             _pluginManager = pluginManager;
             _siteRepository = siteRepository;
             _administratorsInRolesRepository = administratorsInRolesRepository;
@@ -62,9 +63,9 @@ namespace SS.CMS.Core.Security
             _channelPermissionListIgnoreChannelIdKey = GetChannelPermissionListIgnoreChannelIdCacheKey(adminInfo.UserName);
             _channelIdListKey = GetChannelIdListCacheKey(adminInfo.UserName);
 
-            GeneralPermissions.AddRange(_settingsManager.NavSettings.Permissions.App);
-            WebsitePermissions.AddRange(_settingsManager.NavSettings.Permissions.Site);
-            ChannelPermissions.AddRange(_settingsManager.NavSettings.Permissions.Channel);
+            GeneralPermissions.AddRange(_settingsManager.Permissions.App);
+            WebsitePermissions.AddRange(_settingsManager.Permissions.Site);
+            ChannelPermissions.AddRange(_settingsManager.Permissions.Channel);
 
             GeneralPermissions.AddRange(_pluginManager.GetTopPermissions());
             var pluginPermissions = _pluginManager.GetSitePermissions(0);

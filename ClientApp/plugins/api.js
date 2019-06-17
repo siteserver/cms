@@ -27,13 +27,7 @@ export default (ctx, inject) => {
       }
     }
 
-    if (process.isServer) {
-      if (code === 401) {
-        ctx.redirect({ path: 'logout', query: { redirectUrl: ctx.route.path } })
-      } else {
-        ctx.error({ statusCode: code, message: message })
-      }
-    } else if (code === 401) {
+    if (code === 401) {
       ctx.store.commit('notify', {
         type: 'error',
         title: '错误',

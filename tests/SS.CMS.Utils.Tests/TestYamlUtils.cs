@@ -17,8 +17,8 @@ namespace SS.CMS.Utils.Tests
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
 
-            var assetsDirectory = PathUtils.Combine(testsDirectoryPath, "assets/menus");
-            var outputDirectoryPath = PathUtils.Combine(testsDirectoryPath, "output", "menus");
+            var assetsDirectory = PathUtils.Combine(testsDirectoryPath, "assets");
+            var outputDirectoryPath = PathUtils.Combine(testsDirectoryPath, "output");
             DirectoryUtils.DeleteDirectoryIfExists(outputDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(outputDirectoryPath);
 
@@ -322,18 +322,8 @@ namespace SS.CMS.Utils.Tests
 
             YamlUtils.ObjectToFile<List<Menu>>(menus, PathUtils.Combine(outputDirectoryPath, "menus.yml"));
 
-            var nav = new NavSettings
-            {
-                Permissions = permissions,
-                Menus = menus
-            };
-
-            YamlUtils.ObjectToFile<NavSettings>(nav, PathUtils.Combine(outputDirectoryPath, "nav.yml"));
-
-            var navRead = YamlUtils.FileToObject<NavSettings>(PathUtils.Combine(outputDirectoryPath, "nav.yml"));
-
-            Assert.True(true);
-            Assert.True(nav.Permissions.App.Count == navRead.Permissions.App.Count);
+            Assert.True(!string.IsNullOrEmpty(FileUtils.GetFileSizeByFilePath(PathUtils.Combine(outputDirectoryPath, "permissions.yml"))));
+            Assert.True(!string.IsNullOrEmpty(FileUtils.GetFileSizeByFilePath(PathUtils.Combine(outputDirectoryPath, "menus.yml"))));
         }
 
         [Fact]
@@ -343,14 +333,18 @@ namespace SS.CMS.Utils.Tests
             var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
             var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
 
-            var yamlFilePath = PathUtils.Combine(testsDirectoryPath, "assets/nav.yml");
+            var menusPath = PathUtils.Combine(testsDirectoryPath, "assets/menus.yml");
+            var permissionsPath = PathUtils.Combine(testsDirectoryPath, "assets/permissions.yml");
 
-            var nav = YamlUtils.FileToObject<NavSettings>(yamlFilePath);
+            var menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
+            var permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
 
-            Assert.NotNull(nav);
-            Assert.NotNull(nav.Permissions);
-            Assert.NotNull(nav.Permissions.App);
-            Assert.NotNull(nav.Menus);
+            Assert.NotNull(menus);
+            Assert.True(menus.Count == 4);
+            Assert.True(menus[0].Menus.Count == 4);
+            Assert.NotNull(permissions);
+            Assert.NotNull(permissions.App);
+
         }
     }
 }
