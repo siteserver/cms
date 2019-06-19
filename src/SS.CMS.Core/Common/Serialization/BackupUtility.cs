@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Serialization
@@ -24,11 +25,11 @@ namespace SS.CMS.Core.Serialization
             exportObject.ExportTemplates(filePath);
         }
 
-        public static void BackupChannelsAndContents(int siteId, string filePath, string adminName)
+        public static void BackupChannelsAndContents(IChannelRepository channelRepository, int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
 
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = channelRepository.GetChannelIdList(channelRepository.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
 
             exportObject.ExportChannels(channelIdList, filePath);
         }
@@ -69,7 +70,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static void RecoverySite(IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
+        public static void RecoverySite(ICacheManager cacheManager, IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
         {
             var importObject = new ImportObject(siteId, administratorName);
 
@@ -89,10 +90,10 @@ namespace SS.CMS.Core.Serialization
 
             if (isDeleteChannels)
             {
-                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = channelRepository.GetChannelIdList(channelRepository.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
-                    DataProvider.ChannelRepository.Delete(siteId, channelId);
+                    channelRepository.Delete(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)
@@ -101,7 +102,7 @@ namespace SS.CMS.Core.Serialization
                     templateRepository.GetTemplateInfoListBySiteId(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
-                    if (templateInfo.Default == false)
+                    if (templateInfo.IsDefault == false)
                     {
                         templateRepository.Delete(siteId, templateInfo.Id);
                     }
@@ -137,7 +138,7 @@ namespace SS.CMS.Core.Serialization
             }
             importObject.RemoveDbCache();
 
-            CacheUtils.ClearAll();
+            cacheManager.ClearAll();
         }
     }
 }

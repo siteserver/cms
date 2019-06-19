@@ -1,25 +1,19 @@
 using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Config")]
     public partial class ConfigInfo : Entity
     {
         [TableColumn]
-        private string IsInitialized { get; set; }
-
-        public bool Initialized
-        {
-            get => IsInitialized == "True";
-            set => IsInitialized = value.ToString();
-        }
+        public bool IsInitialized { get; set; }
 
         [TableColumn]
         public string DatabaseVersion { get; set; }
 
         [TableColumn]
-        public DateTime? UpdateDate { get; set; }
+        public DateTimeOffset? UpdateDate { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
         private string SystemConfig { get; set; }

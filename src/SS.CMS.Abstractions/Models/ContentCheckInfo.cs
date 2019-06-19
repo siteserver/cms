@@ -1,7 +1,7 @@
 using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_ContentCheck")]
     public class ContentCheckInfo : Entity
@@ -22,19 +22,13 @@ namespace SS.CMS.Abstractions.Models
         public string UserName { get; set; }
 
         [TableColumn]
-        private string IsChecked { get; set; }
-
-        public bool Checked
-        {
-            get => IsChecked == "True";
-            set => IsChecked = value.ToString();
-        }
+        public bool IsChecked { get; set; }
 
         [TableColumn]
         public int CheckedLevel { get; set; }
 
         [TableColumn]
-        public DateTime? CheckDate { get; set; }
+        public DateTimeOffset? CheckDate { get; set; }
 
         [TableColumn]
         public string Reasons { get; set; }

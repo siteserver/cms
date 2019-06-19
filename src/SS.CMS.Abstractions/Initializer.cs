@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Abstractions
+﻿namespace SS.CMS
 {
     /// <summary>
     /// 插件初始化类，此类的方法由系统调用，在插件开发时请勿直接使用。

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
-using Menu = SS.CMS.Abstractions.Menu;
+using SS.CMS.Models;
+using Menu = SS.CMS.Menu;
 
 namespace SS.CMS.Core.Plugin
 {

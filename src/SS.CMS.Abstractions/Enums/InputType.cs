@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     /// <summary>
     /// 表单的输入类型。

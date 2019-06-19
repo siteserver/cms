@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Enums;
+using SS.CMS.Enums;
 
 namespace SS.CMS.Core.Common
 {

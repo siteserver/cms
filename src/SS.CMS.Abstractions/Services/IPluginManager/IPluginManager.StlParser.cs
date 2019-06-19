@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IPluginManager
 {
     public partial interface IPluginManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     public sealed class PackageType : IEquatable<PackageType>, IComparable<PackageType>
     {

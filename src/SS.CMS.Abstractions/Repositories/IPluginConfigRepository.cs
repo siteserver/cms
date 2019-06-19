@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
     public interface IPluginConfigRepository : IRepository
     {

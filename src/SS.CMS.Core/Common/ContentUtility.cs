@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
-using SS.CMS.Core.Services;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPluginManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
@@ -200,7 +196,7 @@ namespace SS.CMS.Core.Common
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.LastEditDate,
+                    AttributeName = ContentAttribute.LastModifiedDate,
                     DisplayName = "最后修改时间",
                     Taxis = taxis++
                 },
@@ -230,14 +226,8 @@ namespace SS.CMS.Core.Common
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.AdminId,
-                    DisplayName = "管理员",
-                    Taxis = taxis++
-                },
-                new TableStyleInfo
-                {
                     AttributeName = ContentAttribute.UserId,
-                    DisplayName = "投稿用户",
+                    DisplayName = "添加人",
                     Taxis = taxis++
                 },
                 new TableStyleInfo
@@ -349,7 +339,7 @@ namespace SS.CMS.Core.Common
             return list;
         }
 
-        public static bool AfterContentAdded(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
+        public static bool AfterContentAdded(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
         {
             var isTranslated = false;
             if (isCrossSiteTrans && isAutomatic)
@@ -396,7 +386,7 @@ namespace SS.CMS.Core.Common
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
+                    errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
                 }
             }
 

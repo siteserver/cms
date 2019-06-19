@@ -1,7 +1,7 @@
 using System.Collections.Specialized;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IUrlManager
 {
     public partial interface IUrlManager
     {

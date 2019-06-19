@@ -1,21 +1,27 @@
 using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
-    public class SiteLogRepository : ISiteLogRepository
+    public partial class SiteLogRepository : ISiteLogRepository
     {
         private readonly Repository<SiteLogInfo> _repository;
         private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
+        private readonly ILogRepository _logRepository;
 
-        public SiteLogRepository(ISettingsManager settingsManager)
+        public SiteLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository)
         {
             _repository = new Repository<SiteLogInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
+            _configRepository = configRepository;
+            _errorLogRepository = errorLogRepository;
+            _logRepository = logRepository;
         }
 
         public IDb Db => _repository.Db;
@@ -25,7 +31,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(SiteLogInfo.Id);
-            public const string AddDate = nameof(SiteLogInfo.AddDate);
+            public const string CreationDate = nameof(SiteLogInfo.CreationDate);
         }
 
         public void Insert(SiteLogInfo logInfo)
@@ -35,12 +41,12 @@ namespace SS.CMS.Core.Repositories
 
         public void DeleteIfThreshold()
         {
-            if (!_settingsManager.ConfigInfo.IsTimeThreshold) return;
+            if (!_configRepository.Instance.IsTimeThreshold) return;
 
-            var days = _settingsManager.ConfigInfo.TimeThreshold;
+            var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            _repository.Delete(Q.Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+            _repository.Delete(Q.Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)

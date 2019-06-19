@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     /// <summary>
     /// 系统支持的模板类型。

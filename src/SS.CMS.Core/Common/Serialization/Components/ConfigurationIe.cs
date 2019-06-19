@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -45,7 +41,7 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.TableName, "AuxiliaryTableForContent" }, siteInfo.TableName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { SiteAttribute.ParentId, "ParentPublishmentSystemId" }, siteInfo.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, siteInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.SettingsXml, siteInfo.SettingsXml);
+            AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.ExtendValues, siteInfo.ExtendValues);
 
             var indexTemplateId = _templateRepository.GetDefaultTemplateId(siteInfo.Id, TemplateType.IndexPageTemplate);
             if (indexTemplateId != 0)
@@ -109,7 +105,7 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 siteInfo.SiteDir = siteInfo.SiteDir.Substring(siteInfo.SiteDir.LastIndexOf("\\", StringComparison.Ordinal) + 1);
             }
-            siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml);
+            siteInfo.ExtendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.ExtendValues);
             siteInfo.IsCreateDoubleClick = false;
             return siteInfo;
         }
@@ -122,12 +118,12 @@ namespace SS.CMS.Core.Serialization.Components
 
             var siteInfo = _siteRepository.GetSiteInfo(_siteId);
 
-            siteInfo.SettingsXml = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.SettingsXml, siteInfo.SettingsXml);
+            siteInfo.ExtendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.ExtendValues, siteInfo.ExtendValues);
 
             siteInfo.IsSeparatedWeb = false;
             siteInfo.IsCreateDoubleClick = false;
 
-            DataProvider.SiteRepository.Update(siteInfo);
+            _siteRepository.Update(siteInfo);
 
             var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
             if (!string.IsNullOrEmpty(indexTemplateName))

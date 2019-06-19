@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Common.Create;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ICreateManager;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -26,29 +29,39 @@ namespace SS.CMS.Core.Services
     {
         private readonly IConfiguration _configuration;
         private readonly ISettingsManager _settingsManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IPluginManager _pluginManager;
         private readonly IUrlManager _urlManager;
         private readonly IPathManager _pathManager;
         private readonly IFileManager _fileManager;
+        private readonly ITableManager _tableManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ISpecialRepository _specialRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ITemplateRepository _templateRepository;
+        private readonly ITagRepository _tagRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public CreateManager(IConfiguration configuration, ISettingsManager settingsManager, IPluginManager pluginManager, IUrlManager urlManager, IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, ISpecialRepository specialRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
+        public CreateManager(IConfiguration configuration, ISettingsManager settingsManager, ICacheManager cacheManager, IPluginManager pluginManager, IUrlManager urlManager, IPathManager pathManager, IFileManager fileManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ISpecialRepository specialRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
         {
             _configuration = configuration;
             _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
             _pluginManager = pluginManager;
             _urlManager = urlManager;
             _pathManager = pathManager;
             _fileManager = fileManager;
+            _tableManager = tableManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _specialRepository = specialRepository;
             _userRepository = userRepository;
             _tableStyleRepository = tableStyleRepository;
             _templateRepository = templateRepository;
+            _tagRepository = tagRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         private string GetTaskName(CreateType createType, int siteId, int channelId, int contentId,
@@ -58,7 +71,7 @@ namespace SS.CMS.Core.Services
             var name = string.Empty;
             if (createType == CreateType.Channel)
             {
-                name = channelId == siteId ? "首页" : ChannelManager.GetChannelName(siteId, channelId);
+                name = channelId == siteId ? "首页" : _channelRepository.GetChannelName(siteId, channelId);
                 if (!string.IsNullOrEmpty(name))
                 {
                     pageCount = 1;
@@ -67,11 +80,11 @@ namespace SS.CMS.Core.Services
             else if (createType == CreateType.AllContent)
             {
                 var siteInfo = _siteRepository.GetSiteInfo(siteId);
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
 
                 if (channelInfo != null)
                 {
-                    var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                    var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                     if (count > 0)
                     {
                         pageCount = count;
@@ -81,7 +94,7 @@ namespace SS.CMS.Core.Services
             }
             else if (createType == CreateType.Content)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
                 var tuple = channelInfo.ContentRepository.GetValueWithChannelId<string>(contentId, ContentAttribute.Title);
                 if (tuple != null)
                 {
@@ -112,7 +125,7 @@ namespace SS.CMS.Core.Services
         {
             CreateTaskManager.ClearAllTask(siteId);
 
-            var channelIdList = ChannelManager.GetChannelIdList(siteId);
+            var channelIdList = _channelRepository.GetChannelIdList(siteId);
             foreach (var channelId in channelIdList)
             {
                 CreateChannel(siteId, channelId);
@@ -144,7 +157,7 @@ namespace SS.CMS.Core.Services
             }
             else if (templateInfo.Type == TemplateType.ChannelTemplate)
             {
-                var channelIdList = DataProvider.ChannelRepository.GetChannelIdList(templateInfo);
+                var channelIdList = _channelRepository.GetChannelIdList(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     CreateChannel(siteId, channelId);
@@ -152,7 +165,7 @@ namespace SS.CMS.Core.Services
             }
             else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                var channelIdList = DataProvider.ChannelRepository.GetChannelIdList(templateInfo);
+                var channelIdList = _channelRepository.GetChannelIdList(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     CreateAllContent(siteId, channelId);
@@ -228,7 +241,7 @@ namespace SS.CMS.Core.Services
         {
             if (siteId <= 0 || channelId <= 0) return;
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
             var channelIdList = TranslateUtils.StringCollectionToIntList(channelInfo.CreateChannelIdsIfContentChanged);
             if (channelInfo.IsCreateChannelIfContentChanged && !channelIdList.Contains(channelId))
             {
@@ -250,7 +263,7 @@ namespace SS.CMS.Core.Services
             else if (createType == CreateType.Content)
             {
                 var siteInfo = _siteRepository.GetSiteInfo(siteId);
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
                 await CreateContentAsync(siteInfo, channelInfo, contentId);
             }
             else if (createType == CreateType.AllContent)
@@ -270,7 +283,7 @@ namespace SS.CMS.Core.Services
         private async Task CreateContentsAsync(int siteId, int channelId)
         {
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
 
             var contentIdList = channelInfo.ContentRepository.StlGetContentIdListChecked(channelInfo, TaxisType.OrderByTaxisDesc);
 
@@ -283,15 +296,15 @@ namespace SS.CMS.Core.Services
         private async Task CreateChannelAsync(int siteId, int channelId)
         {
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
 
-            if (!ChannelManager.IsCreatable(_pluginManager, siteInfo, channelInfo)) return;
+            if (!_channelRepository.IsCreatable(siteInfo, channelInfo)) return;
 
             var templateInfo = channelId == siteId
                 ? _templateRepository.GetIndexPageTemplateInfo(siteId)
                 : _templateRepository.GetChannelTemplateInfo(siteId, channelId);
             var filePath = _pathManager.GetChannelPageFilePath(siteInfo, channelId, 0);
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _pluginManager, _pathManager, _urlManager, _fileManager, _siteRepository, _userRepository, _tableStyleRepository, _templateRepository)
+            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
             {
                 ContextType = EContextType.Channel
             };
@@ -432,7 +445,7 @@ namespace SS.CMS.Core.Services
                 return;
             }
 
-            if (!contentInfo.Checked)
+            if (!contentInfo.IsChecked)
             {
                 _fileManager.DeleteContent(siteInfo, channelInfo.Id, contentId);
                 return;
@@ -449,7 +462,7 @@ namespace SS.CMS.Core.Services
             }
 
             var templateInfo = _templateRepository.GetContentTemplateInfo(siteInfo.Id, channelInfo.Id);
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelInfo.Id, contentId, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _pluginManager, _pathManager, _urlManager, _fileManager, _siteRepository, _userRepository, _tableStyleRepository, _templateRepository)
+            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelInfo.Id, contentId, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
             {
                 ContextType = EContextType.Content,
                 ContentInfo = contentInfo
@@ -622,7 +635,7 @@ namespace SS.CMS.Core.Services
                 return;
             }
 
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _pluginManager, _pathManager, _urlManager, _fileManager, _siteRepository, _userRepository, _tableStyleRepository, _templateRepository);
+            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
             var filePath = _pathManager.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 
             var contentBuilder = new StringBuilder(_templateRepository.GetTemplateContent(siteInfo, templateInfo));
@@ -636,7 +649,7 @@ namespace SS.CMS.Core.Services
             var templateInfoList = _specialRepository.GetTemplateInfoList(siteInfo, specialId, _pathManager);
             foreach (var templateInfo in templateInfoList)
             {
-                var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _pluginManager, _pathManager, _urlManager, _fileManager, _siteRepository, _userRepository, _tableStyleRepository, _templateRepository);
+                var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
                 var filePath = _pathManager.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);

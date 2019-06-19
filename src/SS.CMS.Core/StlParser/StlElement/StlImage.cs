@@ -1,10 +1,6 @@
 ﻿using System.Collections.Specialized;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -167,9 +163,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                            var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
+                            var targetSiteId = parseContext.ChannelRepository.StlGetSiteId(targetChannelId);
                             var targetSiteInfo = parseContext.SiteRepository.GetSiteInfo(targetSiteId);
-                            var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+                            var targetNodeInfo = parseContext.ChannelRepository.GetChannelInfo(targetSiteId, targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
                             var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
@@ -213,11 +209,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (contextType == EContextType.Channel)//获取栏目图片
                 {
-                    var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+                    var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-                    channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
+                    channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                    var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
+                    var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelId);
 
                     picUrl = channel.ImageUrl;
                 }

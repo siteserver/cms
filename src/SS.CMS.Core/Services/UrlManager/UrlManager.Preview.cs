@@ -1,6 +1,4 @@
-﻿using SS.CMS.Abstractions.Services;
-
-namespace SS.CMS.Core.Services
+﻿namespace SS.CMS.Core.Services
 {
     public partial class UrlManager
     {

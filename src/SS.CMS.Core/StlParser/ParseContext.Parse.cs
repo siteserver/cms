@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -39,7 +38,7 @@ namespace SS.CMS.Core.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddStlErrorLog(PageInfo, service.PluginId, nameof(service.OnBeforeStlParse), ex);
+                    GetErrorMessage(service.PluginId, nameof(service.OnBeforeStlParse), ex);
                 }
             }
 
@@ -56,7 +55,7 @@ namespace SS.CMS.Core.StlParser
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddStlErrorLog(PageInfo, service.PluginId, nameof(service.OnAfterStlParse), ex);
+                    GetErrorMessage(service.PluginId, nameof(service.OnAfterStlParse), ex);
                 }
             }
 

@@ -1,15 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Plugin;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
+        public bool IsContentTable(IService service)
+        {
+            return !string.IsNullOrEmpty(service.ContentTableName) &&
+                    service.ContentTableColumns != null && service.ContentTableColumns.Count > 0;
+        }
+
+        public string GetContentTableName(string pluginId)
+        {
+            foreach (var service in Services)
+            {
+                if (service.PluginId == pluginId && IsContentTable(service))
+                {
+                    return service.ContentTableName;
+                }
+            }
+
+            return string.Empty;
+        }
+
         public List<IPackageMetadata> GetContentModelPlugins()
         {
             var list = new List<IPackageMetadata>();

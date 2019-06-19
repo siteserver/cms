@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Text;
 using SS.CMS.Core.Api.Sys.Stl;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 
@@ -55,11 +53,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     }
                 }
 
-                //_dataSet = StlDataUtility.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.PageNum, _listInfo.Order);
+                //_dataSet = parseContext.GetPageSqlContentsDataSet(_listInfo.ConnectionString, _listInfo.QueryString, _listInfo.StartNum, _listInfo.PageNum, _listInfo.Order);
             }
             catch (Exception ex)
             {
-                LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, stlPageSqlContentsElement, ex);
+                _parseContext.GetErrorMessage(ElementName, stlPageSqlContentsElement, ex);
                 _listInfo = new ListInfo();
             }
         }
@@ -71,7 +69,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             try
             {
                 //totalNum = DatabaseApi.Instance.GetPageTotalCount(SqlString);
-                totalNum = StlDatabaseCache.GetPageTotalCount(_sqlString);
+                totalNum = _parseContext.CacheManager.GetPageTotalCount(_sqlString);
                 if (_listInfo.PageNum != 0 && _listInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(_listInfo.PageNum)));//需要生成的总页数
@@ -122,9 +120,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 if (!string.IsNullOrEmpty(_sqlString))
                 {
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = StlDatabaseCache.GetStlPageSqlString(_sqlString, _listInfo.Order, totalNum, _listInfo.PageNum, currentPageIndex);
+                    var pageSqlString = _parseContext.CacheManager.GetStlPageSqlString(_sqlString, _listInfo.Order, totalNum, _listInfo.PageNum, currentPageIndex);
 
-                    var sqlList = StlDataUtility.GetPageContainerSqlList(_parseContext.SettingsManager, _listInfo.ConnectionString, pageSqlString);
+                    var sqlList = _parseContext.GetPageContainerSqlList(_listInfo.ConnectionString, pageSqlString);
 
                     return StlSqlContents.ParseElement(_parseContext, _listInfo, sqlList);
 
@@ -285,7 +283,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, _stlPageSqlContentsElement, ex);
+                parsedContent = _parseContext.GetErrorMessage(ElementName, _stlPageSqlContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

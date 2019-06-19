@@ -1,8 +1,8 @@
 ﻿using System;
 using SqlKata;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
@@ -35,13 +35,13 @@ namespace SS.CMS.Core.Common
             {
                 return nameof(TaxisType.OrderByAddDateDesc);
             }
-            if (type == TaxisType.OrderByLastEditDate)
+            if (type == TaxisType.OrderByLastModifiedDate)
             {
-                return nameof(TaxisType.OrderByLastEditDate);
+                return nameof(TaxisType.OrderByLastModifiedDate);
             }
-            if (type == TaxisType.OrderByLastEditDateDesc)
+            if (type == TaxisType.OrderByLastModifiedDateDesc)
             {
-                return nameof(TaxisType.OrderByLastEditDateDesc);
+                return nameof(TaxisType.OrderByLastModifiedDateDesc);
             }
             if (type == TaxisType.OrderByTaxis)
             {
@@ -106,17 +106,17 @@ namespace SS.CMS.Core.Common
             }
             else if (taxisType == TaxisType.OrderByAddDate)
             {
-                query.OrderBy(nameof(ChannelInfo.AddDate));
+                query.OrderBy(nameof(ChannelInfo.CreationDate));
             }
             else if (taxisType == TaxisType.OrderByAddDateDesc)
             {
-                query.OrderByDesc(nameof(ChannelInfo.AddDate));
+                query.OrderByDesc(nameof(ChannelInfo.CreationDate));
             }
-            else if (taxisType == TaxisType.OrderByLastEditDate)
+            else if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
                 query.OrderBy(nameof(ChannelInfo.LastModifiedDate));
             }
-            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            else if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
                 query.OrderByDesc(nameof(ChannelInfo.LastModifiedDate));
             }
@@ -146,8 +146,8 @@ namespace SS.CMS.Core.Common
                 retval = nameof(ContentInfo.ChannelId);
             else if (taxisType == TaxisType.OrderByAddDate || taxisType == TaxisType.OrderByAddDateDesc)
                 retval = nameof(ContentInfo.AddDate);
-            else if (taxisType == TaxisType.OrderByLastEditDate || taxisType == TaxisType.OrderByLastEditDateDesc)
-                retval = nameof(ContentInfo.LastEditDate);
+            else if (taxisType == TaxisType.OrderByLastModifiedDate || taxisType == TaxisType.OrderByLastModifiedDateDesc)
+                retval = nameof(ContentInfo.LastModifiedDate);
             else if (taxisType == TaxisType.OrderByHits)
                 retval = nameof(ContentInfo.Hits);
             else if (taxisType == TaxisType.OrderByHitsByDay)
@@ -185,11 +185,11 @@ namespace SS.CMS.Core.Common
             {
                 return "添加时间（降序）";
             }
-            if (type == TaxisType.OrderByLastEditDate)
+            if (type == TaxisType.OrderByLastModifiedDate)
             {
                 return "更新时间（升序）";
             }
-            if (type == TaxisType.OrderByLastEditDateDesc)
+            if (type == TaxisType.OrderByLastModifiedDateDesc)
             {
                 return "更新时间（降序）";
             }

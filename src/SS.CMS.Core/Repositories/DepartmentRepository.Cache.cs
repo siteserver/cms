@@ -1,14 +1,11 @@
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache.Core;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class DepartmentRepository
     {
-        private readonly object _lockObject = new object();
-
         public List<KeyValuePair<int, string>> GetRestDepartments()
         {
             var list = new List<KeyValuePair<int, string>>();
@@ -18,7 +15,7 @@ namespace SS.CMS.Core.Repositories
             foreach (var departmentId in departmentIdList)
             {
                 var departmentInfo = GetDepartmentInfo(departmentId);
-                list.Add(new KeyValuePair<int, string>(departmentId, GetTreeItem(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.LastNode, parentsCountDict)));
+                list.Add(new KeyValuePair<int, string>(departmentId, GetTreeItem(departmentInfo.DepartmentName, departmentInfo.ParentsCount, departmentInfo.IsLastNode, parentsCountDict)));
             }
 
             return list;
@@ -108,23 +105,17 @@ namespace SS.CMS.Core.Repositories
 
         public void ClearCache()
         {
-            lock (_lockObject)
-            {
-                DataCacheManager.Remove(CacheKey);
-            }
+            _cacheManager.Remove(CacheKey);
         }
 
         public List<KeyValuePair<int, DepartmentInfo>> GetDepartmentInfoKeyValuePair()
         {
-            lock (_lockObject)
-            {
-                var list = DataCacheManager.Get<List<KeyValuePair<int, DepartmentInfo>>>(CacheKey);
-                if (list != null) return list;
+            var list = _cacheManager.Get<List<KeyValuePair<int, DepartmentInfo>>>(CacheKey);
+            if (list != null) return list;
 
-                list = GetDepartmentInfoKeyValuePairToCache();
-                DataCacheManager.Insert(CacheKey, list);
-                return list;
-            }
+            list = GetDepartmentInfoKeyValuePairToCache();
+            _cacheManager.Insert(CacheKey, list);
+            return list;
         }
     }
 }

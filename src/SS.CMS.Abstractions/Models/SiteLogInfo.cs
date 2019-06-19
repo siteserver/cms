@@ -1,7 +1,6 @@
-using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_SiteLog")]
     public class SiteLogInfo : Entity
@@ -20,9 +19,6 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn]
         public string IpAddress { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
 
         [TableColumn]
         public string Action { get; set; }

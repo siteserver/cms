@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common

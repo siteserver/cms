@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Common.Office;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Serialization.Components;
-using SS.CMS.Core.Services;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICreateManager;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -28,7 +29,10 @@ namespace SS.CMS.Core.Serialization
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
         private readonly IFileManager _fileManager;
+        private readonly ITableManager _tableManager;
+        private readonly IDbCacheRepository _dbCacheRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly ISpecialRepository _specialRepository;
@@ -51,7 +55,7 @@ namespace SS.CMS.Core.Serialization
         public NameValueCollection GetTableNameCache()
         {
             NameValueCollection nameValueCollection = null;
-            var cacheValue = CacheDbUtils.GetValue(GetTableNameNameValueCollectionDbCacheKey());
+            var cacheValue = _dbCacheRepository.GetValue(GetTableNameNameValueCollectionDbCacheKey());
             if (!string.IsNullOrEmpty(cacheValue))
             {
                 nameValueCollection = TranslateUtils.ToNameValueCollection(cacheValue);
@@ -65,14 +69,14 @@ namespace SS.CMS.Core.Serialization
             {
                 var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
                 var cacheValue = TranslateUtils.NameValueCollectionToString(nameValueCollection);
-                CacheDbUtils.RemoveAndInsert(cacheKey, cacheValue);
+                _dbCacheRepository.RemoveAndInsert(cacheKey, cacheValue);
             }
         }
 
         public void RemoveDbCache()
         {
             var cacheKey = GetTableNameNameValueCollectionDbCacheKey();
-            CacheDbUtils.GetValueAndRemove(cacheKey);
+            _dbCacheRepository.GetValueAndRemove(cacheKey);
         }
 
         public void ImportFiles(string siteTemplatePath, bool isOverride)
@@ -272,7 +276,7 @@ namespace SS.CMS.Core.Serialization
             ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
 
-        public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -282,13 +286,13 @@ namespace SS.CMS.Core.Serialization
 
             var taxis = nodeInfo.ContentRepository.GetMaxTaxis(nodeInfo.Id, false);
 
-            ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
+            ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, userId, sourceId);
         }
 
         public void ImportContentsByCsvFile(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
-            var contentInfoList = ExcelObject.GetContentsByCsvFile(_pluginManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
+            var channelInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, channelId);
+            var contentInfoList = ExcelObject.GetContentsByCsvFile(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
             if (importStart > 1 || importCount > 0)
@@ -326,7 +330,7 @@ namespace SS.CMS.Core.Serialization
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.Checked = isChecked;
+                contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
@@ -352,18 +356,16 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public void ImportContentsByCsvFile(ChannelInfo channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public void ImportContentsByCsvFile(ChannelInfo channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
-            var contentInfoList = ExcelObject.GetContentsByCsvFile(_pluginManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
+            var contentInfoList = ExcelObject.GetContentsByCsvFile(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.Checked = isChecked;
+                contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
                 contentInfo.AddDate = DateTime.Now;
-                contentInfo.LastEditDate = DateTime.Now;
-                contentInfo.AdminId = adminId;
                 contentInfo.UserId = userId;
                 contentInfo.SourceId = sourceId;
 
@@ -398,7 +400,7 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
-            var channelInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, channelId);
 
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _siteInfo, channelInfo);
 
@@ -437,7 +439,7 @@ namespace SS.CMS.Core.Serialization
 
             foreach (var contentInfo in contentInfoList)
             {
-                contentInfo.Checked = isChecked;
+                contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
 
                 //int contentID = DataProvider.ContentRepository.Insert(tableName, this.FSO.SiteInfo, contentInfo);
@@ -467,7 +469,7 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public void ImportContentsByTxtFile(ChannelInfo channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public void ImportContentsByTxtFile(ChannelInfo channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var contentInfo = new ContentInfo
             {
@@ -475,11 +477,9 @@ namespace SS.CMS.Core.Serialization
                 ChannelId = channelInfo.Id,
                 Title = PathUtils.GetFileNameWithoutExtension(txtFilePath),
                 Content = StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath, Encoding.UTF8)),
-                Checked = isChecked,
+                IsChecked = isChecked,
                 CheckedLevel = checkedLevel,
                 AddDate = DateTime.Now,
-                LastEditDate = DateTime.Now,
-                AdminId = adminId,
                 UserId = userId,
                 SourceId = sourceId
             };
@@ -519,13 +519,13 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _sitePath, isOverride);
         }
 
-        public void ImportContents(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public void ImportContents(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
             var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
 
-            contentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
+            contentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, isChecked, checkedLevel, userId, sourceId);
 
             FileUtils.DeleteFileIfExists(filePath);
 

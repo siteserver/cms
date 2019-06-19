@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Api.Sys.Stl;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
-using SS.CMS.Utils.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -42,11 +38,11 @@ namespace SS.CMS.Core.StlParser.StlElement
             parseContext.ContextType = EContextType.Content;
             _listInfo = ListInfo.GetListInfo(_parseContext);
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
+            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
+            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
 
-            _contentInfoList = StlDataUtility.GetStlPageContentsSqlString(_parseContext.PluginManager, parseContext.SiteInfo, channelId, _listInfo);
+            _contentInfoList = parseContext.GetStlPageContentsSqlString(parseContext.SiteInfo, channelId, _listInfo);
         }
 
         //API StlActionsSearchController调用
@@ -67,7 +63,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 _listInfo.PageNum = pageNum;
             }
 
-            _contentInfoList = StlDataUtility.GetPageContentsSqlStringBySearch(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImage, _listInfo.IsVideo, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.Order, _listInfo.IsTop, _listInfo.IsRecommend, _listInfo.IsHot, _listInfo.IsColor);
+            _contentInfoList = parseContext.GetPageContentsSqlStringBySearch(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImage, _listInfo.IsVideo, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.Order, _listInfo.IsTop, _listInfo.IsRecommend, _listInfo.IsHot, _listInfo.IsColor);
         }
 
         public int GetPageCount(out int totalNum)
@@ -85,7 +81,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, _stlPageContentsElement, ex);
+                _parseContext.GetErrorMessage(ElementName, _stlPageContentsElement, ex);
             }
             return pageCount;
         }
@@ -119,7 +115,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(_parseContext.PageInfo, ElementName, _stlPageContentsElement, ex);
+                parsedContent = _parseContext.GetErrorMessage(ElementName, _stlPageContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

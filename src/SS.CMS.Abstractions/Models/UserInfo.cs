@@ -2,55 +2,34 @@ using System;
 using Newtonsoft.Json;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_User")]
     public class UserInfo : Entity
     {
-        /// <summary>
-        /// 用户名。
-        /// </summary>
         [TableColumn]
         public string UserName { get; set; }
 
-        /// <summary>
-        /// 密码。
-        /// </summary>
-        [TableColumn]
         [JsonIgnore]
+        [TableColumn]
         public string Password { get; set; }
 
-        /// <summary>
-        /// 加密格式。
-        /// </summary>
-        [TableColumn]
         [JsonIgnore]
+        [TableColumn]
         public string PasswordFormat { get; set; }
 
-        /// <summary>
-        /// 秘钥。
-        /// </summary>
-        [TableColumn]
         [JsonIgnore]
-        public string PasswordSalt { get; set; }
-
-        /// <summary>
-        /// 创建时间。
-        /// </summary>
         [TableColumn]
-        public DateTime? CreateDate { get; set; }
+        public string PasswordSalt { get; set; }
 
         /// <summary>
         /// 最后一次重设密码时间。
         /// </summary>
         [TableColumn]
-        public DateTime? LastResetPasswordDate { get; set; }
+        public DateTimeOffset? LastResetPasswordDate { get; set; }
 
-        /// <summary>
-        /// 最后活动时间。
-        /// </summary>
         [TableColumn]
-        public DateTime? LastActivityDate { get; set; }
+        public DateTimeOffset? LastActivityDate { get; set; }
 
         /// <summary>
         /// 用户组Id。
@@ -58,140 +37,52 @@ namespace SS.CMS.Abstractions.Models
         [TableColumn]
         public int GroupId { get; set; }
 
-        /// <summary>
-        /// 登录次数。
-        /// </summary>
         [TableColumn]
         public int CountOfLogin { get; set; }
 
-        /// <summary>
-        /// 连续登录失败次数。
-        /// </summary>
         [TableColumn]
         public int CountOfFailedLogin { get; set; }
+
+        [TableColumn]
+        public string CreatorUserName { get; set; }
+
+        [TableColumn]
+        public bool IsLockedOut { get; set; }
 
         /// <summary>
         /// 是否已审核用户。
         /// </summary>
         [TableColumn]
-        private string IsChecked { get; set; }
+        public bool IsChecked { get; set; }
 
-        public bool Checked
-        {
-            get => IsChecked == "True";
-            set => IsChecked = value.ToString();
-        }
+        [TableColumn(Text = true)]
+        public string SiteIdCollection { get; set; }
 
-        /// <summary>
-        /// 是否被锁定。
-        /// </summary>
         [TableColumn]
-        private string IsLockedOut { get; set; }
+        public int SiteId { get; set; }
 
-        public bool Locked
-        {
-            get => IsLockedOut == "True";
-            set => IsLockedOut = value.ToString();
-        }
+        [TableColumn]
+        public int DepartmentId { get; set; }
 
-        /// <summary>
-        /// 姓名。
-        /// </summary>
+        [TableColumn]
+        public int AreaId { get; set; }
+
         [TableColumn]
         public string DisplayName { get; set; }
 
-        /// <summary>
-        /// 手机号。
-        /// </summary>
         [TableColumn]
         public string Mobile { get; set; }
 
-        /// <summary>
-        /// 邮箱。
-        /// </summary>
         [TableColumn]
         public string Email { get; set; }
 
-        /// <summary>
-        /// 头像图片路径。
-        /// </summary>
-        [TableColumn]
+        [TableColumn(Length = 1000)]
         public string AvatarUrl { get; set; }
 
-        /// <summary>
-        /// 性别。
-        /// </summary>
-        [TableColumn]
-        public string Gender { get; set; }
-
-        /// <summary>
-        /// 出生日期。
-        /// </summary>
-        [TableColumn]
-        public string Birthday { get; set; }
-
-        /// <summary>
-        /// 微信。
-        /// </summary>
-        [TableColumn]
-        public string WeiXin { get; set; }
-
-        /// <summary>
-        /// QQ。
-        /// </summary>
-        [TableColumn]
-        public string Qq { get; set; }
-
-        /// <summary>
-        /// 微博。
-        /// </summary>
-        [TableColumn]
-        public string WeiBo { get; set; }
-
-        /// <summary>
-        /// 简介。
-        /// </summary>
         [TableColumn(Text = true)]
         public string Bio { get; set; }
 
-        /// <summary>
-        /// 附加字段。
-        /// </summary>
         [TableColumn(Text = true, Extend = true)]
-        public string SettingsXml { get; set; }
-
-        //public Dictionary<string, object> ToDictionary()
-        //{
-        //    var dict = base.ToDictionary();
-
-        //    var styleInfoList = TableStyleManager.GetUserStyleInfoList();
-
-        //    foreach (var styleInfo in styleInfoList)
-        //    {
-        //        dict.Remove(styleInfo.AttributeName);
-        //        dict[styleInfo.AttributeName] = Get(styleInfo.AttributeName);
-        //    }
-
-        //    foreach (var attributeName in UserAttribute.AllAttributes.Value)
-        //    {
-        //        if (StringUtils.StartsWith(attributeName, "Is"))
-        //        {
-        //            dict.Remove(attributeName);
-        //            dict[attributeName] = GetBool(attributeName);
-        //        }
-        //        else
-        //        {
-        //            dict.Remove(attributeName);
-        //            dict[attributeName] = Get(attributeName);
-        //        }
-        //    }
-
-        //    foreach (var attributeName in UserAttribute.ExcludedAttributes.Value)
-        //    {
-        //        dict.Remove(attributeName);
-        //    }
-
-        //    return dict;
-        //}
+        public string ExtendValues { get; set; }
     }
 }

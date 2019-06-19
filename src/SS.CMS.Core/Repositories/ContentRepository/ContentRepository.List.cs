@@ -4,13 +4,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using Dapper;
 using SqlKata;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Api.V1;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
@@ -129,7 +126,7 @@ namespace SS.CMS.Core.Repositories
         //     }
         //     if (!string.IsNullOrEmpty(parameters.ChannelGroup))
         //     {
-        //         var channelIdList = ChannelManager.GetChannelIdList(siteId, parameters.ChannelGroup);
+        //         var channelIdList = _channelRepository.GetChannelIdList(siteId, parameters.ChannelGroup);
         //         if (channelIdList.Count > 0)
         //         {
         //             query.WhereIn(Attr.ChannelId, channelIdList);
@@ -164,7 +161,7 @@ namespace SS.CMS.Core.Repositories
         //         });
         //     }
 
-        //     var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
+        //     var channelInfo = _channelRepository.GetChannelInfo(siteId, siteId);
 
         //     AddOrderByString(query, channelInfo, parameters.OrderBy);
 
@@ -219,8 +216,8 @@ namespace SS.CMS.Core.Repositories
         {
             var retVal = new List<(int, int)>();
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, ScopeType.All, string.Empty, string.Empty, string.Empty);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, ScopeType.All, string.Empty, string.Empty, string.Empty);
 
             var query = MinColumnsQuery.Where(Attr.SiteId, siteId).WhereIn(Attr.ChannelId, channelIdList).WhereTrue(Attr.IsChecked);
             QueryOrder(query, channelInfo, orderBy);
@@ -288,7 +285,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.ChannelId)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.IsChecked, true.ToString())
-                .WhereBetween(Attr.LastEditDate, DateTime.Now.AddHours(-hour), DateTime.Now)
+                .WhereBetween(Attr.LastModifiedDate, DateTime.Now.AddHours(-hour), DateTime.Now)
                 .Distinct()
             ).ToList();
         }
@@ -327,7 +324,7 @@ namespace SS.CMS.Core.Repositories
             List<ContentCountInfo> list;
 
             var sqlString =
-                $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.AdminId}";
+                $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}";
 
             using (var connection = _repository.Db.GetConnection())
             {

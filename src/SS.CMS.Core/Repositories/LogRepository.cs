@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Common;
 using SS.CMS.Data;
-using SS.CMS.Utils;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
-    public class LogRepository : ILogRepository
+    public partial class LogRepository : ILogRepository
     {
         private readonly Repository<LogInfo> _repository;
         private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public LogRepository(ISettingsManager settingsManager)
+        public LogRepository(ISettingsManager settingsManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository)
         {
             _repository = new Repository<LogInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
+            _configRepository = configRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public IDb Db => _repository.Db;
@@ -28,7 +29,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(LogInfo.Id);
-            public const string AddDate = nameof(LogInfo.AddDate);
+            public const string CreationDate = nameof(LogInfo.CreationDate);
             public const string Action = nameof(LogInfo.Action);
         }
 
@@ -48,13 +49,13 @@ namespace SS.CMS.Core.Repositories
 
         public void DeleteIfThreshold()
         {
-            if (!_settingsManager.ConfigInfo.IsTimeThreshold) return;
+            if (!_configRepository.Instance.IsTimeThreshold) return;
 
-            var days = _settingsManager.ConfigInfo.TimeThreshold;
+            var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
             _repository.Delete(Q
-                .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void DeleteAll()
@@ -120,10 +121,10 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         // }
 
-        public DateTime GetLastRemoveLogDate()
+        public DateTimeOffset GetLastRemoveLogDate()
         {
             var addDate = _repository.Get<DateTime?>(Q
-                .Select(Attr.AddDate)
+                .Select(Attr.CreationDate)
                 .Where(Attr.Action, "清空数据库日志")
                 .OrderByDesc(Attr.Id));
 

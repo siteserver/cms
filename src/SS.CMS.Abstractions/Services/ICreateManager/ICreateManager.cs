@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using SS.CMS.Abstractions.Enums;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.ICreateManager
 {
     public interface ICreateManager
     {

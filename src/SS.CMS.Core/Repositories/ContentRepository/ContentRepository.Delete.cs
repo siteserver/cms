@@ -23,7 +23,7 @@ namespace SS.CMS.Core.Repositories
 
             if (contentIdList != null && contentIdList.Count > 0)
             {
-                TagUtils.RemoveTags(siteId, contentIdList);
+                _tagRepository.RemoveTags(siteId, contentIdList);
 
                 deleteNum = _repository.Delete(Q
                     .Where(Attr.SiteId, siteId)

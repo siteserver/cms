@@ -2,15 +2,18 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IUserManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin
 {
+    [AllowAnonymous]
     [Route("admin")]
     [ApiController]
     public partial class LoginController : ControllerBase
@@ -18,26 +21,27 @@ namespace SS.CMS.Api.Controllers.Admin
         public const string Route = "login";
         public const string RouteCaptcha = "login/captcha";
 
-        private readonly IIdentityManager _identityManager;
-        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserManager _userManager;
+        private readonly IUserRepository _userRepository;
 
-        public LoginController(IIdentityManager identityManager, IAdministratorRepository administratorRepository)
+        public LoginController(IUserManager userManager, IUserRepository userRepository)
         {
-            _identityManager = identityManager;
-            _administratorRepository = administratorRepository;
+            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
+        [Authorize(Roles = AuthTypes.Roles.Administrator)]
         [HttpGet(Route)]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
             // var redirect = AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
             // if (redirect != null) return Response<object>.Ok(redirect);
 
-            var adminInfo = _identityManager.IsAdminLoggin ? _identityManager.AdminInfo : null;
+            var accountInfo = await _userManager.GetUserAsync();
 
             return Ok(new
             {
-                Value = adminInfo
+                Value = accountInfo
             });
         }
 
@@ -103,7 +107,7 @@ namespace SS.CMS.Api.Controllers.Admin
         }
 
         [HttpPost(Route)]
-        public ActionResult Login([FromBody] LoginContext context)
+        public async Task<ActionResult> Login([FromBody] LoginContext context)
         {
             Request.Cookies.TryGetValue(_cookieName, out var code);
 
@@ -119,28 +123,30 @@ namespace SS.CMS.Api.Controllers.Admin
                 return BadRequest("验证码不正确，请重新输入！");
             }
 
-            AdministratorInfo adminInfo;
+            UserInfo userInfo;
 
-            if (!_administratorRepository.Validate(context.Account, context.Password, true, out var userName, out var errorMessage))
+            if (!_userRepository.Validate(context.Account, context.Password, true, out var userName, out var errorMessage))
             {
-                adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
-                if (adminInfo != null)
+                userInfo = _userRepository.GetUserInfoByUserName(userName);
+                if (userInfo != null)
                 {
-                    _administratorRepository.UpdateLastActivityDateAndCountOfFailedLogin(adminInfo); // 记录最后登录时间、失败次数+1
+                    _userRepository.UpdateLastActivityDateAndCountOfFailedLogin(userInfo); // 记录最后登录时间、失败次数+1
                 }
                 return BadRequest(errorMessage);
             }
 
-            adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
-            _administratorRepository.UpdateLastActivityDateAndCountOfLogin(adminInfo); // 记录最后登录时间、失败次数清零
-            var accessToken = AdminLogin(adminInfo.UserName, context.IsAutoLogin);
-            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+            userInfo = _userRepository.GetUserInfoByUserName(userName);
+            _userRepository.UpdateLastActivityDateAndCountOfLogin(userInfo); // 记录最后登录时间、失败次数清零
+            //var accessToken = AdminLogin(userInfo.UserName, context.IsAutoLogin);
+            //var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
+
+            await _userManager.SignInAsync(userInfo, true);
 
             return Ok(new
             {
-                Value = adminInfo,
-                AccessToken = accessToken,
-                ExpiresAt = expiresAt
+                Value = userInfo,
+                //AccessToken = accessToken,
+                //ExpiresAt = expiresAt
             });
         }
     }

@@ -1,6 +1,4 @@
-﻿using SS.CMS.Abstractions;
-
-namespace SS.CMS.Core.Plugin
+﻿namespace SS.CMS.Core.Plugin
 {
     public class ContentContext: IContentContext
     {

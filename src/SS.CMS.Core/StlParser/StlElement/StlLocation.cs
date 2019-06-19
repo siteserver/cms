@@ -1,7 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Utils;
 
@@ -73,7 +71,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 separator = parseContext.InnerHtml;
             }
 
-            var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+            var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -90,7 +88,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, currentId);
+                    var currentNodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, currentId);
                     if (currentId == parseContext.SiteId)
                     {
                         var attributes = new NameValueCollection();

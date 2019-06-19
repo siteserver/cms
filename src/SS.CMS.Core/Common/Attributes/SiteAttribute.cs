@@ -1,4 +1,4 @@
-﻿using SS.CMS.Abstractions.Models;
+﻿using SS.CMS.Models;
 
 namespace SS.CMS.Core.Models.Attributes
 {
@@ -11,6 +11,6 @@ namespace SS.CMS.Core.Models.Attributes
         public const string IsRoot = "IsRoot";
         public const string ParentId = nameof(SiteInfo.ParentId);
         public const string Taxis = nameof(SiteInfo.Taxis);
-        public const string SettingsXml = nameof(SettingsXml);
+        public const string ExtendValues = nameof(ExtendValues);
     }
 }

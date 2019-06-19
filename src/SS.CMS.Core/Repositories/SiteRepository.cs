@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Dapper;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Security;
-using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -17,10 +13,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly Repository<SiteInfo> _repository;
         private readonly ISettingsManager _settingsManager;
-        public SiteRepository(ISettingsManager settingsManager)
+        private readonly ICacheManager _cacheManager;
+
+        public SiteRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
             _repository = new Repository<SiteInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
         }
 
         public IDb Db => _repository.Db;
@@ -50,27 +49,27 @@ namespace SS.CMS.Core.Repositories
         public bool Delete(int siteId)
         {
             var siteInfo = GetSiteInfo(siteId);
-            var list = ChannelManager.GetChannelIdList(siteId);
-            DataProvider.TableStyleRepository.Delete(list, siteInfo.TableName);
+            // var list = ChannelManager.GetChannelIdList(siteId);
+            // DataProvider.TableStyleRepository.Delete(list, siteInfo.TableName);
 
-            DataProvider.TagRepository.DeleteTags(siteId);
+            // DataProvider.TagRepository.DeleteTags(siteId);
 
-            DataProvider.ChannelRepository.DeleteAll(siteId);
+            // DataProvider.ChannelRepository.DeleteAll(siteId);
 
             UpdateParentIdToZero(siteId);
 
             _repository.Delete(siteId);
 
             ClearCache();
-            ChannelManager.RemoveCacheBySiteId(siteId);
-            Permissions.ClearAllCache();
+            // ChannelManager.RemoveCacheBySiteId(siteId);
+            // Permissions.ClearAllCache();
 
             return true;
         }
 
         public bool Update(SiteInfo siteInfo)
         {
-            if (siteInfo.Root)
+            if (siteInfo.IsRoot)
             {
                 UpdateAllIsRoot();
             }

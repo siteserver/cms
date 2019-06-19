@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
+﻿using System.Collections;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IFileManager
 {
     public partial interface IFileManager
     {

@@ -1,14 +1,8 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
-using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -217,13 +211,13 @@ namespace SS.CMS.Core.StlParser.StlElement
                 scopeType = isChannel ? ScopeType.Children : ScopeType.Self;
             }
 
-            var orderByString = isChannel ? StlDataUtility.GetChannelTaxisType(order, TaxisType.OrderByTaxis) : StlDataUtility.GetContentTaxisType(parseContext.SiteId, order, TaxisType.OrderByTaxisDesc);
+            var orderByString = isChannel ? parseContext.GetChannelTaxisType(order, TaxisType.OrderByTaxis) : parseContext.GetContentTaxisType(parseContext.SiteId, order, TaxisType.OrderByTaxisDesc);
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
+            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
+            var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelId);
 
             var uniqueId = "Select_" + parseContext.UniqueId;
             attributes["id"] = uniqueId;
@@ -261,14 +255,14 @@ selObj.selectedIndex=0;
 
                 if (isChannel)
                 {
-                    var taxisType = StlDataUtility.GetChannelTaxisType(order, TaxisType.OrderByTaxis);
-                    var channelIdList = StlChannelCache.GetIdListByTotalNum(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
+                    var taxisType = parseContext.GetChannelTaxisType(order, TaxisType.OrderByTaxis);
+                    var channelIdList = parseContext.ChannelRepository.StlGetIdListByTotalNum(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
 
                     if (channelIdList != null && channelIdList.Count > 0)
                     {
                         foreach (var channelIdInSelect in channelIdList)
                         {
-                            var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, channelIdInSelect);
+                            var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelIdInSelect);
 
                             if (nodeInfo != null)
                             {
@@ -286,13 +280,13 @@ selObj.selectedIndex=0;
                 }
                 else
                 {
-                    var minContentInfoList = StlDataUtility.GetMinContentInfoList(parseContext.PluginManager, parseContext.SiteInfo, channelId, parseContext.ContentId, groupContent, groupContentNot, tags, null, null, null, false, 1, totalNum, orderByString, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
+                    var minContentInfoList = parseContext.GetMinContentInfoList(parseContext.SiteInfo, channelId, parseContext.ContentId, groupContent, groupContentNot, tags, null, null, null, false, 1, totalNum, orderByString, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
 
                     if (minContentInfoList != null)
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
-                            var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                            var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
                             var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, false);

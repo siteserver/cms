@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories

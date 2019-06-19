@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using SqlKata;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Repositories.IContentRepository;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
@@ -15,27 +17,35 @@ namespace SS.CMS.Core.Repositories
     public partial class ContentRepository : IContentRepository
     {
         private readonly ISettingsManager _settingsManager;
-        private readonly IAdministratorRepository _administratorRepository;
+        private readonly ICacheManager _cacheManager;
+        private readonly ITableManager _tableManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IContentCheckRepository _contentCheckRepository;
         private readonly IUserRepository _userRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
+        private readonly ITagRepository _tagRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
         private readonly Repository<ContentInfo> _repository;
-        private readonly TableManager _tableManager;
 
-        public ContentRepository(ISettingsManager settingsManager, IPluginManager pluginManager, IAdministratorRepository administratorRepository, IUserRepository userRepository, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository, string tableName)
+        public ContentRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
         {
             _repository = new Repository<ContentInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
 
             _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
+            _tableManager = tableManager;
             _pluginManager = pluginManager;
-            _administratorRepository = administratorRepository;
+            _contentCheckRepository = contentCheckRepository;
+            _userRepository = userRepository;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _userRepository = userRepository;
             _tableStyleRepository = tableStyleRepository;
-
-            _tableManager = new TableManager(_settingsManager);
+            _tagRepository = tagRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public IDb Db => _repository.Db;
@@ -69,7 +79,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.ChannelId)
                 .Select(Attr.IsTop)
                 .Select(Attr.AddDate)
-                .Select(Attr.LastEditDate)
+                .Select(Attr.LastModifiedDate)
                 .Select(Attr.Taxis)
                 .Select(Attr.Hits)
                 .Select(Attr.HitsByDay)
@@ -85,7 +95,7 @@ namespace SS.CMS.Core.Repositories
                 .Select(Attr.ChannelId)
                 .Select(Attr.IsTop)
                 .Select(Attr.AddDate)
-                .Select(Attr.LastEditDate)
+                .Select(Attr.LastModifiedDate)
                 .Select(Attr.Taxis)
                 .Select(Attr.Hits)
                 .Select(Attr.HitsByDay)
@@ -173,8 +183,8 @@ namespace SS.CMS.Core.Repositories
         {
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagList = TagUtils.ParseTagsString(tags);
-                var contentIdList = DataProvider.TagRepository.GetContentIdListByTagCollection(tagList, siteId);
+                var tagList = _tagRepository.ParseTagsString(tags);
+                var contentIdList = _tagRepository.GetContentIdListByTagCollection(tagList, siteId);
                 if (contentIdList.Count > 0)
                 {
                     query.WhereIn(Attr.Id, contentIdList);
@@ -189,7 +199,7 @@ namespace SS.CMS.Core.Repositories
                 var tagCollection = StlGetValue(channelInfo, contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
+                    var contentIdList = _tagRepository.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -247,21 +257,21 @@ namespace SS.CMS.Core.Repositories
             {
                 query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.AddDate).OrderByDesc(Attr.Id);
             }
-            else if (taxisType == TaxisType.OrderByLastEditDate)
+            else if (taxisType == TaxisType.OrderByLastModifiedDate)
             {
-                query.OrderByDesc(Attr.IsTop).OrderBy(Attr.LastEditDate).OrderByDesc(Attr.Id);
+                query.OrderByDesc(Attr.IsTop).OrderBy(Attr.LastModifiedDate).OrderByDesc(Attr.Id);
             }
-            else if (taxisType == TaxisType.OrderByLastEditDateDesc)
+            else if (taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
-                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastEditDate).OrderByDesc(Attr.Id);
+                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastModifiedDate).OrderByDesc(Attr.Id);
             }
             else if (taxisType == TaxisType.OrderByTaxis)
             {
-                query.OrderByDesc(Attr.IsTop).OrderBy(Attr.LastEditDate).OrderByDesc(Attr.Id);
+                query.OrderByDesc(Attr.IsTop).OrderBy(Attr.LastModifiedDate).OrderByDesc(Attr.Id);
             }
             else if (taxisType == TaxisType.OrderByTaxisDesc)
             {
-                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastEditDate).OrderByDesc(Attr.Id);
+                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastModifiedDate).OrderByDesc(Attr.Id);
             }
             else if (taxisType == TaxisType.OrderByHits)
             {
@@ -285,7 +295,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastEditDate).OrderByDesc(Attr.Id);
+                query.OrderByDesc(Attr.IsTop).OrderByDesc(Attr.LastModifiedDate).OrderByDesc(Attr.Id);
             }
         }
     }

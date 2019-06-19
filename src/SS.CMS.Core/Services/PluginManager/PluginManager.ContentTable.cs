@@ -1,39 +1,14 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Plugin;
-using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public bool IsContentTable(IService service)
-        {
-            return !string.IsNullOrEmpty(service.ContentTableName) &&
-                                     service.ContentTableColumns != null && service.ContentTableColumns.Count > 0;
-        }
-
-        public string GetContentTableName(string pluginId)
-        {
-            foreach (var service in Services)
-            {
-                if (service.PluginId == pluginId && IsContentTable(service))
-                {
-                    return service.ContentTableName;
-                }
-            }
-
-            return string.Empty;
-        }
-
         public void SyncContentTable(IService service)
         {
             if (!IsContentTable(service)) return;
@@ -48,18 +23,35 @@ namespace SS.CMS.Core.Services
             tableColumns.AddRange(defaultContentTableColumns);
             tableColumns.AddRange(service.ContentTableColumns);
 
-            var tableManager = new TableManager(_settingsManager);
-
             if (!db.IsTableExists(tableName))
             {
-                tableManager.CreateContentTable(tableName, tableColumns);
+                _tableManager.CreateContentTable(tableName, tableColumns);
             }
             else
             {
-                tableManager.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                _tableManager.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             ContentTableCreateOrUpdateStyles(tableName, service.ContentInputStyles);
+        }
+
+        public bool IsContentTableUsed(string tableName)
+        {
+            var count = _siteRepository.GetTableCount(tableName);
+
+            if (count > 0) return true;
+
+            var contentModelPluginIdList = _channelRepository.GetContentModelPluginIdList();
+            foreach (var pluginId in contentModelPluginIdList)
+            {
+                var service = GetService(pluginId);
+                if (service != null && IsContentTable(service) && service.ContentTableName == tableName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void ContentTableCreateOrUpdateStyles(string tableName, List<InputStyle> inputStyles)
@@ -69,7 +61,7 @@ namespace SS.CMS.Core.Services
             foreach (var inputStyle in inputStyles)
             {
                 columnTaxis++;
-                var styleInfo = _tableStyleRepository.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
+                var styleInfo = _tableManager.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
 
                 var isEquals = true;
 
@@ -103,10 +95,10 @@ namespace SS.CMS.Core.Services
                     styleInfo.Taxis = columnTaxis;
                 }
 
-                if (styleInfo.Required != inputStyle.IsRequired)
+                if (styleInfo.IsRequired != inputStyle.IsRequired)
                 {
                     isEquals = false;
-                    styleInfo.Required = inputStyle.IsRequired;
+                    styleInfo.IsRequired = inputStyle.IsRequired;
                 }
 
                 var validateType = ValidateType.GetValidateType(styleInfo.ValidateType);
@@ -168,7 +160,7 @@ namespace SS.CMS.Core.Services
                                 TableStyleId = styleInfo.Id,
                                 ItemTitle = listItem.Text,
                                 ItemValue = listItem.Value,
-                                Selected = listItem.Selected
+                                IsSelected = listItem.Selected
                             });
                         }
                         else
@@ -187,10 +179,10 @@ namespace SS.CMS.Core.Services
                                 styleItem.ItemValue = listItem.Value;
                             }
 
-                            if (styleItem.Selected != listItem.Selected)
+                            if (styleItem.IsSelected != listItem.Selected)
                             {
                                 isEquals = false;
-                                styleItem.Selected = listItem.Selected;
+                                styleItem.IsSelected = listItem.Selected;
                             }
                         }
                     }
@@ -198,8 +190,8 @@ namespace SS.CMS.Core.Services
 
                 if (isEquals) continue;
 
-                styleInfo.VisibleInList = false;
-                styleInfo.Validate = true;
+                styleInfo.IsVisibleInList = false;
+                styleInfo.IsValidate = true;
                 styleInfoList.Add(styleInfo);
             }
 
@@ -207,32 +199,13 @@ namespace SS.CMS.Core.Services
             {
                 if (styleInfo.Id == 0)
                 {
-                    DataProvider.TableStyleRepository.Insert(styleInfo);
+                    _tableStyleRepository.Insert(styleInfo);
                 }
                 else
                 {
-                    DataProvider.TableStyleRepository.Update(styleInfo);
+                    _tableStyleRepository.Update(styleInfo);
                 }
             }
-        }
-
-        public bool IsContentTableUsed(string tableName)
-        {
-            var count = _siteRepository.GetTableCount(tableName);
-
-            if (count > 0) return true;
-
-            var contentModelPluginIdList = DataProvider.ChannelRepository.GetContentModelPluginIdList();
-            foreach (var pluginId in contentModelPluginIdList)
-            {
-                var service = GetService(pluginId);
-                if (service != null && IsContentTable(service) && service.ContentTableName == tableName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

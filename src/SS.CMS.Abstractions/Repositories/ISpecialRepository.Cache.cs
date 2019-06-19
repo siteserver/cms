@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Models;
+using SS.CMS.Services.IPathManager;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
     public partial interface ISpecialRepository
     {

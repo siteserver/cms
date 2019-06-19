@@ -5,12 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Packaging;
 using SS.CMS.Core.Plugin;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -21,20 +22,27 @@ namespace SS.CMS.Core.Services
     public partial class PluginManager : IPluginManager
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly ICacheManager _cacheManager;
         private readonly IPathManager _pathManager;
+        private readonly ITableManager _tableManager;
         private readonly IPluginRepository _pluginRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
-        private readonly IFileManager _fileManager;
+        private readonly IErrorLogRepository _errorLogRepository;
         private List<IPluginInstance> _pluginInfoListRunnable;
 
-        public PluginManager(ISettingsManager settingsManager, IPathManager pathManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, ITableStyleRepository tableStyleRepository)
+        public PluginManager(ISettingsManager settingsManager, ICacheManager cacheManager, IPathManager pathManager, ITableManager tableManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
+            _cacheManager = cacheManager;
             _pathManager = pathManager;
+            _tableManager = tableManager;
             _pluginRepository = pluginRepository;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _tableStyleRepository = tableStyleRepository;
+            _errorLogRepository = errorLogRepository;
             _pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
@@ -348,7 +356,7 @@ namespace SS.CMS.Core.Services
             }
             catch (Exception ex)
             {
-                LogUtils.AddErrorLog(ex, "载入插件时报错");
+                _errorLogRepository.AddErrorLog(ex, "载入插件时报错");
             }
 
             return dict;
@@ -396,7 +404,7 @@ namespace SS.CMS.Core.Services
             catch (Exception ex)
             {
                 errorMessage = ex.Message;
-                LogUtils.AddErrorLog(ex, $"插件加载：{directoryName}");
+                _errorLogRepository.AddErrorLog(ex, $"插件加载：{directoryName}");
             }
 
             return new PluginInstance(directoryName, metadata, errorMessage);
@@ -450,21 +458,21 @@ namespace SS.CMS.Core.Services
 
         public void ClearCache()
         {
-            CacheUtils.Remove(CacheKey);
+            _cacheManager.Remove(CacheKey);
         }
 
         public SortedList<string, IPluginInstance> GetPluginSortedList()
         {
-            var retval = CacheUtils.Get<SortedList<string, IPluginInstance>>(CacheKey);
+            var retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
             if (retval != null) return retval;
 
             lock (LockObject)
             {
-                retval = CacheUtils.Get<SortedList<string, IPluginInstance>>(CacheKey);
+                retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
                 if (retval == null)
                 {
                     retval = Load();
-                    CacheUtils.InsertHours(CacheKey, retval, 24);
+                    _cacheManager.InsertHours(CacheKey, retval, 24);
                 }
             }
 

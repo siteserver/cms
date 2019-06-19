@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache.Core;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class AreaRepository
     {
-        private readonly object _lockObject = new object();
-
         public List<KeyValuePair<int, string>> GetRestAreas()
         {
             var list = new List<KeyValuePair<int, string>>();
@@ -18,7 +15,7 @@ namespace SS.CMS.Core.Repositories
             foreach (var areaId in areaIdList)
             {
                 var areaInfo = GetAreaInfo(areaId);
-                list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.LastNode, parentsCountDict)));
+                list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, parentsCountDict)));
             }
 
             return list;
@@ -120,32 +117,26 @@ namespace SS.CMS.Core.Repositories
 
         public void ClearCache()
         {
-            lock (_lockObject)
-            {
-                DataCacheManager.Remove(CacheKey);
-            }
+            _cacheManager.Remove(CacheKey);
         }
 
         private List<KeyValuePair<int, AreaInfo>> GetAreaInfoPairList()
         {
-            lock (_lockObject)
-            {
-                var list = DataCacheManager.Get<List<KeyValuePair<int, AreaInfo>>>(CacheKey);
-                if (list != null) return list;
+            var list = _cacheManager.Get<List<KeyValuePair<int, AreaInfo>>>(CacheKey);
+            if (list != null) return list;
 
-                var pairListFormDb = GetAreaInfoPairListToCache();
-                list = new List<KeyValuePair<int, AreaInfo>>();
-                foreach (var pair in pairListFormDb)
+            var pairListFormDb = GetAreaInfoPairListToCache();
+            list = new List<KeyValuePair<int, AreaInfo>>();
+            foreach (var pair in pairListFormDb)
+            {
+                var areaInfo = pair.Value;
+                if (areaInfo != null)
                 {
-                    var areaInfo = pair.Value;
-                    if (areaInfo != null)
-                    {
-                        list.Add(pair);
-                    }
+                    list.Add(pair);
                 }
-                DataCacheManager.Insert(CacheKey, list);
-                return list;
             }
+            _cacheManager.Insert(CacheKey, list);
+            return list;
         }
     }
 }

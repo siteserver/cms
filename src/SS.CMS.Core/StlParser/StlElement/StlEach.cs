@@ -3,7 +3,7 @@ using System.Text;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Template;
+using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -84,15 +84,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (valueList == null || valueList.Count == 0) return string.Empty;
 
-            var eachList = new List<Container.Each>();
+            var eachList = new List<KeyValuePair<int, object>>();
             var index = 0;
             foreach (string value in valueList)
             {
-                eachList.Add(new Container.Each
-                {
-                    ItemIndex = index++,
-                    Value = value
-                });
+                eachList.Add(new KeyValuePair<int, object>(index++, value));
             }
 
             var builder = new StringBuilder();

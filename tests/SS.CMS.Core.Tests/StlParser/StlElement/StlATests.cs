@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Models;
 using Xunit;
 
 namespace SS.CMS.Core.Tests.StlParser.StlElement
@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
             var pluginItems = new Dictionary<string, object>();
             var pageInfo = new PageInfo(_fixture.UrlManager.ApiUrl, 0, 0, siteInfo, templateInfo, pluginItems);
 
-            var contextInfo = new ParseContext(pageInfo, _fixture.Configuration, _fixture.SettingsManager, _fixture.PluginManager, _fixture.PathManager, _fixture.UrlManager, _fixture.FileManager, _fixture.SiteRepository, _fixture.UserRepository, _fixture.TableStyleRepository, _fixture.TemplateRepository);
+            var contextInfo = new ParseContext(pageInfo, _fixture.Configuration, _fixture.SettingsManager, _fixture.CacheManager, _fixture.PluginManager, _fixture.PathManager, _fixture.UrlManager, _fixture.FileManager, _fixture.TableManager, _fixture.SiteRepository, _fixture.ChannelRepository, _fixture.UserRepository, _fixture.TableStyleRepository, _fixture.TemplateRepository, _fixture.TagRepository, _fixture.ErrorLogRepository);
 
             var template = $@"<stl:a href=""https://www.siteserver.cn"">test</stl:a>";
             var builder = new StringBuilder(template);

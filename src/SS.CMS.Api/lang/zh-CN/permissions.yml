@@ -1,6 +1,8 @@
 app:
 - id: plugins_add
   text: 插件管理 -> 添加插件
+- id: plugins_add
+  text: 插件管理 -> 添加插件
 - id: plugins_management
   text: 插件管理 -> 管理插件
 - id: settings_siteAdd

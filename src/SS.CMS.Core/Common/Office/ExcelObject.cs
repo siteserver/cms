@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Services;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -15,7 +11,7 @@ namespace SS.CMS.Core.Common.Office
 {
     public static class ExcelObject
     {
-        public static void CreateExcelFileForContents(IPluginManager pluginManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
+        public static void CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, SiteInfo siteInfo,
             ChannelInfo channelInfo, IList<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, bool? checkedState)
         {
@@ -25,8 +21,8 @@ namespace SS.CMS.Core.Common.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = ChannelManager.GetTableName(pluginManager, siteInfo, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableStyleRepository.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo));
+            var tableName = channelRepository.GetTableName(pluginManager, siteInfo, channelInfo);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableManager.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -119,23 +115,15 @@ namespace SS.CMS.Core.Common.Office
             };
             var rows = new List<List<string>>();
 
-            var userIdList = userRepository.GetIdList(checkedState != ETriState.False).ToList();
-            if (checkedState == ETriState.All)
+            foreach (var userInfo in userRepository.GetAll())
             {
-                userIdList.AddRange(userRepository.GetIdList(false));
-            }
-
-            foreach (var userId in userIdList)
-            {
-                var userInfo = userRepository.GetUserInfoByUserId(userId);
-
                 rows.Add(new List<string>
                 {
                     userInfo.UserName,
                     userInfo.DisplayName,
                     userInfo.Email,
                     userInfo.Mobile,
-                    DateUtils.GetDateAndTimeString(userInfo.CreateDate),
+                    DateUtils.GetDateAndTimeString(userInfo.CreationDate),
                     DateUtils.GetDateAndTimeString(userInfo.LastActivityDate)
                 });
             }
@@ -143,7 +131,7 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<ContentInfo> GetContentsByCsvFile(IPluginManager pluginManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
+        public static List<ContentInfo> GetContentsByCsvFile(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
             ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
@@ -152,7 +140,7 @@ namespace SS.CMS.Core.Common.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableStyleRepository.GetContentStyleInfoList(pluginManager, siteInfo, nodeInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableManager.GetContentStyleInfoList(pluginManager, siteInfo, nodeInfo));
             var nameValueCollection = new NameValueCollection();
             foreach (var styleInfo in styleInfoList)
             {
@@ -188,7 +176,6 @@ namespace SS.CMS.Core.Common.Office
                 {
                     contentInfo.SiteId = siteInfo.Id;
                     contentInfo.ChannelId = nodeInfo.Id;
-                    contentInfo.LastEditDate = DateTime.Now;
 
                     contentInfoList.Add(contentInfo);
                 }

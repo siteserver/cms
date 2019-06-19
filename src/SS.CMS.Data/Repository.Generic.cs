@@ -23,13 +23,6 @@ namespace SS.CMS.Data
             TableColumns = ReflectionUtils.GetTableColumns(typeof(T));
         }
 
-        public Repository(IDb db, string tableName, List<TableColumn> tableColumns)
-        {
-            Db = db;
-            TableName = tableName;
-            TableColumns = tableColumns;
-        }
-
         //        private readonly Lazy<Compiler> _compiler = new Lazy<Compiler>(() => SqlDifferences.GetCompiler(WebConfigUtils.DatabaseType));
 
         //        private KeyValuePair<string, Dictionary<string, object>> Compile(Query xQuery, Tuple<string, Dictionary<string, object>> replace = null)

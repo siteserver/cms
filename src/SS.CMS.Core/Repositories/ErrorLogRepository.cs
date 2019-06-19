@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Data;
-using SS.CMS.Utils;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -15,11 +11,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly Repository<ErrorLogInfo> _repository;
         private readonly ISettingsManager _settingsManager;
+        private readonly IConfigRepository _configRepository;
 
-        public ErrorLogRepository(ISettingsManager settingsManager)
+        public ErrorLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
             _repository = new Repository<ErrorLogInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
+            _configRepository = configRepository;
         }
 
         public IDb Db => _repository.Db;
@@ -30,7 +28,7 @@ namespace SS.CMS.Core.Repositories
         private class Attr
         {
             public const string Id = nameof(ErrorLogInfo.Id);
-            public const string AddDate = nameof(ErrorLogInfo.AddDate);
+            public const string CreationDate = nameof(ErrorLogInfo.CreationDate);
         }
 
         public const string CategoryStl = "stl";
@@ -69,13 +67,13 @@ namespace SS.CMS.Core.Repositories
 
         private void DeleteIfThreshold()
         {
-            if (!_settingsManager.ConfigInfo.IsTimeThreshold) return;
+            if (!_configRepository.Instance.IsTimeThreshold) return;
 
-            var days = _settingsManager.ConfigInfo.TimeThreshold;
+            var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
             _repository.Delete(Q
-                .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-days)));
+                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public ErrorLogInfo GetErrorLogInfo(int logId)
@@ -140,7 +138,7 @@ namespace SS.CMS.Core.Repositories
         {
             try
             {
-                if (!_settingsManager.ConfigInfo.IsLogError) return 0;
+                if (!_configRepository.Instance.IsLogError) return 0;
 
                 DeleteIfThreshold();
 
@@ -162,8 +160,7 @@ namespace SS.CMS.Core.Repositories
                 PluginId = string.Empty,
                 Message = ex.Message,
                 Stacktrace = ex.StackTrace,
-                Summary = summary,
-                AddDate = DateTime.Now
+                Summary = summary
             };
 
             return AddErrorLog(logInfo);
@@ -177,8 +174,21 @@ namespace SS.CMS.Core.Repositories
                 PluginId = pluginId,
                 Message = ex.Message,
                 Stacktrace = ex.StackTrace,
-                Summary = summary,
-                AddDate = DateTime.Now
+                Summary = summary
+            };
+
+            return AddErrorLog(logInfo);
+        }
+
+        public int AddStlErrorLog(string summary, string elementName, string stlContent, Exception ex)
+        {
+            var logInfo = new ErrorLogInfo
+            {
+                Category = CategoryStl,
+                PluginId = string.Empty,
+                Message = ex.Message,
+                Stacktrace = ex.StackTrace,
+                Summary = summary
             };
 
             return AddErrorLog(logInfo);

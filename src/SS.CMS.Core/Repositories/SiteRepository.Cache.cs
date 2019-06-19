@@ -1,50 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Services;
+using SS.CMS.Models;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class SiteRepository
     {
-        private readonly object LockObject = new object();
-        private readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(SiteRepository));
+        private readonly string CacheKey = StringUtils.GetCacheKey(nameof(SiteRepository));
 
         private void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            _cacheManager.Remove(CacheKey);
         }
 
         private List<KeyValuePair<int, SiteInfo>> GetSiteInfoKeyValuePairList()
         {
-            var retval = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
+            var retval = _cacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
             if (retval != null) return retval;
 
-            lock (LockObject)
+            retval = _cacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
+            if (retval == null)
             {
-                retval = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
-                if (retval == null)
+                var list = GetSiteInfoKeyValuePairListToCache();
+                retval = new List<KeyValuePair<int, SiteInfo>>();
+                foreach (var pair in list)
                 {
-                    var list = GetSiteInfoKeyValuePairListToCache();
-                    retval = new List<KeyValuePair<int, SiteInfo>>();
-                    foreach (var pair in list)
-                    {
-                        var siteInfo = pair.Value;
-                        if (siteInfo == null) continue;
+                    var siteInfo = pair.Value;
+                    if (siteInfo == null) continue;
 
-                        siteInfo.SiteDir = GetSiteDir(list, siteInfo);
-                        retval.Add(pair);
-                    }
-
-                    DataCacheManager.Insert(CacheKey, retval);
+                    siteInfo.SiteDir = GetSiteDir(list, siteInfo);
+                    retval.Add(pair);
                 }
+
+                _cacheManager.Insert(CacheKey, retval);
             }
 
             return retval;
@@ -98,7 +91,7 @@ namespace SS.CMS.Core.Repositories
                 var siteInfo = pair.Value;
                 if (siteInfo == null) continue;
 
-                if (siteInfo.Root)
+                if (siteInfo.IsRoot)
                 {
                     return siteInfo;
                 }
@@ -145,7 +138,7 @@ namespace SS.CMS.Core.Repositories
             foreach (var siteId in siteIdList)
             {
                 var siteInfo = GetSiteInfo(siteId);
-                if (siteInfo.Root)
+                if (siteInfo.IsRoot)
                 {
                     hqSiteId = siteInfo.Id;
                 }
@@ -317,12 +310,12 @@ namespace SS.CMS.Core.Repositories
         {
             var parentSiteId = 0;
             var siteInfo = GetSiteInfo(siteId);
-            if (siteInfo != null && siteInfo.Root == false)
+            if (siteInfo != null && siteInfo.IsRoot == false)
             {
                 parentSiteId = siteInfo.ParentId;
                 if (parentSiteId == 0)
                 {
-                    parentSiteId = DataProvider.SiteRepository.GetIdByIsRoot();
+                    parentSiteId = GetIdByIsRoot();
                 }
             }
             return parentSiteId;
@@ -330,7 +323,7 @@ namespace SS.CMS.Core.Repositories
 
         private string GetSiteDir(List<KeyValuePair<int, SiteInfo>> listFromDb, SiteInfo siteInfo)
         {
-            if (siteInfo == null || siteInfo.Root) return string.Empty;
+            if (siteInfo == null || siteInfo.IsRoot) return string.Empty;
             if (siteInfo.ParentId != 0)
             {
                 SiteInfo parent = null;
@@ -387,7 +380,7 @@ namespace SS.CMS.Core.Repositories
 
             var level = GetSiteLevel(siteInfo.Id);
             string psLogo;
-            if (siteInfo.Root)
+            if (siteInfo.IsRoot)
             {
                 psLogo = "siteHQ.gif";
             }
@@ -417,34 +410,6 @@ namespace SS.CMS.Core.Repositories
         {
             var pairList = GetSiteInfoKeyValuePairList();
             return pairList.Any(pair => StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName) || StringUtils.EqualsIgnoreCase(pair.Value.TableName, tableName));
-        }
-
-        public string GetSourceName(int sourceId)
-        {
-            if (sourceId == SourceManager.Default)
-            {
-                return "后台录入";
-            }
-            if (sourceId == SourceManager.User)
-            {
-                return "用户投稿";
-            }
-            if (sourceId == SourceManager.Preview)
-            {
-                return "预览插入";
-            }
-            if (sourceId <= 0) return string.Empty;
-
-            var sourceSiteId = DataProvider.ChannelRepository.GetSiteId(sourceId);
-            var siteInfo = GetSiteInfo(sourceSiteId);
-            if (siteInfo == null) return "内容转移";
-
-            var nodeNames = ChannelManager.GetChannelNameNavigation(siteInfo.Id, sourceId);
-            if (!string.IsNullOrEmpty(nodeNames))
-            {
-                return siteInfo.SiteName + "：" + nodeNames;
-            }
-            return siteInfo.SiteName;
         }
     }
 }

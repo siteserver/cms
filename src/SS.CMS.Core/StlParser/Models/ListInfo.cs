@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Data;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.Models

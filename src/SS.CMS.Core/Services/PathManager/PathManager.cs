@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -11,13 +13,17 @@ namespace SS.CMS.Core.Services
     public partial class PathManager : IPathManager
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly ITableManager _tableManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public PathManager(ISettingsManager settingsManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
+        public PathManager(ISettingsManager settingsManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
         {
             _settingsManager = settingsManager;
+            _tableManager = tableManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _templateRepository = templateRepository;
         }
 
@@ -264,7 +270,6 @@ namespace SS.CMS.Core.Services
 
         public string GetHomeUploadPath(params string[] paths)
         {
-
             var path = GetSiteFilesPath(DirectoryUtils.SiteFiles.Home, PathUtils.Combine(paths));
             DirectoryUtils.CreateDirectoryIfNotExists(path);
             return path;

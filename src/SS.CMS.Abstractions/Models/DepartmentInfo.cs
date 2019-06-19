@@ -1,7 +1,6 @@
-using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Department")]
     public class DepartmentInfo : Entity
@@ -25,13 +24,10 @@ namespace SS.CMS.Abstractions.Models
         public int ChildrenCount { get; set; }
 
         [TableColumn]
-        public bool LastNode { get; set; }
+        public bool IsLastNode { get; set; }
 
         [TableColumn]
         public int Taxis { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
 
         [TableColumn]
         public string Summary { get; set; }

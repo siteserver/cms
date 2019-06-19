@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     public static class Extensions
     {

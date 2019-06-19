@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Models;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.IUrlManager;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
     public partial interface ISiteRepository
     {
@@ -37,7 +38,5 @@ namespace SS.CMS.Abstractions.Repositories
         string GetSiteName(IUrlManager urlManager, SiteInfo siteInfo);
 
         int GetTableCount(string tableName);
-
-        string GetSourceName(int sourceId);
     }
 }

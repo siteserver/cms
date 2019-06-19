@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     public class ContentInfo : Entity
     {
@@ -26,12 +26,6 @@ namespace SS.CMS.Abstractions.Models
         public string LastEditUserName { get; set; }
 
         [TableColumn]
-        public DateTime? LastEditDate { get; set; }
-
-        [TableColumn]
-        public int AdminId { get; set; }
-
-        [TableColumn]
         public int UserId { get; set; }
 
         [TableColumn]
@@ -50,13 +44,7 @@ namespace SS.CMS.Abstractions.Models
         public int ReferenceId { get; set; }
 
         [TableColumn]
-        private string IsChecked { get; set; }
-
-        public bool Checked
-        {
-            get => IsChecked == "True";
-            set => IsChecked = value.ToString();
-        }
+        public bool IsChecked { get; set; }
 
         [TableColumn]
         public int CheckedLevel { get; set; }
@@ -74,7 +62,7 @@ namespace SS.CMS.Abstractions.Models
         public int HitsByMonth { get; set; }
 
         [TableColumn]
-        public DateTime? LastHitsDate { get; set; }
+        public DateTimeOffset? LastHitsDate { get; set; }
 
         [TableColumn]
         public int Downloads { get; set; }
@@ -83,43 +71,19 @@ namespace SS.CMS.Abstractions.Models
         public string Title { get; set; }
 
         [TableColumn]
-        private string IsTop { get; set; }
-
-        public bool Top
-        {
-            get => IsTop == "True";
-            set => IsTop = value.ToString();
-        }
+        public bool IsTop { get; set; }
 
         [TableColumn]
-        private string IsRecommend { get; set; }
-
-        public bool Recommend
-        {
-            get => IsRecommend == "True";
-            set => IsRecommend = value.ToString();
-        }
+        public bool IsRecommend { get; set; }
 
         [TableColumn]
-        private string IsHot { get; set; }
-
-        public bool Hot
-        {
-            get => IsHot == "True";
-            set => IsHot = value.ToString();
-        }
+        public bool IsHot { get; set; }
 
         [TableColumn]
-        private string IsColor { get; set; }
-
-        public bool Color
-        {
-            get => IsColor == "True";
-            set => IsColor = value.ToString();
-        }
+        public bool IsColor { get; set; }
 
         [TableColumn]
-        public DateTime? AddDate { get; set; }
+        public DateTimeOffset? AddDate { get; set; }
 
         [TableColumn]
         public string LinkUrl { get; set; }
@@ -149,7 +113,7 @@ namespace SS.CMS.Abstractions.Models
         public string Content { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
 
         public string TitleFormatString { get; set; }
 

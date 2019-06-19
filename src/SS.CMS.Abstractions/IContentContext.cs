@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Abstractions
+﻿namespace SS.CMS
 {
     /// <summary>
     /// 内容事件关联的上下文。

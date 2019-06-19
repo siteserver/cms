@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -81,7 +79,7 @@ namespace SS.CMS.Core.Repositories
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.Type == templateType && templateInfo.Default)
+                    if (templateInfo.Type == templateType && templateInfo.IsDefault)
                     {
                         info = templateInfo;
                         break;
@@ -105,7 +103,7 @@ namespace SS.CMS.Core.Repositories
             {
                 foreach (var templateInfo in templateInfoDictionary.Values)
                 {
-                    if (templateInfo.Type == templateType && templateInfo.Default)
+                    if (templateInfo.Type == templateType && templateInfo.IsDefault)
                     {
                         id = templateInfo.Id;
                         break;
@@ -260,11 +258,11 @@ namespace SS.CMS.Core.Repositories
 
         private Dictionary<int, Dictionary<int, TemplateInfo>> GetCacheDictionary()
         {
-            var dictionary = DataCacheManager.Get<Dictionary<int, Dictionary<int, TemplateInfo>>>(CacheKey);
+            var dictionary = _cacheManager.Get<Dictionary<int, Dictionary<int, TemplateInfo>>>(CacheKey);
             if (dictionary == null)
             {
                 dictionary = new Dictionary<int, Dictionary<int, TemplateInfo>>();
-                DataCacheManager.InsertHours(CacheKey, dictionary, 24);
+                _cacheManager.InsertHours(CacheKey, dictionary, 24);
             }
             return dictionary;
         }
@@ -308,10 +306,10 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (nodeInfo != null)
+                var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+                if (channelInfo != null)
                 {
-                    templateId = nodeInfo.ChannelTemplateId;
+                    templateId = channelInfo.ChannelTemplateId;
                 }
             }
 
@@ -327,10 +325,10 @@ namespace SS.CMS.Core.Repositories
         public TemplateInfo GetContentTemplateInfo(int siteId, int channelId)
         {
             var templateId = 0;
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            if (nodeInfo != null)
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            if (channelInfo != null)
             {
-                templateId = nodeInfo.ContentTemplateId;
+                templateId = channelInfo.ContentTemplateId;
             }
 
             TemplateInfo templateInfo = null;
@@ -367,7 +365,6 @@ namespace SS.CMS.Core.Repositories
                 {
                     TemplateId = templateInfo.Id,
                     SiteId = templateInfo.SiteId,
-                    AddDate = DateTime.Now,
                     AddUserName = administratorName,
                     ContentLength = content.Length,
                     TemplateContent = content
@@ -385,10 +382,10 @@ namespace SS.CMS.Core.Repositories
         {
             var templateId = 0;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            if (nodeInfo != null)
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            if (channelInfo != null)
             {
-                templateId = nodeInfo.ChannelTemplateId;
+                templateId = channelInfo.ChannelTemplateId;
             }
 
             if (templateId == 0)
@@ -403,10 +400,10 @@ namespace SS.CMS.Core.Repositories
         {
             var templateId = 0;
 
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            if (nodeInfo != null)
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            if (channelInfo != null)
             {
-                templateId = nodeInfo.ContentTemplateId;
+                templateId = channelInfo.ContentTemplateId;
             }
 
             if (templateId == 0)
@@ -427,7 +424,7 @@ namespace SS.CMS.Core.Repositories
         {
             try
             {
-                var content = DataCacheManager.Get<string>(filePath);
+                var content = _cacheManager.Get<string>(filePath);
                 if (content != null) return content;
 
                 if (FileUtils.IsFileExists(filePath))
@@ -435,7 +432,7 @@ namespace SS.CMS.Core.Repositories
                     content = FileUtils.ReadText(filePath, ECharset.utf_8);
                 }
 
-                DataCacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
+                _cacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
                 return content;
             }
             catch

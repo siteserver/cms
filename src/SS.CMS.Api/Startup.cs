@@ -1,3 +1,7 @@
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -5,9 +9,11 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using NSwag;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Services;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.IUserManager;
 
 namespace SS.CMS.Api
 {
@@ -30,6 +36,52 @@ namespace SS.CMS.Api
                 options.AllowSynchronousIO = true;
             });
 
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
+
+            var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
+            services.AddCacheManager();
+            services.AddRepositories();
+            services.AddPathManager();
+            services.AddPluginManager();
+            services.AddUrlManager();
+            services.AddFileManager();
+            services.AddCreateManager();
+            services.AddTableManager();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
+
+            services.AddScoped<IUserManager, UserManager>();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                    {
+                        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                        options.Events.OnRedirectToLogin = (context) =>
+                        {
+                            context.Response.StatusCode = 401;
+                            return Task.CompletedTask;
+                        };
+                    }
+                )
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "yourdomain.com",
+                        ValidAudience = "yourdomain.com",
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(settingsManager.SecretKey))
+                    };
+                });
+
             services.AddCors(options =>
                 {
                     options.AddPolicy(
@@ -42,6 +94,12 @@ namespace SS.CMS.Api
                             .AllowCredentials();
                         });
                 });
+
+            // In production, the VueJs files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/build";
+            });
 
             services.AddControllers()
                 .AddNewtonsoftJson();
@@ -104,25 +162,7 @@ namespace SS.CMS.Api
             //AppContext.Load(_env.ContentRootPath, _env.WebRootPath, _config);
             //AppContext.Db = db;
 
-            services.AddMemoryCache();
-            services.AddDistributedMemoryCache();
 
-            services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
-            services.AddCacheManager();
-            services.AddRepositories();
-            services.AddPathManager();
-            services.AddPluginManager();
-            services.AddUrlManager();
-            services.AddMenuManager();
-            services.AddFileManager();
-            services.AddCreateManager();
-            services.AddIdentityManager();
-
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -141,42 +181,34 @@ namespace SS.CMS.Api
 
             app.UseCors("AllowAny");
 
+            var cookiePolicyOptions = new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+            };
+            app.UseCookiePolicy(cookiePolicyOptions);
+
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            //app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            //app.UseAuthorization();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
-
-            // PluginManager.Load(() =>
-            // {
-            //     var httpContext = app.ApplicationServices.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            //     return new Request(httpContext);
-            // });
-
-            app.Map("/" + settingsManager.ApiPrefix.Trim('/'), api =>
+            var apiMatch = string.IsNullOrEmpty(settingsManager.ApiPrefix) ? string.Empty : $"/{settingsManager.ApiPrefix}";
+            app.Map(apiMatch, api =>
             {
+
+
                 api.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));
 
                 api.UseRouting();
 
-                api.UseAuthorization();
-
                 api.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
                 });
-
-                //api.UseAuthentication();
-                //api.UseAuthorization();
 
                 api.UseOpenApi();
                 api.UseSwaggerUi3();
@@ -187,21 +219,19 @@ namespace SS.CMS.Api
                 });
             });
 
-            app.Map("/" + settingsManager.AdminPrefix.Trim('/'), admin =>
+            var adminMatch = string.IsNullOrEmpty(settingsManager.AdminPrefix) ? string.Empty : $"/{settingsManager.ApiPrefix}";
+            app.Map(adminMatch, admin =>
             {
-                admin.Map("/ping", map => map.Run(async
-                    ctx => await ctx.Response.WriteAsync("pong")));
+                admin.UseAuthentication();
 
                 admin.UseRouting();
-
-                admin.UseAuthorization();
 
                 admin.UseSpa(spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";
                     if (_env.IsDevelopment())
                     {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000/admin");
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                     }
                 });
             });

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using Xunit;
 

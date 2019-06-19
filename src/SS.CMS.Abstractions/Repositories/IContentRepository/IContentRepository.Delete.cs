@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Abstractions.Repositories
+﻿namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {

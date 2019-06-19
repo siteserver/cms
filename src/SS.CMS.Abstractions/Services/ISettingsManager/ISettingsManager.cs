@@ -1,15 +1,22 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Settings;
 using SS.CMS.Data;
+using SS.CMS.Settings;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.ISettingsManager
 {
     public interface ISettingsManager
     {
         string ContentRootPath { get; }
 
         string WebRootPath { get; }
+
+        string ProductVersion { get; }
+
+        string PluginVersion { get; }
+
+        string TargetFramework { get; }
+
+        string EnvironmentVersion { get; }
 
         bool IsProtectData { get; }
         string ApiPrefix { get; }
@@ -32,9 +39,6 @@ namespace SS.CMS.Abstractions.Services
 
         IList<Menu> Menus { get; }
         PermissionsSettings Permissions { get; }
-        ConfigInfo ConfigInfo { get; }
-
-        bool IsChanged { set; }
 
         string Encrypt(string inputString);
 

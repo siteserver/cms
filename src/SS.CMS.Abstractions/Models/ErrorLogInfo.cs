@@ -1,7 +1,7 @@
 using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_ErrorLog")]
     [Serializable]
@@ -21,8 +21,5 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn(Text = true)]
         public string Summary { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
     }
 }

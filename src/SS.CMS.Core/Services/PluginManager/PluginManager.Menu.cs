@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
+using SS.CMS.Models;
+using SS.CMS.Services.IUrlManager;
 
 namespace SS.CMS.Core.Services
 {
@@ -41,7 +40,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
                 }
             }
 
@@ -80,7 +79,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
                 }
             }
 
@@ -122,7 +121,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
                 }
             }
 

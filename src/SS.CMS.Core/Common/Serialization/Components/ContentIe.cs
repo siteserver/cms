@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 using SS.CMS.Utils.Atom.Atom.Core.Collections;
-using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Core.Serialization.Components
 {
@@ -21,6 +18,8 @@ namespace SS.CMS.Core.Serialization.Components
         private readonly string _siteContentDirectoryPath;
         private readonly IPathManager _pathManager;
         private readonly IUrlManager _urlManager;
+        private readonly IChannelRepository _channelRepository;
+        private readonly ITagRepository _tagRepository;
 
         public ContentIe(SiteInfo siteInfo, string siteContentDirectoryPath)
         {
@@ -36,12 +35,12 @@ namespace SS.CMS.Core.Serialization.Components
             ImportContents(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
         }
 
-        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            ImportContents(feed.Entries, nodeInfo, taxis, false, isChecked, checkedLevel, isOverride, adminId, userId, sourceId);
+            ImportContents(feed.Entries, nodeInfo, taxis, false, isChecked, checkedLevel, isOverride, userId, sourceId);
         }
 
         public void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, string adminName)
@@ -90,7 +89,6 @@ namespace SS.CMS.Core.Serialization.Components
                 try
                 {
                     taxis++;
-                    var lastEditDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastEditDate);
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
@@ -129,10 +127,9 @@ namespace SS.CMS.Core.Serialization.Components
                     var contentInfo = new ContentInfo(dict);
 
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
-                    contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
-                    contentInfo.Checked = isChecked;
+                    contentInfo.IsChecked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
                     contentInfo.Hits = hits;
                     contentInfo.HitsByDay = hitsByDay;
@@ -141,10 +138,10 @@ namespace SS.CMS.Core.Serialization.Components
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
                     contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
-                    contentInfo.Top = isTop;
-                    contentInfo.Recommend = isRecommend;
-                    contentInfo.Hot = isHot;
-                    contentInfo.Color = isColor;
+                    contentInfo.IsTop = isTop;
+                    contentInfo.IsRecommend = isRecommend;
+                    contentInfo.IsHot = isHot;
+                    contentInfo.IsColor = isColor;
                     contentInfo.LinkUrl = linkUrl;
 
                     var attributes = AtomUtility.GetDcElementNameValueCollection(entry.AdditionalElements);
@@ -182,7 +179,7 @@ namespace SS.CMS.Core.Serialization.Components
                     {
                         var contentId = channelInfo.ContentRepository.InsertWithTaxis(_siteInfo, channelInfo, contentInfo, taxis);
 
-                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
+                        _tagRepository.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
 
                     if (isTop)
@@ -197,14 +194,13 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        private void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, int userId, int sourceId)
+        private void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId, int sourceId)
         {
             foreach (AtomEntry entry in entries)
             {
                 try
                 {
                     taxis++;
-                    var lastEditDate = AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.LastEditDate);
                     var groupNameCollection = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" });
                     if (isCheckedBySettings)
                     {
@@ -237,7 +233,6 @@ namespace SS.CMS.Core.Serialization.Components
                     {
                         {ContentAttribute.SiteId, _siteInfo.Id},
                         {ContentAttribute.ChannelId, channelInfo.Id},
-                        {ContentAttribute.AdminId, adminId},
                         {ContentAttribute.UserId, userId},
                         {ContentAttribute.SourceId, sourceId},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
@@ -245,10 +240,9 @@ namespace SS.CMS.Core.Serialization.Components
                     var contentInfo = new ContentInfo(dict);
 
                     contentInfo.LastEditUserName = contentInfo.AddUserName;
-                    contentInfo.LastEditDate = TranslateUtils.ToDateTime(lastEditDate);
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
-                    contentInfo.Checked = isChecked;
+                    contentInfo.IsChecked = isChecked;
                     contentInfo.CheckedLevel = checkedLevel;
                     contentInfo.Hits = hits;
                     contentInfo.HitsByDay = hitsByDay;
@@ -257,10 +251,10 @@ namespace SS.CMS.Core.Serialization.Components
                     contentInfo.LastHitsDate = TranslateUtils.ToDateTime(lastHitsDate);
                     contentInfo.Downloads = downloads;
                     contentInfo.Title = AtomUtility.Decrypt(title);
-                    contentInfo.Top = isTop;
-                    contentInfo.Recommend = isRecommend;
-                    contentInfo.Hot = isHot;
-                    contentInfo.Color = isColor;
+                    contentInfo.IsTop = isTop;
+                    contentInfo.IsRecommend = isRecommend;
+                    contentInfo.IsHot = isHot;
+                    contentInfo.IsColor = isColor;
                     contentInfo.LinkUrl = linkUrl;
 
                     var attributes = AtomUtility.GetDcElementNameValueCollection(entry.AdditionalElements);
@@ -298,7 +292,7 @@ namespace SS.CMS.Core.Serialization.Components
                     {
                         var contentId = channelInfo.ContentRepository.InsertWithTaxis(_siteInfo, channelInfo, contentInfo, taxis);
 
-                        TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
+                        _tagRepository.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
 
                     if (isTop)
@@ -316,7 +310,7 @@ namespace SS.CMS.Core.Serialization.Components
         public bool ExportContents(SiteInfo siteInfo, int channelId, IList<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
             if (contentIdList == null || contentIdList.Count == 0)
@@ -396,16 +390,12 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.SiteId, "PublishmentSystemId" }, contentInfo.SiteId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddUserName, contentInfo.AddUserName);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditUserName, contentInfo.LastEditUserName);
-            if (contentInfo.LastEditDate.HasValue)
-            {
-                AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditDate, contentInfo.LastEditDate.Value.ToString(CultureInfo.InvariantCulture));
-            }
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Taxis, contentInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" }, contentInfo.GroupNameCollection);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(contentInfo.Tags));
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.SourceId, contentInfo.SourceId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.ReferenceId, contentInfo.ReferenceId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsChecked, contentInfo.Checked.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsChecked, contentInfo.IsChecked.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.CheckedLevel, contentInfo.CheckedLevel.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Hits, contentInfo.Hits.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.HitsByDay, contentInfo.HitsByDay.ToString());
@@ -419,10 +409,10 @@ namespace SS.CMS.Core.Serialization.Components
 
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Downloads, contentInfo.Downloads.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Title, AtomUtility.Encrypt(contentInfo.Title));
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, contentInfo.Top.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsRecommend, contentInfo.Recommend.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsHot, contentInfo.Hot.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsColor, contentInfo.Color.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsTop, contentInfo.IsTop.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsRecommend, contentInfo.IsRecommend.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsHot, contentInfo.IsHot.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.IsColor, contentInfo.IsColor.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LinkUrl, AtomUtility.Encrypt(contentInfo.LinkUrl));
             if (contentInfo.AddDate.HasValue)
             {

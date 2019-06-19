@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -379,6 +380,7 @@ namespace SS.CMS.Data.Utils
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
+            dataInfo.CreationDate = DateTime.Now;
             dataInfo.LastModifiedDate = DateTime.Now;
 
             var dictionary = new Dictionary<string, object>();
@@ -409,6 +411,7 @@ namespace SS.CMS.Data.Utils
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
+            dataInfo.CreationDate = DateTime.Now;
             dataInfo.LastModifiedDate = DateTime.Now;
 
             var dictionary = new Dictionary<string, object>();

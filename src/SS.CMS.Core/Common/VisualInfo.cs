@@ -1,11 +1,8 @@
-﻿using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.StlParser.Models;
+﻿using SS.CMS.Core.StlParser.Models;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPathManager;
 
 namespace SS.CMS.Core.Common
 {
@@ -77,7 +74,7 @@ namespace SS.CMS.Core.Common
             {
                 visualInfo.TemplateInfo = templateRepository.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = pathManager.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.Root, visualInfo.PageIndex);
+                visualInfo.FilePath = pathManager.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.IsRoot, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {

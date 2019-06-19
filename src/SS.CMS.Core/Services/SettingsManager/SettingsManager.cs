@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using Microsoft.Extensions.Configuration;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Abstractions.Settings;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Repositories;
 using SS.CMS.Data;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Settings;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -22,10 +22,31 @@ namespace SS.CMS.Core.Services
             ContentRootPath = contentRootPath;
             WebRootPath = webRootPath;
 
+            try
+            {
+                ProductVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
+                PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.Plugin.dll")).ProductVersion;
+
+                if (Assembly.GetExecutingAssembly()
+                    .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
+                    .SingleOrDefault() is TargetFrameworkAttribute targetFrameworkAttribute)
+                {
+                    TargetFramework = targetFrameworkAttribute.FrameworkName;
+                }
+
+                EnvironmentVersion = Environment.Version.ToString();
+
+                //DotNetVersion = FileVersionInfo.GetVersionInfo(typeof(Uri).Assembly.Location).ProductVersion;
+            }
+            catch
+            {
+                // ignored
+            }
+
             IsProtectData = config.GetValue<bool>("SS:IsProtectData");
-            ApiPrefix = config.GetValue<string>("SS:ApiPrefix");
-            AdminPrefix = config.GetValue<string>("SS:AdminPrefix");
-            HomePrefix = config.GetValue<string>("SS:HomePrefix");
+            ApiPrefix = StringUtils.TrimSlash(config.GetValue<string>("SS:ApiPrefix"));
+            AdminPrefix = StringUtils.TrimSlash(config.GetValue<string>("SS:AdminPrefix"));
+            HomePrefix = StringUtils.TrimSlash(config.GetValue<string>("SS:HomePrefix"));
             SecretKey = config.GetValue<string>("SS:SecretKey");
             IsNightlyUpdate = config.GetValue<bool>("SS:IsNightlyUpdate");
             Language = config.GetValue<string>("SS:Language");
@@ -59,6 +80,14 @@ namespace SS.CMS.Core.Services
 
         public string WebRootPath { get; }
 
+        public string ProductVersion { get; }
+
+        public string PluginVersion { get; }
+
+        public string TargetFramework { get; }
+
+        public string EnvironmentVersion { get; }
+
         public bool IsProtectData { get; }
         public string ApiPrefix { get; }
         public string AdminPrefix { get; }
@@ -72,39 +101,6 @@ namespace SS.CMS.Core.Services
 
         public IList<Menu> Menus { get; }
         public PermissionsSettings Permissions { get; }
-
-        public ConfigInfo ConfigInfo
-        {
-            get
-            {
-                var retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                if (retVal != null) return retVal;
-
-                lock (_lockObject)
-                {
-                    retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                    if (retVal == null)
-                    {
-                        var configRepository = new ConfigRepository(this);
-                        retVal = configRepository.GetConfigInfo();
-                        DataCacheManager.Insert(CacheKey, retVal);
-                    }
-                }
-
-                return retVal;
-            }
-        }
-
-        public bool IsChanged
-        {
-            set
-            {
-                if (value)
-                {
-                    DataCacheManager.Remove(CacheKey);
-                }
-            }
-        }
 
         public string Encrypt(string inputString)
         {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Data;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_TableStyle")]
     public class TableStyleInfo : Entity
@@ -26,13 +26,7 @@ namespace SS.CMS.Abstractions.Models
         public string HelpText { get; set; }
 
         [TableColumn]
-        private string IsVisibleInList { get; set; }
-
-        public bool VisibleInList
-        {
-            get => IsVisibleInList == "True";
-            set => IsVisibleInList = value.ToString();
-        }
+        public bool IsVisibleInList { get; set; }
 
         private string InputType { get; set; }
 
@@ -46,13 +40,7 @@ namespace SS.CMS.Abstractions.Models
         public string DefaultValue { get; set; }
 
         [TableColumn]
-        private string IsHorizontal { get; set; }
-
-        public bool Horizontal
-        {
-            get => IsHorizontal == "True";
-            set => IsHorizontal = value.ToString();
-        }
+        public bool IsHorizontal { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
@@ -65,7 +53,7 @@ namespace SS.CMS.Abstractions.Models
 
         public int Columns { get; set; }
 
-        public bool FormatString { get; set; }
+        public bool IsFormatString { get; set; }
 
         public int RelatedFieldId { get; set; }
 
@@ -75,9 +63,9 @@ namespace SS.CMS.Abstractions.Models
 
         public string CustomizeRight { get; set; }
 
-        public bool Validate { get; set; }
+        public bool IsValidate { get; set; }
 
-        public bool Required { get; set; }
+        public bool IsRequired { get; set; }
 
         public int MinNum { get; set; }
 

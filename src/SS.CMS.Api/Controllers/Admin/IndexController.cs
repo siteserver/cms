@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Packaging;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.IUserManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Api.Controllers.Admin
 {
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route("admin")]
     [ApiController]
     public class IndexController : ControllerBase
@@ -18,36 +24,33 @@ namespace SS.CMS.Api.Controllers.Admin
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPluginManager _pluginManager;
-        private readonly IIdentityManager _identityManager;
-        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserManager _userManager;
+        private readonly IUserRepository _userRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IConfigRepository _configRepository;
 
-        public IndexController(ISettingsManager settingsManager, IPluginManager pluginManager, IIdentityManager identityManager, IAdministratorRepository administratorRepository, ISiteRepository siteRepository)
+        public IndexController(ISettingsManager settingsManager, IPluginManager pluginManager, IUserManager userManager, IUserRepository userRepository, ISiteRepository siteRepository, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
             _pluginManager = pluginManager;
-            _identityManager = identityManager;
-            _administratorRepository = administratorRepository;
+            _userManager = userManager;
+            _userRepository = userRepository;
             _siteRepository = siteRepository;
+            _configRepository = configRepository;
         }
 
         [HttpGet(Route)]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            if (!_identityManager.IsAdminLoggin)
-            {
-                return Unauthorized();
-            }
-
-            var adminInfo = _administratorRepository.GetAdminInfoByUserId(_identityManager.AdminId);
+            var accountInfo = await _userManager.GetUserAsync();
 
             return Ok(new
             {
                 Value = new
                 {
-                    Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
-                    LastActivityDate = DateUtils.GetDateString(adminInfo.LastActivityDate, EDateFormatType.Chinese),
-                    UpdateDate = DateUtils.GetDateString(_settingsManager.ConfigInfo.UpdateDate, EDateFormatType.Chinese)
+                    Version = _settingsManager.ProductVersion == PackageUtils.VersionDev ? "dev" : _settingsManager.ProductVersion,
+                    LastActivityDate = DateUtils.GetDateString(accountInfo.LastActivityDate, EDateFormatType.Chinese),
+                    UpdateDate = DateUtils.GetDateString(_configRepository.Instance.UpdateDate, EDateFormatType.Chinese)
                 }
             });
         }
@@ -55,18 +58,13 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpGet(RouteUnCheckedList)]
         public ActionResult GetUnCheckedList()
         {
-            if (!_identityManager.IsAdminLoggin)
-            {
-                return Unauthorized();
-            }
-
             var unCheckedList = new List<object>();
 
             foreach (var siteInfo in _siteRepository.GetSiteInfoList())
             {
-                if (!_identityManager.AdminPermissions.IsSiteAdmin(siteInfo.Id)) continue;
+                if (!_userManager.IsSiteAdministrator(siteInfo.Id)) continue;
 
-                var count = siteInfo.ContentRepository.GetCount(_pluginManager, siteInfo, false);
+                var count = siteInfo.ContentRepository.GetCount(siteInfo, false);
                 if (count > 0)
                 {
                     unCheckedList.Add(new

@@ -1,26 +1,32 @@
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class TableStyleRepository : ITableStyleRepository
     {
+        private readonly ICacheManager _cacheManager;
+        private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITableStyleItemRepository _tableStyleItemRepository;
         private readonly Repository<TableStyleInfo> _repository;
-        private readonly TableManager _tableManager;
 
-        public TableStyleRepository(ISettingsManager settingsManager, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository)
+        public TableStyleRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository, IErrorLogRepository errorLogRepository)
         {
+            _cacheManager = cacheManager;
             _repository = new Repository<TableStyleInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _userRepository = userRepository;
             _tableStyleItemRepository = tableStyleItemRepository;
-            _tableManager = new TableManager(settingsManager);
         }
 
         public IDb Db => _repository.Db;
@@ -34,6 +40,13 @@ namespace SS.CMS.Core.Repositories
             public const string TableName = nameof(TableStyleInfo.TableName);
             public const string AttributeName = nameof(TableStyleInfo.AttributeName);
             public const string Taxis = nameof(TableStyleInfo.Taxis);
+        }
+
+        public bool IsExists(int relatedIdentity, string tableName, string attributeName)
+        {
+            var key = TableManager.GetKey(relatedIdentity, tableName, attributeName);
+            var entries = GetAllTableStyles();
+            return entries.Any(x => x.Key == key);
         }
 
         public int Insert(TableStyleInfo styleInfo)
@@ -90,7 +103,7 @@ namespace SS.CMS.Core.Repositories
                 allItemsDict.TryGetValue(styleInfo.Id, out var items);
                 styleInfo.StyleItems = items;
 
-                var key = GetKey(styleInfo.RelatedIdentity, styleInfo.TableName, styleInfo.AttributeName);
+                var key = TableManager.GetKey(styleInfo.RelatedIdentity, styleInfo.TableName, styleInfo.AttributeName);
 
                 if (pairs.All(pair => pair.Key != key))
                 {

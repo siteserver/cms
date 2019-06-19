@@ -2,7 +2,6 @@
 using System.Text;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Template;
 using SS.CMS.Core.StlParser.Utility;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -29,7 +28,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var context = parseContext.Clone(EContextType.SqlContent);
             var listInfo = ListInfo.GetListInfo(context);
             // var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
-            var sqlList = StlDataUtility.GetContainerSqlList(context.SettingsManager, listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
+            var sqlList = parseContext.GetContainerSqlList(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
 
             if (context.IsStlEntity)
             {
@@ -39,7 +38,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return ParseElement(context, listInfo, sqlList);
         }
 
-        public static string ParseElement(ParseContext context, ListInfo listInfo, List<Container.Sql> sqlList)
+        public static string ParseElement(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> sqlList)
         {
             if (sqlList == null || sqlList.Count == 0) return string.Empty;
 
@@ -221,7 +220,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static object ParseEntity(List<Container.Sql> sqlList)
+        private static object ParseEntity(List<KeyValuePair<int, Dictionary<string, object>>> sqlList)
         {
             // var table = dataSource.Tables[0];
             // return TranslateUtils.DataTableToDictionaryList(table);
@@ -229,7 +228,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var dictList = new List<Dictionary<string, object>>();
             foreach (var sql in sqlList)
             {
-                dictList.Add(sql.Dictionary);
+                dictList.Add(sql.Value);
             }
             return dictList;
         }

@@ -1,8 +1,8 @@
 using System;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IPathManager
 {
     public partial interface IPathManager
     {

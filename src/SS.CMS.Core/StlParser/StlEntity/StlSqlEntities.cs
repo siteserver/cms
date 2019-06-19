@@ -32,11 +32,11 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
                 if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex))
                 {
-                    parsedContent = StlParserUtility.ParseItemIndex(parseContext.Container.SqlItem.ItemIndex, attributeName, parseContext).ToString();
+                    parsedContent = StlParserUtility.ParseItemIndex(parseContext.Container.SqlItem.Key, attributeName, parseContext).ToString();
                 }
                 else
                 {
-                    if (parseContext.Container.SqlItem.Dictionary.TryGetValue(attributeName, out var value))
+                    if (parseContext.Container.SqlItem.Value.TryGetValue(attributeName, out var value))
                     {
                         parsedContent = Convert.ToString(value);
                     }

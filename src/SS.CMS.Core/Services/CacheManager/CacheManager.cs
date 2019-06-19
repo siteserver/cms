@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Services.ICacheManager;
 
 namespace SS.CMS.Core.Services
 {

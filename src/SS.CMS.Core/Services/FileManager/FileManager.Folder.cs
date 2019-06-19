@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -32,7 +32,7 @@ namespace SS.CMS.Core.Services
 
             var sitePath = _pathManager.GetSitePath(siteInfo);
 
-            if (siteInfo.Root)
+            if (siteInfo.IsRoot)
             {
                 var filePaths = DirectoryUtils.GetFilePaths(sitePath);
                 foreach (var filePath in filePaths)
@@ -67,7 +67,7 @@ namespace SS.CMS.Core.Services
         {
             var sitePath = _pathManager.GetSitePath(siteInfo);
 
-            if (siteInfo.Root)
+            if (siteInfo.IsRoot)
             {
                 var filePaths = DirectoryUtils.GetFilePaths(siteTemplatePath);
                 foreach (var filePath in filePaths)
@@ -146,13 +146,13 @@ namespace SS.CMS.Core.Services
 
         public void ChangeToHeadquarters(SiteInfo siteInfo, bool isMoveFiles)
         {
-            if (siteInfo.Root == false)
+            if (siteInfo.IsRoot == false)
             {
                 var sitePath = _pathManager.GetSitePath(siteInfo);
 
                 _siteRepository.UpdateParentIdToZero(siteInfo.Id);
 
-                siteInfo.Root = true;
+                siteInfo.IsRoot = true;
                 siteInfo.SiteDir = string.Empty;
 
                 _siteRepository.Update(siteInfo);
@@ -166,9 +166,9 @@ namespace SS.CMS.Core.Services
 
         public void ChangeToSubSite(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList)
         {
-            if (siteInfo.Root)
+            if (siteInfo.IsRoot)
             {
-                siteInfo.Root = false;
+                siteInfo.IsRoot = false;
                 siteInfo.SiteDir = psDir.Trim();
 
                 _siteRepository.Update(siteInfo);

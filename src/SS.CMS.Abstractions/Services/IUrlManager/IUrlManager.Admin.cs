@@ -1,6 +1,4 @@
-﻿using SS.CMS.Abstractions.Models;
-
-namespace SS.CMS.Abstractions.Services
+﻿namespace SS.CMS.Services.IUrlManager
 {
     public partial interface IUrlManager
     {

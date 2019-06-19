@@ -1,31 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Services;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IUserManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 {
+    [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route("admin/settings/admin")]
     [ApiController]
     public class AccessTokenController : ControllerBase
     {
         private const string Route = "access-token";
 
-        private readonly IIdentityManager _identityManager;
+        private readonly IUserManager _userManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
-        private readonly IAdministratorRepository _administratorRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ILogRepository _logRepository;
         private readonly PluginManager _pluginManager;
 
-        public AccessTokenController(IIdentityManager identityManager, IAccessTokenRepository accessTokenRepository, IAdministratorRepository administratorRepository, PluginManager pluginManager)
+        public AccessTokenController(IUserManager userManager, IAccessTokenRepository accessTokenRepository, IUserRepository userRepository, ILogRepository logRepository, PluginManager pluginManager)
         {
-            _identityManager = identityManager;
+            _userManager = userManager;
             _accessTokenRepository = accessTokenRepository;
-            _administratorRepository = administratorRepository;
+            _userRepository = userRepository;
+            _logRepository = logRepository;
             _pluginManager = pluginManager;
         }
 
@@ -55,21 +59,22 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         [HttpGet(Route)]
         public async Task<ActionResult> List()
         {
-            if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
+            if (!_userManager.HasAppPermissions(AuthTypes.AppPermissions.SettingsAdmin))
             {
                 return Unauthorized();
             }
 
+            var userName = _userManager.GetUserName();
+
             IEnumerable<string> adminNames;
 
-            if (_identityManager.AdminPermissions.IsSuperAdmin())
+            if (_userManager.IsSuperAdministrator())
             {
-                adminNames = await _administratorRepository.GetUserNameListAsync();
+                adminNames = await _userRepository.GetUserNameListAsync();
             }
             else
             {
-                adminNames = new List<string> { _identityManager.AdminName };
+                adminNames = new List<string> { userName };
             }
 
             var scopes = new List<string>(_accessTokenRepository.ScopeList);
@@ -87,15 +92,14 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
                 Value = await _accessTokenRepository.GetAllAsync(),
                 adminNames,
                 scopes,
-                _identityManager.AdminName
+                AdminName = userName
             });
         }
 
         [HttpPost(Route)]
         public async Task<ActionResult> Create([FromBody] AccessTokenInfo accessTokenInfo)
         {
-            if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
+            if (!_userManager.HasAppPermissions(AuthTypes.AppPermissions.SettingsAdmin))
             {
                 return Unauthorized();
             }
@@ -114,7 +118,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 
             await _accessTokenRepository.InsertAsync(tokenInfo);
 
-            LogUtils.AddAdminLog(_identityManager.IpAddress, _identityManager.AdminName, "新增API密钥", $"Access Token:{tokenInfo.Title}");
+            _logRepository.AddAdminLog(_userManager.GetIpAddress(), _userManager.GetUserName(), "新增API密钥", $"Access Token:{tokenInfo.Title}");
 
             return Ok(new
             {
@@ -125,8 +129,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         [HttpPut(Route)]
         public async Task<ActionResult> Update([FromBody] AccessTokenInfo accessTokenInfo)
         {
-            if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
+            if (!_userManager.HasAppPermissions(AuthTypes.AppPermissions.SettingsAdmin))
             {
                 return Unauthorized();
             }
@@ -144,7 +147,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 
             await _accessTokenRepository.UpdateAsync(tokenInfo);
 
-            LogUtils.AddAdminLog(_identityManager.IpAddress, _identityManager.AdminName, "修改API密钥", $"Access Token:{tokenInfo.Title}");
+            _logRepository.AddAdminLog(_userManager.GetIpAddress(), _userManager.GetUserName(), "修改API密钥", $"Access Token:{tokenInfo.Title}");
 
             return Ok(new
             {
@@ -155,8 +158,7 @@ namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
         [HttpDelete(Route)]
         public async Task<ActionResult> Delete([FromBody] int id)
         {
-            if (!_identityManager.IsAdminLoggin ||
-                !_identityManager.AdminPermissions.HasSystemPermissions(Constants.SettingsPermissions.Admin))
+            if (!_userManager.HasAppPermissions(AuthTypes.AppPermissions.SettingsAdmin))
             {
                 return Unauthorized();
             }

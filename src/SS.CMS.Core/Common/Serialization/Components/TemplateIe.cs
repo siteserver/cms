@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Services;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICreateManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -69,7 +66,7 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Default), templateInfo.Default.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.IsDefault), templateInfo.IsDefault.ToString());
 
             var templateContent = _templateRepository.GetTemplateContent(siteInfo, templateInfo);
             AtomUtility.AddDcElement(entry.AdditionalElements, "Content", AtomUtility.Encrypt(templateContent));
@@ -97,7 +94,7 @@ namespace SS.CMS.Core.Serialization.Components
                     RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
                     CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
                     CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
-                    Default = false
+                    IsDefault = false
                 };
 
                 var templateContent = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Content"));

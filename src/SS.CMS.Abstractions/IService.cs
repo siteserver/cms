@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 插件服务注册接口。

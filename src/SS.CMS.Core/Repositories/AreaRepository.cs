@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class AreaRepository : IAreaRepository
     {
-        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(AdministratorsInRolesRepository));
-
+        private readonly ICacheManager _cacheManager;
         private readonly Repository<AreaInfo> _repository;
+        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(UserRoleRepository));
 
-        public AreaRepository(ISettingsManager settingsManager)
+        public AreaRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
+            _cacheManager = cacheManager;
             _repository = new Repository<AreaInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
@@ -31,7 +33,7 @@ namespace SS.CMS.Core.Repositories
             public const string ParentsPath = nameof(AreaInfo.ParentsPath);
             public const string ChildrenCount = nameof(AreaInfo.ChildrenCount);
             public const string Taxis = nameof(AreaInfo.Taxis);
-            public const string LastNode = nameof(AreaInfo.LastNode);
+            public const string IsLastNode = nameof(AreaInfo.IsLastNode);
         }
 
         private int Insert(AreaInfo parentInfo, AreaInfo areaInfo)
@@ -56,7 +58,7 @@ namespace SS.CMS.Core.Repositories
                 areaInfo.Taxis = maxTaxis + 1;
             }
             areaInfo.ChildrenCount = 0;
-            areaInfo.LastNode = true;
+            areaInfo.IsLastNode = true;
 
             _repository.Increment(Attr.Taxis, Q
                     .Where(Attr.Taxis, ">=", areaInfo.Taxis)
@@ -71,7 +73,7 @@ namespace SS.CMS.Core.Repositories
             }
 
             _repository.Update(Q
-                .Set(Attr.LastNode, false)
+                .Set(Attr.IsLastNode, false)
                 .Where(Attr.ParentId, areaInfo.ParentId)
             );
 
@@ -83,7 +85,7 @@ namespace SS.CMS.Core.Repositories
             if (topId > 0)
             {
                 _repository.Update(Q
-                    .Set(Attr.LastNode, true)
+                    .Set(Attr.IsLastNode, true)
                     .Where(nameof(Attr.Id), topId)
                 );
             }
@@ -180,7 +182,7 @@ namespace SS.CMS.Core.Repositories
             if (parentId <= 0) return;
 
             _repository.Update(Q
-                .Set(Attr.LastNode, false)
+                .Set(Attr.IsLastNode, false)
                 .Where(Attr.ParentId, parentId)
             );
 
@@ -192,7 +194,7 @@ namespace SS.CMS.Core.Repositories
             if (topId > 0)
             {
                 _repository.Update(Q
-                    .Set(Attr.LastNode, true)
+                    .Set(Attr.IsLastNode, true)
                     .Where(nameof(Attr.Id), topId)
                 );
             }

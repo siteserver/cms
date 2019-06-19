@@ -1,6 +1,4 @@
-using SS.CMS.Abstractions.Enums;
-
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IFileManager
 {
     public partial interface IFileManager
     {

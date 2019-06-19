@@ -2,15 +2,15 @@ using System;
 using System.IO;
 using System.Linq;
 using NuGet.Packaging;
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Packaging;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public SS.CMS.Abstractions.IPackageMetadata GetPackageMetadataFromPluginDirectory(string directoryName, out string errorMessage)
+        public IPackageMetadata GetPackageMetadataFromPluginDirectory(string directoryName, out string errorMessage)
         {
             PackageMetadata metadata = null;
 
@@ -37,7 +37,7 @@ namespace SS.CMS.Core.Services
             return metadata;
         }
 
-        public SS.CMS.Abstractions.IPackageMetadata GetPackageMetadataFromPackages(string directoryName, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
+        public IPackageMetadata GetPackageMetadataFromPackages(string directoryName, out string nuspecPath, out string dllDirectoryPath, out string errorMessage)
         {
             nuspecPath = string.Empty;
             dllDirectoryPath = string.Empty;

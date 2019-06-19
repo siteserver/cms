@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dapper;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Data;
-using SS.CMS.Utils;
-using SS.CMS.Utils.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
 namespace SS.CMS.Core.Repositories
@@ -202,8 +197,8 @@ namespace SS.CMS.Core.Repositories
 
         public int GetCountOfContentAdd(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentAdd(siteId, channelIdList, begin, end, userName, checkedState);
         }
 
@@ -227,8 +222,8 @@ namespace SS.CMS.Core.Repositories
 
         public int GetCountOfContentUpdate(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-            var channelIdList = ChannelManager.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userName);
         }
 
@@ -236,8 +231,8 @@ namespace SS.CMS.Core.Repositories
         {
             var query = Q.Where(Attr.SiteId, siteId);
             query.WhereIn(Attr.ChannelId, channelIdList);
-            query.WhereBetween(Attr.LastEditDate, begin, end.AddDays(1));
-            query.WhereRaw($"{Attr.LastEditDate} != {Attr.AddDate}");
+            query.WhereBetween(Attr.LastModifiedDate, begin, end.AddDays(1));
+            query.WhereRaw($"{Attr.LastModifiedDate} != {Attr.AddDate}");
             if (!string.IsNullOrEmpty(userName))
             {
                 query.Where(Attr.AddUserName, userName);

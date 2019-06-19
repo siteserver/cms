@@ -7,11 +7,11 @@ namespace SS.CMS.Core.Services
     {
         public string AdminIndexUrl => GetAdminUrl(string.Empty);
 
-        public string AdminInstallUrl => GetAdminUrl("install");
-        public string AdminDashboardUrl => GetAdminUrl("dashboard");
-        public string AdminErrorUrl => GetAdminUrl("error");
-        public string AdminLoginUrl => GetAdminUrl("login");
-        public string AdminSyncUrl => GetAdminUrl("sync");
+        public string AdminInstallUrl => GetAdminUrl("install/");
+        public string AdminDashboardUrl => GetAdminUrl("dashboard/");
+        public string AdminErrorUrl => GetAdminUrl("error/");
+        public string AdminLoginUrl => GetAdminUrl("login/");
+        public string AdminSyncUrl => GetAdminUrl("sync/");
 
         public string GetAdminIndexUrl(int? siteId, string pageUrl)
         {

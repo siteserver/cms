@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ISettingsManager;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -23,7 +23,7 @@ namespace SS.CMS.Core.Repositories
         {
             public const string CacheKey = nameof(DbCacheInfo.CacheKey);
             public const string CacheValue = nameof(DbCacheInfo.CacheValue);
-            public const string AddDate = nameof(DbCacheInfo.AddDate);
+            public const string CreationDate = nameof(DbCacheInfo.CreationDate);
         }
 
         public void RemoveAndInsert(string cacheKey, string cacheValue)
@@ -38,8 +38,7 @@ namespace SS.CMS.Core.Repositories
             _repository.Insert(new DbCacheInfo
             {
                 CacheKey = cacheKey,
-                CacheValue = cacheValue,
-                AddDate = DateTime.Now
+                CacheValue = cacheValue
             });
         }
 
@@ -80,7 +79,7 @@ namespace SS.CMS.Core.Repositories
         public void DeleteExcess90Days()
         {
             _repository.Delete(Q
-                .Where(Attr.AddDate, "<", DateTime.Now.AddDays(-90)));
+                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-90)));
         }
     }
 }

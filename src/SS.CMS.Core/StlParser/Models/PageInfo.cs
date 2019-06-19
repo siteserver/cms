@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Api;
 using SS.CMS.Core.Common;
+using SS.CMS.Models;
+using SS.CMS.Services.IUrlManager;
 
 namespace SS.CMS.Core.StlParser.Models
 {
@@ -24,8 +24,8 @@ namespace SS.CMS.Core.StlParser.Models
         public Stack<KeyValuePair<int, SiteInfo>> SiteItems { get; }
         public Stack<KeyValuePair<int, ChannelInfo>> ChannelItems { get; }
         public Stack<KeyValuePair<int, ContentInfo>> ContentItems { get; }
-        public Stack<Container.Each> EachItems { get; }
-        public Stack<Container.Sql> SqlItems { get; }
+        public Stack<KeyValuePair<int, object>> EachItems { get; }
+        public Stack<KeyValuePair<int, Dictionary<string, object>>> SqlItems { get; }
         public Dictionary<string, object> PluginItems { get; }
         private int _uniqueId;
 
@@ -58,8 +58,8 @@ namespace SS.CMS.Core.StlParser.Models
             SiteItems = new Stack<KeyValuePair<int, SiteInfo>>(5);
             ChannelItems = new Stack<KeyValuePair<int, ChannelInfo>>(5);
             ContentItems = new Stack<KeyValuePair<int, ContentInfo>>(5);
-            EachItems = new Stack<Container.Each>(5);
-            SqlItems = new Stack<Container.Sql>(5);
+            EachItems = new Stack<KeyValuePair<int, object>>(5);
+            SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
             PluginItems = pluginItems;
         }
 

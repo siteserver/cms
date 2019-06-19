@@ -1,12 +1,8 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -31,7 +27,7 @@ namespace SS.CMS.Core.Services
         public const string ChannelRulesDefaultDirectoryName = "/channels/";
         public const string ChannelRulesDefaultRegexString = "/channels/(?<channelId>[^_]*)_?(?<pageIndex>[^_]*)";
 
-        public IDictionary ChannelRulesGetDictionary(ITableStyleRepository tableStyleRepository, SiteInfo siteInfo, int channelId)
+        public IDictionary ChannelRulesGetDictionary(SiteInfo siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -50,8 +46,8 @@ namespace SS.CMS.Core.Services
                     {ChannelRulesLowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var styleInfoList = tableStyleRepository.GetChannelStyleInfoList(channelInfo);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+            var styleInfoList = _tableManager.GetChannelStyleInfoList(channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.Type == InputType.Text)
@@ -89,60 +85,60 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesYear))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Year.ToString();
+                        value = channelInfo.CreationDate.Value.Year.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMonth))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Month.ToString();
+                        value = channelInfo.CreationDate.Value.Month.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesDay))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Day.ToString();
+                        value = channelInfo.CreationDate.Value.Day.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesHour))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Hour.ToString();
+                        value = channelInfo.CreationDate.Value.Hour.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMinute))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Minute.ToString();
+                        value = channelInfo.CreationDate.Value.Minute.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSecond))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.AddDate.HasValue)
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo.CreationDate.HasValue)
                     {
-                        value = channelInfo.AddDate.Value.Second.ToString();
+                        value = channelInfo.CreationDate.Value.Second.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSequence))
                 {
-                    value = StlChannelCache.GetSequence(siteInfo.Id, channelId).ToString();
+                    value = _channelRepository.StlGetSequence(siteInfo.Id, channelId).ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesParentRule))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    var parentInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelInfo.ParentId);
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var parentInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelInfo.ParentId);
                     if (parentInfo != null)
                     {
                         var parentRule = GetChannelFilePathRule(siteInfo, parentInfo.Id);
@@ -151,22 +147,22 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesChannelName))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     value = channelInfo.ChannelName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesLowerChannelName))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     value = channelInfo.ChannelName.ToLower();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesLowerChannelIndex))
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     value = channelInfo.IndexName.ToLower();
                 }
                 else
                 {
-                    if (channelInfo == null) channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     var attributeName = element.Replace("{@", string.Empty).Replace("}", string.Empty);
 
                     var isLower = false;

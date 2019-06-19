@@ -1,6 +1,6 @@
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IPathManager
 {
     public partial interface IPathManager
     {

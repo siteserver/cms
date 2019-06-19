@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -194,7 +192,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     parsedContent = parseContext.SiteInfo.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(DataProvider.SiteRepository.TableName, type, parseContext.TableStyleRepository.GetRelatedIdentities(parseContext.SiteId));
+                        var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.SiteRepository.TableName, type, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)

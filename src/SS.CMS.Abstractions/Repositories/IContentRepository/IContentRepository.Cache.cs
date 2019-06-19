@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
@@ -15,8 +15,6 @@ namespace SS.CMS.Abstractions.Repositories
         void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
 
         void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate);
-
-        List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll);
 
         ContentInfo Calculate(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns);
 

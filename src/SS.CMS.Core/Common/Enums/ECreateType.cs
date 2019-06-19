@@ -1,4 +1,4 @@
-﻿using SS.CMS.Abstractions.Enums;
+﻿using SS.CMS.Enums;
 
 namespace SS.CMS.Core.Models.Enumerations
 {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.StlElement;
+using SS.CMS.Models;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common

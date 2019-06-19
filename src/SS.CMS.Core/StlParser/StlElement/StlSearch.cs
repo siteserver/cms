@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using SS.CMS.Core.Api.Sys.Stl;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     /// <summary>
     /// 表单输入的验证规则类型。

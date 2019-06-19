@@ -2,14 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Services.ICreateManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -38,10 +34,10 @@ namespace SS.CMS.Core.Services
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
             var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
-            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
-            var targetTableName = ChannelManager.GetTableName(_pluginManager, targetSiteInfo, targetChannelInfo);
+            var targetChannelInfo = _channelRepository.GetChannelInfo(targetSiteId, targetChannelId);
+            var targetTableName = _channelRepository.GetTableName(_pluginManager, targetSiteInfo, targetChannelInfo);
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (contentInfo == null) return;
@@ -65,7 +61,7 @@ namespace SS.CMS.Core.Services
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        _errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -92,7 +88,7 @@ namespace SS.CMS.Core.Services
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        _errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -139,7 +135,7 @@ namespace SS.CMS.Core.Services
                     }
                     catch (Exception ex)
                     {
-                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
+                        _errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
                 }
 
@@ -154,7 +150,7 @@ namespace SS.CMS.Core.Services
 
             channelInfo.ContentRepository.Delete(siteInfo.Id, contentId);
 
-            TagUtils.RemoveTags(siteInfo.Id, contentId);
+            _tagRepository.RemoveTags(siteInfo.Id, contentId);
 
             foreach (var service in _pluginManager.Services)
             {
@@ -164,7 +160,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
                 }
             }
 
@@ -232,7 +228,7 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                 var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
@@ -265,7 +261,7 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                 var filePath = _pathManager.GetChannelPageFilePath(siteInfo, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);

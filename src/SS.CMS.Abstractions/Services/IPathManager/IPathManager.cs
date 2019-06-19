@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Abstractions.Services
+﻿namespace SS.CMS.Services.IPathManager
 {
     public partial interface IPathManager
     {

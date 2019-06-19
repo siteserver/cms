@@ -38,12 +38,12 @@ namespace SS.CMS.Api.Controllers.V2
 
         private bool IsCacheExists(string name, string code)
         {
-            return CacheUtils.Exists($"SiteServer.CMS.Services.V2.CaptchaService.{name}.{code}");
+            return _cacheManager.Exists($"SiteServer.CMS.Services.V2.CaptchaService.{name}.{code}");
         }
 
         private void Cache(string name, string code)
         {
-            CacheUtils.InsertMinutes($"SiteServer.CMS.Services.V2.CaptchaService.{name}.{code}", true, 10);
+            _cacheManager.InsertMinutes($"SiteServer.CMS.Services.V2.CaptchaService.{name}.{code}", true, 10);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
-using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Data;
+using SS.CMS.Repositories.IContentRepository;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Channel")]
     public class ChannelInfo : Entity, ICloneable
@@ -33,7 +33,7 @@ namespace SS.CMS.Abstractions.Models
         public int ChildrenCount { get; set; }
 
         [TableColumn]
-        public bool LastNode { get; set; }
+        public bool IsLastNode { get; set; }
 
         [TableColumn]
         public string IndexName { get; set; }
@@ -43,9 +43,6 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn]
         public int Taxis { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
 
         [TableColumn(Length = 1000)]
         public string ImageUrl { get; set; }
@@ -117,7 +114,7 @@ namespace SS.CMS.Abstractions.Models
 
         public string TransChannelNames { get; set; }
 
-        public bool TransIsAutomatic { get; set; }
+        public bool IsTransAutomatic { get; set; }
 
         //跨站转发操作类型：复制 引用地址 引用内容
         public string TransDoneType { get; set; } = "Copy";

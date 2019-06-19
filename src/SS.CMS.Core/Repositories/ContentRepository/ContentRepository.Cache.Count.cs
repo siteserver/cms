@@ -1,13 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Repositories;
-using SS.CMS.Core.Services;
+using SS.CMS.Models;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -15,20 +9,20 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly object CountLockObject = new object();
         private readonly string CountCacheKey =
-            DataCacheManager.GetCacheKey(nameof(ContentRepository)) + ".Count";
+            StringUtils.GetCacheKey(nameof(ContentRepository)) + ".Count";
 
         private Dictionary<string, List<ContentCountInfo>> CountGetAllContentCounts()
         {
             lock (CountLockObject)
             {
-                var retVal = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
+                var retVal = _cacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
                 if (retVal != null) return retVal;
 
-                retVal = DataCacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
+                retVal = _cacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
                 if (retVal == null)
                 {
                     retVal = new Dictionary<string, List<ContentCountInfo>>();
-                    DataCacheManager.Insert(CountCacheKey, retVal);
+                    _cacheManager.Insert(CountCacheKey, retVal);
                 }
 
                 return retVal;
@@ -69,7 +63,7 @@ namespace SS.CMS.Core.Repositories
                 var countInfoList = CountGetContentCountInfoList(tableName);
                 var countInfo = countInfoList.FirstOrDefault(x =>
                     x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                    x.IsChecked == contentInfo.Checked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                    x.IsChecked == contentInfo.IsChecked && x.CheckedLevel == contentInfo.CheckedLevel && x.UserId == contentInfo.UserId);
                 if (countInfo != null)
                 {
                     countInfo.Count++;
@@ -80,9 +74,9 @@ namespace SS.CMS.Core.Repositories
                     {
                         SiteId = contentInfo.SiteId,
                         ChannelId = contentInfo.ChannelId,
-                        IsChecked = contentInfo.Checked.ToString(),
+                        IsChecked = contentInfo.IsChecked,
                         CheckedLevel = contentInfo.CheckedLevel,
-                        AdminId = contentInfo.AdminId,
+                        UserId = contentInfo.UserId,
                         Count = 1
                     };
                     countInfoList.Add(countInfo);
@@ -96,9 +90,9 @@ namespace SS.CMS.Core.Repositories
 
             return contentInfo1.SiteId != contentInfo2.SiteId ||
                    contentInfo1.ChannelId != contentInfo2.ChannelId ||
-                   contentInfo1.Checked != contentInfo2.Checked ||
+                   contentInfo1.IsChecked != contentInfo2.IsChecked ||
                    contentInfo1.CheckedLevel != contentInfo2.CheckedLevel ||
-                   contentInfo1.AdminId != contentInfo2.AdminId;
+                   contentInfo1.UserId != contentInfo2.UserId;
         }
 
         private void CountRemove(string tableName, ContentInfo contentInfo)
@@ -110,7 +104,7 @@ namespace SS.CMS.Core.Repositories
                 var countInfoList = CountGetContentCountInfoList(tableName);
                 var countInfo = countInfoList.FirstOrDefault(x =>
                     x.SiteId == contentInfo.SiteId && x.ChannelId == contentInfo.ChannelId &&
-                    x.IsChecked == contentInfo.Checked.ToString() && x.CheckedLevel == contentInfo.CheckedLevel && x.AdminId == contentInfo.AdminId);
+                    x.IsChecked == contentInfo.IsChecked && x.CheckedLevel == contentInfo.CheckedLevel && x.UserId == contentInfo.UserId);
                 if (countInfo != null && countInfo.Count > 0)
                 {
                     countInfo.Count--;
@@ -118,9 +112,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private int CountGetSiteCountByIsChecked(IPluginManager pluginManager, SiteInfo siteInfo, bool isChecked)
+        private int CountGetSiteCountByIsChecked(SiteInfo siteInfo, bool isChecked)
         {
-            var tableNames = _siteRepository.GetTableNameList(pluginManager, siteInfo);
+            var tableNames = _siteRepository.GetTableNameList(_pluginManager, siteInfo);
 
             lock (CountLockObject)
             {
@@ -128,17 +122,16 @@ namespace SS.CMS.Core.Repositories
                 foreach (var tableName in tableNames)
                 {
                     var list = CountGetContentCountInfoList(tableName);
-                    count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked.ToString())
-                        .Sum(x => x.Count);
+                    count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked).Sum(x => x.Count);
                 }
 
                 return count;
             }
         }
 
-        private int CountGetChannelCountByOnlyAdminId(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        private int CountGetChannelCountByOnlyAdminId(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
         {
-            var tableName = ChannelManager.GetTableName(pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
 
             lock (CountLockObject)
             {
@@ -147,7 +140,7 @@ namespace SS.CMS.Core.Repositories
                     ? list.Where(x =>
                             x.SiteId == siteInfo.Id &&
                             x.ChannelId == channelInfo.Id &&
-                            x.AdminId == onlyAdminId.Value)
+                            x.UserId == onlyAdminId.Value)
                         .Sum(x => x.Count)
                     : list.Where(x =>
                             x.SiteId == siteInfo.Id &&
@@ -156,35 +149,35 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private int CountGetChannelCountByIsChecked(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        private int CountGetChannelCountByIsChecked(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
         {
-            var tableName = ChannelManager.GetTableName(pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
 
             lock (CountLockObject)
             {
                 var list = CountGetContentCountInfoList(tableName);
                 return list.Where(x =>
                         x.SiteId == siteInfo.Id && x.ChannelId == channelInfo.Id &&
-                        x.IsChecked == isChecked.ToString())
+                        x.IsChecked == isChecked)
                     .Sum(x => x.Count);
             }
         }
 
         // public
 
-        public int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, bool isChecked)
+        public int GetCount(SiteInfo siteInfo, bool isChecked)
         {
-            return CountGetSiteCountByIsChecked(pluginManager, siteInfo, isChecked);
+            return CountGetSiteCountByIsChecked(siteInfo, isChecked);
         }
 
-        public int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
         {
-            return CountGetChannelCountByOnlyAdminId(pluginManager, siteInfo, channelInfo, onlyAdminId);
+            return CountGetChannelCountByOnlyAdminId(siteInfo, channelInfo, onlyAdminId);
         }
 
-        public int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        public int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
         {
-            return CountGetChannelCountByIsChecked(pluginManager, siteInfo, channelInfo, isChecked);
+            return CountGetChannelCountByIsChecked(siteInfo, channelInfo, isChecked);
         }
     }
 }

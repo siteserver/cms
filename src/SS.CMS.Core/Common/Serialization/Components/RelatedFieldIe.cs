@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -11,6 +12,8 @@ namespace SS.CMS.Core.Serialization.Components
     {
         private readonly int _siteId;
         private readonly string _directoryPath;
+        private readonly IRelatedFieldRepository _relatedFieldRepository;
+        private readonly IRelatedFieldItemRepository _relatedFieldItemRepository;
 
         public RelatedFieldIe(int siteId, string directoryPath)
         {
@@ -24,11 +27,11 @@ namespace SS.CMS.Core.Serialization.Components
 
             var feed = ExportRelatedFieldInfo(relatedFieldInfo);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
+            var relatedFieldItemInfoList = _relatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
             {
-                AddAtomEntry(feed, relatedFieldItemInfo, 1);
+                AddAtomEntry(_relatedFieldItemRepository, feed, relatedFieldItemInfo, 1);
             }
             feed.Save(filePath);
         }
@@ -47,7 +50,7 @@ namespace SS.CMS.Core.Serialization.Components
             return feed;
         }
 
-        private static void AddAtomEntry(AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
+        private static void AddAtomEntry(IRelatedFieldItemRepository relatedFieldItemRepository, AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -61,11 +64,11 @@ namespace SS.CMS.Core.Serialization.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = DataProvider.RelatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
+            var relatedFieldItemInfoList = relatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
-                AddAtomEntry(feed, itemInfo, level + 1);
+                AddAtomEntry(relatedFieldItemRepository, feed, itemInfo, level + 1);
             }
         }
 
@@ -92,20 +95,20 @@ namespace SS.CMS.Core.Serialization.Components
                     Suffixes = suffixes,
                 };
 
-                var srcRelatedFieldInfo = DataProvider.RelatedFieldRepository.GetRelatedFieldInfo(_siteId, title);
+                var srcRelatedFieldInfo = _relatedFieldRepository.GetRelatedFieldInfo(_siteId, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
                     {
-                        DataProvider.RelatedFieldRepository.Delete(srcRelatedFieldInfo.Id);
+                        _relatedFieldRepository.Delete(srcRelatedFieldInfo.Id);
                     }
                     else
                     {
-                        relatedFieldInfo.Title = DataProvider.RelatedFieldRepository.GetImportTitle(_siteId, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = _relatedFieldRepository.GetImportTitle(_siteId, relatedFieldInfo.Title);
                     }
                 }
 
-                var relatedFieldId = DataProvider.RelatedFieldRepository.Insert(relatedFieldInfo);
+                var relatedFieldId = _relatedFieldRepository.Insert(relatedFieldInfo);
 
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
@@ -129,7 +132,7 @@ namespace SS.CMS.Core.Serialization.Components
                         ParentId = parentId
                     };
 
-                    lastInsertedId = DataProvider.RelatedFieldItemRepository.Insert(itemInfo);
+                    lastInsertedId = _relatedFieldItemRepository.Insert(itemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
                 }

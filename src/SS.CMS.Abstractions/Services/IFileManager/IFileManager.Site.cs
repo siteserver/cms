@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IFileManager
 {
     public partial interface IFileManager
     {
-        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
+        void Translate(ICreateManager.ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
 
-        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
+        void Translate(ICreateManager.ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
 
         void Delete(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId);
 

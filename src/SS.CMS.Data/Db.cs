@@ -299,6 +299,10 @@ namespace SS.CMS.Data
                     tableColumn.DataType = DataType.VarChar;
                     tableColumn.DataLength = 50;
                 }
+                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreationDate)))
+                {
+                    tableColumn.DataType = DataType.DateTime;
+                }
                 else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
                 {
                     tableColumn.DataType = DataType.DateTime;
@@ -387,6 +391,10 @@ namespace SS.CMS.Data
                 {
                     tableColumn.DataType = DataType.VarChar;
                     tableColumn.DataLength = 50;
+                }
+                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreationDate)))
+                {
+                    tableColumn.DataType = DataType.DateTime;
                 }
                 else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
                 {

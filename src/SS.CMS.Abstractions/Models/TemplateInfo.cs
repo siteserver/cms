@@ -1,7 +1,7 @@
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Data;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Template")]
     public class TemplateInfo : Entity
@@ -31,13 +31,7 @@ namespace SS.CMS.Abstractions.Models
         public string CreatedFileExtName { get; set; }
 
         [TableColumn]
-        private string IsDefault { get; set; }
-
-        public bool Default
-        {
-            get => IsDefault == "True";
-            set => IsDefault = value.ToString();
-        }
+        public bool IsDefault { get; set; }
 
         public string Content { get; set; }
     }

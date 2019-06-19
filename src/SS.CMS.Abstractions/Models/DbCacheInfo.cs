@@ -1,7 +1,6 @@
-using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_DbCache")]
     public class DbCacheInfo : Entity
@@ -11,8 +10,5 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn]
         public string CacheValue { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
     }
 }

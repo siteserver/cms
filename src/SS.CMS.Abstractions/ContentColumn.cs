@@ -1,7 +1,7 @@
-﻿using SS.CMS.Abstractions.Enums;
-using SS.CMS.Data;
+﻿using SS.CMS.Data;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     public class ContentColumn : TableColumn
     {

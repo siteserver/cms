@@ -1,6 +1,6 @@
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_TableStyleItem")]
     public class TableStyleItemInfo : Entity
@@ -15,12 +15,6 @@ namespace SS.CMS.Abstractions.Models
         public string ItemValue { get; set; }
 
         [TableColumn]
-        private string IsSelected { get; set; }
-
-        public bool Selected
-        {
-            get => IsSelected == "True";
-            set => IsSelected = value.ToString();
-        }
+        public bool IsSelected { get; set; }
     }
 }

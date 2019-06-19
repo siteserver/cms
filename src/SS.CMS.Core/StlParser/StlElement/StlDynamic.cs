@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using SS.CMS.Core.Api.Sys.Stl;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlEntity;
 using SS.CMS.Core.StlParser.Utility;
@@ -122,8 +118,6 @@ namespace SS.CMS.Core.StlParser.StlElement
         public static string ParseDynamicContent(ParseContext parseContext, DynamicInfo dynamicInfo, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
-
-            StlCacheManager.ClearAll();
 
             // var templateInfo = TemplateManager.GetTemplateInfo(dynamicInfo.SiteId, dynamicInfo.TemplateId);
             // var siteInfo = SiteManager.GetSiteInfo(dynamicInfo.SiteId);

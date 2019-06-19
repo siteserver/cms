@@ -38,7 +38,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         public long Taxis { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
     }
 
     public partial class TableGovPublicIdentifierRule

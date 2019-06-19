@@ -1,6 +1,6 @@
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
     public interface IPluginRepository : IRepository
     {

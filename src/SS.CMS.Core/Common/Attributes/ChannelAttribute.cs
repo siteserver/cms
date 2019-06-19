@@ -1,5 +1,5 @@
-﻿using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.StlParser.Models;
+﻿using SS.CMS.Core.StlParser.Models;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.Models.Attributes
 {
@@ -7,6 +7,8 @@ namespace SS.CMS.Core.Models.Attributes
     {
         [StlAttribute(Title = "栏目Id")]
         public const string Id = nameof(ChannelInfo.Id);
+
+        public const string CreationDate = nameof(ChannelInfo.CreationDate);
 
         [StlAttribute(Title = "站点Id")]
         public const string SiteId = nameof(ChannelInfo.SiteId);
@@ -30,7 +32,7 @@ namespace SS.CMS.Core.Models.Attributes
         public const string ChildrenCount = nameof(ChannelInfo.ChildrenCount);
 
         [StlAttribute(Title = "是否最后一级栏目")]
-        public const string LastNode = nameof(ChannelInfo.LastNode);
+        public const string IsLastNode = nameof(ChannelInfo.IsLastNode);
 
         [StlAttribute(Title = "栏目索引")]
         public const string IndexName = nameof(ChannelInfo.IndexName);
@@ -40,9 +42,6 @@ namespace SS.CMS.Core.Models.Attributes
 
         [StlAttribute(Title = "栏目排序")]
         public const string Taxis = nameof(ChannelInfo.Taxis);
-
-        [StlAttribute(Title = "栏目添加时间")]
-        public const string AddDate = nameof(ChannelInfo.AddDate);
 
         [StlAttribute(Title = "栏目图片")]
         public const string ImageUrl = nameof(ChannelInfo.ImageUrl);

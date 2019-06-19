@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -157,7 +153,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 string pageUrl;
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
+                    channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
                     pageUrl = parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else
@@ -451,7 +447,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -477,7 +473,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
+                    var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
                     pageUrl = parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else
@@ -533,7 +529,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlEntity, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -939,7 +935,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -1007,7 +1003,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlEntity, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
@@ -1404,7 +1400,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -1472,7 +1468,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlEntity, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
             }
 
             return parsedContent;

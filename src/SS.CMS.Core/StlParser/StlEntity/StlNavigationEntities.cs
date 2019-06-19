@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -38,17 +35,17 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var attributeName = entityName.Substring(12, entityName.Length - 13);
 
-                var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+                var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
 
                 if (StringUtils.EqualsIgnoreCase(PreviousChannel, attributeName) || StringUtils.EqualsIgnoreCase(NextChannel, attributeName))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(attributeName, PreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = StlChannelCache.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = parseContext.ChannelRepository.StlGetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, siblingChannelId);
+                        var siblingNodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, siblingChannelId);
                         parsedContent = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, siblingNodeInfo, parseContext.IsLocal);
                     }
                 }

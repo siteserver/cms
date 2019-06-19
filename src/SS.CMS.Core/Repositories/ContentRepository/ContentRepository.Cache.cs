@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Plugin;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -17,7 +14,7 @@ namespace SS.CMS.Core.Repositories
     {
         public void RemoveCacheBySiteId(string tableName, int siteId)
         {
-            foreach (var channelId in ChannelManager.GetChannelIdList(siteId))
+            foreach (var channelId in _channelRepository.GetChannelIdList(siteId))
             {
                 ListRemove(channelId);
                 ContentRemove(channelId);
@@ -49,7 +46,7 @@ namespace SS.CMS.Core.Repositories
             var dict = ContentGetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
 
-            var tableName = ChannelManager.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
             CountAdd(tableName, contentInfo);
 
             StlClearCache();
@@ -69,7 +66,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (CountIsChanged(contentInfo, contentInfoToUpdate))
                 {
-                    var tableName = ChannelManager.GetTableName(_pluginManager, siteInfo, channelInfo);
+                    var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
                     CountRemove(tableName, contentInfo);
                     CountAdd(tableName, contentInfoToUpdate);
                 }
@@ -78,89 +75,6 @@ namespace SS.CMS.Core.Repositories
             dict[contentInfoToUpdate.Id] = contentInfoToUpdate;
 
             StlClearCache();
-        }
-
-        public List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
-        {
-            var columns = new List<ContentColumn>();
-
-            var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
-            var pluginIds = _pluginManager.GetContentPluginIds(channelInfo);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
-
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(_tableStyleRepository.GetContentStyleInfoList(_pluginManager, siteInfo, channelInfo));
-
-            styleInfoList.Insert(0, new TableStyleInfo
-            {
-                AttributeName = ContentAttribute.Sequence,
-                DisplayName = "序号"
-            });
-
-            foreach (var styleInfo in styleInfoList)
-            {
-                if (styleInfo.Type == InputType.TextEditor) continue;
-
-                var column = new ContentColumn
-                {
-                    AttributeName = styleInfo.AttributeName,
-                    DisplayName = styleInfo.DisplayName,
-                    InputType = styleInfo.Type
-                };
-                if (styleInfo.AttributeName == ContentAttribute.Title)
-                {
-                    column.IsList = true;
-                }
-                else
-                {
-                    if (attributesOfDisplay.Contains(styleInfo.AttributeName))
-                    {
-                        column.IsList = true;
-                    }
-                }
-
-                if (StringUtils.ContainsIgnoreCase(ContentAttribute.CalculateAttributes.Value, styleInfo.AttributeName))
-                {
-                    column.IsCalculate = true;
-                }
-
-                if (includeAll || column.IsList)
-                {
-                    columns.Add(column);
-                }
-            }
-
-            if (pluginColumns != null)
-            {
-                foreach (var pluginId in pluginColumns.Keys)
-                {
-                    var contentColumns = pluginColumns[pluginId];
-                    if (contentColumns == null || contentColumns.Count == 0) continue;
-
-                    foreach (var columnName in contentColumns.Keys)
-                    {
-                        var attributeName = $"{pluginId}:{columnName}";
-                        var column = new ContentColumn
-                        {
-                            AttributeName = attributeName,
-                            DisplayName = $"{columnName}({pluginId})",
-                            InputType = InputType.Text,
-                            IsCalculate = true
-                        };
-
-                        if (attributesOfDisplay.Contains(attributeName))
-                        {
-                            column.IsList = true;
-                        }
-
-                        if (includeAll || column.IsList)
-                        {
-                            columns.Add(column);
-                        }
-                    }
-                }
-            }
-
-            return columns;
         }
 
         public ContentInfo Calculate(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
@@ -177,19 +91,6 @@ namespace SS.CMS.Core.Repositories
                 {
                     retVal.Set(ContentAttribute.Sequence, sequence);
                 }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AdminId))
-                {
-                    var value = string.Empty;
-                    if (contentInfo.AdminId > 0)
-                    {
-                        var adminInfo = _administratorRepository.GetAdminInfoByUserId(contentInfo.AdminId);
-                        if (adminInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
-                        }
-                    }
-                    retVal.Set(ContentAttribute.AdminId, value);
-                }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.UserId))
                 {
                     var value = string.Empty;
@@ -205,17 +106,17 @@ namespace SS.CMS.Core.Repositories
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
                 {
-                    retVal.Set(ContentAttribute.SourceId, _siteRepository.GetSourceName(contentInfo.SourceId));
+                    retVal.Set(ContentAttribute.SourceId, _channelRepository.GetSourceName(contentInfo.SourceId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
                 {
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        var adminInfo = _administratorRepository.GetAdminInfoByUserName(contentInfo.AddUserName);
-                        if (adminInfo != null)
+                        var userInfo = _userRepository.GetUserInfoByUserName(contentInfo.AddUserName);
+                        if (userInfo != null)
                         {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                            value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
                         }
                     }
                     retVal.Set(ContentAttribute.AddUserName, value);
@@ -225,10 +126,10 @@ namespace SS.CMS.Core.Repositories
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
                     {
-                        var adminInfo = _administratorRepository.GetAdminInfoByUserName(contentInfo.LastEditUserName);
-                        if (adminInfo != null)
+                        var userInfo = _userRepository.GetUserInfoByUserName(contentInfo.LastEditUserName);
+                        if (userInfo != null)
                         {
-                            value = string.IsNullOrEmpty(adminInfo.DisplayName) ? adminInfo.UserName : adminInfo.DisplayName;
+                            value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
                         }
                     }
                     retVal.Set(ContentAttribute.LastEditUserName, value);
@@ -261,7 +162,7 @@ namespace SS.CMS.Core.Repositories
                         }
                         catch (Exception ex)
                         {
-                            LogUtils.AddErrorLog(pluginId, ex);
+                            _errorLogRepository.AddErrorLog(pluginId, ex);
                         }
                     }
                 }
@@ -282,7 +183,7 @@ namespace SS.CMS.Core.Repositories
                 return false;
             }
 
-            return channelInfo.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.Checked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
+            return channelInfo.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.IsChecked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
         }
     }
 }

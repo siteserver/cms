@@ -1,62 +1,53 @@
-﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using SS.CMS.Models;
 using SS.CMS.Utils;
+using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class UserRepository
     {
-        private readonly object _lockObject = new object();
-
-        private void ClearCache()
+        public void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            _cacheManager.Remove(CacheKey);
         }
 
-        private void UpdateCache(UserInfo userInfo)
+        public void UpdateCache(UserInfo userInfo)
         {
             if (userInfo == null) return;
 
             var dict = GetDict();
 
-            lock (_lockObject)
+            dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+            dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+            if (!string.IsNullOrEmpty(userInfo.Mobile))
             {
-                dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                if (!string.IsNullOrEmpty(userInfo.Mobile))
-                {
-                    dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                }
-                if (!string.IsNullOrEmpty(userInfo.Email))
-                {
-                    dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                }
+                dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+            }
+            if (!string.IsNullOrEmpty(userInfo.Email))
+            {
+                dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
             }
         }
 
-        private void RemoveCache(UserInfo userInfo)
+        public void RemoveCache(UserInfo userInfo)
         {
             if (userInfo == null) return;
 
             var dict = GetDict();
 
-            lock (_lockObject)
+            dict.Remove(GetDictKeyByUserId(userInfo.Id));
+            dict.Remove(GetDictKeyByUserName(userInfo.UserName));
+            if (!string.IsNullOrEmpty(userInfo.Mobile))
             {
-                dict.Remove(GetDictKeyByUserId(userInfo.Id));
-                dict.Remove(GetDictKeyByUserName(userInfo.UserName));
-                if (!string.IsNullOrEmpty(userInfo.Mobile))
-                {
-                    dict.Remove(GetDictKeyByMobile(userInfo.Mobile));
-                }
+                dict.Remove(GetDictKeyByMobile(userInfo.Mobile));
+            }
 
-                if (!string.IsNullOrEmpty(userInfo.Email))
-                {
-                    dict.Remove(GetDictKeyByEmail(userInfo.Email));
-                }
+            if (!string.IsNullOrEmpty(userInfo.Email))
+            {
+                dict.Remove(GetDictKeyByEmail(userInfo.Email));
             }
         }
 
@@ -89,25 +80,22 @@ namespace SS.CMS.Core.Repositories
             dict.TryGetValue(GetDictKeyByUserId(userId), out UserInfo userInfo);
             if (userInfo != null) return userInfo;
 
-            lock (_lockObject)
-            {
-                dict.TryGetValue(GetDictKeyByUserId(userId), out userInfo);
+            dict.TryGetValue(GetDictKeyByUserId(userId), out userInfo);
 
-                if (userInfo == null)
+            if (userInfo == null)
+            {
+                userInfo = GetByUserId(userId);
+                if (userInfo != null)
                 {
-                    userInfo = GetByUserId(userId);
-                    if (userInfo != null)
+                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+                    if (!string.IsNullOrEmpty(userInfo.Mobile))
                     {
-                        dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                        dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                        if (!string.IsNullOrEmpty(userInfo.Mobile))
-                        {
-                            dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                        }
-                        if (!string.IsNullOrEmpty(userInfo.Email))
-                        {
-                            dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                        }
+                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                    }
+                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    {
+                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
                     }
                 }
             }
@@ -124,25 +112,54 @@ namespace SS.CMS.Core.Repositories
             dict.TryGetValue(GetDictKeyByUserName(userName), out UserInfo userInfo);
             if (userInfo != null) return userInfo;
 
-            lock (_lockObject)
-            {
-                dict.TryGetValue(GetDictKeyByUserName(userName), out userInfo);
+            dict.TryGetValue(GetDictKeyByUserName(userName), out userInfo);
 
-                if (userInfo == null)
+            if (userInfo == null)
+            {
+                userInfo = GetByUserName(userName);
+                if (userInfo != null)
                 {
-                    userInfo = GetByUserName(userName);
-                    if (userInfo != null)
+                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+                    if (!string.IsNullOrEmpty(userInfo.Mobile))
                     {
-                        dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                        dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                        if (!string.IsNullOrEmpty(userInfo.Mobile))
-                        {
-                            dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                        }
-                        if (!string.IsNullOrEmpty(userInfo.Email))
-                        {
-                            dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                        }
+                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                    }
+                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    {
+                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
+                    }
+                }
+            }
+
+            return userInfo;
+        }
+
+        public async Task<UserInfo> GetUserInfoByUserNameAsync(string userName)
+        {
+            if (string.IsNullOrEmpty(userName)) return null;
+
+            var dict = GetDict();
+
+            dict.TryGetValue(GetDictKeyByUserName(userName), out UserInfo userInfo);
+            if (userInfo != null) return userInfo;
+
+            dict.TryGetValue(GetDictKeyByUserName(userName), out userInfo);
+
+            if (userInfo == null)
+            {
+                userInfo = await GetByUserNameAsync(userName);
+                if (userInfo != null)
+                {
+                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+                    if (!string.IsNullOrEmpty(userInfo.Mobile))
+                    {
+                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                    }
+                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    {
+                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
                     }
                 }
             }
@@ -159,25 +176,22 @@ namespace SS.CMS.Core.Repositories
             dict.TryGetValue(GetDictKeyByMobile(mobile), out UserInfo userInfo);
             if (userInfo != null) return userInfo;
 
-            lock (_lockObject)
-            {
-                dict.TryGetValue(GetDictKeyByMobile(mobile), out userInfo);
+            dict.TryGetValue(GetDictKeyByMobile(mobile), out userInfo);
 
-                if (userInfo == null)
+            if (userInfo == null)
+            {
+                userInfo = GetByMobile(mobile);
+                if (userInfo != null)
                 {
-                    userInfo = GetByMobile(mobile);
-                    if (userInfo != null)
+                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+                    if (!string.IsNullOrEmpty(userInfo.Mobile))
                     {
-                        dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                        dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                        if (!string.IsNullOrEmpty(userInfo.Mobile))
-                        {
-                            dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                        }
-                        if (!string.IsNullOrEmpty(userInfo.Email))
-                        {
-                            dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                        }
+                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                    }
+                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    {
+                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
                     }
                 }
             }
@@ -194,25 +208,22 @@ namespace SS.CMS.Core.Repositories
             dict.TryGetValue(GetDictKeyByEmail(email), out UserInfo userInfo);
             if (userInfo != null) return userInfo;
 
-            lock (_lockObject)
-            {
-                dict.TryGetValue(GetDictKeyByEmail(email), out userInfo);
+            dict.TryGetValue(GetDictKeyByEmail(email), out userInfo);
 
-                if (userInfo == null)
+            if (userInfo == null)
+            {
+                userInfo = GetByEmail(email);
+                if (userInfo != null)
                 {
-                    userInfo = GetByEmail(email);
-                    if (userInfo != null)
+                    dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
+                    dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
+                    if (!string.IsNullOrEmpty(userInfo.Mobile))
                     {
-                        dict[GetDictKeyByUserId(userInfo.Id)] = userInfo;
-                        dict[GetDictKeyByUserName(userInfo.UserName)] = userInfo;
-                        if (!string.IsNullOrEmpty(userInfo.Mobile))
-                        {
-                            dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
-                        }
-                        if (!string.IsNullOrEmpty(userInfo.Email))
-                        {
-                            dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
-                        }
+                        dict[GetDictKeyByMobile(userInfo.Mobile)] = userInfo;
+                    }
+                    if (!string.IsNullOrEmpty(userInfo.Email))
+                    {
+                        dict[GetDictKeyByEmail(userInfo.Email)] = userInfo;
                     }
                 }
             }
@@ -222,17 +233,14 @@ namespace SS.CMS.Core.Repositories
 
         private Dictionary<string, UserInfo> GetDict()
         {
-            var dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+            var dict = _cacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
             if (dict != null) return dict;
 
-            lock (_lockObject)
+            dict = _cacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
+            if (dict == null)
             {
-                dict = DataCacheManager.Get<Dictionary<string, UserInfo>>(CacheKey);
-                if (dict == null)
-                {
-                    dict = new Dictionary<string, UserInfo>();
-                    DataCacheManager.Insert(CacheKey, dict);
-                }
+                dict = new Dictionary<string, UserInfo>();
+                _cacheManager.Insert(CacheKey, dict);
             }
 
             return dict;
@@ -254,22 +262,41 @@ namespace SS.CMS.Core.Repositories
             return GetUserInfoByUserName(account);
         }
 
-        public bool IsIpAddressCached(string ipAddress)
+        public List<int> GetLatestTop10SiteIdList(List<int> siteIdListLatestAccessed, List<int> siteIdListOrderByLevel, List<int> siteIdListWithPermissions)
         {
-            if (_settingsManager.ConfigInfo.UserRegistrationMinMinutes == 0 || string.IsNullOrEmpty(ipAddress))
+            var siteIdList = new List<int>();
+
+            foreach (var siteId in siteIdListLatestAccessed)
             {
-                return true;
+                if (siteIdList.Count >= 10) break;
+                if (!siteIdList.Contains(siteId) && siteIdListWithPermissions.Contains(siteId))
+                {
+                    siteIdList.Add(siteId);
+                }
             }
-            var obj = CacheUtils.Get($"SiteServer.CMS.Provider.User.InsertObject.IpAddress.{ipAddress}");
-            return obj == null;
+
+            if (siteIdList.Count < 10)
+            {
+                // var siteIdListOrderByLevel = SiteManager.GetSiteIdListOrderByLevel();
+                foreach (var siteId in siteIdListOrderByLevel)
+                {
+                    if (siteIdList.Count >= 5) break;
+                    if (!siteIdList.Contains(siteId) && siteIdListWithPermissions.Contains(siteId))
+                    {
+                        siteIdList.Add(siteId);
+                    }
+                }
+            }
+
+            return siteIdList;
         }
 
-        public void CacheIpAddress(string ipAddress)
+        public string GetDisplayName(string userName)
         {
-            if (_settingsManager.ConfigInfo.UserRegistrationMinMinutes > 0 && !string.IsNullOrEmpty(ipAddress))
-            {
-                CacheUtils.InsertMinutes($"SiteServer.CMS.Provider.User.InsertObject.IpAddress.{ipAddress}", ipAddress, _settingsManager.ConfigInfo.UserRegistrationMinMinutes);
-            }
+            var userInfo = GetUserInfoByUserName(userName);
+            if (userInfo == null) return userName;
+
+            return userInfo.DisplayName;
         }
     }
 }

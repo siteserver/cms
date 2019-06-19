@@ -1,8 +1,8 @@
-﻿using SS.CMS.Abstractions.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 为内容编辑（新增）页面的提交事件提供数据。
@@ -10,7 +10,7 @@ namespace SS.CMS.Abstractions
     public class ContentFormSubmitEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SS.CMS.Abstractions.ContentFormSubmitEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SS.CMS.ContentFormSubmitEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">站点Id。</param>
         /// <param name="channelId">栏目Id。</param>

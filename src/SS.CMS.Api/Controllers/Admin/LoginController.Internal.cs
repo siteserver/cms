@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using SS.CMS.Abstractions;
 using SS.CMS.Core.Common;
 using SS.CMS.Utils;
 
@@ -39,64 +38,64 @@ namespace SS.CMS.Api.Controllers.Admin
             return validateCode;
         }
 
-        public string AdminLogin(string userName, bool isAutoLogin)
-        {
-            if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
-            if (adminInfo == null || adminInfo.Locked) return null;
+        //public string AdminLogin(string userName, bool isAutoLogin)
+        //{
+        //    if (string.IsNullOrEmpty(userName)) return null;
+        //    var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
+        //    if (adminInfo == null || adminInfo.Locked) return null;
 
-            var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
-            var identityToken = new Token
-            {
-                UserId = adminInfo.Id,
-                UserName = adminInfo.UserName,
-                ExpiresAt = expiresAt
-            };
-            var accessToken = _identityManager.GetToken(identityToken);
+        //    var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
+        //    var identityToken = new Token
+        //    {
+        //        UserId = adminInfo.Id,
+        //        UserName = adminInfo.UserName,
+        //        ExpiresAt = expiresAt
+        //    };
+        //    var accessToken = _identityManager.GetToken(identityToken);
 
-            // const string Issuer = "https://gov.uk";
+        //    // const string Issuer = "https://gov.uk";
 
-            // var claims = new List<Claim> {
-            //     new Claim(ClaimTypes.Name, "Andrew", ClaimValueTypes.String, Issuer),
-            //     new Claim(ClaimTypes.Surname, "Lock", ClaimValueTypes.String, Issuer),
-            //     new Claim(ClaimTypes.Country, "UK", ClaimValueTypes.String, Issuer),
-            //     new Claim("ChildhoodHero", "Ronnie James Dio", ClaimValueTypes.String)
-            // };
+        //    // var claims = new List<Claim> {
+        //    //     new Claim(ClaimTypes.Name, "Andrew", ClaimValueTypes.String, Issuer),
+        //    //     new Claim(ClaimTypes.Surname, "Lock", ClaimValueTypes.String, Issuer),
+        //    //     new Claim(ClaimTypes.Country, "UK", ClaimValueTypes.String, Issuer),
+        //    //     new Claim("ChildhoodHero", "Ronnie James Dio", ClaimValueTypes.String)
+        //    // };
 
-            // var userIdentity = new ClaimsIdentity(claims, "Passport");
+        //    // var userIdentity = new ClaimsIdentity(claims, "Passport");
 
-            // var userPrincipal = new ClaimsPrincipal(userIdentity);
+        //    // var userPrincipal = new ClaimsPrincipal(userIdentity);
 
-            // await HttpContext.SignInAsync("Cookie", userPrincipal,
-            //     new AuthenticationProperties
-            //     {
-            //         ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
-            //         IsPersistent = false,
-            //         AllowRefresh = false
-            //     });
+        //    // await HttpContext.SignInAsync("Cookie", userPrincipal,
+        //    //     new AuthenticationProperties
+        //    //     {
+        //    //         ExpiresUtc = DateTime.UtcNow.AddMinutes(20),
+        //    //         IsPersistent = false,
+        //    //         AllowRefresh = false
+        //    //     });
 
-            LogUtils.AddAdminLog(_identityManager.IpAddress, adminInfo.UserName, "管理员登录");
+        //    LogUtils.AddAdminLog(_identityManager.IpAddress, adminInfo.UserName, "管理员登录");
 
-            if (isAutoLogin)
-            {
-                Response.Cookies.Delete(Constants.CookieAdminToken);
-                Response.Cookies.Append(Constants.CookieAdminToken, accessToken, new CookieOptions
-                {
-                    Expires = expiresAt
-                });
-            }
-            else
-            {
-                Response.Cookies.Delete(Constants.CookieAdminToken);
-                Response.Cookies.Append(Constants.CookieAdminToken, accessToken);
-            }
+        //    if (isAutoLogin)
+        //    {
+        //        Response.Cookies.Delete(Constants.CookieAdminToken);
+        //        Response.Cookies.Append(Constants.CookieAdminToken, accessToken, new CookieOptions
+        //        {
+        //            Expires = expiresAt
+        //        });
+        //    }
+        //    else
+        //    {
+        //        Response.Cookies.Delete(Constants.CookieAdminToken);
+        //        Response.Cookies.Append(Constants.CookieAdminToken, accessToken);
+        //    }
 
-            return accessToken;
-        }
+        //    return accessToken;
+        //}
 
-        public void AdminLogout()
-        {
-            Response.Cookies.Delete(Constants.CookieAdminToken);
-        }
+        //public void AdminLogout()
+        //{
+        //    Response.Cookies.Delete(Constants.CookieAdminToken);
+        //}
     }
 }

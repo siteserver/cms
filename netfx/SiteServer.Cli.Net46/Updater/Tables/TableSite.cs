@@ -55,7 +55,7 @@ namespace SiteServer.Cli.Updater.Tables
         public long Taxis { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
     }
 
     public partial class TableSite

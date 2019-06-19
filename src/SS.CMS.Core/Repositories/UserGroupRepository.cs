@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -14,12 +15,14 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<UserGroupInfo> _repository;
         private readonly ISettingsManager _settingsManager;
         private readonly ICacheManager _cacheManager;
+        private readonly IConfigRepository _configRepository;
 
-        public UserGroupRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
+        public UserGroupRepository(ISettingsManager settingsManager, ICacheManager cacheManager, IConfigRepository configRepository)
         {
             _repository = new Repository<UserGroupInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _cacheManager = cacheManager;
+            _configRepository = configRepository;
         }
 
         public IDb Db => _repository.Db;

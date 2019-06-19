@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.Serialization.Components;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICreateManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 using SS.CMS.Utils.IO;
@@ -23,7 +26,10 @@ namespace SS.CMS.Core.Serialization
         private readonly IPluginManager _pluginManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
+        private readonly ITableManager _tableManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
+        private readonly IRelatedFieldRepository _relatedFieldRepository;
         private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly IContentGroupRepository _contentGroupRepository;
         private readonly ISpecialRepository _specialRepository;
@@ -44,7 +50,7 @@ namespace SS.CMS.Core.Serialization
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = DataProvider.SiteRepository.GetLowerSiteDirListThatNotIsRoot();
+            var siteDirList = _siteRepository.GetLowerSiteDirListThatNotIsRoot();
 
             var fileSystems = FileSystemUtils.GetFileSystemInfoExtendCollection(_pathManager.GetSitePath(_siteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -58,7 +64,7 @@ namespace SS.CMS.Core.Serialization
                     {
                         var isSiteDirectory = false;
 
-                        if (_siteInfo.Root)
+                        if (_siteInfo.IsRoot)
                         {
                             foreach (var siteDir in siteDirList)
                             {
@@ -109,7 +115,7 @@ namespace SS.CMS.Core.Serialization
         {
             var filePath = _pathManager.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = _pathManager.GetTemporaryFilesPath("TableStyle");
-            TableStyleIe.SingleExportTableStyles(_tableStyleRepository, tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
+            TableStyleIe.SingleExportTableStyles(_tableManager, _channelRepository, tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -117,11 +123,11 @@ namespace SS.CMS.Core.Serialization
             return PathUtils.GetFileName(filePath);
         }
 
-        public static string ExportRootSingleTableStyle(IPathManager pathManager, ITableStyleRepository tableStyleRepository, string tableName)
+        public static string ExportRootSingleTableStyle(ITableManager tableManager, IPathManager pathManager, IChannelRepository channelRepository, string tableName)
         {
             var filePath = pathManager.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = pathManager.GetTemporaryFilesPath("TableStyle");
-            TableStyleIe.SingleExportTableStyles(tableStyleRepository, tableName, styleDirectoryPath);
+            TableStyleIe.SingleExportTableStyles(tableManager, channelRepository, tableName, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -156,7 +162,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = DataProvider.RelatedFieldRepository.GetRelatedFieldInfoList(_siteInfo.Id);
+            var relatedFieldInfoList = _relatedFieldRepository.GetRelatedFieldInfoList(_siteInfo.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
                 relatedFieldIe.ExportRelatedField(relatedFieldInfo);
@@ -172,7 +178,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var relatedFieldInfo = DataProvider.RelatedFieldRepository.GetRelatedFieldInfo(relatedFieldId);
+            var relatedFieldInfo = _relatedFieldRepository.GetRelatedFieldInfo(relatedFieldId);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, directoryPath);
             relatedFieldIe.ExportRelatedField(relatedFieldInfo);
@@ -199,8 +205,8 @@ namespace SS.CMS.Core.Serialization
                 styleIe.ExportTableStyles(siteInfo.Id, tableName);
             }
 
-            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.ChannelRepository.TableName);
-            styleIe.ExportTableStyles(siteInfo.Id, DataProvider.SiteRepository.TableName);
+            styleIe.ExportTableStyles(siteInfo.Id, _channelRepository.TableName);
+            styleIe.ExportTableStyles(siteInfo.Id, _siteRepository.TableName);
         }
 
 
@@ -212,12 +218,12 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = ChannelManager.GetChannelIdList(_siteInfo.Id);
+            var allChannelIdList = _channelRepository.GetChannelIdList(_siteInfo.Id);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
+                var nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, channelId);
                 var parentIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
@@ -277,8 +283,8 @@ namespace SS.CMS.Core.Serialization
                 if (!allChannelIdList.Contains(channelId))
                 {
                     allChannelIdList.Add(channelId);
-                    var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, channelId);
-                    var childChannelIdList = ChannelManager.GetChannelIdList(nodeInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                    var nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, channelId);
+                    var childChannelIdList = _channelRepository.GetChannelIdList(nodeInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }

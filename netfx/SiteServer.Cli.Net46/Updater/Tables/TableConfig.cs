@@ -35,7 +35,7 @@ namespace SiteServer.Cli.Updater.Tables
         public DateTimeOffset UpdateDate { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
     }
 
     public partial class TableConfig
@@ -57,7 +57,7 @@ namespace SiteServer.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {"SystemConfig", nameof(SettingsXml)}
+                {"SystemConfig", nameof(ExtendValues)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

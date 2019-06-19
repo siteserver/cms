@@ -17,7 +17,10 @@ namespace SS.CMS.Data
         public string Guid { get; set; }
 
         [TableColumn]
-        public DateTime? LastModifiedDate { get; set; }
+        public DateTimeOffset? CreationDate { get; set; }
+
+        [TableColumn]
+        public DateTimeOffset? LastModifiedDate { get; set; }
 
         private readonly List<string> _propertyNames;
 
@@ -36,7 +39,7 @@ namespace SS.CMS.Data
             _extendDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
-        protected Entity(IDictionary<string, object> dict): this()
+        protected Entity(IDictionary<string, object> dict) : this()
         {
             if (dict == null) return;
 
@@ -117,7 +120,7 @@ namespace SS.CMS.Data
             {
                 //if (!_columnNames.Contains(o.Key, StringComparer.OrdinalIgnoreCase))
                 //{
-                    Set(o.Key, o.Value);
+                Set(o.Key, o.Value);
                 //}
             }
         }

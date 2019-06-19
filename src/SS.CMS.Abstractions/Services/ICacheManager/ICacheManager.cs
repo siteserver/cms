@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.ICacheManager
 {
-    public interface ICacheManager
+    public partial interface ICacheManager
     {
         void Remove(string key);
 

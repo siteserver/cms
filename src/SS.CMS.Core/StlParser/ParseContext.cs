@@ -1,12 +1,15 @@
 using System.Collections.Specialized;
 using Microsoft.Extensions.Configuration;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.ITableManager;
+using SS.CMS.Services.IUrlManager;
 
 namespace SS.CMS.Core.StlParser
 {
@@ -14,16 +17,21 @@ namespace SS.CMS.Core.StlParser
     {
         public IConfiguration Configuration { get; }
         public ISettingsManager SettingsManager { get; }
+        public ICacheManager CacheManager { get; }
         public IPluginManager PluginManager { get; }
         public IPathManager PathManager { get; }
         public IUrlManager UrlManager { get; }
         public IFileManager FileManager { get; }
+        public ITableManager TableManager { get; }
         public ISiteRepository SiteRepository { get; }
+        public IChannelRepository ChannelRepository { get; }
         public IUserRepository UserRepository { get; }
         public ITableStyleRepository TableStyleRepository { get; }
         public ITemplateRepository TemplateRepository { get; }
+        public ITagRepository TagRepository { get; }
+        public IErrorLogRepository ErrorLogRepository { get; }
 
-        public ParseContext(PageInfo pageInfo, IConfiguration configuration, ISettingsManager settingsManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ISiteRepository siteRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository)
+        public ParseContext(PageInfo pageInfo, IConfiguration configuration, ISettingsManager settingsManager, ICacheManager cacheManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
         {
             PageInfo = pageInfo;
             ChannelId = pageInfo.PageChannelId;
@@ -31,14 +39,19 @@ namespace SS.CMS.Core.StlParser
 
             Configuration = configuration;
             SettingsManager = settingsManager;
+            CacheManager = CacheManager;
             PluginManager = pluginManager;
             PathManager = pathManager;
             UrlManager = urlManager;
             FileManager = fileManager;
+            TableManager = tableManager;
             SiteRepository = siteRepository;
+            ChannelRepository = channelRepository;
             UserRepository = userRepository;
             TableStyleRepository = tableStyleRepository;
             TemplateRepository = templateRepository;
+            TagRepository = tagRepository;
+            ErrorLogRepository = errorLogRepository;
         }
 
         //用于clone
@@ -105,7 +118,7 @@ namespace SS.CMS.Core.StlParser
             {
                 if (_channelInfo != null) return _channelInfo;
                 if (ChannelId <= 0) return null;
-                _channelInfo = ChannelManager.GetChannelInfo(SiteId, ChannelId);
+                _channelInfo = ChannelRepository.GetChannelInfo(SiteId, ChannelId);
                 return _channelInfo;
             }
             set { _channelInfo = value; }

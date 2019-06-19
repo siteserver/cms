@@ -83,7 +83,7 @@ namespace SiteServer.Cli.Updater.Tables
         public string Signature { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
     }
 
     public partial class TableUser

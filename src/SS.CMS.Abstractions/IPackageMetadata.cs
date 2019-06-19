@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 插件元数据接口。

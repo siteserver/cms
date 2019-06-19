@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -37,7 +38,6 @@ namespace SS.CMS.Core.Repositories
         public async Task<int> InsertAsync(AccessTokenInfo accessTokenInfo)
         {
             accessTokenInfo.Token = _settingsManager.Encrypt(StringUtils.GetGuid());
-            accessTokenInfo.AddDate = DateTime.Now;
 
             accessTokenInfo.Id = await _repository.InsertAsync(accessTokenInfo);
             if (accessTokenInfo.Id > 0)

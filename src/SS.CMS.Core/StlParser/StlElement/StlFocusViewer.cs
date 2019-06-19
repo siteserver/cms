@@ -1,13 +1,9 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
-using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -121,7 +117,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeOrder))
                 {
-                    taxisType = StlDataUtility.GetContentTaxisType(parseContext.SiteId, value, TaxisType.OrderByTaxisDesc);
+                    taxisType = parseContext.GetContentTaxisType(parseContext.SiteId, value, TaxisType.OrderByTaxisDesc);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, AttributeStartNum))
                 {
@@ -196,9 +192,9 @@ namespace SS.CMS.Core.StlParser.StlElement
         {
             var parsedContent = string.Empty;
 
-            var channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, parseContext.ChannelId, channelIndex, channelName);
+            var channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, parseContext.ChannelId, channelIndex, channelName);
 
-            var minContentInfoList = StlDataUtility.GetMinContentInfoList(parseContext.PluginManager, parseContext.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, null, null, false, startNum, totalNum, taxisType, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = parseContext.GetMinContentInfoList(parseContext.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, true, null, null, false, startNum, totalNum, taxisType, isTop, isRecommend, isHot, isColor, scopeType, groupChannel, groupChannelNot, null);
 
             if (minContentInfoList != null)
             {
@@ -212,7 +208,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
                         var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
@@ -300,7 +296,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
                         var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
@@ -362,7 +358,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
                         var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
@@ -482,7 +478,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
+                        var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, minContentInfo.ChannelId);
                         var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 

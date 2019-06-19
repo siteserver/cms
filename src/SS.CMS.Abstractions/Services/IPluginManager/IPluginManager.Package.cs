@@ -1,9 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
-using SS.CMS.Abstractions.Enums;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IPluginManager
 {
     public partial interface IPluginManager
     {

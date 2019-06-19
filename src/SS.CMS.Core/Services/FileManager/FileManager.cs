@@ -1,5 +1,9 @@
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.IUrlManager;
 
 namespace SS.CMS.Core.Services
 {
@@ -10,16 +14,22 @@ namespace SS.CMS.Core.Services
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ITemplateRepository _templateRepository;
+        private readonly ITagRepository _tagRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public FileManager(ISettingsManager settingsManager, IUrlManager urlManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
+        public FileManager(ISettingsManager settingsManager, IUrlManager urlManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _urlManager = urlManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _templateRepository = templateRepository;
+            _tagRepository = tagRepository;
+            _errorLogRepository = errorLogRepository;
         }
     }
 }

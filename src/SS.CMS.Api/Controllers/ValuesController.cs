@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Models;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.IUserManager;
 
 namespace SS.CMS.Api.Controllers
 {
@@ -9,24 +14,43 @@ namespace SS.CMS.Api.Controllers
     public class ValuesController : ControllerBase
     {
         private readonly ISettingsManager _settingsManager;
+        private readonly IUserManager _userManager;
 
-        public ValuesController(ISettingsManager settingsManager)
+        public ValuesController(ISettingsManager settingsManager, IUserManager userManager)
         {
             _settingsManager = settingsManager;
+            _userManager = userManager;
         }
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<string>>> Get()
         {
-            return new string[] { "value1", "value2", _settingsManager.IsNightlyUpdate.ToString(), _settingsManager.SecretKey, _settingsManager.DatabaseType.Value, _settingsManager.ContentRootPath };
+            await _userManager.SignInAsync(new UserInfo
+            {
+                Id = 1,
+                UserName = "admin"
+            }, true);
+            var user = User;
+            var val = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            return new string[] { "value1", "value2", user.Identity.IsAuthenticated.ToString(), val };
         }
 
-        // GET api/values/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            return "value";
+            var user = User;
+            return user.Identity.IsAuthenticated.ToString();
+        }
+
+        [Authorize]
+        [HttpGet("{str}")]
+        public ActionResult<string> Get(string str)
+        {
+            var user = User;
+            return user.Identity.IsAuthenticated.ToString();
         }
 
         // POST api/values

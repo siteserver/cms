@@ -163,7 +163,10 @@ namespace SS.CMS.Data.Utils
                     IsExtend = dataExtend
                 };
 
-                if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)) || Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)) || Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
+                if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)) ||
+                    Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)) ||
+                    Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreationDate)) ||
+                    Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
                 {
                     entityColumns.Add(tableColumn);
                 }

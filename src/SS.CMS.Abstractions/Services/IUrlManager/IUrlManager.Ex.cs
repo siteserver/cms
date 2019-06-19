@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Linq;
+﻿using System.Collections.Specialized;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IUrlManager
 {
     public partial interface IUrlManager
     {

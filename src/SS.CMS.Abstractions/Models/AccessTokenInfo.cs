@@ -1,7 +1,6 @@
-﻿using System;
-using SS.CMS.Data;
+﻿using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_AccessToken")]
     public class AccessTokenInfo : Entity
@@ -20,8 +19,5 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn]
         public int RateLimit { get; set; }
-
-        [TableColumn]
-        public DateTimeOffset? AddDate { get; set; }
     }
 }

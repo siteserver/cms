@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IFileManager
 {
     public partial interface IFileManager
     {

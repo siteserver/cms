@@ -1,7 +1,6 @@
-using System;
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Special")]
     public class SpecialInfo : Entity
@@ -14,8 +13,5 @@ namespace SS.CMS.Abstractions.Models
 
         [TableColumn]
         public string Url { get; set; }
-
-        [TableColumn]
-        public DateTime? AddDate { get; set; }
     }
 }

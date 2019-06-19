@@ -1,6 +1,6 @@
-﻿using SS.CMS.Abstractions.Models;
+﻿using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {

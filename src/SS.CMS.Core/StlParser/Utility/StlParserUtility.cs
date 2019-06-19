@@ -3,17 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Repositories;
-using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Utils;
@@ -377,7 +367,7 @@ namespace SS.CMS.Core.StlParser.Utility
             }
             else if (parseContext.ContextType == EContextType.SqlContent)
             {
-                dbItemIndex = parseContext.Container.SqlItem.ItemIndex;
+                dbItemIndex = parseContext.Container.SqlItem.Key;
             }
             else if (parseContext.ContextType == EContextType.Site)
             {
@@ -385,7 +375,7 @@ namespace SS.CMS.Core.StlParser.Utility
             }
             else if (parseContext.ContextType == EContextType.Each)
             {
-                dbItemIndex = parseContext.Container.EachItem.ItemIndex;
+                dbItemIndex = parseContext.Container.EachItem.Key;
             }
 
             return parseContext.PageItemIndex + dbItemIndex + 1;
@@ -394,38 +384,6 @@ namespace SS.CMS.Core.StlParser.Utility
         public static string GetAjaxDivId(int updaterId)
         {
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
-        }
-
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal, IUrlManager urlManager)
-        {
-            var currentUrl = string.Empty;
-            if (templateType == TemplateType.IndexPageTemplate)
-            {
-                currentUrl = urlManager.GetWebUrl(siteInfo);
-            }
-            else if (templateType == TemplateType.ContentTemplate)
-            {
-                if (contentInfo == null)
-                {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    currentUrl = urlManager.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
-                }
-                else
-                {
-                    currentUrl = urlManager.GetContentUrl(siteInfo, contentInfo, isLocal);
-                }
-            }
-            else if (templateType == TemplateType.ChannelTemplate)
-            {
-                currentUrl = urlManager.GetChannelUrl(siteInfo, ChannelManager.GetChannelInfo(siteInfo.Id, channelId), isLocal);
-            }
-            else if (templateType == TemplateType.FileTemplate)
-            {
-                currentUrl = urlManager.GetFileUrl(siteInfo, templateId, isLocal);
-            }
-            //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
-            //return PageUtils.AddProtocolToUrl(currentUrl);
-            return currentUrl;
         }
 
         public static void GetLoading(string innerHtml, out string loading, out string template)

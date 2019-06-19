@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SS.CMS.Abstractions
+﻿namespace SS.CMS
 {
     public interface IPluginInstance
     {

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 using SS.CMS.Utils.Atom.Atom.AdditionalElements;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -47,7 +46,6 @@ namespace SS.CMS.Core.Serialization.Components
                 indexNameList.Add(indexName);
             }
             channelInfo.GroupNameCollection = AtomUtility.GetDcElementContent(additionalElements, new List<string> { ChannelAttribute.GroupNameCollection, "NodeGroupNameCollection" });
-            channelInfo.AddDate = DateTime.Now;
             channelInfo.ImageUrl = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ImageUrl);
             channelInfo.Content = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Content));
             channelInfo.FilePath = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.FilePath);
@@ -87,14 +85,10 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsPath, channelInfo.ParentsPath);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsCount, channelInfo.ParentsCount.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChildrenCount, channelInfo.ChildrenCount.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.LastNode, channelInfo.LastNode.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.IsLastNode, channelInfo.IsLastNode.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.IndexName, "NodeIndexName" }, channelInfo.IndexName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.GroupNameCollection, "NodeGroupNameCollection" }, channelInfo.GroupNameCollection);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Taxis, channelInfo.Taxis.ToString());
-            if (channelInfo.AddDate.HasValue)
-            {
-                AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.AddDate, channelInfo.AddDate.Value.ToLongDateString());
-            }
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ImageUrl, channelInfo.ImageUrl);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Content, AtomUtility.Encrypt(channelInfo.Content));
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.FilePath, channelInfo.FilePath);

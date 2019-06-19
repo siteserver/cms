@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Api.Sys.Stl;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlEntity
@@ -67,9 +64,9 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     if (parseContext.ContentInfo != null && parseContext.ContentInfo.ReferenceId > 0 && parseContext.ContentInfo.SourceId > 0 && parseContext.ContentInfo.TranslateContentType != TranslateContentType.ReferenceContent.ToString())
                     {
                         var targetChannelId = parseContext.ContentInfo.SourceId;
-                        var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
+                        var targetSiteId = parseContext.ChannelRepository.StlGetSiteId(targetChannelId);
                         var targetSiteInfo = parseContext.SiteRepository.GetSiteInfo(targetSiteId);
-                        var targetNodeInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+                        var targetNodeInfo = parseContext.ChannelRepository.GetChannelInfo(targetSiteId, targetChannelId);
 
                         var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetNodeInfo, parseContext.ContentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
@@ -128,7 +125,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         }
                         else
                         {
-                            var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+                            var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
                             parsedContent = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, nodeInfo, parseContext.ContentId, parseContext.IsLocal);
                         }
                     }
@@ -211,7 +208,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     {
                         if (parseContext.ContentInfo != null)
                         {
-                            parsedContent = DateUtils.Format(parseContext.ContentInfo.LastEditDate, string.Empty);
+                            parsedContent = DateUtils.Format(parseContext.ContentInfo.LastModifiedDate, string.Empty);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Content, attributeName))//内容正文
@@ -287,17 +284,17 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         {
                             contentChannelId = parseContext.ChannelInfo.ContentRepository.StlGetChannelId(parseContext.ChannelInfo, parseContext.ContentId);
 
-                            var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, contentChannelId);
+                            var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, contentChannelId);
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, attributeName);
                             parsedContent = parseContext.ChannelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, contentChannelId);
-                            var tableName = ChannelManager.GetTableName(parseContext.PluginManager, parseContext.SiteInfo, channelInfo);
-                            var relatedIdentities = parseContext.TableStyleRepository.GetRelatedIdentities(channelInfo);
-                            var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
+                            var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, contentChannelId);
+                            var tableName = parseContext.ChannelRepository.GetTableName(parseContext.PluginManager, parseContext.SiteInfo, channelInfo);
+                            var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(channelInfo);
+                            var styleInfo = parseContext.TableManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, parsedContent, ",", parseContext.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -17,14 +18,16 @@ namespace SS.CMS.Core.Repositories
         private readonly ISettingsManager _settingsManager;
         private readonly ICacheManager _cacheManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ITemplateLogRepository _templateLogRepository;
 
-        public TemplateRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ISiteRepository siteRepository, ITemplateLogRepository templateLogRepository)
+        public TemplateRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateLogRepository templateLogRepository)
         {
             _repository = new Repository<TemplateInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _cacheManager = cacheManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _templateLogRepository = templateLogRepository;
         }
 
@@ -45,7 +48,7 @@ namespace SS.CMS.Core.Repositories
 
         public int Insert(TemplateInfo templateInfo, string templateContent, string administratorName)
         {
-            if (templateInfo.Default)
+            if (templateInfo.IsDefault)
             {
                 SetAllTemplateDefaultToFalse(templateInfo.SiteId, templateInfo.Type);
             }
@@ -62,7 +65,7 @@ namespace SS.CMS.Core.Repositories
 
         public void Update(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, string administratorName)
         {
-            if (templateInfo.Default)
+            if (templateInfo.IsDefault)
             {
                 SetAllTemplateDefaultToFalse(siteInfo.Id, templateInfo.Type);
             }
@@ -263,7 +266,7 @@ namespace SS.CMS.Core.Repositories
                 RelatedFileName = "T_系统首页模板.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                IsDefault = true
             };
             templateInfoList.Add(templateInfo);
 
@@ -275,7 +278,7 @@ namespace SS.CMS.Core.Repositories
                 RelatedFileName = "T_系统栏目模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                IsDefault = true
             };
             templateInfoList.Add(templateInfo);
 
@@ -287,7 +290,7 @@ namespace SS.CMS.Core.Repositories
                 RelatedFileName = "T_系统内容模板.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
-                Default = true
+                IsDefault = true
             };
             templateInfoList.Add(templateInfo);
 

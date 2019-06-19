@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 为内容转移事件提供数据
@@ -8,7 +8,7 @@ namespace SS.CMS.Abstractions
     public class ContentTranslateEventArgs : EventArgs
     {
         /// <summary>
-        /// 初始化 <see cref="T:SS.CMS.Abstractions.ContentTranslateEventArgs" /> 类的新实例。
+        /// 初始化 <see cref="T:SS.CMS.ContentTranslateEventArgs" /> 类的新实例。
         /// </summary>
         /// <param name="siteId">原始内容的站点Id。</param>
         /// <param name="channelId">原始内容的栏目Id。</param>

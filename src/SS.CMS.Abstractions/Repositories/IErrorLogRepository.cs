@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
     public interface IErrorLogRepository : IRepository
     {
@@ -18,5 +18,7 @@ namespace SS.CMS.Abstractions.Repositories
         int AddErrorLog(Exception ex, string summary = "");
 
         int AddErrorLog(string pluginId, Exception ex, string summary = "");
+
+        int AddStlErrorLog(string summary, string elementName, string stlContent, Exception ex);
     }
 }

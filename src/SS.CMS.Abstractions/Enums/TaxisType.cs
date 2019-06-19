@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     public sealed class TaxisType
     {
@@ -10,8 +10,8 @@ namespace SS.CMS.Abstractions.Enums
         public static readonly TaxisType OrderByChannelIdDesc = new TaxisType("OrderByChannelIdDesc");
         public static readonly TaxisType OrderByAddDate = new TaxisType("OrderByAddDate");
         public static readonly TaxisType OrderByAddDateDesc = new TaxisType("OrderByAddDateDesc");
-        public static readonly TaxisType OrderByLastEditDate = new TaxisType("OrderByLastEditDate");
-        public static readonly TaxisType OrderByLastEditDateDesc = new TaxisType("OrderByLastEditDateDesc");
+        public static readonly TaxisType OrderByLastModifiedDate = new TaxisType("OrderByLastModifiedDate");
+        public static readonly TaxisType OrderByLastModifiedDateDesc = new TaxisType("OrderByLastModifiedDateDesc");
         public static readonly TaxisType OrderByTaxis = new TaxisType("OrderByTaxis");
         public static readonly TaxisType OrderByTaxisDesc = new TaxisType("OrderByTaxisDesc");
         public static readonly TaxisType OrderByHits = new TaxisType("OrderByHits");
@@ -53,13 +53,13 @@ namespace SS.CMS.Abstractions.Enums
             {
                 return OrderByAddDateDesc;
             }
-            if (string.Equals(OrderByLastEditDate.Value, val, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(OrderByLastModifiedDate.Value, val, StringComparison.OrdinalIgnoreCase))
             {
-                return OrderByLastEditDate;
+                return OrderByLastModifiedDate;
             }
-            if (string.Equals(OrderByLastEditDateDesc.Value, val, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(OrderByLastModifiedDateDesc.Value, val, StringComparison.OrdinalIgnoreCase))
             {
-                return OrderByLastEditDateDesc;
+                return OrderByLastModifiedDateDesc;
             }
             if (string.Equals(OrderByTaxis.Value, val, StringComparison.OrdinalIgnoreCase))
             {

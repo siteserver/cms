@@ -158,39 +158,39 @@ namespace SS.CMS.Core.Services
 
         public AdministratorInfo AdminInfo { get; private set; }
 
-        public string AdminLogin(string userName, bool isAutoLogin, IAccessTokenRepository accessTokenRepository)
-        {
-            if (string.IsNullOrEmpty(userName)) return null;
-            var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
-            if (adminInfo == null || adminInfo.Locked) return null;
+        //public string AdminLogin(string userName, bool isAutoLogin, IAccessTokenRepository accessTokenRepository)
+        //{
+        //    if (string.IsNullOrEmpty(userName)) return null;
+        //    var adminInfo = _administratorRepository.GetAdminInfoByUserName(userName);
+        //    if (adminInfo == null || adminInfo.Locked) return null;
 
-            var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
-            var token = new Token
-            {
-                UserId = adminInfo.Id,
-                UserName = adminInfo.UserName,
-                ExpiresAt = expiresAt
-            };
-            var accessToken = GetToken(token);
+        //    var expiresAt = DateTimeOffset.UtcNow.AddDays(Constants.AccessTokenExpireDays);
+        //    var token = new Token
+        //    {
+        //        UserId = adminInfo.Id,
+        //        UserName = adminInfo.UserName,
+        //        ExpiresAt = expiresAt
+        //    };
+        //    var accessToken = GetToken(token);
 
-            AddAdminLog("管理员登录");
+        //    AddAdminLog("管理员登录");
 
-            if (isAutoLogin)
-            {
-                _context.Response.Cookies.Delete(Constants.CookieAdminToken);
-                _context.Response.Cookies.Append(Constants.CookieAdminToken, accessToken, new CookieOptions
-                {
-                    Expires = expiresAt
-                });
-            }
-            else
-            {
-                _context.Response.Cookies.Delete(Constants.CookieAdminToken);
-                _context.Response.Cookies.Append(Constants.CookieAdminToken, accessToken);
-            }
+        //    if (isAutoLogin)
+        //    {
+        //        _context.Response.Cookies.Delete(Constants.CookieAdminToken);
+        //        _context.Response.Cookies.Append(Constants.CookieAdminToken, accessToken, new CookieOptions
+        //        {
+        //            Expires = expiresAt
+        //        });
+        //    }
+        //    else
+        //    {
+        //        _context.Response.Cookies.Delete(Constants.CookieAdminToken);
+        //        _context.Response.Cookies.Append(Constants.CookieAdminToken, accessToken);
+        //    }
 
-            return accessToken;
-        }
+        //    return accessToken;
+        //}
 
         public void AdminLogout()
         {

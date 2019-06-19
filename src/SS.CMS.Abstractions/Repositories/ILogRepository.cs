@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Dapper;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
-    public interface ILogRepository : IRepository
+    public partial interface ILogRepository : IRepository
     {
         int Insert(LogInfo log);
 
@@ -19,7 +17,7 @@ namespace SS.CMS.Abstractions.Repositories
 
         int GetCount();
 
-        DateTime GetLastRemoveLogDate();
+        DateTimeOffset GetLastRemoveLogDate();
 
         // /// <summary>
         // /// 统计管理员actionType的操作次数

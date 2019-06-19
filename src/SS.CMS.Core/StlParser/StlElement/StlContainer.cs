@@ -72,9 +72,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = StlDataUtility.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
+            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
 
             parseContext.ContextType = context;
             parseContext.ChannelId = channelId;

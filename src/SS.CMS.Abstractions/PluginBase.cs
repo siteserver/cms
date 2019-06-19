@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 插件父类，所有插件必须继承此类并实现Startup方法。

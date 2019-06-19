@@ -1,12 +1,9 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Services.IPluginManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -32,7 +29,7 @@ namespace SS.CMS.Core.Services
         public const string ContentRulesDefaultDirectoryName = "/contents/";
         public const string ContentRulesDefaultRegexString = "/contents/(?<channelId>[^/]*)/(?<contentId>[^/]*)_?(?<pageIndex>[^_]*)";
 
-        public IDictionary ContentRulesGetDictionary(IPluginManager pluginManager, ITableStyleRepository tableStyleRepository, SiteInfo siteInfo, int channelId)
+        public IDictionary ContentRulesGetDictionary(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -52,8 +49,8 @@ namespace SS.CMS.Core.Services
                     {ContentRulesLowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-            var styleInfoList = tableStyleRepository.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+            var styleInfoList = _tableManager.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.Type == InputType.Text)
@@ -68,7 +65,7 @@ namespace SS.CMS.Core.Services
 
         public string ContentRulesParse(SiteInfo siteInfo, int channelId, int contentId)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
             var filePath = ContentRulesParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
@@ -103,13 +100,13 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesSequence))
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     value = channelInfo.ContentRepository.StlGetSequence(channelInfo, contentId).ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesParentRule))//继承父级设置 20151113 sessionliang
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
-                    var parentInfo = ChannelManager.GetChannelInfo(siteInfo.Id, nodeInfo.ParentId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var parentInfo = _channelRepository.GetChannelInfo(siteInfo.Id, nodeInfo.ParentId);
                     if (parentInfo != null)
                     {
                         var parentRule = GetContentFilePathRule(siteInfo, parentInfo.Id);
@@ -118,7 +115,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelName))
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName;
@@ -126,7 +123,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelName))
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName.ToLower();
@@ -134,7 +131,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelIndex))
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName;
@@ -142,7 +139,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelIndex))
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName.ToLower();

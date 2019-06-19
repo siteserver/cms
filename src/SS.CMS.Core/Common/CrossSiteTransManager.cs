@@ -1,11 +1,11 @@
 ﻿using System.Text;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
@@ -15,12 +15,14 @@ namespace SS.CMS.Core.Common
         private IPathManager _pathManager;
         private IFileManager _fileManager;
         private ISiteRepository _siteRepository;
+        private IChannelRepository _channelRepository;
 
-        public CrossSiteTransManager(IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository)
+        public CrossSiteTransManager(IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository)
         {
             _pathManager = pathManager;
             _fileManager = fileManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
         }
 
         public bool IsCrossSiteTrans(SiteInfo siteInfo, ChannelInfo channelInfo)
@@ -86,7 +88,7 @@ namespace SS.CMS.Core.Common
 
                 if (transType == ECrossSiteTransType.SelfSite || transType == ECrossSiteTransType.ParentSite || transType == ECrossSiteTransType.SpecifiedSite)
                 {
-                    isAutomatic = channelInfo.TransIsAutomatic;
+                    isAutomatic = channelInfo.IsTransAutomatic;
                 }
             }
 
@@ -136,7 +138,7 @@ namespace SS.CMS.Core.Common
                         var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
-                            var theNodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                            var theNodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                             if (theNodeInfo != null)
                             {
                                 nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -155,14 +157,14 @@ namespace SS.CMS.Core.Common
 
         public void TransContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetChannelId)
         {
-            var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteInfo.Id, targetChannelId);
+            var targetChannelInfo = _channelRepository.GetChannelInfo(targetSiteInfo.Id, targetChannelId);
 
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
             _fileManager.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;
             contentInfo.ChannelId = targetChannelId;
-            contentInfo.Checked = targetSiteInfo.IsCrossSiteTransChecked;
+            contentInfo.IsChecked = targetSiteInfo.IsCrossSiteTransChecked;
             contentInfo.CheckedLevel = 0;
 
             //复制

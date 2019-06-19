@@ -18,7 +18,13 @@
     <RepositoryUrl>https://github.com/siteserver/cms</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Add netstandard2.0 support</PackageReleaseNotes>
+    <RootNamespace>SS.CMS</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Services\IIdentityManager\**" />
+    <EmbeddedResource Remove="Services\IIdentityManager\**" />
+    <None Remove="Services\IIdentityManager\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />

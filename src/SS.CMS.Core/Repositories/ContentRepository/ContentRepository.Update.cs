@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
@@ -113,18 +112,17 @@ namespace SS.CMS.Core.Repositories
             }
 
             //出现IsTop与Taxis不同步情况
-            if (contentInfo.Top == false && contentInfo.Taxis >= TaxisIsTopStartValue)
+            if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
             {
                 contentInfo.Taxis = GetMaxTaxis(contentInfo.ChannelId, false) + 1;
             }
-            else if (contentInfo.Top && contentInfo.Taxis < TaxisIsTopStartValue)
+            else if (contentInfo.IsTop && contentInfo.Taxis < TaxisIsTopStartValue)
             {
                 contentInfo.Taxis = GetMaxTaxis(contentInfo.ChannelId, true) + 1;
             }
 
             contentInfo.SiteId = siteInfo.Id;
             contentInfo.ChannelId = channelInfo.Id;
-            contentInfo.LastEditDate = DateTime.Now;
 
             _repository.Update(contentInfo);
 
@@ -144,7 +142,6 @@ namespace SS.CMS.Core.Repositories
         {
             var updateNum = _repository.Update(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
-                .Set(Attr.LastEditDate, DateTime.Now)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, "<", 0)
             );
@@ -166,7 +163,7 @@ namespace SS.CMS.Core.Repositories
             foreach (var contentId in contentIdList)
             {
                 var settingsXml = _repository.Get<string>(Q
-                    .Select(Attr.SettingsXml)
+                    .Select(Attr.ExtendValues)
                     .Where(Attr.Id, contentId));
 
                 var attributes = TranslateUtils.JsonDeserialize(settingsXml, new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
@@ -182,7 +179,7 @@ namespace SS.CMS.Core.Repositories
                     _repository.Update(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
-                        .Set(Attr.SettingsXml, settingsXml)
+                        .Set(Attr.ExtendValues, settingsXml)
                         .Set(Attr.ChannelId, translateChannelId)
                         .Where(Attr.Id, contentId)
                     );
@@ -192,19 +189,19 @@ namespace SS.CMS.Core.Repositories
                     _repository.Update(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
-                        .Set(Attr.SettingsXml, settingsXml)
+                        .Set(Attr.ExtendValues, settingsXml)
                         .Where(Attr.Id, contentId)
                     );
                 }
 
-                DataProvider.ContentCheckRepository.Insert(new ContentCheckInfo
+                _contentCheckRepository.Insert(new ContentCheckInfo
                 {
                     TableName = TableName,
                     SiteId = siteId,
                     ChannelId = channelId,
                     ContentId = contentId,
                     UserName = userName,
-                    Checked = isChecked,
+                    IsChecked = isChecked,
                     CheckedLevel = checkedLevel,
                     CheckDate = checkDate,
                     Reasons = reasons
@@ -270,7 +267,6 @@ namespace SS.CMS.Core.Repositories
             {
                 updateNum = _repository.Update(Q
                     .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
-                    .Set(Attr.LastEditDate, DateTime.Now)
                     .Where(Attr.SiteId, siteId)
                     .WhereIn(Attr.Id, contentIdList)
                 );
@@ -292,7 +288,6 @@ namespace SS.CMS.Core.Repositories
 
             var updateNum = _repository.Update(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
-                .Set(Attr.LastEditDate, DateTime.Now)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
             );

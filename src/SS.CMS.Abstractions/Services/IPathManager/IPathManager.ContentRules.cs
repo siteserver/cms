@@ -1,12 +1,11 @@
 using System.Collections;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Services
+namespace SS.CMS.Services.IPathManager
 {
     public partial interface IPathManager
     {
-        IDictionary ContentRulesGetDictionary(IPluginManager pluginManager, ITableStyleRepository tableStyleRepository, SiteInfo siteInfo, int channelId);
+        IDictionary ContentRulesGetDictionary(IPluginManager.IPluginManager pluginManager, SiteInfo siteInfo, int channelId);
 
         string ContentRulesParse(SiteInfo siteInfo, int channelId, int contentId);
 

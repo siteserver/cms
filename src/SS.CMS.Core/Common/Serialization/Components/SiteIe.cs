@@ -1,14 +1,10 @@
 ﻿using System;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
-using SS.CMS.Core.Services;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 
@@ -23,6 +19,7 @@ namespace SS.CMS.Core.Serialization.Components
         private readonly IPluginManager _pluginManager;
         private readonly IPathManager _pathManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
 
         public SiteIe(SiteInfo siteInfo, string siteContentDirectoryPath)
         {
@@ -34,8 +31,8 @@ namespace SS.CMS.Core.Serialization.Components
 
         public int ImportChannelsAndContents(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
         {
-            var psChildCount = DataProvider.ChannelRepository.GetCount(_siteInfo.Id);
-            var indexNameList = DataProvider.ChannelRepository.GetIndexNameList(_siteInfo.Id);
+            var psChildCount = _channelRepository.GetCount(_siteInfo.Id);
+            var indexNameList = _channelRepository.GetIndexNameList(_siteInfo.Id);
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -64,7 +61,7 @@ namespace SS.CMS.Core.Serialization.Components
                 orderString = orderString.Substring(0, orderString.LastIndexOf("_", StringComparison.Ordinal));
             }
 
-            var parentId = DataProvider.ChannelRepository.GetId(_siteInfo.Id, orderString);
+            var parentId = _channelRepository.GetId(_siteInfo.Id, orderString);
             if (theParentId != 0)
             {
                 parentId = theParentId;
@@ -75,10 +72,10 @@ namespace SS.CMS.Core.Serialization.Components
             if (parentIdOriginal == 0)
             {
                 channelId = _siteInfo.Id;
-                var nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, _siteInfo.Id);
+                var nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, _siteInfo.Id);
                 _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                DataProvider.ChannelRepository.Update(nodeInfo);
+                _channelRepository.Update(nodeInfo);
 
                 if (isImportContents)
                 {
@@ -95,7 +92,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var theSameNameChannelId = 0;
                 if (isOverride)
                 {
-                    theSameNameChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
+                    theSameNameChannelId = _channelRepository.GetChannelIdByParentIdAndChannelName(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
                     if (theSameNameChannelId != 0)
                     {
                         isUpdate = true;
@@ -103,16 +100,16 @@ namespace SS.CMS.Core.Serialization.Components
                 }
                 if (!isUpdate)
                 {
-                    channelId = DataProvider.ChannelRepository.Insert(nodeInfo);
+                    channelId = _channelRepository.Insert(nodeInfo);
                 }
                 else
                 {
                     channelId = theSameNameChannelId;
-                    nodeInfo = ChannelManager.GetChannelInfo(_siteInfo.Id, theSameNameChannelId);
-                    var tableName = ChannelManager.GetTableName(_pluginManager, _siteInfo, nodeInfo);
+                    nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, theSameNameChannelId);
+                    var tableName = _channelRepository.GetTableName(_pluginManager, _siteInfo, nodeInfo);
                     _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                    DataProvider.ChannelRepository.Update(nodeInfo);
+                    _channelRepository.Update(nodeInfo);
 
                     //DataProvider.ContentDao.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
                 }
@@ -128,12 +125,12 @@ namespace SS.CMS.Core.Serialization.Components
 
         public void Export(int siteId, int channelId, bool isSaveContents)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
             if (channelInfo == null) return;
 
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
 
-            var fileName = DataProvider.ChannelRepository.GetOrderStringInSite(channelId);
+            var fileName = _channelRepository.GetOrderStringInSite(channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 

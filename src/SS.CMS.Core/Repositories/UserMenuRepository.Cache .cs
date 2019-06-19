@@ -1,34 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache.Core;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class UserMenuRepository
     {
-        private readonly object _lockObject = new object();
-
         public void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            _cacheManager.Remove(CacheKey);
         }
 
         public List<UserMenuInfo> GetAllUserMenus()
         {
-            var retval = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
+            var retval = _cacheManager.Get<List<UserMenuInfo>>(CacheKey);
             if (retval != null) return retval;
 
-            lock (_lockObject)
+            retval = _cacheManager.Get<List<UserMenuInfo>>(CacheKey);
+            if (retval == null)
             {
-                retval = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
-                if (retval == null)
-                {
-                    retval = GetUserMenuInfoListToCache();
+                retval = GetUserMenuInfoListToCache();
 
-                    DataCacheManager.Insert(CacheKey, retval);
-                }
+                _cacheManager.Insert(CacheKey, retval);
             }
 
             return retval;
@@ -54,7 +48,7 @@ namespace SS.CMS.Core.Repositories
                         Id = 0,
                         SystemId = Dashboard,
                         GroupIdCollection = string.Empty,
-                        Disabled = false,
+                        IsDisabled = false,
                         ParentId = 0,
                         Taxis = 1,
                         Text = "用户中心",
@@ -67,7 +61,7 @@ namespace SS.CMS.Core.Repositories
                         Id = 0,
                         SystemId = ContentAdd,
                         GroupIdCollection = string.Empty,
-                        Disabled = false,
+                        IsDisabled = false,
                         ParentId = 0,
                         Taxis = 2,
                         Text = "新增稿件",
@@ -80,7 +74,7 @@ namespace SS.CMS.Core.Repositories
                         Id = 0,
                         SystemId = Contents,
                         GroupIdCollection = string.Empty,
-                        Disabled = false,
+                        IsDisabled = false,
                         ParentId = 0,
                         Taxis = 3,
                         Text = "稿件管理",
@@ -93,7 +87,7 @@ namespace SS.CMS.Core.Repositories
                         Id = 0,
                         SystemId = Return,
                         GroupIdCollection = string.Empty,
-                        Disabled = false,
+                        IsDisabled = false,
                         ParentId = 0,
                         Taxis = 4,
                         Text = "返回网站",

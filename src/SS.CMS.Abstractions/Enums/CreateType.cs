@@ -1,6 +1,6 @@
 using System;
 
-namespace SS.CMS.Abstractions.Enums
+namespace SS.CMS.Enums
 {
     public sealed class CreateType
     {

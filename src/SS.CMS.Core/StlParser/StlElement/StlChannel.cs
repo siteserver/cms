@@ -1,14 +1,10 @@
 ﻿using System.Text;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -190,10 +186,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = ChannelManager.GetChannelId(parseContext.SiteId, channelId, channelIndex, channelName);
-            var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, channelId);
+            channelId = parseContext.ChannelRepository.GetChannelId(parseContext.SiteId, channelId, channelIndex, channelName);
+            var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelId);
 
             if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
             {
@@ -270,9 +266,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 parsedContent = channel.ChildrenCount.ToString();
             }
-            else if (type.Equals(ChannelAttribute.LastNode.ToLower()))
+            else if (type.Equals(ChannelAttribute.IsLastNode.ToLower()))
             {
-                parsedContent = channel.LastNode.ToString();
+                parsedContent = channel.IsLastNode.ToString();
             }
             else if (type.Equals(ChannelAttribute.ChannelIndex.ToLower()) || type.Equals(ChannelAttribute.IndexName.ToLower()))
             {
@@ -296,10 +292,10 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 parsedContent = channel.Taxis.ToString();
             }
-            else if (type.Equals(ChannelAttribute.AddDate.ToLower()))
+            else if (type.Equals(ChannelAttribute.CreationDate.ToLower()))
             {
                 inputType = InputType.DateTime;
-                parsedContent = DateUtils.Format(channel.AddDate, formatString);
+                parsedContent = DateUtils.Format(channel.CreationDate, formatString);
             }
             else if (type.Equals(ChannelAttribute.ImageUrl.ToLower()))
             {
@@ -421,7 +417,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfContents.ToLower()))
             {
-                var count = channel.ContentRepository.GetCount(parseContext.PluginManager, parseContext.SiteInfo, channel, true);
+                var count = channel.ContentRepository.GetCount(parseContext.SiteInfo, channel, true);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
@@ -433,7 +429,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 var attributeName = type;
 
-                var styleInfo = parseContext.TableStyleRepository.GetTableStyleInfo(DataProvider.ChannelRepository.TableName, attributeName, parseContext.TableStyleRepository.GetRelatedIdentities(channel));
+                var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(channel));
                 if (styleInfo.Id > 0)
                 {
                     parsedContent = channel.Get(attributeName, styleInfo.DefaultValue);

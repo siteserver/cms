@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -32,8 +32,7 @@ namespace SS.CMS.Core.Common.Office
                             {
                                 {ContentAttribute.Title, title.Trim()},
                                 {ContentAttribute.SiteId, siteInfo.Id},
-                                {ContentAttribute.ChannelId, nodeInfo.Id},
-                                {ContentAttribute.LastEditDate, DateTime.Now}
+                                {ContentAttribute.ChannelId, nodeInfo.Id}
                             };
                             var contentInfo = new ContentInfo(dict);
                             contentInfo.Content = StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim());

@@ -1,8 +1,7 @@
-﻿using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Models.Attributes;
+﻿using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlEntity
@@ -31,9 +30,9 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 {
                     parsedContent = userInfo.UserName;
                 }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.CreateDate, attributeName))
+                else if (StringUtils.EqualsIgnoreCase(UserAttribute.CreationDate, attributeName))
                 {
-                    parsedContent = DateUtils.Format(userInfo.CreateDate, string.Empty);
+                    parsedContent = DateUtils.Format(userInfo.CreationDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.LastActivityDate, attributeName))
                 {
@@ -58,26 +57,6 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.AvatarUrl, attributeName))
                 {
                     parsedContent = context.UrlManager.GetUserAvatarUrl(userInfo);
-                }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.Gender, attributeName))
-                {
-                    parsedContent = userInfo.Gender;
-                }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.Birthday, attributeName))
-                {
-                    parsedContent = userInfo.Birthday;
-                }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.WeiXin, attributeName))
-                {
-                    parsedContent = userInfo.WeiXin;
-                }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.Qq, attributeName))
-                {
-                    parsedContent = userInfo.Qq;
-                }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.WeiBo, attributeName))
-                {
-                    parsedContent = userInfo.WeiBo;
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.Bio, attributeName))
                 {

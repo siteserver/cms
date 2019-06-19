@@ -1,4 +1,4 @@
-﻿namespace SS.CMS.Abstractions.Services
+﻿namespace SS.CMS.Services.IPluginManager
 {
     public partial interface IPluginManager
     {

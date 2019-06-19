@@ -1,6 +1,6 @@
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Plugin")]
     public class PluginInfo : Entity
@@ -9,7 +9,7 @@ namespace SS.CMS.Abstractions.Models
         public string PluginId { get; set; }
 
         [TableColumn]
-        public bool Disabled { get; set; }
+        public bool IsDisabled { get; set; }
 
         [TableColumn]
         public int Taxis { get; set; }

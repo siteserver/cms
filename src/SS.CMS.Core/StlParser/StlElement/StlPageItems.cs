@@ -52,7 +52,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             catch (Exception ex)
             {
                 parsedContent =
-                    LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                    parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -88,7 +88,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -121,7 +121,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = LogUtils.AddStlErrorLog(parseContext.PageInfo, ElementName, stlElement, ex);
+                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
             }
 
             return parsedContent;

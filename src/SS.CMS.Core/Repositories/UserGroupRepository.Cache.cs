@@ -1,34 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Core;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class UserGroupRepository
     {
-        private readonly object _lockObject = new object();
-
         private void ClearCache()
         {
-            DataCacheManager.Remove(CacheKey);
+            _cacheManager.Remove(CacheKey);
         }
 
         public IList<UserGroupInfo> GetAllUserGroups()
         {
-            var list = DataCacheManager.Get<IList<UserGroupInfo>>(CacheKey);
+            var list = _cacheManager.Get<IList<UserGroupInfo>>(CacheKey);
             if (list == null)
             {
-                lock (_lockObject)
+                list = _cacheManager.Get<IList<UserGroupInfo>>(CacheKey);
+                if (list == null)
                 {
-                    list = DataCacheManager.Get<IList<UserGroupInfo>>(CacheKey);
-                    if (list == null)
-                    {
-                        list = GetUserGroupInfoListToCache() ?? new List<UserGroupInfo>();
+                    list = GetUserGroupInfoListToCache() ?? new List<UserGroupInfo>();
 
-                        DataCacheManager.Insert(CacheKey, list);
-                    }
+                    _cacheManager.Insert(CacheKey, list);
                 }
             }
 
@@ -36,7 +29,7 @@ namespace SS.CMS.Core.Repositories
             {
                 Id = 0,
                 GroupName = "默认用户组",
-                AdminName = _settingsManager.ConfigInfo.UserDefaultGroupAdminName
+                AdminName = _configRepository.Instance.UserDefaultGroupAdminName
             });
 
             return list;

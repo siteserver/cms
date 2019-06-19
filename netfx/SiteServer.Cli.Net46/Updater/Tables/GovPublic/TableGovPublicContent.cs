@@ -70,7 +70,7 @@ namespace SiteServer.Cli.Updater.Tables.GovPublic
         public DateTime LastHitsDate { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
 
         [JsonProperty("departmentID")]
         public long DepartmentId { get; set; }

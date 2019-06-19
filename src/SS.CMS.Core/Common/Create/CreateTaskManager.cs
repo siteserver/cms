@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Enums;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Enums;
 
 namespace SS.CMS.Core.Common.Create
 {

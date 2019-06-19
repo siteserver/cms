@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Data;
 using System.Linq;
-using System.Text;
-using Dapper;
 using SqlKata;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Security;
-using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
@@ -86,8 +79,8 @@ namespace SS.CMS.Core.Repositories
                 siteInfo = _siteRepository.GetSiteInfo(siteId);
             }
 
-            var channelId = ChannelManager.GetChannelId(siteId, siteId, channelIndex, channelName);
-            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var channelId = _channelRepository.GetChannelId(siteId, siteId, channelIndex, channelName);
+            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
 
             if (!string.IsNullOrEmpty(siteIds))
             {
@@ -103,9 +96,9 @@ namespace SS.CMS.Core.Repositories
                 var channelIdList = new List<int>();
                 foreach (var theChannelId in TranslateUtils.StringCollectionToIntList(channelIds))
                 {
-                    var theSiteId = DataProvider.ChannelRepository.GetSiteId(theChannelId);
+                    var theSiteId = _channelRepository.GetSiteId(theChannelId);
                     channelIdList.AddRange(
-                        ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(theSiteId, theChannelId),
+                        _channelRepository.GetChannelIdList(_channelRepository.GetChannelInfo(theSiteId, theChannelId),
                             ScopeType.All, string.Empty, string.Empty, string.Empty));
                 }
 
@@ -113,8 +106,8 @@ namespace SS.CMS.Core.Repositories
             }
             else if (channelId != siteId)
             {
-                var theSiteId = DataProvider.ChannelRepository.GetSiteId(channelId);
-                var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(theSiteId, channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
+                var theSiteId = _channelRepository.GetSiteId(channelId);
+                var channelIdList = _channelRepository.GetChannelIdList(_channelRepository.GetChannelInfo(theSiteId, channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
 
                 query.WhereIn(Attr.ChannelId, channelIdList);
             }
@@ -160,7 +153,7 @@ namespace SS.CMS.Core.Repositories
                 query.WhereBetween(dateAttribute, sinceDate, DateTime.Now);
             }
 
-            var tableName = ChannelManager.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
             //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
 
             foreach (string key in form.Keys)
@@ -184,7 +177,7 @@ namespace SS.CMS.Core.Repositories
                 //        if (StringUtils.EqualsIgnoreCase(tableStyleInfo.AttributeName, key))
                 //        {
                 //            whereBuilder.Append(" AND ");
-                //            whereBuilder.Append($"({ContentAttribute.SettingsXml} LIKE '%{key}={value}%')");
+                //            whereBuilder.Append($"({ContentAttribute.ExtendValues} LIKE '%{key}={value}%')");
                 //            break;
                 //        }
                 //    }
@@ -196,8 +189,8 @@ namespace SS.CMS.Core.Repositories
 
         // public string GetSqlString(int siteId, int channelId, bool isSystemAdministrator, List<int> owningChannelIdList, string searchType, string keyword, string dateFrom, string dateTo, bool isSearchChildren, bool? checkedState, bool isTrashContent)
         // {
-        //     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-        //     var channelIdList = ChannelManager.GetChannelIdList(channelInfo,
+        //     var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+        //     var channelIdList = _channelRepository.GetChannelIdList(channelInfo,
         //         isSearchChildren ? ScopeType.All : ScopeType.Self, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
 
         //     var list = new List<int>();
@@ -380,8 +373,8 @@ namespace SS.CMS.Core.Repositories
 
             if (!string.IsNullOrEmpty(tags))
             {
-                var tagCollection = TagUtils.ParseTagsString(tags);
-                var contentIdList = DataProvider.TagRepository.GetContentIdListByTagCollection(tagCollection, siteId);
+                var tagCollection = _tagRepository.ParseTagsString(tags);
+                var contentIdList = _tagRepository.GetContentIdListByTagCollection(tagCollection, siteId);
                 if (contentIdList.Count > 0)
                 {
                     query.WhereIn(Attr.Id, contentIdList);
@@ -393,7 +386,7 @@ namespace SS.CMS.Core.Repositories
                 var tagCollection = StlGetValue(channelInfo, contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
+                    var contentIdList = _tagRepository.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -605,7 +598,7 @@ namespace SS.CMS.Core.Repositories
         //     return DatabaseUtils.GetSelectSqlString(TableName, SqlUtils.Asterisk, whereString.ToString());
         // }
 
-        // public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, int? onlyAdminId, Permissions adminPermissions, List<string> allAttributeNameList)
+        // public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, int? onlyUserId, Permissions adminPermissions, List<string> allAttributeNameList)
         // {
         //     var isAllChannels = false;
         //     var searchChannelIdList = new List<int>();
@@ -619,7 +612,7 @@ namespace SS.CMS.Core.Repositories
         //     }
         //     else
         //     {
-        //         var channelIdList = ChannelManager.GetChannelIdList(channelInfo, ScopeType.All, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
+        //         var channelIdList = _channelRepository.GetChannelIdList(channelInfo, ScopeType.All, string.Empty, string.Empty, channelInfo.ContentModelPluginId);
 
         //         if (adminPermissions.IsSystemAdministrator)
         //         {
@@ -696,7 +689,7 @@ namespace SS.CMS.Core.Repositories
         //         }
         //         //whereList.Add(allLowerAttributeNameList.Contains(searchType.ToLower())
         //         //    ? $"{searchType} LIKE '%{keyword}%'"
-        //         //    : $"{nameof(ContentAttribute.SettingsXml)} LIKE '%{searchType}={keyword}%'");
+        //         //    : $"{nameof(ContentAttribute.ExtendValues)} LIKE '%{searchType}={keyword}%'");
         //     }
 
         //     if (isCheckOnly)
@@ -715,9 +708,9 @@ namespace SS.CMS.Core.Repositories
         //         }
         //     }
 
-        //     if (onlyAdminId.HasValue)
+        //     if (onlyUserId.HasValue)
         //     {
-        //         whereList.Add($"{nameof(Attr.AdminId)} = {onlyAdminId.Value}");
+        //         whereList.Add($"{nameof(Attr.AdminId)} = {onlyUserId.Value}");
         //     }
 
         //     if (isWritingOnly)
@@ -728,12 +721,12 @@ namespace SS.CMS.Core.Repositories
         //     return $"WHERE {string.Join(" AND ", whereList)}";
         // }
 
-        public Query GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public Query GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId)
         {
             var query = Q.Where(Attr.SiteId, siteInfo.Id).Where(Attr.ChannelId, channelInfo.Id).WhereNot(Attr.SourceId, SourceManager.Preview);
-            if (onlyAdminId.HasValue)
+            if (onlyUserId.HasValue)
             {
-                query.Where(Attr.AdminId, onlyAdminId.Value);
+                query.Where(Attr.UserId, onlyUserId.Value);
             }
 
             return query;

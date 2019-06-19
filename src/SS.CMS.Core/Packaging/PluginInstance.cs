@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Repositories;
 
 namespace SS.CMS.Core.Plugin
 {

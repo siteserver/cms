@@ -1,4 +1,4 @@
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     public class Permission
     {

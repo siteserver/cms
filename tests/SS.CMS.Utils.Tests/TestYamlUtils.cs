@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Settings;
+using SS.CMS.Settings;
 using Xunit;
 
 namespace SS.CMS.Utils.Tests

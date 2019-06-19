@@ -8,9 +8,11 @@ using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using HtmlAgilityPack;
 using OpenXmlPowerTools;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Services.IFileManager;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 using FileUtils = SS.CMS.Utils.FileUtils;
 

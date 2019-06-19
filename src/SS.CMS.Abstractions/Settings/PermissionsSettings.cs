@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SS.CMS.Abstractions.Settings
+namespace SS.CMS.Settings
 {
     public class PermissionsSettings
     {

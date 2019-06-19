@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Models;
+using SS.CMS.Models;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
         private readonly object ContentLockObject = new object();
-        private readonly string ContentCachePrefix = DataCacheManager.GetCacheKey(nameof(ContentRepository)) + "." + "Content";
+        private readonly string ContentCachePrefix = StringUtils.GetCacheKey(nameof(ContentRepository)) + "." + "Content";
 
         private string ContentGetContentCacheKey(int channelId)
         {
@@ -20,7 +19,7 @@ namespace SS.CMS.Core.Repositories
             lock (ContentLockObject)
             {
                 var cacheKey = ContentGetContentCacheKey(channelId);
-                DataCacheManager.Remove(cacheKey);
+                _cacheManager.Remove(cacheKey);
             }
         }
 
@@ -29,11 +28,11 @@ namespace SS.CMS.Core.Repositories
             lock (ContentLockObject)
             {
                 var cacheKey = ContentGetContentCacheKey(channelId);
-                var dict = DataCacheManager.Get<Dictionary<int, ContentInfo>>(cacheKey);
+                var dict = _cacheManager.Get<Dictionary<int, ContentInfo>>(cacheKey);
                 if (dict == null)
                 {
                     dict = new Dictionary<int, ContentInfo>();
-                    DataCacheManager.InsertHours(cacheKey, dict, 12);
+                    _cacheManager.InsertHours(cacheKey, dict, 12);
                 }
 
                 return dict;

@@ -1,6 +1,4 @@
-﻿using SS.CMS.Core.Cache;
-
-namespace SS.CMS.Core.Common
+﻿namespace SS.CMS.Core.Common
 {
     public static class SourceManager
     {

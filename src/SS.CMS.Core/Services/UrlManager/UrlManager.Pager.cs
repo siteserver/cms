@@ -1,10 +1,5 @@
-﻿using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
-using SS.CMS.Core.StlParser.StlElement;
+﻿using SS.CMS.Core.StlParser.StlElement;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.Services
 {
@@ -181,7 +176,7 @@ namespace SS.CMS.Core.Services
                 }
                 else
                 {
-                    var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     var redirectUrl = contentId > 0 ? _pathManager.GetContentPageFilePath(siteInfo, nodeInfo.Id, contentId, pageIndex) : _pathManager.GetChannelPageFilePath(siteInfo, nodeInfo.Id, pageIndex);
                     redirectUrl = GetSiteUrlByPhysicalPath(siteInfo, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";

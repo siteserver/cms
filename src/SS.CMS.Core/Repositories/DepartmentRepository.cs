@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -33,7 +34,7 @@ namespace SS.CMS.Core.Repositories
             public const string ParentsPath = nameof(DepartmentInfo.ParentsPath);
             public const string ChildrenCount = nameof(DepartmentInfo.ChildrenCount);
             public const string Taxis = nameof(DepartmentInfo.Taxis);
-            public const string LastNode = nameof(DepartmentInfo.LastNode);
+            public const string IsLastNode = nameof(DepartmentInfo.IsLastNode);
         }
 
         private int Insert(DepartmentInfo parentInfo, DepartmentInfo departmentInfo)
@@ -59,7 +60,7 @@ namespace SS.CMS.Core.Repositories
             }
 
             departmentInfo.ChildrenCount = 0;
-            departmentInfo.LastNode = true;
+            departmentInfo.IsLastNode = true;
 
             _repository.Increment(Attr.Taxis, Q
                 .Where(Attr.Taxis, ">=", departmentInfo.Taxis));
@@ -73,7 +74,7 @@ namespace SS.CMS.Core.Repositories
             }
 
             _repository.Update(Q
-                .Set(Attr.LastNode, false)
+                .Set(Attr.IsLastNode, false)
                 .Where(Attr.ParentId, departmentInfo.ParentId)
             );
 
@@ -85,7 +86,7 @@ namespace SS.CMS.Core.Repositories
             if (topId > 0)
             {
                 _repository.Update(Q
-                    .Set(Attr.LastNode, true)
+                    .Set(Attr.IsLastNode, true)
                     .Where(Attr.Id, topId)
                 );
             }
@@ -188,7 +189,7 @@ namespace SS.CMS.Core.Repositories
             if (parentId <= 0) return;
 
             _repository.Update(Q
-                .Set(Attr.LastNode, false)
+                .Set(Attr.IsLastNode, false)
                 .Where(Attr.ParentId, parentId)
             );
 
@@ -200,7 +201,7 @@ namespace SS.CMS.Core.Repositories
             if (topId > 0)
             {
                 _repository.Update(Q
-                    .Set(Attr.LastNode, true)
+                    .Set(Attr.IsLastNode, true)
                     .Where(Attr.Id, topId)
                 );
             }

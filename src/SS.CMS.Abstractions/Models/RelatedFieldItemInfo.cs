@@ -1,6 +1,6 @@
 using SS.CMS.Data;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_RelatedFieldItem")]
     public class RelatedFieldItemInfo : Entity

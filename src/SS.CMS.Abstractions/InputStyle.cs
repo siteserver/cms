@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
+using SS.CMS.Enums;
 
-namespace SS.CMS.Abstractions
+namespace SS.CMS
 {
     /// <summary>
     /// 表示表单的输入样式。

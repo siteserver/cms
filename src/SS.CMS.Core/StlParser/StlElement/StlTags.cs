@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache.Stl;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -96,8 +93,8 @@ namespace SS.CMS.Core.StlParser.StlElement
                 contentId = parseContext.ContentId;
             }
 
-            var tagInfoList = StlTagCache.GetTagInfoList(parseContext.SiteId, contentId, isOrderByCount, totalNum);
-            tagInfoList = TagUtils.GetTagInfoList(tagInfoList, totalNum, tagLevel);
+            var tagInfoList = parseContext.TagRepository.GetTagInfoList(parseContext.SiteId, contentId, isOrderByCount, totalNum);
+            tagInfoList = parseContext.TagRepository.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (parseContext.ContextType == EContextType.Content && parseContext.ContentInfo != null)
             {
                 var tagInfoList2 = new List<TagInfo>();

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.StlParser.StlElement
@@ -166,7 +164,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     }
                     else
                     {
-                        var nodeInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+                        var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
                         url = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, nodeInfo, parseContext.ContentId, parseContext.IsLocal);
                     }
 
@@ -193,11 +191,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 else if (parseContext.ContextType == EContextType.Channel) //获取栏目Url
                 {
                     parseContext.ChannelId =
-                        StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+                        parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
                     parseContext.ChannelId =
-                        ChannelManager.GetChannelId(parseContext.SiteId,
+                        parseContext.ChannelRepository.GetChannelId(parseContext.SiteId,
                             parseContext.ChannelId, channelIndex, channelName);
-                    var channel = ChannelManager.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+                    var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
 
                     url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, channel, parseContext.IsLocal);
                     if (string.IsNullOrWhiteSpace(parseContext.InnerHtml))

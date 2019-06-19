@@ -1,9 +1,9 @@
 using System;
 using Newtonsoft.Json;
-using SS.CMS.Abstractions.Repositories;
 using SS.CMS.Data;
+using SS.CMS.Repositories.IContentRepository;
 
-namespace SS.CMS.Abstractions.Models
+namespace SS.CMS.Models
 {
     [Table("siteserver_Site")]
     public class SiteInfo : Entity
@@ -31,7 +31,7 @@ namespace SS.CMS.Abstractions.Models
         /// 是否主站。
         /// </summary>
         [TableColumn]
-        public bool Root { get; set; }
+        public bool IsRoot { get; set; }
 
         /// <summary>
         /// 如果没有上级站点，则返回 0，否则返回上级站点Id。
@@ -46,7 +46,7 @@ namespace SS.CMS.Abstractions.Models
         public int Taxis { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
 
 
         [JsonIgnore]

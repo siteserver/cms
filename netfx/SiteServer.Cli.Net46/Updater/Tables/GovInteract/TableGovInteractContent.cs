@@ -69,7 +69,7 @@ namespace SiteServer.Cli.Updater.Tables.GovInteract
         public DateTimeOffset LastHitsDate { get; set; }
 
         [JsonProperty("settingsXML")]
-        public string SettingsXml { get; set; }
+        public string ExtendValues { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }

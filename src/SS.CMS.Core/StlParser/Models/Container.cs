@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.StlParser.Models
 {
@@ -79,8 +79,8 @@ namespace SS.CMS.Core.StlParser.Models
 
         public KeyValuePair<int, ContentInfo> ContentItem { get; private set; }
 
-        public Container.Each EachItem { get; private set; }
+        public KeyValuePair<int, object> EachItem { get; private set; }
 
-        public Container.Sql SqlItem { get; private set; }
+        public KeyValuePair<int, Dictionary<string, object>> SqlItem { get; private set; }
     }
 }

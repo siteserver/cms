@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Abstractions.Services;
+using SS.CMS.Services.ICacheManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.V2
@@ -16,11 +16,11 @@ namespace SS.CMS.Api.Controllers.V2
         public const string Route = "captcha/{name}";
         public const string RouteActionsCheck = "captcha/{name}/actions/check";
 
-        private readonly IIdentityManager _identityManager;
+        private readonly ICacheManager _cacheManager;
 
-        public CaptchaController(IIdentityManager identityManager)
+        public CaptchaController(ICacheManager cacheManager)
         {
-            _identityManager = identityManager;
+            _cacheManager = cacheManager;
         }
 
         [HttpGet(Route)]

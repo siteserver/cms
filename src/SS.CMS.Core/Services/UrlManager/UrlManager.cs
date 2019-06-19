@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Specialized;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Cache.Stl;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.IPathManager;
+using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services.IUrlManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -18,18 +18,24 @@ namespace SS.CMS.Core.Services
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
         private readonly IPluginManager _pluginManager;
+        private readonly IConfigRepository _configRepository;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly ISpecialRepository _specialRepository;
         private readonly ITemplateRepository _templateRepository;
+        private readonly IErrorLogRepository _errorLogRepository;
 
-        public UrlManager(ISettingsManager settingsManager, IPathManager pathManager, IPluginManager pluginManager, ISiteRepository siteRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository)
+        public UrlManager(ISettingsManager settingsManager, IPathManager pathManager, IPluginManager pluginManager, IConfigRepository configRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ISpecialRepository specialRepository, ITemplateRepository templateRepository, IErrorLogRepository errorLogRepository)
         {
             _settingsManager = settingsManager;
             _pathManager = pathManager;
             _pluginManager = pluginManager;
+            _configRepository = configRepository;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _specialRepository = specialRepository;
             _templateRepository = templateRepository;
+            _errorLogRepository = errorLogRepository;
         }
 
         public string GetRootUrl(string relatedUrl)
@@ -66,7 +72,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
                 }
             }
 
@@ -87,7 +93,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogUtils.AddErrorLog(service.PluginId, ex);
+                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
                 }
             }
 
@@ -161,7 +167,7 @@ namespace SS.CMS.Core.Services
         //    });
         //}
 
-        public string ApiUrl => _settingsManager.ConfigInfo.IsSeparatedApi ? _settingsManager.ConfigInfo.SeparatedApiUrl : $"/{_settingsManager.ApiPrefix}";
+        public string ApiUrl => _configRepository.Instance.IsSeparatedApi ? _configRepository.Instance.SeparatedApiUrl : $"/{_settingsManager.ApiPrefix}";
 
         private string _innerApiUrl;
 
@@ -346,12 +352,12 @@ namespace SS.CMS.Core.Services
             var channelId = contentInfoCurrent.ChannelId;
             if (referenceId > 0 && contentInfoCurrent.TranslateContentType != TranslateContentType.ReferenceContent.ToString())
             {
-                if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(_siteRepository, sourceId)))
+                if (sourceId > 0 && (_channelRepository.IsExists(siteInfo.Id, sourceId) || _channelRepository.IsExists(_siteRepository, sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
+                    var targetSiteId = _channelRepository.StlGetSiteId(targetChannelId);
                     var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
-                    var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+                    var targetChannelInfo = _channelRepository.GetChannelInfo(targetSiteId, targetChannelId);
 
                     var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
@@ -367,14 +373,14 @@ namespace SS.CMS.Core.Services
                 }
                 else
                 {
-                    var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+                    var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
                     channelId = channelInfo.ContentRepository.StlGetChannelId(channelInfo, referenceId);
                     linkUrl = channelInfo.ContentRepository.StlGetValue(channelInfo, referenceId, ContentAttribute.LinkUrl);
-                    if (ChannelManager.IsExists(siteInfo.Id, channelId))
+                    if (_channelRepository.IsExists(siteInfo.Id, channelId))
                     {
                         return GetContentUrlById(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                     }
-                    var targetSiteId = StlChannelCache.GetSiteId(channelId);
+                    var targetSiteId = _channelRepository.StlGetSiteId(channelId);
                     var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
                     return GetContentUrlById(targetSiteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
@@ -395,17 +401,17 @@ namespace SS.CMS.Core.Services
                 return GetPreviewContentUrl(siteInfo.Id, channelId, contentId);
             }
 
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             var contentInfoCurrent = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
 
             if (referenceId > 0 && contentInfoCurrent.TranslateContentType != TranslateContentType.ReferenceContent.ToString())
             {
-                if (sourceId > 0 && (ChannelManager.IsExists(siteInfo.Id, sourceId) || ChannelManager.IsExists(_siteRepository, sourceId)))
+                if (sourceId > 0 && (_channelRepository.IsExists(siteInfo.Id, sourceId) || _channelRepository.IsExists(_siteRepository, sourceId)))
                 {
                     var targetChannelId = sourceId;
-                    var targetSiteId = StlChannelCache.GetSiteId(targetChannelId);
+                    var targetSiteId = _channelRepository.StlGetSiteId(targetChannelId);
                     var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
-                    var targetChannelInfo = ChannelManager.GetChannelInfo(targetSiteId, targetChannelId);
+                    var targetChannelInfo = _channelRepository.GetChannelInfo(targetSiteId, targetChannelId);
 
                     var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetChannelInfo, referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
@@ -441,7 +447,7 @@ namespace SS.CMS.Core.Services
                 return GetIndexPageUrl(siteInfo, isLocal);
             }
             var linkUrl = string.Empty;
-            var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             if (nodeInfo != null)
             {
                 linkUrl = nodeInfo.LinkUrl;
@@ -491,12 +497,12 @@ namespace SS.CMS.Core.Services
                 {
                     if (linkType == ELinkType.NoLinkIfContentNotExists)
                     {
-                        var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                        var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                         url = count == 0 ? PageUtils.UnClickableUrl : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToOnlyOneContent)
                     {
-                        var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                        var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                         if (count == 1)
                         {
                             var contentId = channelInfo.ContentRepository.StlGetContentId(channelInfo, TaxisType.Parse(channelInfo.DefaultTaxisType));
@@ -509,7 +515,7 @@ namespace SS.CMS.Core.Services
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
                     {
-                        var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                        var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                         if (count == 0)
                         {
                             url = PageUtils.UnClickableUrl;
@@ -526,7 +532,7 @@ namespace SS.CMS.Core.Services
                     }
                     else if (linkType == ELinkType.LinkToFirstContent)
                     {
-                        var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                        var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
                             var contentId = channelInfo.ContentRepository.StlGetContentId(channelInfo, TaxisType.Parse(channelInfo.DefaultTaxisType));
@@ -540,7 +546,7 @@ namespace SS.CMS.Core.Services
                     }
                     else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent)
                     {
-                        var count = channelInfo.ContentRepository.GetCount(_pluginManager, siteInfo, channelInfo, true);
+                        var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
                             var contentId = channelInfo.ContentRepository.StlGetContentId(channelInfo, TaxisType.Parse(channelInfo.DefaultTaxisType));
@@ -558,22 +564,22 @@ namespace SS.CMS.Core.Services
                     }
                     else if (linkType == ELinkType.LinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = StlChannelCache.GetChannelInfoByLastAddDate(channelInfo.Id);
+                        var lastAddChannelInfo = _channelRepository.StlGetChannelInfoByLastAddDate(channelInfo.Id);
                         url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, isLocal) : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToFirstChannel)
                     {
-                        var firstChannelInfo = StlChannelCache.GetChannelInfoByTaxis(channelInfo.Id);
+                        var firstChannelInfo = _channelRepository.StlGetChannelInfoByTaxis(channelInfo.Id);
                         url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, isLocal) : GetChannelUrlNotComputed(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = StlChannelCache.GetChannelInfoByLastAddDate(channelInfo.Id);
+                        var lastAddChannelInfo = _channelRepository.StlGetChannelInfoByLastAddDate(channelInfo.Id);
                         url = lastAddChannelInfo != null ? GetChannelUrl(siteInfo, lastAddChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                     {
-                        var firstChannelInfo = StlChannelCache.GetChannelInfoByTaxis(channelInfo.Id);
+                        var firstChannelInfo = _channelRepository.StlGetChannelInfoByTaxis(channelInfo.Id);
                         url = firstChannelInfo != null ? GetChannelUrl(siteInfo, firstChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                 }

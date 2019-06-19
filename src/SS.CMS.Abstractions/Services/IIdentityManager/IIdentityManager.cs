@@ -4,7 +4,7 @@ using SS.CMS.Abstractions.Repositories;
 
 namespace SS.CMS.Abstractions.Services
 {
-    public interface IIdentityManager
+    public partial interface IIdentityManager
     {
         Task Sync();
 

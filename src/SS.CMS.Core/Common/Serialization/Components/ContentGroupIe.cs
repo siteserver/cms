@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
-using SS.CMS.Core.Models;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Atom.Atom.Core;
 

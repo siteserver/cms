@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Common;
 using SS.CMS.Data;
+using SS.CMS.Models;
+using SS.CMS.Repositories;
+using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -14,10 +12,12 @@ namespace SS.CMS.Core.Repositories
     {
         private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(ChannelGroupRepository));
 
+        private readonly ICacheManager _cacheManager;
         private readonly Repository<ChannelGroupInfo> _repository;
 
-        public ChannelGroupRepository(ISettingsManager settingsManager)
+        public ChannelGroupRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
+            _cacheManager = cacheManager;
             _repository = new Repository<ChannelGroupInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
@@ -58,15 +58,15 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.GroupName, groupName));
 
-            var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), ScopeType.All, groupName, string.Empty, string.Empty);
-            foreach (var channelId in channelIdList)
-            {
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                var groupNameList = TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
-                groupNameList.Remove(groupName);
-                channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupNameList);
-                DataProvider.ChannelRepository.Update(channelInfo);
-            }
+            // var channelIdList = ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, siteId), ScopeType.All, groupName, string.Empty, string.Empty);
+            // foreach (var channelId in channelIdList)
+            // {
+            //     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            //     var groupNameList = TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
+            //     groupNameList.Remove(groupName);
+            //     channelInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(groupNameList);
+            //     DataProvider.ChannelRepository.Update(channelInfo);
+            // }
 
             ClearCache();
         }

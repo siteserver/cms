@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common
@@ -10,29 +11,6 @@ namespace SS.CMS.Core.Common
     public static class WordSpliter
     {
         private const string SplitChar = " "; //分隔符
-
-        private static SortedList ReadContent(int siteId)
-        {
-            var cacheKey = "SiteServer.CMS.Core.WordSpliter." + siteId;
-            if (!CacheUtils.Exists(cacheKey))
-            {
-                var arrText = new SortedList();
-
-                var tagList = DataProvider.TagRepository.GetTagList(siteId);
-                if (tagList.Count > 0)
-                {
-                    foreach (var line in tagList)
-                    {
-                        if (!string.IsNullOrEmpty(line))
-                        {
-                            arrText.Add(line.Trim(), line.Trim());
-                        }
-                    }
-                }
-                CacheUtils.InsertHours(cacheKey, arrText, 1);
-            }
-            return (SortedList)CacheUtils.Get(cacheKey);
-        }
 
         private static bool IsMatch(string str, string reg)
         {
@@ -129,10 +107,10 @@ namespace SS.CMS.Core.Common
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private static ArrayList StringSpliter(string[] key, int siteId)
+        private static ArrayList StringSpliter(ITagRepository tagRepository, string[] key, int siteId)
         {
             var list = new ArrayList();
-            var dict = ReadContent(siteId);//载入词典
+            var dict = tagRepository.ReadContent(siteId);//载入词典
             //
             for (var i = 0; i < key.Length; i++)
             {
@@ -173,9 +151,9 @@ namespace SS.CMS.Core.Common
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public static string[] DoSplit(string content, int siteId)
+        public static string[] DoSplit(ITagRepository tagRepository, string content, int siteId)
         {
-            var keyList = StringSpliter(FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
+            var keyList = StringSpliter(tagRepository, FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
             //去掉重复的关键词
             for (var i = 0; i < keyList.Count; i++)
@@ -196,10 +174,10 @@ namespace SS.CMS.Core.Common
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public static string GetKeywords(string content, int siteId, int totalNum)
+        public static string GetKeywords(ITagRepository tagRepository, string content, int siteId, int totalNum)
         {
             var value = "";
-            var _key = DoSplit(content, siteId);
+            var _key = DoSplit(tagRepository, content, siteId);
             var currentNum = 1;
             for (var i = 1; i < _key.Length; i++)
             {

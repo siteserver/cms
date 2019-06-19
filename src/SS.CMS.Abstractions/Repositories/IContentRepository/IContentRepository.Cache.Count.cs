@@ -1,14 +1,13 @@
-﻿using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
+﻿using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, bool isChecked);
+        int GetCount(SiteInfo siteInfo, bool isChecked);
 
-        int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
+        int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
 
-        int GetCount(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked);
+        int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked);
     }
 }

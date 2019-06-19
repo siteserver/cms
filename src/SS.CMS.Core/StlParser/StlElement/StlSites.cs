@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Repositories;
-using SS.CMS.Core.Cache;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Template;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -31,7 +27,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             // var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
 
-            var siteList = StlDataUtility.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.Order);
+            var siteList = parseContext.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.Order);
 
             if (context.IsStlEntity)
             {

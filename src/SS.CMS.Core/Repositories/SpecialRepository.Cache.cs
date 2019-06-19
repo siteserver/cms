@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Abstractions.Services;
-using SS.CMS.Core.Cache.Core;
-using SS.CMS.Core.Common;
+using SS.CMS.Enums;
+using SS.CMS.Models;
+using SS.CMS.Services.IPathManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -58,11 +55,11 @@ namespace SS.CMS.Core.Repositories
 
                     var templateInfo = new TemplateInfo
                     {
+                        Id = 0,
                         Content = GetContentByFilePath(htmlFilePath),
                         CreatedFileExtName = ".html",
                         CreatedFileFullName = PathUtils.Combine(specialInfo.Url, relatedPath),
-                        Id = 0,
-                        Default = false,
+                        IsDefault = false,
                         RelatedFileName = string.Empty,
                         SiteId = siteInfo.Id,
                         Type = TemplateType.FileTemplate,
@@ -134,11 +131,11 @@ namespace SS.CMS.Core.Repositories
 
         private Dictionary<int, Dictionary<int, SpecialInfo>> GetCacheDictionary()
         {
-            var dictionary = DataCacheManager.Get<Dictionary<int, Dictionary<int, SpecialInfo>>>(CacheKey);
+            var dictionary = _cacheManager.Get<Dictionary<int, Dictionary<int, SpecialInfo>>>(CacheKey);
             if (dictionary != null) return dictionary;
 
             dictionary = new Dictionary<int, Dictionary<int, SpecialInfo>>();
-            DataCacheManager.InsertHours(CacheKey, dictionary, 24);
+            _cacheManager.InsertHours(CacheKey, dictionary, 24);
             return dictionary;
         }
 
@@ -146,7 +143,7 @@ namespace SS.CMS.Core.Repositories
         {
             try
             {
-                var content = DataCacheManager.Get<string>(filePath);
+                var content = _cacheManager.Get<string>(filePath);
                 if (content != null) return content;
 
                 if (FileUtils.IsFileExists(filePath))
@@ -154,7 +151,7 @@ namespace SS.CMS.Core.Repositories
                     content = FileUtils.ReadText(filePath, Encoding.UTF8);
                 }
 
-                DataCacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
+                _cacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);
                 return content;
             }
             catch

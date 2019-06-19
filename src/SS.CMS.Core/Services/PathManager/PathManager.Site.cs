@@ -1,7 +1,6 @@
 using System;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 
@@ -30,7 +29,7 @@ namespace SS.CMS.Core.Services
 
             if (siteInfo != null)
             {
-                resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
+                resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
             return MapWebRootPath(resolvedPath);
         }
@@ -52,7 +51,7 @@ namespace SS.CMS.Core.Services
 
             if (siteInfo != null)
             {
-                resolvedPath = siteInfo.Root ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
+                resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
             return MapWebRootPath(resolvedPath);
         }
@@ -112,7 +111,7 @@ namespace SS.CMS.Core.Services
         private string GetChannelFilePathRule(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var nodeInfo = _channelRepository.GetChannelInfo(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ChannelFilePathRule;
@@ -142,7 +141,7 @@ namespace SS.CMS.Core.Services
         private string GetContentFilePathRule(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+            var nodeInfo = _channelRepository.GetChannelInfo(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ContentFilePathRule;
@@ -156,11 +155,11 @@ namespace SS.CMS.Core.Services
 
         public string GetChannelPageFilePath(SiteInfo siteInfo, int channelId, int currentPageIndex)
         {
-            var nodeInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = _templateRepository.GetDefaultTemplateInfo(siteInfo.Id, TemplateType.IndexPageTemplate);
-                return GetIndexPageFilePath(siteInfo, templateInfo.CreatedFileFullName, siteInfo.Root, currentPageIndex);
+                return GetIndexPageFilePath(siteInfo, templateInfo.CreatedFileFullName, siteInfo.IsRoot, currentPageIndex);
             }
             var filePath = nodeInfo.FilePath;
 
@@ -188,7 +187,7 @@ namespace SS.CMS.Core.Services
 
         public string GetContentPageFilePath(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var channelInfo = ChannelManager.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
             return GetContentPageFilePath(siteInfo, channelId, contentInfo, currentPageIndex);
         }
@@ -461,7 +460,7 @@ namespace SS.CMS.Core.Services
             SiteInfo headquarter = null;
             foreach (var siteInfo in siteInfoList)
             {
-                if (siteInfo.Root)
+                if (siteInfo.IsRoot)
                 {
                     headquarter = siteInfo;
                 }
@@ -491,7 +490,7 @@ namespace SS.CMS.Core.Services
             var siteInfoList = _siteRepository.GetSiteInfoList();
             foreach (var siteInfo in siteInfoList)
             {
-                if (siteInfo?.Root != false) continue;
+                if (siteInfo?.IsRoot != false) continue;
 
                 if (StringUtils.Contains(directoryDir, siteInfo.SiteDir.ToLower()))
                 {

@@ -1,4 +1,4 @@
-﻿using SS.CMS.Abstractions.Services;
+﻿using SS.CMS.Services.ISettingsManager;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Api.Sys.Stl

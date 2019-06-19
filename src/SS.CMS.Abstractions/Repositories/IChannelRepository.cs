@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
 using SS.CMS.Data;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories
 {
-    public interface IChannelRepository : IRepository
+    public partial interface IChannelRepository : IRepository
     {
         int Insert(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId,
             string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId);
@@ -63,8 +63,6 @@ namespace SS.CMS.Abstractions.Repositories
         IList<int> GetIdListByTotalNum(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType,
             string groupChannel, string groupChannelNot, bool? isImage, int totalNum);
 
-        Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId);
-
         IList<KeyValuePair<int, ChannelInfo>> GetContainerChannelList(int siteId, int channelId, string group,
             string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType,
             ScopeType scopeType, bool isTotal);
@@ -76,5 +74,7 @@ namespace SS.CMS.Abstractions.Repositories
         int GetTemplateUseCount(int siteId, int templateId, TemplateType templateType, bool isDefault);
 
         IList<int> GetChannelIdList(TemplateInfo templateInfo);
+
+        string GetSourceName(int sourceId);
     }
 }

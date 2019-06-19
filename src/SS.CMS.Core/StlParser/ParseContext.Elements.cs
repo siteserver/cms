@@ -131,7 +131,7 @@ namespace SS.CMS.Core.StlParser
                         }
                         catch (Exception ex)
                         {
-                            parsedContent = LogUtils.AddStlErrorLog(PageInfo, elementName, stlElement, ex);
+                            parsedContent = GetErrorMessage(elementName, stlElement, ex);
                         }
                     }
                 }
@@ -156,7 +156,7 @@ namespace SS.CMS.Core.StlParser
                             }
                             catch (Exception ex)
                             {
-                                parsedContent = LogUtils.AddStlErrorLog(PageInfo, elementName, stlElement, ex);
+                                parsedContent = GetErrorMessage(elementName, stlElement, ex);
                             }
                         }
                     }

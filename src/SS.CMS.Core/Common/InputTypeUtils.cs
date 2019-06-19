@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Abstractions;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Repositories;
+using SS.CMS.Enums;
+using SS.CMS.Repositories;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common

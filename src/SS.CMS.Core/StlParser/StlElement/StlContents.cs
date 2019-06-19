@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Abstractions.Models;
-using SS.CMS.Core.Cache;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Template;
 using SS.CMS.Core.StlParser.Utility;
+using SS.CMS.Models;
 
 namespace SS.CMS.Core.StlParser.StlElement
 {
@@ -33,20 +31,20 @@ namespace SS.CMS.Core.StlParser.StlElement
 
         // private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
         // {
-        //     var channelId = StlDataUtility.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+        //     var channelId = parseContext.GetChannelIdByLevel(pageInfo.SiteId, contextInfo.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
         //     channelId = ChannelManager.GetChannelId(pageInfo.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-        //     return StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+        //     return parseContext.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         // }
 
         private static List<KeyValuePair<int, ContentInfo>> GetContainerContentList(ParseContext parseContext, ListInfo listInfo)
         {
-            var channelId = StlDataUtility.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = ChannelManager.GetChannelId(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = parseContext.ChannelRepository.GetChannelId(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return StlDataUtility.GetContainerContentList(parseContext.PluginManager, parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return parseContext.GetContainerContentList(parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
         public static string ParseElement(ParseContext parseContext, ListInfo listInfo, List<KeyValuePair<int, ContentInfo>> contentList)
@@ -255,7 +253,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var channelInfo = ChannelManager.GetChannelInfo(parseContext.SiteId, content.Value.ChannelId);
+                var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, content.Value.ChannelId);
                 var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, content.Value.Id);
 
                 if (contentInfo != null)

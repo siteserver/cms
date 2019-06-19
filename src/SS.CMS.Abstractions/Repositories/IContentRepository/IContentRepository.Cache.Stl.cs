@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SqlKata;
-using SS.CMS.Abstractions.Enums;
-using SS.CMS.Abstractions.Models;
+using SS.CMS.Enums;
+using SS.CMS.Models;
 
-namespace SS.CMS.Abstractions.Repositories
+namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
