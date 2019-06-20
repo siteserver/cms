@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Core.Common.Create;
-using SS.CMS.Services.IUserManager;
-using SS.CMS.Utils;
+using SS.CMS.Services;
 
 namespace SS.CMS.Api.Controllers.Admin.Cms
 {

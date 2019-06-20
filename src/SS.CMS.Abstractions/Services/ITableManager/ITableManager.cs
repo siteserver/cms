@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SS.CMS.Data;
 
-namespace SS.CMS.Services.ITableManager
+namespace SS.CMS.Services
 {
     public partial interface ITableManager
     {
@@ -39,8 +39,6 @@ namespace SS.CMS.Services.ITableManager
         void UpdateConfigVersion();
 
         void SyncDatabase();
-
-        bool IsNeedInstall();
     }
 
 }

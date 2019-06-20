@@ -1,4 +1,4 @@
-namespace SS.CMS.Services.IFileManager
+namespace SS.CMS.Services
 {
     public partial interface IFileManager
     {

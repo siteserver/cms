@@ -1,3 +1,0 @@
-This is a line of text
-Everything written to Console.Write() or
-Console.WriteLine() will be written to a file

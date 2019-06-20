@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Enums;
 using SS.CMS.Models;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.IUserManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Repositories
 {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using SqlKata.Compilers;
@@ -30,6 +31,8 @@ namespace SS.CMS.Data
         Task CreateIndexAsync(string tableName, string indexName, params string[] columns);
 
         List<string> GetColumnNames(string tableName);
+
+        string GetTableName<T>() where T : Entity;
 
         List<TableColumn> GetTableColumns<T>() where T : Entity;
 

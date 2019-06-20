@@ -1,59 +1,81 @@
 ﻿using System;
-using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SS.CMS.Cli.Core;
+using SS.CMS.Cli.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Cli
 {
-    class Program
+    internal static class Program
     {
-        static int Main(string[] args)
+        static async Task Main(string[] args)
         {
-            // Create some options and a parser
-            var optionThatTakesInt = new Option(
-                "--int-option",
-                "An option whose argument is parsed as an int",
-                new Argument<int>(defaultValue: 42));
-            optionThatTakesInt.AddAlias("-i");
-
-            var optionThatTakesBool = new Option(
-                "--bool-option",
-                "An option whose argument is parsed as a bool",
-                new Argument<bool>());
-            var optionThatTakesFileInfo = new Option(
-                "--file-option",
-                "An option whose argument is parsed as a FileInfo",
-                new Argument<FileInfo>());
-
-            // Add them to the root command
-            var rootCommand = new RootCommand();
-
-            rootCommand.Description = "My sample app";
-            rootCommand.AddOption(optionThatTakesInt);
-            rootCommand.AddOption(optionThatTakesBool);
-            rootCommand.AddOption(optionThatTakesFileInfo);
-
-            rootCommand.Handler = CommandHandler.Create<int, bool, FileInfo>((intOption, boolOption, fileOption) =>
+            try
             {
-                Console.WriteLine($"The value for --int-option is: {intOption}");
-                Console.WriteLine($"The value for --bool-option is: {boolOption}");
-                Console.WriteLine($"The value for --file-option is: {fileOption?.FullName ?? "null"}");
-
-                var path = PathUtils.Combine(Directory.GetParent(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName).ToString(), ".sscms");
-
-                Console.WriteLine(path);
-            });
-
-            var command = new Command("subcommand")
+                Console.OutputEncoding = Encoding.GetEncoding(936);
+            }
+            catch
             {
-                new Command("subsubcommand")
-            };
+                try
+                {
+                    Console.OutputEncoding = Encoding.UTF8;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
 
-            rootCommand.AddCommand(command);
+            try
+            {
+                var contentRootPath = Directory.GetCurrentDirectory();
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(contentRootPath)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                IConfigurationRoot configuration = builder.Build();
 
-            // Parse the incoming args and invoke the handler
-            return rootCommand.InvokeAsync(args).Result;
+                var services = new ServiceCollection();
+
+                services.AddMemoryCache();
+                services.AddDistributedMemoryCache();
+
+                var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
+
+                services.AddCacheManager();
+                services.AddRepositories();
+                services.AddPathManager();
+                services.AddPluginManager();
+                services.AddUrlManager();
+                services.AddFileManager();
+                services.AddCreateManager();
+                services.AddTableManager();
+
+                services.AddTransient<Application>();
+                services.AddTransient<BackupJob>();
+                services.AddTransient<InstallJob>();
+                services.AddTransient<RestoreJob>();
+                services.AddTransient<TestJob>();
+                services.AddTransient<UpdateJob>();
+                services.AddTransient<VersionJob>();
+                services.AddTransient<UpdaterManager>();
+
+                var provider = services.BuildServiceProvider();
+                CliUtils.Provider = provider;
+
+                var application = provider.GetService<Application>();
+                await application.RunAsync(args);
+            }
+            finally
+            {
+                Console.WriteLine("\r\nPress any key to exit...");
+                Console.ReadKey();
+            }
         }
+
+
     }
 }

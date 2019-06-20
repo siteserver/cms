@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Models;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.IUserManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Api.Controllers
 {

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SS.CMS.Core.Common;
 using SS.CMS.Models;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.Services
 {

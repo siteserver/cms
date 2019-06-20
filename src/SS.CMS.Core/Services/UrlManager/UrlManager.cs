@@ -5,10 +5,7 @@ using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services

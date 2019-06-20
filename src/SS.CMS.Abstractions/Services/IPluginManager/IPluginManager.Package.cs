@@ -1,6 +1,6 @@
 using SS.CMS.Enums;
 
-namespace SS.CMS.Services.IPluginManager
+namespace SS.CMS.Services
 {
     public partial interface IPluginManager
     {

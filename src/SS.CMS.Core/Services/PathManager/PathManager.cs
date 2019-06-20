@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services

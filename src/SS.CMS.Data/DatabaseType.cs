@@ -35,7 +35,7 @@ namespace SS.CMS.Data
         /// </summary>
         public static readonly DatabaseType SQLite = new DatabaseType(nameof(SQLite));
 
-        public static DatabaseType GetDatabaseType(string databaseType)
+        public static DatabaseType Parse(string databaseType)
         {
             var retVal = MySql;
 

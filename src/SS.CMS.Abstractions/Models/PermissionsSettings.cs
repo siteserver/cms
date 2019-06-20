@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SS.CMS.Settings
+namespace SS.CMS.Models
 {
     public class PermissionsSettings
     {

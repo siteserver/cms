@@ -2,8 +2,7 @@
 using System.Collections.Specialized;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ITableManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 

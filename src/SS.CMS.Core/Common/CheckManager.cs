@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using SS.CMS.Core.Security;
 using SS.CMS.Models;
-using SS.CMS.Services.IUserManager;
-using SS.CMS.Utils;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.Common
 {

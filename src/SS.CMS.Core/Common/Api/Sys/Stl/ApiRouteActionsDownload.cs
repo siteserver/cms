@@ -1,5 +1,5 @@
 ﻿using System.Collections.Specialized;
-using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Api.Sys.Stl

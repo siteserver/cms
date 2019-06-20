@@ -19,7 +19,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 redirect = true;
                 redirectUrl = _urlManager.AdminInstallUrl;
             }
-            else if (checkDatabaseVersion && _configRepository.Instance.IsInitialized &&
+            else if (checkDatabaseVersion && _configRepository.Instance != null &&
                      _configRepository.Instance.DatabaseVersion != _settingsManager.ProductVersion)
             {
                 redirect = true;

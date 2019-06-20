@@ -2,12 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Services;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IUserManager;
-using SS.CMS.Utils;
+using SS.CMS.Services;
 
 namespace SS.CMS.Api.Controllers.Admin.Settings.Admin
 {

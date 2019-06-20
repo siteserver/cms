@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IUserManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Admin

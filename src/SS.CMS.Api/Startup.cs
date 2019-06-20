@@ -12,8 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using SS.CMS.Core.Services;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.IUserManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Api
 {

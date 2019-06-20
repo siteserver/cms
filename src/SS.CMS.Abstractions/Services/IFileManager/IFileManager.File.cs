@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.IFileManager
+namespace SS.CMS.Services
 {
     public partial interface IFileManager
     {

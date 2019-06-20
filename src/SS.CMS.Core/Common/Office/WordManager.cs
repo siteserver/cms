@@ -10,9 +10,7 @@ using HtmlAgilityPack;
 using OpenXmlPowerTools;
 using SS.CMS.Enums;
 using SS.CMS.Models;
-using SS.CMS.Services.IFileManager;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 using FileUtils = SS.CMS.Utils.FileUtils;
 

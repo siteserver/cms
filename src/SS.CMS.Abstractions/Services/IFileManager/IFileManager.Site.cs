@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.IFileManager
+namespace SS.CMS.Services
 {
     public partial interface IFileManager
     {
-        void Translate(ICreateManager.ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
+        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
 
-        void Translate(ICreateManager.ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
+        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
 
         void Delete(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId);
 

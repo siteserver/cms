@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using Microsoft.Extensions.Configuration;
 using SS.CMS.Data;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Settings;
+using SS.CMS.Models;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
@@ -58,22 +58,27 @@ namespace SS.CMS.Core.Services
 
             if (IsProtectData)
             {
-                DatabaseType = DatabaseType.GetDatabaseType(TranslateUtils.DecryptStringBySecretKey(config.GetValue<string>("SS:Database:Type"), SecretKey));
+                DatabaseType = DatabaseType.Parse(TranslateUtils.DecryptStringBySecretKey(config.GetValue<string>("SS:Database:Type"), SecretKey));
                 DatabaseConnectionString = TranslateUtils.DecryptStringBySecretKey(config.GetValue<string>("SS:Database:ConnectionString"), SecretKey);
                 RedisConnectionString = TranslateUtils.DecryptStringBySecretKey(config.GetValue<string>("SS:Redis:ConnectionString"), SecretKey);
             }
             else
             {
-                DatabaseType = DatabaseType.GetDatabaseType(config.GetValue<string>("SS:Database:Type"));
+                DatabaseType = DatabaseType.Parse(config.GetValue<string>("SS:Database:Type"));
                 DatabaseConnectionString = config.GetValue<string>("SS:Database:ConnectionString");
                 RedisConnectionString = config.GetValue<string>("SS:Redis:ConnectionString");
             }
 
             var menusPath = PathUtils.GetLangPath(contentRootPath, Language, "menus.yml");
+            if (FileUtils.IsFileExists(menusPath))
+            {
+                Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
+            }
             var permissionsPath = PathUtils.GetLangPath(contentRootPath, Language, "permissions.yml");
-
-            Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
-            Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
+            if (FileUtils.IsFileExists(permissionsPath))
+            {
+                Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
+            }
         }
 
         public string ContentRootPath { get; }

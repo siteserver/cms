@@ -2,7 +2,7 @@
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 
-namespace SS.CMS.Services.IFileManager
+namespace SS.CMS.Services
 {
     public partial interface IFileManager
     {

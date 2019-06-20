@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Core.Common;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
-using SS.CMS.Services.IUserManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Api.Controllers.Admin
 {
@@ -31,7 +28,7 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpGet(Route)]
         public ActionResult Get()
         {
-            if (_tableManager.IsNeedInstall())
+            if (_configRepository.Instance == null)
             {
                 return BadRequest("系统未安装，向导被禁用");
             }

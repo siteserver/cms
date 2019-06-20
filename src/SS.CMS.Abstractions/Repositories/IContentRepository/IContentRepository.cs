@@ -4,6 +4,5 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository : IRepository
     {
-        string GetContentTableName(int siteId);
     }
 }

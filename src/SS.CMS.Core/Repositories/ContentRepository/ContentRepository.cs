@@ -5,10 +5,7 @@ using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Repositories.IContentRepository;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
 
@@ -67,11 +64,6 @@ namespace SS.CMS.Core.Repositories
         //     }
         //     return Instance(db, tableName);
         // }
-
-        public string GetContentTableName(int siteId)
-        {
-            return $"siteserver_Content_{siteId}";
-        }
 
         private Query MinColumnsQuery => Q
                 .Select(Attr.Id)

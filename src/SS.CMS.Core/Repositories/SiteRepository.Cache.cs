@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SS.CMS.Core.Common;
 using SS.CMS.Models;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories

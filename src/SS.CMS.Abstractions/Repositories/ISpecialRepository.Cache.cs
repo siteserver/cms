@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Models;
-using SS.CMS.Services.IPathManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Repositories
 {

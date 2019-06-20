@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SS.CMS.Services.IUserManager
+namespace SS.CMS.Services
 {
     public partial interface IUserManager
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using SS.CMS.Data;
 
-namespace SS.CMS.Services.ICacheManager
+namespace SS.CMS.Services
 {
     public partial interface ICacheManager
     {

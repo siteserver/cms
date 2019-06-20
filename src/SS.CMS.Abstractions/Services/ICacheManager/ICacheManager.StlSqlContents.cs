@@ -1,4 +1,4 @@
-namespace SS.CMS.Services.ICacheManager
+namespace SS.CMS.Services
 {
     public partial interface ICacheManager
     {

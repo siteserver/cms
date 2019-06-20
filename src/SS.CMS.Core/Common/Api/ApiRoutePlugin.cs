@@ -1,4 +1,4 @@
-﻿using SS.CMS.Services.IUrlManager;
+﻿using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Common.Api

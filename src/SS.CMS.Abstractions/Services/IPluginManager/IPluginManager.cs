@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SS.CMS.Services.IPluginManager
+namespace SS.CMS.Services
 {
     /// <summary>
     /// The entry for managing SiteServer plugins

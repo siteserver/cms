@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using SS.CMS.Core.Common;
 using SS.CMS.Core.Services;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.Repositories
 {

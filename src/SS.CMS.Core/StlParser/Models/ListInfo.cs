@@ -279,7 +279,7 @@ namespace SS.CMS.Core.StlParser.Models
                 else if (parseContext.ContextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConfigName))
                 {
                     listInfo.DatabaseType =
-                        DatabaseType.GetDatabaseType(parseContext.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.DatabaseType}"]);
+                        DatabaseType.Parse(parseContext.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.DatabaseType}"]);
                     listInfo.ConnectionString = parseContext.Configuration[$"{StlSqlContents.ConfigName}:{StlSqlContents.ConnectionString}"];
                     if (string.IsNullOrEmpty(listInfo.ConnectionString))
                     {
@@ -289,7 +289,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (parseContext.ContextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.DatabaseType))
                 {
-                    listInfo.DatabaseType = DatabaseType.GetDatabaseType(value);
+                    listInfo.DatabaseType = DatabaseType.Parse(value);
                 }
                 else if (parseContext.ContextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.ConnectionString))
                 {

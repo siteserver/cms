@@ -7,16 +7,13 @@ namespace SS.CMS.Models
     public partial class ConfigInfo : Entity
     {
         [TableColumn]
-        public bool IsInitialized { get; set; }
-
-        [TableColumn]
         public string DatabaseVersion { get; set; }
 
         [TableColumn]
         public DateTimeOffset? UpdateDate { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
-        private string SystemConfig { get; set; }
+        public string ExtendValues { get; set; }
 
         public bool IsSeparatedApi { get; set; }
 

@@ -3,13 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.IFileManager;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.StlParser
 {

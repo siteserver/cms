@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SS.CMS.Services.ICacheManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.V2

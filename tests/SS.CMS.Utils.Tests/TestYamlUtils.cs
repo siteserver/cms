@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using SS.CMS.Settings;
+using SS.CMS.Models;
 using Xunit;
 
 namespace SS.CMS.Utils.Tests

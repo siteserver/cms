@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,8 @@ namespace SS.CMS.Data
 
         public Db(DatabaseType databaseType, string connectionString)
         {
+            if (databaseType == null || connectionString == null) return;
+
             if (databaseType == DatabaseType.MySql)
             {
                 connectionString = connectionString.TrimEnd(';');
@@ -170,6 +173,28 @@ namespace SS.CMS.Data
             }
 
             return exists;
+        }
+
+        public bool IsConnectionWorks(out string errorMessage)
+        {
+            var retval = false;
+            errorMessage = string.Empty;
+            try
+            {
+                var connection = GetConnection();
+                connection.Open();
+                if (connection.State == ConnectionState.Open)
+                {
+                    retval = true;
+                    connection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+
+            return retval;
         }
 
         public string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumn> columns)
@@ -519,6 +544,11 @@ namespace SS.CMS.Data
         {
             var allTableColumnInfoList = GetTableColumns(tableName);
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
+        }
+
+        public string GetTableName<T>() where T : Entity
+        {
+            return ReflectionUtils.GetTableName(typeof(T));
         }
 
         public List<TableColumn> GetTableColumns<T>() where T : Entity

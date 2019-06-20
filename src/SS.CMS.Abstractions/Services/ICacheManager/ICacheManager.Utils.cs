@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SS.CMS.Services.ICacheManager
+namespace SS.CMS.Services
 {
     public partial interface ICacheManager
     {

@@ -3,14 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.ICreateManager;
-using SS.CMS.Services.IFileManager;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

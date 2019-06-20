@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.ITableManager
+namespace SS.CMS.Services
 {
     public partial interface ITableManager
     {
@@ -11,7 +11,7 @@ namespace SS.CMS.Services.ITableManager
 
         List<TableStyleInfo> GetChannelStyleInfoList(ChannelInfo channelInfo);
 
-        List<TableStyleInfo> GetContentStyleInfoList(IPluginManager.IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
+        List<TableStyleInfo> GetContentStyleInfoList(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
 
         List<TableStyleInfo> GetUserStyleInfoList();
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Data;
-using SS.CMS.Settings;
+using SS.CMS.Models;
 
-namespace SS.CMS.Services.ISettingsManager
+namespace SS.CMS.Services
 {
     public interface ISettingsManager
     {

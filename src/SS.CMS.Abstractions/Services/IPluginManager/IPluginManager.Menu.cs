@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.IPluginManager
+namespace SS.CMS.Services
 {
     public partial interface IPluginManager
     {
-        List<Menu> GetTopMenus(IUrlManager.IUrlManager urlManager);
+        List<Menu> GetTopMenus(IUrlManager urlManager);
 
-        List<Menu> GetSiteMenus(IUrlManager.IUrlManager urlManager, int siteId);
+        List<Menu> GetSiteMenus(IUrlManager urlManager, int siteId);
 
-        List<Menu> GetContentMenus(IUrlManager.IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo);
+        List<Menu> GetContentMenus(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo);
 
         List<Permission> GetTopPermissions();
 

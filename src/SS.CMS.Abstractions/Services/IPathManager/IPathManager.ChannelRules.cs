@@ -1,7 +1,7 @@
 using System.Collections;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.IPathManager
+namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {

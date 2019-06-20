@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using SS.CMS.Enums;
 using SS.CMS.Models;
-using SS.CMS.Services.IPluginManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services

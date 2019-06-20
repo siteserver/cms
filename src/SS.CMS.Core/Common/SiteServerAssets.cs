@@ -1,5 +1,4 @@
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
 

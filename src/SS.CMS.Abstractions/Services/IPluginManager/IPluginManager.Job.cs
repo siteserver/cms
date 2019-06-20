@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SS.CMS.Services.IPluginManager
+namespace SS.CMS.Services
 {
     public partial interface IPluginManager
     {

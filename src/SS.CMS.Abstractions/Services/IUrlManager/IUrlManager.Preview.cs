@@ -1,4 +1,4 @@
-namespace SS.CMS.Services.IUrlManager
+namespace SS.CMS.Services
 {
     public partial interface IUrlManager
     {

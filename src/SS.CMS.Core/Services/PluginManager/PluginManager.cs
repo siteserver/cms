@@ -7,11 +7,7 @@ using System.Reflection;
 using System.Threading;
 using SS.CMS.Core.Plugin;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services

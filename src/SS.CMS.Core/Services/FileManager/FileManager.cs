@@ -1,9 +1,5 @@
 using SS.CMS.Repositories;
-using SS.CMS.Services.IFileManager;
-using SS.CMS.Services.IPathManager;
-using SS.CMS.Services.IPluginManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.IUrlManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.Services
 {

@@ -16,6 +16,11 @@ namespace SS.CMS.Utils
             return values.Aggregate(key, (current, t) => current + ("." + t));
         }
 
+        public static string GetContentTableName(int siteId)
+        {
+            return $"siteserver_Content_{siteId}";
+        }
+
         public static bool Equals(string s1, string s2)
         {
             return s1 == s2 || string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2);

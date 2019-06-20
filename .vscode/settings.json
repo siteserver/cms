@@ -1,3 +1,6 @@
 {
-    "eslint.enable": false
+    "eslint.enable": false,
+    "cSpell.words": [
+        "bairong"
+    ]
 }

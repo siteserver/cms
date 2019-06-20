@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using SS.CMS.Core.Common;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.ISettingsManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -30,21 +28,21 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(ConfigInfo.Id);
-            public const string IsInitialized = "IsInitialized";
             public const string DatabaseVersion = nameof(ConfigInfo.DatabaseVersion);
             public const string UpdateDate = nameof(ConfigInfo.UpdateDate);
-            public const string SystemConfig = "SystemConfig";
+            public const string ExtendValues = nameof(ConfigInfo.ExtendValues);
         }
 
-        public int Insert(ConfigInfo configInfo)
+        public void Insert(ConfigInfo configInfo)
         {
-            configInfo.Id = _repository.Insert(configInfo);
-            if (configInfo.Id > 0)
+            if (!_repository.Exists())
             {
-                IsChanged = true;
+                configInfo.Id = _repository.Insert(configInfo);
+                if (configInfo.Id > 0)
+                {
+                    ClearCache();
+                }
             }
-
-            return configInfo.Id;
         }
 
         public bool Update(ConfigInfo configInfo)
@@ -52,31 +50,13 @@ namespace SS.CMS.Core.Repositories
             var updated = _repository.Update(configInfo);
             if (updated)
             {
-                IsChanged = true;
+                ClearCache();
             }
 
             return updated;
         }
 
-        public bool IsInitialized()
-        {
-            try
-            {
-                var isInitialized = _repository.Get<string>(Q
-                    .Select(Attr.IsInitialized)
-                    .OrderBy(Attr.Id));
-
-                return TranslateUtils.ToBool(isInitialized);
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return false;
-        }
-
-        public ConfigInfo GetConfigInfo()
+        private ConfigInfo GetConfigInfo()
         {
             ConfigInfo info = null;
 
@@ -86,7 +66,14 @@ namespace SS.CMS.Core.Repositories
             }
             catch
             {
-                info = _repository.Get(Q.OrderBy(Attr.Id));
+                try
+                {
+                    info = _repository.Get(Q.OrderBy(Attr.Id));
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             return info;
@@ -110,15 +97,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public bool IsChanged
+        private void ClearCache()
         {
-            set
-            {
-                if (value)
-                {
-                    _cacheManager.Remove(CacheKey);
-                }
-            }
+            _cacheManager.Remove(CacheKey);
         }
     }
 }

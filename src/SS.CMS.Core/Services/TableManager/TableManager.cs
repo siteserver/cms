@@ -5,11 +5,8 @@ using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.ICacheManager;
-using SS.CMS.Services.ISettingsManager;
-using SS.CMS.Services.ITableManager;
+using SS.CMS.Services;
 using SS.CMS.Utils;
-using SS.CMS.Utils.Enumerations;
 
 namespace SS.CMS.Core.Services
 {
@@ -433,12 +430,11 @@ namespace SS.CMS.Core.Services
 
         public void UpdateConfigVersion()
         {
-            var configInfo = _configRepository.GetConfigInfo();
+            var configInfo = _configRepository.Instance;
             if (configInfo == null)
             {
                 configInfo = new ConfigInfo
                 {
-                    IsInitialized = true,
                     DatabaseVersion = _settingsManager.ProductVersion,
                     UpdateDate = DateTime.Now
                 };
@@ -447,7 +443,6 @@ namespace SS.CMS.Core.Services
             else
             {
                 configInfo.DatabaseVersion = _settingsManager.ProductVersion;
-                configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;
                 _configRepository.Update(configInfo);
             }
@@ -462,16 +457,6 @@ namespace SS.CMS.Core.Services
             SyncContentTables();
 
             UpdateConfigVersion();
-        }
-
-        public bool IsNeedInstall()
-        {
-            var isNeedInstall = !_configRepository.IsInitialized();
-            if (isNeedInstall)
-            {
-                isNeedInstall = !_configRepository.IsInitialized();
-            }
-            return isNeedInstall;
         }
     }
 }

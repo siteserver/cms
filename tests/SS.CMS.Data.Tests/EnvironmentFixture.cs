@@ -18,7 +18,7 @@ namespace SS.CMS.Data.Tests
                 .SetBasePath(projDirectoryPath)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            var databaseType = DatabaseType.GetDatabaseType(config["ss:database:type"]);
+            var databaseType = DatabaseType.Parse(config["ss:database:type"]);
             var connectionString = config["ss:database:connectionString"];
 
             Db = new Db(databaseType, connectionString);

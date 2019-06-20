@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace SS.CMS.Services.ICacheManager
+namespace SS.CMS.Services
 {
     public partial interface ICacheManager
     {

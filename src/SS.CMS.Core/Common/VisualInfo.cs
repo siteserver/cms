@@ -2,7 +2,7 @@
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Services.IPathManager;
+using SS.CMS.Services;
 
 namespace SS.CMS.Core.Common
 {

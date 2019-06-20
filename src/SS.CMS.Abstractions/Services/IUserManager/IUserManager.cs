@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using SS.CMS.Models;
 
-namespace SS.CMS.Services.IUserManager
+namespace SS.CMS.Services
 {
     public partial interface IUserManager
     {
