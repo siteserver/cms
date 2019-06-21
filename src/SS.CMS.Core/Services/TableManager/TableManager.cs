@@ -12,6 +12,8 @@ namespace SS.CMS.Core.Services
 {
     public partial class TableManager : ITableManager
     {
+        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(TableManager));
+
         private readonly ICacheManager _cacheManager;
         private readonly ISettingsManager _settingsManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
@@ -45,8 +47,7 @@ namespace SS.CMS.Core.Services
         private readonly IUserRepository _userRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IList<IRepository> _repositories;
-        private readonly IDb _db;
-        private readonly string CacheKey = StringUtils.GetCacheKey(nameof(TableManager));
+        private readonly IDatabase _database;
 
         public TableManager(
             ISettingsManager settingsManager,
@@ -83,8 +84,6 @@ namespace SS.CMS.Core.Services
             IUserRoleRepository userRoleRepository
         )
         {
-            _db = new Db(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
-
             _cacheManager = cacheManager;
             _settingsManager = settingsManager;
 
@@ -150,6 +149,8 @@ namespace SS.CMS.Core.Services
             _repositories.Add(_userRepository);
             _userRoleRepository = userRoleRepository;
             _repositories.Add(_userRoleRepository);
+
+            _database = new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
         }
 
         private void ClearCache()
@@ -183,7 +184,7 @@ namespace SS.CMS.Core.Services
 
             if (list != null) return list;
 
-            list = _db.GetTableColumns(tableName);
+            list = _database.GetTableColumns(tableName);
             CacheUpdate(allDict, list, tableName);
             return list;
         }
@@ -248,7 +249,7 @@ namespace SS.CMS.Core.Services
 
             try
             {
-                _db.CreateTable(tableName, tableColumns);
+                _database.CreateTable(tableName, tableColumns);
             }
             catch (Exception e)
             {
@@ -261,7 +262,7 @@ namespace SS.CMS.Core.Services
             {
                 try
                 {
-                    _db.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+                    _database.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
 
 
                     //sqlString =
@@ -278,7 +279,7 @@ namespace SS.CMS.Core.Services
 
                 try
                 {
-                    _db.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    _database.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
@@ -301,7 +302,7 @@ namespace SS.CMS.Core.Services
         {
             try
             {
-                _db.AlterTable(tableName,
+                _database.AlterTable(tableName,
                     GetRealTableColumns(tableColumns), dropColumnNames);
 
                 ClearCache();
@@ -361,19 +362,19 @@ namespace SS.CMS.Core.Services
 
         public void CreateContentTable(string tableName, List<TableColumn> tableColumns)
         {
-            var isDbExists = _db.IsTableExists(tableName);
+            var isDbExists = _database.IsTableExists(tableName);
             if (isDbExists) return;
 
-            _db.CreateTable(tableName, tableColumns);
-            _db.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            _db.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
+            _database.CreateTable(tableName, tableColumns);
+            _database.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            _database.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
 
             ClearCache();
         }
 
         public void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
         {
-            _db.AlterTable(tableName, tableColumns, dropColumnNames);
+            _database.AlterTable(tableName, tableColumns, dropColumnNames);
 
             ClearCache();
         }
@@ -397,11 +398,27 @@ namespace SS.CMS.Core.Services
 
         public void SyncSystemTables()
         {
+            if (!_database.IsTableExists(_configRepository.TableName))
+            {
+                CreateTable(_configRepository.TableName, _configRepository.TableColumns, string.Empty, false, out _);
+            }
+            else
+            {
+                AlterTable(_configRepository.TableName, _configRepository.TableColumns, string.Empty);
+            }
+
+            var configInfo = _configRepository.Instance;
+            if (configInfo == null)
+            {
+                configInfo = new ConfigInfo();
+                _configRepository.Insert(configInfo);
+            }
+
             foreach (var repository in _repositories)
             {
-                if (string.IsNullOrEmpty(repository.TableName) || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
+                if (string.IsNullOrEmpty(repository.TableName) || repository.TableName == _configRepository.TableName || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!_db.IsTableExists(repository.TableName))
+                if (!_database.IsTableExists(repository.TableName))
                 {
                     CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
                 }

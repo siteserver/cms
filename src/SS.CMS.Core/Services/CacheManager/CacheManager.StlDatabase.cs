@@ -77,10 +77,10 @@ namespace SS.CMS.Core.Services
             return retval;
         }
 
-        public List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDb db, string queryString)
+        public List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDatabase database, string queryString)
         {
             var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetContainerSqlList),
-                db.DatabaseType.Value, db.ConnectionString, queryString);
+                database.DatabaseType.Value, database.ConnectionString, queryString);
             var retval = Get<List<KeyValuePair<int, Dictionary<string, object>>>>(cacheKey);
             if (retval != null) return retval;
 
@@ -89,7 +89,7 @@ namespace SS.CMS.Core.Services
             {
                 var rows = new List<KeyValuePair<int, Dictionary<string, object>>>();
                 var itemIndex = 0;
-                using (var connection = db.GetConnection())
+                using (var connection = database.GetConnection())
                 {
                     using (var reader = connection.ExecuteReader(queryString))
                     {

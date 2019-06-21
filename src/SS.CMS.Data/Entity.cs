@@ -17,10 +17,10 @@ namespace SS.CMS.Data
         public string Guid { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? LastModifiedDate { get; set; }
+        public DateTime? LastModifiedDate { get; set; }
 
         private readonly List<string> _propertyNames;
 

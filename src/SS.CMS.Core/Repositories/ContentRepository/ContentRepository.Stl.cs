@@ -204,7 +204,7 @@ namespace SS.CMS.Core.Repositories
             orderStringReverse = orderStringReverse.Replace(" ASC", " DESC");
             orderStringReverse = orderStringReverse.Replace(" DESC2", " ASC");
 
-            if (_repository.Db.DatabaseType == DatabaseType.MySql)
+            if (_repository.Database.DatabaseType == DatabaseType.MySql)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -213,7 +213,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (_repository.Db.DatabaseType == DatabaseType.SqlServer)
+            else if (_repository.Database.DatabaseType == DatabaseType.SqlServer)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -222,7 +222,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse}
 ) AS t2 {orderString}";
             }
-            else if (_repository.Db.DatabaseType == DatabaseType.PostgreSql)
+            else if (_repository.Database.DatabaseType == DatabaseType.PostgreSql)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -231,7 +231,7 @@ SELECT {Container.Content.SqlColumns} FROM (
     ) AS t1 {orderStringReverse} LIMIT {recsToRetrieve}
 ) AS t2 {orderString}";
             }
-            else if (_repository.Db.DatabaseType == DatabaseType.Oracle)
+            else if (_repository.Database.DatabaseType == DatabaseType.Oracle)
             {
                 pageSqlString = $@"
 SELECT {Container.Content.SqlColumns} FROM (
@@ -245,7 +245,7 @@ SELECT {Container.Content.SqlColumns} FROM (
             var itemIndex = 0;
             var contentInfoList = new List<ContentInfo>();
 
-            using (var connection = _repository.Db.GetConnection())
+            using (var connection = _repository.Database.GetConnection())
             {
                 contentInfoList = connection.Query<ContentInfo>(pageSqlString).ToList();
             }

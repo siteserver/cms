@@ -3,34 +3,32 @@ using System.IO;
 using System.Reflection;
 using SS.CMS.Core.Common.Office;
 using SS.CMS.Utils;
+using SS.CMS.Utils.Tests;
 using Xunit;
 
 namespace SS.CMS.Core.Tests.Core.Office
 {
-    [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
     public class WordManagerTests : IClassFixture<EnvironmentFixture>
     {
-        public EnvironmentFixture Fixture { get; }
+        private EnvironmentFixture _fixture { get; }
 
         public WordManagerTests(EnvironmentFixture fixture)
         {
-            Fixture = fixture;
+            _fixture = fixture;
         }
 
-        [Fact, TestPriority(0)]
+        [Fact]
         public void WordParseTest()
         {
-            var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
+            var projDirectoryPath = _fixture.SettingsManager.ContentRootPath;
 
-            var htmlDirectoryPath = PathUtils.Combine(testsDirectoryPath, "output");
+            var htmlDirectoryPath = PathUtils.Combine(projDirectoryPath, "output");
             var imageDirectoryPath = PathUtils.Combine(htmlDirectoryPath, "images");
             const string imageDirectoryUrl = "images";
             DirectoryUtils.DeleteDirectoryIfExists(htmlDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(htmlDirectoryPath);
 
-            var wordsDirectory = PathUtils.Combine(testsDirectoryPath, "assets/words");
+            var wordsDirectory = PathUtils.Combine(projDirectoryPath, "assets/words");
 
             foreach (var docxFilePath in Directory.GetFiles(wordsDirectory, "*.docx"))
             {

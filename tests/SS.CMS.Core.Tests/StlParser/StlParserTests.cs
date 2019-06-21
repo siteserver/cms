@@ -1,24 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SS.CMS.Core.Tests.StlParser
 {
-    [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
-    public class StlParserTests : IClassFixture<EnvironmentFixture>
+    public class StlParserTests
     {
-        private readonly EnvironmentFixture _fixture;
+        private readonly ITestOutputHelper _output;
 
-        public StlParserTests(EnvironmentFixture fixture)
+        public StlParserTests(ITestOutputHelper output)
         {
-            _fixture = fixture;
+            _output = output;
         }
 
-        [Fact, TestPriority(0)]
+        [Fact]
         public async Task HtmlElementTest1()
         {
             var context = BrowsingContext.New(Configuration.Default);
@@ -28,12 +27,12 @@ namespace SS.CMS.Core.Tests.StlParser
 
             var select = document.CreateElement<IHtmlSelectElement>();
             select.Id = "select1";
-            Console.WriteLine(select.ToHtml());
+            _output.WriteLine(select.ToHtml());
 
             Assert.True(true);
         }
 
-        [Fact, TestPriority(0)]
+        [Fact]
         public void HtmlElementTest2()
         {
             var context = BrowsingContext.New(Configuration.Default);
@@ -42,7 +41,7 @@ namespace SS.CMS.Core.Tests.StlParser
 
             var select = document.CreateElement<IHtmlSelectElement>();
             select.Id = "select2";
-            Console.WriteLine(select.ToHtml());
+            _output.WriteLine(select.ToHtml());
 
             Assert.True(true);
         }

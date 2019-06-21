@@ -15,7 +15,7 @@ namespace SS.CMS.Data.Utils
             return query != null ? query.Clone().From(tableName) : new Query(tableName);
         }
 
-        private static (string sql, Dictionary<string, object> namedBindings) Compile(IDb db, string tableName, Query query)
+        private static (string sql, Dictionary<string, object> namedBindings) Compile(IDatabase database, string tableName, Query query)
         {
             var method = query.Method;
             if (method == "update")
@@ -26,7 +26,7 @@ namespace SS.CMS.Data.Utils
             string sql;
             Dictionary<string, object> namedBindings;
 
-            var compiler = DbUtils.GetCompiler(db.DatabaseType, db.ConnectionString);
+            var compiler = DbUtils.GetCompiler(database.DatabaseType, database.ConnectionString);
             var compiled = compiler.Compile(query);
 
             if (method == "update")

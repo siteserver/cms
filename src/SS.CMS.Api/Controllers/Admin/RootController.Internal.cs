@@ -8,8 +8,7 @@ namespace SS.CMS.Api.Controllers.Admin
 {
     public partial class RootController
     {
-        private object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false,
-            bool checkLogin = false)
+        private object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false, bool checkLogin = false)
         {
             var redirect = false;
             var redirectUrl = string.Empty;

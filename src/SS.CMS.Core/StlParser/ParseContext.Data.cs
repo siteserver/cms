@@ -441,13 +441,13 @@ namespace SS.CMS.Core.StlParser
         public List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(string connectionString, string queryString, int startNum, int totalNum, string order)
         {
             var sqlString = CacheManager.GetSelectSqlStringByQueryString(connectionString, queryString, startNum, totalNum, order);
-            var db = new Db(SettingsManager.DatabaseType, connectionString);
+            var db = new Database(SettingsManager.DatabaseType, connectionString);
             return CacheManager.GetContainerSqlList(db, sqlString);
         }
 
         public List<KeyValuePair<int, Dictionary<string, object>>> GetPageContainerSqlList(string connectionString, string pageSqlString)
         {
-            var db = new Db(SettingsManager.DatabaseType, SettingsManager.DatabaseConnectionString);
+            var db = new Database(SettingsManager.DatabaseType, SettingsManager.DatabaseConnectionString);
             return CacheManager.GetContainerSqlList(db, pageSqlString);
         }
 

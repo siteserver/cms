@@ -12,10 +12,10 @@ namespace SS.CMS.Core.Repositories
         private readonly Repository<RelatedFieldItemInfo> _repository;
         public RelatedFieldItemRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<RelatedFieldItemInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<RelatedFieldItemInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

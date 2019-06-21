@@ -26,10 +26,10 @@ namespace SS.CMS.Models
         /// 最后一次重设密码时间。
         /// </summary>
         [TableColumn]
-        public DateTimeOffset? LastResetPasswordDate { get; set; }
+        public DateTime? LastResetPasswordDate { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? LastActivityDate { get; set; }
+        public DateTime? LastActivityDate { get; set; }
 
         /// <summary>
         /// 用户组Id。

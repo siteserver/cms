@@ -28,7 +28,7 @@ namespace SS.CMS.Models
         public int CheckedLevel { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? CheckDate { get; set; }
+        public DateTime? CheckDate { get; set; }
 
         [TableColumn]
         public string Reasons { get; set; }

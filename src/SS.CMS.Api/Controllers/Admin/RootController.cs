@@ -16,8 +16,8 @@ namespace SS.CMS.Api.Controllers.Admin
     [ApiController]
     public partial class RootController : ControllerBase
     {
-        public const string Route = "";
-        public const string RouteActionsDownload = "actions/download";
+        private const string Route = "";
+        private const string RouteActionsDownload = "actions/download";
 
         private readonly ISettingsManager _settingsManager;
         private readonly IPluginManager _pluginManager;
@@ -63,8 +63,6 @@ namespace SS.CMS.Api.Controllers.Admin
             //    });
             //}
 
-            var adminInfo = await _userManager.GetUserAsync();
-
             //if (adminInfo.Locked)
             //{
             //    return Ok(new
@@ -76,6 +74,8 @@ namespace SS.CMS.Api.Controllers.Admin
 
             var redirect = AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
             if (redirect != null) return Ok(redirect);
+
+            var adminInfo = await _userManager.GetUserAsync();
 
             var siteInfo = siteId.HasValue ? _siteRepository.GetSiteInfo(siteId.Value) : null;
             var isSuperAdmin = _userManager.IsSuperAdministrator();

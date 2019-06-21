@@ -4,20 +4,26 @@ using System.IO;
 using System.Reflection;
 using SS.CMS.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SS.CMS.Utils.Tests
 {
-    public class TestYamlUtils
+    public class TestYamlUtils : IClassFixture<EnvironmentFixture>
     {
+        private EnvironmentFixture _fixture { get; }
+        private readonly ITestOutputHelper _output;
+
+        public TestYamlUtils(EnvironmentFixture fixture, ITestOutputHelper output)
+        {
+            _fixture = fixture;
+            _output = output;
+        }
+
         [Fact]
         public void TestWriteYaml()
         {
-            var codeBaseUrl = new Uri(Assembly.GetExecutingAssembly().CodeBase);
-            var codeBasePath = Uri.UnescapeDataString(codeBaseUrl.AbsolutePath);
-            var testsDirectoryPath = DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(DirectoryUtils.GetParentPath(Path.GetDirectoryName(codeBasePath))));
-
-            var assetsDirectory = PathUtils.Combine(testsDirectoryPath, "assets");
-            var outputDirectoryPath = PathUtils.Combine(testsDirectoryPath, "output");
+            var assetsDirectory = PathUtils.Combine(_fixture.SettingsManager.ContentRootPath, "assets");
+            var outputDirectoryPath = PathUtils.Combine(_fixture.SettingsManager.ContentRootPath, "output");
             DirectoryUtils.DeleteDirectoryIfExists(outputDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(outputDirectoryPath);
 

@@ -10,7 +10,7 @@ namespace SS.CMS.Models
         public string DatabaseVersion { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
 
         [TableColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
@@ -27,12 +27,6 @@ namespace SS.CMS.Models
 
         public bool IsLogError { get; set; } = true;
 
-        /// <summary>
-        /// �Ƿ�ֻ�鿴�Լ����ӵ�����
-        /// ����ǣ���ô����Աֻ�ܲ鿴�Լ����ӵ�����
-        /// ������ǣ���ô����Ա���Բ鿴��������Ա�����ݣ�Ĭ��false
-        /// ע�⣺���������룬վ�����Ա����˹���Ա����������Ч
-        /// </summary>
         public bool IsViewContentOnlySelf { get; set; }
 
         // �Ƿ���ʱ����ֵ

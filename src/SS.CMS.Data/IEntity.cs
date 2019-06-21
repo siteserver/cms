@@ -8,8 +8,8 @@ namespace SS.CMS.Data
 
         string Guid { get; set; }
 
-        DateTimeOffset? CreationDate { get; set; }
+        DateTime? CreationDate { get; set; }
 
-        DateTimeOffset? LastModifiedDate { get; set; }
+        DateTime? LastModifiedDate { get; set; }
     }
 }

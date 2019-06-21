@@ -136,7 +136,7 @@ namespace SS.CMS.Cli.Core
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
-        public static Db GetDatabase(string databaseType, string connectionString, string configFile, out string errorMessage)
+        public static Database GetDatabase(string databaseType, string connectionString, string configFile, out string errorMessage)
         {
             if (connectionString == null)
             {
@@ -166,7 +166,7 @@ namespace SS.CMS.Cli.Core
                 errorMessage = "请在命令行设置数据库连接参数或者指定数据库连接配置文件";
                 return null;
             }
-            var db = new Db(DatabaseType.Parse(databaseType), connectionString);
+            var db = new Database(DatabaseType.Parse(databaseType), connectionString);
             if (db.IsConnectionWorks(out errorMessage))
             {
                 return db;

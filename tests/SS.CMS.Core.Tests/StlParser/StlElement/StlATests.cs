@@ -1,26 +1,27 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
-using SS.CMS.Core.Models;
 using SS.CMS.Core.StlParser;
 using SS.CMS.Core.StlParser.Models;
-using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Models;
+using SS.CMS.Utils.Tests;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SS.CMS.Core.Tests.StlParser.StlElement
 {
-    [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
+    [Collection("Database collection")]
     public class StlATests
     {
-        private readonly EnvironmentFixture _fixture;
+        private readonly DatabaseFixture _fixture;
+        private readonly ITestOutputHelper _output;
 
-        public StlATests(EnvironmentFixture fixture)
+        public StlATests(DatabaseFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
+            _output = output;
         }
 
-        [Fact, TestPriority(0)]
+        [Fact]
         public void ParseTest()
         {
             var siteInfo = new SiteInfo();
@@ -36,7 +37,7 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
             contextInfo.ParseTemplateContent(builder);
             var parsedContent = builder.ToString();
 
-            Console.Write(parsedContent);
+            _output.WriteLine(parsedContent);
 
             Assert.True(true);
         }

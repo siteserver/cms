@@ -6,7 +6,7 @@ using SqlKata.Compilers;
 
 namespace SS.CMS.Data
 {
-    public interface IDb
+    public interface IDatabase
     {
         DatabaseType DatabaseType { get; }
 

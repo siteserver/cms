@@ -4,13 +4,14 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
+using SS.CMS.Data;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
-using SS.CMS.Utils;
+using Xunit;
 
-namespace SS.CMS.Api.Tests
+namespace SS.CMS.Utils.Tests
 {
-    public class EnvironmentFixture : IDisposable
+    public class DatabaseFixture : IDisposable
     {
         public IConfiguration Configuration { get; }
         public ISettingsManager SettingsManager { get; }
@@ -53,18 +54,18 @@ namespace SS.CMS.Api.Tests
         public IUserRepository UserRepository { get; }
         public IUserRoleRepository UserRoleRepository { get; }
 
-        public EnvironmentFixture()
+        public DatabaseFixture()
         {
-            var projDirectoryPath = DirectoryUtils.GetParentPath(Directory.GetCurrentDirectory(), 3);
+            var contentRootPath = Directory.GetCurrentDirectory();
 
             var config = new ConfigurationBuilder()
-                .SetBasePath(projDirectoryPath)
+                .SetBasePath(contentRootPath)
                 .AddJsonFile("appSettings.json")
                 .Build();
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var cacheManager = new CacheManager(memoryCache, null);
-            var settingsManager = new SettingsManager(config, projDirectoryPath, PathUtils.Combine(projDirectoryPath, "wwwroot"));
+            var settingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
 
             var accessTokenRepository = new AccessTokenRepository(settingsManager, cacheManager);
 
@@ -179,10 +180,25 @@ namespace SS.CMS.Api.Tests
             UserLogRepository = userLogRepository;
             UserMenuRepository = userMenuRepository;
             UserRepository = userRepository;
+
+            var db = new Database(SettingsManager.DatabaseType, SettingsManager.DatabaseConnectionString);
+            var tableNames = db.GetTableNames();
+            foreach (var tableName in tableNames)
+            {
+                db.DropTable(tableName);
+            }
+
+            tableManager.InstallDatabase("admin", "admin888");
         }
 
         public void Dispose()
         {
+            var db = new Database(SettingsManager.DatabaseType, SettingsManager.DatabaseConnectionString);
+            var tableNames = db.GetTableNames();
+            foreach (var tableName in tableNames)
+            {
+                db.DropTable(tableName);
+            }
             // ... clean up test data from the database ...
         }
     }

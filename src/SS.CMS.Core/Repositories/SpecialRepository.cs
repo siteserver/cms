@@ -16,12 +16,12 @@ namespace SS.CMS.Core.Repositories
         private readonly ICacheManager _cacheManager;
         public SpecialRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
-            _repository = new Repository<SpecialInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<SpecialInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _cacheManager = cacheManager;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
 
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;

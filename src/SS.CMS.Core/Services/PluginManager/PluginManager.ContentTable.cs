@@ -17,7 +17,7 @@ namespace SS.CMS.Core.Services
 
             var tableColumns = new List<TableColumn>();
 
-            var db = new Db(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
+            var db = new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
             var defaultContentTableColumns = db.GetTableColumns<ContentInfo>();
 
             tableColumns.AddRange(defaultContentTableColumns);

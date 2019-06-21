@@ -24,13 +24,13 @@ namespace SS.CMS.Core.Repositories
         public ChannelRepository(ISettingsManager settingsManager, ICacheManager cacheManager, IUserRepository userRepository, IChannelGroupRepository channelGroupRepository, ISiteRepository siteRepository)
         {
             _cacheManager = cacheManager;
-            _repository = new Repository<ChannelInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<ChannelInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _userRepository = userRepository;
             _channelGroupRepository = channelGroupRepository;
             _siteRepository = siteRepository;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

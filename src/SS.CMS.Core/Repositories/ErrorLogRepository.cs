@@ -15,12 +15,12 @@ namespace SS.CMS.Core.Repositories
 
         public ErrorLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
-            _repository = new Repository<ErrorLogInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<ErrorLogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
 
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;

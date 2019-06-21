@@ -62,7 +62,7 @@ namespace SS.CMS.Models
         public int HitsByMonth { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? LastHitsDate { get; set; }
+        public DateTime? LastHitsDate { get; set; }
 
         [TableColumn]
         public int Downloads { get; set; }
@@ -83,7 +83,7 @@ namespace SS.CMS.Models
         public bool IsColor { get; set; }
 
         [TableColumn]
-        public DateTimeOffset? AddDate { get; set; }
+        public DateTime? AddDate { get; set; }
 
         [TableColumn]
         public string LinkUrl { get; set; }

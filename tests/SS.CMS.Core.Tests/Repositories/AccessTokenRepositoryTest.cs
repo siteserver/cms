@@ -1,37 +1,30 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Utils;
+using SS.CMS.Utils.Tests;
 using Xunit;
 
 namespace SS.CMS.Core.Tests.Repositories
 {
-    [TestCaseOrderer("SS.CMS.Core.Tests.PriorityOrderer", "SS.CMS.Core.Tests")]
-    public class AccessTokenRepositoryTest : IClassFixture<EnvironmentFixture>
+    [Collection("Database collection")]
+    public class AccessTokenRepositoryTest
     {
-        private readonly EnvironmentFixture _fixture;
+        private readonly DatabaseFixture _fixture;
 
-        public AccessTokenRepositoryTest(EnvironmentFixture fixture)
+        public AccessTokenRepositoryTest(DatabaseFixture fixture)
         {
             _fixture = fixture;
+
+            if (!TestEnv.IsTestMachine) return;
         }
 
-        [SkippableFact, TestPriority(0)]
-        public void TestCreateTable()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
-
-            var db = new Db(_fixture.SettingsManager.DatabaseType, _fixture.SettingsManager.DatabaseConnectionString);
-
-            db.CreateTableAsync(_fixture.AccessTokenRepository.TableName, _fixture.AccessTokenRepository.TableColumns).GetAwaiter().GetResult();
-
-            Assert.True(db.IsTableExistsAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult());
-        }
-
-        [SkippableFact, TestPriority(1)]
+        [SkippableFact]
         public void TestBasic()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
             var accessTokenInfo = new AccessTokenInfo();
             _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
@@ -53,10 +46,10 @@ namespace SS.CMS.Core.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [SkippableFact, TestPriority(1)]
+        [SkippableFact]
         public void TestIsTitleExists()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
             const string testTitle = "IsTitleExists";
 
@@ -78,10 +71,10 @@ namespace SS.CMS.Core.Tests.Repositories
             Assert.True(deleted);
         }
 
-        [SkippableFact, TestPriority(1)]
+        [SkippableFact]
         public void TestGetAccessTokenInfoList()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
             var accessTokenInfo = new AccessTokenInfo
             {
@@ -95,18 +88,6 @@ namespace SS.CMS.Core.Tests.Repositories
 
             var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
             Assert.True(deleted);
-        }
-
-        [SkippableFact, TestPriority(2)]
-        public void TestDropTable()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
-
-            var db = new Db(_fixture.SettingsManager.DatabaseType, _fixture.SettingsManager.DatabaseConnectionString);
-
-            db.DropTableAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult();
-
-            Assert.False(db.IsTableExistsAsync(_fixture.AccessTokenRepository.TableName).GetAwaiter().GetResult());
         }
     }
 }

@@ -12,12 +12,12 @@ namespace SS.CMS.Data.Utils
 {
     internal static partial class RepositoryUtils
     {
-        public static int InsertObject<T>(IDb db, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
+        public static int InsertObject<T>(IDatabase database, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
-            dataInfo.CreationDate = DateTime.Now;
-            dataInfo.LastModifiedDate = DateTime.Now;
+            dataInfo.CreationDate = DateTime.UtcNow;
+            dataInfo.LastModifiedDate = DateTime.UtcNow;
 
             var dictionary = new Dictionary<string, object>();
             foreach (var tableColumn in tableColumns)
@@ -33,9 +33,9 @@ namespace SS.CMS.Data.Utils
 
             var xQuery = NewQuery(tableName);
             xQuery.AsInsert(dictionary, true);
-            var (sql, bindings) = Compile(db, tableName, xQuery);
+            var (sql, bindings) = Compile(database, tableName, xQuery);
 
-            using (var connection = db.GetConnection())
+            using (var connection = database.GetConnection())
             {
                 dataInfo.Id = connection.QueryFirst<int>(sql, bindings);
             }
@@ -43,12 +43,12 @@ namespace SS.CMS.Data.Utils
             return dataInfo.Id;
         }
 
-        public static async Task<int> InsertObjectAsync<T>(IDb db, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
+        public static async Task<int> InsertObjectAsync<T>(IDatabase database, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
-            dataInfo.CreationDate = DateTime.Now;
-            dataInfo.LastModifiedDate = DateTime.Now;
+            dataInfo.CreationDate = DateTime.UtcNow;
+            dataInfo.LastModifiedDate = DateTime.UtcNow;
 
             var dictionary = new Dictionary<string, object>();
             foreach (var tableColumn in tableColumns)
@@ -64,9 +64,9 @@ namespace SS.CMS.Data.Utils
 
             var xQuery = NewQuery(tableName);
             xQuery.AsInsert(dictionary, true);
-            var (sql, bindings) = Compile(db, tableName, xQuery);
+            var (sql, bindings) = Compile(database, tableName, xQuery);
 
-            using (var connection = db.GetConnection())
+            using (var connection = database.GetConnection())
             {
                 dataInfo.Id = await connection.QueryFirstAsync<int>(sql, bindings);
             }
@@ -74,27 +74,27 @@ namespace SS.CMS.Data.Utils
             return dataInfo.Id;
         }
 
-        public static async Task BulkInsertAsync<T>(IDb db, string tableName, List<TableColumn> tableColumns, IEnumerable<T> items) where T : Entity
+        public static async Task BulkInsertAsync<T>(IDatabase database, string tableName, List<TableColumn> tableColumns, IEnumerable<T> items) where T : Entity
         {
             var objList = new List<IDictionary<string, object>>();
             foreach (var item in items)
             {
                 objList.Add(item.ToDictionary());
             }
-            await BulkInsertAsync(db, tableName, tableColumns, objList);
+            await BulkInsertAsync(database, tableName, tableColumns, objList);
         }
 
-        public static async Task BulkInsertAsync(IDb db, string tableName, List<TableColumn> tableColumns, IEnumerable<JObject> items)
+        public static async Task BulkInsertAsync(IDatabase database, string tableName, List<TableColumn> tableColumns, IEnumerable<JObject> items)
         {
             var objList = new List<IDictionary<string, object>>();
             foreach (var item in items)
             {
                 objList.Add(JsonGetDictionaryIgnorecase(item));
             }
-            await BulkInsertAsync(db, tableName, tableColumns, objList);
+            await BulkInsertAsync(database, tableName, tableColumns, objList);
         }
 
-        public static async Task BulkInsertAsync(IDb db, string tableName, List<TableColumn> tableColumns, IEnumerable<IDictionary<string, object>> items)
+        public static async Task BulkInsertAsync(IDatabase database, string tableName, List<TableColumn> tableColumns, IEnumerable<IDictionary<string, object>> items)
         {
             var columnNames = new StringBuilder();
             foreach (var tableColumn in tableColumns)
@@ -138,8 +138,8 @@ namespace SS.CMS.Data.Utils
                     }
                     else if (tableColumn.DataType == DataType.DateTime)
                     {
-                        if (val == null) val = DateTime.Now;
-                        values.Append($"{GetDateTimeSqlString(db, Convert.ToDateTime(val))},");
+                        if (val == null) val = DateTimeOffset.UtcNow;
+                        values.Append($"{GetDateTimeSqlString(database, Convert.ToDateTime(val))},");
                     }
                     else
                     {
@@ -157,7 +157,7 @@ namespace SS.CMS.Data.Utils
 
                     if (parameterCount > 1000)
                     {
-                        await InsertRowsAsync(db, tableName, columnNames.ToString(), valuesList, parameterList);
+                        await InsertRowsAsync(database, tableName, columnNames.ToString(), valuesList, parameterList);
                         valuesList.Clear();
                         parameterList = new DynamicParameters();
                         parameterCount = 0;
@@ -167,7 +167,7 @@ namespace SS.CMS.Data.Utils
 
             if (valuesList.Count > 0 && parameterCount > 0)
             {
-                await InsertRowsAsync(db, tableName, columnNames.ToString(), valuesList, parameterList);
+                await InsertRowsAsync(database, tableName, columnNames.ToString(), valuesList, parameterList);
             }
         }
 
@@ -176,33 +176,16 @@ namespace SS.CMS.Data.Utils
             return new Dictionary<string, object>(json.ToObject<IDictionary<string, object>>(), StringComparer.CurrentCultureIgnoreCase);
         }
 
-        private static string GetDateTimeSqlString(IDb db, DateTime dateTime)
+        private static string GetDateTimeSqlString(IDatabase database, DateTime dateTime)
         {
-            var retval = string.Empty;
-
-            if (db.DatabaseType == DatabaseType.MySql)
-            {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-            }
-            else if (db.DatabaseType == DatabaseType.SqlServer)
-            {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-            }
-            else if (db.DatabaseType == DatabaseType.PostgreSql)
-            {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
-            }
-            else if (db.DatabaseType == DatabaseType.Oracle)
-            {
-                retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
-            }
-
-            return retval;
+            return database.DatabaseType == DatabaseType.Oracle
+                ? $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')"
+                : $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
         }
 
-        private static async Task InsertRowsAsync(IDb db, string tableName, string columnNames, List<string> valuesList, DynamicParameters parameterList)
+        private static async Task InsertRowsAsync(IDatabase database, string tableName, string columnNames, List<string> valuesList, DynamicParameters parameterList)
         {
-            if (db.DatabaseType == DatabaseType.SqlServer)
+            if (database.DatabaseType == DatabaseType.SqlServer)
             {
                 var sqlStringBuilder = new StringBuilder($@"INSERT INTO {tableName} ({columnNames}) VALUES ");
                 foreach (var values in valuesList)
@@ -223,12 +206,12 @@ SET IDENTITY_INSERT {tableName} OFF
 ";
                 }
 
-                using (var connection = db.GetConnection())
+                using (var connection = database.GetConnection())
                 {
                     await connection.ExecuteAsync(sqlString, parameterList);
                 }
             }
-            else if (db.DatabaseType == DatabaseType.Oracle)
+            else if (database.DatabaseType == DatabaseType.Oracle)
             {
                 var sqlStringBuilder = new StringBuilder("INSERT ALL");
                 foreach (var values in valuesList)
@@ -238,7 +221,7 @@ SET IDENTITY_INSERT {tableName} OFF
 
                 sqlStringBuilder.Append(" SELECT 1 FROM DUAL");
 
-                using (var connection = db.GetConnection())
+                using (var connection = database.GetConnection())
                 {
                     await connection.ExecuteAsync(sqlStringBuilder.ToString(), parameterList);
                 }
@@ -252,7 +235,7 @@ SET IDENTITY_INSERT {tableName} OFF
                 }
                 sqlStringBuilder.Length -= 2;
 
-                using (var connection = db.GetConnection())
+                using (var connection = database.GetConnection())
                 {
                     await connection.ExecuteAsync(sqlStringBuilder.ToString(), parameterList);
                 }

@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Services
         {
             if (service.DatabaseTables == null || service.DatabaseTables.Count <= 0) return;
 
-            var db = new Db(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
+            var db = new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
 
             foreach (var tableName in service.DatabaseTables.Keys)
             {

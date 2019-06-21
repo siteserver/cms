@@ -220,7 +220,7 @@ namespace SS.CMS.Cli.Updater.Tables.GovPublic
         private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            var tableColumns = (new Db(null, null)).GetTableColumns<ContentInfo>();
+            var tableColumns = (new Database(null, null)).GetTableColumns<ContentInfo>();
 
             columns.AddRange(tableColumns);
             columns.AddRange(NewColumns);

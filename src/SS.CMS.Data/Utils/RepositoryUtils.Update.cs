@@ -10,7 +10,7 @@ namespace SS.CMS.Data.Utils
 {
     internal static partial class RepositoryUtils
     {
-        public static void SyncAndCheckGuid(IDb db, string tableName, Entity dataInfo)
+        public static void SyncAndCheckGuid(IDatabase database, string tableName, Entity dataInfo)
         {
             if (dataInfo == null || dataInfo.Id <= 0) return;
 
@@ -24,13 +24,13 @@ namespace SS.CMS.Data.Utils
             dataInfo.Guid = Utilities.GetGuid();
             dataInfo.LastModifiedDate = DateTime.Now;
 
-            UpdateAll(db, tableName, new Query()
+            UpdateAll(database, tableName, new Query()
                 .Set(nameof(Entity.Guid), dataInfo.Guid)
                 .Where(nameof(Entity.Id), dataInfo.Id)
             );
         }
 
-        public static async Task SyncAndCheckGuidAsync(IDb db, string tableName, Entity dataInfo)
+        public static async Task SyncAndCheckGuidAsync(IDatabase database, string tableName, Entity dataInfo)
         {
             if (dataInfo == null || dataInfo.Id <= 0) return;
 
@@ -44,82 +44,82 @@ namespace SS.CMS.Data.Utils
             dataInfo.Guid = Utilities.GetGuid();
             dataInfo.LastModifiedDate = DateTime.Now;
 
-            await UpdateAllAsync(db, tableName, new Query()
+            await UpdateAllAsync(database, tableName, new Query()
                 .Set(nameof(Entity.Guid), dataInfo.Guid)
                 .Where(nameof(Entity.Id), dataInfo.Id)
             );
         }
 
-        public static int UpdateAll(IDb db, string tableName, Query query)
+        public static int UpdateAll(IDatabase database, string tableName, Query query)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.Method = "update";
 
-            var (sql, bindings) = Compile(db, tableName, xQuery);
+            var (sql, bindings) = Compile(database, tableName, xQuery);
 
-            using (var connection = db.GetConnection())
+            using (var connection = database.GetConnection())
             {
                 return connection.Execute(sql, bindings);
             }
         }
 
-        public static async Task<int> UpdateAllAsync(IDb db, string tableName, Query query)
+        public static async Task<int> UpdateAllAsync(IDatabase database, string tableName, Query query)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery.Method = "update";
 
-            var (sql, bindings) = Compile(db, tableName, xQuery);
+            var (sql, bindings) = Compile(database, tableName, xQuery);
 
-            using (var connection = db.GetConnection())
+            using (var connection = database.GetConnection())
             {
                 return await connection.ExecuteAsync(sql, bindings);
             }
         }
 
-        public static int IncrementAll(IDb db, string tableName, string columnName, Query query, int num = 1)
+        public static int IncrementAll(IDatabase database, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(db.DatabaseType, columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(database.DatabaseType, columnName, num)}");
 
-            return UpdateAll(db, tableName, xQuery);
+            return UpdateAll(database, tableName, xQuery);
         }
 
-        public static async Task<int> IncrementAllAsync(IDb db, string tableName, string columnName, Query query, int num = 1)
+        public static async Task<int> IncrementAllAsync(IDatabase database, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(db.DatabaseType, columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnIncrement(database.DatabaseType, columnName, num)}");
 
-            return await UpdateAllAsync(db, tableName, xQuery);
+            return await UpdateAllAsync(database, tableName, xQuery);
         }
 
-        public static int DecrementAll(IDb db, string tableName, string columnName, Query query, int num = 1)
+        public static int DecrementAll(IDatabase database, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(db.DatabaseType, columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(database.DatabaseType, columnName, num)}");
 
-            return UpdateAll(db, tableName, xQuery);
+            return UpdateAll(database, tableName, xQuery);
         }
 
-        public static async Task<int> DecrementAllAsync(IDb db, string tableName, string columnName, Query query, int num = 1)
+        public static async Task<int> DecrementAllAsync(IDatabase database, string tableName, string columnName, Query query, int num = 1)
         {
             var xQuery = NewQuery(tableName, query);
 
             xQuery
                 .ClearComponent("update")
-                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(db.DatabaseType, columnName, num)}");
+                .SetRaw($"{columnName} = {DbUtils.ColumnDecrement(database.DatabaseType, columnName, num)}");
 
-            return await UpdateAllAsync(db, tableName, xQuery);
+            return await UpdateAllAsync(database, tableName, xQuery);
         }
     }
 }

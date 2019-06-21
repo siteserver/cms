@@ -12,10 +12,10 @@ namespace SS.CMS.Core.Repositories
 
         public PluginConfigRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<PluginConfigInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<PluginConfigInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

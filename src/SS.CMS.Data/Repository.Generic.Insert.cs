@@ -9,17 +9,17 @@ namespace SS.CMS.Data
     {
         public virtual int Insert(T dataInfo)
         {
-            return RepositoryUtils.InsertObject(Db, TableName, TableColumns, dataInfo);
+            return RepositoryUtils.InsertObject(Database, TableName, TableColumns, dataInfo);
         }
 
         public virtual async Task<int> InsertAsync(T dataInfo)
         {
-            return await RepositoryUtils.InsertObjectAsync(Db, TableName, TableColumns, dataInfo);
+            return await RepositoryUtils.InsertObjectAsync(Database, TableName, TableColumns, dataInfo);
         }
 
         public virtual async Task BulkInsertAsync(IEnumerable<T> items)
         {
-            await RepositoryUtils.BulkInsertAsync(Db, TableName, TableColumns, items);
+            await RepositoryUtils.BulkInsertAsync(Database, TableName, TableColumns, items);
         }
     }
 }

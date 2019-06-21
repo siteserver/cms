@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -9,19 +10,18 @@ namespace SS.CMS.Core.Repositories
 {
     public class ConfigRepository : IConfigRepository
     {
-        private readonly ISettingsManager _settingsManager;
+        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(ConfigRepository));
+
         private readonly ICacheManager _cacheManager;
         private readonly Repository<ConfigInfo> _repository;
-        private readonly string CacheKey = StringUtils.GetCacheKey(nameof(ConfigRepository));
 
         public ConfigRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
-            _repository = new Repository<ConfigInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
-            _settingsManager = settingsManager;
+            _repository = new Repository<ConfigInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _cacheManager = cacheManager;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

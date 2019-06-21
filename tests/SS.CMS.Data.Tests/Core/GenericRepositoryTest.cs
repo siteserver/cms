@@ -4,37 +4,53 @@ using System.Linq;
 using SqlKata;
 using SS.CMS.Data.Tests.Mocks;
 using SS.CMS.Data.Utils;
-using SS.CMS.Utils;
+using SS.CMS.Utils.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace SS.CMS.Data.Tests.Core
 {
-    [TestCaseOrderer("SS.CMS.Data.Tests.PriorityOrderer", "SS.CMS.Data.Tests")]
-    public class GenericRepositoryTest : IClassFixture<EnvironmentFixture>
+    public class GenericRepositoryTest : IClassFixture<EnvironmentFixture>, IDisposable
     {
-        private readonly EnvironmentFixture _fixture;
         private readonly ITestOutputHelper _output;
         private readonly Repository<TestTableInfo> _repository;
 
         public GenericRepositoryTest(EnvironmentFixture fixture, ITestOutputHelper output)
         {
-            _fixture = fixture;
             _output = output;
-            _repository = new Repository<TestTableInfo>(_fixture.Db);
+
+            var db = new Database(fixture.SettingsManager.DatabaseType, fixture.SettingsManager.DatabaseConnectionString);
+            _repository = new Repository<TestTableInfo>(db);
+
+            if (!TestEnv.IsTestMachine) return;
+
+            var isExists = db.IsTableExists(_repository.TableName);
+            if (isExists)
+            {
+                db.DropTable(_repository.TableName);
+            }
+
+            db.CreateTable(_repository.TableName, _repository.TableColumns);
         }
 
-        [SkippableFact, TestPriority(0)]
+        public void Dispose()
+        {
+            if (!TestEnv.IsTestMachine) return;
+
+            //_fixture.Db.DropTable(_repository.TableName);
+        }
+
+        [SkippableFact]
         public void Start()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
             var tableName = _repository.TableName;
             var tableColumns = _repository.TableColumns;
 
             Assert.Equal("TestTable", tableName);
             Assert.NotNull(tableColumns);
-            Assert.Equal(11, tableColumns.Count);
+            Assert.Equal(12, tableColumns.Count);
 
             var varChar100Column = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.TypeVarChar100));
             Assert.NotNull(varChar100Column);
@@ -59,20 +75,12 @@ namespace SS.CMS.Data.Tests.Core
 
             var lockedColumn = tableColumns.FirstOrDefault(x => x.AttributeName == nameof(TestTableInfo.Locked));
             Assert.Null(lockedColumn);
-
-            var isExists = _fixture.Db.IsTableExists(tableName);
-            if (isExists)
-            {
-                _fixture.Db.DropTable(tableName);
-            }
-
-            _fixture.Db.CreateTable(tableName, tableColumns);
         }
 
-        [SkippableFact, TestPriority(1)]
+        [SkippableFact]
         public void TestInsert()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
             var id = _repository.Insert(null);
             Assert.Equal(0, id);
@@ -113,14 +121,8 @@ namespace SS.CMS.Data.Tests.Core
 
             _output.WriteLine(dataInfo.Guid);
             _output.WriteLine(dataInfo.LastModifiedDate.ToString());
-        }
 
-        [SkippableFact, TestPriority(2)]
-        public void TestGet()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
-
-            var dataInfo = _repository.Get(1);
+            dataInfo = _repository.Get(1);
             Assert.NotNull(dataInfo);
             Assert.Equal(1, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -147,14 +149,8 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(-100, dataInfo.Num);
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
-        }
 
-        [SkippableFact, TestPriority(2)]
-        public void TestGetWithParameters()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
-
-            var dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "string"));
+            dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "string"));
             Assert.NotNull(dataInfo);
             Assert.Equal(2, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -193,15 +189,6 @@ namespace SS.CMS.Data.Tests.Core
             dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "not exists"));
             Assert.Null(dataInfo);
 
-            dataInfo = _repository.Get(new Query());
-            Assert.NotNull(dataInfo);
-        }
-
-        [SkippableFact, TestPriority(2)]
-        public void TestExists()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
-
             var exists = _repository.Exists(new Query()
                 .Where(nameof(TestTableInfo.TypeVarChar100), "string"));
             Assert.True(exists);
@@ -211,27 +198,53 @@ namespace SS.CMS.Data.Tests.Core
 
             exists = _repository.Exists(new Query());
             Assert.True(exists);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(2)]
+        [SkippableFact]
         public void TestCount()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "string",
+                Num = -100,
+                Date = DateTime.Now,
+                Locked = true
+            });
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "test",
+                Num = -100,
+                Date = DateTime.Now,
+                Locked = true
+            });
 
             var count = _repository.Count();
             Assert.Equal(2, count);
 
-            count = _repository.Count(new Query().Where("Id", 1));
+            count = _repository.Count(new Query().Where("TypeVarChar100", "test"));
             Assert.Equal(1, count);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(2)]
+        [SkippableFact]
         public void TestGetValue()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                Guid = "wrong guid",
+                TypeVarChar100 = "string"
+            });
 
             var guid = _repository.Get<string>(new Query()
-                .Select(nameof(Entity.Guid)).Where("Id", 1));
+                .Select(nameof(Entity.Guid)).Where("TypeVarChar100", "string"));
             Assert.True(Utilities.IsGuid(guid));
 
             var date = _repository.Get<DateTime?>(new Query()
@@ -243,16 +256,23 @@ namespace SS.CMS.Data.Tests.Core
                 .Where("Guid", guid));
             Assert.True(lastModifiedDate.HasValue);
             _output.WriteLine(lastModifiedDate.Value.ToString(CultureInfo.InvariantCulture));
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(2)]
+        [SkippableFact]
         public void TestGetValues()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "string"
+            });
 
             var guidList = _repository.GetAll<string>(new Query()
                 .Select(nameof(TestTableInfo.Guid))
-                .Where("Id", 1)).ToList();
+                .Where("TypeVarChar100", "string")).ToList();
 
             Assert.NotNull(guidList);
             Assert.True(Utilities.IsGuid(guidList.First()));
@@ -263,15 +283,25 @@ namespace SS.CMS.Data.Tests.Core
             Assert.False(dateList.First().HasValue);
 
             var lastModifiedDateList = _repository.GetAll<DateTime?>(new Query()
-                .Select(nameof(TestTableInfo.LastModifiedDate))
-                .Where("Id", 1)).ToList();
-            Assert.True(lastModifiedDateList.First().HasValue);
+                .Select(nameof(TestTableInfo.LastModifiedDate))).ToList();
+            lastModifiedDateList.ForEach(x => Assert.True(x.HasValue));
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(2)]
+        [SkippableFact]
         public void TestGetAll()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str1"
+            });
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str2"
+            });
 
             var allList = _repository.GetAll().ToList();
             Assert.Equal(2, allList.Count);
@@ -282,12 +312,21 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Single(list);
         }
 
-        [SkippableFact, TestPriority(3)]
+        [SkippableFact]
         public void TestUpdate()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
-            var dataInfo = _repository.Get(1);
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str1"
+            });
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str2"
+            });
+
+            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str2"));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified = dataInfo.LastModifiedDate.Value.Ticks;
 
@@ -297,10 +336,9 @@ namespace SS.CMS.Data.Tests.Core
             var updated = _repository.Update(dataInfo);
             Assert.True(updated);
 
-            Assert.Equal(1, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
-            Assert.Null(dataInfo.TypeVarChar100);
+            Assert.NotEmpty(dataInfo.TypeVarChar100);
             Assert.Null(dataInfo.TypeVarCharDefault);
             Assert.Equal("new content", dataInfo.Content);
             Assert.Equal(0, dataInfo.Num);
@@ -315,12 +353,23 @@ namespace SS.CMS.Data.Tests.Core
 
             updated = _repository.Update((TestTableInfo)null);
             Assert.False(updated);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(3)]
+        [SkippableFact]
         public void TestUpdateWithParameters()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str1"
+            });
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str2"
+            });
 
             var lastModified = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate)).Where("Id", 1));
@@ -339,7 +388,7 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(1, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
-            Assert.Null(dataInfo.TypeVarChar100);
+            Assert.NotNull(dataInfo.TypeVarChar100);
             Assert.Null(dataInfo.TypeVarCharDefault);
             Assert.Equal("new content2", dataInfo.Content);
             Assert.Equal(0, dataInfo.Num);
@@ -351,22 +400,33 @@ namespace SS.CMS.Data.Tests.Core
 
             updated = _repository.Update(new Query());
             Assert.True(updated == 2);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(3)]
+        [SkippableFact]
         public void TestUpdateAll()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
+
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str1"
+            });
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str2"
+            });
 
             var lastModified = _repository.Get<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate))
-                .Where("Id", 1));
+                .Where("TypeVarChar100", "str1"));
             Assert.True(lastModified.HasValue);
 
             var updatedCount = _repository.Update(new Query()
                 .Set("Content", "new content2")
                 .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
-                .Where("Id", 1));
+                .Where("TypeVarChar100", "str1"));
 
             Assert.True(updatedCount == 1);
 
@@ -376,52 +436,59 @@ namespace SS.CMS.Data.Tests.Core
 
             Assert.True(updatedCount == 1);
 
-            var dataInfo = _repository.Get(1);
+            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified2 = dataInfo.LastModifiedDate.Value.Ticks;
 
             Assert.True(lastModified2 > lastModified.Value.Ticks);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(3)]
+        [SkippableFact]
         public void TestIncrementAll()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
-            var dataInfo = _repository.Get(1);
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str1"
+            });
+
+            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(0, dataInfo.Num);
 
-            var affected = _repository.Increment(Attr.Num, Q.Where(Attr.Id, 1));
+            var affected = _repository.Increment(Attr.Num, Q.Where("TypeVarChar100", "str1"));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.Get(1);
+            dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(1, dataInfo.Num);
 
             affected = _repository.Decrement(Attr.Num, Q.Where(Attr.Id, 1));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.Get(1);
+            dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(0, dataInfo.Num);
+
+            _repository.Delete();
         }
 
-        [SkippableFact, TestPriority(4)]
+        [SkippableFact]
         public void TestDelete()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
-            var deleted = _repository.Delete(1);
-            Assert.True(deleted);
+            _repository.Insert(new TestTableInfo
+            {
+                TypeVarChar100 = "str"
+            });
 
-            deleted = _repository.Delete(3);
-            Assert.False(deleted);
-        }
+            var deleted = _repository.Delete(Q.Where("TypeVarChar100","str"));
+            Assert.Equal(1, deleted);
 
-        [SkippableFact, TestPriority(5)]
-        public void End()
-        {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Assert.False(_repository.Delete(1));
 
-            _fixture.Db.DropTable(_repository.TableName);
+            _repository.Delete();
         }
     }
 }

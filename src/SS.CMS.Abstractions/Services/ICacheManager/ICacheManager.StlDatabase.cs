@@ -14,7 +14,7 @@ namespace SS.CMS.Services
 
         DataSet GetDataSet(string connectionString, string queryString);
 
-        List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDb db, string queryString);
+        List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDatabase database, string queryString);
 
         DataTable GetDataTable(string connectionString, string queryString);
     }

@@ -305,7 +305,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<string>(Q
                 .Select(name)
                 .Where(Attr.ChannelId, channelId)
-                .WhereInStr(_repository.Db.DatabaseType, name, startString)
+                .WhereInStr(_repository.Database.DatabaseType, name, startString)
                 .Distinct()
                 .Limit(totalNum)
             ).ToList();
@@ -326,7 +326,7 @@ namespace SS.CMS.Core.Repositories
             var sqlString =
                 $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}";
 
-            using (var connection = _repository.Db.GetConnection())
+            using (var connection = _repository.Database.GetConnection())
             {
                 list = connection.Query<ContentCountInfo>(sqlString).ToList();
             }

@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Repositories
 
         public ContentRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
         {
-            _repository = new Repository<ContentInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
+            _repository = new Repository<ContentInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
 
             _settingsManager = settingsManager;
             _cacheManager = cacheManager;
@@ -45,7 +45,7 @@ namespace SS.CMS.Core.Repositories
             _errorLogRepository = errorLogRepository;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

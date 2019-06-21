@@ -20,14 +20,14 @@ namespace SS.CMS.Core.Repositories
         public TableStyleRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository, IErrorLogRepository errorLogRepository)
         {
             _cacheManager = cacheManager;
-            _repository = new Repository<TableStyleInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<TableStyleInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _userRepository = userRepository;
             _tableStyleItemRepository = tableStyleItemRepository;
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 

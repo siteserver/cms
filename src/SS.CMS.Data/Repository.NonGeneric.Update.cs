@@ -30,7 +30,7 @@ namespace SS.CMS.Data
                 query.Set(tableColumn.AttributeName, value);
             }
 
-            return RepositoryUtils.UpdateAll(Db, TableName, query) > 0;
+            return RepositoryUtils.UpdateAll(Database, TableName, query) > 0;
         }
 
         public virtual async Task<bool> UpdateAsync<T>(T dataInfo) where T : Entity
@@ -56,7 +56,7 @@ namespace SS.CMS.Data
                 query.Set(tableColumn.AttributeName, value);
             }
 
-            return await RepositoryUtils.UpdateAllAsync(Db, TableName, query) > 0;
+            return await RepositoryUtils.UpdateAllAsync(Database, TableName, query) > 0;
         }
 
         public virtual bool Update<T>(T dataInfo, params string[] columnNames) where T : Entity
@@ -76,7 +76,7 @@ namespace SS.CMS.Data
                 //{
                 //    query.Set(value.Key, value.Value);
                 //}
-                return RepositoryUtils.UpdateAll(Db, TableName, query) > 0;
+                return RepositoryUtils.UpdateAll(Database, TableName, query) > 0;
             }
             if (Utilities.IsGuid(dataInfo.Guid))
             {
@@ -95,7 +95,7 @@ namespace SS.CMS.Data
                 //    query.Set(value.Key, value.Value);
                 //}
 
-                return RepositoryUtils.UpdateAll(Db, TableName, query) > 0;
+                return RepositoryUtils.UpdateAll(Database, TableName, query) > 0;
             }
 
             return false;
@@ -113,7 +113,7 @@ namespace SS.CMS.Data
                     query.Set(columnName, ReflectionUtils.GetValue(dataInfo, columnName));
                 }
 
-                return await RepositoryUtils.UpdateAllAsync(Db, TableName, query) > 0;
+                return await RepositoryUtils.UpdateAllAsync(Database, TableName, query) > 0;
             }
             if (Utilities.IsGuid(dataInfo.Guid))
             {
@@ -126,7 +126,7 @@ namespace SS.CMS.Data
                     query.Set(columnName, ReflectionUtils.GetValue(dataInfo, columnName));
                 }
 
-                return await RepositoryUtils.UpdateAllAsync(Db, TableName, query) > 0;
+                return await RepositoryUtils.UpdateAllAsync(Database, TableName, query) > 0;
             }
 
             return false;
@@ -134,32 +134,32 @@ namespace SS.CMS.Data
 
         public virtual int Update(Query query)
         {
-            return RepositoryUtils.UpdateAll(Db, TableName, query);
+            return RepositoryUtils.UpdateAll(Database, TableName, query);
         }
 
         public virtual async Task<int> UpdateAsync(Query query)
         {
-            return await RepositoryUtils.UpdateAllAsync(Db, TableName, query);
+            return await RepositoryUtils.UpdateAllAsync(Database, TableName, query);
         }
 
         public virtual int Increment(string columnName, Query query, int num = 1)
         {
-            return RepositoryUtils.IncrementAll(Db, TableName, columnName, query, num);
+            return RepositoryUtils.IncrementAll(Database, TableName, columnName, query, num);
         }
 
         public virtual async Task<int> IncrementAsync(string columnName, Query query, int num = 1)
         {
-            return await RepositoryUtils.IncrementAllAsync(Db, TableName, columnName, query, num);
+            return await RepositoryUtils.IncrementAllAsync(Database, TableName, columnName, query, num);
         }
 
         public virtual int Decrement(string columnName, Query query, int num = 1)
         {
-            return RepositoryUtils.DecrementAll(Db, TableName, columnName, query, num);
+            return RepositoryUtils.DecrementAll(Database, TableName, columnName, query, num);
         }
 
         public virtual async Task<int> DecrementAsync(string columnName, Query query, int num = 1)
         {
-            return await RepositoryUtils.DecrementAllAsync(Db, TableName, columnName, query, num);
+            return await RepositoryUtils.DecrementAllAsync(Database, TableName, columnName, query, num);
         }
     }
 }

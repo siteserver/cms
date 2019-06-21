@@ -4,7 +4,7 @@ namespace SS.CMS.Data
 {
     public interface IRepository
     {
-        IDb Db { get; }
+        IDatabase Database { get; }
 
         string TableName { get; }
 

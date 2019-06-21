@@ -1,28 +1,29 @@
 ﻿using System;
 using SS.CMS.Core.Common;
 using SS.CMS.Utils;
+using SS.CMS.Utils.Tests;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SS.CMS.Api.Tests
 {
-    [TestCaseOrderer("SS.CMS.Api.Tests.PriorityOrderer", "SS.CMS.Api.Tests")]
-    public class IntegrationTests : IClassFixture<EnvironmentFixture>
+    public class IntegrationTests 
     {
-        private readonly EnvironmentFixture _fixture;
+        private readonly ITestOutputHelper _output;
 
-        public IntegrationTests(EnvironmentFixture fixture)
+        public IntegrationTests(ITestOutputHelper output)
         {
-            _fixture = fixture;
+            _output = output;
         }
 
-        [SkippableFact, TestPriority(0)]
+        [SkippableFact]
         public void TrueTest()
         {
-            Skip.IfNot(TestEnv.IntegrationTestMachine);
+            Skip.IfNot(TestEnv.IsTestMachine);
 
-            Console.WriteLine("test!!");
+            _output.WriteLine("test!!");
 
-            _fixture.TableManager.SyncDatabase();
+            //_fixture.TableManager.SyncDatabase();
 
             Assert.True(true);
         }

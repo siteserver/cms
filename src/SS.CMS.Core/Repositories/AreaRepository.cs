@@ -17,10 +17,10 @@ namespace SS.CMS.Core.Repositories
         public AreaRepository(ISettingsManager settingsManager, ICacheManager cacheManager)
         {
             _cacheManager = cacheManager;
-            _repository = new Repository<AreaInfo>(new Db(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<AreaInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
-        public IDb Db => _repository.Db;
+        public IDatabase Database => _repository.Database;
 
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;

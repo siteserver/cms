@@ -8,9 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="output\**" />
-    <EmbeddedResource Remove="output\**" />
-    <None Remove="output\**" />
+    <Content Include="assets\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SS.CMS.Core\SS.CMS.Core.csproj" />
+    <ProjectReference Include="..\SS.CMS.Utils.Tests\SS.CMS.Utils.Tests.csproj" />
   </ItemGroup>
 
 </Project>

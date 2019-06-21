@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 using Dapper;
 using SS.CMS.Data.DatabaseImpl;
 using SS.CMS.Data.Utils;
+using System.IO;
 
 namespace SS.CMS.Data
 {
-    public class Db : IDb
+    public class Database : IDatabase
     {
         public DatabaseType DatabaseType { get; }
 
         public string ConnectionString { get; }
 
-        public Db(DatabaseType databaseType, string connectionString)
+        public Database(DatabaseType databaseType, string connectionString)
         {
             if (databaseType == null || connectionString == null) return;
 
@@ -39,6 +40,15 @@ namespace SS.CMS.Data
                 if (!Utilities.ContainsIgnoreCase(connectionString, "pooling="))
                 {
                     connectionString += ";pooling=false;";
+                }
+            }
+            else if (databaseType == DatabaseType.SQLite)
+            {
+                if (connectionString.Contains("=~/"))
+                {
+                    var projDirectoryPath = Directory.GetCurrentDirectory();
+                    connectionString = connectionString.Replace("=~/", $"={projDirectoryPath}/");
+                    connectionString = connectionString.Replace('/', Path.DirectorySeparatorChar);
                 }
             }
 
