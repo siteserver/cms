@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Data.Tests.Mocks;
 using SS.CMS.Data.Utils;
@@ -78,11 +79,14 @@ namespace SS.CMS.Data.Tests.Core
         }
 
         [SkippableFact]
-        public void TestInsert()
+        public async Task InsertTest()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
             var id = _repository.Insert(null);
+            Assert.Equal(0, id);
+
+            id = await _repository.InsertAsync(null);
             Assert.Equal(0, id);
 
             var dataInfo = new TestTableInfo();
@@ -99,6 +103,11 @@ namespace SS.CMS.Data.Tests.Core
             Assert.True(dataInfo.Date == null);
             Assert.False(dataInfo.Locked);
 
+            dataInfo = new TestTableInfo();
+            await _repository.InsertAsync(dataInfo);
+            Assert.Equal(2, dataInfo.Id);
+            Assert.True(Utilities.IsGuid(dataInfo.Guid));
+
             dataInfo = new TestTableInfo
             {
                 Guid = "wrong guid",
@@ -108,7 +117,7 @@ namespace SS.CMS.Data.Tests.Core
                 Locked = true
             };
             _repository.Insert(dataInfo);
-            Assert.Equal(2, dataInfo.Id);
+            Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.TypeVarChar100);
@@ -138,9 +147,9 @@ namespace SS.CMS.Data.Tests.Core
             _output.WriteLine(dataInfo.Guid);
             _output.WriteLine(dataInfo.LastModifiedDate.ToString());
 
-            dataInfo = _repository.Get(2);
+            dataInfo = _repository.Get(3);
             Assert.NotNull(dataInfo);
-            Assert.Equal(2, dataInfo.Id);
+            Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.TypeVarChar100);
@@ -152,7 +161,7 @@ namespace SS.CMS.Data.Tests.Core
 
             dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "string"));
             Assert.NotNull(dataInfo);
-            Assert.Equal(2, dataInfo.Id);
+            Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.TypeVarChar100);
@@ -164,7 +173,7 @@ namespace SS.CMS.Data.Tests.Core
 
             dataInfo = _repository.Get(dataInfo.Guid);
             Assert.NotNull(dataInfo);
-            Assert.Equal(2, dataInfo.Id);
+            Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.TypeVarChar100);
@@ -176,7 +185,7 @@ namespace SS.CMS.Data.Tests.Core
 
             dataInfo = _repository.Get(dataInfo.Guid);
             Assert.NotNull(dataInfo);
-            Assert.Equal(2, dataInfo.Id);
+            Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             Assert.Equal("string", dataInfo.TypeVarChar100);
@@ -483,7 +492,7 @@ namespace SS.CMS.Data.Tests.Core
                 TypeVarChar100 = "str"
             });
 
-            var deleted = _repository.Delete(Q.Where("TypeVarChar100","str"));
+            var deleted = _repository.Delete(Q.Where("TypeVarChar100", "str"));
             Assert.Equal(1, deleted);
 
             Assert.False(_repository.Delete(1));

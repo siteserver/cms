@@ -57,7 +57,7 @@ namespace SS.CMS.Core.Packaging
 
             if (Version == "$version$")
             {
-                Version = PackageUtils.VersionDev;
+                Version = "1.0.0.0";
             }
 
             if (Version.IndexOf('.') < 0)

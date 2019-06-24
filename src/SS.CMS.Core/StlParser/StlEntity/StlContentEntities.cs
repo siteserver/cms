@@ -194,7 +194,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            parsedContent = ApiRouteActionsDownload.GetUrl(parseContext.SettingsManager, parseContext.ApiUrl, parseContext.SiteId, parseContext.ChannelId, parseContext.ContentId, parsedContent);
+                            parsedContent = ApiRouteActionsDownload.GetUrl(parseContext.SettingsManager, parseContext.SiteId, parseContext.ChannelId, parseContext.ContentId, parsedContent);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//内容添加日期

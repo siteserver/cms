@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(LogInfo.Id);
-            public const string CreationDate = nameof(LogInfo.CreationDate);
+            public const string CreatedDate = nameof(LogInfo.CreatedDate);
             public const string Action = nameof(LogInfo.Action);
         }
 
@@ -55,7 +55,7 @@ namespace SS.CMS.Core.Repositories
             if (days <= 0) return;
 
             _repository.Delete(Q
-                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
+                .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void DeleteAll()
@@ -124,7 +124,7 @@ namespace SS.CMS.Core.Repositories
         public DateTimeOffset GetLastRemoveLogDate()
         {
             var addDate = _repository.Get<DateTime?>(Q
-                .Select(Attr.CreationDate)
+                .Select(Attr.CreatedDate)
                 .Where(Attr.Action, "清空数据库日志")
                 .OrderByDesc(Attr.Id));
 

@@ -29,8 +29,6 @@ namespace SS.CMS.Core.StlParser
 
         public int UniqueId => PageInfo.UniqueId;
 
-        public string ApiUrl => PageInfo.ApiUrl;
-
         public PageInfo PageInfo { get; set; }
 
         public string GetErrorMessage(string elementName, string stlElement, Exception ex)

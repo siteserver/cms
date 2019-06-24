@@ -10,14 +10,14 @@
 
         public string GetPreviewSiteUrl(int siteId)
         {
-            var apiUrl = GetInnerApiUrl(PreviewRoute);
+            var apiUrl = GetApiUrl(PreviewRoute);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             return apiUrl;
         }
 
         public string GetPreviewChannelUrl(int siteId, int channelId)
         {
-            var apiUrl = GetInnerApiUrl(PreviewRouteChannel);
+            var apiUrl = GetApiUrl(PreviewRouteChannel);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             return apiUrl;
@@ -25,7 +25,7 @@
 
         public string GetPreviewContentUrl(int siteId, int channelId, int contentId)
         {
-            var apiUrl = GetInnerApiUrl(PreviewRouteContent);
+            var apiUrl = GetApiUrl(PreviewRouteContent);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{channelId}", channelId.ToString());
             apiUrl = apiUrl.Replace("{contentId}", contentId.ToString());
@@ -43,7 +43,7 @@
 
         public string GetPreviewFileUrl(int siteId, int fileTemplateId)
         {
-            var apiUrl = GetInnerApiUrl(PreviewRouteFile);
+            var apiUrl = GetApiUrl(PreviewRouteFile);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{fileTemplateId}", fileTemplateId.ToString());
             return apiUrl;
@@ -51,7 +51,7 @@
 
         public string GetPreviewSpecialUrl(int siteId, int specialId)
         {
-            var apiUrl = GetInnerApiUrl(PreviewRouteSpecial);
+            var apiUrl = GetApiUrl(PreviewRouteSpecial);
             apiUrl = apiUrl.Replace("{siteId}", siteId.ToString());
             apiUrl = apiUrl.Replace("{specialId}", specialId.ToString());
             return apiUrl;

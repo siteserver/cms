@@ -13,42 +13,35 @@ namespace SS.CMS.Api.Controllers.Admin
     [Authorize(Roles = AuthTypes.Roles.Administrator)]
     [Route("admin")]
     [ApiController]
-    public class IndexController : ControllerBase
+    public partial class IndexController : ControllerBase
     {
         private const string Route = "index";
         private const string RouteUnCheckedList = "index/unCheckedList";
 
         private readonly ISettingsManager _settingsManager;
-        private readonly IPluginManager _pluginManager;
         private readonly IUserManager _userManager;
-        private readonly IUserRepository _userRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IConfigRepository _configRepository;
 
-        public IndexController(ISettingsManager settingsManager, IPluginManager pluginManager, IUserManager userManager, IUserRepository userRepository, ISiteRepository siteRepository, IConfigRepository configRepository)
+        public IndexController(ISettingsManager settingsManager, IUserManager userManager, ISiteRepository siteRepository, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
-            _pluginManager = pluginManager;
             _userManager = userManager;
-            _userRepository = userRepository;
             _siteRepository = siteRepository;
             _configRepository = configRepository;
         }
 
         [HttpGet(Route)]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult<GetModel>> Get()
         {
             var accountInfo = await _userManager.GetUserAsync();
 
-            return Ok(new
+            return new GetModel
             {
-                Value = new
-                {
-                    Version = _settingsManager.ProductVersion == PackageUtils.VersionDev ? "dev" : _settingsManager.ProductVersion,
-                    LastActivityDate = DateUtils.GetDateString(accountInfo.LastActivityDate, EDateFormatType.Chinese),
-                    UpdateDate = DateUtils.GetDateString(_configRepository.Instance.UpdateDate, EDateFormatType.Chinese)
-                }
-            });
+                Version = _settingsManager.ProductVersion,
+                LastActivityDate = accountInfo.LastActivityDate,
+                UpdateDate = _configRepository.Instance.UpdateDate
+            };
         }
 
         [HttpGet(RouteUnCheckedList)]

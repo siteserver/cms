@@ -7,8 +7,12 @@ namespace SS.CMS.Core.Models.Attributes
     {
         [StlAttribute(Title = "栏目Id")]
         public const string Id = nameof(ChannelInfo.Id);
-
-        public const string CreationDate = nameof(ChannelInfo.CreationDate);
+        [StlAttribute(Title = "栏目Guid")]
+        public const string Guid = nameof(ChannelInfo.Guid);
+        [StlAttribute(Title = "创建时间")]
+        public const string CreatedDate = nameof(ChannelInfo.CreatedDate);
+        [StlAttribute(Title = "修改时间")]
+        public const string LastModifiedDate = nameof(ChannelInfo.LastModifiedDate);
 
         [StlAttribute(Title = "站点Id")]
         public const string SiteId = nameof(ChannelInfo.SiteId);

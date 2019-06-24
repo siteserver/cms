@@ -30,9 +30,9 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 {
                     parsedContent = userInfo.UserName;
                 }
-                else if (StringUtils.EqualsIgnoreCase(UserAttribute.CreationDate, attributeName))
+                else if (StringUtils.EqualsIgnoreCase(UserAttribute.CreatedDate, attributeName))
                 {
-                    parsedContent = DateUtils.Format(userInfo.CreationDate, string.Empty);
+                    parsedContent = DateUtils.Format(userInfo.CreatedDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(UserAttribute.LastActivityDate, attributeName))
                 {

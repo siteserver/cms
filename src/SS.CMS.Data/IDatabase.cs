@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
-using SqlKata.Compilers;
 
 namespace SS.CMS.Data
 {
@@ -45,5 +43,7 @@ namespace SS.CMS.Data
         List<TableColumn> GetTableColumns(string tableName);
 
         List<string> GetTableNames();
+
+        Task<(bool IsConnectionWorks, string ErrorMessage)> IsConnectionWorksAsync();
     }
 }

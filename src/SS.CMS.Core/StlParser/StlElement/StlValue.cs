@@ -164,8 +164,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (!parseContext.BodyCodes.ContainsKey("datestring.js"))
                 {
-                    parseContext.BodyCodes.Add("datestring.js", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        parseContext.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    parseContext.BodyCodes.Add("datestring.js", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(false);</script>";
@@ -174,8 +173,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (!parseContext.BodyCodes.ContainsKey("datestring"))
                 {
-                    parseContext.BodyCodes.Add("datestring", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(
-                        parseContext.ApiUrl, SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
+                    parseContext.BodyCodes.Add("datestring", $@"<script charset=""{SiteFilesAssets.DateString.Charset}"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.DateString.Js)}"" type=""text/javascript""></script>");
                 }
 
                 parsedContent = @"<script language=""javascript"" type=""text/javascript"">RunGLNL(true);</script>";

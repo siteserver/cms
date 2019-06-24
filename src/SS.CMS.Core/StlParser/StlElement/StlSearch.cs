@@ -165,7 +165,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
 
             var ajaxDivId = StlParserUtility.GetAjaxDivId(parseContext.UniqueId);
-            var apiUrl = ApiRouteActionsSearch.GetUrl(parseContext.ApiUrl);
+            var apiUrl = ApiRouteActionsSearch.GetUrl();
             var apiParameters = ApiRouteActionsSearch.GetParameters(parseContext.SettingsManager, isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, parseContext.SiteId, ajaxDivId, yes);
 
             var builder = new StringBuilder();

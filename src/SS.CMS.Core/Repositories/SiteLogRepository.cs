@@ -31,7 +31,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(SiteLogInfo.Id);
-            public const string CreationDate = nameof(SiteLogInfo.CreationDate);
+            public const string CreatedDate = nameof(SiteLogInfo.CreatedDate);
         }
 
         public void Insert(SiteLogInfo logInfo)
@@ -46,7 +46,7 @@ namespace SS.CMS.Core.Repositories
             var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            _repository.Delete(Q.Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
+            _repository.Delete(Q.Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)

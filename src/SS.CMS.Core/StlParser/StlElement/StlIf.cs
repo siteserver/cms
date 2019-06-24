@@ -454,7 +454,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             };
             dynamicInfo.ElementValues = TranslateUtils.JsonSerialize(ifInfo);
 
-            return dynamicInfo.GetScript(parseContext.SettingsManager, ApiRouteActionsIf.GetUrl(parseContext.ApiUrl));
+            return dynamicInfo.GetScript(parseContext.SettingsManager, ApiRouteActionsIf.GetUrl());
         }
 
         private static bool TestTypeValues(string testOperate, string testValue, List<string> actualValues)
@@ -812,9 +812,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
 
-            if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CreationDate, testTypeStr))
+            if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CreatedDate, testTypeStr))
             {
-                theValue = DateUtils.GetDateAndTimeString(channel.CreationDate);
+                theValue = DateUtils.GetDateAndTimeString(channel.CreatedDate);
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.Title, testTypeStr))
             {
@@ -885,9 +885,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             else if (parseContext.ContextType == EContextType.Channel)
             {
                 var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
-                if (channel.CreationDate.HasValue)
+                if (channel.CreatedDate.HasValue)
                 {
-                    addDate = channel.CreationDate.Value;
+                    addDate = channel.CreatedDate.Value;
                 }
             }
             else
@@ -924,9 +924,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 else if (parseContext.ChannelId != 0)//获取栏目
                 {
                     var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
-                    if (channel.CreationDate.HasValue)
+                    if (channel.CreatedDate.HasValue)
                     {
-                        addDate = channel.CreationDate.Value;
+                        addDate = channel.CreatedDate.Value;
                     }
                 }
             }

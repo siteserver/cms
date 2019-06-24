@@ -122,7 +122,7 @@ namespace SS.CMS.Core.Common.Office
                     userInfo.DisplayName,
                     userInfo.Email,
                     userInfo.Mobile,
-                    DateUtils.GetDateAndTimeString(userInfo.CreationDate),
+                    DateUtils.GetDateAndTimeString(userInfo.CreatedDate),
                     DateUtils.GetDateAndTimeString(userInfo.LastActivityDate)
                 });
             }

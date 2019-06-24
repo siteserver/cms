@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>SiteServer CMS - 用户中心</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta content="SiteServer CMS 用户中心" name="description" />
+  <meta content="SiteServer CMS" name="author" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="shortcut icon" href="../assets/images/favicon.ico">
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <style>
+    .nav-tabs .nav-link.active{
+      background-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="main" class="wrapper-page">
+
+    <template v-if="pageConfig">
+      <div class="text-center">
+        <div class="logo-lg"> <span>{{ pageConfig.homeTitle }}</span> </div>
+      </div>
+
+      <form v-on:submit="btnRegisterClick" class="form-horizontal m-t-20">
+
+        <ul class="nav nav-tabs tabs-bordered nav-justified mb-3">
+          <li class="nav-item"><a href="javascript:;" class="nav-link active">用户注册</a></li>
+        </ul>
+
+        <div class="form-group">
+          <label>
+            用户名
+            <span class="text-danger">*</span>
+            <small v-show="errors.has('userName')" class="text-danger">{{ errors.first('userName') }}</small>
+          </label>
+          <input v-model="userName" type="text" class="form-control" name="userName" data-vv-as="用户名" v-validate="'required|alpha_dash'"
+            :class="{'is-invalid': errors.has('userName') }">
+        </div>
+
+        <div class="form-group">
+          <label>
+            密码
+            <span class="text-danger">*</span>
+            <small v-show="errors.has('password')" class="text-danger">{{ errors.first('password') }}</small>
+          </label>
+          <input v-model="password" type="password" class="form-control" name="password" data-vv-as="密码" v-validate="'required'"
+            :class="{'is-invalid': errors.has('password') }">
+        </div>
+
+        <div v-for="style in styles" v-if="style.inputType === 'Text' || style.inputType === 'TextArea' || style.inputType === 'Radio'"
+          class="form-group">
+          <label>
+            {{ style.displayName }}
+            <small v-if="style.helpText" class="text-muted">{{ style.helpText }}</small>
+            <span v-if="style.additional.veeValidate.indexOf('required') !== -1" class="text-danger">*</span>
+            <small v-show="errors.has(style.attributeName)" class="text-danger">{{ errors.first(style.attributeName) }}</small>
+          </label>
+
+          <template v-if="style.inputType === 'Text'">
+            <input v-model="style.value" type="text" class="form-control" :name="style.attributeName" :data-vv-as="style.displayName"
+              v-validate="style.additional.veeValidate" :class="{'is-invalid': errors.has(style.attributeName)}">
+          </template>
+          <template v-else-if="style.inputType === 'TextArea'">
+            <textarea v-model="style.value" class="form-control" :style="'height: ' + (style.additional.height ? style.additional.height : 125) + 'px;'"
+              :name="style.attributeName" :data-vv-as="style.displayName" v-validate="style.additional.veeValidate"
+              :class="{'is-invalid': errors.has(style.attributeName)}"></textarea>
+          </template>
+          <template v-else-if="style.inputType === 'Radio'">
+            <div class="m-2">
+              <div v-for="(styleItem, index) in style.styleItems" class="radio radio-primary form-check-inline">
+                <input v-model="style.value" type="radio" :id="styleItem.itemValue" :value="styleItem.itemValue" :name="style.attributeName">
+                <label :for="styleItem.itemValue"> {{ styleItem.itemTitle }} </label>
+              </div>
+            </div>
+          </template>
+
+        </div>
+
+        <div v-if="pageConfig.isUserRegistrationGroup" class="form-group">
+          <label>用户组</label>
+          <select v-model="groupId" class="form-control">
+            <option v-for="group in groups" :value="group.id">{{ group.groupName }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>
+            验证码
+            <span class="text-danger">*</span>
+            <small v-show="errors.has('captcha')" class="text-danger">{{ errors.first('captcha') }}</small>
+          </label>
+          <input v-model="captcha" type="text" class="form-control" name="captcha" data-vv-as="验证码" v-validate="'required'"
+            :class="{'is-invalid': errors.has('captcha') }">
+        </div>
+
+        <div class="form-group row">
+          <div class="col-12 text-right">
+            <a href="javascript:;" v-on:click="reload">
+              <img v-show="captchaUrl" style="display: none" class="float-right rounded" v-bind:src="captchaUrl" align="absmiddle">
+            </a>
+          </div>
+        </div>
+
+        <template v-if="pageAlert">
+          <div class="alert" v-bind:class="{ 'alert-warning': pageAlert.type === 'warning', 'alert-success': pageAlert.type === 'success', 'alert-danger': pageAlert.type === 'danger' }">
+            <button v-on:click="pageAlert = null" class="close" data-dismiss="alert">×</button>
+            <span v-html="pageAlert.html"></span>
+          </div>
+        </template>
+
+        <div class="form-group row">
+          <div class="col-12">
+            <button v-on:click="btnRegisterClick" style="width: 100%" class="btn btn-primary btn-large btn-custom w-md"
+              type="submit">注 册</button>
+            <div v-if="pageConfig.isHomeAgreement" class="checkbox checkbox-primary mt-2">
+              <input id="agreement" type="checkbox" v-model="isAgreement">
+              <label for="agreement" v-html="pageConfig.homeAgreementHtml"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row m-t-30">
+          <div class="col-12 text-center">
+            <a href="login.html" class="text-muted"><i class="fa fa-user m-r-5"></i> 已有账号，请登录</a>
+          </div>
+        </div>
+
+      </form>
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="../assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+
+</body>
+
+</html>
+
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script src="../config.js" type="text/javascript"></script>
+
+<script src="register.js" type="text/javascript"></script>

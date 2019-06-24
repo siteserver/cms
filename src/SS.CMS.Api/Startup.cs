@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using SS.CMS.Core.Services;
 using SS.CMS.Services;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Api
 {
@@ -21,10 +22,16 @@ namespace SS.CMS.Api
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _config;
 
-        public Startup(IWebHostEnvironment env, IConfiguration config)
+        public Startup(IWebHostEnvironment env)
         {
             _env = env;
-            _config = config;
+
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+            _config = builder.Build();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -194,11 +201,8 @@ namespace SS.CMS.Api
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var apiMatch = string.IsNullOrEmpty(settingsManager.ApiPrefix) ? string.Empty : $"/{settingsManager.ApiPrefix}";
-            app.Map(apiMatch, api =>
+            app.Map(Constants.ApiUrl, api =>
             {
-
-
                 api.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));
 
@@ -218,22 +222,20 @@ namespace SS.CMS.Api
                 });
             });
 
-            var adminMatch = string.IsNullOrEmpty(settingsManager.AdminPrefix) ? string.Empty : $"/{settingsManager.ApiPrefix}";
-            app.Map(adminMatch, admin =>
-            {
-                admin.UseAuthentication();
+            // var adminMatch = string.IsNullOrEmpty(settingsManager.AdminPrefix) ? string.Empty : $"/{settingsManager.AdminPrefix}";
+            // app.Map(adminMatch, admin =>
+            // {
+            //     admin.UseRouting();
 
-                admin.UseRouting();
-
-                admin.UseSpa(spa =>
-                {
-                    spa.Options.SourcePath = "ClientApp";
-                    if (_env.IsDevelopment())
-                    {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-                    }
-                });
-            });
+            //     admin.UseSpa(spa =>
+            //     {
+            //         spa.Options.SourcePath = "ClientApp";
+            //         if (_env.IsDevelopment())
+            //         {
+            //             spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+            //         }
+            //     });
+            // });
         }
     }
 }

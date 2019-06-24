@@ -70,7 +70,7 @@ namespace SS.CMS.Core.Serialization
                                 }
                             }
                         }
-                        if (!isSiteDirectory && !_pathManager.IsSystemDirectory(fileSystem.Name))
+                        if (!isSiteDirectory)
                         {
                             DirectoryUtils.CreateDirectoryIfNotExists(destPath);
                             DirectoryUtils.MoveDirectory(srcPath, destPath, false);

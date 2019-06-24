@@ -227,7 +227,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 _topChannelId = topChannelId;
                 _level = level;
 
-                _treeDirectoryUrl = SiteFilesAssets.GetUrl(_parseContext.ApiUrl, "tree");
+                _treeDirectoryUrl = SiteFilesAssets.GetUrl("tree");
                 _iconFolderUrl = PageUtils.Combine(_treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(_treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(_treeDirectoryUrl, "minus.png");
@@ -556,7 +556,7 @@ function stltree_displayChildren(element){
 var stltree_isNodeTree = {isNodeTree};
 </script>
 ";
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl("tree");
                 var iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 var iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
                 var iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
@@ -664,7 +664,7 @@ var stltree_isNodeTree = {isNodeTree};
                 _level = nodeInfo.ParentsCount - topParentsCount;
                 _currentChannelId = currentChannelId;
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(_parseContext.UrlManager.ApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl("tree");
                 _iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 _iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
                 _iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
@@ -858,7 +858,7 @@ function stltree_displayChildren(img){
     }
 }
 ";
-                var loadingUrl = ApiRouteActionsLoadingChannels.GetUrl(parseContext.ApiUrl);
+                var loadingUrl = ApiRouteActionsLoadingChannels.GetUrl();
                 var formatString = parseContext.SettingsManager.Encrypt(currentFormatString);
 
                 script += $@"
@@ -917,7 +917,7 @@ function loadingChannelsOnLoad(path){{
 
                 script += GetScriptOnLoad(parseContext.ChannelRepository, parseContext.SiteId, topChannelId, parseContext.PageChannelId);
 
-                var treeDirectoryUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, "tree");
+                var treeDirectoryUrl = SiteFilesAssets.GetUrl("tree");
                 var iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
                 var iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
                 var iconMinusUrl = PageUtils.Combine(treeDirectoryUrl, "minus.png");
@@ -929,7 +929,7 @@ function loadingChannelsOnLoad(path){{
                 script = script.Replace("{iconPlusUrl}", iconPlusUrl);
                 script = script.Replace("{isNodeTree}", "true");
 
-                script = script.Replace("{iconLoadingUrl}", SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.FileLoading));
+                script = script.Replace("{iconLoadingUrl}", SiteFilesAssets.GetUrl("loading.gif"));
 
                 return script;
             }

@@ -44,6 +44,11 @@ namespace SS.CMS.Utils
             return File.ReadAllText(filePath, Encoding.UTF8);
         }
 
+        public static async Task<string> ReadTextAsync(string filePath)
+        {
+            return await ReadTextAsync(filePath, Encoding.UTF8);
+        }
+
         public static async Task<string> ReadTextAsync(string filePath, Encoding encoding)
         {
             using (var sr = new StreamReader(filePath, encoding))
@@ -52,6 +57,11 @@ namespace SS.CMS.Utils
                 sr.Close();
                 return text;
             }
+        }
+
+        public static async Task WriteTextAsync(string filePath, string content)
+        {
+            await WriteTextAsync(filePath, Encoding.UTF8, content);
         }
 
         public static async Task WriteTextAsync(string filePath, Encoding encoding, string content)

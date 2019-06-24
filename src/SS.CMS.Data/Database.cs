@@ -24,22 +24,20 @@ namespace SS.CMS.Data
 
             if (databaseType == DatabaseType.MySql)
             {
-                connectionString = connectionString.TrimEnd(';');
                 if (!Utilities.ContainsIgnoreCase(connectionString, "SslMode="))
                 {
-                    connectionString += ";SslMode=Preferred;";
+                    connectionString = connectionString.TrimEnd(';') + ";SslMode=Preferred;";
                 }
                 if (!Utilities.ContainsIgnoreCase(connectionString, "CharSet="))
                 {
-                    connectionString += ";CharSet=utf8;";
+                    connectionString = connectionString.TrimEnd(';') + ";CharSet=utf8;";
                 }
             }
             else if (databaseType == DatabaseType.Oracle)
             {
-                connectionString = connectionString.TrimEnd(';');
                 if (!Utilities.ContainsIgnoreCase(connectionString, "pooling="))
                 {
-                    connectionString += ";pooling=false;";
+                    connectionString = connectionString.TrimEnd(';') + ";pooling=false;";
                 }
             }
             else if (databaseType == DatabaseType.SQLite)
@@ -49,6 +47,10 @@ namespace SS.CMS.Data
                     var projDirectoryPath = Directory.GetCurrentDirectory();
                     connectionString = connectionString.Replace("=~/", $"={projDirectoryPath}/");
                     connectionString = connectionString.Replace('/', Path.DirectorySeparatorChar);
+                }
+                if (!Utilities.ContainsIgnoreCase(connectionString, "Version="))
+                {
+                    connectionString = connectionString.TrimEnd(';') + ";Version=3;";
                 }
             }
 
@@ -185,14 +187,14 @@ namespace SS.CMS.Data
             return exists;
         }
 
-        public bool IsConnectionWorks(out string errorMessage)
+        public async Task<(bool IsConnectionWorks, string ErrorMessage)> IsConnectionWorksAsync()
         {
             var retval = false;
-            errorMessage = string.Empty;
+            var errorMessage = string.Empty;
             try
             {
                 var connection = GetConnection();
-                connection.Open();
+                await connection.OpenAsync();
                 if (connection.State == ConnectionState.Open)
                 {
                     retval = true;
@@ -204,7 +206,7 @@ namespace SS.CMS.Data
                 errorMessage = ex.Message;
             }
 
-            return retval;
+            return (retval, errorMessage);
         }
 
         public string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumn> columns)
@@ -334,7 +336,7 @@ namespace SS.CMS.Data
                     tableColumn.DataType = DataType.VarChar;
                     tableColumn.DataLength = 50;
                 }
-                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreationDate)))
+                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreatedDate)))
                 {
                     tableColumn.DataType = DataType.DateTime;
                 }
@@ -427,7 +429,7 @@ namespace SS.CMS.Data
                     tableColumn.DataType = DataType.VarChar;
                     tableColumn.DataLength = 50;
                 }
-                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreationDate)))
+                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreatedDate)))
                 {
                     tableColumn.DataType = DataType.DateTime;
                 }

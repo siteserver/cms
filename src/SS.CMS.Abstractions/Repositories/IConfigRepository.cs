@@ -9,6 +9,8 @@ namespace SS.CMS.Repositories
 
         bool Update(ConfigInfo configInfo);
 
+        ConfigInfo GetConfigInfo();
+
         ConfigInfo Instance { get; }
     }
 }

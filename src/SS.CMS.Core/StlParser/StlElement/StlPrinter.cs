@@ -64,9 +64,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
         private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
-            var jsUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Print.JsUtf8);
+            var jsUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.Print.JsUtf8);
 
-            var iconUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Print.IconUrl);
+            var iconUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.Print.IconUrl);
             if (!parseContext.BodyCodes.ContainsKey(PageInfo.Const.JsAfStlPrinter))
             {
                 parseContext.BodyCodes.Add(PageInfo.Const.JsAfStlPrinter, $@"

@@ -7,9 +7,9 @@ namespace SS.CMS.Core.Services
 {
     public partial class UserManager
     {
-        public bool IsSuperAdministrator()
+        public bool IsAdministrator()
         {
-            return _context.User.IsInRole(AuthTypes.Roles.SuperAdministrator);
+            return _context.User.IsInRole(AuthTypes.Roles.Administrator);
         }
 
         public bool IsSiteAdministrator(int siteId)
@@ -25,6 +25,11 @@ namespace SS.CMS.Core.Services
             }
 
             return false;
+        }
+
+        public bool IsSuperAdministrator()
+        {
+            return _context.User.IsInRole(AuthTypes.Roles.SuperAdministrator);
         }
 
         public IList<string> GetRoles()
@@ -127,10 +132,11 @@ namespace SS.CMS.Core.Services
         public async Task<IList<int>> GetSiteIdsAsync()
         {
             var siteIdList = new List<int>();
+            var allSiteIdList = _siteRepository.GetSiteIdList();
 
             if (IsSuperAdministrator())
             {
-                siteIdList = _siteRepository.GetSiteIdList();
+                siteIdList = allSiteIdList;
             }
             else if (HasSitePermissions())
             {

@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
             var siteInfo = new SiteInfo();
             var templateInfo = new TemplateInfo();
             var pluginItems = new Dictionary<string, object>();
-            var pageInfo = new PageInfo(_fixture.UrlManager.ApiUrl, 0, 0, siteInfo, templateInfo, pluginItems);
+            var pageInfo = new PageInfo(0, 0, siteInfo, templateInfo, pluginItems);
 
             var contextInfo = new ParseContext(pageInfo, _fixture.Configuration, _fixture.SettingsManager, _fixture.CacheManager, _fixture.PluginManager, _fixture.PathManager, _fixture.UrlManager, _fixture.FileManager, _fixture.TableManager, _fixture.SiteRepository, _fixture.ChannelRepository, _fixture.UserRepository, _fixture.TableStyleRepository, _fixture.TemplateRepository, _fixture.TagRepository, _fixture.ErrorLogRepository);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Utils.Tests;
@@ -22,12 +23,12 @@ namespace SS.CMS.Core.Tests.Repositories
         }
 
         [SkippableFact]
-        public void TestInsert()
+        public async Task TestInsert()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
             var userInfo = new UserInfo();
-            var id = _fixture.UserRepository.Insert(userInfo, out _);
+            var (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
 
             Assert.True(id == 0);
 
@@ -37,7 +38,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest"
             };
 
-            id = _fixture.UserRepository.Insert(userInfo, out var errorMessage);
+            (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
             _output.WriteLine(errorMessage);
 
             Assert.True(id == 0);
@@ -48,7 +49,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest@2"
             };
 
-            id = _fixture.UserRepository.Insert(userInfo, out errorMessage);
+            (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
             _output.WriteLine(errorMessage);
 
             Assert.True(id > 0);

@@ -9,68 +9,14 @@ namespace SS.CMS.Core.Common
         public const string FileS = "s.gif";
         public const string FileWaiting = "waiting.gif";
 
-        public static string GetUrl(string apiUrl, string relatedUrl)
+        public static string GetUrl(string relatedUrl)
         {
-            if (string.IsNullOrEmpty(apiUrl))
-            {
-                apiUrl = "/api";
-            }
-            apiUrl = apiUrl.Trim().ToLower();
-
-            if (apiUrl == "/api")
-            {
-                apiUrl = "/";
-            }
-            else if (apiUrl.EndsWith("/api"))
-            {
-                apiUrl = apiUrl.Substring(0, apiUrl.LastIndexOf("/api", StringComparison.Ordinal));
-            }
-            else if (apiUrl.EndsWith("/api/"))
-            {
-                apiUrl = apiUrl.Substring(0, apiUrl.LastIndexOf("/api/", StringComparison.Ordinal));
-            }
-            if (string.IsNullOrEmpty(apiUrl))
-            {
-                apiUrl = "/";
-            }
-            return PageUtils.Combine(apiUrl, "sitefiles/assets", relatedUrl);
+            return PageUtils.Combine("/sitefiles/assets", relatedUrl);
         }
 
         // public static string GetPath(params string[] paths) => PathUtilsEx.GetSiteFilesPath("assets", PathUtils.Combine(paths));
 
         public static string GetPath(params string[] paths) => null;
-        public class CommentInput
-        {
-            public static string CommentsTemplatePath => GetPath("commentInput/template.html");
-
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "commentInput/script.js");
-
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "commentInput/style.css");
-        }
-
-        public class Digg
-        {
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "digg/script.js");
-
-            public static string GetStyleUrl(string apiUrl, string theme) => GetUrl(apiUrl, $"digg/{theme}.css");
-        }
-
-        public class Input
-        {
-            public static string TemplatePath => GetPath("input/template.html");
-            public static string LoadingPath => GetPath("input/loading.html");
-            public static string YesPath => GetPath("input/yes.html");
-            public static string NoPath => GetPath("input/no.html");
-
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "input/script.js");
-        }
-
-        public class Resume
-        {
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "resume/js/resume.js");
-
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "resume/css/resume.css");
-        }
 
         public class Search
         {
@@ -83,43 +29,19 @@ namespace SS.CMS.Core.Common
 
         public class Star
         {
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "star/script.js");
+            public static string ScriptUrl => GetUrl("star/script.js");
 
-            public static string GetStyleUrl(string apiUrl, string theme) => GetUrl(apiUrl, $"star/{theme}.css");
+            public static string GetStyleUrl(string theme) => GetUrl($"star/{theme}.css");
         }
 
         public class Vote
         {
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "vote/css/vote.css");
+            public static string StyleUrl => GetUrl("vote/css/vote.css");
         }
 
         public class Tags
         {
-            public static string GetStyleUrl(string apiUrl, string theme) => GetUrl(apiUrl, $"tags/{theme}.css");
-        }
-
-        public class GovPublicApply
-        {
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "govpublicapply/js/apply.js");
-
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "govpublicapply/css/apply.css");
-        }
-
-        public class GovPublicQuery
-        {
-            public static string GetScriptUrl(string apiUrl) => GetUrl(apiUrl, "govpublicquery/js/query.js");
-
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "govpublicquery/css/query.css");
-        }
-
-        public class GovInteractApply
-        {
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "govinteractapply/css/apply.css");
-        }
-
-        public class GovInteractQuery
-        {
-            public static string GetStyleUrl(string apiUrl) => GetUrl(apiUrl, "govinteractquery/css/query.css");
+            public static string GetStyleUrl(string theme) => GetUrl($"tags/{theme}.css");
         }
 
         public class BaiRongFlash
@@ -258,23 +180,6 @@ namespace SS.CMS.Core.Common
             public const string Charset = "utf-8";
         }
 
-        public class Lightbox
-        {
-            public const string Js = "scripts/lightbox/lightbox.js";
-            public const string Css = "scripts/lightbox/lightbox.css";
-        }
-
-        public class Tabstrip
-        {
-            public const string Js = "scripts/tabstrip.js";
-            public const string Css = "styles/tabstrip.css";
-        }
-
-        public class Global
-        {
-            public const string Css = "styles/global.v1.0.css";
-        }
-
         public class Flashes
         {
             public const string Vcastr = "flashes/vcastr3.swf";
@@ -292,14 +197,6 @@ namespace SS.CMS.Core.Common
 
             public const string OnFocusDateOnly = "WdatePicker({isShowClear:false,readOnly:true,dateFmt:'yyyy-MM-dd'});";
             public const string FormatStringDateOnly = "yyyy-MM-dd";
-        }
-
-        public class Slide
-        {
-            public const string FullScreenSwf = "scripts/slide/fullscreen.swf";
-            public const string Js = "scripts/slide/script.js";
-            public const string Css = "scripts/slide/style.css";
-            public const string Template = "scripts/slide/template.html";
         }
 
         public class Print

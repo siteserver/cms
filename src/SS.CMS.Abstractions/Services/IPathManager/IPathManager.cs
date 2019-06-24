@@ -2,19 +2,11 @@
 {
     public partial interface IPathManager
     {
-        string GetAdminPath(params string[] paths);
-
-        string GetHomePath(params string[] paths);
-
         string GetBackupFilesPath(params string[] paths);
 
         string GetTemporaryFilesPath(params string[] paths);
 
         string GetSiteTemplatesPath(params string[] paths);
-
-        bool IsSystemDirectory(string directoryName);
-
-        bool IsWebSiteDirectory(string directoryName);
 
         string AddVirtualToPath(string path);
 

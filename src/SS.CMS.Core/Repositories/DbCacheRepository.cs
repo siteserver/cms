@@ -23,7 +23,7 @@ namespace SS.CMS.Core.Repositories
         {
             public const string CacheKey = nameof(DbCacheInfo.CacheKey);
             public const string CacheValue = nameof(DbCacheInfo.CacheValue);
-            public const string CreationDate = nameof(DbCacheInfo.CreationDate);
+            public const string CreatedDate = nameof(DbCacheInfo.CreatedDate);
         }
 
         public void RemoveAndInsert(string cacheKey, string cacheValue)
@@ -79,7 +79,7 @@ namespace SS.CMS.Core.Repositories
         public void DeleteExcess90Days()
         {
             _repository.Delete(Q
-                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-90)));
+                .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-90)));
         }
     }
 }

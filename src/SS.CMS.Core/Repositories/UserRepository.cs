@@ -71,27 +71,27 @@ namespace SS.CMS.Core.Repositories
             return _repository.Count();
         }
 
-        public int Insert(UserInfo userInfo, out string errorMessage)
+        public async Task<(int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo)
         {
-            if (!InsertValidate(userInfo.UserName, userInfo.Password, userInfo.Email, userInfo.Mobile, out errorMessage)) return 0;
+            var errorMessage = string.Empty;
+
+            if (!InsertValidate(userInfo.UserName, userInfo.Password, userInfo.Email, userInfo.Mobile, out errorMessage)) return (0, errorMessage);
 
             try
             {
-                userInfo.CreationDate = DateTime.Now;
+                userInfo.CreatedDate = DateTime.Now;
                 userInfo.PasswordFormat = PasswordFormat.Encrypted.Value;
                 userInfo.Password = EncodePassword(userInfo.Password, PasswordFormat.Parse(userInfo.PasswordFormat), out var passwordSalt);
                 userInfo.PasswordSalt = passwordSalt;
 
-                var identity = _repository.Insert(userInfo);
+                var identity = await _repository.InsertAsync(userInfo);
 
-                if (identity <= 0) return 0;
-
-                return identity;
+                return (identity, null);
             }
             catch (Exception ex)
             {
                 errorMessage = ex.Message;
-                return 0;
+                return (0, errorMessage);
             }
         }
 

@@ -197,7 +197,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     imageHtml = $@"<img src=""{imageUrl}"" style=""{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" />";
                 }
 
-                var swfUrl = SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.FlowPlayer.Swf);
+                var swfUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.FlowPlayer.Swf);
                 return $@"
 <a href=""{playUrl}"" style=""display:block;{(width > 0 ? $"width:{width}px;" : string.Empty)}{(height > 0 ? $"height:{height}px;" : string.Empty)}"" id=""player_{ajaxElementId}"">{imageHtml}</a>
 <script language=""javascript"">

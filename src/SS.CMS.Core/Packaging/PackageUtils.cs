@@ -16,7 +16,6 @@ namespace SS.CMS.Core.Packaging
     {
         public const string PackageIdSsCms = "SS.CMS";
         public const string PackageIdSiteServerPlugin = "SiteServer.Plugin";
-        public const string VersionDev = "0.0.0";
 
         public const string CacheKeySsCmsIsDownload = nameof(CacheKeySsCmsIsDownload);
 

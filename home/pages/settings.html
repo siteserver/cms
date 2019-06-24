@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>SiteServer CMS - 用户中心</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta content="SiteServer CMS 用户中心" name="description" />
+  <meta content="SiteServer CMS" name="author" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="shortcut icon" href="../assets/images/favicon.ico">
+  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    .btn.disabled,
+    .btn:disabled {
+      background-color: #949494 !important;
+      border-color: #949494 !important;
+    }
+  </style>
+  <script src="../assets/lib/modernizr.min.js"></script>
+  <script type="text/javascript" src="../assets/lib/iframe-resizer-3.6.2/iframeResizer.contentWindow.min.js"></script>
+</head>
+
+<body class="p-0">
+  <div id="main" class="container-fluid">
+
+    <template v-if="pageConfig">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="page-title-box">
+            <h4 class="page-title">账户设置</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <div class="col-xl-3 col-lg-4">
+          <div class="text-center card-box">
+            <div class="member-card">
+              <div class="thumb-xl member-thumb m-b-10 center-block">
+                <img :src="avatarUrl" class="rounded-circle img-thumbnail" alt="profile-image">
+              </div>
+
+              <div class="">
+                <h4 class="m-b-5">
+                  {{ pageUser.displayName || pageUser.userName }}
+                </h4>
+                <p class="text-muted" v-if="pageUser.signature">{{ pageUser.signature }}</p>
+              </div>
+
+              <file-upload extensions="gif,jpg,jpeg,png,webp" accept="image/png,image/gif,image/jpeg,image/webp" name="avatar"
+                :drop="!editAvatar" v-model="files" @input-filter="inputFilter" @input-file="inputFile" ref="upload"
+                :post-action="uploadUrl" class="btn btn-success btn-sm w-sm m-t-10">
+                更换头像
+              </file-upload>
+
+              <div class="text-left m-t-40">
+                <p v-if="pageUser.mobile" class="text-muted font-13">
+                  <strong>手机：</strong> <span class="m-l-15"> {{ pageUser.mobile }} </span>
+                </p>
+                <p v-if="pageUser.email" class="text-muted font-13">
+                  <strong>邮箱：</strong> <span class="m-l-15"> {{ pageUser.email }} </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8 col-xl-9">
+          <tempalte v-if="files.length && editAvatar">
+            <div class="card-box">
+              <div style="max-width: 100%" v-if="files.length">
+                <img ref="editImage" :src="files[0].url" />
+              </div>
+              <div class="text-center p-4">
+                <button type="submit" class="btn btn-primary mr-2" @click.prevent="editSave">保 存</button>
+                <button type="button" class="btn btn-secondary" @click.prevent="$refs.upload.clear">取 消</button>
+              </div>
+            </div>
+          </tempalte>
+          <template v-else>
+            <div class="card-box">
+
+              <h4>登录账号设置</h4>
+              <hr />
+
+              <div v-if="accountAlertMessage" :class="'alert alert-' + (accountAlertType ? accountAlertType : 'info')"
+                v-html="accountAlertMessage"></div>
+
+              <div class="form-group">
+                <label for="userName">
+                  用户名
+                </label>
+                <input type="text" v-model="pageUser.userName" disabled class="form-control">
+                <small class="help-block">用户的唯一标识符。</small>
+              </div>
+              <div class="form-group">
+                <label for="mobile">
+                  手机号码
+                  <small v-show="errors.has('account.mobile')" class="text-danger">{{errors.first('account.mobile')
+                    }}</small>
+                </label>
+                <input type="text" v-model="mobile" name="mobile" class="form-control" data-vv-as="手机号码" data-vv-scope="account"
+                  v-validate="'required|mobile'" :class="{'is-invalid': errors.has('account.mobile')}">
+                <small class="help-block">可用于登录、找回密码等功能，不会公开显示。</small>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" v-validate="{ email: true }" v-model="email" name="email" class="form-control"
+                  data-vv-scope="account" :class="{'is-invalid': errors.has('account.email')}">
+                <small class="help-block">可用于登录，不会公开显示。</small>
+              </div>
+
+              <button @click="updateAccount" class="btn btn-primary w-md" :disabled="errors.any('account')" type="button">保
+                存</button>
+
+            </div>
+
+            <div class="card-box">
+
+              <h4>修改密码</h4>
+              <hr />
+
+              <div v-if="passwordAlertMessage" :class="'alert alert-' + (passwordAlertType ? passwordAlertType : 'info')"
+                v-html="passwordAlertMessage"></div>
+
+              <div class="form-group">
+                <label for="oldPassword">
+                  当前密码
+                  <small v-show="errors.has('password.oldPassword')" class="text-danger">{{errors.first('password.oldPassword')
+                    }}</small>
+                </label>
+                <input type="password" v-model="oldPassword" name="oldPassword" class="form-control" data-vv-as="当前密码"
+                  data-vv-scope="password" v-validate="'required'" :class="{'is-invalid': errors.has('password.oldPassword')}">
+              </div>
+              <div class="form-group">
+                <label for="newPassword">
+                  新密码
+                  <small v-show="errors.has('password.newPassword')" class="text-danger">{{errors.first('password.newPassword')
+                    }}</small>
+                </label>
+                <input type="password" v-model="newPassword" name="newPassword" ref="newPassword" class="form-control"
+                  data-vv-as="新密码" data-vv-scope="password" v-validate="'required'" :class="{'is-invalid':
+errors.has('password.newPassword')}">
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">
+                  新密码确认
+                  <small v-show="errors.has('password.confirmPassword')" class="text-danger">{{errors.first('password.confirmPassword')
+                    }}</small>
+                </label>
+                <input type="password" v-model="confirmPassword" name="confirmPassword" class="form-control" data-vv-as="新密码确认"
+                  data-vv-scope="password" v-validate="'required|confirmed:newPassword'" :class="{'is-invalid':
+errors.has('password.confirmPassword')}">
+              </div>
+
+              <button @click="updatePassword" class="btn btn-primary w-md" :disabled="errors.any('password')" type="button">保
+                存</button>
+
+            </div>
+
+            <div v-if="pageConfig.isUserUnRegistrationAllowed" class="card-box">
+
+              <h4>永久删除账户</h4>
+              <hr />
+
+              <div v-if="deleteAlertMessage" :class="'alert alert-danger'" v-html="deleteAlertMessage"></div>
+
+              <p>
+                帐户删除操作无法撤销，此操作会删除您的帐户以及帐户中的所有数据。
+              </p>
+
+              <p>
+                在您准备好继续之后，请使用“永久删除账户”按钮。
+              </p>
+
+              <button @click="deleteAccount" class="btn btn-danger w-md" type="button">永久关闭账户</button>
+
+            </div>
+          </template>
+        </div>
+
+      </div>
+
+    </template>
+    <template v-else>
+      <div class="text-center" style="margin-top: 100px">
+        <img class="mt-3" src="../assets/images/loading.gif" />
+        <p class="lead mt-3 text-nowrap">载入中，请稍后...</p>
+      </div>
+    </template>
+
+  </div>
+</body>
+
+</html>
+
+<script src="../assets/lib/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="../assets/lib/popper.min.js"></script>
+<script src="../assets/lib/bootstrap.min.js"></script>
+<script src="../assets/lib/lodash-4.17.10.min.js" type="text/javascript"></script>
+<script src="../assets/lib/layer-3.1.1/layer.js" type="text/javascript"></script>
+<script src="../assets/lib/sweetalert2-7.28.4.all.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vue-2.5.16.min.js" type="text/javascript"></script>
+<script src="../assets/lib/vee-validate-2.1.0.js"></script>
+<script src="../assets/lib/vee-validate-locale-zh_CN-2.1.0.js"></script>
+<script src="../assets/lib/js.cookie-2.2.0.js"></script>
+<script src="../assets/js/utils.js" type="text/javascript"></script>
+<script src="../config.js" type="text/javascript"></script>
+
+<script src="../assets/lib/vue-upload-component-2.8.14.js" type="text/javascript"></script>
+<link href="../assets/lib/cropperjs-1.4.1/cropper.min.css" rel="stylesheet">
+<script src="../assets/lib/cropperjs-1.4.1/cropper.min.js"></script>
+<script src="settings.js" type="text/javascript"></script>

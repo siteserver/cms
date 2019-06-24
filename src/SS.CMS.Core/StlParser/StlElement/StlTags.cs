@@ -78,7 +78,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             if (!isInnerHtml)
             {
                 tagsBuilder.Append($@"
-<link rel=""stylesheet"" href=""{SiteFilesAssets.Tags.GetStyleUrl(parseContext.ApiUrl, theme)}"" type=""text/css"" />
+<link rel=""stylesheet"" href=""{SiteFilesAssets.Tags.GetStyleUrl(theme)}"" type=""text/css"" />
 ");
                 tagsBuilder.Append(@"<ul class=""tagCloud"">");
             }

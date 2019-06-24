@@ -42,17 +42,7 @@ namespace SS.CMS.Core.Services
 
         public string GetApiUrl(string route)
         {
-            return PageUtils.Combine(ApiUrl, route);
-        }
-
-        public string GetAdminUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(Constants.ApplicationPath, _settingsManager.AdminPrefix, relatedUrl);
-        }
-
-        public string GetHomeUrl(string relatedUrl)
-        {
-            return PageUtils.Combine(Constants.ApplicationPath, _settingsManager.HomePrefix, relatedUrl);
+            return PageUtils.Combine(Constants.ApiUrl, route);
         }
 
         public string GetSystemDefaultPageUrl(int siteId)
@@ -107,8 +97,7 @@ namespace SS.CMS.Core.Services
             var url = PageUtils.AddQueryStringIfNotExists(ParsePluginUrl(pluginId, href), new NameValueCollection
             {
                 {"v", StringUtils.GetRandomInt(1, 1000).ToString()},
-                {"pluginId", pluginId},
-                {"apiUrl", InnerApiUrl}
+                {"pluginId", pluginId}
             });
             if (siteId > 0)
             {
@@ -164,39 +153,29 @@ namespace SS.CMS.Core.Services
         //    });
         //}
 
-        public string ApiUrl => _configRepository.Instance.IsSeparatedApi ? _configRepository.Instance.SeparatedApiUrl : $"/{_settingsManager.ApiPrefix}";
-
-        private string _innerApiUrl;
-
-        public string InnerApiUrl
+        public string GetWebUrl(SiteInfo siteInfo, params string[] paths)
         {
-            get
-            {
-                if (string.IsNullOrEmpty(_innerApiUrl))
-                {
-                    _innerApiUrl = ParseNavigationUrl($"~/{_settingsManager.ApiPrefix}");
-                }
-                return _innerApiUrl;
-            }
-        }
-
-        public string GetInnerApiUrl(string route)
-        {
-            return PageUtils.Combine(InnerApiUrl, route);
-        }
-
-        public string GetWebUrl(SiteInfo siteInfo)
-        {
-            return siteInfo.IsSeparatedWeb
+            var webUrl = siteInfo.IsSeparatedWeb
                 ? siteInfo.SeparatedWebUrl
                 : ParseNavigationUrl($"~/{siteInfo.SiteDir}");
+            webUrl = PageUtils.Combine(webUrl, PageUtils.Combine(paths));
+            return RemoveDefaultFileName(siteInfo, webUrl);
         }
 
-        public string GetAssetsUrl(SiteInfo siteInfo)
+        public string GetAssetsUrl(SiteInfo siteInfo, params string[] paths)
         {
-            return siteInfo.IsSeparatedAssets
+            var assetsUrl = siteInfo.IsSeparatedAssets
                 ? siteInfo.SeparatedAssetsUrl
                 : PageUtils.Combine(GetWebUrl(siteInfo), siteInfo.AssetsDir);
+            return PageUtils.Combine(assetsUrl, PageUtils.Combine(paths));
+        }
+
+        public string GetHomeUrl(SiteInfo siteInfo, params string[] paths)
+        {
+            var assetsUrl = siteInfo.IsSeparatedAssets
+                ? siteInfo.SeparatedAssetsUrl
+                : PageUtils.Combine(GetWebUrl(siteInfo), siteInfo.AssetsDir);
+            return PageUtils.Combine(assetsUrl, PageUtils.Combine(paths));
         }
 
         public string GetSiteUrl(SiteInfo siteInfo, bool isLocal)

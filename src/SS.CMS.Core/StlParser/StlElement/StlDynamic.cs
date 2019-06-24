@@ -106,7 +106,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 OnError = onError
             };
 
-            return dynamicInfo.GetScript(parseContext.SettingsManager, ApiRouteActionsDynamic.GetUrl(parseContext.ApiUrl));
+            return dynamicInfo.GetScript(parseContext.SettingsManager, ApiRouteActionsDynamic.GetUrl());
         }
 
         internal static string ParseDynamicElement(string stlElement, ParseContext parseContext)

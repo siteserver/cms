@@ -34,7 +34,7 @@ namespace SS.CMS.Repositories
 
         int GetParentSiteId(int siteId);
 
-        string GetSiteName(IUrlManager urlManager, SiteInfo siteInfo);
+        string GetSiteName(SiteInfo siteInfo);
 
         int GetTableCount(string tableName);
     }

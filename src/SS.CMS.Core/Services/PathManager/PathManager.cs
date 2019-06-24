@@ -25,16 +25,6 @@ namespace SS.CMS.Core.Services
             _templateRepository = templateRepository;
         }
 
-        public string GetAdminPath(params string[] paths)
-        {
-            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.AdminPrefix), paths);
-        }
-
-        public string GetHomePath(params string[] paths)
-        {
-            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, _settingsManager.HomePrefix), paths);
-        }
-
         public string GetBackupFilesPath(params string[] paths)
         {
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.BackupFiles), paths);
@@ -48,26 +38,6 @@ namespace SS.CMS.Core.Services
         public string GetSiteTemplatesPath(params string[] paths)
         {
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates), paths);
-        }
-
-        public bool IsSystemDirectory(string directoryName)
-        {
-            if (StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.ApiPrefix)
-                || StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.AdminPrefix)
-                || StringUtils.EqualsIgnoreCase(directoryName, _settingsManager.HomePrefix))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool IsWebSiteDirectory(string directoryName)
-        {
-            return StringUtils.EqualsIgnoreCase(directoryName, "channels")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "contents")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "Template")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "include")
-                   || StringUtils.EqualsIgnoreCase(directoryName, "upload");
         }
 
         public string AddVirtualToPath(string path)

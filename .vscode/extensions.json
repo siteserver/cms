@@ -4,6 +4,7 @@
 		"dbaeumer.vscode-eslint",
 		"warren-buckley.iis-express",
 		"esbenp.prettier-vscode",
-		"octref.vetur"
+		"octref.vetur",
+		"formulahendry.dotnet-test-explorer"
 	]
 }

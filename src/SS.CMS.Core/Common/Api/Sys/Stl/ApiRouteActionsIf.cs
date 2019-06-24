@@ -6,9 +6,9 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {
         public const string Route = "sys/stl/actions/if";
 
-        public static string GetUrl(string apiUrl)
+        public static string GetUrl()
         {
-            return PageUtils.Combine(apiUrl, Route);
+            return PageUtils.Combine(Constants.ApiUrl, Route);
         }
     }
 }

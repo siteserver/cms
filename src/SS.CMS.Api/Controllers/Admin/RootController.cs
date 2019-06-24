@@ -17,6 +17,7 @@ namespace SS.CMS.Api.Controllers.Admin
     public partial class RootController : ControllerBase
     {
         private const string Route = "";
+        private const string RouteActionsValidate = "actions/validate";
         private const string RouteActionsDownload = "actions/download";
 
         private readonly ISettingsManager _settingsManager;
@@ -52,71 +53,13 @@ namespace SS.CMS.Api.Controllers.Admin
 
         [Authorize]
         [HttpGet(Route)]
-        public async Task<ActionResult> Get([FromQuery] int? siteId, string pageUrl)
+        public async Task<ActionResult> Get([FromQuery] int siteId)
         {
-            //if (!_identityManager.IsAdminLoggin)
-            //{
-            //    return Ok(new
-            //    {
-            //        Value = false,
-            //        RedirectUrl = $"{_urlManager.AdminLoginUrl}?redirectUrl={PageUtils.UrlEncode(_urlManager.GetAdminIndexUrl(siteId, pageUrl))}"
-            //    });
-            //}
-
-            //if (adminInfo.Locked)
-            //{
-            //    return Ok(new
-            //    {
-            //        Value = false,
-            //        RedirectUrl = $"{_urlManager.AdminErrorUrl}?message={PageUtils.UrlEncode("管理员账号已被锁定，请联系超级管理员协助解决")}"
-            //    });
-            //}
-
-            var redirect = AdminRedirectCheck(checkInstall: true, checkDatabaseVersion: true);
-            if (redirect != null) return Ok(redirect);
-
             var adminInfo = await _userManager.GetUserAsync();
 
-            var siteInfo = siteId.HasValue ? _siteRepository.GetSiteInfo(siteId.Value) : null;
+            var siteInfo = _siteRepository.GetSiteInfo(siteId);
             var isSuperAdmin = _userManager.IsSuperAdministrator();
             var siteIdList = await _userManager.GetSiteIdsAsync();
-
-            if (siteInfo == null || !siteIdList.Contains(siteInfo.Id))
-            {
-                if (siteIdList.Contains(adminInfo.SiteId))
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = _urlManager.GetAdminIndexUrl(adminInfo.SiteId, pageUrl)
-                    });
-                }
-
-                if (siteIdList.Count > 0)
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        RedirectUrl = _urlManager.GetAdminIndexUrl(siteIdList[0], pageUrl)
-                    });
-                }
-
-                if (isSuperAdmin)
-                {
-                    return Ok(new
-                    {
-                        Value = false,
-                        //RedirectUrl = PageSiteAdd.GetRedirectUrl()
-                        RedirectUrl = string.Empty
-                    });
-                }
-
-                return Ok(new
-                {
-                    Value = false,
-                    RedirectUrl = $"{_urlManager.AdminErrorUrl}?message={PageUtils.UrlEncode("您没有可以管理的站点，请联系超级管理员协助解决")}"
-                });
-            }
 
             var packageIds = new List<string>
                 {
@@ -165,15 +108,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 //Level = permissions.GetAdminLevel()
             };
 
-            var defaultPageUrl = PageUtils.UrlDecode(pageUrl);
-            if (string.IsNullOrEmpty(defaultPageUrl))
-            {
-                defaultPageUrl = _urlManager.GetSystemDefaultPageUrl(siteId ?? 0);
-            }
-            if (string.IsNullOrEmpty(defaultPageUrl))
-            {
-                defaultPageUrl = _urlManager.AdminDashboardUrl;
-            }
+            var defaultPageUrl = _urlManager.GetSystemDefaultPageUrl(siteId);
 
             return Ok(new
             {
@@ -183,19 +118,90 @@ namespace SS.CMS.Api.Controllers.Admin
                 _settingsManager.ProductVersion,
                 _settingsManager.PluginVersion,
                 _settingsManager.TargetFramework,
-                _settingsManager.EnvironmentVersion,
                 IsSuperAdmin = isSuperAdmin,
                 PackageList = packageList,
                 PackageIds = packageIds,
-                _settingsManager.ApiPrefix,
-                _settingsManager.AdminPrefix,
-                _settingsManager.HomePrefix,
+                _settingsManager.AdminUrl,
+                _settingsManager.HomeUrl,
                 TopMenus = topMenus,
                 //LeftMenus = leftMenus,
                 //SiteMenus = siteMenus,
                 //PluginMenus = pluginMenus,
                 AdminInfo = adminInfoToReturn
             });
+        }
+
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [AllowAnonymous]
+        [HttpPost(RouteActionsValidate)]
+        public async Task<ActionResult<ValidateResult>> Validate([FromQuery] int? siteId)
+        {
+            var validateResult = new ValidateResult();
+            validateResult.IsInstalled = !string.IsNullOrWhiteSpace(_settingsManager.DatabaseConnectionString);
+            if (!validateResult.IsInstalled)
+            {
+                return validateResult;
+            }
+
+            if (_configRepository.Instance == null)
+            {
+                _configRepository.GetConfigInfo();
+            }
+
+            validateResult.IsAdministrator = User.Identity.IsAuthenticated && _userManager.IsAdministrator();
+            if (!validateResult.IsAdministrator)
+            {
+                return validateResult;
+            }
+
+            var adminInfo = await _userManager.GetUserAsync();
+            validateResult.IsLockedOut = adminInfo.IsLockedOut;
+            if (validateResult.IsLockedOut)
+            {
+                return validateResult;
+            }
+
+            validateResult.DatabaseVersion = _configRepository.Instance.DatabaseVersion;
+            validateResult.ProductVersion = _settingsManager.ProductVersion;
+            if (validateResult.DatabaseVersion != validateResult.ProductVersion)
+            {
+                return validateResult;
+            }
+
+            var siteIdList = await _userManager.GetSiteIdsAsync();
+            if (siteId.HasValue && siteIdList.Contains(siteId.Value))
+            {
+                validateResult.SiteId = siteId.Value;
+            }
+            else
+            {
+                if (_userManager.IsSuperAdministrator())
+                {
+                    if (siteIdList.Count == 0)
+                    {
+                        validateResult.RedirectToCreateSite = true;
+                    }
+                    else
+                    {
+                        validateResult.SiteId = siteIdList[0];
+                    }
+                }
+                else
+                {
+                    if (siteIdList.Count == 0)
+                    {
+                        validateResult.RedirectToErrorSite = true;
+                        validateResult.ErrorMessage = "您没有可以管理的站点，请联系超级管理员协助解决";
+                    }
+                    else
+                    {
+                        validateResult.SiteId = siteIdList[0];
+                    }
+                }
+            }
+
+            return validateResult;
         }
 
         [HttpPost(Route)]

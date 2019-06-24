@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Repositories
         private class Attr
         {
             public const string Id = nameof(ErrorLogInfo.Id);
-            public const string CreationDate = nameof(ErrorLogInfo.CreationDate);
+            public const string CreatedDate = nameof(ErrorLogInfo.CreatedDate);
         }
 
         public const string CategoryStl = "stl";
@@ -73,7 +73,7 @@ namespace SS.CMS.Core.Repositories
             if (days <= 0) return;
 
             _repository.Delete(Q
-                .Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
+                .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public ErrorLogInfo GetErrorLogInfo(int logId)

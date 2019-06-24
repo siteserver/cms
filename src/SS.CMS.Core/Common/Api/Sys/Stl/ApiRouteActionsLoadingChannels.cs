@@ -6,10 +6,9 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {
         public const string Route = "sys/stl/actions/loading_channels";
 
-        public static string GetUrl(string apiUrl)
+        public static string GetUrl()
         {
-            apiUrl = PageUtils.Combine(apiUrl, Route);
-            return apiUrl;
+            return PageUtils.Combine(Constants.ApiUrl, Route);
         }
     }
 }

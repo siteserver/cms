@@ -17,7 +17,7 @@ namespace SS.CMS.Data
         public string Guid { get; set; }
 
         [TableColumn]
-        public DateTime? CreationDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         [TableColumn]
         public DateTime? LastModifiedDate { get; set; }

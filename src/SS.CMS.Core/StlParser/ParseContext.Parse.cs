@@ -103,8 +103,7 @@ namespace SS.CMS.Core.StlParser
                             fileTemplateId = TemplateInfo.Id;
                         }
 
-                        var apiUrl = ApiUrl;
-                        var ajaxUrl = ApiRouteActionsTrigger.GetUrl(apiUrl, SiteId, ChannelId,
+                        var ajaxUrl = ApiRouteActionsTrigger.GetUrl(SiteId, ChannelId,
                             ContentId, fileTemplateId, true);
                         if (!FootCodes.ContainsKey("CreateDoubleClick"))
                         {

@@ -7,13 +7,13 @@ namespace SS.CMS.Core.StlParser.Models
     {
         public static class Channel
         {
-            public static readonly string SqlColumns = $"{ChannelAttribute.Id}, {ChannelAttribute.SiteId}, {ChannelAttribute.CreationDate}, {ChannelAttribute.Taxis}";
+            public static readonly string SqlColumns = $"{ChannelAttribute.Id}, {ChannelAttribute.SiteId}, {ChannelAttribute.CreatedDate}, {ChannelAttribute.Taxis}";
 
             public static readonly string[] Columns = new string[]
             {
                 ChannelAttribute.Id,
                 ChannelAttribute.SiteId,
-                ChannelAttribute.CreationDate,
+                ChannelAttribute.CreatedDate,
                 ChannelAttribute.Taxis
             };
         }

@@ -60,7 +60,7 @@ namespace SS.CMS.Cli.Services
             await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
             await Console.Out.WriteLineAsync();
 
-            var db = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile, out var errorMessage);
+            var (db, errorMessage) = await CliUtils.GetDatabaseAsync(_databaseType, _connectionString, _configFile);
             if (db != null)
             {
                 try

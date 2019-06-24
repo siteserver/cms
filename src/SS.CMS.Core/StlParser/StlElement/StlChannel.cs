@@ -292,10 +292,10 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 parsedContent = channel.Taxis.ToString();
             }
-            else if (type.Equals(ChannelAttribute.CreationDate.ToLower()))
+            else if (type.Equals(ChannelAttribute.CreatedDate.ToLower()))
             {
                 inputType = InputType.DateTime;
-                parsedContent = DateUtils.Format(channel.CreationDate, formatString);
+                parsedContent = DateUtils.Format(channel.CreatedDate, formatString);
             }
             else if (type.Equals(ChannelAttribute.ImageUrl.ToLower()))
             {

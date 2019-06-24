@@ -123,8 +123,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 return $@"
 <audio class=""mejs__player"" src=""{playUrl}"" {(isAutoPlay ? "autoplay" : string.Empty)} {(isPreLoad ? string.Empty : @"preload=""none""")} {(isLoop ? "loop" : string.Empty)}>
-    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"">
-        <param name=""movie"" value=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.MediaElement.Swf)}"" />
+    <object width=""460"" height=""40"" type=""application/x-shockwave-flash"" data=""{SiteFilesAssets.GetUrl(SiteFilesAssets.MediaElement.Swf)}"">
+        <param name=""movie"" value=""{SiteFilesAssets.GetUrl(SiteFilesAssets.MediaElement.Swf)}"" />
         <param name=""flashvars"" value=""controls=true&file={playUrl}"" />
     </object>
 </audio>

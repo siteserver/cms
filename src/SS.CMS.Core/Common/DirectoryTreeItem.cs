@@ -23,9 +23,9 @@ namespace SS.CMS.Core.Common
         private bool enabled = true;
         private bool isClickChange = false;
 
-        public static DirectoryTreeItem CreateDirectoryTreeItem(IUrlManager urlManager, bool isDisplay, bool selected, int parentsCount, bool hasChildren, string text, string linkUrl, string onClickUrl, string target, bool enabled, bool isClickChange)
+        public static DirectoryTreeItem CreateDirectoryTreeItem(bool isDisplay, bool selected, int parentsCount, bool hasChildren, string text, string linkUrl, string onClickUrl, string target, bool enabled, bool isClickChange)
         {
-            var item = new DirectoryTreeItem(urlManager);
+            var item = new DirectoryTreeItem();
             item.isDisplay = isDisplay;
             item.selected = selected;
             item.parentsCount = parentsCount;
@@ -39,9 +39,9 @@ namespace SS.CMS.Core.Common
             return item;
         }
 
-        private DirectoryTreeItem(IUrlManager urlManager)
+        private DirectoryTreeItem()
         {
-            var treeDirectoryUrl = SiteServerAssets.GetIconUrl(urlManager, "tree");
+            var treeDirectoryUrl = SiteServerAssets.GetIconUrl("tree");
             iconFolderUrl = PageUtils.Combine(treeDirectoryUrl, "folder.gif");
             iconOpenedFolderUrl = PageUtils.Combine(treeDirectoryUrl, "openedfolder.gif");
             iconEmptyUrl = PageUtils.Combine(treeDirectoryUrl, "empty.gif");
@@ -139,17 +139,17 @@ namespace SS.CMS.Core.Common
             return htmlBuilder.ToString();
         }
 
-        public static string GetNavigationBarScript(IUrlManager urlManager)
+        public static string GetNavigationBarScript()
         {
-            return GetScript(urlManager, false);
+            return GetScript(false);
         }
 
-        public static string GetNodeTreeScript(IUrlManager urlManager)
+        public static string GetNodeTreeScript()
         {
-            return GetScript(urlManager, true);
+            return GetScript(true);
         }
 
-        private static string GetScript(IUrlManager urlManager, bool isNodeTree)
+        private static string GetScript(bool isNodeTree)
         {
             var script = @"
 <script language=""JavaScript"">
@@ -273,7 +273,7 @@ function displayChildren(element){
 var isNodeTree = {isNodeTree};
 </script>
 ";
-            var item = new DirectoryTreeItem(urlManager);
+            var item = new DirectoryTreeItem();
             script = script.Replace("{iconEmptyUrl}", item.iconEmptyUrl);
             script = script.Replace("{iconFolderUrl}", item.iconFolderUrl);
             script = script.Replace("{iconMinusUrl}", item.iconMinusUrl);

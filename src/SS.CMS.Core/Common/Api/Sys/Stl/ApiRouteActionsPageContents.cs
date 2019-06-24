@@ -7,9 +7,9 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {
         public const string Route = "sys/stl/actions/pagecontents";
 
-        public static string GetUrl(string apiUrl)
+        public static string GetUrl()
         {
-            return PageUtils.Combine(apiUrl, Route);
+            return PageUtils.Combine(Constants.ApiUrl, Route);
         }
 
         public static string GetParameters(ISettingsManager settingsManager, int siteId, int pageChannelId, int templateId, int totalNum, int pageCount,

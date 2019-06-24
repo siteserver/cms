@@ -8,7 +8,7 @@ namespace SS.CMS.Core.Models.Attributes
     {
         public const string Id = nameof(UserInfo.Id);
         public const string Guid = nameof(UserInfo.Guid);
-        public const string CreationDate = nameof(UserInfo.CreationDate);
+        public const string CreatedDate = nameof(UserInfo.CreatedDate);
         public const string LastModifiedDate = nameof(UserInfo.LastModifiedDate);
         public const string UserName = nameof(UserInfo.UserName);
         public const string Password = nameof(UserInfo.Password);
@@ -32,7 +32,7 @@ namespace SS.CMS.Core.Models.Attributes
         {
             Id,
             Guid,
-            CreationDate,
+            CreatedDate,
             LastModifiedDate,
             UserName,
             Password,

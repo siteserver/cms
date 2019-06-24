@@ -13,7 +13,6 @@ namespace SS.CMS.Core.StlParser.Models
         public SortedDictionary<string, string> FootCodes { get; }
         public SiteInfo SiteInfo { get; private set; }
         public Dictionary<string, string> Parameters { get; set; }
-        public string ApiUrl { get; }
         public TemplateInfo TemplateInfo { get; }
         public UserInfo UserInfo { get; set; }
         public int SiteId { get; private set; }
@@ -36,10 +35,10 @@ namespace SS.CMS.Core.StlParser.Models
 
         public PageInfo Clone()
         {
-            return new PageInfo(ApiUrl, PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
+            return new PageInfo(PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
         }
 
-        public PageInfo(string apiUrl, int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
+        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
         {
             TemplateInfo = templateInfo;
             SiteId = siteInfo.Id;
@@ -52,7 +51,6 @@ namespace SS.CMS.Core.StlParser.Models
             SiteInfo = siteInfo;
             UserInfo = null;
             _uniqueId = 1;
-            ApiUrl = apiUrl;
 
             SiteItems = new Stack<KeyValuePair<int, SiteInfo>>(5);
             ChannelItems = new Stack<KeyValuePair<int, ChannelInfo>>(5);
@@ -193,59 +191,59 @@ namespace SS.CMS.Core.StlParser.Models
                 if (SiteInfo.IsCreateWithJQuery)
                 {
                     retval =
-                        $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
+                        $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
                 }
             }
             else if (pageJsName == Const.Vue)
             {
                 retval =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.JsCookie)
             {
                 retval =
-                    $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.JsCookie)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{ SiteFilesAssets.GetUrl(SiteFilesAssets.Components.JsCookie)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.StlClient)
             {
                 retval =
-                    $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Lodash)}"" type=""text/javascript""></script><script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.StlClient)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{ SiteFilesAssets.GetUrl(SiteFilesAssets.Components.Lodash)}"" type=""text/javascript""></script><script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Components.StlClient)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BAjaxUpload)
             {
                 retval =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
                 retval =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
                 retval =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {
                 retval =
-                    $@"<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Css)}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{SiteFilesAssets
-                        .JQuery.ShowLoading.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Js)}""></script>";
+                    $@"<link href=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.ShowLoading.Css)}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{SiteFilesAssets
+                        .JQuery.ShowLoading.Charset}"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.ShowLoading.Js)}""></script>";
             }
             else if (pageJsName == Const.BjTemplates)
             {
                 retval =
-                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.JTemplates.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JTemplates.Js)}""></script>";
+                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.JTemplates.Charset}"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.JTemplates.Js)}""></script>";
             }
             else if (pageJsName == Const.BValidate)
             {
                 retval =
-                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.ValidateJs.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ValidateJs.Js)}""></script>";
+                    $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.ValidateJs.Charset}"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.ValidateJs.Js)}""></script>";
             }
             else if (pageJsName == Const.BBootstrap)
             {
-                var cssUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Css);
-                var jsUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Js);
+                var cssUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.Bootstrap.Css);
+                var jsUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.JQuery.Bootstrap.Js);
                 retval = $@"
 <link rel=""stylesheet"" type=""text/css"" href=""{cssUrl}"">
 <script language=""javascript"" src=""{jsUrl}""></script>
@@ -254,27 +252,27 @@ namespace SS.CMS.Core.StlParser.Models
             else if (pageJsName == Const.JsAcSwfObject)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.SwfObject.Js)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.SwfObject.Js)}""></script>";
             }
             else if (pageJsName == Const.JsAcJwPlayer6)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JwPlayer6.Js)}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.JwPlayer6.Js)}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
             }
             else if (pageJsName == Const.JsAcFlowPlayer)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.FlowPlayer.Js)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.FlowPlayer.Js)}""></script>";
             }
             else if (pageJsName == Const.JsAcMediaElement)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Js)}""></script><link rel=""stylesheet"" href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Css)}"" />";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.MediaElement.Js)}""></script><link rel=""stylesheet"" href=""{SiteFilesAssets.GetUrl(SiteFilesAssets.MediaElement.Css)}"" />";
             }
             else if (pageJsName == Const.JsAcAudioJs)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.AudioJs.Js)}""></script>
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.AudioJs.Js)}""></script>
 <script type='text/javascript'>
 audiojs.events.ready(function() {{
     audiojs.createAll();
@@ -285,8 +283,8 @@ audiojs.events.ready(function() {{
             else if (pageJsName == Const.JsAcVideoJs)
             {
                 retval = $@"
-<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Css)}"" rel=""stylesheet"">
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Js)}""></script>
+<link href=""{SiteFilesAssets.GetUrl(SiteFilesAssets.VideoJs.Css)}"" rel=""stylesheet"">
+<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.VideoJs.Js)}""></script>
 ";
             }
             else if (pageJsName == Const.JsPageOpenWindow)
@@ -309,23 +307,23 @@ wnd_frame.src=url;}}
             else if (pageJsName == Const.JsUserScript)
             {
                 retval = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
-<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {urlManager.GetWebUrl(SiteInfo).TrimEnd('/')}');</script>
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
+<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Stl.JsPageScript)}""></script>
+<script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(string.Empty)}', '{SiteInfo.Id}', {urlManager.GetWebUrl(SiteInfo).TrimEnd('/')}');</script>
+<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)
             {
-                retval = $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
+                retval = $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.DatePicker.Js)}""></script>";
             }
             else if (pageJsName == Const.JsStaticAdFloating)
             {
                 retval =
-                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Static.JsStaticAdFloating)}""></script>";
+                    $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.Static.JsStaticAdFloating)}""></script>";
             }
             else if (pageJsName == Const.JsAhTranslate)
             {
                 retval =
-                    $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.TwCn.Js)}"" charset=""{SiteFilesAssets.TwCn.Charset}"" type=""text/javascript""></script>";
+                    $@"<script src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.TwCn.Js)}"" charset=""{SiteFilesAssets.TwCn.Charset}"" type=""text/javascript""></script>";
             }
             return retval;
         }

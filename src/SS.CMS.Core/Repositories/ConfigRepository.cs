@@ -56,7 +56,17 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        private ConfigInfo GetConfigInfo()
+        public ConfigInfo GetConfigInfo()
+        {
+            var configInfo = _repository.Get(Q.OrderBy(Attr.Id));
+            if (configInfo != null)
+            {
+                _cacheManager.Insert(CacheKey, configInfo);
+            }
+            return configInfo;
+        }
+
+        private ConfigInfo GetConfigInfoWithoutException()
         {
             ConfigInfo info = null;
 
@@ -89,7 +99,7 @@ namespace SS.CMS.Core.Repositories
                 retVal = _cacheManager.Get<ConfigInfo>(CacheKey);
                 if (retVal == null)
                 {
-                    retVal = GetConfigInfo();
+                    retVal = GetConfigInfoWithoutException();
                     _cacheManager.Insert(CacheKey, retVal);
                 }
 

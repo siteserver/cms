@@ -310,9 +310,9 @@ namespace SS.CMS.Core.Common
                 }
                 else
                 {
+                    var swfUrl = urlManager.GetAssetsUrl(siteInfo, SiteFilesAssets.BrPlayer.Swf);
                     retVal = $@"
-<embed src=""{SiteFilesAssets.GetUrl(urlManager.ApiUrl, SiteFilesAssets.BrPlayer.Swf)}"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true
-                        .ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
+<embed src=""swfUrl"" allowfullscreen=""true"" flashvars=""controlbar=over&autostart={true.ToString().ToLower()}&image={string.Empty}&file={videoUrl}"" width=""{450}"" height=""{350}""/>
 ";
                 }
             }
@@ -326,7 +326,7 @@ namespace SS.CMS.Core.Common
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, channelId, contentId,
+                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, siteInfo.Id, channelId, contentId,
                     fileUrl);
             }
             else
@@ -334,7 +334,7 @@ namespace SS.CMS.Core.Common
                 var linkAttributes = new NameValueCollection();
 
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, channelId,
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, siteInfo.Id, channelId,
                     contentId, fileUrl);
 
                 innerHtml = string.IsNullOrEmpty(innerHtml)
@@ -362,14 +362,14 @@ namespace SS.CMS.Core.Common
             string retVal;
             if (isStlEntity)
             {
-                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, fileUrl);
+                retVal = ApiRouteActionsDownload.GetUrl(settingsManager, siteInfo.Id, fileUrl);
             }
             else
             {
                 var linkAttributes = new NameValueCollection();
 
                 TranslateUtils.AddAttributesIfNotExists(linkAttributes, attributes);
-                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, urlManager.ApiUrl, siteInfo.Id, fileUrl);
+                linkAttributes["href"] = ApiRouteActionsDownload.GetUrl(settingsManager, siteInfo.Id, fileUrl);
                 innerHtml = string.IsNullOrEmpty(innerHtml) ? PageUtils.GetFileNameFromUrl(fileUrl) : innerHtml;
 
                 if (isLower)

@@ -126,7 +126,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(AddDate, attributeName))//栏目添加日期
                 {
-                    parsedContent = DateUtils.Format(nodeInfo.CreationDate, string.Empty);
+                    parsedContent = DateUtils.Format(nodeInfo.CreatedDate, string.Empty);
                 }
                 else if (StringUtils.EqualsIgnoreCase(DirectoryName, attributeName))//生成文件夹名称
                 {

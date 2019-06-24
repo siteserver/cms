@@ -68,7 +68,6 @@ namespace SS.CMS.Utils.Tests
             var settingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
 
             var accessTokenRepository = new AccessTokenRepository(settingsManager, cacheManager);
-
             var userRoleRepository = new UserRoleRepository(settingsManager);
             var areaRepository = new AreaRepository(settingsManager, cacheManager);
             var channelGroupRepository = new ChannelGroupRepository(settingsManager, cacheManager);
@@ -90,12 +89,10 @@ namespace SS.CMS.Utils.Tests
             var tableStyleItemRepository = new TableStyleItemRepository(settingsManager);
             var tagRepository = new TagRepository(settingsManager, cacheManager);
             var templateLogRepository = new TemplateLogRepository(settingsManager);
-
             var userGroupRepository = new UserGroupRepository(settingsManager, cacheManager, configRepository);
             var userLogRepository = new UserLogRepository(settingsManager, configRepository);
             var userMenuRepository = new UserMenuRepository(settingsManager, cacheManager);
             var userRepository = new UserRepository(settingsManager, cacheManager, configRepository, userRoleRepository);
-
             var permissionRepository = new PermissionRepository(settingsManager, cacheManager, roleRepository);
             var channelRepository = new ChannelRepository(settingsManager, cacheManager, userRepository, channelGroupRepository, siteRepository);
             var templateRepository = new TemplateRepository(settingsManager, cacheManager, siteRepository, channelRepository, templateLogRepository);

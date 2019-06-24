@@ -297,7 +297,7 @@ namespace SS.CMS.Core.Services
                 ? _templateRepository.GetIndexPageTemplateInfo(siteId)
                 : _templateRepository.GetChannelTemplateInfo(siteId, channelId);
             var filePath = _pathManager.GetChannelPageFilePath(siteInfo, channelId, 0);
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
+            var parseContext = new ParseContext(new PageInfo(channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
             {
                 ContextType = EContextType.Channel
             };
@@ -455,7 +455,7 @@ namespace SS.CMS.Core.Services
             }
 
             var templateInfo = _templateRepository.GetContentTemplateInfo(siteInfo.Id, channelInfo.Id);
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, channelInfo.Id, contentId, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
+            var parseContext = new ParseContext(new PageInfo(channelInfo.Id, contentId, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
             {
                 ContextType = EContextType.Content,
                 ContentInfo = contentInfo
@@ -628,7 +628,7 @@ namespace SS.CMS.Core.Services
                 return;
             }
 
-            var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
+            var parseContext = new ParseContext(new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
             var filePath = _pathManager.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 
             var contentBuilder = new StringBuilder(_templateRepository.GetTemplateContent(siteInfo, templateInfo));
@@ -642,7 +642,7 @@ namespace SS.CMS.Core.Services
             var templateInfoList = _specialRepository.GetTemplateInfoList(siteInfo, specialId, _pathManager);
             foreach (var templateInfo in templateInfoList)
             {
-                var parseContext = new ParseContext(new PageInfo(_urlManager.ApiUrl, siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
+                var parseContext = new ParseContext(new PageInfo(siteId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _settingsManager, _cacheManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository);
                 var filePath = _pathManager.MapPath(siteInfo, templateInfo.CreatedFileFullName);
 
                 var contentBuilder = new StringBuilder(templateInfo.Content);

@@ -8,25 +8,17 @@ namespace SS.CMS.Services
 
         string GetApiUrl(string route);
 
-        string GetAdminUrl(string relatedUrl);
-
-        string GetHomeUrl(string relatedUrl);
-
         string GetSystemDefaultPageUrl(int siteId);
 
         string GetHomeDefaultPageUrl();
 
         string GetMenuUrl(string pluginId, string href, int siteId, int channelId, int contentId);
 
-        string ApiUrl { get; }
+        string GetWebUrl(SiteInfo siteInfo, params string[] value);
 
-        string InnerApiUrl { get; }
+        string GetAssetsUrl(SiteInfo siteInfo, params string[] value);
 
-        string GetInnerApiUrl(string route);
-
-        string GetWebUrl(SiteInfo siteInfo);
-
-        string GetAssetsUrl(SiteInfo siteInfo);
+        string GetHomeUrl(SiteInfo siteInfo, params string[] value);
 
         string GetSiteUrl(SiteInfo siteInfo, bool isLocal);
 

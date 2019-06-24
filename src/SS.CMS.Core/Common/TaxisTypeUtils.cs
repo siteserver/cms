@@ -106,11 +106,11 @@ namespace SS.CMS.Core.Common
             }
             else if (taxisType == TaxisType.OrderByAddDate)
             {
-                query.OrderBy(nameof(ChannelInfo.CreationDate));
+                query.OrderBy(nameof(ChannelInfo.CreatedDate));
             }
             else if (taxisType == TaxisType.OrderByAddDateDesc)
             {
-                query.OrderByDesc(nameof(ChannelInfo.CreationDate));
+                query.OrderByDesc(nameof(ChannelInfo.CreatedDate));
             }
             else if (taxisType == TaxisType.OrderByLastModifiedDate)
             {

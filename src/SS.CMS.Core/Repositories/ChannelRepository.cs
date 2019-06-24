@@ -10,6 +10,7 @@ using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
 using SS.CMS.Utils;
+using Attr = SS.CMS.Core.Models.Attributes.ChannelAttribute;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -33,27 +34,6 @@ namespace SS.CMS.Core.Repositories
         public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
-
-        private class Attr
-        {
-            public const string Id = nameof(ChannelInfo.Id);
-            public const string CreationDate = nameof(ChannelInfo.CreationDate);
-            public const string LastModifiedDate = nameof(ChannelInfo.LastModifiedDate);
-            public const string SiteId = nameof(ChannelInfo.SiteId);
-            public const string ContentModelPluginId = nameof(ChannelInfo.ContentModelPluginId);
-            public const string ParentId = nameof(ChannelInfo.ParentId);
-            public const string ParentsPath = nameof(ChannelInfo.ParentsPath);
-            public const string ChildrenCount = nameof(ChannelInfo.ChildrenCount);
-            public const string IsLastNode = "IsLastNode";
-            public const string IndexName = nameof(ChannelInfo.IndexName);
-            public const string GroupNameCollection = nameof(ChannelInfo.GroupNameCollection);
-            public const string ImageUrl = nameof(ChannelInfo.ImageUrl);
-            public const string Taxis = nameof(ChannelInfo.Taxis);
-            public const string FilePath = nameof(ChannelInfo.FilePath);
-            public const string ChannelTemplateId = nameof(ChannelInfo.ChannelTemplateId);
-            public const string ContentTemplateId = nameof(ChannelInfo.ContentTemplateId);
-            public const string ExtendValues = "ExtendValues";
-        }
 
         private void InsertChannelInfo(ChannelInfo parentChannelInfo, ChannelInfo channelInfo)
         {
@@ -619,11 +599,11 @@ namespace SS.CMS.Core.Repositories
             }
             else if (taxisType == TaxisType.OrderByAddDate || taxisType == TaxisType.OrderByLastModifiedDate)
             {
-                query.OrderBy(Attr.CreationDate);
+                query.OrderBy(Attr.CreatedDate);
             }
             else if (taxisType == TaxisType.OrderByAddDateDesc || taxisType == TaxisType.OrderByLastModifiedDateDesc)
             {
-                query.OrderByDesc(Attr.CreationDate);
+                query.OrderByDesc(Attr.CreatedDate);
             }
             else if (taxisType == TaxisType.OrderByTaxis)
             {

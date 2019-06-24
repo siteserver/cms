@@ -69,7 +69,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ApiUrl, attributeName))//API地址
                 {
-                    parsedContent = parseContext.PageInfo.ApiUrl.TrimEnd('/');
+                    parsedContent = Constants.ApiUrl.TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteId, attributeName))//ID
                 {
@@ -97,22 +97,22 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
-                    parsedContent = parseContext.UrlManager.GetHomeUrl(string.Empty).TrimEnd('/');
+                    parsedContent = parseContext.UrlManager.GetHomeUrl(parseContext.SiteInfo, string.Empty).TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(LoginUrl, attributeName))
                 {
                     var returnUrl = parseContext.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal);
-                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseContext.UrlManager.GetHomeUrl(parseContext.SiteInfo, $"pages/login.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(LogoutUrl, attributeName))
                 {
                     var returnUrl = parseContext.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal);
-                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseContext.UrlManager.GetHomeUrl(parseContext.SiteInfo, $"pages/logout.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.EqualsIgnoreCase(RegisterUrl, attributeName))
                 {
                     var returnUrl = parseContext.GetStlCurrentUrl(parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, parseContext.ContentInfo, parseContext.PageInfo.TemplateInfo.Type, parseContext.PageInfo.TemplateInfo.Id, parseContext.PageInfo.IsLocal);
-                    parsedContent = parseContext.UrlManager.GetHomeUrl($"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
+                    parsedContent = parseContext.UrlManager.GetHomeUrl(parseContext.SiteInfo, $"pages/register.html?returnUrl={PageUtils.UrlEncode(returnUrl)}");
                 }
                 else if (StringUtils.StartsWithIgnoreCase(attributeName, "TableFor"))//
                 {

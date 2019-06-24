@@ -16,7 +16,7 @@ namespace SS.CMS.Data.Utils
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
-            dataInfo.CreationDate = DateTime.UtcNow;
+            dataInfo.CreatedDate = DateTime.UtcNow;
             dataInfo.LastModifiedDate = DateTime.UtcNow;
 
             var dictionary = new Dictionary<string, object>();
@@ -47,7 +47,7 @@ namespace SS.CMS.Data.Utils
         {
             if (dataInfo == null) return 0;
             dataInfo.Guid = Utilities.GetGuid();
-            dataInfo.CreationDate = DateTime.UtcNow;
+            dataInfo.CreatedDate = DateTime.UtcNow;
             dataInfo.LastModifiedDate = DateTime.UtcNow;
 
             var dictionary = new Dictionary<string, object>();

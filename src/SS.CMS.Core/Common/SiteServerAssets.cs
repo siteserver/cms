@@ -8,29 +8,24 @@ namespace SS.CMS.Core.Common
     {
         public const string DirectoryName = "assets";
 
-        public static string GetUrl(IUrlManager urlManager, string relatedUrl)
+        public static string GetUrl(string relatedUrl)
         {
-            return PageUtils.Combine(urlManager.GetAdminUrl(DirectoryName), relatedUrl);
-        }
-
-        public static string GetPath(IPathManager pathManager, params string[] paths)
-        {
-            return pathManager.GetAdminPath(DirectoryName, PathUtils.Combine(paths));
+            return PageUtils.Combine("/", DirectoryName, relatedUrl);
         }
 
         public const string DirectoryIcons = "icons";
         public const string DirectoryFileSystem = "icons/filesystem";
 
-        public static string GetFileSystemIconUrl(IUrlManager urlManager, EFileSystemType fileSystemType, bool isLargeIcon)
+        public static string GetFileSystemIconUrl(EFileSystemType fileSystemType, bool isLargeIcon)
         {
             string urlFormat =
                 $"{DirectoryFileSystem}/{(isLargeIcon ? "large" : "small")}{(fileSystemType != EFileSystemType.Directory ? EFileSystemTypeUtils.GetValue(fileSystemType) : ".directory")}.gif";
-            return GetUrl(urlManager, urlFormat);
+            return GetUrl(urlFormat);
         }
 
-        public static string GetIconUrl(IUrlManager urlManager, string iconName)
+        public static string GetIconUrl(string iconName)
         {
-            return GetUrl(urlManager, PageUtils.Combine(DirectoryIcons, iconName));
+            return GetUrl(PageUtils.Combine(DirectoryIcons, iconName));
         }
 
         public class Default

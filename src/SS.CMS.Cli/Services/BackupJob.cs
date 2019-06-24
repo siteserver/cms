@@ -79,7 +79,7 @@ namespace SS.CMS.Cli.Services
             var treeInfo = new TreeInfo(directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var db = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile, out var errorMessage);
+            var (db, errorMessage) = await CliUtils.GetDatabaseAsync(_databaseType, _connectionString, _configFile);
             if (db == null)
             {
                 await CliUtils.PrintErrorAsync(errorMessage);

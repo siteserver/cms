@@ -136,7 +136,7 @@ namespace SS.CMS.Cli.Core
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
 
-        public static Database GetDatabase(string databaseType, string connectionString, string configFile, out string errorMessage)
+        public static async Task<(Database Database, string ErrorMessage)> GetDatabaseAsync(string databaseType, string connectionString, string configFile)
         {
             if (connectionString == null)
             {
@@ -155,23 +155,22 @@ namespace SS.CMS.Cli.Core
 
                     if (string.IsNullOrEmpty(connectionString))
                     {
-                        errorMessage = $"{configPath} 中数据库连接字符串 connectionString 未设置";
-                        return null;
+                        return (null, $"{configPath} 中数据库连接字符串 connectionString 未设置");
                     }
                 }
             }
 
             if (connectionString == null)
             {
-                errorMessage = "请在命令行设置数据库连接参数或者指定数据库连接配置文件";
-                return null;
+                return (null, "请在命令行设置数据库连接参数或者指定数据库连接配置文件");
             }
             var db = new Database(DatabaseType.Parse(databaseType), connectionString);
-            if (db.IsConnectionWorks(out errorMessage))
+            var (isConnectionWorks, errorMessage) = await db.IsConnectionWorksAsync();
+            if (isConnectionWorks)
             {
-                return db;
+                return (db, null);
             }
-            return null;
+            return (null, errorMessage);
         }
 
         private static string GetConfigFilePath(string configFile)

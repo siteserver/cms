@@ -373,7 +373,7 @@ namespace SS.CMS.Core.Repositories
         //    return siteIdList;
         //}
 
-        public string GetSiteName(IUrlManager urlManager, SiteInfo siteInfo)
+        public string GetSiteName(SiteInfo siteInfo)
         {
             var padding = string.Empty;
 
@@ -391,7 +391,7 @@ namespace SS.CMS.Core.Repositories
                     psLogo = $"subsite{level + 1}.gif";
                 }
             }
-            psLogo = SiteServerAssets.GetIconUrl(urlManager, "tree/" + psLogo);
+            psLogo = SiteServerAssets.GetIconUrl("tree/" + psLogo);
 
             for (var i = 0; i < level; i++)
             {

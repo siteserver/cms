@@ -8,41 +8,6 @@ namespace SS.CMS.Api.Controllers.Admin
 {
     public partial class RootController
     {
-        private object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false, bool checkLogin = false)
-        {
-            var redirect = false;
-            var redirectUrl = string.Empty;
-
-            if (checkInstall && string.IsNullOrWhiteSpace(_settingsManager.DatabaseConnectionString))
-            {
-                redirect = true;
-                redirectUrl = _urlManager.AdminInstallUrl;
-            }
-            else if (checkDatabaseVersion && _configRepository.Instance != null &&
-                     _configRepository.Instance.DatabaseVersion != _settingsManager.ProductVersion)
-            {
-                redirect = true;
-                redirectUrl = _urlManager.AdminSyncUrl;
-            }
-
-            else if (checkLogin && !User.Identity.IsAuthenticated)
-            {
-                redirect = true;
-                redirectUrl = _urlManager.AdminLoginUrl;
-            }
-
-            if (redirect)
-            {
-                return new
-                {
-                    Value = false,
-                    RedirectUrl = redirectUrl
-                };
-            }
-
-            return null;
-        }
-
         public const string TopMenuIdSite = "Site";
         public const string TopMenuIdLink = "Link";
         public const string TopMenuIdPlugins = "Plugins";

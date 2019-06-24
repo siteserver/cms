@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Repositories
         {
             public const string Id = nameof(TemplateLogInfo.Id);
             public const string TemplateId = nameof(TemplateLogInfo.TemplateId);
-            public const string CreationDate = nameof(TemplateLogInfo.CreationDate);
+            public const string CreatedDate = nameof(TemplateLogInfo.CreatedDate);
             public const string AddUserName = nameof(TemplateLogInfo.AddUserName);
             public const string ContentLength = nameof(TemplateLogInfo.ContentLength);
             public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
@@ -53,14 +53,14 @@ namespace SS.CMS.Core.Repositories
         {
             var dictionary = new Dictionary<int, string>();
 
-            var dataList = _repository.GetAll<(int Id, DateTimeOffset? CreationDate, string AddUserName, int ContentLength)>(Q
-                .Select(Attr.Id, Attr.CreationDate, Attr.AddUserName, Attr.ContentLength)
+            var dataList = _repository.GetAll<(int Id, DateTimeOffset? CreatedDate, string AddUserName, int ContentLength)>(Q
+                .Select(Attr.Id, Attr.CreatedDate, Attr.AddUserName, Attr.ContentLength)
                 .Where(Attr.TemplateId, templateId));
 
             foreach (var result in dataList)
             {
                 var id = result.Id;
-                var creationDate = result.CreationDate;
+                var creationDate = result.CreatedDate;
                 var addUserName = result.AddUserName;
                 var contentLength = result.ContentLength;
 

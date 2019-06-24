@@ -86,49 +86,49 @@ namespace SS.CMS.Core.Services
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesYear))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Year.ToString();
+                        value = channelInfo.CreatedDate.Value.Year.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMonth))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Month.ToString();
+                        value = channelInfo.CreatedDate.Value.Month.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesDay))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Day.ToString();
+                        value = channelInfo.CreatedDate.Value.Day.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesHour))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Hour.ToString();
+                        value = channelInfo.CreatedDate.Value.Hour.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMinute))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Minute.ToString();
+                        value = channelInfo.CreatedDate.Value.Minute.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSecond))
                 {
                     if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    if (channelInfo.CreationDate.HasValue)
+                    if (channelInfo.CreatedDate.HasValue)
                     {
-                        value = channelInfo.CreationDate.Value.Second.ToString();
+                        value = channelInfo.CreatedDate.Value.Second.ToString();
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSequence))

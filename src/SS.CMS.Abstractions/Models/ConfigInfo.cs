@@ -15,10 +15,6 @@ namespace SS.CMS.Models
         [TableColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
 
-        public bool IsSeparatedApi { get; set; }
-
-        public string SeparatedApiUrl { get; set; }
-
         public bool IsLogSite { get; set; } = true;
 
         public bool IsLogAdmin { get; set; } = true;

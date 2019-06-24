@@ -7,12 +7,6 @@ namespace SS.CMS.Core.Services
 {
     public partial class UrlManager
     {
-        // 系统根目录访问地址
-        public string GetMainUrl(int siteId)
-        {
-            return GetAdminUrl($"main.cshtml?siteId={siteId}");
-        }
-
         public string GetSiteFilesUrl(string relatedUrl)
         {
             return PageUtils.Combine(Constants.ApplicationPath, DirectoryUtils.SiteFiles.DirectoryName, relatedUrl);
@@ -41,70 +35,10 @@ namespace SS.CMS.Core.Services
 
             if (StringUtils.StartsWith(url, "~/"))
             {
-                return GetRootUrl(url.Substring(1));
-            }
-
-            if (StringUtils.StartsWith(url, "@/"))
-            {
-                return GetAdminUrl(url.Substring(1));
+                return url.Substring(1);
             }
 
             return GetSiteFilesUrl(PageUtils.Combine(DirectoryUtils.SiteFiles.Plugins, pluginId, url));
-        }
-
-        public string GetSiteServerUrl(string className)
-        {
-            return GetAdminUrl(className.ToCamelCase() + ".cshtml");
-        }
-
-        public string GetSiteServerUrl(string className, NameValueCollection queryString)
-        {
-            return PageUtils.AddQueryString(GetAdminUrl(className.ToCamelCase() + ".aspx"), queryString);
-        }
-
-        public string GetPluginsUrl(string className)
-        {
-            return GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".cshtml"));
-        }
-
-        public string GetPluginsUrl(string className, NameValueCollection queryString)
-        {
-            return PageUtils.AddQueryString(GetAdminUrl(PageUtils.Combine("plugins", className.ToCamelCase() + ".aspx")), queryString);
-        }
-
-        public string GetSettingsUrl(string className)
-        {
-            return GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".cshtml"));
-        }
-
-        public string GetSettingsUrl(string className, NameValueCollection queryString)
-        {
-            return PageUtils.AddQueryString(GetAdminUrl(PageUtils.Combine("settings", className.ToCamelCase() + ".aspx")), queryString);
-        }
-
-        public string GetCmsUrl(string pageName, int siteId, object param = null)
-        {
-            var url = GetAdminUrl(PageUtils.Combine("cms", $"{pageName.ToCamelCase()}.cshtml?siteId={siteId}"));
-            return param == null ? url : param.GetType().GetProperties().Aggregate(url, (current, p) => current + $"&{p.Name.ToCamelCase()}={p.GetValue(param)}");
-        }
-
-        public string GetCmsUrl(int siteId, string className, NameValueCollection queryString)
-        {
-            queryString = queryString ?? new NameValueCollection();
-            queryString.Remove("siteId");
-            return PageUtils.AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.aspx?siteId={siteId}"), queryString);
-        }
-
-        public string GetCmsWebHandlerUrl(int siteId, string className, NameValueCollection queryString)
-        {
-            queryString = queryString ?? new NameValueCollection();
-            queryString.Remove("siteId");
-            return PageUtils.AddQueryString(GetAdminUrl($"cms/{className.ToCamelCase()}.ashx?siteId={siteId}"), queryString);
-        }
-
-        public string GetAjaxUrl(string className, NameValueCollection queryString)
-        {
-            return PageUtils.AddQueryString(GetAdminUrl(PageUtils.Combine("ajax", className.ToLower() + ".aspx")), queryString);
         }
 
         public string GetRootUrlByPhysicalPath(string physicalPath)
@@ -112,11 +46,6 @@ namespace SS.CMS.Core.Services
             var requestPath = PathUtils.GetPathDifference(_settingsManager.WebRootPath, physicalPath);
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
             return GetRootUrl(requestPath);
-        }
-
-        public string GetLoadingUrl(string url)
-        {
-            return GetAdminUrl($"loading.aspx?redirectUrl={_settingsManager.Encrypt(url)}");
         }
 
         public string ParseNavigationUrl(string url)

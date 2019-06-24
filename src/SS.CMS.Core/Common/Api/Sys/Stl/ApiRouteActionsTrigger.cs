@@ -7,10 +7,10 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {
         public const string Route = "sys/stl/actions/trigger";
 
-        public static string GetUrl(string apiUrl, int siteId, int channelId, int contentId,
+        public static string GetUrl(int siteId, int channelId, int contentId,
             int fileTemplateId, bool isRedirect)
         {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Route), new NameValueCollection
+            return PageUtils.AddQueryString(PageUtils.Combine(Constants.ApiUrl, Route), new NameValueCollection
             {
                 {"siteId", siteId.ToString()},
                 {"channelId", channelId.ToString()},

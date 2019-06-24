@@ -30,7 +30,7 @@ namespace SS.CMS.Core.Repositories
         {
             public const string Id = nameof(UserLogInfo.Id);
             public const string UserName = nameof(UserLogInfo.UserName);
-            public const string CreationDate = nameof(UserLogInfo.CreationDate);
+            public const string CreatedDate = nameof(UserLogInfo.CreatedDate);
             public const string Action = nameof(UserLogInfo.Action);
         }
 
@@ -50,7 +50,7 @@ namespace SS.CMS.Core.Repositories
             var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            _repository.Delete(Q.Where(Attr.CreationDate, "<", DateTime.Now.AddDays(-days)));
+            _repository.Delete(Q.Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
         public void Delete(List<int> idList)

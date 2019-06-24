@@ -9,7 +9,7 @@ namespace SS.CMS.Core.Models.Attributes
     {
         public const string Id = nameof(Entity.Id);
         public const string Guid = nameof(Entity.Guid);
-        public const string CreationDate = nameof(Entity.CreationDate);
+        public const string CreatedDate = nameof(Entity.CreatedDate);
         public const string LastModifiedDate = nameof(Entity.LastModifiedDate);
         public const string ChannelId = nameof(ContentInfo.ChannelId);
         public const string SiteId = nameof(ContentInfo.SiteId);

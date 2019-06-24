@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <VersionPrefix>7.0.0</VersionPrefix>
+    <VersionSuffix>preview1</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>

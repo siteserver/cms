@@ -9,9 +9,9 @@ namespace SS.CMS.Core.Api.Sys.Stl
     {
         public const string Route = "sys/stl/actions/search";
 
-        public static string GetUrl(string apiUrl)
+        public static string GetUrl()
         {
-            return PageUtils.Combine(apiUrl, Route);
+            return PageUtils.Combine(Constants.ApiUrl, Route);
         }
 
         public static string GetParameters(ISettingsManager settingsManager, bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int pageNum, bool isHighlight, int siteId, string ajaxDivId, string template)

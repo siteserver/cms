@@ -15,7 +15,7 @@ namespace SS.CMS.Repositories
 
         int GetCount();
 
-        int Insert(UserInfo userInfo, out string errorMessage);
+        Task<(int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo);
 
         bool Update(UserInfo UserInfo, out string errorMessage);
 

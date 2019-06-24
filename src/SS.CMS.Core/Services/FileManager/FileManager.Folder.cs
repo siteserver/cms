@@ -50,7 +50,7 @@ namespace SS.CMS.Core.Services
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!_pathManager.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
+                    if (!siteDirList.Contains(directoryName.ToLower()))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }
@@ -86,7 +86,7 @@ namespace SS.CMS.Core.Services
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!_pathManager.IsSystemDirectory(directoryName) && !siteDirList.Contains(directoryName.ToLower()))
+                    if (!siteDirList.Contains(directoryName.ToLower()))
                     {
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
                         DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);

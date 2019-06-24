@@ -277,7 +277,7 @@ var files_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var links_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}';
 var texts_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(SiteFilesAssets.Flashes.Bcastr)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -342,7 +342,7 @@ var urls_uniqueID='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")
 var imgs_uniqueID='{TranslateUtils.ObjectCollectionToString(imageUrls, "|")}';
 var titles_uniqueID='{TranslateUtils.ObjectCollectionToString(titleCollection, "|")}';
 
-var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
+var so_{uniqueId} = new SWFObject(""{SiteFilesAssets.GetUrl(SiteFilesAssets.Flashes.Ali)}"", ""flash_{uniqueId}"", ""{imageWidth}"", ""{imageHeight}"", ""7"", """");
 {paramBuilder}
 so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 </script>
@@ -529,7 +529,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
                     var divHtml = $@"<div {TranslateUtils.ToAttributesString(attributes)}>&nbsp;</div>";
 
                     string scriptHtml = $@"
-<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.BaiRongFlash.Js)}""></script>
+<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(SiteFilesAssets.BaiRongFlash.Js)}""></script>
 <script type=""text/javascript"">
 	var uniqueID_focus_width={imageWidth}
 	var uniqueID_focus_height={imageHeight}
@@ -540,7 +540,7 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 	var uniqueID_links='{TranslateUtils.ObjectCollectionToString(navigationUrls, "|")}'
 	var uniqueID_texts='{titles}'
 	
-	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(parseContext.ApiUrl, SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
+	var uniqueID_FocusFlash = new bairongFlash(""{SiteFilesAssets.GetUrl(SiteFilesAssets.Flashes.FocusViewer)}"", ""focusflash"", uniqueID_focus_width, uniqueID_swf_height, ""7"", ""{bgColor}"", false, ""High"");
 	uniqueID_FocusFlash.addParam(""allowScriptAccess"", ""sameDomain"");
 	uniqueID_FocusFlash.addParam(""menu"", ""false"");
 	uniqueID_FocusFlash.addParam(""wmode"", ""transparent"");
