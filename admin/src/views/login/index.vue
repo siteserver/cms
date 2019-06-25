@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import md5 from 'blueimp-md5'
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
@@ -172,7 +173,10 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+          this.$store.dispatch('user/login', {
+            username: this.loginForm.username,
+            password: md5(this.loginForm.password)
+          })
             .then(() => {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
