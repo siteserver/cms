@@ -2,6 +2,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Configuration;
+using SS.CMS.Services;
 
 //https://docs.microsoft.com/en-us/aspnet/core/mvc/advanced/app-parts?view=aspnetcore-3.0
 
@@ -12,10 +14,14 @@ namespace SS.CMS.Api.Controllers
     public class FeaturesController : ControllerBase
     {
         private readonly ApplicationPartManager _partManager;
+        private readonly IConfiguration _config;
+        private readonly ISettingsManager _settingsManager;
 
-        public FeaturesController(ApplicationPartManager partManager)
+        public FeaturesController(ApplicationPartManager partManager, IConfiguration config, ISettingsManager settingsManager)
         {
             _partManager = partManager;
+            _config = config;
+            _settingsManager = settingsManager;
         }
 
         private const string Route = "{name}";
@@ -52,7 +58,9 @@ namespace SS.CMS.Api.Controllers
             return Ok(new
             {
                 Value = controllers,
-                Request.RouteValues
+                Request.RouteValues,
+                Config = _config.GetValue<string>("AdminUrl"),
+                Settings = _settingsManager.AdminUrl
             });
         }
     }

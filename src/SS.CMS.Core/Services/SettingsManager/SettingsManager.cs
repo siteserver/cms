@@ -38,30 +38,6 @@ namespace SS.CMS.Core.Services
                 // ignored
             }
 
-
-            AdminUrl = StringUtils.TrimSlash(config.GetValue<string>("AdminUrl"));
-            HomeUrl = StringUtils.TrimSlash(config.GetValue<string>("HomeUrl"));
-            Language = config.GetValue<string>("Language");
-            IsNightlyUpdate = config.GetValue<bool>("IsNightlyUpdate");
-            IsProtectData = config.GetValue<bool>("IsProtectData");
-            SecretKey = config.GetValue<string>("SecretKey");
-
-            if (string.IsNullOrEmpty(SecretKey))
-            {
-                SecretKey = StringUtils.GetShortGuid();
-            }
-
-            DatabaseType = DatabaseType.Parse(config.GetValue<string>("Database:Type"));
-            DatabaseConnectionString = config.GetValue<string>("Database:ConnectionString");
-            RedisIsEnabled = config.GetValue<bool>("Redis:IsEnabled");
-            RedisConnectionString = config.GetValue<string>("Redis:ConnectionString");
-
-            if (IsProtectData)
-            {
-                DatabaseConnectionString = Decrypt(DatabaseConnectionString);
-                RedisConnectionString = Decrypt(RedisConnectionString);
-            }
-
             var menusPath = PathUtils.GetLangPath(contentRootPath, Language, "menus.yml");
             if (FileUtils.IsFileExists(menusPath))
             {
@@ -76,43 +52,44 @@ namespace SS.CMS.Core.Services
 
         public string ContentRootPath { get; }
         public string WebRootPath { get; }
-        public string ProductVersion { get; private set; }
-        public string PluginVersion { get; private set; }
-        public string TargetFramework { get; private set; }
-        public bool IsProtectData { get; private set; }
-        public string AdminUrl { get; private set; }
-        public string HomeUrl { get; private set; }
-        public string SecretKey { get; private set; }
-        public bool IsNightlyUpdate { get; private set; }
-        public string Language { get; private set; }
-        public DatabaseType DatabaseType { get; private set; }
-        public string DatabaseConnectionString { get; private set; }
-        public bool RedisIsEnabled { get; private set; }
-        public string RedisConnectionString { get; private set; }
+        public string ProductVersion { get; }
+        public string PluginVersion { get; }
+        public string TargetFramework { get; }
 
-        public IList<Menu> Menus { get; private set; }
-        public PermissionsSettings Permissions { get; private set; }
+        public string AdminUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(AdminUrl)));
+        public string HomeUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(HomeUrl)));
+        public string Language => _config.GetValue<string>(nameof(Language));
+        public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
+        public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
+        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
+        public DatabaseType DatabaseType => DatabaseType.Parse(_config.GetValue<string>("Database:Type"));
+        public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
+        public bool RedisIsEnabled => _config.GetValue<bool>("Redis:IsEnabled");
+        public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
+
+        public IList<Menu> Menus { get; }
+        public PermissionsSettings Permissions { get; }
 
         public string Encrypt(string inputString)
         {
-            return TranslateUtils.EncryptStringBySecretKey(inputString, SecretKey);
+            return TranslateUtils.EncryptStringBySecretKey(inputString, SecurityKey);
         }
 
         public string Decrypt(string inputString)
         {
-            return TranslateUtils.DecryptStringBySecretKey(inputString, SecretKey);
+            return TranslateUtils.DecryptStringBySecretKey(inputString, SecurityKey);
         }
 
         public void SaveSettings(string adminUrl, string homeUrl, string language, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, bool redisIdEnabled, string redisConnectionString)
         {
-            AdminUrl = adminUrl;
-            HomeUrl = homeUrl;
-            Language = language;
-            IsProtectData = isProtectData;
-            DatabaseType = databaseType;
-            DatabaseConnectionString = databaseConnectionString;
-            RedisIsEnabled = redisIdEnabled;
-            RedisConnectionString = redisConnectionString;
+            // AdminUrl = adminUrl;
+            // HomeUrl = homeUrl;
+            // Language = language;
+            // IsProtectData = isProtectData;
+            // DatabaseType = databaseType;
+            // DatabaseConnectionString = databaseConnectionString;
+            // RedisIsEnabled = redisIdEnabled;
+            // RedisConnectionString = redisConnectionString;
 
             //             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 

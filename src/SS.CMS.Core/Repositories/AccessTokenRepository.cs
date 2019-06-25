@@ -68,7 +68,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo)
         {
-            accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid(), _settingsManager.SecretKey);
+            accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid(), _settingsManager.SecurityKey);
 
             await UpdateAsync(accessTokenInfo);
 
@@ -123,7 +123,7 @@ namespace SS.CMS.Core.Repositories
                     var retVal = new Dictionary<string, AccessTokenInfo>();
                     foreach (var accessTokenInfo in await _repository.GetAllAsync())
                     {
-                        var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token, _settingsManager.SecretKey);
+                        var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token, _settingsManager.SecurityKey);
                         if (!string.IsNullOrEmpty(token))
                         {
                             retVal[token] = accessTokenInfo;

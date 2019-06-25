@@ -138,8 +138,15 @@ namespace SS.CMS.Api.Controllers.Admin
         public async Task<ActionResult<ValidateResult>> Validate([FromQuery] int? siteId)
         {
             var validateResult = new ValidateResult();
+
             validateResult.IsInstalled = !string.IsNullOrWhiteSpace(_settingsManager.DatabaseConnectionString);
             if (!validateResult.IsInstalled)
+            {
+                return validateResult;
+            }
+
+            validateResult.IsAuthenticated = User.Identity.IsAuthenticated;
+            if (!validateResult.IsAuthenticated)
             {
                 return validateResult;
             }
@@ -149,7 +156,7 @@ namespace SS.CMS.Api.Controllers.Admin
                 _configRepository.GetConfigInfo();
             }
 
-            validateResult.IsAdministrator = User.Identity.IsAuthenticated && _userManager.IsAdministrator();
+            validateResult.IsAdministrator = _userManager.IsAdministrator();
             if (!validateResult.IsAdministrator)
             {
                 return validateResult;

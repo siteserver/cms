@@ -15,7 +15,7 @@ namespace SS.CMS.Services
         bool IsProtectData { get; }
         string AdminUrl { get; }
         string HomeUrl { get; }
-        string SecretKey { get; }
+        string SecurityKey { get; }
         bool IsNightlyUpdate { get; }
         string Language { get; }
         DatabaseType DatabaseType { get; }

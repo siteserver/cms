@@ -45,7 +45,7 @@ namespace SS.CMS.Api.Tests.Controllers.Admin
             var result = Assert.IsType<InstallController.ResultModel>(actionResult.Result);
 
             _output.WriteLine($"version:{result.IsSuccess}");
-            Assert.Equal(true, result.IsSuccess);
+            Assert.True(result.IsSuccess);
         }
     }
 }

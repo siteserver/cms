@@ -5,7 +5,7 @@ namespace SS.CMS.Services
 {
     public partial interface IUserManager
     {
-        Task SignInAsync(UserInfo userInfo, bool isPersistent = false);
+        Task<string> SignInAsync(UserInfo userInfo);
 
         Task SignOutAsync();
 

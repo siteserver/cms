@@ -11,6 +11,7 @@ namespace SS.CMS.Api.Controllers.Admin
         public class ValidateResult
         {
             public bool IsInstalled { get; set; }
+            public bool IsAuthenticated { get; set; }
             public bool IsAdministrator { get; set; }
             public bool IsLockedOut { get; set; }
             public string DatabaseVersion { get; set; }

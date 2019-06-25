@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 
 namespace SS.CMS.Repositories
@@ -7,7 +8,7 @@ namespace SS.CMS.Repositories
     {
         IList<string> GetUserNameListByRoleName(string roleName);
 
-        IList<string> GetRoles(string userName);
+        Task<IList<string>> GetRolesAsync(string userName);
 
         void RemoveUser(string userName);
 

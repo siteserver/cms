@@ -140,7 +140,7 @@ namespace SS.CMS.Api.Controllers.Admin
             //var accessToken = AdminLogin(userInfo.UserName, context.IsAutoLogin);
             //var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
-            await _userManager.SignInAsync(userInfo, true);
+            await _userManager.SignInAsync(userInfo);
 
             return Ok(new
             {

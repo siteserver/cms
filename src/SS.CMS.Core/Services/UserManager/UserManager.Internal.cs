@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class UserManager
     {
-        private IEnumerable<Claim> GetUserClaims(UserInfo userInfo)
+        private async Task<IEnumerable<Claim>> GetUserClaimsAsync(UserInfo userInfo)
         {
             var claims = new List<Claim>
             {
@@ -20,7 +20,7 @@ namespace SS.CMS.Core.Services
                 new Claim(AuthTypes.ClaimTypes.UserName, userInfo.UserName)
             };
 
-            var roles = _userRoleRepository.GetRoles(userInfo.UserName);
+            var roles = await _userRoleRepository.GetRolesAsync(userInfo.UserName);
 
             if (roles != null)
             {

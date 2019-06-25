@@ -1,7 +1,5 @@
-using System;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,16 +20,10 @@ namespace SS.CMS.Api
         private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _config;
 
-        public Startup(IWebHostEnvironment env)
+        public Startup(IWebHostEnvironment env, IConfiguration config)
         {
             _env = env;
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile(Constants.ConfigFileName, optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-            _config = builder.Build();
+            _config = config;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -55,24 +47,9 @@ namespace SS.CMS.Api
             services.AddCreateManager();
             services.AddTableManager();
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            });
-
             services.AddScoped<IUserManager, UserManager>();
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-                        options.Events.OnRedirectToLogin = (context) =>
-                        {
-                            context.Response.StatusCode = 401;
-                            return Task.CompletedTask;
-                        };
-                    }
-                )
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -84,7 +61,7 @@ namespace SS.CMS.Api
                         ValidIssuer = "yourdomain.com",
                         ValidAudience = "yourdomain.com",
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(settingsManager.SecretKey))
+                            Encoding.UTF8.GetBytes(settingsManager.SecurityKey))
                     };
                 });
 
@@ -104,23 +81,13 @@ namespace SS.CMS.Api
             // In production, the VueJs files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/build";
+                configuration.RootPath = "admin";
             });
 
             services.AddControllers()
                 .AddNewtonsoftJson();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddScoped(provider =>
-            //{
-            //    var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            //    return new Request(httpContext, null);
-            //});
-            //services.AddScoped(provider =>
-            //{
-            //    var httpContext = provider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            //    return new Response(httpContext);
-            //});
 
             services.AddOpenApiDocument(config =>
             {
@@ -187,19 +154,10 @@ namespace SS.CMS.Api
 
             app.UseCors("AllowAny");
 
-            var cookiePolicyOptions = new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            };
-            app.UseCookiePolicy(cookiePolicyOptions);
-
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.Map(Constants.ApiUrl, api =>
             {
@@ -207,6 +165,9 @@ namespace SS.CMS.Api
                     ctx => await ctx.Response.WriteAsync("pong")));
 
                 api.UseRouting();
+
+                api.UseAuthentication();
+                api.UseAuthorization();
 
                 api.UseEndpoints(endpoints =>
                 {

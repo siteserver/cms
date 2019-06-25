@@ -29,7 +29,7 @@ namespace SS.CMS.Api.Controllers
             {
                 Id = 1,
                 UserName = "admin"
-            }, true);
+            });
             var user = User;
             var val = User.FindFirst(ClaimTypes.Name)?.Value;
 

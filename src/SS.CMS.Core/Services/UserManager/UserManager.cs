@@ -1,8 +1,12 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
@@ -89,21 +93,37 @@ namespace SS.CMS.Core.Services
         //    return accessToken;
         //}
 
-        public async Task SignInAsync(UserInfo userInfo, bool isPersistent = false)
+        public async Task<string> SignInAsync(UserInfo userInfo)
         {
-            if (userInfo == null || userInfo.IsLockedOut) return;
+            if (userInfo == null || userInfo.IsLockedOut) return null;
 
-            var identity = new ClaimsIdentity(this.GetUserClaims(userInfo), CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
+            // var identity = new ClaimsIdentity(this.GetUserClaims(userInfo), CookieAuthenticationDefaults.AuthenticationScheme);
+            // var principal = new ClaimsPrincipal(identity);
 
-            await _context.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
-                {
-                    IsPersistent = isPersistent
-                }
-            );
+            // await _context.SignInAsync(
+            //     CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
+            //     {
+            //         IsPersistent = isPersistent
+            //     }
+            // );
 
             //AddAdminLog("管理员登录");
+
+            var claims = await this.GetUserClaimsAsync(userInfo);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settingsManager.SecurityKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "yourdomain.com",
+                audience: "yourdomain.com",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return accessToken;
         }
 
         public async Task SignOutAsync()

@@ -237,7 +237,7 @@ namespace SS.CMS.Api.Controllers.Admin
   ""Language"": ""{_settingsManager.Language}"",
   ""IsNightlyUpdate"": false,
   ""IsProtectData"": {_settingsManager.IsProtectData.ToString().ToLower()},
-  ""SecretKey"": ""{_settingsManager.SecretKey}"",
+  ""SecretKey"": ""{_settingsManager.SecurityKey}"",
   ""Database"": {{
     ""Type"": ""{databaseType.Value}"",
     ""ConnectionString"": ""{databaseConnectionStringValue}""

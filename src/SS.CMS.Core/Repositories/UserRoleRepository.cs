@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -72,14 +73,14 @@ namespace SS.CMS.Core.Repositories
             return 0;
         }
 
-        public IList<string> GetRoles(string userName)
+        public async Task<IList<string>> GetRolesAsync(string userName)
         {
             var roleNameList = new List<string>();
 
-            var roles = _repository.GetAll<string>(Q
+            var roles = await _repository.GetAllAsync<string>(Q
                 .Select(Attr.RoleName)
                 .Where(Attr.UserName, userName)
-                .Distinct()).ToList();
+                .Distinct());
 
             foreach (var role in roles)
             {
