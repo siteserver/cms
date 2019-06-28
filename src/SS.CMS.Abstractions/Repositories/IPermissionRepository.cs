@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -6,9 +7,9 @@ namespace SS.CMS.Repositories
 {
     public interface IPermissionRepository : IRepository
     {
-        int Insert(PermissionInfo permissionsInfo);
+        Task<int> InsertAsync(PermissionInfo permissionsInfo);
 
-        bool Delete(string roleName);
+        Task<bool> DeleteAsync(string roleName);
 
         List<string> GetAppPermissions(IEnumerable<string> roles);
 

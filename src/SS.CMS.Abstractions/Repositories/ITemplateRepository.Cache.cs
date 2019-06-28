@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
@@ -32,9 +33,9 @@ namespace SS.CMS.Repositories
 
         TemplateInfo GetIndexPageTemplateInfo(int siteId);
 
-        TemplateInfo GetChannelTemplateInfo(int siteId, int channelId);
+        Task<TemplateInfo> GetChannelTemplateInfoAsync(int siteId, int channelId);
 
-        TemplateInfo GetContentTemplateInfo(int siteId, int channelId);
+        Task<TemplateInfo> GetContentTemplateInfoAsync(int siteId, int channelId);
 
         TemplateInfo GetFileTemplateInfo(int siteId, int fileTemplateId);
 
@@ -42,12 +43,12 @@ namespace SS.CMS.Repositories
 
         int GetIndexTemplateId(int siteId);
 
-        int GetChannelTemplateId(int siteId, int channelId);
+        Task<int> GetChannelTemplateIdAsync(int siteId, int channelId);
 
-        int GetContentTemplateId(int siteId, int channelId);
+        Task<int> GetContentTemplateIdAsync(int siteId, int channelId);
 
-        string GetTemplateContent(SiteInfo siteInfo, TemplateInfo templateInfo);
+        Task<string> GetTemplateContentAsync(SiteInfo siteInfo, TemplateInfo templateInfo);
 
-        string GetContentByFilePath(string filePath);
+        Task<string> GetContentByFilePathAsync(string filePath);
     }
 }

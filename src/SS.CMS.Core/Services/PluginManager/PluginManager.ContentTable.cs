@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
 using SS.CMS.Enums;
@@ -9,7 +10,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public void SyncContentTable(IService service)
+        public async Task SyncContentTableAsync(IService service)
         {
             if (!IsContentTable(service)) return;
 
@@ -32,10 +33,10 @@ namespace SS.CMS.Core.Services
                 _tableManager.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
-            ContentTableCreateOrUpdateStyles(tableName, service.ContentInputStyles);
+            await ContentTableCreateOrUpdateStylesAsync(tableName, service.ContentInputStyles);
         }
 
-        public bool IsContentTableUsed(string tableName)
+        public async Task<bool> IsContentTableUsedAsync(string tableName)
         {
             var count = _siteRepository.GetTableCount(tableName);
 
@@ -44,7 +45,7 @@ namespace SS.CMS.Core.Services
             var contentModelPluginIdList = _channelRepository.GetContentModelPluginIdList();
             foreach (var pluginId in contentModelPluginIdList)
             {
-                var service = GetService(pluginId);
+                var service = await GetServiceAsync(pluginId);
                 if (service != null && IsContentTable(service) && service.ContentTableName == tableName)
                 {
                     return true;
@@ -54,7 +55,7 @@ namespace SS.CMS.Core.Services
             return false;
         }
 
-        private void ContentTableCreateOrUpdateStyles(string tableName, List<InputStyle> inputStyles)
+        private async Task ContentTableCreateOrUpdateStylesAsync(string tableName, List<InputStyle> inputStyles)
         {
             var styleInfoList = new List<TableStyleInfo>();
             var columnTaxis = 0;
@@ -203,7 +204,7 @@ namespace SS.CMS.Core.Services
                 }
                 else
                 {
-                    _tableStyleRepository.Update(styleInfo);
+                    await _tableStyleRepository.UpdateAsync(styleInfo);
                 }
             }
         }

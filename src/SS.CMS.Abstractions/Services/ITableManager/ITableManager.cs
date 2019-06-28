@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 
 namespace SS.CMS.Services
@@ -22,23 +23,22 @@ namespace SS.CMS.Services
 
         List<string> GetTableColumnNameList(string tableName, DataType excludeDataType);
 
-        bool CreateTable(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex);
+        Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable);
 
-        void AlterTable(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null);
+        Task AlterTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null);
 
         void CreateContentTable(string tableName, List<TableColumn> tableColumns);
 
         void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null);
 
-        void InstallDatabase(string userName, string adminPassword);
+        void InstallDatabase(string userName, string password);
 
-        void SyncSystemTables();
+        Task SyncSystemTablesAsync();
 
         void SyncContentTables();
 
         void UpdateConfigVersion();
 
-        void SyncDatabase();
+        Task SyncDatabaseAsync();
     }
-
 }

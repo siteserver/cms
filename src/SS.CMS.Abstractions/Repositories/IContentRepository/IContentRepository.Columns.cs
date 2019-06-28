@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        List<InputListItem> GetContentsColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll);
+        Task<List<InputListItem>> GetContentsColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll);
 
-        List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll);
+        Task<List<ContentColumn>> GetContentColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll);
     }
 }

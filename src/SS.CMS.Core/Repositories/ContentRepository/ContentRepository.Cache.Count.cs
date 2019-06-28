@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -112,9 +113,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private int CountGetSiteCountByIsChecked(SiteInfo siteInfo, bool isChecked)
+        private async Task<int> CountGetSiteCountByIsCheckedAsync(SiteInfo siteInfo, bool isChecked)
         {
-            var tableNames = _siteRepository.GetTableNameList(_pluginManager, siteInfo);
+            var tableNames = await _siteRepository.GetTableNameListAsync(_pluginManager, siteInfo);
 
             lock (CountLockObject)
             {
@@ -129,9 +130,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private int CountGetChannelCountByOnlyAdminId(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        private async Task<int> CountGetChannelCountByOnlyAdminIdAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
         {
-            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
 
             lock (CountLockObject)
             {
@@ -149,9 +150,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private int CountGetChannelCountByIsChecked(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        private async Task<int> CountGetChannelCountByIsCheckedAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
         {
-            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
 
             lock (CountLockObject)
             {
@@ -165,19 +166,19 @@ namespace SS.CMS.Core.Repositories
 
         // public
 
-        public int GetCount(SiteInfo siteInfo, bool isChecked)
+        public async Task<int> GetCountAsync(SiteInfo siteInfo, bool isChecked)
         {
-            return CountGetSiteCountByIsChecked(siteInfo, isChecked);
+            return await CountGetSiteCountByIsCheckedAsync(siteInfo, isChecked);
         }
 
-        public int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public async Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
         {
-            return CountGetChannelCountByOnlyAdminId(siteInfo, channelInfo, onlyAdminId);
+            return await CountGetChannelCountByOnlyAdminIdAsync(siteInfo, channelInfo, onlyAdminId);
         }
 
-        public int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        public async Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
         {
-            return CountGetChannelCountByIsChecked(siteInfo, channelInfo, isChecked);
+            return await CountGetChannelCountByIsCheckedAsync(siteInfo, channelInfo, isChecked);
         }
     }
 }

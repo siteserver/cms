@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -6,32 +7,28 @@ namespace SS.CMS.Repositories
 {
     public interface IAreaRepository : IRepository
     {
-        int Insert(AreaInfo areaInfo);
+        Task<int> InsertAsync(AreaInfo areaInfo);
 
-        bool Update(AreaInfo areaInfo);
+        Task<bool> UpdateAsync(AreaInfo areaInfo);
 
-        void UpdateTaxis(int selectedId, bool isSubtract);
+        Task UpdateTaxisAsync(int selectedId, bool isSubtract);
 
-        bool Delete(int areaId);
+        Task<bool> DeleteAsync(int areaId);
 
-        IEnumerable<int> GetIdListByParentId(int parentId);
+        Task<IEnumerable<int>> GetIdListByParentIdAsync(int parentId);
 
         // cache
 
-        List<KeyValuePair<int, string>> GetRestAreas();
-
         string GetTreeItem(string name, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict);
 
-        AreaInfo GetAreaInfo(int areaId);
+        Task<AreaInfo> GetAreaInfoAsync(int areaId);
 
-        string GetThisAreaName(int areaId);
+        Task<string> GetThisAreaNameAsync(int areaId);
 
-        string GetAreaName(int areaId);
+        Task<string> GetAreaNameAsync(int areaId);
 
-        string GetParentsPath(int areaId);
+        Task<string> GetParentsPathAsync(int areaId);
 
-        List<int> GetAreaIdList();
-
-        void ClearCache();
+        Task<List<int>> GetAreaIdListAsync();
     }
 }

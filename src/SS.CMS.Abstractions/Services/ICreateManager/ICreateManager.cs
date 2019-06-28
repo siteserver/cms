@@ -5,23 +5,23 @@ namespace SS.CMS.Services
 {
     public interface ICreateManager
     {
-        void CreateByAll(int siteId);
+        Task AddCreateByAllTaskAsync(int siteId);
 
-        void CreateByTemplate(int siteId, int templateId);
+        Task AddCreateByTemplateTaskAsync(int siteId, int templateId);
 
-        void CreateChannel(int siteId, int channelId);
+        Task AddCreateChannelTaskAsync(int siteId, int channelId);
 
-        void CreateContent(int siteId, int channelId, int contentId);
+        Task AddCreateContentTaskAsync(int siteId, int channelId, int contentId);
 
-        void CreateAllContent(int siteId, int channelId);
+        Task AddCreateAllContentTaskAsync(int siteId, int channelId);
 
-        void CreateFile(int siteId, int fileTemplateId);
+        Task AddCreateFileTaskAsync(int siteId, int fileTemplateId);
 
-        void CreateSpecial(int siteId, int specialId);
+        Task AddCreateSpecialTaskAsync(int siteId, int specialId);
 
-        void TriggerContentChangedEvent(int siteId, int channelId);
+        Task TriggerContentChangedEventAsync(int siteId, int channelId);
 
         Task ExecuteAsync(int siteId, CreateType createType, int channelId, int contentId,
-            int fileTemplateId, int specialId);
+                    int fileTemplateId, int specialId);
     }
 }

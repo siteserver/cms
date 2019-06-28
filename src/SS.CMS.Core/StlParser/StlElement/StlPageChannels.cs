@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Enums;
@@ -17,13 +18,13 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "每页显示的栏目数目")]
         private const string PageNum = nameof(PageNum);
 
-        private readonly string _stlPageChannelsElement;
-        private readonly ParseContext _parseContext;
-        private readonly ListInfo _listInfo;
-        private readonly IList<KeyValuePair<int, ChannelInfo>> _channelList;
+        private string _stlPageChannelsElement;
+        private ParseContext _parseContext;
+        private ListInfo _listInfo;
+        private IList<KeyValuePair<int, ChannelInfo>> _channelList;
 
 
-        public StlPageChannels(string stlPageChannelsElement, ParseContext parseContext)
+        public async Task LoadAsync(string stlPageChannelsElement, ParseContext parseContext)
         {
             _stlPageChannelsElement = stlPageChannelsElement;
             _stlPageChannelsElement = stlPageChannelsElement;
@@ -31,11 +32,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             _parseContext = parseContext.Clone(stlPageChannelsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
             _parseContext.ContextType = EContextType.Channel;
-            _listInfo = ListInfo.GetListInfo(_parseContext);
+            _listInfo = await ListInfo.GetListInfoAsync(_parseContext);
 
-            var channelId = parseContext.GetChannelIdByLevel(_parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(_parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
 
-            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(_parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
+            channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(_parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(_listInfo.Others.Get(IsTotal));
 
@@ -46,7 +47,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var taxisType = parseContext.GetChannelTaxisType(_listInfo.Order, TaxisType.OrderByTaxis);
 
-            _channelList = _parseContext.ChannelRepository.StlGetContainerChannelList(_parseContext.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
+            _channelList = await _parseContext.ChannelRepository.StlGetContainerChannelListAsync(_parseContext.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
         }
 
         public int GetPageCount(out int totalNum)
@@ -63,7 +64,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return pageCount;
         }
 
-        public string Parse(int currentPageIndex, int pageCount)
+        public async Task<string> ParseAsync(int currentPageIndex, int pageCount)
         {
             var parsedContent = string.Empty;
 
@@ -84,12 +85,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                         pageChannelList = _channelList;
                     }
 
-                    parsedContent = StlChannels.ParseElement(_parseContext, _listInfo, pageChannelList);
+                    parsedContent = await StlChannels.ParseElementAsync(_parseContext, _listInfo, pageChannelList);
                 }
             }
             catch (Exception ex)
             {
-                parsedContent = _parseContext.GetErrorMessage(ElementName, _stlPageChannelsElement, ex);
+                parsedContent = await _parseContext.GetErrorMessageAsync(ElementName, _stlPageChannelsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

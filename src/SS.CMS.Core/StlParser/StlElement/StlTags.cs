@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Models;
@@ -29,7 +30,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string Context = nameof(Context);
 
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var tagLevel = 1;
             var totalNum = 0;
@@ -63,10 +64,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, isInnerHtml, tagLevel, totalNum, isOrderByCount, theme);
+            return await ParseImplAsync(parseContext, isInnerHtml, tagLevel, totalNum, isOrderByCount, theme);
         }
 
-        private static string ParseImpl(ParseContext parseContext, bool isInnerHtml, int tagLevel, int totalNum, bool isOrderByCount, string theme)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, bool isInnerHtml, int tagLevel, int totalNum, bool isOrderByCount, string theme)
         {
             var innerHtml = string.Empty;
             if (isInnerHtml)
@@ -95,38 +96,42 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var tagInfoList = parseContext.TagRepository.GetTagInfoList(parseContext.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = parseContext.TagRepository.GetTagInfoList(tagInfoList, totalNum, tagLevel);
-            if (parseContext.ContextType == EContextType.Content && parseContext.ContentInfo != null)
+            if (parseContext.ContextType == EContextType.Content)
             {
-                var tagInfoList2 = new List<TagInfo>();
-                var tagNameList = TranslateUtils.StringCollectionToStringList(parseContext.ContentInfo.Tags.Trim().Replace(" ", ","));
-                foreach (var tagName in tagNameList)
+                var contentInfo = await parseContext.GetContentInfoAsync();
+                if (contentInfo != null)
                 {
-                    if (!string.IsNullOrEmpty(tagName))
+                    var tagInfoList2 = new List<TagInfo>();
+                    var tagNameList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags.Trim().Replace(" ", ","));
+                    foreach (var tagName in tagNameList)
                     {
-                        var isAdd = false;
-                        foreach (var tagInfo in tagInfoList)
+                        if (!string.IsNullOrEmpty(tagName))
                         {
-                            if (tagInfo.Tag == tagName)
+                            var isAdd = false;
+                            foreach (var tagInfo in tagInfoList)
                             {
-                                isAdd = true;
+                                if (tagInfo.Tag == tagName)
+                                {
+                                    isAdd = true;
+                                    tagInfoList2.Add(tagInfo);
+                                    break;
+                                }
+                            }
+                            if (!isAdd)
+                            {
+                                var tagInfo = new TagInfo
+                                {
+                                    SiteId = parseContext.SiteId,
+                                    ContentIdCollection = contentId.ToString(),
+                                    Tag = tagName,
+                                    UseNum = 1
+                                };
                                 tagInfoList2.Add(tagInfo);
-                                break;
                             }
                         }
-                        if (!isAdd)
-                        {
-                            var tagInfo = new TagInfo
-                            {
-                                SiteId = parseContext.SiteId,
-                                ContentIdCollection = contentId.ToString(),
-                                Tag = tagName,
-                                UseNum = 1
-                            };
-                            tagInfoList2.Add(tagInfo);
-                        }
                     }
+                    tagInfoList = tagInfoList2;
                 }
-                tagInfoList = tagInfoList2;
             }
 
             foreach (var tagInfo in tagInfoList)
@@ -138,7 +143,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
                     var innerBuilder = new StringBuilder(tagHtml);
-                    parseContext.ParseInnerContent(innerBuilder);
+                    await parseContext.ParseInnerContentAsync(innerBuilder);
                     tagsBuilder.Append(innerBuilder);
                 }
                 else

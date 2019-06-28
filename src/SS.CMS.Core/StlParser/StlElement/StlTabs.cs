@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -44,7 +45,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {ActionMouseOver, "鼠标移动"}
         };
 
-        internal static string Parse(ParseContext parseContext)
+        internal static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var tabName = string.Empty;
             var type = string.Empty;
@@ -83,10 +84,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, tabName, type, action, classActive, classNormal, current);
+            return await ParseImplAsync(parseContext, tabName, type, action, classActive, classNormal, current);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string tabName, string type, string action, string classActive, string classNormal, int current)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string tabName, string type, string action, string classActive, string classNormal, int current)
         {
             parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);
 
@@ -187,7 +188,7 @@ function stl_tab_{uniqueId}(tabName, no){{
                     if (!string.IsNullOrEmpty(htmlNode.InnerHtml))
                     {
                         var innerBuilder = new StringBuilder(htmlNode.InnerHtml);
-                        parseContext.ParseInnerContent(innerBuilder);
+                        await parseContext.ParseInnerContentAsync(innerBuilder);
                         innerHtml = innerBuilder.ToString();
                     }
 

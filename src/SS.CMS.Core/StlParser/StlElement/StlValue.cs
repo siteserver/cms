@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Enums;
@@ -64,7 +65,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {TypeDateOfTraditional, "带农历的当前日期"}
         };
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var type = string.Empty;
             var formatString = string.Empty;
@@ -114,11 +115,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Replace))
                 {
-                    replace = value;
+                    replace = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, To))
                 {
-                    to = value;
+                    to = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsClearTags))
                 {

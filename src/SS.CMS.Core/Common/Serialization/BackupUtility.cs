@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Enums;
 using SS.CMS.Repositories;
@@ -16,19 +17,19 @@ namespace SS.CMS.Core.Serialization
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static void BackupTemplates(int siteId, string filePath, string adminName)
+        public static async Task BackupTemplatesAsync(int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
-            exportObject.ExportTemplates(filePath);
+            await exportObject.ExportTemplatesAsync(filePath);
         }
 
-        public static void BackupChannelsAndContents(IChannelRepository channelRepository, int siteId, string filePath, string adminName)
+        public static async Task BackupChannelsAndContentsAsync(IChannelRepository channelRepository, int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
 
-            var channelIdList = channelRepository.GetChannelIdList(channelRepository.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = await channelRepository.GetChannelIdListAsync(await channelRepository.GetChannelInfoAsync(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
 
-            exportObject.ExportChannels(channelIdList, filePath);
+            await exportObject.ExportChannelsAsync(channelIdList, filePath);
         }
 
         public static void BackupFiles(int siteId, string filePath, string adminName)
@@ -39,7 +40,7 @@ namespace SS.CMS.Core.Serialization
         }
 
 
-        public static void BackupSite(IPathManager pathManager, IUrlManager urlManager, ISiteRepository siteRepository, int siteId, string filePath, string adminName)
+        public static async Task BackupSiteAsync(IPathManager pathManager, IUrlManager urlManager, ISiteRepository siteRepository, int siteId, string filePath, string adminName)
         {
             var exportObject = new ExportObject(siteId, adminName);
             var siteInfo = siteRepository.GetSiteInfo(siteId);
@@ -53,12 +54,12 @@ namespace SS.CMS.Core.Serialization
             exportObject.ExportFilesToSite(siteTemplatePath, true, new ArrayList(), true);
 
             var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.SiteContent);
-            exportObject.ExportSiteContent(siteContentDirectoryPath, true, true, new List<int>());
+            await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, true, true, new List<int>());
 
             var templateFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
-            exportObject.ExportTemplates(templateFilePath);
+            await exportObject.ExportTemplatesAsync(templateFilePath);
             var tableDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.Table);
-            exportObject.ExportTablesAndStyles(tableDirectoryPath);
+            await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             var configurationFilePath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);
             exportObject.ExportMetadata(siteInfo.SiteName, urlManager.GetWebUrl(siteInfo), string.Empty, string.Empty, metadataPath);
@@ -67,7 +68,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static void RecoverySite(ICacheManager cacheManager, IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
+        public static async Task RecoverySiteAsync(ICacheManager cacheManager, IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
         {
             var importObject = new ImportObject(siteId, administratorName);
 
@@ -87,10 +88,10 @@ namespace SS.CMS.Core.Serialization
 
             if (isDeleteChannels)
             {
-                var channelIdList = channelRepository.GetChannelIdList(channelRepository.GetChannelInfo(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await channelRepository.GetChannelIdListAsync(await channelRepository.GetChannelInfoAsync(siteId, siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
-                    channelRepository.Delete(siteId, channelId);
+                    await channelRepository.DeleteAsync(siteId, channelId);
                 }
             }
             if (isDeleteTemplates)
@@ -101,7 +102,7 @@ namespace SS.CMS.Core.Serialization
                 {
                     if (templateInfo.IsDefault == false)
                     {
-                        templateRepository.Delete(siteId, templateInfo.Id);
+                        await templateRepository.DeleteAsync(siteId, templateInfo.Id);
                     }
                 }
             }
@@ -115,7 +116,7 @@ namespace SS.CMS.Core.Serialization
 
             //导入模板
             var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
-            importObject.ImportTemplates(templateFilePath, isOverride, administratorName);
+            await importObject.ImportTemplatesAsync(templateFilePath, isOverride, administratorName);
 
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);
@@ -126,14 +127,14 @@ namespace SS.CMS.Core.Serialization
 
             //导入栏目及内容
             var siteContentDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.SiteContent);
-            importObject.ImportChannelsAndContents(0, siteContentDirectoryPath, isOverride);
+            await importObject.ImportChannelsAndContentsAsync(0, siteContentDirectoryPath, isOverride);
 
             //导入表样式及清除缓存
             if (isUseTable)
             {
                 importObject.ImportTableStyles(tableDirectoryPath);
             }
-            importObject.RemoveDbCache();
+            await importObject.RemoveDbCacheAsync();
 
             cacheManager.ClearAll();
         }

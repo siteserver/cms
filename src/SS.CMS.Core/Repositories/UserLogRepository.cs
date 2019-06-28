@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -43,26 +44,26 @@ namespace SS.CMS.Core.Repositories
             return logInfo;
         }
 
-        private void DeleteIfThreshold()
+        private async Task DeleteIfThresholdAsync()
         {
             if (!_configRepository.Instance.IsTimeThreshold) return;
 
             var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            _repository.Delete(Q.Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
+            await _repository.DeleteAsync(Q.Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
-        public void Delete(List<int> idList)
+        public async Task DeleteAsync(List<int> idList)
         {
             if (idList == null || idList.Count <= 0) return;
 
-            _repository.Delete(Q.WhereIn(Attr.Id, idList));
+            await _repository.DeleteAsync(Q.WhereIn(Attr.Id, idList));
         }
 
-        public void DeleteAll()
+        public async Task DeleteAllAsync()
         {
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         public int GetCount()
@@ -146,11 +147,11 @@ namespace SS.CMS.Core.Repositories
                 .OrderByDesc(Attr.Id)).ToList();
         }
 
-        public void AddUserLog(string ipAddress, string userName, string actionType, string summary)
+        public async Task AddUserLogAsync(string ipAddress, string userName, string actionType, string summary)
         {
             if (!_configRepository.Instance.IsLogUser) return;
 
-            DeleteIfThreshold();
+            await DeleteIfThresholdAsync();
 
             if (!string.IsNullOrEmpty(summary))
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Models;
 
@@ -6,31 +7,31 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public int Insert(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task<int> InsertAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             var taxis = 0;
             if (contentInfo.SourceId == SourceManager.Preview)
             {
                 channelInfo.IsPreviewContentsExists = true;
-                _channelRepository.UpdateExtend(channelInfo);
+                await _channelRepository.UpdateExtendAsync(channelInfo);
             }
             else
             {
                 taxis = GetTaxisToInsert(contentInfo.ChannelId, contentInfo.IsTop);
             }
-            return InsertWithTaxis(siteInfo, channelInfo, contentInfo, taxis);
+            return await InsertWithTaxisAsync(siteInfo, channelInfo, contentInfo, taxis);
         }
 
-        public int InsertPreview(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task<int> InsertPreviewAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             channelInfo.IsPreviewContentsExists = true;
-            _channelRepository.UpdateExtend(channelInfo);
+            await _channelRepository.UpdateExtendAsync(channelInfo);
 
             contentInfo.SourceId = SourceManager.Preview;
-            return InsertWithTaxis(siteInfo, channelInfo, contentInfo, 0);
+            return await InsertWithTaxisAsync(siteInfo, channelInfo, contentInfo, 0);
         }
 
-        public int InsertWithTaxis(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo, int taxis)
+        public async Task<int> InsertWithTaxisAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo, int taxis)
         {
             if (siteInfo.IsAutoPageInTextEditor && !string.IsNullOrEmpty(contentInfo.Content))
             {
@@ -42,7 +43,7 @@ namespace SS.CMS.Core.Repositories
 
             contentInfo.Id = _repository.Insert(contentInfo);
 
-            InsertCache(siteInfo, channelInfo, contentInfo);
+            await InsertCacheAsync(siteInfo, channelInfo, contentInfo);
 
             return contentInfo.Id;
         }

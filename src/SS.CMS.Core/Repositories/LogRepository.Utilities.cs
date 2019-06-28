@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -6,13 +7,13 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class LogRepository
     {
-        public void AddAdminLog(string ipAddress, string adminName, string action, string summary = "")
+        public async Task AddAdminLogAsync(string ipAddress, string adminName, string action, string summary = "")
         {
             // if (!ConfigManager.Instance.IsLogAdmin) return;
 
             try
             {
-                DeleteIfThreshold();
+                await DeleteIfThresholdAsync();
 
                 if (!string.IsNullOrEmpty(action))
                 {
@@ -35,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             }
             catch (Exception ex)
             {
-                _errorLogRepository.AddErrorLog(ex);
+                await _errorLogRepository.AddErrorLogAsync(ex);
             }
         }
     }

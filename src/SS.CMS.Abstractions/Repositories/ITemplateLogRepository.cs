@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -14,6 +15,6 @@ namespace SS.CMS.Repositories
 
         Dictionary<int, string> GetLogIdWithNameDictionary(int templateId);
 
-        void Delete(List<int> idList);
+        Task DeleteAsync(List<int> idList);
     }
 }

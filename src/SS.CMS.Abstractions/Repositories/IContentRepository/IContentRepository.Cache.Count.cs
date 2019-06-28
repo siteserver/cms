@@ -1,13 +1,14 @@
-﻿using SS.CMS.Models;
+﻿using System.Threading.Tasks;
+using SS.CMS.Models;
 
 namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        int GetCount(SiteInfo siteInfo, bool isChecked);
+        Task<int> GetCountAsync(SiteInfo siteInfo, bool isChecked);
 
-        int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
+        Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
 
-        int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked);
+        Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked);
     }
 }

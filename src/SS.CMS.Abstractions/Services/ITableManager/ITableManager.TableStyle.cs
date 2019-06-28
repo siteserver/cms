@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
@@ -11,7 +12,7 @@ namespace SS.CMS.Services
 
         List<TableStyleInfo> GetChannelStyleInfoList(ChannelInfo channelInfo);
 
-        List<TableStyleInfo> GetContentStyleInfoList(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
+        Task<List<TableStyleInfo>> GetContentStyleInfoListAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
 
         List<TableStyleInfo> GetUserStyleInfoList();
 

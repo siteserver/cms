@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
@@ -10,7 +11,7 @@ namespace SS.CMS.Core.Common.Office
 {
     public static class ExcelObject
     {
-        public static void CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, SiteInfo siteInfo,
+        public static async Task CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, SiteInfo siteInfo,
             ChannelInfo channelInfo, IList<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, bool? checkedState)
         {
@@ -20,8 +21,8 @@ namespace SS.CMS.Core.Common.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var tableName = channelRepository.GetTableName(pluginManager, siteInfo, channelInfo);
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableManager.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo));
+            var tableName = await channelRepository.GetTableNameAsync(pluginManager, siteInfo, channelInfo);
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await tableManager.GetContentStyleInfoListAsync(pluginManager, siteInfo, channelInfo));
 
             foreach (var styleInfo in styleInfoList)
             {
@@ -60,7 +61,7 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForContents(string filePath, SiteInfo siteInfo,
+        public static async Task CreateExcelFileForContentsAsync(string filePath, SiteInfo siteInfo,
             ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -69,7 +70,7 @@ namespace SS.CMS.Core.Common.Office
             var head = new List<string>();
             var rows = new List<List<string>>();
 
-            var columns = channelInfo.ContentRepository.GetContentColumns(siteInfo, channelInfo, true);
+            var columns = await channelInfo.ContentRepository.GetContentColumnsAsync(siteInfo, channelInfo, true);
 
             foreach (var column in columns)
             {
@@ -130,7 +131,7 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static List<ContentInfo> GetContentsByCsvFile(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
+        public static async Task<List<ContentInfo>> GetContentsByCsvFileAsync(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
             ChannelInfo nodeInfo)
         {
             var contentInfoList = new List<ContentInfo>();
@@ -139,7 +140,7 @@ namespace SS.CMS.Core.Common.Office
 
             if (rows.Count <= 0) return contentInfoList;
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(tableManager.GetContentStyleInfoList(pluginManager, siteInfo, nodeInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await tableManager.GetContentStyleInfoListAsync(pluginManager, siteInfo, nodeInfo));
             var nameValueCollection = new NameValueCollection();
             foreach (var styleInfo in styleInfoList)
             {

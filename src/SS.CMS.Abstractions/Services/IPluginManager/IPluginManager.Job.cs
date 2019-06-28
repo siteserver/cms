@@ -6,6 +6,6 @@ namespace SS.CMS.Services
 {
     public partial interface IPluginManager
     {
-        Dictionary<string, Func<IJobContext, Task>> GetJobs();
+        Task<Dictionary<string, Func<IJobContext, Task>>> GetJobsAsync();
     }
 }

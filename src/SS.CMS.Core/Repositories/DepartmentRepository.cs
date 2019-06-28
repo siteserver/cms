@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -248,7 +249,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var departmentInfo = _repository.Get(id);
             if (departmentInfo == null) return false;
@@ -260,7 +261,7 @@ namespace SS.CMS.Core.Repositories
             }
             idList.Add(id);
 
-            var deletedNum = _repository.Delete(Q
+            var deletedNum = await _repository.DeleteAsync(Q
                 .WhereIn(Attr.Id, idList));
 
             if (deletedNum > 0)

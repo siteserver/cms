@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -29,7 +30,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "所处上下文")]
         private const string Context = nameof(Context);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             if (parseContext.IsStlEntity || string.IsNullOrWhiteSpace(parseContext.InnerHtml)) return string.Empty;
 
@@ -45,11 +46,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelIndex = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelName = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
@@ -72,9 +73,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
+            channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
             parseContext.ContextType = context;
             parseContext.ChannelId = channelId;
@@ -82,7 +83,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var innerHtml = RegexUtils.GetInnerContent(ElementName, parseContext.OuterHtml);
 
             var builder = new StringBuilder(innerHtml);
-            parseContext.ParseInnerContent(builder);
+            await parseContext.ParseInnerContentAsync(builder);
 
             return builder.ToString();
         }

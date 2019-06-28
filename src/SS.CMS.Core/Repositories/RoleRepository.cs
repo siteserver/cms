@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -64,9 +65,9 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public void DeleteRole(string roleName)
+        public async Task DeleteRoleAsync(string roleName)
         {
-            _repository.Delete(Q.Where(Attr.RoleName, roleName));
+            await _repository.DeleteAsync(Q.Where(Attr.RoleName, roleName));
         }
 
         public bool IsRoleExists(string roleName)

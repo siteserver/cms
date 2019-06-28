@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -28,7 +29,7 @@ namespace SS.CMS.Core.Serialization.Components
             _contentIe = new ContentIe(siteInfo, siteContentDirectoryPath);
         }
 
-        public int ImportChannelsAndContents(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
+        public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
         {
             var psChildCount = _channelRepository.GetCount(_siteInfo.Id);
             var indexNameList = _channelRepository.GetIndexNameList(_siteInfo.Id);
@@ -71,14 +72,14 @@ namespace SS.CMS.Core.Serialization.Components
             if (parentIdOriginal == 0)
             {
                 channelId = _siteInfo.Id;
-                var nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, _siteInfo.Id);
+                var nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, _siteInfo.Id);
                 _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                _channelRepository.Update(nodeInfo);
+                await _channelRepository.UpdateAsync(nodeInfo);
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, adminName);
                 }
             }
             else
@@ -91,7 +92,7 @@ namespace SS.CMS.Core.Serialization.Components
                 var theSameNameChannelId = 0;
                 if (isOverride)
                 {
-                    theSameNameChannelId = _channelRepository.GetChannelIdByParentIdAndChannelName(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
+                    theSameNameChannelId = await _channelRepository.GetChannelIdByParentIdAndChannelNameAsync(_siteInfo.Id, parentId, nodeInfo.ChannelName, false);
                     if (theSameNameChannelId != 0)
                     {
                         isUpdate = true;
@@ -99,32 +100,32 @@ namespace SS.CMS.Core.Serialization.Components
                 }
                 if (!isUpdate)
                 {
-                    channelId = _channelRepository.Insert(nodeInfo);
+                    channelId = await _channelRepository.InsertAsync(nodeInfo);
                 }
                 else
                 {
                     channelId = theSameNameChannelId;
-                    nodeInfo = _channelRepository.GetChannelInfo(_siteInfo.Id, theSameNameChannelId);
-                    var tableName = _channelRepository.GetTableName(_pluginManager, _siteInfo, nodeInfo);
+                    nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, theSameNameChannelId);
+                    var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, _siteInfo, nodeInfo);
                     _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
-                    _channelRepository.Update(nodeInfo);
+                    await _channelRepository.UpdateAsync(nodeInfo);
 
                     //DataProvider.ContentDao.DeleteContentsByChannelId(_siteInfo.Id, tableName, theSameNameChannelId);
                 }
 
                 if (isImportContents)
                 {
-                    _contentIe.ImportContents(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, adminName);
                 }
             }
 
             return channelId;
         }
 
-        public void Export(int siteId, int channelId, bool isSaveContents)
+        public async Task ExportAsync(int siteId, int channelId, bool isSaveContents)
         {
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (channelInfo == null) return;
 
             var siteInfo = _siteRepository.GetSiteInfo(siteId);

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public Dictionary<string, Func<IParseContext, string>> GetParses()
+        public async Task<Dictionary<string, Func<IParseContext, string>>> GetParsesAsync()
         {
             var elementsToParse = new Dictionary<string, Func<IParseContext, string>>();
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.StlElementsToParse != null && service.StlElementsToParse.Count > 0)
                 {

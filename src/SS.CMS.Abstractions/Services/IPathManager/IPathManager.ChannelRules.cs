@@ -1,12 +1,15 @@
 using System.Collections;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {
-        IDictionary ChannelRulesGetDictionary(SiteInfo siteInfo, int channelId);
+        Task<string> GetChannelFilePathRuleAsync(SiteInfo siteInfo, int channelId);
 
-        string ChannelRulesParse(SiteInfo siteInfo, int channelId);
+        Task<IDictionary> ChannelRulesGetDictionaryAsync(SiteInfo siteInfo, int channelId);
+
+        Task<string> ChannelRulesParseAsync(SiteInfo siteInfo, int channelId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -6,15 +7,15 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class AreaRepository
     {
-        public List<KeyValuePair<int, string>> GetRestAreas()
+        public async Task<List<KeyValuePair<int, string>>> GetRestAreasAsync()
         {
             var list = new List<KeyValuePair<int, string>>();
 
-            var areaIdList = GetAreaIdList();
+            var areaIdList = await GetAreaIdListAsync();
             var parentsCountDict = new Dictionary<int, bool>();
             foreach (var areaId in areaIdList)
             {
-                var areaInfo = GetAreaInfo(areaId);
+                var areaInfo = await GetAreaInfoAsync(areaId);
                 list.Add(new KeyValuePair<int, string>(areaId, GetTreeItem(areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode, parentsCountDict)));
             }
 
@@ -41,9 +42,9 @@ namespace SS.CMS.Core.Repositories
             return str;
         }
 
-        public AreaInfo GetAreaInfo(int areaId)
+        public async Task<AreaInfo> GetAreaInfoAsync(int areaId)
         {
-            var pairList = GetAreaInfoPairList();
+            var pairList = await GetAreaInfoPairListAsync();
 
             foreach (var pair in pairList)
             {
@@ -57,9 +58,9 @@ namespace SS.CMS.Core.Repositories
             return null;
         }
 
-        public string GetThisAreaName(int areaId)
+        public async Task<string> GetThisAreaNameAsync(int areaId)
         {
-            var areaInfo = GetAreaInfo(areaId);
+            var areaInfo = await GetAreaInfoAsync(areaId);
             if (areaInfo != null)
             {
                 return areaInfo.AreaName;
@@ -67,13 +68,13 @@ namespace SS.CMS.Core.Repositories
             return string.Empty;
         }
 
-        public string GetAreaName(int areaId)
+        public async Task<string> GetAreaNameAsync(int areaId)
         {
             if (areaId <= 0) return string.Empty;
 
             var areaNameList = new List<string>();
 
-            var parentsPath = GetParentsPath(areaId);
+            var parentsPath = await GetParentsPathAsync(areaId);
             var areaIdList = new List<int>();
             if (!string.IsNullOrEmpty(parentsPath))
             {
@@ -83,7 +84,7 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var theAreaId in areaIdList)
             {
-                var areaInfo = GetAreaInfo(theAreaId);
+                var areaInfo = await GetAreaInfoAsync(theAreaId);
                 if (areaInfo != null)
                 {
                     areaNameList.Add(areaInfo.AreaName);
@@ -93,10 +94,10 @@ namespace SS.CMS.Core.Repositories
             return TranslateUtils.ObjectCollectionToString(areaNameList, " > ");
         }
 
-        public string GetParentsPath(int areaId)
+        public async Task<string> GetParentsPathAsync(int areaId)
         {
             var retval = string.Empty;
-            var areaInfo = GetAreaInfo(areaId);
+            var areaInfo = await GetAreaInfoAsync(areaId);
             if (areaInfo != null)
             {
                 retval = areaInfo.ParentsPath;
@@ -104,9 +105,9 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public List<int> GetAreaIdList()
+        public async Task<List<int>> GetAreaIdListAsync()
         {
-            var pairList = GetAreaInfoPairList();
+            var pairList = await GetAreaInfoPairListAsync();
             var list = new List<int>();
             foreach (var pair in pairList)
             {
@@ -115,17 +116,17 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public void ClearCache()
+        private void ClearCache()
         {
             _cacheManager.Remove(CacheKey);
         }
 
-        private List<KeyValuePair<int, AreaInfo>> GetAreaInfoPairList()
+        private async Task<List<KeyValuePair<int, AreaInfo>>> GetAreaInfoPairListAsync()
         {
             var list = _cacheManager.Get<List<KeyValuePair<int, AreaInfo>>>(CacheKey);
             if (list != null) return list;
 
-            var pairListFormDb = GetAreaInfoPairListToCache();
+            var pairListFormDb = await GetAreaInfoPairListToCacheAsync();
             list = new List<KeyValuePair<int, AreaInfo>>();
             foreach (var pair in pairListFormDb)
             {

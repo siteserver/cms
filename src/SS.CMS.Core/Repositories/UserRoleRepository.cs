@@ -39,15 +39,15 @@ namespace SS.CMS.Core.Repositories
                 .Distinct()).ToList();
         }
 
-        public void RemoveUser(string userName)
+        public async Task RemoveUserAsync(string userName)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.UserName, userName));
         }
 
-        public void RemoveUserFromRole(string userName, string roleName)
+        public async Task RemoveUserFromRoleAsync(string userName, string roleName)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.UserName, userName)
                 .Where(Attr.RoleName, roleName));
         }

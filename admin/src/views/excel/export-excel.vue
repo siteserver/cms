@@ -71,7 +71,7 @@ export default {
     fetchData() {
       this.listLoading = true
       fetchList().then(response => {
-        this.list = response.data.items
+        this.list = response.items
         this.listLoading = false
       })
     },

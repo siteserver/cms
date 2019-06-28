@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using SS.CMS.Data;
 
 namespace SS.CMS.Repositories
 {
     public interface IPluginRepository : IRepository
     {
-        void DeleteById(string pluginId);
+        Task DeleteByIdAsync(string pluginId);
 
         void UpdateIsDisabled(string pluginId, bool isDisabled);
 

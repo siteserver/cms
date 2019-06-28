@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -52,9 +53,9 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public bool Delete(int groupId)
+        public async Task<bool> DeleteAsync(int groupId)
         {
-            var deleted = _repository.Delete(groupId);
+            var deleted = await _repository.DeleteAsync(groupId);
 
             ClearCache();
 

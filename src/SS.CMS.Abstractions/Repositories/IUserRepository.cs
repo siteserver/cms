@@ -27,7 +27,7 @@ namespace SS.CMS.Repositories
 
         List<int> UpdateSiteId(UserInfo userInfo, int siteId);
 
-        bool Delete(UserInfo userInfo);
+        Task<bool> DeleteAsync(UserInfo userInfo);
 
         void Lock(List<int> userIdList);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -52,13 +53,13 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public SpecialInfo Delete(int siteId, int specialId)
+        public async Task<SpecialInfo> DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return null;
 
             var specialInfo = GetSpecialInfo(siteId, specialId);
 
-            _repository.Delete(specialId);
+            await _repository.DeleteAsync(specialId);
 
             RemoveCache(siteId);
 

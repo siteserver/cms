@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Enums;
@@ -339,7 +340,7 @@ namespace SS.CMS.Core.Common
             return list;
         }
 
-        public static bool AfterContentAdded(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
+        public static async Task<bool> AfterContentAddedAsync(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
         {
             var isTranslated = false;
             if (isCrossSiteTrans && isAutomatic)
@@ -370,7 +371,7 @@ namespace SS.CMS.Core.Common
                         {
                             foreach (var targetChannelId in targetChannelIdArrayList)
                             {
-                                crossSiteTransManager.TransContentInfo(siteInfo, channelInfo, contentId, targetSiteInfo, targetChannelId);
+                                await crossSiteTransManager.TransContentInfoAsync(siteInfo, channelInfo, contentId, targetSiteInfo, targetChannelId);
                                 isTranslated = true;
                             }
                         }
@@ -378,7 +379,7 @@ namespace SS.CMS.Core.Common
                 }
             }
 
-            foreach (var service in pluginManager.Services)
+            foreach (var service in await pluginManager.GetServicesAsync())
             {
                 try
                 {
@@ -386,7 +387,7 @@ namespace SS.CMS.Core.Common
                 }
                 catch (Exception ex)
                 {
-                    errorLogRepository.AddErrorLog(service.PluginId, ex, nameof(service.OnContentAddCompleted));
+                    await errorLogRepository.AddErrorLogAsync(service.PluginId, ex, nameof(service.OnContentAddCompleted));
                 }
             }
 

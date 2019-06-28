@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -50,9 +51,9 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public bool Delete(int menuId)
+        public async Task<bool> DeleteAsync(int menuId)
         {
-            _repository.Delete(Q.Where(Attr.Id, menuId).OrWhere(Attr.ParentId, menuId));
+            await _repository.DeleteAsync(Q.Where(Attr.Id, menuId).OrWhere(Attr.ParentId, menuId));
 
             ClearCache();
 

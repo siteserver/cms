@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using SS.CMS.Core.Plugin;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
@@ -26,7 +27,6 @@ namespace SS.CMS.Core.Services
         private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IErrorLogRepository _errorLogRepository;
-        private List<IPluginInstance> _pluginInfoListRunnable;
 
         public PluginManager(ISettingsManager settingsManager, ICacheManager cacheManager, IPathManager pathManager, ITableManager tableManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
         {
@@ -39,12 +39,11 @@ namespace SS.CMS.Core.Services
             _channelRepository = channelRepository;
             _tableStyleRepository = tableStyleRepository;
             _errorLogRepository = errorLogRepository;
-            _pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
-        public IPackageMetadata GetMetadata(string pluginId)
+        public async Task<IPackageMetadata> GetMetadataAsync(string pluginId)
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
             IPluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
             {
@@ -53,36 +52,30 @@ namespace SS.CMS.Core.Services
             return null;
         }
 
-        public bool IsExists(string pluginId)
+        public async Task<bool> IsExistsAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return false;
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             return dict.ContainsKey(pluginId);
         }
 
-        public List<IPluginInstance> PluginInfoListRunnable
+        public async Task<List<IPluginInstance>> GetPluginInfoListRunnableAsync()
         {
-            get
-            {
-                var dict = GetPluginSortedList();
-                return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
-            }
+            var dict = await GetPluginSortedListAsync();
+            return dict.Values.Where(pluginInfo => pluginInfo.Plugin != null).ToList();
         }
 
-        public List<IPluginInstance> AllPluginInfoList
+        public async Task<List<IPluginInstance>> GetAllPluginInfoListAsync()
         {
-            get
-            {
-                var dict = GetPluginSortedList();
-                return dict.Values.ToList();
-            }
+            var dict = await GetPluginSortedListAsync();
+            return dict.Values.ToList();
         }
 
-        public List<IPluginInstance> GetEnabledPluginInfoList<T>() where T : PluginBase
+        public async Task<List<IPluginInstance>> GetEnabledPluginInfoListAsync<T>() where T : PluginBase
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
             return
                     dict.Values.Where(
                             pluginInfo =>
@@ -92,37 +85,34 @@ namespace SS.CMS.Core.Services
                         .ToList();
         }
 
-        public List<IService> Services
+        public async Task<List<IService>> GetServicesAsync()
         {
-            get
-            {
-                var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
-                return dict.Values.Where(
-                            pluginInfo =>
-                                pluginInfo.Plugin != null && !pluginInfo.IsDisabled
-                        ).Select(pluginInfo => pluginInfo.Service).ToList();
-            }
+            return dict.Values.Where(
+                        pluginInfo =>
+                            pluginInfo.Plugin != null && !pluginInfo.IsDisabled
+                    ).Select(pluginInfo => pluginInfo.Service).ToList();
         }
 
-        public IPluginInstance GetPluginInfo(string pluginId)
+        public async Task<IPluginInstance> GetPluginInfoAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             return dict.TryGetValue(pluginId, out var pluginInfo) ? pluginInfo : null;
         }
 
-        public IPluginInstance GetPluginInfo<T>() where T : PluginBase
+        public async Task<IPluginInstance> GetPluginInfoAsync<T>() where T : PluginBase
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
             return dict.Values.Where(instance => instance.Plugin is T).FirstOrDefault(instance => instance.IsRunnable && !instance.IsDisabled);
         }
 
-        public Dictionary<string, string> GetPluginIdAndVersionDict()
+        public async Task<Dictionary<string, string>> GetPluginIdAndVersionDictAsync()
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             var retval = new Dictionary<string, string>();
 
@@ -152,11 +142,11 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public PluginBase GetPlugin(string pluginId)
+        public async Task<PluginBase> GetPluginAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             IPluginInstance pluginInfo;
             if (dict.TryGetValue(pluginId, out pluginInfo))
@@ -166,11 +156,11 @@ namespace SS.CMS.Core.Services
             return null;
         }
 
-        public IPluginInstance GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase
+        public async Task<IPluginInstance> GetEnabledPluginInfoAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             IPluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
@@ -182,9 +172,9 @@ namespace SS.CMS.Core.Services
             return null;
         }
 
-        public List<IPluginInstance> GetEnabledPluginInfoList<T1, T2>()
+        public async Task<List<IPluginInstance>> GetEnabledPluginInfoListAsync<T1, T2>()
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             return dict.Values.Where(
                             pluginInfo =>
@@ -194,9 +184,9 @@ namespace SS.CMS.Core.Services
                         .ToList();
         }
 
-        public List<PluginBase> GetEnabledPluginMetadatas<T>() where T : PluginBase
+        public async Task<List<PluginBase>> GetEnabledPluginMetadatasAsync<T>() where T : PluginBase
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             return dict.Values.Where(
                         pluginInfo =>
@@ -205,11 +195,11 @@ namespace SS.CMS.Core.Services
                     ).Select(pluginInfo => pluginInfo.Plugin).ToList();
         }
 
-        public IPackageMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : PluginBase
+        public async Task<IPackageMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             IPluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
@@ -221,11 +211,11 @@ namespace SS.CMS.Core.Services
             return null;
         }
 
-        public T GetEnabledFeature<T>(string pluginId) where T : PluginBase
+        public async Task<T> GetEnabledFeatureAsync<T>(string pluginId) where T : PluginBase
         {
             if (string.IsNullOrEmpty(pluginId)) return default(T);
 
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             IPluginInstance pluginInfo;
             var isGet = dict.TryGetValue(pluginId, out pluginInfo);
@@ -237,9 +227,9 @@ namespace SS.CMS.Core.Services
             return default(T);
         }
 
-        public List<T> GetEnabledFeatures<T>() where T : PluginBase
+        public async Task<List<T>> GetEnabledFeaturesAsync<T>() where T : PluginBase
         {
-            var dict = GetPluginSortedList();
+            var dict = await GetPluginSortedListAsync();
 
             var pluginInfos = dict.Values.Where(
                         pluginInfo =>
@@ -250,11 +240,11 @@ namespace SS.CMS.Core.Services
             return pluginInfos.Select(pluginInfo => (T)pluginInfo.Plugin).ToList();
         }
 
-        public IService GetService(string pluginId)
+        public async Task<IService> GetServiceAsync(string pluginId)
         {
             if (string.IsNullOrEmpty(pluginId)) return null;
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (StringUtils.EqualsIgnoreCase(service.PluginId, pluginId))
                 {
@@ -271,9 +261,9 @@ namespace SS.CMS.Core.Services
             ClearCache();
         }
 
-        public void UpdateDisabled(string pluginId, bool isDisabled)
+        public async Task UpdateDisabledAsync(string pluginId, bool isDisabled)
         {
-            var pluginInfo = GetPluginInfo(pluginId);
+            var pluginInfo = await GetPluginInfoAsync(pluginId);
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = isDisabled;
@@ -282,9 +272,9 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void UpdateTaxis(string pluginId, int taxis)
+        public async Task UpdateTaxisAsync(string pluginId, int taxis)
         {
-            var pluginInfo = GetPluginInfo(pluginId);
+            var pluginInfo = await GetPluginInfoAsync(pluginId);
             if (pluginInfo != null)
             {
                 pluginInfo.Taxis = taxis;
@@ -293,9 +283,9 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public string GetPluginIconUrl(string pluginId)
+        public async Task<string> GetPluginIconUrlAsync(string pluginId)
         {
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.PluginId == pluginId)
                 {
@@ -320,7 +310,7 @@ namespace SS.CMS.Core.Services
         private readonly object LockObject = new object();
         private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
 
-        private SortedList<string, IPluginInstance> Load()
+        private async Task<SortedList<string, IPluginInstance>> LoadAsync()
         {
             var dict = new SortedList<string, IPluginInstance>();
 
@@ -339,7 +329,7 @@ namespace SS.CMS.Core.Services
                 {
                     if (StringUtils.StartsWith(directoryName, ".") || StringUtils.EqualsIgnoreCase(directoryName, "packages")) continue;
 
-                    var pluginInfo = ActivePlugin(directoryName);
+                    var pluginInfo = await ActivePluginAsync(directoryName);
                     if (pluginInfo != null)
                     {
                         dict[directoryName] = pluginInfo;
@@ -352,13 +342,13 @@ namespace SS.CMS.Core.Services
             }
             catch (Exception ex)
             {
-                _errorLogRepository.AddErrorLog(ex, "载入插件时报错");
+                await _errorLogRepository.AddErrorLogAsync(ex, "载入插件时报错");
             }
 
             return dict;
         }
 
-        private PluginInstance ActivePlugin(string directoryName)
+        private async Task<PluginInstance> ActivePluginAsync(string directoryName)
         {
             IPackageMetadata metadata = null;
             string errorMessage;
@@ -395,12 +385,12 @@ namespace SS.CMS.Core.Services
 
                 //var type = assembly.GetTypes().First(o => o.IsClass && !o.IsAbstract && o.IsSubclassOf(typeof(PluginBase)));
 
-                return ActiveAndAdd(metadata, type);
+                return await ActiveAndAddAsync(metadata, type);
             }
             catch (Exception ex)
             {
                 errorMessage = ex.Message;
-                _errorLogRepository.AddErrorLog(ex, $"插件加载：{directoryName}");
+                await _errorLogRepository.AddErrorLogAsync(ex, $"插件加载：{directoryName}");
             }
 
             return new PluginInstance(directoryName, metadata, errorMessage);
@@ -429,7 +419,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        private PluginInstance ActiveAndAdd(IPackageMetadata metadata, Type type)
+        private async Task<PluginInstance> ActiveAndAddAsync(IPackageMetadata metadata, Type type)
         {
             if (metadata == null || type == null) return null;
 
@@ -446,8 +436,8 @@ namespace SS.CMS.Core.Services
 
             plugin.Startup(service);
 
-            SyncContentTable(service);
-            SyncTable(service);
+            await SyncContentTableAsync(service);
+            await SyncTableAsync(service);
 
             return new PluginInstance(metadata, service, plugin, s.ElapsedMilliseconds, _pluginRepository);
         }
@@ -457,19 +447,16 @@ namespace SS.CMS.Core.Services
             _cacheManager.Remove(CacheKey);
         }
 
-        public SortedList<string, IPluginInstance> GetPluginSortedList()
+        public async Task<SortedList<string, IPluginInstance>> GetPluginSortedListAsync()
         {
             var retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
             if (retval != null) return retval;
 
-            lock (LockObject)
+            retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
+            if (retval == null)
             {
-                retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
-                if (retval == null)
-                {
-                    retval = Load();
-                    _cacheManager.InsertHours(CacheKey, retval, 24);
-                }
+                retval = await LoadAsync();
+                _cacheManager.InsertHours(CacheKey, retval, 24);
             }
 
             return retval;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -45,7 +46,7 @@ namespace SS.CMS.Core.Repositories
             return siteInfo.Id;
         }
 
-        public bool Delete(int siteId)
+        public async Task<bool> DeleteAsync(int siteId)
         {
             var siteInfo = GetSiteInfo(siteId);
             // var list = ChannelManager.GetChannelIdList(siteId);
@@ -57,7 +58,7 @@ namespace SS.CMS.Core.Repositories
 
             UpdateParentIdToZero(siteId);
 
-            _repository.Delete(siteId);
+            await _repository.DeleteAsync(siteId);
 
             ClearCache();
             // ChannelManager.RemoveCacheBySiteId(siteId);

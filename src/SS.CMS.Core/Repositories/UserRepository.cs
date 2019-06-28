@@ -195,17 +195,17 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(userInfo);
         }
 
-        public bool Delete(UserInfo userInfo)
+        public async Task<bool> DeleteAsync(UserInfo userInfo)
         {
             if (userInfo == null) return false;
 
-            var deleted = _repository.Delete(userInfo.Id);
+            var deleted = await _repository.DeleteAsync(userInfo.Id);
 
             if (deleted)
             {
                 RemoveCache(userInfo);
 
-                _userRoleRepository.RemoveUser(userInfo.UserName);
+                await _userRoleRepository.RemoveUserAsync(userInfo.UserName);
             }
 
             return deleted;

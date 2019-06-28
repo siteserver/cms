@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
@@ -7,17 +8,17 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public void Delete(int siteId, int contentId)
+        public async Task DeleteAsync(int siteId, int contentId)
         {
             if (siteId <= 0 || contentId <= 0) return;
 
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Id, contentId)
             );
         }
 
-        private void DeleteReferenceContents(int siteId, int channelId, IList<int> contentIdList)
+        private async Task DeleteReferenceContentsAsync(int siteId, int channelId, IList<int> contentIdList)
         {
             var deleteNum = 0;
 
@@ -25,7 +26,7 @@ namespace SS.CMS.Core.Repositories
             {
                 _tagRepository.RemoveTags(siteId, contentIdList);
 
-                deleteNum = _repository.Delete(Q
+                deleteNum = await _repository.DeleteAsync(Q
                     .Where(Attr.SiteId, siteId)
                     .Where(Attr.ReferenceId, ">", 0)
                     .WhereIn(Attr.Id, contentIdList));

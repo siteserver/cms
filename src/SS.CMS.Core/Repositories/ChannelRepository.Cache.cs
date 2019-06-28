@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -43,9 +44,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void CacheUpdate(int siteId, ChannelInfo channelInfo)
+        private async Task CacheUpdateAsync(int siteId, ChannelInfo channelInfo)
         {
-            var dict = GetChannelInfoDictionaryBySiteId(siteId);
+            var dict = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
 
             lock (LockObject)
             {
@@ -53,16 +54,15 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteId(int siteId)
+        public async Task<Dictionary<int, ChannelInfo>> GetChannelInfoDictionaryBySiteIdAsync(int siteId)
         {
             var allDict = CacheGetAllDictionary();
 
-            Dictionary<int, ChannelInfo> dict;
-            allDict.TryGetValue(siteId, out dict);
+            allDict.TryGetValue(siteId, out var dict);
 
             if (dict != null) return dict;
 
-            dict = GetChannelInfoDictionaryBySiteIdToCache(siteId);
+            dict = await GetChannelInfoDictionaryBySiteIdToCacheAsync(siteId);
             CacheUpdate(allDict, dict, siteId);
             return dict;
         }
@@ -73,28 +73,28 @@ namespace SS.CMS.Core.Repositories
             StlClearCache();
         }
 
-        public void UpdateCache(int siteId, ChannelInfo channelInfo)
+        public async Task UpdateCacheAsync(int siteId, ChannelInfo channelInfo)
         {
-            CacheUpdate(siteId, channelInfo);
+            await CacheUpdateAsync(siteId, channelInfo);
             StlClearCache();
         }
 
-        public ChannelInfo GetChannelInfo(int siteId, int channelId)
+        public async Task<ChannelInfo> GetChannelInfoAsync(int siteId, int channelId)
         {
             ChannelInfo channelInfo = null;
-            var dict = GetChannelInfoDictionaryBySiteId(siteId);
+            var dict = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             if (channelId == 0) channelId = siteId;
             dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
             return channelInfo;
         }
 
-        public int GetChannelId(int siteId, int channelId, string channelIndex, string channelName)
+        public async Task<int> GetChannelIdAsync(int siteId, int channelId, string channelIndex, string channelName)
         {
             var retval = channelId;
 
             if (!string.IsNullOrEmpty(channelIndex))
             {
-                var theChannelId = GetChannelIdByIndexName(siteId, channelIndex);
+                var theChannelId = await GetChannelIdByIndexNameAsync(siteId, channelIndex);
                 if (theChannelId != 0)
                 {
                     retval = theChannelId;
@@ -102,10 +102,10 @@ namespace SS.CMS.Core.Repositories
             }
             if (!string.IsNullOrEmpty(channelName))
             {
-                var theChannelId = GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                var theChannelId = await GetChannelIdByParentIdAndChannelNameAsync(siteId, retval, channelName, true);
                 if (theChannelId == 0)
                 {
-                    theChannelId = GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
+                    theChannelId = await GetChannelIdByParentIdAndChannelNameAsync(siteId, siteId, channelName, true);
                 }
                 if (theChannelId != 0)
                 {
@@ -116,20 +116,20 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public int GetChannelIdByIndexName(int siteId, string indexName)
+        public async Task<int> GetChannelIdByIndexNameAsync(int siteId, string indexName)
         {
             if (string.IsNullOrEmpty(indexName)) return 0;
 
-            var dict = GetChannelInfoDictionaryBySiteId(siteId);
+            var dict = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             var channelInfo = dict.Values.FirstOrDefault(x => x != null && x.IndexName == indexName);
             return channelInfo?.Id ?? 0;
         }
 
-        public int GetChannelIdByParentIdAndChannelName(int siteId, int parentId, string channelName, bool recursive)
+        public async Task<int> GetChannelIdByParentIdAndChannelNameAsync(int siteId, int parentId, string channelName, bool recursive)
         {
             if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
 
-            var dict = GetChannelInfoDictionaryBySiteId(siteId);
+            var dict = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             var channelInfoList = dict.Values.OrderBy(x => x.Taxis).ToList();
 
             ChannelInfo channelInfo;
@@ -172,27 +172,27 @@ namespace SS.CMS.Core.Repositories
         //    return dic.Values.Where(x => !string.IsNullOrEmpty(x?.IndexName)).Select(x => x.IndexName).Distinct().ToList();
         //}
 
-        public List<ChannelInfo> GetChannelInfoList(int siteId)
+        public async Task<List<ChannelInfo>> GetChannelInfoListAsync(int siteId)
         {
-            var dic = GetChannelInfoDictionaryBySiteId(siteId);
+            var dic = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             return dic.Values.Where(channelInfo => channelInfo != null).ToList();
         }
 
-        public List<int> GetChannelIdList(int siteId)
+        public async Task<List<int>> GetChannelIdListAsync(int siteId)
         {
-            var dic = GetChannelInfoDictionaryBySiteId(siteId);
+            var dic = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
-        public Dictionary<int, ChannelInfo> GetChannelInfoDictionary(int siteId)
+        public async Task<Dictionary<int, ChannelInfo>> GetChannelInfoDictionaryAsync(int siteId)
         {
-            return GetChannelInfoDictionaryBySiteId(siteId);
+            return await GetChannelInfoDictionaryBySiteIdAsync(siteId);
         }
 
-        public List<int> GetChannelIdList(int siteId, string channelGroup)
+        public async Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup)
         {
             var channelInfoList = new List<ChannelInfo>();
-            var dic = GetChannelInfoDictionaryBySiteId(siteId);
+            var dic = await GetChannelInfoDictionaryBySiteIdAsync(siteId);
             foreach (var channelInfo in dic.Values)
             {
                 if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
@@ -205,16 +205,16 @@ namespace SS.CMS.Core.Repositories
             return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
-        public List<int> GetChannelIdList(ChannelInfo channelInfo, ScopeType scopeType)
+        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType)
         {
-            return GetChannelIdList(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
+            return await GetChannelIdListAsync(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
         }
 
-        public List<int> GetChannelIdList(ChannelInfo channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)
+        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)
         {
             if (channelInfo == null) return new List<int>();
 
-            var dic = GetChannelInfoDictionaryBySiteId(channelInfo.SiteId);
+            var dic = await GetChannelInfoDictionaryBySiteIdAsync(channelInfo.SiteId);
             var channelInfoList = new List<ChannelInfo>();
 
             if (channelInfo.ChildrenCount == 0)
@@ -299,54 +299,54 @@ namespace SS.CMS.Core.Repositories
             return filteredChannelInfoList.OrderBy(c => c.Taxis).Select(channelInfoInList => channelInfoInList.Id).ToList();
         }
 
-        public bool IsExists(int siteId, int channelId)
+        public async Task<bool> IsExistsAsync(int siteId, int channelId)
         {
-            var nodeInfo = GetChannelInfo(siteId, channelId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
             return nodeInfo != null;
         }
 
-        public bool IsExists(ISiteRepository siteRepository, int channelId)
+        public async Task<bool> IsExistsAsync(ISiteRepository siteRepository, int channelId)
         {
             var list = siteRepository.GetSiteIdList();
             foreach (var siteId in list)
             {
-                var nodeInfo = GetChannelInfo(siteId, channelId);
+                var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
                 if (nodeInfo != null) return true;
             }
 
             return false;
         }
 
-        public int GetChannelIdByParentsCount(int siteId, int channelId, int parentsCount)
+        public async Task<int> GetChannelIdByParentsCountAsync(int siteId, int channelId, int parentsCount)
         {
             if (parentsCount == 0) return siteId;
             if (channelId == 0 || channelId == siteId) return siteId;
 
-            var nodeInfo = GetChannelInfo(siteId, channelId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo != null)
             {
-                return nodeInfo.ParentsCount == parentsCount ? nodeInfo.Id : GetChannelIdByParentsCount(siteId, nodeInfo.ParentId, parentsCount);
+                return nodeInfo.ParentsCount == parentsCount ? nodeInfo.Id : await GetChannelIdByParentsCountAsync(siteId, nodeInfo.ParentId, parentsCount);
             }
             return siteId;
         }
 
-        public string GetTableName(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
         {
-            return GetTableName(pluginManager, siteInfo, GetChannelInfo(siteInfo.Id, channelId));
+            return await GetTableNameAsync(pluginManager, siteInfo, await GetChannelInfoAsync(siteInfo.Id, channelId));
         }
 
-        public string GetTableName(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
         {
-            return channelInfo != null ? GetTableName(pluginManager, siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
+            return channelInfo != null ? await GetTableNameAsync(pluginManager, siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
         }
 
-        public string GetTableName(IPluginManager pluginManager, SiteInfo siteInfo, string pluginId)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, string pluginId)
         {
             var tableName = siteInfo.TableName;
 
             if (string.IsNullOrEmpty(pluginId)) return tableName;
 
-            var contentTable = pluginManager.GetContentTableName(pluginId);
+            var contentTable = await pluginManager.GetContentTableNameAsync(pluginId);
             if (!string.IsNullOrEmpty(contentTable))
             {
                 tableName = contentTable;
@@ -375,20 +375,20 @@ namespace SS.CMS.Core.Repositories
         //    return tableStyle;
         //}
 
-        public bool IsContentModelPlugin(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public async Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             if (string.IsNullOrEmpty(nodeInfo.ContentModelPluginId)) return false;
 
-            var contentTable = pluginManager.GetContentTableName(nodeInfo.ContentModelPluginId);
+            var contentTable = await pluginManager.GetContentTableNameAsync(nodeInfo.ContentModelPluginId);
             return !string.IsNullOrEmpty(contentTable);
         }
 
-        public string GetNodeTreeLastImageHtml(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public async Task<string> GetNodeTreeLastImageHtmlAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo nodeInfo)
         {
             var imageHtml = string.Empty;
             if (!string.IsNullOrEmpty(nodeInfo.ContentModelPluginId) || !string.IsNullOrEmpty(nodeInfo.ContentRelatedPluginIds))
             {
-                var list = pluginManager.GetContentPlugins(nodeInfo, true);
+                var list = await pluginManager.GetContentPluginsAsync(nodeInfo, true);
                 if (list != null && list.Count > 0)
                 {
                     imageHtml += @"<i class=""ion-cube"" style=""font-size: 15px;vertical-align: baseline;""></i>&nbsp;";
@@ -397,10 +397,10 @@ namespace SS.CMS.Core.Repositories
             return imageHtml;
         }
 
-        public int GetParentId(int siteId, int channelId)
+        public async Task<int> GetParentIdAsync(int siteId, int channelId)
         {
             var retval = 0;
-            var nodeInfo = GetChannelInfo(siteId, channelId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ParentId;
@@ -408,10 +408,10 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public string GetParentsPath(int siteId, int channelId)
+        public async Task<string> GetParentsPathAsync(int siteId, int channelId)
         {
             var retval = string.Empty;
-            var nodeInfo = GetChannelInfo(siteId, channelId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ParentsPath;
@@ -419,16 +419,16 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public int GetTopLevel(int siteId, int channelId)
+        public async Task<int> GetTopLevelAsync(int siteId, int channelId)
         {
-            var parentsPath = GetParentsPath(siteId, channelId);
+            var parentsPath = await GetParentsPathAsync(siteId, channelId);
             return string.IsNullOrEmpty(parentsPath) ? 0 : parentsPath.Split(',').Length;
         }
 
-        public string GetChannelName(int siteId, int channelId)
+        public async Task<string> GetChannelNameAsync(int siteId, int channelId)
         {
             var retval = string.Empty;
-            var nodeInfo = GetChannelInfo(siteId, channelId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo != null)
             {
                 retval = nodeInfo.ChannelName;
@@ -436,7 +436,7 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public string GetChannelNameNavigation(int siteId, int channelId)
+        public async Task<string> GetChannelNameNavigationAsync(int siteId, int channelId)
         {
             var nodeNameList = new List<string>();
 
@@ -444,10 +444,10 @@ namespace SS.CMS.Core.Repositories
 
             if (channelId == siteId)
             {
-                var nodeInfo = GetChannelInfo(siteId, siteId);
+                var nodeInfo = await GetChannelInfoAsync(siteId, siteId);
                 return nodeInfo.ChannelName;
             }
-            var parentsPath = GetParentsPath(siteId, channelId);
+            var parentsPath = await GetParentsPathAsync(siteId, channelId);
             var channelIdList = new List<int>();
             if (!string.IsNullOrEmpty(parentsPath))
             {
@@ -458,7 +458,7 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var theChannelId in channelIdList)
             {
-                var nodeInfo = GetChannelInfo(siteId, theChannelId);
+                var nodeInfo = await GetChannelInfoAsync(siteId, theChannelId);
                 if (nodeInfo != null)
                 {
                     nodeNameList.Add(nodeInfo.ChannelName);
@@ -468,7 +468,7 @@ namespace SS.CMS.Core.Repositories
             return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
         }
 
-        public string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, IUserManager userManager, bool[] isLastNodeArray, bool isShowContentNum)
+        public async Task<string> GetSelectTextAsync(SiteInfo siteInfo, ChannelInfo channelInfo, IUserManager userManager, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
@@ -493,31 +493,31 @@ namespace SS.CMS.Core.Repositories
             if (isShowContentNum)
             {
                 var onlyAdminId = userManager.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-                var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, onlyAdminId);
                 retval = string.Concat(retval, " (", count, ")");
             }
 
             return retval;
         }
 
-        public string GetContentAttributesOfDisplay(int siteId, int channelId)
+        public async Task<string> GetContentAttributesOfDisplayAsync(int siteId, int channelId)
         {
-            var channelInfo = GetChannelInfo(siteId, channelId);
+            var channelInfo = await GetChannelInfoAsync(siteId, channelId);
             if (channelInfo == null) return string.Empty;
             if (siteId != channelId && string.IsNullOrEmpty(channelInfo.ContentAttributesOfDisplay))
             {
-                return GetContentAttributesOfDisplay(siteId, channelInfo.ParentId);
+                return await GetContentAttributesOfDisplayAsync(siteId, channelInfo.ParentId);
             }
             return channelInfo.ContentAttributesOfDisplay;
         }
 
-        public bool IsAncestorOrSelf(int siteId, int parentId, int childId)
+        public async Task<bool> IsAncestorOrSelfAsync(int siteId, int parentId, int childId)
         {
             if (parentId == childId)
             {
                 return true;
             }
-            var nodeInfo = GetChannelInfo(siteId, childId);
+            var nodeInfo = await GetChannelInfoAsync(siteId, childId);
             if (nodeInfo == null)
             {
                 return false;
@@ -529,16 +529,16 @@ namespace SS.CMS.Core.Repositories
             return false;
         }
 
-        public List<KeyValuePair<int, string>> GetChannels(int siteId, IUserManager userManager, params string[] channelPermissions)
+        public async Task<List<KeyValuePair<int, string>>> GetChannelsAsync(int siteId, IUserManager userManager, params string[] channelPermissions)
         {
             var options = new List<KeyValuePair<int, string>>();
 
-            var list = GetChannelIdList(siteId);
+            var list = await GetChannelIdListAsync(siteId);
             foreach (var channelId in list)
             {
                 var enabled = userManager.HasChannelPermissions(siteId, channelId, channelPermissions);
 
-                var channelInfo = GetChannelInfo(siteId, channelId);
+                var channelInfo = await GetChannelInfoAsync(siteId, channelId);
                 if (enabled && channelPermissions.Contains(AuthTypes.ChannelPermissions.ContentAdd))
                 {
                     if (channelInfo.IsContentAddable == false) enabled = false;
@@ -547,7 +547,7 @@ namespace SS.CMS.Core.Repositories
                 if (enabled)
                 {
                     var tuple = new KeyValuePair<int, string>(channelId,
-                        GetChannelNameNavigation(siteId, channelId));
+                        await GetChannelNameNavigationAsync(siteId, channelId));
                     options.Add(tuple);
                 }
             }
@@ -555,7 +555,7 @@ namespace SS.CMS.Core.Repositories
             return options;
         }
 
-        public bool IsCreatable(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<bool> IsCreatableAsync(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             if (siteInfo == null || channelInfo == null) return false;
 
@@ -571,17 +571,17 @@ namespace SS.CMS.Core.Repositories
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExists)
             {
-                var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                 isCreatable = count != 0;
             }
             else if (linkType == ELinkType.LinkToOnlyOneContent)
             {
-                var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                 isCreatable = count != 1;
             }
             else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
             {
-                var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                 if (count != 0 && count != 1)
                 {
                     isCreatable = true;
@@ -589,7 +589,7 @@ namespace SS.CMS.Core.Repositories
             }
             else if (linkType == ELinkType.LinkToFirstContent)
             {
-                var count = channelInfo.ContentRepository.GetCount(siteInfo, channelInfo, true);
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                 isCreatable = count < 1;
             }
             else if (linkType == ELinkType.NoLinkIfChannelNotExists)

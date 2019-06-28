@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -32,33 +33,33 @@ namespace SS.CMS.Core.Repositories
             public const string ChannelPermissions = nameof(PermissionInfo.ChannelPermissions);
         }
 
-        public int Insert(PermissionInfo permissionsInfo)
+        public async Task<int> InsertAsync(PermissionInfo permissionsInfo)
         {
             if (IsExists(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId))
             {
-                Delete(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId);
+                await DeleteAsync(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId);
             }
             return _repository.Insert(permissionsInfo);
         }
 
-        public bool Delete(string roleName)
+        public async Task<bool> DeleteAsync(string roleName)
         {
-            return _repository.Delete(Q
+            return await _repository.DeleteAsync(Q
                 .Where(Attr.RoleName, roleName)
             ) > 0;
         }
 
-        private void Delete(string roleName, int siteId)
+        private async Task DeleteAsync(string roleName, int siteId)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.RoleName, roleName)
                 .Where(Attr.SiteId, siteId)
             );
         }
 
-        private void Delete(string roleName, int siteId, int channelId)
+        private async Task DeleteAsync(string roleName, int siteId, int channelId)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.RoleName, roleName)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)

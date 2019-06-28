@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Utils;
 
@@ -14,7 +15,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "文件路径")]
         private const string File = nameof(File);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var file = string.Empty;
             var parameters = new Dictionary<string, string>();
@@ -25,19 +26,19 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, File))
                 {
-                    file = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    file = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     file = parseContext.UrlManager.AddVirtualToUrl(file);
                 }
                 else
                 {
-                    parameters[name] = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    parameters[name] = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
             }
 
-            return ParseImpl(parseContext, file, parameters);
+            return await ParseImplAsync(parseContext, file, parameters);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string file, Dictionary<string, string> parameters)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string file, Dictionary<string, string> parameters)
         {
             if (string.IsNullOrEmpty(file)) return string.Empty;
 
@@ -45,9 +46,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             parseContext.PageInfo.Parameters = parameters;
 
             var filePath = parseContext.PathManager.MapPath(parseContext.SiteInfo, parseContext.PathManager.AddVirtualToPath(file));
-            var content = parseContext.TemplateRepository.GetContentByFilePath(filePath);
+            var content = await parseContext.TemplateRepository.GetContentByFilePathAsync(filePath);
             var contentBuilder = new StringBuilder(content);
-            parseContext.ParseTemplateContent(contentBuilder);
+            await parseContext.ParseTemplateContentAsync(contentBuilder);
             var parsedContent = contentBuilder.ToString();
 
             parseContext.PageInfo.Parameters = pageParameters;

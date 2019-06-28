@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlEntity;
 using SS.CMS.Core.StlParser.Utility;
@@ -14,7 +15,7 @@ namespace SS.CMS.Core.StlParser
         /// <summary>
         /// 将原始内容中的STL实体替换为实际内容
         /// </summary>
-        public void ReplaceStlEntities(StringBuilder parsedBuilder)
+        public async Task ReplaceStlEntitiesAsync(StringBuilder parsedBuilder)
         {
             var stlEntityList = StlParserUtility.GetStlEntityList(parsedBuilder.ToString());
 
@@ -23,12 +24,15 @@ namespace SS.CMS.Core.StlParser
                 var startIndex = parsedBuilder.ToString().IndexOf(stlEntity, StringComparison.Ordinal);
                 if (startIndex == -1) continue;
 
-                var resultContent = ParseStlEntity(stlEntity);
-                parsedBuilder.Replace(stlEntity, resultContent, startIndex, stlEntity.Length);
+                var resultContent = await ParseStlEntityAsync(stlEntity);
+                if (resultContent != null)
+                {
+                    parsedBuilder.Replace(stlEntity, resultContent.ToString(), startIndex, stlEntity.Length);
+                }
             }
         }
 
-        internal string ParseStlEntity(string stlEntity)
+        internal async Task<string> ParseStlEntityAsync(string stlEntity)
         {
             var parsedContent = string.Empty;
 
@@ -36,19 +40,19 @@ namespace SS.CMS.Core.StlParser
 
             if (entityType == EStlEntityType.Stl)
             {
-                parsedContent = StlStlEntities.Parse(stlEntity, this);
+                parsedContent = await StlStlEntities.ParseAsync(stlEntity, this);
             }
             else if (entityType == EStlEntityType.StlElement)
             {
-                parsedContent = StlElementEntities.Parse(stlEntity, this);
+                parsedContent = await StlElementEntities.ParseAsync(stlEntity, this);
             }
             else if (entityType == EStlEntityType.Content)
             {
-                parsedContent = StlContentEntities.Parse(stlEntity, this);
+                parsedContent = await StlContentEntities.ParseAsync(stlEntity, this);
             }
             else if (entityType == EStlEntityType.Channel)
             {
-                parsedContent = StlChannelEntities.Parse(stlEntity, this);
+                parsedContent = await StlChannelEntities.ParseAsync(stlEntity, this);
             }
             else if (entityType == EStlEntityType.Request)
             {
@@ -56,7 +60,7 @@ namespace SS.CMS.Core.StlParser
             }
             else if (entityType == EStlEntityType.Navigation)
             {
-                parsedContent = StlNavigationEntities.Parse(stlEntity, this);
+                parsedContent = await StlNavigationEntities.ParseAsync(stlEntity, this);
             }
             else if (entityType == EStlEntityType.Sql)
             {
@@ -70,12 +74,12 @@ namespace SS.CMS.Core.StlParser
             return parsedContent;
         }
 
-        internal string ReplaceStlEntitiesForAttributeValue(string attrValue)
+        internal async Task<string> ReplaceStlEntitiesForAttributeValueAsync(string attrValue)
         {
             if (!StlParserUtility.IsStlEntityInclude(attrValue)) return attrValue;
 
             var contentBuilder = new StringBuilder(attrValue);
-            ReplaceStlEntities(contentBuilder);
+            await ReplaceStlEntitiesAsync(contentBuilder);
             return contentBuilder.ToString();
         }
     }

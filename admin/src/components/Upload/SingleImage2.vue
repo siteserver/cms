@@ -61,11 +61,11 @@ export default {
       const _self = this
       return new Promise((resolve, reject) => {
         getToken().then(response => {
-          const key = response.data.qiniu_key
-          const token = response.data.qiniu_token
+          const key = response.qiniu_key
+          const token = response.qiniu_token
           _self._data.dataObj.token = token
           _self._data.dataObj.key = key
-          this.tempUrl = response.data.qiniu_url
+          this.tempUrl = response.qiniu_url
           resolve(true)
         }).catch(() => {
           reject(false)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models;
 using SS.CMS.Models;
 using SS.CMS.Utils;
@@ -44,7 +45,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void RemoveTags(List<string> tags, int siteId, int contentId)
+        private async Task RemoveTagsAsync(List<string> tags, int siteId, int contentId)
         {
             if (tags == null || tags.Count == 0) return;
 
@@ -60,7 +61,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (tagInfo.UseNum == 0)
                 {
-                    DeleteTag(tagName, siteId);
+                    await DeleteTagAsync(tagName, siteId);
                 }
                 else
                 {
@@ -69,7 +70,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public void UpdateTags(string tagsPrevious, string tagsNow, int siteId, int contentId)
+        public async Task UpdateTagsAsync(string tagsPrevious, string tagsNow, int siteId, int contentId)
         {
             if (tagsPrevious == tagsNow) return;
 
@@ -94,7 +95,7 @@ namespace SS.CMS.Core.Repositories
                 }
             }
 
-            RemoveTags(tagsToRemove, siteId, contentId);
+            await RemoveTagsAsync(tagsToRemove, siteId, contentId);
             AddTags(tagsToAdd, siteId, contentId);
         }
 

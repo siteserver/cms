@@ -93,7 +93,7 @@ export default {
       this.loading = true
       this.$emit('create') // for test
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
+        this.list = response.items
         this.loading = false
       })
     }

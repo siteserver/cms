@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 
 namespace SS.CMS.Core.StlParser.StlEntity
@@ -11,7 +12,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
         public static SortedList<string, string> AttributeList => null;
 
-        internal static string Parse(string stlEntity, ParseContext parseContext)
+        internal static async Task<string> ParseAsync(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
 
@@ -21,7 +22,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 var stlElement = $"<{stlEntity.Trim(' ', '{', '}')} />";
 
                 var innerBuilder = new StringBuilder(stlElement);
-                parseContext.ParseInnerContent(innerBuilder);
+                await parseContext.ParseInnerContentAsync(innerBuilder);
                 parsedContent = innerBuilder.ToString();
             }
             catch

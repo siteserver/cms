@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -7,40 +8,30 @@ namespace SS.CMS.Repositories
 {
     public partial interface IChannelRepository : IRepository
     {
-        int Insert(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId,
-            string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId);
+        Task<int> InsertAsync(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId);
 
-        int Insert(ChannelInfo channelInfo);
+        Task<int> InsertAsync(ChannelInfo channelInfo);
 
-        /// <summary>
-        /// 添加后台发布节点
-        /// </summary>
         int InsertSiteInfo(ChannelInfo channelInfo, SiteInfo siteInfo, string administratorName);
 
-        void Update(ChannelInfo channelInfo);
+        Task UpdateAsync(ChannelInfo channelInfo);
 
-        void UpdateChannelTemplateId(ChannelInfo channelInfo);
+        Task UpdateChannelTemplateIdAsync(ChannelInfo channelInfo);
 
-        void UpdateContentTemplateId(ChannelInfo channelInfo);
+        Task UpdateContentTemplateIdAsync(ChannelInfo channelInfo);
 
-        void UpdateExtend(ChannelInfo channelInfo);
+        Task UpdateExtendAsync(ChannelInfo channelInfo);
 
-        void UpdateTaxis(int siteId, int selectedId, bool isSubtract);
+        Task UpdateTaxisAsync(int siteId, int selectedId, bool isSubtract);
 
-        void AddGroupNameList(int siteId, int channelId, List<string> groupList);
+        Task AddGroupNameListAsync(int siteId, int channelId, List<string> groupList);
 
-        void DeleteAll(int siteId);
+        Task DeleteAllAsync(int siteId);
 
-        void Delete(int siteId, int channelId);
+        Task DeleteAsync(int siteId, int channelId);
 
-        /// <summary>
-        /// 得到最后一个添加的子节点
-        /// </summary>
         ChannelInfo GetChannelInfoByLastAddDate(int channelId);
 
-        /// <summary>
-        /// 得到第一个子节点
-        /// </summary>
         ChannelInfo GetChannelInfoByTaxis(int channelId);
 
         int GetIdByParentIdAndTaxis(int parentId, int taxis, bool isNextChannel);
@@ -49,22 +40,19 @@ namespace SS.CMS.Repositories
 
         int GetSiteId(int channelId);
 
-        /// <summary>
-        /// 在节点树中得到此节点的排序号，以“1_2_5_2”的形式表示
-        /// </summary>
         string GetOrderStringInSite(int channelId);
 
         IList<string> GetIndexNameList(int siteId);
 
         int GetCount(int channelId);
 
-        int GetSequence(int siteId, int channelId);
+        Task<int> GetSequenceAsync(int siteId, int channelId);
 
-        IList<int> GetIdListByTotalNum(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType,
+        Task<IList<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType,
             string groupChannel, string groupChannelNot, bool? isImage, int totalNum);
 
-        IList<KeyValuePair<int, ChannelInfo>> GetContainerChannelList(int siteId, int channelId, string group,
-            string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType,
+        Task<IList<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId,
+            string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType,
             ScopeType scopeType, bool isTotal);
 
         IList<string> GetContentModelPluginIdList();
@@ -75,6 +63,6 @@ namespace SS.CMS.Repositories
 
         IList<int> GetChannelIdList(TemplateInfo templateInfo);
 
-        string GetSourceName(int sourceId);
+        Task<string> GetSourceNameAsync(int sourceId);
     }
 }

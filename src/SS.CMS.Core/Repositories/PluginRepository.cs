@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -32,9 +33,9 @@ namespace SS.CMS.Core.Repositories
             public const string Taxis = nameof(PluginInfo.Taxis);
         }
 
-        public void DeleteById(string pluginId)
+        public async Task DeleteByIdAsync(string pluginId)
         {
-            _repository.Delete(Q.Where(Attr.PluginId, pluginId));
+            await _repository.DeleteAsync(Q.Where(Attr.PluginId, pluginId));
         }
 
         public void UpdateIsDisabled(string pluginId, bool isDisabled)

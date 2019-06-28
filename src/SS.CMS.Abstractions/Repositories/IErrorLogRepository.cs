@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -7,18 +8,18 @@ namespace SS.CMS.Repositories
 {
     public interface IErrorLogRepository : IRepository
     {
-        void Delete(List<int> idList);
+        Task DeleteAsync(List<int> idList);
 
         ErrorLogInfo GetErrorLogInfo(int logId);
 
-        void DeleteAll();
+        Task DeleteAllAsync();
 
-        int AddErrorLog(ErrorLogInfo logInfo);
+        Task<int> AddErrorLogAsync(ErrorLogInfo logInfo);
 
-        int AddErrorLog(Exception ex, string summary = "");
+        Task<int> AddErrorLogAsync(Exception ex, string summary = "");
 
-        int AddErrorLog(string pluginId, Exception ex, string summary = "");
+        Task<int> AddErrorLogAsync(string pluginId, Exception ex, string summary = "");
 
-        int AddStlErrorLog(string summary, string elementName, string stlContent, Exception ex);
+        Task<int> AddStlErrorLogAsync(string summary, string elementName, string stlContent, Exception ex);
     }
 }

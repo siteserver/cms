@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
@@ -30,9 +31,9 @@ namespace SS.CMS.Repositories.IContentRepository
 
         int GetCountCheckedImage(int siteId, int channelId);
 
-        int GetCountOfContentAdd(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState);
+        Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState);
 
-        int GetCountOfContentUpdate(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName);
+        Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName);
 
         ContentInfo GetCacheContentInfo(int contentId);
     }

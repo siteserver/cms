@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Models;
@@ -72,7 +73,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public void ImportRelatedField(bool overwrite)
+        public async Task ImportRelatedFieldAsync(bool overwrite)
         {
             if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
             var filePaths = DirectoryUtils.GetFilePaths(_directoryPath);
@@ -100,7 +101,7 @@ namespace SS.CMS.Core.Serialization.Components
                 {
                     if (overwrite)
                     {
-                        _relatedFieldRepository.Delete(srcRelatedFieldInfo.Id);
+                        await _relatedFieldRepository.DeleteAsync(srcRelatedFieldInfo.Id);
                     }
                     else
                     {

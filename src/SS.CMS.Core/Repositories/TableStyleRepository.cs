@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Services;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -57,20 +58,20 @@ namespace SS.CMS.Core.Repositories
             return id;
         }
 
-        public void Update(TableStyleInfo info, bool deleteAndInsertStyleItems = true)
+        public async Task UpdateAsync(TableStyleInfo info, bool deleteAndInsertStyleItems = true)
         {
             _repository.Update(info);
             if (deleteAndInsertStyleItems)
             {
-                _tableStyleItemRepository.DeleteAndInsertStyleItems(info.Id, info.StyleItems);
+                await _tableStyleItemRepository.DeleteAndInsertStyleItemsAsync(info.Id, info.StyleItems);
             }
 
             ClearCache();
         }
 
-        public void Delete(int relatedIdentity, string tableName, string attributeName)
+        public async Task DeleteAsync(int relatedIdentity, string tableName, string attributeName)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.RelatedIdentity, relatedIdentity)
                 .Where(Attr.TableName, tableName)
                 .Where(Attr.AttributeName, attributeName));
@@ -78,11 +79,11 @@ namespace SS.CMS.Core.Repositories
             ClearCache();
         }
 
-        public void Delete(List<int> relatedIdentities, string tableName)
+        public async Task DeleteAsync(List<int> relatedIdentities, string tableName)
         {
             if (relatedIdentities == null || relatedIdentities.Count <= 0) return;
 
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .WhereIn(Attr.RelatedIdentity, relatedIdentities)
                 .Where(Attr.TableName, tableName));
 

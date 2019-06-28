@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -10,10 +11,10 @@ namespace SS.CMS.Repositories
 
         int Insert(TableStyleInfo styleInfo);
 
-        void Update(TableStyleInfo info, bool deleteAndInsertStyleItems = true);
+        Task UpdateAsync(TableStyleInfo info, bool deleteAndInsertStyleItems = true);
 
-        void Delete(int relatedIdentity, string tableName, string attributeName);
+        Task DeleteAsync(int relatedIdentity, string tableName, string attributeName);
 
-        void Delete(List<int> relatedIdentities, string tableName);
+        Task DeleteAsync(List<int> relatedIdentities, string tableName);
     }
 }

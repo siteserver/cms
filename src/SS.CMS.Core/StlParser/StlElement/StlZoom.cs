@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -18,7 +19,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "缩放字体大小")]
         private const string FontSize = nameof(FontSize);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var zoomId = string.Empty;
             var fontSize = 16;
@@ -42,10 +43,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, attributes, zoomId, fontSize);
+            return await ParseImplAsync(parseContext, attributes, zoomId, fontSize);
         }
 
-        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string zoomId, int fontSize)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, NameValueCollection attributes, string zoomId, int fontSize)
         {
             if (string.IsNullOrEmpty(zoomId))
             {
@@ -77,7 +78,7 @@ function stlDoZoom(zoomId, size){
             if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(parseContext.InnerHtml);
-                parseContext.ParseInnerContent(innerBuilder);
+                await parseContext.ParseInnerContentAsync(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
             attributes["href"] = $"javascript:stlDoZoom('{zoomId}', {fontSize});";

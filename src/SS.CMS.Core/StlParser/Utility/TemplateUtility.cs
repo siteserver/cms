@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Utils;
@@ -8,7 +9,7 @@ namespace SS.CMS.Core.StlParser.Utility
 {
     public static class TemplateUtility
     {
-        public static string GetContentsItemTemplateString(ParseContext parseContext, string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId)
+        public static async Task<string> GetContentsItemTemplateStringAsync(ParseContext parseContext, string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
             //var contentInfo = new BackgroundContentInfo(container.ContentItem.DataItem);
@@ -17,7 +18,7 @@ namespace SS.CMS.Core.StlParser.Utility
 
             var contentItemInfo = parseContext.PageInfo.ContentItems.Peek();
 
-            var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, contentItemInfo.Value.ChannelId);
+            var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, contentItemInfo.Value.ChannelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo,
                 contentItemInfo.Value.Id);
 
@@ -47,7 +48,9 @@ namespace SS.CMS.Core.StlParser.Utility
                     var isTrue = true;
                     foreach (var itemType in itemTypeArrayList)
                     {
-                        if (!IsContentTemplateString(itemType, itemTypes, ref theTemplateString, selectedItems, selectedValues, context))
+                        var (isContentTemplateString, _) = await IsContentTemplateStringAsync(itemType, itemTypes,
+                            theTemplateString, selectedItems, selectedValues, context);
+                        if (!isContentTemplateString)
                         {
                             isTrue = false;
                         }
@@ -66,7 +69,7 @@ namespace SS.CMS.Core.StlParser.Utility
             }
 
             var innerBuilder = new StringBuilder(theTemplateString);
-            context.ParseInnerContent(innerBuilder);
+            await context.ParseInnerContentAsync(innerBuilder);
 
             Container.PopContentItem(context.PageInfo);
 
@@ -78,96 +81,89 @@ namespace SS.CMS.Core.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        private static bool IsContentTemplateString(string itemType, string itemTypes, ref string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, ParseContext parseContext)
+        private static async Task<(bool IsContentTemplateString, string TemplateString)> IsContentTemplateStringAsync(string itemType, string itemTypes, string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, ParseContext parseContext)
         {
+            var contentInfo = await parseContext.GetContentInfoAsync();
+            if (contentInfo == null) return (false, null);
+
             if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedCurrent))//当前内容
             {
-                if (parseContext.ContentInfo.Id == parseContext.PageContentId)
+                if (contentInfo.Id == parseContext.PageContentId)
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsTop))//置顶内容
             {
-                if (parseContext.ContentInfo.IsTop)
+                if (contentInfo.IsTop)
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedImage))//带图片的内容
             {
-                if (!string.IsNullOrEmpty(parseContext.ContentInfo.ImageUrl))
+                if (!string.IsNullOrEmpty(contentInfo.ImageUrl))
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedVideo))//带视频的内容
             {
-                if (!string.IsNullOrEmpty(parseContext.ContentInfo.VideoUrl))
+                if (!string.IsNullOrEmpty(contentInfo.VideoUrl))
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedFile))//带附件的内容
             {
-                if (!string.IsNullOrEmpty(parseContext.ContentInfo.FileUrl))
+                if (!string.IsNullOrEmpty(contentInfo.FileUrl))
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsRecommend))//推荐的内容
             {
-                if (parseContext.ContentInfo.IsRecommend)
+                if (contentInfo.IsRecommend)
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsHot))//热点内容
             {
-                if (parseContext.ContentInfo.IsHot)
+                if (contentInfo.IsHot)
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedIsColor))//醒目内容
             {
-                if (parseContext.ContentInfo.IsColor)
+                if (contentInfo.IsColor)
                 {
-                    templateString = selectedItems.Get(itemTypes);
-                    return true;
+                    return (true, selectedItems.Get(itemTypes));
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedChannelName))//带有附件的内容
             {
                 if (selectedValues.Count > 0)
                 {
-                    var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.ContentInfo.SiteId, parseContext.ContentInfo.ChannelId);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.SiteId, contentInfo.ChannelId);
                     if (nodeInfo != null)
                     {
                         if (selectedValues.Get(nodeInfo.ChannelName) != null)
                         {
-                            templateString = selectedValues.Get(nodeInfo.ChannelName);
-                            return true;
+                            return (true, selectedValues.Get(nodeInfo.ChannelName));
                         }
                     }
                 }
             }
             else if (IsNumberInRange(parseContext.Container.ContentItem.Key + 1, itemType))
             {
-                templateString = selectedItems.Get(itemTypes);
-                return true;
+                return (true, selectedItems.Get(itemTypes));
             }
-            return false;
+            return (false, null);
         }
 
-        public static string GetChannelsItemTemplateString(ParseContext parseContext, string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId)
+        public static async Task<string> GetChannelsItemTemplateStringAsync(ParseContext parseContext, string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
 
@@ -178,7 +174,7 @@ namespace SS.CMS.Core.StlParser.Utility
             context.ContainerClientId = containerClientId;
             context.ChannelId = channelId;
 
-            var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(context.SiteId, channelId);
+            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(context.SiteId, channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.AllKeys)
@@ -204,7 +200,7 @@ namespace SS.CMS.Core.StlParser.Utility
                         var upLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedUp) ? 1 : TranslateUtils.ToInt(itemType.Substring(2));
                         if (upLevel > 0)
                         {
-                            var theChannelId = parseContext.GetChannelIdByLevel(context.SiteId, context.PageChannelId, upLevel, -1);
+                            var theChannelId = await parseContext.GetChannelIdByLevelAsync(context.SiteId, context.PageChannelId, upLevel, -1);
                             if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
@@ -217,7 +213,7 @@ namespace SS.CMS.Core.StlParser.Utility
                         var topLevel = StringUtils.EqualsIgnoreCase(itemType, StlItemTemplate.SelectedTop) ? 1 : TranslateUtils.ToInt(itemType.Substring(3));
                         if (topLevel >= 0)
                         {
-                            var theChannelId = parseContext.GetChannelIdByLevel(context.SiteId, context.PageChannelId, 0, topLevel);
+                            var theChannelId = await parseContext.GetChannelIdByLevelAsync(context.SiteId, context.PageChannelId, 0, topLevel);
                             if (channelId == theChannelId)
                             {
                                 templateString = selectedItems.Get(itemType);
@@ -234,14 +230,14 @@ namespace SS.CMS.Core.StlParser.Utility
             }
 
             var innerBuilder = new StringBuilder(templateString);
-            context.ParseInnerContent(innerBuilder);
+            await context.ParseInnerContentAsync(innerBuilder);
 
             Container.PopChannelItem(context.PageInfo);
 
             return innerBuilder.ToString();
         }
 
-        public static string GetSqlContentsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, ParseContext parseContext)
+        public static async Task<string> GetSqlContentsTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, ParseContext parseContext)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
 
@@ -262,14 +258,14 @@ namespace SS.CMS.Core.StlParser.Utility
             }
 
             var innerBuilder = new StringBuilder(templateString);
-            context.ParseInnerContent(innerBuilder);
+            await context.ParseInnerContentAsync(innerBuilder);
 
             Container.PopSqlItem(context.PageInfo);
 
             return innerBuilder.ToString();
         }
 
-        public static string GetSitesTemplateString(string templateString, string containerClientId, ParseContext parseContext)
+        public static async Task<string> GetSitesTemplateStringAsync(string templateString, string containerClientId, ParseContext parseContext)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
             var siteInfo = parseContext.SiteRepository.GetSiteInfo(container.SiteItem.Value.Id);
@@ -284,7 +280,7 @@ namespace SS.CMS.Core.StlParser.Utility
             context.PageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, context);
 
             var innerBuilder = new StringBuilder(templateString);
-            context.ParseInnerContent(innerBuilder);
+            await context.ParseInnerContentAsync(innerBuilder);
 
             Container.PopSiteItems(context.PageInfo);
 
@@ -293,7 +289,7 @@ namespace SS.CMS.Core.StlParser.Utility
             return innerBuilder.ToString();
         }
 
-        public static string GetEachsTemplateString(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, ParseContext parseContext)
+        public static async Task<string> GetEachsTemplateStringAsync(string templateString, NameValueCollection selectedItems, NameValueCollection selectedValues, string containerClientId, ParseContext parseContext)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
 
@@ -314,7 +310,7 @@ namespace SS.CMS.Core.StlParser.Utility
             }
 
             var innerBuilder = new StringBuilder(templateString);
-            context.ParseInnerContent(innerBuilder);
+            await context.ParseInnerContentAsync(innerBuilder);
 
             Container.PopEachItem(context.PageInfo);
 

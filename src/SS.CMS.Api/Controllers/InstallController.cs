@@ -201,7 +201,7 @@ namespace SS.CMS.Api.Controllers.Admin
                     userRepository,
                     userRoleRepository);
 
-                tableManager.SyncDatabase();
+                await tableManager.SyncDatabaseAsync();
 
                 var userInfo = new UserInfo
                 {

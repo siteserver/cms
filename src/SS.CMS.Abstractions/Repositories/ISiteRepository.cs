@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -9,7 +10,7 @@ namespace SS.CMS.Repositories
     {
         int Insert(SiteInfo siteInfo);
 
-        bool Delete(int siteId);
+        Task<bool> DeleteAsync(int siteId);
 
         bool Update(SiteInfo siteInfo);
 

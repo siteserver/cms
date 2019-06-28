@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
@@ -6,23 +7,23 @@ namespace SS.CMS.Services
 {
     public partial interface IFileManager
     {
-        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
+        Task TranslateAsync(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType);
 
-        void Translate(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
+        Task TranslateAsync(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType);
 
-        void Delete(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId);
+        Task DeleteAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId);
 
         string TextEditorContentEncode(SiteInfo siteInfo, string content);
 
         string TextEditorContentDecode(SiteInfo siteInfo, string content, bool isLocal);
 
-        void DeleteContents(SiteInfo siteInfo, int channelId, IList<int> contentIdList);
+        Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IList<int> contentIdList);
 
-        void DeleteContent(SiteInfo siteInfo, int channelId, int contentId);
+        Task DeleteContentAsync(SiteInfo siteInfo, int channelId, int contentId);
 
-        void DeleteChannels(SiteInfo siteInfo, List<int> channelIdList);
+        Task DeleteChannelsAsync(SiteInfo siteInfo, List<int> channelIdList);
 
-        void DeleteChannelsByPage(SiteInfo siteInfo, List<int> channelIdList);
+        Task DeleteChannelsByPageAsync(SiteInfo siteInfo, List<int> channelIdList);
 
         void DeletePagingFiles(string filePath);
 

@@ -1,21 +1,22 @@
+using System.Threading.Tasks;
 using SS.CMS.Data;
 
 namespace SS.CMS.Repositories
 {
     public interface IDbCacheRepository : IRepository
     {
-        void RemoveAndInsert(string cacheKey, string cacheValue);
+        Task RemoveAndInsertAsync(string cacheKey, string cacheValue);
 
-        void Clear();
+        Task ClearAsync();
 
         bool IsExists(string cacheKey);
 
         string GetValue(string cacheKey);
 
-        string GetValueAndRemove(string cacheKey);
+        Task<string> GetValueAndRemoveAsync(string cacheKey);
 
         int GetCount();
 
-        void DeleteExcess90Days();
+        Task DeleteExcess90DaysAsync();
     }
 }

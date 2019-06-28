@@ -16,20 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\V2\AdministratorsController.cs" />
-    <Compile Remove="Controllers\V2\AdministratorsService.cs" />
-    <Compile Remove="Controllers\V2\ContentsController.cs" />
-    <Compile Remove="Controllers\V2\ContentsService.cs" />
-    <Compile Remove="Controllers\V2\PingController.cs" />
-    <Compile Remove="Controllers\V2\StlController.cs" />
-    <Compile Remove="Controllers\V2\StlService.cs" />
-    <Compile Remove="Controllers\V2\TestController.cs" />
-    <Compile Remove="Controllers\V2\UsersController.cs" />
-    <Compile Remove="Controllers\V2\UsersService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Controllers\Admin\LoginController.Internal.cs" />
+    <Compile Remove="Controllers\Test\**" />
+    <Content Remove="Controllers\Test\**" />
+    <EmbeddedResource Remove="Controllers\Test\**" />
+    <None Remove="Controllers\Test\**" />
   </ItemGroup>
 
   <ItemGroup>

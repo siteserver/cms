@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -33,9 +34,9 @@ namespace SS.CMS.Core.Repositories
             _repository.Insert(configInfo);
         }
 
-        public void Delete(string pluginId, int siteId, string configName)
+        public async Task DeleteAsync(string pluginId, int siteId, string configName)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.PluginId, pluginId)
                 .Where(Attr.ConfigName, configName));

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,43 +12,54 @@ using SS.CMS.Repositories;
 using SS.CMS.Services;
 using SS.CMS.Utils;
 
-namespace SS.CMS.Api.Controllers.V2
+namespace SS.CMS.Api.Controllers.Users
 {
-    [AllowAnonymous]
-    [Route("v2")]
     [ApiController]
-    public partial class UserController : ControllerBase
+    [AllowAnonymous]
+    [Route("users")]
+    public partial class UsersController : ControllerBase
     {
-        public const string RouteLogin = "user/login";
-        public const string RouteLoginCaptcha = "user/login/captcha";
-        public const string RouteInfo = "user/info";
-        public const string RouteLogout = "user/logout";
+        public const string RouteLogin = "login";
+        public const string RouteLoginCaptcha = "login/captcha";
+        public const string RouteInfo = "info";
+        public const string RouteMenus = "menus";
+        public const string RouteLogout = "logout";
 
+        private readonly ISettingsManager _settingsManager;
         private readonly IUserManager _userManager;
         private readonly IUserRepository _userRepository;
 
-        public UserController(IUserManager userManager, IUserRepository userRepository)
+        public UsersController(ISettingsManager settingsManager, IUserManager userManager, IUserRepository userRepository)
         {
+            _settingsManager = settingsManager;
             _userManager = userManager;
             _userRepository = userRepository;
         }
 
         [Authorize]
         [HttpGet(RouteInfo)]
-        public async Task<ActionResult> GetInfo(string token)
+        public async Task<ActionResult<InfoResponse>> GetInfo()
         {
-            // var redirect = AdminRedirectCheck(request, checkInstall: true, checkDatabaseVersion: true);
-            // if (redirect != null) return Response<object>.Ok(redirect);
-
             var userInfo = await _userManager.GetUserAsync();
+            var menus = GetTopMenus();
 
-            return Ok(new
+            return new InfoResponse
             {
-                Name = userInfo.UserName,
-                Avatar = userInfo.AvatarUrl,
-                Introduction = userInfo.Bio,
-                Roles = new string[] { "admin" }
-            });
+                Id = userInfo.Id,
+                DisplayName = userInfo.DisplayName,
+                UserName = userInfo.UserName,
+                AvatarUrl = userInfo.AvatarUrl,
+                Bio = userInfo.Bio,
+                Roles = new string[] { "admin" },
+                Menus = menus
+            };
+        }
+
+        [Authorize]
+        [HttpGet(RouteMenus)]
+        public IList<Menu> GetMenus(string topMenu, int siteId)
+        {
+            return siteId > 0 ? GetSiteMenus(siteId) : GetAppMenus(topMenu);
         }
 
         [HttpGet(RouteLoginCaptcha)]
@@ -147,7 +158,7 @@ namespace SS.CMS.Api.Controllers.V2
         }
 
         [HttpPost(RouteLogout)]
-        public async Task<ActionResult> Logout()
+        public ActionResult Logout()
         {
             //await _userManager.SignOutAsync();
 

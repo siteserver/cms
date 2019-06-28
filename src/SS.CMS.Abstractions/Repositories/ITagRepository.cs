@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -22,9 +23,9 @@ namespace SS.CMS.Repositories
 
         IList<string> GetTagList(int siteId);
 
-        void DeleteTags(int siteId);
+        Task DeleteTagsAsync(int siteId);
 
-        void DeleteTag(string tag, int siteId);
+        Task DeleteTagAsync(string tag, int siteId);
 
         int GetTagCount(string tag, int siteId);
 

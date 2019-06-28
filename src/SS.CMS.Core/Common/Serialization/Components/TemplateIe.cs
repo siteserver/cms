@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -22,7 +23,7 @@ namespace SS.CMS.Core.Serialization.Components
             _filePath = filePath;
         }
 
-        public void ExportTemplates()
+        public async Task ExportTemplatesAsync()
         {
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -30,13 +31,13 @@ namespace SS.CMS.Core.Serialization.Components
 
             foreach (var templateInfo in templateInfoList)
             {
-                var entry = ExportTemplateInfo(templateInfo);
+                var entry = await ExportTemplateInfoAsync(templateInfo);
                 feed.Entries.Add(entry);
             }
             feed.Save(_filePath);
         }
 
-        public void ExportTemplates(List<int> templateIdList)
+        public async Task ExportTemplatesAsync(List<int> templateIdList)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -46,14 +47,14 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 if (templateIdList.Contains(templateInfo.Id))
                 {
-                    var entry = ExportTemplateInfo(templateInfo);
+                    var entry = await ExportTemplateInfoAsync(templateInfo);
                     feed.Entries.Add(entry);
                 }
             }
             feed.Save(_filePath);
         }
 
-        private AtomEntry ExportTemplateInfo(TemplateInfo templateInfo)
+        private async Task<AtomEntry> ExportTemplateInfoAsync(TemplateInfo templateInfo)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -68,13 +69,13 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
             AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.IsDefault), templateInfo.IsDefault.ToString());
 
-            var templateContent = _templateRepository.GetTemplateContent(siteInfo, templateInfo);
+            var templateContent = await _templateRepository.GetTemplateContentAsync(siteInfo, templateInfo);
             AtomUtility.AddDcElement(entry.AdditionalElements, "Content", AtomUtility.Encrypt(templateContent));
 
             return entry;
         }
 
-        public void ImportTemplates(bool overwrite, string administratorName)
+        public async Task ImportTemplatesAsync(bool overwrite, string administratorName)
         {
             if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
@@ -127,7 +128,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                 if (templateInfo.Type == TemplateType.FileTemplate)
                 {
-                    _createManager.CreateFile(_siteId, templateId);
+                    await _createManager.AddCreateFileTaskAsync(_siteId, templateId);
                 }
             }
         }

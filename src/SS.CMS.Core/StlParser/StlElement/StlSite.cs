@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Enums;
@@ -68,7 +69,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {TypeSiteUrl, "站点的域名地址"}
         };
 
-        internal static object Parse(ParseContext parseContext)
+        internal static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var siteName = string.Empty;
             var siteDir = string.Empty;
@@ -93,11 +94,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, SiteName))
                 {
-                    siteName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    siteName = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, SiteDir))
                 {
-                    siteDir = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    siteDir = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Type))
                 {
@@ -169,10 +170,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 return siteInfo;
             }
 
-            return ParseImpl(parseContext, siteInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseContext, siteInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static string ParseImpl(ParseContext parseContext, SiteInfo siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, SiteInfo siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (siteInfo == null) return string.Empty;
 
@@ -187,7 +188,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 parseContext.PageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, parseContext);
 
                 var innerBuilder = new StringBuilder(parseContext.InnerHtml);
-                parseContext.ParseInnerContent(innerBuilder);
+                await parseContext.ParseInnerContentAsync(innerBuilder);
                 parsedContent = innerBuilder.ToString();
 
                 parseContext.PageInfo.ChangeSite(preSiteInfo, prePageChannelId, prePageContentId, parseContext);

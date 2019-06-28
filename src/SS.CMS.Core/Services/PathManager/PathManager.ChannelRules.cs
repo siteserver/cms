@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Utils;
@@ -27,7 +28,7 @@ namespace SS.CMS.Core.Services
         public const string ChannelRulesDefaultDirectoryName = "/channels/";
         public const string ChannelRulesDefaultRegexString = "/channels/(?<channelId>[^_]*)_?(?<pageIndex>[^_]*)";
 
-        public IDictionary ChannelRulesGetDictionary(SiteInfo siteInfo, int channelId)
+        public async Task<IDictionary> ChannelRulesGetDictionaryAsync(SiteInfo siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -46,7 +47,7 @@ namespace SS.CMS.Core.Services
                     {ChannelRulesLowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
             var styleInfoList = _tableManager.GetChannelStyleInfoList(channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
@@ -60,15 +61,15 @@ namespace SS.CMS.Core.Services
             return dictionary;
         }
 
-        public string ChannelRulesParse(SiteInfo siteInfo, int channelId)
+        public async Task<string> ChannelRulesParseAsync(SiteInfo siteInfo, int channelId)
         {
-            var channelFilePathRule = GetChannelFilePathRule(siteInfo, channelId);
-            var filePath = ChannelRulesParseChannelPath(siteInfo, channelId, channelFilePathRule);
+            var channelFilePathRule = await GetChannelFilePathRuleAsync(siteInfo, channelId);
+            var filePath = await ChannelRulesParseChannelPathAsync(siteInfo, channelId, channelFilePathRule);
             return filePath;
         }
 
         //递归处理
-        private string ChannelRulesParseChannelPath(SiteInfo siteInfo, int channelId, string channelFilePathRule)
+        private async Task<string> ChannelRulesParseChannelPathAsync(SiteInfo siteInfo, int channelId, string channelFilePathRule)
         {
             var filePath = channelFilePathRule.Trim();
             const string regex = "(?<element>{@[^}]+})";
@@ -85,7 +86,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesYear))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Year.ToString();
@@ -93,7 +94,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMonth))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Month.ToString();
@@ -101,7 +102,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesDay))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Day.ToString();
@@ -109,7 +110,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesHour))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Hour.ToString();
@@ -117,7 +118,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesMinute))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Minute.ToString();
@@ -125,7 +126,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSecond))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (channelInfo.CreatedDate.HasValue)
                     {
                         value = channelInfo.CreatedDate.Value.Second.ToString();
@@ -133,36 +134,37 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesSequence))
                 {
-                    value = _channelRepository.StlGetSequence(siteInfo.Id, channelId).ToString();
+                    var sequence = await _channelRepository.StlGetSequenceAsync(siteInfo.Id, channelId);
+                    value = sequence.ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesParentRule))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    var parentInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelInfo.ParentId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var parentInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelInfo.ParentId);
                     if (parentInfo != null)
                     {
-                        var parentRule = GetChannelFilePathRule(siteInfo, parentInfo.Id);
-                        value = DirectoryUtils.GetDirectoryPath(ChannelRulesParseChannelPath(siteInfo, parentInfo.Id, parentRule)).Replace("\\", "/");
+                        var parentRule = await GetChannelFilePathRuleAsync(siteInfo, parentInfo.Id);
+                        value = DirectoryUtils.GetDirectoryPath(await ChannelRulesParseChannelPathAsync(siteInfo, parentInfo.Id, parentRule)).Replace("\\", "/");
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesChannelName))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     value = channelInfo.ChannelName;
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesLowerChannelName))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     value = channelInfo.ChannelName.ToLower();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ChannelRulesLowerChannelIndex))
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     value = channelInfo.IndexName.ToLower();
                 }
                 else
                 {
-                    if (channelInfo == null) channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    if (channelInfo == null) channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     var attributeName = element.Replace("{@", string.Empty).Replace("}", string.Empty);
 
                     var isLower = false;

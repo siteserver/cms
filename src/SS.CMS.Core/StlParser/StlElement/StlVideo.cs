@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Utils;
@@ -35,7 +36,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否循环播放")]
         private const string IsLoop = nameof(IsLoop);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var type = ContentAttribute.VideoUrl;
             var playUrl = string.Empty;
@@ -56,11 +57,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PlayUrl))
                 {
-                    playUrl = value;
+                    playUrl = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ImageUrl))
                 {
-                    imageUrl = value;
+                    imageUrl = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Width))
                 {
@@ -84,13 +85,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
+            return await ParseImplAsync(parseContext, type, playUrl, imageUrl, width, height, isAutoPlay, isControls, isLoop);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string type, string playUrl, string imageUrl, int width, int height, bool isAutoPlay, bool isControls, bool isLoop)
         {
-
-
             var videoUrl = string.Empty;
             if (!string.IsNullOrEmpty(playUrl))
             {
@@ -98,29 +97,15 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else
             {
-                var contentId = parseContext.ContentId;
                 if (parseContext.ContextType == EContextType.Content)
                 {
-                    if (contentId != 0)//获取内容视频
+                    var contentInfo = await parseContext.GetContentInfoAsync();
+                    if (contentInfo != null)
                     {
-                        if (parseContext.ContentInfo == null)
+                        videoUrl = contentInfo.Get<string>(type);
+                        if (string.IsNullOrEmpty(videoUrl))
                         {
-                            videoUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, type);
-                            if (string.IsNullOrEmpty(videoUrl))
-                            {
-                                if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
-                                {
-                                    videoUrl = parseContext.ChannelInfo.ContentRepository.StlGetValue(parseContext.ChannelInfo, contentId, ContentAttribute.VideoUrl);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            videoUrl = parseContext.ContentInfo.Get<string>(type);
-                            if (string.IsNullOrEmpty(videoUrl))
-                            {
-                                videoUrl = parseContext.ContentInfo.VideoUrl;
-                            }
+                            videoUrl = contentInfo.VideoUrl;
                         }
                     }
                 }

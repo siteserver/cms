@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -6,11 +7,11 @@ namespace SS.CMS.Repositories
 {
     public interface IUserLogRepository : IRepository
     {
-        void AddUserLog(string ipAddress, string userName, string actionType, string summary);
+        Task AddUserLogAsync(string ipAddress, string userName, string actionType, string summary);
 
-        void Delete(List<int> idList);
+        Task DeleteAsync(List<int> idList);
 
-        void DeleteAll();
+        Task DeleteAllAsync();
 
         int GetCount();
 

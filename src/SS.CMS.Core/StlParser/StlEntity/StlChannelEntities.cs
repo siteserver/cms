@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
@@ -41,7 +42,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
             {ItemIndex, "栏目排序"}
         };
 
-        internal static string Parse(string stlEntity, ParseContext parseContext)
+        internal static async Task<string> ParseAsync(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
 
@@ -57,7 +58,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 if (!string.IsNullOrEmpty(channelIndex))
                 {
                     //channelId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
-                    channelId = parseContext.ChannelRepository.GetChannelIdByIndexName(parseContext.SiteId, channelIndex);
+                    channelId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
                     if (channelId == 0)
                     {
                         channelId = parseContext.ChannelId;
@@ -93,7 +94,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.GetChannelIdByLevel(parseContext.SiteId, channelId, upLevel, topLevel));
+                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, channelId, upLevel, topLevel));
 
                 if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
@@ -113,7 +114,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//栏目链接地址
                 {
-                    parsedContent = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, nodeInfo, parseContext.IsLocal);
+                    parsedContent = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, nodeInfo, parseContext.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(ImageUrl, attributeName))//栏目图片地址
                 {

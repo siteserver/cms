@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Serialization;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -104,7 +105,7 @@ namespace SS.CMS.Core.Common
             return list;
         }
 
-        public void ImportSiteTemplateToEmptySite(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public async Task ImportSiteTemplateToEmptySiteAsync(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
         {
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
@@ -118,7 +119,7 @@ namespace SS.CMS.Core.Common
 
                 importObject.ImportFiles(siteTemplatePath, true);
 
-                importObject.ImportTemplates(templateFilePath, true, administratorName);
+                await importObject.ImportTemplatesAsync(templateFilePath, true, administratorName);
 
                 importObject.ImportConfiguration(configurationFilePath);
 
@@ -126,7 +127,7 @@ namespace SS.CMS.Core.Common
 
                 foreach (var filePath in filePathList)
                 {
-                    importObject.ImportSiteContent(siteContentDirectoryPath, filePath, isImportContents);
+                    await importObject.ImportSiteContentAsync(siteContentDirectoryPath, filePath, isImportContents);
                 }
 
                 if (isImportTableStyles)
@@ -134,11 +135,11 @@ namespace SS.CMS.Core.Common
                     importObject.ImportTableStyles(tableDirectoryPath);
                 }
 
-                importObject.RemoveDbCache();
+                await importObject.RemoveDbCacheAsync();
             }
         }
 
-        public void ExportSiteToSiteTemplate(SiteInfo siteInfo, string siteTemplateDir, string adminName)
+        public async Task ExportSiteToSiteTemplateAsync(SiteInfo siteInfo, string siteTemplateDir, string adminName)
         {
             var exportObject = new ExportObject(siteInfo.Id, adminName);
 
@@ -146,10 +147,10 @@ namespace SS.CMS.Core.Common
 
             //导出模板
             var templateFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileTemplate);
-            exportObject.ExportTemplates(templateFilePath);
+            await exportObject.ExportTemplatesAsync(templateFilePath);
             //导出辅助表及样式
             var tableDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.Table);
-            exportObject.ExportTablesAndStyles(tableDirectoryPath);
+            await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             //导出站点属性以及站点属性表单
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
             exportObject.ExportConfiguration(configurationFilePath);

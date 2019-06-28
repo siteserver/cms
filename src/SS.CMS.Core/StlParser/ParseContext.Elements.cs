@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Plugin;
 using SS.CMS.Core.StlParser.Models;
@@ -18,7 +19,7 @@ namespace SS.CMS.Core.StlParser
         /// <summary>
         /// 将原始内容中的STL元素替换为实际内容
         /// </summary>
-        public void ReplaceStlElements(StringBuilder parsedBuilder)
+        public async Task ReplaceStlElementsAsync(StringBuilder parsedBuilder)
         {
             var stlElements = StlParserUtility.GetStlElementList(parsedBuilder.ToString());
             foreach (var stlElement in stlElements)
@@ -28,7 +29,7 @@ namespace SS.CMS.Core.StlParser
                     var startIndex = parsedBuilder.ToString().IndexOf(stlElement, StringComparison.Ordinal);
                     if (startIndex == -1) continue;
 
-                    var parsedContent = ParseStlElement(stlElement);
+                    var parsedContent = await ParseStlElementAsync(stlElement);
                     parsedBuilder.Replace(stlElement, parsedContent, startIndex, stlElement.Length);
                 }
                 catch
@@ -38,43 +39,43 @@ namespace SS.CMS.Core.StlParser
             }
         }
 
-        public static readonly Dictionary<string, Func<ParseContext, object>> ElementsToParseDic = new Dictionary<string, Func<ParseContext, object>>
+        public static readonly Dictionary<string, Func<ParseContext, Task<object>>> ElementsToParseDic = new Dictionary<string, Func<ParseContext, Task<object>>>
         {
-            {StlA.ElementName.ToLower(), StlA.Parse},
-            {StlAction.ElementName.ToLower(), StlAction.Parse},
-            {StlAudio.ElementName.ToLower(), StlAudio.Parse},
-            {StlChannel.ElementName.ToLower(), StlChannel.Parse},
-            {StlChannels.ElementName.ToLower(), StlChannels.Parse},
-            {StlContainer.ElementName.ToLower(), StlContainer.Parse},
-            {StlContent.ElementName.ToLower(), StlContent.Parse},
-            {StlContents.ElementName.ToLower(), StlContents.Parse},
-            {StlCount.ElementName.ToLower(), StlCount.Parse},
-            {StlDynamic.ElementName.ToLower(), StlDynamic.Parse},
-            {StlEach.ElementName.ToLower(), StlEach.Parse},
-            {StlFile.ElementName.ToLower(), StlFile.Parse},
-            {StlFlash.ElementName.ToLower(), StlFlash.Parse},
-            {StlFocusViewer.ElementName.ToLower(), StlFocusViewer.Parse},
-            {StlIf.ElementName.ToLower(), StlIf.Parse},
-            {StlImage.ElementName.ToLower(), StlImage.Parse},
-            {StlInclude.ElementName.ToLower(), StlInclude.Parse},
-            {StlLocation.ElementName.ToLower(), StlLocation.Parse},
-            {StlMarquee.ElementName.ToLower(), StlMarquee.Parse},
-            {StlNavigation.ElementName.ToLower(), StlNavigation.Parse},
-            {StlPlayer.ElementName.ToLower(), StlPlayer.Parse},
-            {StlPrinter.ElementName.ToLower(), StlPrinter.Parse},
-            {StlSearch.ElementName.ToLower(), StlSearch.Parse},
-            {StlSearch.ElementName2.ToLower(), StlSearch.Parse},
-            {StlSelect.ElementName.ToLower(), StlSelect.Parse},
-            {StlSite.ElementName.ToLower(), StlSite.Parse},
-            {StlSites.ElementName.ToLower(), StlSites.Parse},
-            {StlSqlContent.ElementName.ToLower(), StlSqlContent.Parse},
-            {StlSqlContents.ElementName.ToLower(), StlSqlContents.Parse},
-            {StlTabs.ElementName.ToLower(), StlTabs.Parse},
-            {StlTags.ElementName.ToLower(), StlTags.Parse},
-            {StlTree.ElementName.ToLower(), StlTree.Parse},
-            {StlValue.ElementName.ToLower(), StlValue.Parse},
-            {StlVideo.ElementName.ToLower(), StlVideo.Parse},
-            {StlZoom.ElementName.ToLower(), StlZoom.Parse}
+            {StlA.ElementName.ToLower(), StlA.ParseAsync},
+            {StlAction.ElementName.ToLower(), StlAction.ParseAsync},
+            {StlAudio.ElementName.ToLower(), StlAudio.ParseAsync},
+            {StlChannel.ElementName.ToLower(), StlChannel.ParseAsync},
+            {StlChannels.ElementName.ToLower(), StlChannels.ParseAsync},
+            {StlContainer.ElementName.ToLower(), StlContainer.ParseAsync},
+            {StlContent.ElementName.ToLower(), StlContent.ParseAsync},
+            {StlContents.ElementName.ToLower(), StlContents.ParseAsync},
+            {StlCount.ElementName.ToLower(), StlCount.ParseAsync},
+            {StlDynamic.ElementName.ToLower(), StlDynamic.ParseAsync},
+            {StlEach.ElementName.ToLower(), StlEach.ParseAsync},
+            {StlFile.ElementName.ToLower(), StlFile.ParseAsync},
+            {StlFlash.ElementName.ToLower(), StlFlash.ParseAsync},
+            {StlFocusViewer.ElementName.ToLower(), StlFocusViewer.ParseAsync},
+            {StlIf.ElementName.ToLower(), StlIf.ParseAsync},
+            {StlImage.ElementName.ToLower(), StlImage.ParseAsync},
+            {StlInclude.ElementName.ToLower(), StlInclude.ParseAsync},
+            {StlLocation.ElementName.ToLower(), StlLocation.ParseAsync},
+            {StlMarquee.ElementName.ToLower(), StlMarquee.ParseAsync},
+            {StlNavigation.ElementName.ToLower(), StlNavigation.ParseAsync},
+            {StlPlayer.ElementName.ToLower(), StlPlayer.ParseAsync},
+            {StlPrinter.ElementName.ToLower(), StlPrinter.ParseAsync},
+            {StlSearch.ElementName.ToLower(), StlSearch.ParseAsync},
+            {StlSearch.ElementName2.ToLower(), StlSearch.ParseAsync},
+            {StlSelect.ElementName.ToLower(), StlSelect.ParseAsync},
+            {StlSite.ElementName.ToLower(), StlSite.ParseAsync},
+            {StlSites.ElementName.ToLower(), StlSites.ParseAsync},
+            {StlSqlContent.ElementName.ToLower(), StlSqlContent.ParseAsync},
+            {StlSqlContents.ElementName.ToLower(), StlSqlContents.ParseAsync},
+            {StlTabs.ElementName.ToLower(), StlTabs.ParseAsync},
+            {StlTags.ElementName.ToLower(), StlTags.ParseAsync},
+            {StlTree.ElementName.ToLower(), StlTree.ParseAsync},
+            {StlValue.ElementName.ToLower(), StlValue.ParseAsync},
+            {StlVideo.ElementName.ToLower(), StlVideo.ParseAsync},
+            {StlZoom.ElementName.ToLower(), StlZoom.ParseAsync}
         };
 
         private static readonly IList<string> ElementsToEncrypt = new List<string>
@@ -85,7 +86,7 @@ namespace SS.CMS.Core.StlParser
             {StlPageItems.ElementName.ToLower()}
         };
 
-        private string ParseStlElement(string stlElement)
+        private async Task<string> ParseStlElementAsync(string stlElement)
         {
             string parsedContent = null;
 
@@ -103,7 +104,7 @@ namespace SS.CMS.Core.StlParser
                 {
                     if (stlElementInfo.IsDynamic)
                     {
-                        parsedContent = StlDynamic.ParseDynamicElement(stlElement, this);
+                        parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
                     }
                     else
                     {
@@ -115,34 +116,23 @@ namespace SS.CMS.Core.StlParser
 
                                 var obj = func(contextClone);
 
-                                if (obj == null)
-                                {
-                                    parsedContent = string.Empty;
-                                }
-                                else if (obj is string)
-                                {
-                                    parsedContent = (string)obj;
-                                }
-                                else
-                                {
-                                    parsedContent = TranslateUtils.JsonSerialize(obj);
-                                }
+                                parsedContent = obj == null ? string.Empty : TranslateUtils.JsonSerialize(obj);
                             }
                         }
                         catch (Exception ex)
                         {
-                            parsedContent = GetErrorMessage(elementName, stlElement, ex);
+                            parsedContent = await GetErrorMessageAsync(elementName, stlElement, ex);
                         }
                     }
                 }
                 else
                 {
-                    var parsers = PluginManager.GetParses();
+                    var parsers = await PluginManager.GetParsesAsync();
                     if (parsers.ContainsKey(elementName))
                     {
                         if (stlElementInfo.IsDynamic)
                         {
-                            parsedContent = StlDynamic.ParseDynamicElement(stlElement, this);
+                            parsedContent = await StlDynamic.ParseDynamicElementAsync(stlElement, this);
                         }
                         else
                         {
@@ -150,13 +140,15 @@ namespace SS.CMS.Core.StlParser
                             {
                                 if (parsers.TryGetValue(elementName, out var func))
                                 {
-                                    var context = new ParseContextImpl(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml, stlElementInfo.Attributes, PageInfo, this);
+                                    var context = new ParseContextImpl();
+                                    await context.LoadAsync(stlElementInfo.OuterHtml, stlElementInfo.InnerHtml,
+                                        stlElementInfo.Attributes, PageInfo, this);
                                     parsedContent = func(context);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                parsedContent = GetErrorMessage(elementName, stlElement, ex);
+                                parsedContent = await GetErrorMessageAsync(elementName, stlElement, ex);
                             }
                         }
                     }

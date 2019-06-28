@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'SS CMS',
+  title: 'Vue Element Admin',
 
   /**
    * @type {boolean} true | false

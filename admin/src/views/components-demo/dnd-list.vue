@@ -29,8 +29,8 @@ export default {
     getData() {
       this.listLoading = true
       fetchList().then(response => {
-        this.list1 = response.data.items.splice(0, 5)
-        this.list2 = response.data.items
+        this.list1 = response.items.splice(0, 5)
+        this.list2 = response.items
       })
     }
   }

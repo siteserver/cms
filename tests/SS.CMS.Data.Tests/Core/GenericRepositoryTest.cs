@@ -208,11 +208,11 @@ namespace SS.CMS.Data.Tests.Core
             exists = _repository.Exists(new Query());
             Assert.True(exists);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestCount()
+        public async Task TestCount()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -238,11 +238,11 @@ namespace SS.CMS.Data.Tests.Core
             count = _repository.Count(new Query().Where("TypeVarChar100", "test"));
             Assert.Equal(1, count);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestGetValue()
+        public async Task TestGetValue()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -266,11 +266,11 @@ namespace SS.CMS.Data.Tests.Core
             Assert.True(lastModifiedDate.HasValue);
             _output.WriteLine(lastModifiedDate.Value.ToString(CultureInfo.InvariantCulture));
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestGetValues()
+        public async Task TestGetValues()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -295,7 +295,7 @@ namespace SS.CMS.Data.Tests.Core
                 .Select(nameof(TestTableInfo.LastModifiedDate))).ToList();
             lastModifiedDateList.ForEach(x => Assert.True(x.HasValue));
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
@@ -322,7 +322,7 @@ namespace SS.CMS.Data.Tests.Core
         }
 
         [SkippableFact]
-        public void TestUpdate()
+        public async Task TestUpdate()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -363,11 +363,11 @@ namespace SS.CMS.Data.Tests.Core
             updated = _repository.Update((TestTableInfo)null);
             Assert.False(updated);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestUpdateWithParameters()
+        public async Task TestUpdateWithParameters()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -410,11 +410,11 @@ namespace SS.CMS.Data.Tests.Core
             updated = _repository.Update(new Query());
             Assert.True(updated == 2);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestUpdateAll()
+        public async Task TestUpdateAll()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -451,11 +451,11 @@ namespace SS.CMS.Data.Tests.Core
 
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestIncrementAll()
+        public async Task TestIncrementAll()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -479,11 +479,11 @@ namespace SS.CMS.Data.Tests.Core
             dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(0, dataInfo.Num);
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestDelete()
+        public async Task TestDelete()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -492,12 +492,12 @@ namespace SS.CMS.Data.Tests.Core
                 TypeVarChar100 = "str"
             });
 
-            var deleted = _repository.Delete(Q.Where("TypeVarChar100", "str"));
+            var deleted = await _repository.DeleteAsync(Q.Where("TypeVarChar100", "str"));
             Assert.Equal(1, deleted);
 
-            Assert.False(_repository.Delete(1));
+            Assert.False(await _repository.DeleteAsync(1));
 
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
     }
 }

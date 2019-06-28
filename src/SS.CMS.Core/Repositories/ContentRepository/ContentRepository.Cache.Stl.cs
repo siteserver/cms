@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -134,10 +135,10 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public int StlGetCountOfContentAdd(int siteId, ChannelInfo channelInfo, ScopeType scope,
+        public async Task<int> StlGetCountOfContentAddAsync(int siteId, ChannelInfo channelInfo, ScopeType scope,
             DateTime begin, DateTime end, string userName, bool? checkedState)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(ContentRepository), nameof(StlGetCountOfContentAdd),
+            var cacheKey = StringUtils.GetCacheKey(nameof(ContentRepository), nameof(StlGetCountOfContentAddAsync),
                     siteId.ToString(), channelInfo.Id.ToString(), scope.Value,
                     DateUtils.GetDateString(begin), DateUtils.GetDateString(end), userName, checkedState.HasValue ? checkedState.ToString() : string.Empty);
             var retval = _cacheManager.GetInt(cacheKey);
@@ -146,7 +147,7 @@ namespace SS.CMS.Core.Repositories
             retval = _cacheManager.GetInt(cacheKey);
             if (retval == -1)
             {
-                retval = GetCountOfContentAdd(siteId, channelInfo.Id, scope,
+                retval = await GetCountOfContentAddAsync(siteId, channelInfo.Id, scope,
                 begin, end, userName, checkedState);
                 _cacheManager.Set(cacheKey, retval);
             }
@@ -239,9 +240,9 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public List<ContentInfo> StlGetStlSqlStringChecked(int siteId, ChannelInfo channelInfo, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
+        public async Task<List<ContentInfo>> StlGetStlSqlStringCheckedAsync(int siteId, ChannelInfo channelInfo, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(ContentRepository), nameof(StlGetStlSqlStringChecked), siteId.ToString(), channelInfo.Id.ToString(), startNum.ToString(),
+            var cacheKey = StringUtils.GetCacheKey(nameof(ContentRepository), nameof(StlGetStlSqlStringCheckedAsync), siteId.ToString(), channelInfo.Id.ToString(), startNum.ToString(),
                     totalNum.ToString(), order, query.ToString(), scopeType.Value, groupChannel,
                     groupChannelNot);
             var retval = _cacheManager.Get<List<ContentInfo>>(cacheKey);
@@ -250,7 +251,7 @@ namespace SS.CMS.Core.Repositories
             retval = _cacheManager.Get<List<ContentInfo>>(cacheKey);
             if (retval == null)
             {
-                var channelIdList = _channelRepository.GetChannelIdList(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
+                var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
                 retval = GetStlSqlStringChecked(channelIdList, siteId, channelInfo.Id, startNum,
                 totalNum, order, query, scopeType, groupChannel, groupChannelNot);
                 _cacheManager.Set(cacheKey, retval);

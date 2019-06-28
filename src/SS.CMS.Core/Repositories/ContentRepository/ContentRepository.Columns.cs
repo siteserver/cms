@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
@@ -10,15 +11,15 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public List<InputListItem> GetContentsColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public async Task<List<InputListItem>> GetContentsColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var items = new List<InputListItem>();
 
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = _pluginManager.GetContentPluginIds(channelInfo);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(_tableManager.GetContentStyleInfoList(_pluginManager, siteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await _tableManager.GetContentStyleInfoListAsync(_pluginManager, siteInfo, channelInfo));
 
             styleInfoList.Insert(0, new TableStyleInfo
             {
@@ -85,15 +86,15 @@ namespace SS.CMS.Core.Repositories
             return items;
         }
 
-        public List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public async Task<List<ContentColumn>> GetContentColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();
 
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.ContentAttributesOfDisplay);
             var pluginIds = _pluginManager.GetContentPluginIds(channelInfo);
-            var pluginColumns = _pluginManager.GetContentColumns(pluginIds);
+            var pluginColumns = await _pluginManager.GetContentColumnsAsync(pluginIds);
 
-            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(_tableManager.GetContentStyleInfoList(_pluginManager, siteInfo, channelInfo));
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await _tableManager.GetContentStyleInfoListAsync(_pluginManager, siteInfo, channelInfo));
 
             styleInfoList.Insert(0, new TableStyleInfo
             {

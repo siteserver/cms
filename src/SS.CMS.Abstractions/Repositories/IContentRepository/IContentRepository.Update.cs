@@ -1,32 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        void UpdateArrangeTaxis(int channelId, string attributeName, bool isDesc);
+        Task UpdateArrangeTaxisAsync(int channelId, string attributeName, bool isDesc);
 
-        bool SetTaxisToUp(int channelId, int contentId, bool isTop);
+        Task<bool> SetTaxisToUpAsync(int channelId, int contentId, bool isTop);
 
-        bool SetTaxisToDown(int channelId, int contentId, bool isTop);
+        Task<bool> SetTaxisToDownAsync(int channelId, int contentId, bool isTop);
 
-        void Update(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
+        Task UpdateAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
 
-        void AddDownloads(int channelId, int contentId);
+        Task AddDownloadsAsync(int channelId, int contentId);
 
-        void UpdateRestoreContentsByTrash(int siteId, int channelId);
+        Task UpdateRestoreContentsByTrashAsync(int siteId, int channelId);
 
-        void UpdateIsChecked(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons);
+        Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons);
 
-        void SetAutoPageContentToSite(int siteId);
+        Task SetAutoPageContentToSiteAsync(int siteId);
 
-        void AddContentGroupList(int contentId, List<string> contentGroupList);
+        Task AddContentGroupListAsync(int contentId, List<string> contentGroupList);
 
-        void Update(int channelId, int contentId, string name, string value);
+        Task UpdateAsync(int channelId, int contentId, string name, string value);
 
-        void UpdateTrashContents(int siteId, int channelId, IList<int> contentIdList);
+        Task UpdateTrashContentsAsync(int siteId, int channelId, IList<int> contentIdList);
 
-        void UpdateTrashContentsByChannelId(int siteId, int channelId);
+        Task UpdateTrashContentsByChannelIdAsync(int siteId, int channelId);
     }
 }

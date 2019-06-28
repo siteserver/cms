@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -31,9 +32,9 @@ namespace SS.CMS.Core.Serialization.Components
             _adminName = adminName;
         }
 
-        public void ExportTableStyles(int siteId, string tableName)
+        public async Task ExportTableStylesAsync(int siteId, string tableName)
         {
-            var allRelatedIdentities = _channelRepository.GetChannelIdList(siteId);
+            var allRelatedIdentities = await _channelRepository.GetChannelIdListAsync(siteId);
             allRelatedIdentities.Insert(0, 0);
             var tableStyleInfoWithItemsDict = _tableManager.GetTableStyleInfoWithItemsDictionary(tableName, allRelatedIdentities);
             if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;
@@ -54,7 +55,7 @@ namespace SS.CMS.Core.Serialization.Components
                     //仅导出当前系统内的表样式
                     if (tableStyleInfo.RelatedIdentity != 0)
                     {
-                        if (!_channelRepository.IsAncestorOrSelf(siteId, siteId, tableStyleInfo.RelatedIdentity))
+                        if (!await _channelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyleInfo.RelatedIdentity))
                         {
                             continue;
                         }
@@ -117,9 +118,9 @@ namespace SS.CMS.Core.Serialization.Components
             return entry;
         }
 
-        public static void SingleExportTableStyles(ITableManager tableManager, IChannelRepository channelRepository, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(ITableManager tableManager, IChannelRepository channelRepository, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var channelInfo = channelRepository.GetChannelInfo(siteId, relatedIdentity);
+            var channelInfo = await channelRepository.GetChannelInfoAsync(siteId, relatedIdentity);
             var relatedIdentities = tableManager.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -168,7 +169,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public static void SingleImportTableStyle(ITableStyleRepository tableStyleRepository, string tableName, string styleDirectoryPath, int relatedIdentity)
+        public static async Task SingleImportTableStyleAsync(ITableStyleRepository tableStyleRepository, string tableName, string styleDirectoryPath, int relatedIdentity)
         {
             if (!DirectoryUtils.IsDirectoryExists(styleDirectoryPath)) return;
 
@@ -227,7 +228,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                 if (tableStyleRepository.IsExists(relatedIdentity, tableName, attributeName))
                 {
-                    tableStyleRepository.Delete(relatedIdentity, tableName, attributeName);
+                    await tableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
                 }
                 tableStyleRepository.Insert(styleInfo);
             }

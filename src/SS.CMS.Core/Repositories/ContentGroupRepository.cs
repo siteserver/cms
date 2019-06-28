@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -59,9 +60,9 @@ namespace SS.CMS.Core.Repositories
             return success;
         }
 
-        public void Delete(int siteId, string groupName)
+        public async Task DeleteAsync(int siteId, string groupName)
         {
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.GroupName, groupName));
 

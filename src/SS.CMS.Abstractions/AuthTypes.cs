@@ -18,6 +18,11 @@
             public const string SuperAdministrator = nameof(SuperAdministrator);
         }
 
+        public static class Menus
+        {
+            public const string Site = nameof(Site);
+        }
+
         public static class AppPermissions
         {
             public const string PluginsAdd = "plugins_add";

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -13,7 +14,7 @@ namespace SS.CMS.Repositories
 
         void SetDefault(int siteId, int id);
 
-        void Delete(int siteId, int id);
+        Task DeleteAsync(int siteId, int id);
 
         string GetImportTemplateName(int siteId, string templateName);
 

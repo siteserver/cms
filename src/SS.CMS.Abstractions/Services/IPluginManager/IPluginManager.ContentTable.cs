@@ -1,9 +1,11 @@
-﻿namespace SS.CMS.Services
+﻿using System.Threading.Tasks;
+
+namespace SS.CMS.Services
 {
     public partial interface IPluginManager
     {
-        void SyncContentTable(IService service);
+        Task SyncContentTableAsync(IService service);
 
-        bool IsContentTableUsed(string tableName);
+        Task<bool> IsContentTableUsedAsync(string tableName);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -20,13 +21,13 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "翻页中生成的静态页面最大数，剩余页面将动态获取")]
         public const string MaxPage = nameof(MaxPage);
 
-        private readonly string _stlPageContentsElement;
+        private string _stlPageContentsElement;
 
-        private readonly List<ContentInfo> _contentInfoList;
-        private readonly ParseContext _parseContext;
-        private readonly ListInfo _listInfo;
+        private List<ContentInfo> _contentInfoList;
+        private ParseContext _parseContext;
+        private ListInfo _listInfo;
 
-        public StlPageContents(string stlPageContentsElement, ParseContext parseContext)
+        public async Task LoadAsync(string stlPageContentsElement, ParseContext parseContext)
         {
             _stlPageContentsElement = stlPageContentsElement;
             _parseContext = parseContext;
@@ -36,17 +37,17 @@ namespace SS.CMS.Core.StlParser.StlElement
             _parseContext = parseContext.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
             parseContext.ContextType = EContextType.Content;
-            _listInfo = ListInfo.GetListInfo(_parseContext);
+            _listInfo = await ListInfo.GetListInfoAsync(_parseContext);
 
-            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, _parseContext.ChannelId, _listInfo.UpLevel, _listInfo.TopLevel);
 
-            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
+            channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, _listInfo.ChannelIndex, _listInfo.ChannelName);
 
-            _contentInfoList = parseContext.GetStlPageContentsSqlString(parseContext.SiteInfo, channelId, _listInfo);
+            _contentInfoList = await parseContext.GetStlPageContentsSqlStringAsync(parseContext.SiteInfo, channelId, _listInfo);
         }
 
         //API StlActionsSearchController调用
-        public StlPageContents(string stlPageContentsElement, ParseContext parseContext, int pageNum, ChannelInfo channelInfo)
+        public async Task LoadAsync(string stlPageContentsElement, ParseContext parseContext, int pageNum, ChannelInfo channelInfo)
         {
             _parseContext = parseContext;
 
@@ -54,7 +55,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             _parseContext = parseContext.Clone(stlPageContentsElement, stlElementInfo.InnerHtml, stlElementInfo.Attributes);
 
             _parseContext.ContextType = EContextType.Content;
-            _listInfo = ListInfo.GetListInfo(_parseContext);
+            _listInfo = await ListInfo.GetListInfoAsync(_parseContext);
 
             _listInfo.Scope = ScopeType.All;
 
@@ -66,9 +67,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             _contentInfoList = parseContext.GetPageContentsSqlStringBySearch(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImage, _listInfo.IsVideo, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.Order, _listInfo.IsTop, _listInfo.IsRecommend, _listInfo.IsHot, _listInfo.IsColor);
         }
 
-        public int GetPageCount(out int totalNum)
+        public async Task<(int PageCount, int TotalNum)> GetPageCountAsync()
         {
-            totalNum = 0;
+            var totalNum = 0;
             var pageCount = 1;
             try
             {
@@ -81,12 +82,12 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                _parseContext.GetErrorMessage(ElementName, _stlPageContentsElement, ex);
+                await _parseContext.GetErrorMessageAsync(ElementName, _stlPageContentsElement, ex);
             }
-            return pageCount;
+            return (pageCount, totalNum);
         }
 
-        public string Parse(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
+        public async Task<string> ParseAsync(int totalNum, int currentPageIndex, int pageCount, bool isStatic)
         {
             if (isStatic)
             {
@@ -115,7 +116,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = _parseContext.GetErrorMessage(ElementName, _stlPageContentsElement, ex);
+                parsedContent = await _parseContext.GetErrorMessageAsync(ElementName, _stlPageContentsElement, ex);
             }
 
             //还原翻页为0，使得其他列表能够正确解析ItemIndex

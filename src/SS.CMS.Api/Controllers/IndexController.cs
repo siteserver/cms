@@ -45,7 +45,7 @@ namespace SS.CMS.Api.Controllers.Admin
         }
 
         [HttpGet(RouteUnCheckedList)]
-        public ActionResult GetUnCheckedList()
+        public async Task<ActionResult> GetUnCheckedList()
         {
             var unCheckedList = new List<object>();
 
@@ -53,7 +53,7 @@ namespace SS.CMS.Api.Controllers.Admin
             {
                 if (!_userManager.IsSiteAdministrator(siteInfo.Id)) continue;
 
-                var count = siteInfo.ContentRepository.GetCount(siteInfo, false);
+                var count = await siteInfo.ContentRepository.GetCountAsync(siteInfo, false);
                 if (count > 0)
                 {
                     unCheckedList.Add(new

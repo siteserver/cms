@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -20,20 +21,20 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示所有级别的子栏目")]
         public const string IsAllChildren = nameof(IsAllChildren);
 
-        public static object Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             parseContext.ContextType = EContextType.Channel;
-            var listInfo = ListInfo.GetListInfo(parseContext);
+            var listInfo = await ListInfo.GetListInfoAsync(parseContext);
 
             // var dataSource = GetDataSource(pageInfo, contextInfo, listInfo);
-            var channelList = GetContainerChannelList(parseContext, listInfo);
+            var channelList = await GetContainerChannelListAsync(parseContext, listInfo);
 
             if (parseContext.IsStlEntity)
             {
-                return ParseEntity(parseContext, channelList);
+                return await ParseEntityAsync(parseContext, channelList);
             }
 
-            return ParseElement(parseContext, listInfo, channelList);
+            return await ParseElementAsync(parseContext, listInfo, channelList);
         }
 
         // public static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -52,11 +53,11 @@ namespace SS.CMS.Core.StlParser.StlElement
         //     return parseContext.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         // }
 
-        public static IList<KeyValuePair<int, ChannelInfo>> GetContainerChannelList(ParseContext parseContext, ListInfo listInfo)
+        public static async Task<IList<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(ParseContext parseContext, ListInfo listInfo)
         {
-            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             var isTotal = TranslateUtils.ToBool(listInfo.Others.Get(IsTotal));
 
@@ -67,10 +68,10 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var taxisType = parseContext.GetChannelTaxisType(listInfo.Order, TaxisType.OrderByTaxis);
 
-            return parseContext.ChannelRepository.StlGetContainerChannelList(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+            return await parseContext.ChannelRepository.StlGetContainerChannelListAsync(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
         }
 
-        public static string ParseElement(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)
+        public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)
         {
             if (channelList == null || channelList.Count == 0) return string.Empty;
 
@@ -105,7 +106,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     parseContext.PageInfo.ChannelItems.Push(channel);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetChannelsItemTemplateString(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
+                    builder.Append(await TemplateUtility.GetChannelsItemTemplateStringAsync(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -154,7 +155,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                                     parseContext.PageInfo.ChannelItems.Push(channel);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetChannelsItemTemplateString(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
+                                    cellHtml = await TemplateUtility.GetChannelsItemTemplateStringAsync(parseContext, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
@@ -180,7 +181,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return builder.ToString();
         }
 
-        private static object ParseEntity(ParseContext parseContext, IList<KeyValuePair<int, ChannelInfo>> channelList)
+        private static async Task<object> ParseEntityAsync(ParseContext parseContext, IList<KeyValuePair<int, ChannelInfo>> channelList)
         {
             // var table = dataSource.Tables[0];
             // foreach (DataRow row in table.Rows)
@@ -197,7 +198,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var channelInfoList = new List<IDictionary<string, object>>();
             foreach (var channel in channelList)
             {
-                var channelInfo = parseContext.ChannelRepository.GetChannelInfo(channel.Value.SiteId, channel.Value.Id);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channel.Value.SiteId, channel.Value.Id);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Models;
@@ -106,29 +107,32 @@ namespace SS.CMS.Core.StlParser
         public NameValueCollection Attributes { get; set; }
 
         private ChannelInfo _channelInfo;
+        public async Task<ChannelInfo> GetChannelInfoAsync()
+        {
+            if (_channelInfo != null) return _channelInfo;
+            if (ChannelId <= 0) return null;
+            _channelInfo = await ChannelRepository.GetChannelInfoAsync(SiteId, ChannelId);
+            return _channelInfo;
+        }
+
         public ChannelInfo ChannelInfo
         {
-            get
-            {
-                if (_channelInfo != null) return _channelInfo;
-                if (ChannelId <= 0) return null;
-                _channelInfo = ChannelRepository.GetChannelInfo(SiteId, ChannelId);
-                return _channelInfo;
-            }
-            set { _channelInfo = value; }
+            set => _channelInfo = value;
         }
 
         private ContentInfo _contentInfo;
+        public async Task<ContentInfo> GetContentInfoAsync()
+        {
+            if (_contentInfo != null) return _contentInfo;
+            if (ContentId <= 0) return null;
+            var channelInfo = await GetChannelInfoAsync();
+            _contentInfo = channelInfo.ContentRepository.GetContentInfo(SiteInfo, channelInfo, ContentId);
+            return _contentInfo;
+        }
+
         public ContentInfo ContentInfo
         {
-            get
-            {
-                if (_contentInfo != null) return _contentInfo;
-                if (ContentId <= 0) return null;
-                _contentInfo = ChannelInfo.ContentRepository.GetContentInfo(SiteInfo, ChannelInfo, ContentId);
-                return _contentInfo;
-            }
-            set { _contentInfo = value; }
+            set => _contentInfo = value;
         }
 
         public bool IsInnerElement { get; set; }

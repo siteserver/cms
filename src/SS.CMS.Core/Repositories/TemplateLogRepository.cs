@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -73,11 +74,11 @@ namespace SS.CMS.Core.Repositories
             return dictionary;
         }
 
-        public void Delete(List<int> idList)
+        public async Task DeleteAsync(List<int> idList)
         {
             if (idList != null && idList.Count > 0)
             {
-                _repository.Delete(Q.WhereIn(Attr.Id, idList));
+                await _repository.DeleteAsync(Q.WhereIn(Attr.Id, idList));
             }
         }
     }

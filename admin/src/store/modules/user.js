@@ -1,3 +1,4 @@
+import md5 from 'blueimp-md5'
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
@@ -7,7 +8,8 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  menus: []
 }
 
 const mutations = {
@@ -25,6 +27,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_MENUS: (state, menus) => {
+    state.menus = menus
   }
 }
 
@@ -33,7 +38,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: md5(password) }).then(response => {
         const { token } = response
         commit('SET_TOKEN', token)
         setToken(token)
@@ -48,24 +53,29 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { roles, name, avatar, introduction } = response
-
-        if (!name) {
+        if (!response) {
           reject('Verification failed, please Login again.')
         }
 
+        const data = {
+          name: response.userName,
+          avatar: response.avatarUrl,
+          introduction: response.bio,
+          roles: response.roles,
+          menus: response.menus
+        }
+
         // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
+        if (!data.roles || data.roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
 
-        commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
-        resolve({
-          roles, name, avatar, introduction
-        })
+        commit('SET_ROLES', data.roles)
+        commit('SET_MENUS', data.menus)
+        commit('SET_NAME', data.name)
+        commit('SET_AVATAR', data.avatar)
+        commit('SET_INTRODUCTION', data.introduction)
+        resolve(data)
       }).catch(error => {
         reject(error)
       })

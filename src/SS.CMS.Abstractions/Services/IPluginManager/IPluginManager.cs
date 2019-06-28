@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SS.CMS.Services
 {
@@ -7,54 +8,54 @@ namespace SS.CMS.Services
     /// </summary>
     public partial interface IPluginManager
     {
-        IPackageMetadata GetMetadata(string pluginId);
+        Task<IPackageMetadata> GetMetadataAsync(string pluginId);
 
-        bool IsExists(string pluginId);
+        Task<bool> IsExistsAsync(string pluginId);
 
-        List<IPluginInstance> PluginInfoListRunnable { get; }
+        Task<List<IPluginInstance>> GetPluginInfoListRunnableAsync();
 
-        List<IPluginInstance> AllPluginInfoList { get; }
+        Task<List<IPluginInstance>> GetAllPluginInfoListAsync();
 
-        List<IPluginInstance> GetEnabledPluginInfoList<T>() where T : PluginBase;
+        Task<List<IPluginInstance>> GetEnabledPluginInfoListAsync<T>() where T : PluginBase;
 
-        List<IService> Services { get; }
+        Task<List<IService>> GetServicesAsync();
 
-        IPluginInstance GetPluginInfo(string pluginId);
+        Task<IPluginInstance> GetPluginInfoAsync(string pluginId);
 
-        IPluginInstance GetPluginInfo<T>() where T : PluginBase;
+        Task<IPluginInstance> GetPluginInfoAsync<T>() where T : PluginBase;
 
-        Dictionary<string, string> GetPluginIdAndVersionDict();
+        Task<Dictionary<string, string>> GetPluginIdAndVersionDictAsync();
 
         List<string> PackagesIdAndVersionList { get; }
 
-        PluginBase GetPlugin(string pluginId);
+        Task<PluginBase> GetPluginAsync(string pluginId);
 
-        IPluginInstance GetEnabledPluginInfo<T>(string pluginId) where T : PluginBase;
+        Task<IPluginInstance> GetEnabledPluginInfoAsync<T>(string pluginId) where T : PluginBase;
 
-        List<IPluginInstance> GetEnabledPluginInfoList<T1, T2>();
+        Task<List<IPluginInstance>> GetEnabledPluginInfoListAsync<T1, T2>();
 
-        List<PluginBase> GetEnabledPluginMetadatas<T>() where T : PluginBase;
+        Task<List<PluginBase>> GetEnabledPluginMetadatasAsync<T>() where T : PluginBase;
 
-        IPackageMetadata GetEnabledPluginMetadata<T>(string pluginId) where T : PluginBase;
+        Task<IPackageMetadata> GetEnabledPluginMetadataAsync<T>(string pluginId) where T : PluginBase;
 
-        T GetEnabledFeature<T>(string pluginId) where T : PluginBase;
+        Task<T> GetEnabledFeatureAsync<T>(string pluginId) where T : PluginBase;
 
-        List<T> GetEnabledFeatures<T>() where T : PluginBase;
+        Task<List<T>> GetEnabledFeaturesAsync<T>() where T : PluginBase;
 
-        IService GetService(string pluginId);
+        Task<IService> GetServiceAsync(string pluginId);
 
         void Delete(string pluginId);
 
-        void UpdateDisabled(string pluginId, bool isDisabled);
+        Task UpdateDisabledAsync(string pluginId, bool isDisabled);
 
-        void UpdateTaxis(string pluginId, int taxis);
+        Task UpdateTaxisAsync(string pluginId, int taxis);
 
-        string GetPluginIconUrl(string pluginId);
+        Task<string> GetPluginIconUrlAsync(string pluginId);
 
         string GetPluginIconUrl(IService service);
 
         void ClearCache();
 
-        SortedList<string, IPluginInstance> GetPluginSortedList();
+        Task<SortedList<string, IPluginInstance>> GetPluginSortedListAsync();
     }
 }

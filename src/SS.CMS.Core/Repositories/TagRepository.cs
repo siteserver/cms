@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -104,16 +105,16 @@ namespace SS.CMS.Core.Repositories
                 .OrderByDesc(Attr.UseNum)).ToList();
         }
 
-        public void DeleteTags(int siteId)
+        public async Task DeleteTagsAsync(int siteId)
         {
             var query = GetQuery(null, siteId, 0);
-            _repository.Delete(query);
+            await _repository.DeleteAsync(query);
         }
 
-        public void DeleteTag(string tag, int siteId)
+        public async Task DeleteTagAsync(string tag, int siteId)
         {
             var query = GetQuery(tag, siteId, 0);
-            _repository.Delete(query);
+            await _repository.DeleteAsync(query);
         }
 
         public int GetTagCount(string tag, int siteId)

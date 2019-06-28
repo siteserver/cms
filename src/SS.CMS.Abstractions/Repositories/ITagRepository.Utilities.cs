@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Repositories
 {
     public partial interface ITagRepository
     {
-        void UpdateTags(string tagsPrevious, string tagsNow, int siteId, int contentId);
+        Task UpdateTagsAsync(string tagsPrevious, string tagsNow, int siteId, int contentId);
 
         void RemoveTags(int siteId, IList<int> contentIdList);
 

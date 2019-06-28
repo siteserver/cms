@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Services;
 
@@ -24,11 +25,11 @@ namespace SS.CMS.Repositories
 
         bool IsExists(int siteId);
 
-        List<string> GetSiteTableNames(IPluginManager pluginManager);
+        Task<List<string>> GetSiteTableNamesAsync(IPluginManager pluginManager);
 
-        List<string> GetAllTableNameList(IPluginManager pluginManager);
+        Task<List<string>> GetAllTableNameListAsync(IPluginManager pluginManager);
 
-        List<string> GetTableNameList(IPluginManager pluginManager, SiteInfo siteInfo);
+        Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, SiteInfo siteInfo);
 
         int GetSiteLevel(int siteId);
 

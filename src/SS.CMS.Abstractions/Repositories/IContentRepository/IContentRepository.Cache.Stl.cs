@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -25,7 +26,7 @@ namespace SS.CMS.Repositories.IContentRepository
 
         int StlGetCountCheckedImage(int siteId, ChannelInfo channelInfo);
 
-        int StlGetCountOfContentAdd(int siteId, ChannelInfo channelInfo, ScopeType scope,
+        Task<int> StlGetCountOfContentAddAsync(int siteId, ChannelInfo channelInfo, ScopeType scope,
             DateTime begin, DateTime end, string userName, bool? checkedState);
 
         int StlGetContentId(ChannelInfo channelInfo, int taxis, bool isNextContent);
@@ -38,7 +39,7 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Query StlGetStlWhereString(int siteId, string group, string groupNot, string tags, bool? isTop, ChannelInfo channelInfo, bool isRelatedContents, int contentId);
 
-        List<ContentInfo> StlGetStlSqlStringChecked(int siteId, ChannelInfo channelInfo, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot);
+        Task<List<ContentInfo>> StlGetStlSqlStringCheckedAsync(int siteId, ChannelInfo channelInfo, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot);
 
         Query StlGetStlWhereStringBySearch(ChannelInfo channelInfo, string group, string groupNot, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor);
 

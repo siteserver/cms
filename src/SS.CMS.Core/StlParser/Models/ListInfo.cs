@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
@@ -14,7 +15,7 @@ namespace SS.CMS.Core.StlParser.Models
     {
         private EContextType _contextType = EContextType.Content;
 
-        public static ListInfo GetListInfo(ParseContext parseContext)
+        public static async Task<ListInfo> GetListInfoAsync(ParseContext parseContext)
         {
             var listInfo = new ListInfo
             {
@@ -115,14 +116,14 @@ namespace SS.CMS.Core.StlParser.Models
                         else if (StlParserUtility.IsSpecifiedStlElement(theStlElement, StlLoading.ElementName))
                         {
                             var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
-                            parseContext.ParseInnerContent(innerBuilder);
+                            await parseContext.ParseInnerContentAsync(innerBuilder);
                             listInfo.LoadingTemplate = innerBuilder.ToString();
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
                         else if (parseContext.ContextType == EContextType.SqlContent && StlParserUtility.IsSpecifiedStlElement(theStlElement, StlQueryString.ElementName))
                         {
                             var innerBuilder = new StringBuilder(StlParserUtility.GetInnerHtml(theStlElement));
-                            parseContext.ParseInnerContent(innerBuilder);
+                            await parseContext.ParseInnerContentAsync(innerBuilder);
                             listInfo.QueryString = innerBuilder.ToString();
                             innerHtml = innerHtml.Replace(theStlElement, string.Empty);
                         }
@@ -147,11 +148,11 @@ namespace SS.CMS.Core.StlParser.Models
 
                 if (StringUtils.EqualsIgnoreCase(name, StlListBase.ChannelIndex))
                 {
-                    listInfo.ChannelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.ChannelIndex = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.ChannelName))
                 {
-                    listInfo.ChannelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.ChannelName = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Parent))
                 {
@@ -187,19 +188,19 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.TotalNum))
                 {
-                    listInfo.TotalNum = TranslateUtils.ToInt(parseContext.ReplaceStlEntitiesForAttributeValue(value));
+                    listInfo.TotalNum = TranslateUtils.ToInt(await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value));
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlPageContents.PageNum))
                 {
-                    listInfo.PageNum = TranslateUtils.ToInt(parseContext.ReplaceStlEntitiesForAttributeValue(value), Constants.PageSize);
+                    listInfo.PageNum = TranslateUtils.ToInt(await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value), Constants.PageSize);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlPageContents.MaxPage))
                 {
-                    listInfo.MaxPage = TranslateUtils.ToInt(parseContext.ReplaceStlEntitiesForAttributeValue(value));
+                    listInfo.MaxPage = TranslateUtils.ToInt(await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value));
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.StartNum))
                 {
-                    listInfo.StartNum = TranslateUtils.ToInt(parseContext.ReplaceStlEntitiesForAttributeValue(value));
+                    listInfo.StartNum = TranslateUtils.ToInt(await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value));
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Order))
                 {
@@ -207,7 +208,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupChannel))
                 {
-                    listInfo.GroupChannel = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.GroupChannel = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupChannel))
                     {
                         listInfo.GroupChannel = "__Empty__";
@@ -215,7 +216,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupChannelNot))
                 {
-                    listInfo.GroupChannelNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.GroupChannelNot = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupChannelNot))
                     {
                         listInfo.GroupChannelNot = "__Empty__";
@@ -223,7 +224,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContent) || StringUtils.EqualsIgnoreCase(name, "group"))
                 {
-                    listInfo.GroupContent = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.GroupContent = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupContent))
                     {
                         listInfo.GroupContent = "__Empty__";
@@ -231,7 +232,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.GroupContentNot) || StringUtils.EqualsIgnoreCase(name, "groupNot"))
                 {
-                    listInfo.GroupContentNot = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.GroupContentNot = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (string.IsNullOrEmpty(listInfo.GroupContentNot))
                     {
                         listInfo.GroupContentNot = "__Empty__";
@@ -239,7 +240,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Tags))
                 {
-                    listInfo.Tags = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.Tags = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StlListBase.Columns))
                 {
@@ -297,7 +298,7 @@ namespace SS.CMS.Core.StlParser.Models
                 }
                 else if (parseContext.ContextType == EContextType.SqlContent && StringUtils.EqualsIgnoreCase(name, StlSqlContents.QueryString))
                 {
-                    listInfo.QueryString = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    listInfo.QueryString = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else
                 {

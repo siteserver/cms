@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -10,9 +11,9 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        private void UpdateTaxis(int channelId, int contentId, int taxis)
+        private async Task UpdateTaxisAsync(int channelId, int contentId, int taxis)
         {
-            var updateNum = _repository.Update(Q
+            var updateNum = await _repository.UpdateAsync(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.Id, contentId)
             );
@@ -22,7 +23,7 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public void UpdateArrangeTaxis(int channelId, string attributeName, bool isDesc)
+        public async Task UpdateArrangeTaxisAsync(int channelId, string attributeName, bool isDesc)
         {
             var query = Q
             .Where(Attr.ChannelId, channelId)
@@ -37,7 +38,7 @@ namespace SS.CMS.Core.Repositories
                 query.OrderByDesc(attributeName);
             }
 
-            var list = _repository.GetAll<(int id, string isTop)>(query);
+            var list = await _repository.GetAllAsync<(int id, string isTop)>(query);
             var taxis = 1;
             foreach ((int id, string isTop) in list)
             {
@@ -47,11 +48,11 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public bool SetTaxisToUp(int channelId, int contentId, bool isTop)
+        public async Task<bool> SetTaxisToUpAsync(int channelId, int contentId, bool isTop)
         {
             var taxis = GetTaxis(contentId);
 
-            var result = _repository.Get<(int HigherId, int HigherTaxis)?>(Q
+            var result = await _repository.GetAsync<(int HigherId, int HigherTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, ">", taxis)
@@ -68,17 +69,17 @@ namespace SS.CMS.Core.Repositories
 
             if (higherId == 0) return false;
 
-            UpdateTaxis(channelId, contentId, higherTaxis);
-            UpdateTaxis(channelId, higherId, taxis);
+            await UpdateTaxisAsync(channelId, contentId, higherTaxis);
+            await UpdateTaxisAsync(channelId, higherId, taxis);
 
             return true;
         }
 
-        public bool SetTaxisToDown(int channelId, int contentId, bool isTop)
+        public async Task<bool> SetTaxisToDownAsync(int channelId, int contentId, bool isTop)
         {
             var taxis = GetTaxis(contentId);
 
-            var result = _repository.Get<(int LowerId, int LowerTaxis)?>(Q
+            var result = await _repository.GetAsync<(int LowerId, int LowerTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, "<", taxis)
@@ -95,13 +96,13 @@ namespace SS.CMS.Core.Repositories
 
             if (lowerId == 0) return false;
 
-            UpdateTaxis(channelId, contentId, lowerTaxis);
-            UpdateTaxis(channelId, lowerId, taxis);
+            await UpdateTaxisAsync(channelId, contentId, lowerTaxis);
+            await UpdateTaxisAsync(channelId, lowerId, taxis);
 
             return true;
         }
 
-        public void Update(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task UpdateAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             if (contentInfo == null) return;
 
@@ -126,21 +127,21 @@ namespace SS.CMS.Core.Repositories
 
             _repository.Update(contentInfo);
 
-            UpdateCache(siteInfo, channelInfo, contentInfo);
+            await UpdateCacheAsync(siteInfo, channelInfo, contentInfo);
             RemoveCountCache(TableName);
         }
 
-        public void AddDownloads(int channelId, int contentId)
+        public async Task AddDownloadsAsync(int channelId, int contentId)
         {
-            _repository.Increment(Attr.Downloads, Q
+            await _repository.IncrementAsync(Attr.Downloads, Q
                 .Where(Attr.Id, contentId));
 
             RemoveCache(TableName, channelId);
         }
 
-        public void UpdateRestoreContentsByTrash(int siteId, int channelId)
+        public async Task UpdateRestoreContentsByTrashAsync(int siteId, int channelId)
         {
-            var updateNum = _repository.Update(Q
+            var updateNum = await _repository.UpdateAsync(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, "<", 0)
@@ -151,7 +152,7 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public void UpdateIsChecked(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
+        public async Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
         {
             if (isChecked)
             {
@@ -176,7 +177,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (translateChannelId > 0)
                 {
-                    _repository.Update(Q
+                    await _repository.UpdateAsync(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
                         .Set(Attr.ExtendValues, settingsXml)
@@ -186,7 +187,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 else
                 {
-                    _repository.Update(Q
+                    await _repository.UpdateAsync(Q
                         .Set(Attr.IsChecked, isChecked.ToString())
                         .Set(Attr.CheckedLevel, checkedLevel)
                         .Set(Attr.ExtendValues, settingsXml)
@@ -211,7 +212,7 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public void SetAutoPageContentToSite(int siteId)
+        public async Task SetAutoPageContentToSiteAsync(int siteId)
         {
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
             if (!siteInfo.IsAutoPageInTextEditor) return;
@@ -224,12 +225,12 @@ namespace SS.CMS.Core.Repositories
                 {
                     var content = ContentUtility.GetAutoPageContent(result.Content, siteInfo.AutoPageWordNum);
 
-                    Update(result.ChannelId, result.Id, Attr.Content, content);
+                    await UpdateAsync(result.ChannelId, result.Id, Attr.Content, content);
                 }
             }
         }
 
-        public void AddContentGroupList(int contentId, List<string> contentGroupList)
+        public async Task AddContentGroupListAsync(int contentId, List<string> contentGroupList)
         {
             if (!GetChanelIdAndValue<string>(contentId, Attr.GroupNameCollection, out var channelId, out var value)) return;
 
@@ -238,12 +239,12 @@ namespace SS.CMS.Core.Repositories
             {
                 if (!list.Contains(groupName)) list.Add(groupName);
             }
-            Update(channelId, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
+            await UpdateAsync(channelId, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
         }
 
-        public void Update(int channelId, int contentId, string name, string value)
+        public async Task UpdateAsync(int channelId, int contentId, string name, string value)
         {
-            var updateNum = _repository.Update(Q
+            var updateNum = await _repository.UpdateAsync(Q
                 .Set(name, value)
                 .Where(Attr.Id, contentId)
             );
@@ -253,12 +254,12 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public void UpdateTrashContents(int siteId, int channelId, IList<int> contentIdList)
+        public async Task UpdateTrashContentsAsync(int siteId, int channelId, IList<int> contentIdList)
         {
             var referenceIdList = GetReferenceIdList(contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteReferenceContents(siteId, channelId, referenceIdList);
+                await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
             }
 
             var updateNum = 0;
@@ -277,13 +278,13 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public void UpdateTrashContentsByChannelId(int siteId, int channelId)
+        public async Task UpdateTrashContentsByChannelIdAsync(int siteId, int channelId)
         {
             var contentIdList = GetContentIdList(channelId);
             var referenceIdList = GetReferenceIdList(contentIdList);
             if (referenceIdList.Count > 0)
             {
-                DeleteReferenceContents(siteId, channelId, referenceIdList);
+                await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
             }
 
             var updateNum = _repository.Update(Q

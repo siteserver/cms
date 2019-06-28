@@ -130,9 +130,9 @@ export default {
         /* 七牛*/
         // const token = this.$store.getters.token;
         // getToken(token).then(response => {
-        //   file.token = response.data.qiniu_token;
-        //   file.key = response.data.qiniu_key;
-        //   file.url = response.data.qiniu_url;
+        //   file.token = response.qiniu_token;
+        //   file.key = response.qiniu_key;
+        //   file.url = response.qiniu_url;
         //   done();
         // })
         done()

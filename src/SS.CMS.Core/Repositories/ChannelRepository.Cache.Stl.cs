@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -33,40 +34,34 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public int StlGetSequence(int siteId, int channelId)
+        public async Task<int> StlGetSequenceAsync(int siteId, int channelId)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(GetSequence),
+            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(StlGetSequenceAsync),
                 siteId.ToString(), channelId.ToString());
             var retval = _cacheManager.GetInt(cacheKey);
             if (retval != -1) return retval;
 
-            lock (LockObject)
+            retval = _cacheManager.GetInt(cacheKey);
+            if (retval == -1)
             {
-                retval = _cacheManager.GetInt(cacheKey);
-                if (retval == -1)
-                {
-                    retval = GetSequence(siteId, channelId);
-                    _cacheManager.Set(cacheKey, retval);
-                }
+                retval = await GetSequenceAsync(siteId, channelId);
+                _cacheManager.Set(cacheKey, retval);
             }
 
             return retval;
         }
 
-        public IList<KeyValuePair<int, ChannelInfo>> StlGetContainerChannelList(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
+        public async Task<IList<KeyValuePair<int, ChannelInfo>>> StlGetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(GetContainerChannelList), siteId.ToString(), channelId.ToString(), group.ToString(), groupNot.ToString(), isImage.ToString(), startNum.ToString(), totalNum.ToString(), TaxisTypeUtils.GetValue(taxisType), scopeType.Value, isTotal.ToString());
+            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(StlGetContainerChannelListAsync), siteId.ToString(), channelId.ToString(), group.ToString(), groupNot.ToString(), isImage.ToString(), startNum.ToString(), totalNum.ToString(), TaxisTypeUtils.GetValue(taxisType), scopeType.Value, isTotal.ToString());
             var retval = _cacheManager.Get<IList<KeyValuePair<int, ChannelInfo>>>(cacheKey);
             if (retval != null) return retval;
 
-            lock (LockObject)
+            retval = _cacheManager.Get<IList<KeyValuePair<int, ChannelInfo>>>(cacheKey);
+            if (retval == null)
             {
-                retval = _cacheManager.Get<IList<KeyValuePair<int, ChannelInfo>>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = GetContainerChannelList(siteId, channelId, group, groupNot, isImage, startNum, totalNum, taxisType, scopeType, isTotal);
-                    _cacheManager.Set(cacheKey, retval);
-                }
+                retval = await GetContainerChannelListAsync(siteId, channelId, group, groupNot, isImage, startNum, totalNum, taxisType, scopeType, isTotal);
+                _cacheManager.Set(cacheKey, retval);
             }
 
             return retval;
@@ -92,21 +87,18 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        public IList<int> StlGetIdListByTotalNum(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
+        public async Task<IList<int>> StlGetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(GetIdListByTotalNum),
+            var cacheKey = StringUtils.GetCacheKey(nameof(ChannelRepository), nameof(GetIdListByTotalNumAsync),
                        siteId.ToString(), channelId.ToString(), TaxisTypeUtils.GetValue(taxisType), scopeType.Value, groupChannel, groupChannelNot, isImage.ToString(), totalNum.ToString());
             var retval = _cacheManager.Get<IList<int>>(cacheKey);
             if (retval != null) return retval;
 
-            lock (LockObject)
+            retval = _cacheManager.Get<IList<int>>(cacheKey);
+            if (retval == null)
             {
-                retval = _cacheManager.Get<IList<int>>(cacheKey);
-                if (retval == null)
-                {
-                    retval = GetIdListByTotalNum(siteId, channelId, taxisType, scopeType, groupChannel, groupChannelNot, isImage, totalNum);
-                    _cacheManager.Set(cacheKey, retval);
-                }
+                retval = await GetIdListByTotalNumAsync(siteId, channelId, taxisType, scopeType, groupChannel, groupChannelNot, isImage, totalNum);
+                _cacheManager.Set(cacheKey, retval);
             }
 
             return retval;

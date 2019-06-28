@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -10,7 +11,7 @@ namespace SS.CMS.Repositories
 
         bool Update(ChannelGroupInfo groupInfo);
 
-        void Delete(int siteId, string groupName);
+        Task DeleteAsync(int siteId, string groupName);
 
         void UpdateTaxisToUp(int siteId, string groupName);
 

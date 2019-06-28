@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
@@ -18,15 +19,15 @@ namespace SS.CMS.Services
 
         string GetUploadSpecialName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName);
 
-        string GetChannelFilePathRule(SiteInfo siteInfo, int channelId);
+        
 
-        string GetContentFilePathRule(SiteInfo siteInfo, int channelId);
+        
 
-        string GetChannelPageFilePath(SiteInfo siteInfo, int channelId, int currentPageIndex);
+        Task<string> GetChannelPageFilePathAsync(SiteInfo siteInfo, int channelId, int currentPageIndex);
 
-        string GetContentPageFilePath(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex);
+        Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex);
 
-        string GetContentPageFilePath(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, int currentPageIndex);
+        Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, int currentPageIndex);
 
         bool IsImageExtensionAllowed(SiteInfo siteInfo, string fileExtention);
 

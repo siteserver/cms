@@ -55,8 +55,8 @@ export default {
   methods: {
     async fetchData() {
       this.listLoading = true
-      const { data } = await fetchList()
-      this.list = data.items
+      const { items } = await fetchList()
+      this.list = items
       this.listLoading = false
     },
     handleDownload() {

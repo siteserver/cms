@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Utils;
@@ -93,9 +94,9 @@ namespace SS.CMS.Core.Services
             return retVal;
         }
 
-        public string GetChannelFilePathRule(SiteInfo siteInfo, int channelId)
+        public async Task<string> GetChannelFilePathRuleAsync(SiteInfo siteInfo, int channelId)
         {
-            var channelFilePathRule = GetChannelFilePathRule(siteInfo.Id, channelId);
+            var channelFilePathRule = await GetChannelFilePathRuleAsync(siteInfo.Id, channelId);
             if (string.IsNullOrEmpty(channelFilePathRule))
             {
                 channelFilePathRule = siteInfo.ChannelFilePathRule;
@@ -108,24 +109,24 @@ namespace SS.CMS.Core.Services
             return channelFilePathRule;
         }
 
-        private string GetChannelFilePathRule(int siteId, int channelId)
+        private async Task<string> GetChannelFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ChannelFilePathRule;
             if (string.IsNullOrEmpty(filePathRule) && nodeInfo.ParentId != 0)
             {
-                filePathRule = GetChannelFilePathRule(siteId, nodeInfo.ParentId);
+                filePathRule = await GetChannelFilePathRuleAsync(siteId, nodeInfo.ParentId);
             }
 
             return filePathRule;
         }
 
-        public string GetContentFilePathRule(SiteInfo siteInfo, int channelId)
+        public async Task<string> GetContentFilePathRuleAsync(SiteInfo siteInfo, int channelId)
         {
-            var contentFilePathRule = GetContentFilePathRule(siteInfo.Id, channelId);
+            var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo.Id, channelId);
             if (string.IsNullOrEmpty(contentFilePathRule))
             {
                 contentFilePathRule = siteInfo.ContentFilePathRule;
@@ -138,24 +139,24 @@ namespace SS.CMS.Core.Services
             return contentFilePathRule;
         }
 
-        private string GetContentFilePathRule(int siteId, int channelId)
+        private async Task<string> GetContentFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ContentFilePathRule;
             if (string.IsNullOrEmpty(filePathRule) && nodeInfo.ParentId != 0)
             {
-                filePathRule = GetContentFilePathRule(siteId, nodeInfo.ParentId);
+                filePathRule = await GetContentFilePathRuleAsync(siteId, nodeInfo.ParentId);
             }
 
             return filePathRule;
         }
 
-        public string GetChannelPageFilePath(SiteInfo siteInfo, int channelId, int currentPageIndex)
+        public async Task<string> GetChannelPageFilePathAsync(SiteInfo siteInfo, int channelId, int currentPageIndex)
         {
-            var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = _templateRepository.GetDefaultTemplateInfo(siteInfo.Id, TemplateType.IndexPageTemplate);
@@ -165,7 +166,7 @@ namespace SS.CMS.Core.Services
 
             if (string.IsNullOrEmpty(filePath))
             {
-                filePath = ChannelRulesParse(siteInfo, channelId);
+                filePath = await ChannelRulesParseAsync(siteInfo, channelId);
             }
 
             filePath = MapPath(siteInfo, filePath);// PathUtils.Combine(sitePath, filePath);
@@ -185,16 +186,16 @@ namespace SS.CMS.Core.Services
             return filePath;
         }
 
-        public string GetContentPageFilePath(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
+        public async Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
-            return GetContentPageFilePath(siteInfo, channelId, contentInfo, currentPageIndex);
+            return await GetContentPageFilePathAsync(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 
-        public string GetContentPageFilePath(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, int currentPageIndex)
+        public async Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, int currentPageIndex)
         {
-            var filePath = ContentRulesParse(siteInfo, channelId, contentInfo);
+            var filePath = await ContentRulesParseAsync(siteInfo, channelId, contentInfo);
 
             filePath = MapPath(siteInfo, filePath);
             if (PathUtils.IsDirectoryPath(filePath))

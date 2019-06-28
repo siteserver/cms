@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -35,9 +36,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public void DeleteAndInsertStyleItems(int tableStyleId, List<TableStyleItemInfo> styleItems)
+        public async Task DeleteAndInsertStyleItemsAsync(int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
-            _repository.Delete(Q.Where(Attr.TableStyleId, tableStyleId));
+            await _repository.DeleteAsync(Q.Where(Attr.TableStyleId, tableStyleId));
 
             if (styleItems == null || styleItems.Count == 0) return;
 

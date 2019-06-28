@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -27,7 +28,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
             {NextContent, "下一内容链接"}
         };
 
-        internal static string Parse(string stlEntity, ParseContext parseContext)
+        internal static async Task<string> ParseAsync(string stlEntity, ParseContext parseContext)
         {
             var parsedContent = string.Empty;
             try
@@ -35,7 +36,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var attributeName = entityName.Substring(12, entityName.Length - 13);
 
-                var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
 
                 if (StringUtils.EqualsIgnoreCase(PreviousChannel, attributeName) || StringUtils.EqualsIgnoreCase(NextChannel, attributeName))
                 {
@@ -45,21 +46,23 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     var siblingChannelId = parseContext.ChannelRepository.StlGetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, siblingChannelId);
-                        parsedContent = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, siblingNodeInfo, parseContext.IsLocal);
+                        var siblingNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, siblingChannelId);
+                        parsedContent = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, siblingNodeInfo, parseContext.IsLocal);
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(PreviousContent, attributeName) || StringUtils.EqualsIgnoreCase(NextContent, attributeName))
                 {
                     if (parseContext.ContentId != 0)
                     {
-                        var taxis = parseContext.ContentInfo.Taxis;
+                        var channelInfo = await parseContext.GetChannelInfoAsync();
+                        var contentInfo = await parseContext.GetContentInfoAsync();
+                        var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var siblingContentId = parseContext.ChannelInfo.ContentRepository.StlGetContentId(parseContext.ChannelInfo, taxis, isNextContent);
+                        var siblingContentId = channelInfo.ContentRepository.StlGetContentId(channelInfo, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            var contentInfo = parseContext.ChannelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, parseContext.ChannelInfo, siblingContentId);
-                            parsedContent = parseContext.UrlManager.GetContentUrl(parseContext.SiteInfo, contentInfo, parseContext.IsLocal);
+                            contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, siblingContentId);
+                            parsedContent = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, contentInfo, parseContext.IsLocal);
                         }
                     }
                 }

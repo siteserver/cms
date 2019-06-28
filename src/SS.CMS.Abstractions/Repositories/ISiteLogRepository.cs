@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -8,10 +9,10 @@ namespace SS.CMS.Repositories
     {
         void Insert(SiteLogInfo logInfo);
 
-        void DeleteIfThreshold();
+        Task DeleteIfThresholdAsync();
 
-        void Delete(List<int> idList);
+        Task DeleteAsync(List<int> idList);
 
-        void DeleteAll();
+        Task DeleteAllAsync();
     }
 }

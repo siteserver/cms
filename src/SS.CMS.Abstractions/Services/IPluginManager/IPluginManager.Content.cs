@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
@@ -8,18 +9,18 @@ namespace SS.CMS.Services
     {
         bool IsContentTable(IService service);
 
-        string GetContentTableName(string pluginId);
+        Task<string> GetContentTableNameAsync(string pluginId);
 
-        List<IPackageMetadata> GetContentModelPlugins();
+        Task<List<IPackageMetadata>> GetContentModelPluginsAsync();
 
-        List<string> GetContentTableNameList();
+        Task<List<string>> GetContentTableNameListAsync();
 
-        List<IPackageMetadata> GetAllContentRelatedPlugins(bool includeContentTable);
+        Task<List<IPackageMetadata>> GetAllContentRelatedPluginsAsync(bool includeContentTable);
 
-        List<IService> GetContentPlugins(ChannelInfo channelInfo, bool includeContentTable);
+        Task<List<IService>> GetContentPluginsAsync(ChannelInfo channelInfo, bool includeContentTable);
 
         List<string> GetContentPluginIds(ChannelInfo channelInfo);
 
-        Dictionary<string, Dictionary<string, Func<IContentContext, string>>> GetContentColumns(List<string> pluginIds);
+        Task<Dictionary<string, Dictionary<string, Func<IContentContext, string>>>> GetContentColumnsAsync(List<string> pluginIds);
     }
 }

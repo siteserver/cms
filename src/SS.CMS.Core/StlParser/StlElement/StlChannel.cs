@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
@@ -75,7 +76,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否转换为大写")]
         private const string IsUpper = nameof(IsUpper);
 
-        public static object Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var leftText = string.Empty;
             var rightText = string.Empty;
@@ -103,11 +104,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelIndex = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelName = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Parent))
                 {
@@ -186,20 +187,20 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = parseContext.ChannelRepository.GetChannelId(parseContext.SiteId, channelId, channelIndex, channelName);
-            var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelId);
+            channelId = await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId, channelId, channelIndex, channelName);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
 
             if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
             {
                 return channel.ToDictionary();
             }
 
-            var parsedContent = ParseImpl(parseContext, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+            var parsedContent = await ParseImplAsync(parseContext, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
 
             var innerBuilder = new StringBuilder(parsedContent);
-            parseContext.ParseInnerContent(innerBuilder);
+            await parseContext.ParseInnerContentAsync(innerBuilder);
             parsedContent = innerBuilder.ToString();
 
             if (!StringUtils.EqualsIgnoreCase(type, ChannelAttribute.PageContent))
@@ -210,7 +211,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static string ParseImpl(ParseContext parseContext, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
         {
             if (string.IsNullOrEmpty(type))
             {
@@ -417,7 +418,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfContents.ToLower()))
             {
-                var count = channel.ContentRepository.GetCount(parseContext.SiteInfo, channel, true);
+                var count = await channel.ContentRepository.GetCountAsync(parseContext.SiteInfo, channel, true);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))

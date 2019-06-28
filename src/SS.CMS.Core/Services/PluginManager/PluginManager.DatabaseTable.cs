@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using SS.CMS.Core.Models.Attributes;
+﻿using System.Threading.Tasks;
 using SS.CMS.Data;
-using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public void SyncTable(IService service)
+        public async Task SyncTableAsync(IService service)
         {
             if (service.DatabaseTables == null || service.DatabaseTables.Count <= 0) return;
 
@@ -20,11 +18,11 @@ namespace SS.CMS.Core.Services
 
                 if (!db.IsTableExists(tableName))
                 {
-                    db.CreateTable(tableName, tableColumns);
+                    await db.CreateTableAsync(tableName, tableColumns);
                 }
                 else
                 {
-                    db.AlterTable(tableName, tableColumns, null);
+                    await db.AlterTableAsync(tableName, tableColumns, null);
                 }
             }
         }

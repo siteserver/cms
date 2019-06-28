@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
@@ -8,9 +9,9 @@ namespace SS.CMS.Services
 
         string GetApiUrl(string route);
 
-        string GetSystemDefaultPageUrl(int siteId);
+        Task<string> GetSystemDefaultPageUrlAsync(int siteId);
 
-        string GetHomeDefaultPageUrl();
+        Task<string> GetHomeDefaultPageUrlAsync();
 
         string GetMenuUrl(string pluginId, string href, int siteId, int channelId, int contentId);
 
@@ -30,14 +31,14 @@ namespace SS.CMS.Services
 
         string GetFileUrl(SiteInfo siteInfo, int fileTemplateId, bool isLocal);
 
-        string GetContentUrl(SiteInfo siteInfo, ContentInfo contentInfo, bool isLocal);
+        Task<string> GetContentUrlAsync(SiteInfo siteInfo, ContentInfo contentInfo, bool isLocal);
 
-        string GetContentUrl(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal);
+        Task<string> GetContentUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal);
 
         //得到栏目经过计算后的连接地址
-        string GetChannelUrl(SiteInfo siteInfo, ChannelInfo channelInfo, bool isLocal);
+        Task<string> GetChannelUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isLocal);
 
-        string GetInputChannelUrl(SiteInfo siteInfo, ChannelInfo nodeInfo, bool isLocal);
+        Task<string> GetInputChannelUrlAsync(SiteInfo siteInfo, ChannelInfo nodeInfo, bool isLocal);
 
         string AddVirtualToUrl(string url);
 

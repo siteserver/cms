@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -18,10 +19,10 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "站点文件夹")]
         private const string SiteDir = nameof(SiteDir);
 
-        public static object Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var context = parseContext.Clone(EContextType.Site);
-            var listInfo = ListInfo.GetListInfo(context);
+            var listInfo = await ListInfo.GetListInfoAsync(context);
             var siteName = listInfo.Others.Get(SiteName);
             var siteDir = listInfo.Others.Get(SiteDir);
 
@@ -34,10 +35,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 return ParseEntity(context, siteList);
             }
 
-            return ParseElement(context, listInfo, siteList);
+            return await ParseElementAsync(context, listInfo, siteList);
         }
 
-        private static string ParseElement(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, SiteInfo>> siteList)
+        private static async Task<string> ParseElementAsync(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, SiteInfo>> siteList)
         {
             if (siteList == null || siteList.Count == 0) return string.Empty;
 
@@ -72,7 +73,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     context.PageInfo.SiteItems.Push(site);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetSitesTemplateString(templateString, string.Empty, context));
+                    builder.Append(await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, context));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -121,7 +122,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                                     context.PageInfo.SiteItems.Push(site);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetSitesTemplateString(templateString, string.Empty, context);
+                                    cellHtml = await TemplateUtility.GetSitesTemplateStringAsync(templateString, string.Empty, context);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

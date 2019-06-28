@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Drawing;
 
-namespace SS.CMS.Api.Controllers.V2
+namespace SS.CMS.Api.Controllers.Users
 {
-    public partial class UserController
+    public partial class UsersController
     {
-        public class LoginRequest
-        {
-            public string UserName { get; set; }
-            public string Password { get; set; }
-            public string Captcha { get; set; }
-            public bool IsAutoLogin { get; set; }
-        }
-
         private readonly Color[] _colors = { Color.FromArgb(37, 72, 91), Color.FromArgb(68, 24, 25), Color.FromArgb(17, 46, 2), Color.FromArgb(70, 16, 100), Color.FromArgb(24, 88, 74) };
 
-        private readonly string _cookieName = "SS-" + nameof(UserController);
+        private readonly string _cookieName = "SS-" + nameof(UsersController);
 
         private static string CreateValidateCode()
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Plugin;
@@ -12,9 +13,9 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public void RemoveCacheBySiteId(string tableName, int siteId)
+        public async Task RemoveCacheBySiteIdAsync(string tableName, int siteId)
         {
-            foreach (var channelId in _channelRepository.GetChannelIdList(siteId))
+            foreach (var channelId in await _channelRepository.GetChannelIdListAsync(siteId))
             {
                 ListRemove(channelId);
                 ContentRemove(channelId);
@@ -37,7 +38,7 @@ namespace SS.CMS.Core.Repositories
             StlClearCache();
         }
 
-        public void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        private async Task InsertCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
@@ -46,13 +47,13 @@ namespace SS.CMS.Core.Repositories
             var dict = ContentGetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
 
-            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
             CountAdd(tableName, contentInfo);
 
             StlClearCache();
         }
 
-        public void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
+        private async Task UpdateCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
         {
             var dict = ContentGetContentDict(channelInfo.Id);
 
@@ -66,7 +67,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (CountIsChanged(contentInfo, contentInfoToUpdate))
                 {
-                    var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
+                    var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
                     CountRemove(tableName, contentInfo);
                     CountAdd(tableName, contentInfoToUpdate);
                 }
@@ -77,7 +78,7 @@ namespace SS.CMS.Core.Repositories
             StlClearCache();
         }
 
-        public ContentInfo Calculate(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public async Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             if (contentInfo == null) return null;
 
@@ -106,7 +107,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
                 {
-                    retVal.Set(ContentAttribute.SourceId, _channelRepository.GetSourceName(contentInfo.SourceId));
+                    retVal.Set(ContentAttribute.SourceId, await _channelRepository.GetSourceNameAsync(contentInfo.SourceId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
                 {
@@ -162,7 +163,7 @@ namespace SS.CMS.Core.Repositories
                         }
                         catch (Exception ex)
                         {
-                            _errorLogRepository.AddErrorLog(pluginId, ex);
+                            await _errorLogRepository.AddErrorLogAsync(pluginId, ex);
                         }
                     }
                 }

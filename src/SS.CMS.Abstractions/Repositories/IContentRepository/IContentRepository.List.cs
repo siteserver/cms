@@ -18,7 +18,7 @@ namespace SS.CMS.Repositories.IContentRepository
 
         List<int> GetContentIdListChecked(int channelId, TaxisType taxisType);
 
-        IList<(int, int)> ApiGetContentIdListByChannelId(int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString, out int totalCount);
+        //IList<(int, int)> ApiGetContentIdListByChannelId(int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString, out int totalCount);
 
         IList<int> GetIdListBySameTitle(int channelId, string title);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Utils;
 
@@ -27,7 +28,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         private const string IsContainSelf = nameof(IsContainSelf);
 
         //对“当前位置”（stl:location）元素进行解析
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var separator = " - ";
             var target = string.Empty;
@@ -61,17 +62,17 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, separator, target, linkClass, wordNum, isContainSelf);
+            return await ParseImplAsync(parseContext, separator, target, linkClass, wordNum, isContainSelf);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string separator, string target, string linkClass, int wordNum, bool isContainSelf)
         {
             if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
                 separator = parseContext.InnerHtml;
             }
 
-            var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.ChannelId);
+            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -88,7 +89,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, currentId);
+                    var currentNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, currentId);
                     if (currentId == parseContext.SiteId)
                     {
                         var attributes = new NameValueCollection();
@@ -128,7 +129,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
+                        var url = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;
@@ -151,7 +152,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = parseContext.UrlManager.GetChannelUrl(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
+                        var url = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, currentNodeInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;

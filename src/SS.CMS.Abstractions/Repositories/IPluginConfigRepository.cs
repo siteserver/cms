@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -7,7 +8,7 @@ namespace SS.CMS.Repositories
     {
         void Insert(PluginConfigInfo configInfo);
 
-        void Delete(string pluginId, int siteId, string configName);
+        Task DeleteAsync(string pluginId, int siteId, string configName);
 
         void Update(PluginConfigInfo configInfo);
 

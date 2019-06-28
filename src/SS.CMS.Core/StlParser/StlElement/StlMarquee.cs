@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;
@@ -33,12 +34,12 @@ namespace SS.CMS.Core.StlParser.StlElement
             {DirectionHorizontal, "水平"}
         };
 
-        internal static string Parse(ParseContext parseContext)
+        internal static async Task<object> ParseAsync(ParseContext parseContext)
         {
             if (string.IsNullOrEmpty(parseContext.InnerHtml)) return string.Empty;
 
             var innerBuilder = new StringBuilder(parseContext.InnerHtml);
-            parseContext.ParseInnerContent(innerBuilder);
+            await parseContext.ParseInnerContentAsync(innerBuilder);
             var scrollHtml = innerBuilder.ToString();
 
             var scrollDelay = 40;

@@ -119,7 +119,7 @@ namespace SS.CMS.Cli.Services
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                _tableManager.SyncSystemTables();
+                await _tableManager.SyncSystemTablesAsync();
             }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Enums;
@@ -9,12 +10,12 @@ namespace SS.CMS.Core.Plugin
 {
     public class ParseContextImpl : IParseContext
     {
-        public ParseContextImpl(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ParseContext parseContext)
+        public async Task LoadAsync(string stlOuterHtml, string stlInnerHtml, NameValueCollection stlAttributes, PageInfo pageInfo, ParseContext parseContext)
         {
             SiteId = parseContext.SiteInfo.Id;
             ChannelId = parseContext.ChannelId;
             ContentId = parseContext.ContentId;
-            ContentInfo = parseContext.ContentInfo;
+            ContentInfo = await parseContext.GetContentInfoAsync();
             TemplateType = pageInfo.TemplateInfo.Type;
             TemplateId = pageInfo.TemplateInfo.Id;
 
@@ -29,7 +30,7 @@ namespace SS.CMS.Core.Plugin
             PluginItems = pageInfo.PluginItems;
         }
 
-        public Dictionary<string, object> PluginItems { get; }
+        public Dictionary<string, object> PluginItems { get; private set; }
 
         public void Set<T>(string key, T objectValue)
         {
@@ -53,30 +54,30 @@ namespace SS.CMS.Core.Plugin
             return default(T);
         }
 
-        public int SiteId { get; }
+        public int SiteId { get; private set; }
 
-        public int ChannelId { get; }
+        public int ChannelId { get; private set; }
 
-        public int ContentId { get; }
+        public int ContentId { get; private set; }
 
-        public ContentInfo ContentInfo { get; }
+        public ContentInfo ContentInfo { get; private set; }
 
-        public TemplateType TemplateType { get; }
+        public TemplateType TemplateType { get; private set; }
 
-        public int TemplateId { get; }
+        public int TemplateId { get; private set; }
 
-        public SortedDictionary<string, string> HeadCodes { get; }
+        public SortedDictionary<string, string> HeadCodes { get; private set; }
 
-        public SortedDictionary<string, string> BodyCodes { get; }
+        public SortedDictionary<string, string> BodyCodes { get; private set; }
 
-        public SortedDictionary<string, string> FootCodes { get; }
+        public SortedDictionary<string, string> FootCodes { get; private set; }
 
-        public string StlOuterHtml { get; }
+        public string StlOuterHtml { get; private set; }
 
-        public string StlInnerHtml { get; }
+        public string StlInnerHtml { get; private set; }
 
-        public NameValueCollection StlAttributes { get; }
+        public NameValueCollection StlAttributes { get; private set; }
 
-        public bool IsStlElement { get; }
+        public bool IsStlElement { get; private set; }
     }
 }

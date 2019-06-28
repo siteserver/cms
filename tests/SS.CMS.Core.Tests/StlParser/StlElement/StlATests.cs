@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Models;
@@ -22,7 +23,7 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
         }
 
         [Fact]
-        public void ParseTest()
+        public async Task ParseTest()
         {
             var siteInfo = new SiteInfo();
             var templateInfo = new TemplateInfo();
@@ -34,7 +35,7 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
             var template = $@"<stl:a href=""https://www.siteserver.cn"">test</stl:a>";
             var builder = new StringBuilder(template);
 
-            contextInfo.ParseTemplateContent(builder);
+            await contextInfo.ParseTemplateContentAsync(builder);
             var parsedContent = builder.ToString();
 
             _output.WriteLine(parsedContent);

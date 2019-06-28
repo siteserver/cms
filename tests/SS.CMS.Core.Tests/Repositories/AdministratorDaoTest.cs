@@ -85,7 +85,7 @@ namespace SS.CMS.Core.Tests.Repositories
             Assert.NotNull(userInfo);
             Assert.Equal(TestUserName, userInfo.UserName);
 
-            var deleted = _fixture.UserRepository.Delete(userInfo);
+            var deleted = await _fixture.UserRepository.DeleteAsync(userInfo);
 
             Assert.True(deleted);
         }

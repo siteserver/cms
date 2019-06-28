@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Models;
@@ -69,7 +70,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         };
 
         //对“翻页项”（pageItem）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
-        public static string ParseElement(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseElementAsync(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
@@ -153,12 +154,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                 string pageUrl;
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
-                    pageUrl = parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
+                    channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.PageChannelId);
+                    pageUrl = await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else
                 {
-                    pageUrl = parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, 0, currentPageIndex, pageCount, parseContext.IsLocal);
+                    pageUrl = await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
 
                 var isActive = false;
@@ -231,7 +232,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, successTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -249,7 +250,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(failureTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, failureTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, failureTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -346,10 +347,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = parseContext.ContextType == EContextType.Channel ? parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
+                        pageUrl = parseContext.ContextType == EContextType.Channel ? await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
-                            ? GetParsedContent(parseContext, successTemplateString, pageUrl, listEllipsis)
+                            ? await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, listEllipsis)
                             : $@"<a href=""{pageUrl}"" {TranslateUtils.ToAttributesString(attributes)}>{listEllipsis}</a>");
                     }
 
@@ -357,11 +358,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            pageUrl = parseContext.ContextType == EContextType.Channel ? parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
+                            pageUrl = parseContext.ContextType == EContextType.Channel ? await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, successTemplateString, pageUrl, index.ToString()));
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, index.ToString()));
                             }
                             else
                             {
@@ -379,7 +380,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (!string.IsNullOrEmpty(failureTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, pageUrl, index.ToString()));
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, failureTemplateString, pageUrl, index.ToString()));
                             }
                             else
                             {
@@ -394,10 +395,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        pageUrl = parseContext.ContextType == EContextType.Channel ? parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
+                        pageUrl = parseContext.ContextType == EContextType.Channel ? await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
 
                         pageBuilder.Append(!string.IsNullOrEmpty(successTemplateString)
-                            ? GetParsedContent(parseContext, successTemplateString, pageUrl, listEllipsis)
+                            ? await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, listEllipsis)
                             : $@"<a href=""{pageUrl}"" {TranslateUtils.ToAttributesString(attributes)}>{listEllipsis}</a>");
                     }
 
@@ -426,7 +427,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (currentPageIndex + 1 != index)
                             {
-                                pageUrl = parseContext.ContextType == EContextType.Channel ? parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
+                                pageUrl = parseContext.ContextType == EContextType.Channel ? await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, index, currentPageIndex, pageCount, parseContext.IsLocal) : await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, index, currentPageIndex, pageCount, parseContext.IsLocal);
 
                                 htmlSelect.AddOption(index.ToString(), pageUrl);
                             }
@@ -447,7 +448,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;
@@ -455,7 +456,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             //return parsedContent;
         }
 
-        public static string ParseEntity(ParseContext parseContext, string stlEntity, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent)
+        public static async Task<string> ParseEntityAsync(ParseContext parseContext, string stlEntity, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent)
         {
             var parsedContent = string.Empty;
             try
@@ -473,12 +474,12 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, parseContext.PageChannelId);
-                    pageUrl = parseContext.UrlManager.GetPagerUrlInChannelPage(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
+                    var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.PageChannelId);
+                    pageUrl = await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else
                 {
-                    pageUrl = parseContext.UrlManager.GetPagerUrlInContentPage(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, 0, currentPageIndex, pageCount, parseContext.IsLocal);
+                    pageUrl = await parseContext.UrlManager.GetPagerUrlInContentPageAsync(type, parseContext.SiteInfo, parseContext.PageChannelId, parseContext.PageContentId, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
@@ -529,13 +530,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
         }
 
-        public static string ParseElementInSearchPage(ParseContext parseContext, string stlElement, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseElementInSearchPageAsync(ParseContext parseContext, string stlElement, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
@@ -706,7 +707,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
                             string pageUrl = $"javascript:{clickString}";
-                            parsedContent = GetParsedContent(parseContext, successTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -725,7 +726,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(failureTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -826,7 +827,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
                             string pageUrl = $"javascript:{clickString}";
-                            pageBuilder.Append(GetParsedContent(parseContext, successTemplateString, pageUrl, listEllipsis));
+                            pageBuilder.Append(await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, listEllipsis));
                         }
                         else
                         {
@@ -844,7 +845,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
                                 string pageUrl = $"javascript:{clickString}";
-                                pageBuilder.Append(GetParsedContent(parseContext, successTemplateString, pageUrl, index.ToString()));
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, index.ToString()));
                             }
                             else
                             {
@@ -862,7 +863,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (!string.IsNullOrEmpty(failureTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, index.ToString()));
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, failureTemplateString, PageUtils.UnClickableUrl, index.ToString()));
                             }
                             else
                             {
@@ -882,7 +883,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
                             string pageUrl = $"javascript:{clickString}";
-                            pageBuilder.Append(GetParsedContent(parseContext, successTemplateString, pageUrl, listEllipsis));
+                            pageBuilder.Append(await GetParsedContentAsync(parseContext, successTemplateString, pageUrl, listEllipsis));
                         }
                         else
                         {
@@ -935,13 +936,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static string ParseEntityInSearchPage(ParseContext parseContext, string stlEntity, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
+        public static async Task<string> ParseEntityInSearchPageAsync(ParseContext parseContext, string stlEntity, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
             var parsedContent = string.Empty;
             try
@@ -1003,14 +1004,14 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
         }
 
 
-        public static string ParseElementInDynamicPage(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseElementInDynamicPageAsync(ParseContext parseContext, string stlElement, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1108,7 +1109,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     }
                 }
 
-                var jsMethod = parseContext.UrlManager.GetPagerJsMethodInDynamicPage(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
+                var jsMethod = await parseContext.UrlManager.GetPagerJsMethodInDynamicPageAsync(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -1180,7 +1181,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -1199,7 +1200,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (!string.IsNullOrEmpty(failureTemplateString))
                         {
-                            parsedContent = GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
+                            parsedContent = await GetParsedContentAsync(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1));
                         }
                         else
                         {
@@ -1294,11 +1295,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = parseContext.UrlManager.GetPagerJsMethodInDynamicPage(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
+                        jsMethod = await parseContext.UrlManager.GetPagerJsMethodInDynamicPageAsync(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            pageBuilder = new StringBuilder(GetParsedContent(parseContext, successTemplateString, $"javascript:{jsMethod}", listEllipsis));
+                            pageBuilder = new StringBuilder(await GetParsedContentAsync(parseContext, successTemplateString, $"javascript:{jsMethod}", listEllipsis));
                         }
                         else
                         {
@@ -1312,11 +1313,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            jsMethod = parseContext.UrlManager.GetPagerJsMethodInDynamicPage(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
+                            jsMethod = await parseContext.UrlManager.GetPagerJsMethodInDynamicPageAsync(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, successTemplateString,
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, successTemplateString,
                                     $"javascript:{jsMethod}", Convert.ToString(index)));
                             }
                             else
@@ -1335,7 +1336,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             if (!string.IsNullOrEmpty(failureTemplateString))
                             {
-                                pageBuilder.Append(GetParsedContent(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1)));
+                                pageBuilder.Append(await GetParsedContentAsync(parseContext, failureTemplateString, PageUtils.UnClickableUrl, Convert.ToString(currentPageIndex + 1)));
                             }
                             else
                             {
@@ -1350,11 +1351,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = parseContext.UrlManager.GetPagerJsMethodInDynamicPage(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
+                        jsMethod = await parseContext.UrlManager.GetPagerJsMethodInDynamicPageAsync(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
-                            pageBuilder = new StringBuilder(GetParsedContent(parseContext, successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1)));
+                            pageBuilder = new StringBuilder(await GetParsedContentAsync(parseContext, successTemplateString, $"javascript:{jsMethod}", Convert.ToString(currentPageIndex + 1)));
                         }
                         else
                         {
@@ -1400,13 +1401,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlElement, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlElement, ex);
             }
 
             return parsedContent;
         }
 
-        public static string ParseEntityInDynamicPage(ParseContext parseContext, string stlEntity, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static async Task<string> ParseEntityInDynamicPageAsync(ParseContext parseContext, string stlEntity, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1418,7 +1419,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = parseContext.UrlManager.GetPagerJsMethodInDynamicPage(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
+                var jsMethod = await parseContext.UrlManager.GetPagerJsMethodInDynamicPageAsync(type, parseContext.SiteInfo, parseContext.ChannelId, parseContext.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, parseContext.IsLocal);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {
@@ -1468,19 +1469,19 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             catch (Exception ex)
             {
-                parsedContent = parseContext.GetErrorMessage(ElementName, stlEntity, ex);
+                parsedContent = await parseContext.GetErrorMessageAsync(ElementName, stlEntity, ex);
             }
 
             return parsedContent;
         }
 
-        private static string GetParsedContent(ParseContext parseContext, string content, string pageUrl, string pageNum)
+        private static async Task<string> GetParsedContentAsync(ParseContext parseContext, string content, string pageUrl, string pageNum)
         {
             var parsedContent = StringUtils.ReplaceIgnoreCase(content, "{Current.Url}", pageUrl);
             parsedContent = StringUtils.ReplaceIgnoreCase(parsedContent, "{Current.Num}", pageNum);
 
             var innerBuilder = new StringBuilder(parsedContent);
-            parseContext.ParseInnerContent(innerBuilder);
+            await parseContext.ParseInnerContentAsync(innerBuilder);
             return innerBuilder.ToString();
         }
     }

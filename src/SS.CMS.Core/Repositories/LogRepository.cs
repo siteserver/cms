@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -39,28 +40,28 @@ namespace SS.CMS.Core.Repositories
             return log.Id;
         }
 
-        public void Delete(List<int> idList)
+        public async Task DeleteAsync(List<int> idList)
         {
             if (idList == null || idList.Count <= 0) return;
 
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .WhereIn(Attr.Id, idList));
         }
 
-        public void DeleteIfThreshold()
+        public async Task DeleteIfThresholdAsync()
         {
             if (!_configRepository.Instance.IsTimeThreshold) return;
 
             var days = _configRepository.Instance.TimeThreshold;
             if (days <= 0) return;
 
-            _repository.Delete(Q
+            await _repository.DeleteAsync(Q
                 .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
-        public void DeleteAll()
+        public async Task DeleteAllAsync()
         {
-            _repository.Delete();
+            await _repository.DeleteAsync();
         }
 
         public int GetCount()

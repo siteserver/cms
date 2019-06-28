@@ -10,9 +10,9 @@ namespace SS.CMS.Repositories
 
         Task<IList<string>> GetRolesAsync(string userName);
 
-        void RemoveUser(string userName);
+        Task RemoveUserAsync(string userName);
 
-        void RemoveUserFromRole(string userName, string roleName);
+        Task RemoveUserFromRoleAsync(string userName, string roleName);
 
         bool IsUserInRole(string userName, string roleName);
 

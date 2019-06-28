@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
@@ -60,7 +61,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "是否关键字高亮")]
         public const string IsHighlight = nameof(IsHighlight);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var isAllSites = false;
             var siteName = string.Empty;
@@ -136,7 +137,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, PageNum))
                 {
-                    pageNum = TranslateUtils.ToInt(value, 0);
+                    pageNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, IsHighlight))
                 {
@@ -151,15 +152,15 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             if (string.IsNullOrEmpty(loading))
             {
-                loading = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.LoadingTemplatePath);
+                loading = await parseContext.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.LoadingTemplatePath);
             }
             if (string.IsNullOrEmpty(yes))
             {
-                yes = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.YesTemplatePath);
+                yes = await parseContext.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.YesTemplatePath);
             }
             if (string.IsNullOrEmpty(no))
             {
-                no = parseContext.TemplateRepository.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
+                no = await parseContext.TemplateRepository.GetContentByFilePathAsync(SiteFilesAssets.Search.NoTemplatePath);
             }
 
             parseContext.PageInfo.AddPageBodyCodeIfNotExists(parseContext.UrlManager, PageInfo.Const.Jquery);

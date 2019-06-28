@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Services;
@@ -29,7 +30,7 @@ namespace SS.CMS.Core.Services
         public const string ContentRulesDefaultDirectoryName = "/contents/";
         public const string ContentRulesDefaultRegexString = "/contents/(?<channelId>[^/]*)/(?<contentId>[^/]*)_?(?<pageIndex>[^_]*)";
 
-        public IDictionary ContentRulesGetDictionary(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
+        public async Task<IDictionary> ContentRulesGetDictionaryAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -49,8 +50,8 @@ namespace SS.CMS.Core.Services
                     {ContentRulesLowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-            var styleInfoList = _tableManager.GetContentStyleInfoList(pluginManager, siteInfo, channelInfo);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var styleInfoList = await _tableManager.GetContentStyleInfoListAsync(pluginManager, siteInfo, channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
                 if (styleInfo.Type == InputType.Text)
@@ -63,23 +64,23 @@ namespace SS.CMS.Core.Services
             return dictionary;
         }
 
-        public string ContentRulesParse(SiteInfo siteInfo, int channelId, int contentId)
+        public async Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, int contentId)
         {
-            var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-            var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
             var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
-            var filePath = ContentRulesParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
+            var filePath = await ContentRulesParseContentPathAsync(siteInfo, channelId, contentInfo, contentFilePathRule);
             return filePath;
         }
 
-        public string ContentRulesParse(SiteInfo siteInfo, int channelId, ContentInfo contentInfo)
+        public async Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo)
         {
-            var contentFilePathRule = GetContentFilePathRule(siteInfo, channelId);
-            var filePath = ContentRulesParseContentPath(siteInfo, channelId, contentInfo, contentFilePathRule);
+            var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
+            var filePath = await ContentRulesParseContentPathAsync(siteInfo, channelId, contentInfo, contentFilePathRule);
             return filePath;
         }
 
-        private string ContentRulesParseContentPath(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, string contentFilePathRule)
+        private async Task<string> ContentRulesParseContentPathAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, string contentFilePathRule)
         {
             var filePath = contentFilePathRule.Trim();
             var regex = "(?<element>{@[^}]+})";
@@ -100,22 +101,22 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesSequence))
                 {
-                    var channelInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     value = channelInfo.ContentRepository.StlGetSequence(channelInfo, contentId).ToString();
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesParentRule))//继承父级设置 20151113 sessionliang
                 {
-                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
-                    var parentInfo = _channelRepository.GetChannelInfo(siteInfo.Id, nodeInfo.ParentId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var parentInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, nodeInfo.ParentId);
                     if (parentInfo != null)
                     {
-                        var parentRule = GetContentFilePathRule(siteInfo, parentInfo.Id);
-                        value = DirectoryUtils.GetDirectoryPath(ContentRulesParseContentPath(siteInfo, parentInfo.Id, contentInfo, parentRule)).Replace("\\", "/");
+                        var parentRule = await GetContentFilePathRuleAsync(siteInfo, parentInfo.Id);
+                        value = DirectoryUtils.GetDirectoryPath(await ContentRulesParseContentPathAsync(siteInfo, parentInfo.Id, contentInfo, parentRule)).Replace("\\", "/");
                     }
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelName))
                 {
-                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName;
@@ -123,7 +124,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelName))
                 {
-                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName.ToLower();
@@ -131,7 +132,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelIndex))
                 {
-                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName;
@@ -139,7 +140,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelIndex))
                 {
-                    var nodeInfo = _channelRepository.GetChannelInfo(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName.ToLower();

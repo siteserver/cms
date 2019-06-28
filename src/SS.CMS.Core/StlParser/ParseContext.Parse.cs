@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Api.Sys.Stl;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.StlElement;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Enums;
@@ -15,9 +15,10 @@ namespace SS.CMS.Core.StlParser
 {
     public partial class ParseContext
     {
-        public void Parse(StringBuilder contentBuilder, string filePath, bool isDynamic)
+        public async Task ParseAsync(StringBuilder contentBuilder, string filePath, bool isDynamic)
         {
-            foreach (var service in PluginManager.Services)
+            var contentInfo = await GetContentInfoAsync();
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 try
                 {
@@ -26,7 +27,7 @@ namespace SS.CMS.Core.StlParser
                         PageInfo.SiteId,
                         PageInfo.PageChannelId,
                         PageInfo.PageContentId,
-                        ContentInfo,
+                        ContentInfo = contentInfo,
                         PageInfo.TemplateInfo.Type,
                         PageInfo.TemplateInfo.Id,
                         filePath,
@@ -38,24 +39,24 @@ namespace SS.CMS.Core.StlParser
                 }
                 catch (Exception ex)
                 {
-                    GetErrorMessage(service.PluginId, nameof(service.OnBeforeStlParse), ex);
+                    await GetErrorMessageAsync(service.PluginId, nameof(service.OnBeforeStlParse), ex);
                 }
             }
 
             if (contentBuilder.Length > 0)
             {
-                ParseTemplateContent(contentBuilder);
+                await ParseTemplateContentAsync(contentBuilder);
             }
 
-            foreach (var service in PluginManager.Services)
+            foreach (var service in await PluginManager.GetServicesAsync())
             {
                 try
                 {
-                    service.OnAfterStlParse(new ParseEventArgs(SiteId, PageChannelId, PageContentId, ContentInfo, TemplateInfo.Type, TemplateInfo.Id, filePath, HeadCodes, BodyCodes, FootCodes, contentBuilder));
+                    service.OnAfterStlParse(new ParseEventArgs(SiteId, PageChannelId, PageContentId, contentInfo, TemplateInfo.Type, TemplateInfo.Id, filePath, HeadCodes, BodyCodes, FootCodes, contentBuilder));
                 }
                 catch (Exception ex)
                 {
-                    GetErrorMessage(service.PluginId, nameof(service.OnAfterStlParse), ex);
+                    await GetErrorMessageAsync(service.PluginId, nameof(service.OnAfterStlParse), ex);
                 }
             }
 
@@ -163,44 +164,44 @@ namespace SS.CMS.Core.StlParser
             }
         }
 
-        public void ParseTemplateContent(StringBuilder parsedBuilder)
+        public async Task ParseTemplateContentAsync(StringBuilder parsedBuilder)
         {
             var isInnerElement = IsInnerElement;
             IsInnerElement = false;
             ContainerClientId = string.Empty;
-            ReplaceStlElements(parsedBuilder);
-            ReplaceStlEntities(parsedBuilder);
+            await ReplaceStlElementsAsync(parsedBuilder);
+            await ReplaceStlEntitiesAsync(parsedBuilder);
             IsInnerElement = isInnerElement;
         }
 
-        public string ParseTemplatePreview(SiteInfo siteInfo, string template)
+        public async Task<string> ParseTemplatePreviewAsync(SiteInfo siteInfo, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var parsedBuilder = new StringBuilder(template);
 
-            ParseTemplateContent(parsedBuilder);
+            await ParseTemplateContentAsync(parsedBuilder);
 
             return PageInfo.HeadCodesHtml + PageInfo.BodyCodesHtml + parsedBuilder + PageInfo.FootCodesHtml;
         }
 
-        public void ParseInnerContent(StringBuilder builder)
+        public async Task ParseInnerContentAsync(StringBuilder builder)
         {
             if (builder == null || builder.Length == 0) return;
 
             var isInnerElement = IsInnerElement;
             IsInnerElement = true;
-            ReplaceStlElements(builder);
-            ReplaceStlEntities(builder);
+            await ReplaceStlElementsAsync(builder);
+            await ReplaceStlEntitiesAsync(builder);
             IsInnerElement = isInnerElement;
         }
 
-        public string ParseInnerContent(string template)
+        public async Task<string> ParseInnerContentAsync(string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 
             var builder = new StringBuilder(template);
-            ParseInnerContent(builder);
+            await ParseInnerContentAsync(builder);
             return builder.ToString();
         }
 
@@ -209,7 +210,7 @@ namespace SS.CMS.Core.StlParser
             return $"<!-- {SettingsManager.Encrypt(stlElement)} -->";
         }
 
-        public void ReplacePageElementsInContentPage(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount)
+        public async Task ReplacePageElementsInContentPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -217,19 +218,19 @@ namespace SS.CMS.Core.StlParser
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageInContentPage(stlElement, currentPageIndex, pageCount);
+                    var pageHtml = await ParseStlPageInContentPageAsync(stlElement, currentPageIndex, pageCount);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageItemInContentPage(stlElement, currentPageIndex, pageCount, pageCount);
+                    var pageHtml = await ParseStlPageItemInContentPageAsync(stlElement, currentPageIndex, pageCount, pageCount);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public void ReplacePageElementsInChannelPage(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum)
+        public async Task ReplacePageElementsInChannelPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -237,19 +238,19 @@ namespace SS.CMS.Core.StlParser
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageInChannelPage(stlElement, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = await ParseStlPageInChannelPageAsync(stlElement, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(StlEncrypt(stlElement), pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageItemInChannelPage(stlElement, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = await ParseStlPageItemInChannelPageAsync(stlElement, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public void ReplacePageElementsInSearchPage(StringBuilder parsedBuilder, List<string> labelList, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
+        public async Task ReplacePageElementsInSearchPageAsync(StringBuilder parsedBuilder, List<string> labelList, string ajaxDivId, int currentPageIndex, int pageCount, int totalNum)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -257,19 +258,19 @@ namespace SS.CMS.Core.StlParser
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageInSearchPage(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = await ParseStlPageInSearchPageAsync(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageItemInSearchPage(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
+                    var pageHtml = await ParseStlPageItemInSearchPageAsync(stlElement, ajaxDivId, currentPageIndex, pageCount, totalNum);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }
         }
 
-        public void ReplacePageElementsInDynamicPage(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public async Task ReplacePageElementsInDynamicPageAsync(StringBuilder parsedBuilder, List<string> labelList, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -277,13 +278,13 @@ namespace SS.CMS.Core.StlParser
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageInDynamicPage(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = await ParseStlPageInDynamicPageAsync(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = ParseStlPageItemInDynamicPage(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = await ParseStlPageItemInDynamicPageAsync(stlElement, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }

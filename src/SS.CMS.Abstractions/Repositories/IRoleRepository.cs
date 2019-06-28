@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -16,7 +17,7 @@ namespace SS.CMS.Repositories
 
         void UpdateRole(string roleName, string description);
 
-        void DeleteRole(string roleName);
+        Task DeleteRoleAsync(string roleName);
 
         bool IsRoleExists(string roleName);
     }

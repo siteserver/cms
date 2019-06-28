@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -10,7 +11,7 @@ namespace SS.CMS.Repositories
 
         bool Update(RelatedFieldItemInfo info);
 
-        void Delete(int id);
+        Task DeleteAsync(int id);
 
         IList<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -23,10 +24,10 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "数据库查询语句")]
         public const string QueryString = nameof(QueryString);
 
-        public static object Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var context = parseContext.Clone(EContextType.SqlContent);
-            var listInfo = ListInfo.GetListInfo(context);
+            var listInfo = await ListInfo.GetListInfoAsync(context);
             // var dataSource = StlDataUtility.GetSqlContentsDataSource(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString);
             var sqlList = parseContext.GetContainerSqlList(listInfo.ConnectionString, listInfo.QueryString, listInfo.StartNum, listInfo.TotalNum, listInfo.Order);
 
@@ -35,10 +36,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 return ParseEntity(sqlList);
             }
 
-            return ParseElement(context, listInfo, sqlList);
+            return await ParseElementAsync(context, listInfo, sqlList);
         }
 
-        public static string ParseElement(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> sqlList)
+        public static async Task<string> ParseElementAsync(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, Dictionary<string, object>>> sqlList)
         {
             if (sqlList == null || sqlList.Count == 0) return string.Empty;
 
@@ -73,7 +74,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     context.PageInfo.SqlItems.Push(sql);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context));
+                    builder.Append(await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -122,7 +123,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                                     context.PageInfo.SqlItems.Push(sql);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetSqlContentsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context);
+                                    cellHtml = await TemplateUtility.GetSqlContentsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, context);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

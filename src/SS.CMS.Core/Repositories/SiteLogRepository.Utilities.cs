@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -6,19 +7,19 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class SiteLogRepository
     {
-        public void AddSiteLog(int siteId, int channelId, int contentId, string ipAddress, string adminName, string action, string summary)
+        public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string ipAddress, string adminName, string action, string summary)
         {
             // if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
-                _logRepository.AddAdminLog(adminName, action, summary);
+                await _logRepository.AddAdminLogAsync(adminName, action, summary);
             }
             else
             {
                 try
                 {
-                    DeleteIfThreshold();
+                    await DeleteIfThresholdAsync();
 
                     if (!string.IsNullOrEmpty(action))
                     {
@@ -47,7 +48,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 catch (Exception ex)
                 {
-                    _errorLogRepository.AddErrorLog(ex);
+                    await _errorLogRepository.AddErrorLogAsync(ex);
                 }
             }
         }

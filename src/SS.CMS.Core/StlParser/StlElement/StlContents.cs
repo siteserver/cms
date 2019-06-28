@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -15,18 +16,18 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示相关内容列表")]
         public const string IsRelatedContents = nameof(IsRelatedContents);
 
-        public static object Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             parseContext.ContextType = EContextType.Content;
-            var listInfo = ListInfo.GetListInfo(parseContext);
-            var contentList = GetContainerContentList(parseContext, listInfo);
+            var listInfo = await ListInfo.GetListInfoAsync(parseContext);
+            var contentList = await GetContainerContentListAsync(parseContext, listInfo);
 
             if (parseContext.IsStlEntity)
             {
-                return ParseEntity(parseContext, contentList);
+                return await ParseEntityAsync(parseContext, contentList);
             }
 
-            return ParseElement(parseContext, listInfo, contentList);
+            return await ParseElementAsync(parseContext, listInfo, contentList);
         }
 
         // private static DataSet GetDataSource(PageInfo pageInfo, ContextInfo contextInfo, ListInfo listInfo)
@@ -38,16 +39,16 @@ namespace SS.CMS.Core.StlParser.StlElement
         //     return parseContext.GetContentsDataSource(pageInfo.SiteInfo, channelId, contextInfo.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImageExists, listInfo.IsImage, listInfo.IsVideoExists, listInfo.IsVideo, listInfo.IsFileExists, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.IsTopExists, listInfo.IsTop, listInfo.IsRecommendExists, listInfo.IsRecommend, listInfo.IsHotExists, listInfo.IsHot, listInfo.IsColorExists, listInfo.IsColor, listInfo.Where, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         // }
 
-        private static List<KeyValuePair<int, ContentInfo>> GetContainerContentList(ParseContext parseContext, ListInfo listInfo)
+        private static async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListAsync(ParseContext parseContext, ListInfo listInfo)
         {
-            var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
+            var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = parseContext.ChannelRepository.GetChannelId(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
-            return parseContext.GetContainerContentList(parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
+            return await parseContext.GetContainerContentListAsync(parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
 
-        public static string ParseElement(ParseContext parseContext, ListInfo listInfo, List<KeyValuePair<int, ContentInfo>> contentList)
+        public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, List<KeyValuePair<int, ContentInfo>> contentList)
         {
             if (contentList == null || contentList.Count == 0) return string.Empty;
 
@@ -83,7 +84,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     parseContext.PageInfo.ContentItems.Push(content);
                     var context = parseContext.Clone(EContextType.Content);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetContentsItemTemplateString(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
+                    builder.Append(await TemplateUtility.GetContentsItemTemplateStringAsync(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -134,7 +135,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                                     var context = parseContext.Clone(EContextType.Content);
 
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetContentsItemTemplateString(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
+                                    cellHtml = await TemplateUtility.GetContentsItemTemplateStringAsync(context, templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;
@@ -233,7 +234,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static object ParseEntity(ParseContext parseContext, List<KeyValuePair<int, ContentInfo>> contentList)
+        private static async Task<object> ParseEntityAsync(ParseContext parseContext, List<KeyValuePair<int, ContentInfo>> contentList)
         {
             var contentInfoList = new List<IDictionary<string, object>>();
 
@@ -253,7 +254,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var channelInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, content.Value.ChannelId);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, content.Value.ChannelId);
                 var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, content.Value.Id);
 
                 if (contentInfo != null)

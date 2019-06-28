@@ -1,5 +1,6 @@
 const getters = {
   sidebar: state => state.app.sidebar,
+  topMenu: state => state.app.topMenu,
   language: state => state.app.language,
   size: state => state.app.size,
   device: state => state.app.device,
@@ -10,6 +11,7 @@ const getters = {
   name: state => state.user.name,
   introduction: state => state.user.introduction,
   roles: state => state.user.roles,
+  menus: state => state.user.menus,
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs
 }

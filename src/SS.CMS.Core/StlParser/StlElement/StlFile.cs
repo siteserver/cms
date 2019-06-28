@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
@@ -48,7 +49,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "显示在信息后的文字")]
         private const string RightText = nameof(RightText);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var type = ContentAttribute.FileUrl;
             var no = 0;
@@ -117,15 +118,15 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
+            return await ParseImplAsync(parseContext, type, no, src, isFileName, isFileType, isFileSize, isCount, isLower, isUpper, leftText, rightText, attributes);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string type, int no, string src, bool isFileName, bool isFileType, bool isFileSize, bool isCount, bool isLower, bool isUpper, string leftText, string rightText, NameValueCollection attributes)
         {
             if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(parseContext.InnerHtml);
-                parseContext.ParseInnerContent(innerBuilder);
+                await parseContext.ParseInnerContentAsync(innerBuilder);
                 parseContext.InnerHtml = innerBuilder.ToString();
             }
 
@@ -144,7 +145,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     if (parseContext.ContentId != 0)
                     {
-                        var contentInfo = parseContext.ContentInfo;
+                        var contentInfo = await parseContext.GetContentInfoAsync();
 
                         if (!string.IsNullOrEmpty(contentInfo?.Get<string>(type)))
                         {
@@ -214,13 +215,15 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (isCount)
             {
-                parsedContent = (parseContext.ContentInfo?.Downloads ?? 0).ToString();
+                var contentInfo = await parseContext.GetContentInfoAsync();
+                parsedContent = (contentInfo?.Downloads ?? 0).ToString();
             }
             else
             {
-                parsedContent = parseContext.ContentInfo != null
-                    ? InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, parseContext.ContentInfo.ChannelId,
-                        parseContext.ContentInfo.Id, fileUrl, attributes, parseContext.InnerHtml,
+                var contentInfo = await parseContext.GetContentInfoAsync();
+                parsedContent = contentInfo != null
+                    ? InputParserUtility.GetFileHtmlWithCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, contentInfo.ChannelId,
+                        contentInfo.Id, fileUrl, attributes, parseContext.InnerHtml,
                         parseContext.IsStlEntity, isLower, isUpper)
                     : InputParserUtility.GetFileHtmlWithoutCount(parseContext.UrlManager, parseContext.SettingsManager, parseContext.SiteInfo, fileUrl, attributes,
                         parseContext.InnerHtml, parseContext.IsStlEntity, isLower, isUpper);

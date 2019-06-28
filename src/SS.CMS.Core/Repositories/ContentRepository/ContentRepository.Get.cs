@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
 using SS.CMS.Enums;
@@ -195,10 +196,10 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public int GetCountOfContentAdd(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState)
+        public async Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState)
         {
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
-            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentAdd(siteId, channelIdList, begin, end, userName, checkedState);
         }
 
@@ -220,10 +221,10 @@ namespace SS.CMS.Core.Repositories
             return _repository.Count(query);
         }
 
-        public int GetCountOfContentUpdate(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName)
+        public async Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
-            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, scope, string.Empty, string.Empty, string.Empty);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userName);
         }
 

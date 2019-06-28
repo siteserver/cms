@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -10,7 +11,7 @@ namespace SS.CMS.Repositories
 
         bool Update(SpecialInfo specialInfo);
 
-        SpecialInfo Delete(int siteId, int specialId);
+        Task<SpecialInfo> DeleteAsync(int siteId, int specialId);
 
         bool IsTitleExists(int siteId, string title);
 

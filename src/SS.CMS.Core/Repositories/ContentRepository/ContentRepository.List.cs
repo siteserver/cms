@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using SqlKata;
 using SS.CMS.Core.Common;
@@ -212,54 +213,54 @@ namespace SS.CMS.Core.Repositories
         //     return tupleList;
         // }
 
-        public IList<(int, int)> ApiGetContentIdListByChannelId(int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString, out int totalCount)
-        {
-            var retVal = new List<(int, int)>();
+        //public async Task<IList<(int, int)>> ApiGetContentIdListByChannelIdAsync(int siteId, int channelId, int top, int skip, string like, string orderBy, NameValueCollection queryString)
+        //{
+        //    var retVal = new List<(int, int)>();
 
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
-            var channelIdList = _channelRepository.GetChannelIdList(channelInfo, ScopeType.All, string.Empty, string.Empty, string.Empty);
+        //    var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+        //    var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, ScopeType.All, string.Empty, string.Empty, string.Empty);
 
-            var query = MinColumnsQuery.Where(Attr.SiteId, siteId).WhereIn(Attr.ChannelId, channelIdList).WhereTrue(Attr.IsChecked);
-            QueryOrder(query, channelInfo, orderBy);
+        //    var query = MinColumnsQuery.Where(Attr.SiteId, siteId).WhereIn(Attr.ChannelId, channelIdList).WhereTrue(Attr.IsChecked);
+        //    QueryOrder(query, channelInfo, orderBy);
 
-            var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
-            if (queryString != null && queryString.Count > 0)
-            {
-                var columnNameList = _tableManager.GetTableColumnNameList(TableName);
+        //    var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
+        //    if (queryString != null && queryString.Count > 0)
+        //    {
+        //        var columnNameList = _tableManager.GetTableColumnNameList(TableName);
 
-                foreach (string attributeName in queryString)
-                {
-                    if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
+        //        foreach (string attributeName in queryString)
+        //        {
+        //            if (!StringUtils.ContainsIgnoreCase(columnNameList, attributeName)) continue;
 
-                    var value = queryString[attributeName];
+        //            var value = queryString[attributeName];
 
-                    if (StringUtils.EqualsIgnoreCase(attributeName, Attr.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsTop))
-                    {
-                        query.Where(attributeName, TranslateUtils.ToBool(value));
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(attributeName, Attr.Id) || StringUtils.EqualsIgnoreCase(attributeName, Attr.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, Attr.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, Attr.CheckedLevel))
-                    {
-                        query.Where(attributeName, TranslateUtils.ToInt(value));
-                    }
-                    else if (likeList.Contains(attributeName))
-                    {
-                        query.WhereLike(attributeName, value);
-                    }
-                    else
-                    {
-                        query.WhereLike(attributeName, value);
-                    }
-                }
-            }
+        //            if (StringUtils.EqualsIgnoreCase(attributeName, Attr.IsChecked) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsColor) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsHot) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsRecommend) || StringUtils.EqualsIgnoreCase(attributeName, Attr.IsTop))
+        //            {
+        //                query.Where(attributeName, TranslateUtils.ToBool(value));
+        //            }
+        //            else if (StringUtils.EqualsIgnoreCase(attributeName, Attr.Id) || StringUtils.EqualsIgnoreCase(attributeName, Attr.ReferenceId) || StringUtils.EqualsIgnoreCase(attributeName, Attr.SourceId) || StringUtils.EqualsIgnoreCase(attributeName, Attr.CheckedLevel))
+        //            {
+        //                query.Where(attributeName, TranslateUtils.ToInt(value));
+        //            }
+        //            else if (likeList.Contains(attributeName))
+        //            {
+        //                query.WhereLike(attributeName, value);
+        //            }
+        //            else
+        //            {
+        //                query.WhereLike(attributeName, value);
+        //            }
+        //        }
+        //    }
 
-            totalCount = _repository.Count(query);
-            if (totalCount > 0 && skip < totalCount)
-            {
-                retVal = _repository.GetAll(query.Skip(skip).Limit(top)).Select(o => (o.ChannelId, o.Id)).ToList();
-            }
+        //    totalCount = _repository.Count(query);
+        //    if (totalCount > 0 && skip < totalCount)
+        //    {
+        //        retVal = _repository.GetAll(query.Skip(skip).Limit(top)).Select(o => (o.ChannelId, o.Id)).ToList();
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         private IList<int> GetReferenceIdList(IList<int> contentIdList)
         {

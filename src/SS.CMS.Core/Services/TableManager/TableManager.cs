@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -246,20 +247,18 @@ namespace SS.CMS.Core.Services
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
-        public bool CreateTable(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable, out Exception ex)
+        public async Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable)
         {
-            ex = null;
             var database = GetDatabase();
 
             try
             {
                 database.CreateTable(tableName, tableColumns);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                ex = e;
-                _errorLogRepository.AddErrorLog(pluginId, ex, string.Empty);
-                return false;
+                await _errorLogRepository.AddErrorLogAsync(pluginId, ex, string.Empty);
+                return (false, ex);
             }
 
             if (isContentTable)
@@ -274,11 +273,10 @@ namespace SS.CMS.Core.Services
 
                     //ExecuteNonQuery(ConnectionString, sqlString);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    ex = e;
-                    _errorLogRepository.AddErrorLog(pluginId, ex, string.Empty);
-                    return false;
+                    await _errorLogRepository.AddErrorLogAsync(pluginId, ex, string.Empty);
+                    return (false, ex);
                 }
 
                 try
@@ -290,19 +288,18 @@ namespace SS.CMS.Core.Services
 
                     //ExecuteNonQuery(ConnectionString, sqlString);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    ex = e;
-                    _errorLogRepository.AddErrorLog(pluginId, ex, string.Empty);
-                    return false;
+                    await _errorLogRepository.AddErrorLogAsync(pluginId, ex, string.Empty);
+                    return (false, ex);
                 }
             }
 
             ClearCache();
-            return true;
+            return (true, null);
         }
 
-        public void AlterTable(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
+        public async Task AlterTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
         {
             var database = GetDatabase();
 
@@ -315,7 +312,7 @@ namespace SS.CMS.Core.Services
             }
             catch (Exception ex)
             {
-                _errorLogRepository.AddErrorLog(pluginId, ex, string.Empty);
+                await _errorLogRepository.AddErrorLogAsync(pluginId, ex, string.Empty);
             }
         }
 
@@ -402,17 +399,17 @@ namespace SS.CMS.Core.Services
             // _userRoleRepository.AddUserToRole(userName, AuthTypes.Roles.SuperAdministrator);
         }
 
-        public void SyncSystemTables()
+        public async Task SyncSystemTablesAsync()
         {
             var database = GetDatabase();
 
             if (!database.IsTableExists(_configRepository.TableName))
             {
-                CreateTable(_configRepository.TableName, _configRepository.TableColumns, string.Empty, false, out _);
+                await CreateTableAsync(_configRepository.TableName, _configRepository.TableColumns, string.Empty, false);
             }
             else
             {
-                AlterTable(_configRepository.TableName, _configRepository.TableColumns, string.Empty);
+                await AlterTableAsync(_configRepository.TableName, _configRepository.TableColumns, string.Empty);
             }
 
             var configInfo = _configRepository.Instance;
@@ -428,11 +425,11 @@ namespace SS.CMS.Core.Services
 
                 if (!database.IsTableExists(repository.TableName))
                 {
-                    CreateTable(repository.TableName, repository.TableColumns, string.Empty, false, out _);
+                    await CreateTableAsync(repository.TableName, repository.TableColumns, string.Empty, false);
                 }
                 else
                 {
-                    AlterTable(repository.TableName, repository.TableColumns, string.Empty);
+                    await AlterTableAsync(repository.TableName, repository.TableColumns, string.Empty);
                 }
             }
         }
@@ -473,11 +470,11 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void SyncDatabase()
+        public async Task SyncDatabaseAsync()
         {
             _cacheManager.ClearAll();
 
-            SyncSystemTables();
+            await SyncSystemTablesAsync();
 
             SyncContentTables();
 

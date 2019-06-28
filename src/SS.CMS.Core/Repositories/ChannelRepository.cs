@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
@@ -166,12 +167,12 @@ namespace SS.CMS.Core.Repositories
         //     }
         // }
 
-        private void TaxisSubtract(int siteId, int selectedId)
+        private async Task TaxisSubtractAsync(int siteId, int selectedId)
         {
-            var channelInfo = GetChannelInfo(siteId, selectedId);
+            var channelInfo = await GetChannelInfoAsync(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
 
-            var dataInfo = _repository.Get(Q
+            var dataInfo = await _repository.GetAsync(Q
                 .Where(Attr.ParentId, channelInfo.ParentId)
                 .WhereNot(Attr.Id, channelInfo.Id)
                 .Where(Attr.Taxis, "<", channelInfo.Taxis)
@@ -192,9 +193,9 @@ namespace SS.CMS.Core.Repositories
             UpdateIsLastNode(channelInfo.ParentId);
         }
 
-        private void TaxisAdd(int siteId, int selectedId)
+        private async Task TaxisAddAsync(int siteId, int selectedId)
         {
-            var channelInfo = GetChannelInfo(siteId, selectedId);
+            var channelInfo = await GetChannelInfoAsync(siteId, selectedId);
             if (channelInfo == null || channelInfo.ParentId == 0 || channelInfo.SiteId == 0) return;
 
             var dataInfo = _repository.Get(Q
@@ -292,7 +293,7 @@ namespace SS.CMS.Core.Repositories
             return parentId;
         }
 
-        public int Insert(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId)
+        public async Task<int> InsertAsync(int siteId, int parentId, string channelName, string indexName, string contentModelPluginId, string contentRelatedPluginIds, int channelTemplateId, int contentTemplateId)
         {
             if (siteId > 0 && parentId == 0) return 0;
 
@@ -313,18 +314,18 @@ namespace SS.CMS.Core.Repositories
                 // ContentTemplateId = contentTemplateId > 0 ? contentTemplateId : defaultContentTemplateInfo.Id
             };
 
-            var parentChannelInfo = GetChannelInfo(siteId, parentId);
+            var parentChannelInfo = await GetChannelInfoAsync(siteId, parentId);
 
             InsertChannelInfo(parentChannelInfo, channelInfo);
 
             return channelInfo.Id;
         }
 
-        public int Insert(ChannelInfo channelInfo)
+        public async Task<int> InsertAsync(ChannelInfo channelInfo)
         {
             if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
 
-            var parentChannelInfo = GetChannelInfo(channelInfo.SiteId, channelInfo.ParentId);
+            var parentChannelInfo = await GetChannelInfoAsync(channelInfo.SiteId, channelInfo.ParentId);
 
             InsertChannelInfo(parentChannelInfo, channelInfo);
 
@@ -354,58 +355,58 @@ namespace SS.CMS.Core.Repositories
             return channelInfo.Id;
         }
 
-        public void Update(ChannelInfo channelInfo)
+        public async Task UpdateAsync(ChannelInfo channelInfo)
         {
             _repository.Update(channelInfo);
-            UpdateCache(channelInfo.SiteId, channelInfo);
+            await UpdateCacheAsync(channelInfo.SiteId, channelInfo);
         }
 
-        public void UpdateChannelTemplateId(ChannelInfo channelInfo)
+        public async Task UpdateChannelTemplateIdAsync(ChannelInfo channelInfo)
         {
             _repository.Update(Q
                 .Set(Attr.ChannelTemplateId, channelInfo.ChannelTemplateId)
                 .Where(Attr.Id, channelInfo.Id)
             );
 
-            UpdateCache(channelInfo.SiteId, channelInfo);
+            await UpdateCacheAsync(channelInfo.SiteId, channelInfo);
         }
 
-        public void UpdateContentTemplateId(ChannelInfo channelInfo)
+        public async Task UpdateContentTemplateIdAsync(ChannelInfo channelInfo)
         {
             _repository.Update(Q
                 .Set(Attr.ContentTemplateId, channelInfo.ContentTemplateId)
                 .Where(Attr.Id, channelInfo.Id)
             );
 
-            UpdateCache(channelInfo.SiteId, channelInfo);
+            await UpdateCacheAsync(channelInfo.SiteId, channelInfo);
         }
 
-        public void UpdateExtend(ChannelInfo channelInfo)
+        public async Task UpdateExtendAsync(ChannelInfo channelInfo)
         {
             _repository.Update(Q
                 .Set(Attr.ExtendValues, channelInfo.ExtendValues)
                 .Where(Attr.Id, channelInfo.Id)
             );
 
-            UpdateCache(channelInfo.SiteId, channelInfo);
+            await UpdateCacheAsync(channelInfo.SiteId, channelInfo);
         }
 
-        public void UpdateTaxis(int siteId, int selectedId, bool isSubtract)
+        public async Task UpdateTaxisAsync(int siteId, int selectedId, bool isSubtract)
         {
             if (isSubtract)
             {
-                TaxisSubtract(siteId, selectedId);
+                await TaxisSubtractAsync(siteId, selectedId);
             }
             else
             {
-                TaxisAdd(siteId, selectedId);
+                await TaxisAddAsync(siteId, selectedId);
             }
             RemoveCacheBySiteId(siteId);
         }
 
-        public void AddGroupNameList(int siteId, int channelId, List<string> groupList)
+        public async Task AddGroupNameListAsync(int siteId, int channelId, List<string> groupList)
         {
-            var channelInfo = GetChannelInfo(siteId, channelId);
+            var channelInfo = await GetChannelInfoAsync(siteId, channelId);
             if (channelInfo == null) return;
 
             var list = TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
@@ -421,17 +422,17 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.Id, channelId)
             );
 
-            UpdateCache(siteId, channelInfo);
+            await UpdateCacheAsync(siteId, channelInfo);
         }
 
-        public void DeleteAll(int siteId)
+        public async Task DeleteAllAsync(int siteId)
         {
-            _repository.Delete(Q.Where(Attr.SiteId, siteId).OrWhere(Attr.Id, siteId));
+            await _repository.DeleteAsync(Q.Where(Attr.SiteId, siteId).OrWhere(Attr.Id, siteId));
         }
 
-        public void Delete(int siteId, int channelId)
+        public async Task DeleteAsync(int siteId, int channelId)
         {
-            var channelInfo = GetChannelInfo(siteId, channelId);
+            var channelInfo = await GetChannelInfoAsync(siteId, channelId);
             if (channelInfo == null) return;
 
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
@@ -439,17 +440,17 @@ namespace SS.CMS.Core.Repositories
             var idList = new List<int>();
             if (channelInfo.ChildrenCount > 0)
             {
-                idList = GetChannelIdList(channelInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                idList = await GetChannelIdListAsync(channelInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
             }
             idList.Add(channelId);
 
             foreach (var i in idList)
             {
-                var cInfo = GetChannelInfo(siteId, i);
-                cInfo.ContentRepository.UpdateTrashContentsByChannelId(siteId, i);
+                var cInfo = await GetChannelInfoAsync(siteId, i);
+                await cInfo.ContentRepository.UpdateTrashContentsByChannelIdAsync(siteId, i);
             }
 
-            var deletedNum = _repository.Delete(Q
+            var deletedNum = await _repository.DeleteAsync(Q
                 .WhereIn(Attr.Id, idList));
 
             if (channelInfo.ParentId != 0)
@@ -465,7 +466,7 @@ namespace SS.CMS.Core.Repositories
 
             if (channelInfo.ParentId == 0)
             {
-                _siteRepository.Delete(channelInfo.Id);
+                await _siteRepository.DeleteAsync(channelInfo.Id);
             }
             else
             {
@@ -623,7 +624,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void QueryWhereScope(Query query, int siteId, int channelId, bool isTotal, ScopeType scopeType)
+        private async Task QueryWhereScopeAsync(Query query, int siteId, int channelId, bool isTotal, ScopeType scopeType)
         {
             if (isTotal)
             {
@@ -631,7 +632,7 @@ namespace SS.CMS.Core.Repositories
                 return;
             }
 
-            var channelInfo = GetChannelInfo(siteId, channelId);
+            var channelInfo = await GetChannelInfoAsync(siteId, channelId);
             if (channelInfo == null) return;
 
             if (channelInfo.ChildrenCount == 0)
@@ -653,7 +654,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 else
                 {
-                    var channelIdList = GetChannelIdList(channelInfo, scopeType);
+                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
                     query.WhereIn(Attr.Id, channelIdList);
                 }
             }
@@ -665,13 +666,13 @@ namespace SS.CMS.Core.Repositories
                 }
                 else
                 {
-                    var channelIdList = GetChannelIdList(channelInfo, scopeType);
+                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
                     query.WhereIn(Attr.Id, channelIdList);
                 }
             }
             else if (scopeType == ScopeType.SelfAndChildren || scopeType == ScopeType.Children)
             {
-                var channelIdList = GetChannelIdList(channelInfo, scopeType);
+                var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
                 query.WhereIn(Attr.Id, channelIdList);
             }
         }
@@ -694,7 +695,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void QueryWhereGroup(Query query, int siteId, string group, string groupNot)
+        private async Task QueryWhereGroupAsync(Query query, int siteId, string group, string groupNot)
         {
             if (!string.IsNullOrEmpty(group))
             {
@@ -712,7 +713,7 @@ namespace SS.CMS.Core.Repositories
 
                         if (_channelGroupRepository.IsExists(siteId, groupName))
                         {
-                            var groupChannelIdList = GetChannelIdList(siteId, groupName);
+                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
                             foreach (int channelId in groupChannelIdList)
                             {
                                 if (!channelIdList.Contains(channelId))
@@ -745,7 +746,7 @@ namespace SS.CMS.Core.Repositories
 
                         if (_channelGroupRepository.IsExists(siteId, groupName))
                         {
-                            var groupChannelIdList = GetChannelIdList(siteId, groupName);
+                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
                             foreach (int channelId in groupChannelIdList)
                             {
                                 if (!channelIdList.Contains(channelId))
@@ -828,9 +829,9 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.ParentId, channelId));
         }
 
-        public int GetSequence(int siteId, int channelId)
+        public async Task<int> GetSequenceAsync(int siteId, int channelId)
         {
-            var channelInfo = GetChannelInfo(siteId, channelId);
+            var channelInfo = await GetChannelInfoAsync(siteId, channelId);
 
             var taxis = _repository.Get<int>(Q
                 .Select(Attr.Taxis)
@@ -842,11 +843,11 @@ namespace SS.CMS.Core.Repositories
                    ) + 1;
         }
 
-        public IList<int> GetIdListByTotalNum(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
+        public async Task<IList<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
         {
             var query = Q.NewQuery();
-            QueryWhereScope(query, siteId, channelId, false, scopeType);
-            QueryWhereGroup(query, siteId, groupChannel, groupChannelNot);
+            await QueryWhereScopeAsync(query, siteId, channelId, false, scopeType);
+            await QueryWhereGroupAsync(query, siteId, groupChannel, groupChannelNot);
             QueryWhereImage(query, isImage);
             QueryOrder(query, taxisType);
             if (totalNum > 0)
@@ -857,9 +858,9 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll<int>(query.Select(Attr.Id)).ToList();
         }
 
-        private Dictionary<int, ChannelInfo> GetChannelInfoDictionaryBySiteIdToCache(int siteId)
+        private async Task<Dictionary<int, ChannelInfo>> GetChannelInfoDictionaryBySiteIdToCacheAsync(int siteId)
         {
-            var channelInfoList = _repository.GetAll(Q
+            var channelInfoList = await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(q => q
                     .Where(Attr.Id, siteId)
@@ -904,13 +905,13 @@ namespace SS.CMS.Core.Repositories
         //     return list;
         // }
 
-        public IList<KeyValuePair<int, ChannelInfo>> GetContainerChannelList(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
+        public async Task<IList<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
         {
             var query = Q.Select(Container.Channel.Columns).Offset(startNum - 1).Limit(totalNum);
-            QueryWhereGroup(query, siteId, group, groupNot);
+            await QueryWhereGroupAsync(query, siteId, group, groupNot);
             QueryWhereImage(query, isImage);
             QueryOrder(query, taxisType);
-            QueryWhereScope(query, siteId, channelId, isTotal, scopeType);
+            await QueryWhereScopeAsync(query, siteId, channelId, isTotal, scopeType);
 
             var channelInfoList = _repository.GetAll<ChannelInfo>(query).ToList();
             var list = new List<KeyValuePair<int, ChannelInfo>>();
@@ -1035,7 +1036,7 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public string GetSourceName(int sourceId)
+        public async Task<string> GetSourceNameAsync(int sourceId)
         {
             if (sourceId == SourceManager.Default)
             {
@@ -1055,7 +1056,7 @@ namespace SS.CMS.Core.Repositories
             var siteInfo = _siteRepository.GetSiteInfo(sourceSiteId);
             if (siteInfo == null) return "内容转移";
 
-            var nodeNames = GetChannelNameNavigation(siteInfo.Id, sourceId);
+            var nodeNames = await GetChannelNameNavigationAsync(siteInfo.Id, sourceId);
             if (!string.IsNullOrEmpty(nodeNames))
             {
                 return siteInfo.SiteName + "：" + nodeNames;

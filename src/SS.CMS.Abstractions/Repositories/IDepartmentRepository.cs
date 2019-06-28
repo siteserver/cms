@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 
@@ -12,7 +13,7 @@ namespace SS.CMS.Repositories
 
         void UpdateTaxis(int selectedId, bool isSubtract);
 
-        bool Delete(int id);
+        Task<bool> DeleteAsync(int id);
 
         IList<int> GetIdListByParentId(int parentId);
 

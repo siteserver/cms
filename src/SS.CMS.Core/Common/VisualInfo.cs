@@ -1,4 +1,5 @@
-﻿using SS.CMS.Core.StlParser.Models;
+﻿using System.Threading.Tasks;
+using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -24,7 +25,7 @@ namespace SS.CMS.Core.Common
 
         public int PageIndex { get; private set; }
 
-        public static VisualInfo GetInstance(int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId, IPathManager pathManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
+        public static async Task<VisualInfo> GetInstanceAsync(int siteId, int channelId, int contentId, int fileTemplateId, int pageIndex, int previewId, IPathManager pathManager, ISiteRepository siteRepository, ITemplateRepository templateRepository)
         {
             var visualInfo = new VisualInfo
             {
@@ -78,15 +79,15 @@ namespace SS.CMS.Core.Common
             }
             else if (templateType == TemplateType.ChannelTemplate)
             {
-                visualInfo.TemplateInfo = templateRepository.GetChannelTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
+                visualInfo.TemplateInfo = await templateRepository.GetChannelTemplateInfoAsync(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Channel;
-                visualInfo.FilePath = pathManager.GetChannelPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.PageIndex);
+                visualInfo.FilePath = await pathManager.GetChannelPageFilePathAsync(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.ContentTemplate)
             {
-                visualInfo.TemplateInfo = templateRepository.GetContentTemplateInfo(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
+                visualInfo.TemplateInfo = await templateRepository.GetContentTemplateInfoAsync(visualInfo.SiteInfo.Id, visualInfo.ChannelId);
                 visualInfo.ContextType = EContextType.Content;
-                visualInfo.FilePath = pathManager.GetContentPageFilePath(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
+                visualInfo.FilePath = await pathManager.GetContentPageFilePathAsync(visualInfo.SiteInfo, visualInfo.ChannelId, visualInfo.ContentId, visualInfo.PageIndex);
             }
             else if (templateType == TemplateType.FileTemplate)
             {

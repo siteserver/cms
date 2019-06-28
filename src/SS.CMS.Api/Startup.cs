@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,6 +87,12 @@ namespace SS.CMS.Api
 
             services.AddControllers()
                 .AddNewtonsoftJson();
+            // services.AddApiVersioning(o =>
+            // {
+            //     o.ReportApiVersions = true;
+            //     o.AssumeDefaultVersionWhenUnspecified = true;
+            //     o.DefaultApiVersion = new ApiVersion(1, 0);
+            // });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
@@ -23,14 +24,14 @@ namespace SS.CMS.Core.StlParser.StlElement
             {ContentAttribute.FileUrl, "遍历内容的附件字段"}
         };
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
-            var listInfo = ListInfo.GetListInfo(parseContext);
+            var listInfo = await ListInfo.GetListInfoAsync(parseContext);
 
-            return ParseImpl(parseContext, listInfo);
+            return await ParseImplAsync(parseContext, listInfo);
         }
 
-        private static string ParseImpl(ParseContext parseContext, ListInfo listInfo)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, ListInfo listInfo)
         {
             var parsedContent = string.Empty;
 
@@ -40,7 +41,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 type = ContentAttribute.ImageUrl;
             }
 
-            var contentInfo = parseContext.ContentInfo;
+            var contentInfo = await parseContext.GetContentInfoAsync();
             var valueList = new List<string>();
 
             if (contentInfo != null)
@@ -122,7 +123,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     parseContext.PageInfo.EachItems.Push(each);
                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                    builder.Append(TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext));
+                    builder.Append(await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext));
                 }
 
                 if (!string.IsNullOrEmpty(listInfo.FooterTemplate))
@@ -171,7 +172,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                                     parseContext.PageInfo.EachItems.Push(each);
                                     var templateString = isAlternative ? listInfo.AlternatingItemTemplate : listInfo.ItemTemplate;
-                                    cellHtml = TemplateUtility.GetEachsTemplateString(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext);
+                                    cellHtml = await TemplateUtility.GetEachsTemplateStringAsync(templateString, listInfo.SelectedItems, listInfo.SelectedValues, string.Empty, parseContext);
                                 }
                                 tr.AddCell(cellHtml, cellAttributes);
                                 itemIndex++;

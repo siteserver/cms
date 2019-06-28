@@ -1,4 +1,5 @@
-﻿using SS.CMS.Core.Models.Attributes;
+﻿using System.Threading.Tasks;
+using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Utils;
 using SS.CMS.Utils.Enumerations;
@@ -41,7 +42,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "高度")]
         private const string Height = nameof(Height);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var isGetPicUrlFromAttribute = false;
             var channelIndex = string.Empty;
@@ -60,7 +61,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, ChannelIndex))
                 {
-                    channelIndex = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelIndex = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelIndex))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -68,7 +69,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, ChannelName))
                 {
-                    channelName = parseContext.ReplaceStlEntitiesForAttributeValue(value);
+                    channelName = await parseContext.ReplaceStlEntitiesForAttributeValueAsync(value);
                     if (!string.IsNullOrEmpty(channelName))
                     {
                         isGetPicUrlFromAttribute = true;
@@ -120,10 +121,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
+            return await ParseImplAsync(parseContext, isGetPicUrlFromAttribute, channelIndex, channelName, upLevel, topLevel, type, src, altSrc, width, height);
         }
 
-        private static string ParseImpl(ParseContext parseContext, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
+        private static async Task<object> ParseImplAsync(ParseContext parseContext, bool isGetPicUrlFromAttribute, string channelIndex, string channelName, int upLevel, int topLevel, string type, string src, string altSrc, string width, string height)
         {
             var parsedContent = string.Empty;
 
@@ -133,7 +134,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 contentId = parseContext.ContentId;
             }
-            var contentInfo = parseContext.ContentInfo;
+            var contentInfo = await parseContext.GetContentInfoAsync();
 
             string flashUrl;
             if (!string.IsNullOrEmpty(src))
@@ -146,22 +147,22 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteInfo.Id, parseContext.ChannelId);
+                        var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteInfo.Id, parseContext.ChannelId);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
                         flashUrl = nodeInfo.ContentRepository.StlGetValue(nodeInfo, contentId, type);
                     }
                     else
                     {
-                        flashUrl = parseContext.ContentInfo.Get<string>(type);
+                        flashUrl = contentInfo.Get<string>(type);
                     }
                 }
                 else//获取栏目Flash
                 {
-                    var channelId = parseContext.GetChannelIdByLevel(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
+                    var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-                    channelId = parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelName(parseContext.SiteId, channelId, channelIndex, channelName);
-                    var channel = parseContext.ChannelRepository.GetChannelInfo(parseContext.SiteId, channelId);
+                    channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
+                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
 
                     flashUrl = channel.ImageUrl;
                 }
@@ -183,11 +184,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var extension = PathUtils.GetExtension(flashUrl);
                 if (EFileSystemTypeUtils.IsImage(extension))
                 {
-                    parsedContent = StlImage.Parse(parseContext);
+                    return await StlImage.ParseAsync(parseContext);
                 }
                 else if (EFileSystemTypeUtils.IsPlayer(extension))
                 {
-                    parsedContent = StlPlayer.Parse(parseContext);
+                    return await StlPlayer.ParseAsync(parseContext);
                 }
                 else
                 {

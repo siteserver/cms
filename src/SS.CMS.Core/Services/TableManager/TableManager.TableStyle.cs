@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -88,10 +89,10 @@ namespace SS.CMS.Core.Services
             return GetStyleInfoList(_channelRepository.TableName, relatedIdentities);
         }
 
-        public List<TableStyleInfo> GetContentStyleInfoList(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<List<TableStyleInfo>> GetContentStyleInfoListAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
-            var tableName = _channelRepository.GetTableName(pluginManager, siteInfo, channelInfo);
+            var tableName = await _channelRepository.GetTableNameAsync(pluginManager, siteInfo, channelInfo);
             return GetStyleInfoList(tableName, relatedIdentities);
         }
 

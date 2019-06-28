@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Services;
 
@@ -7,11 +8,11 @@ namespace SS.CMS.Core.Services
 {
     public partial class PluginManager
     {
-        public List<Menu> GetTopMenus(IUrlManager urlManager)
+        public async Task<List<Menu>> GetTopMenusAsync(IUrlManager urlManager)
         {
             var menus = new List<Menu>();
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.SystemMenuFuncs == null) continue;
 
@@ -39,18 +40,18 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return menus;
         }
 
-        public List<Menu> GetSiteMenus(IUrlManager urlManager, int siteId)
+        public async Task<List<Menu>> GetSiteMenusAsync(IUrlManager urlManager, int siteId)
         {
             var menus = new List<Menu>();
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.SiteMenuFuncs == null) continue;
 
@@ -78,19 +79,19 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
             return menus;
         }
 
-        public List<Menu> GetContentMenus(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo)
+        public async Task<List<Menu>> GetContentMenusAsync(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo)
         {
             var menus = new List<Menu>();
             if (pluginIds == null || pluginIds.Count == 0) return menus;
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (!pluginIds.Contains(service.PluginId)) continue;
 
@@ -120,7 +121,7 @@ namespace SS.CMS.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _errorLogRepository.AddErrorLog(service.PluginId, ex);
+                    await _errorLogRepository.AddErrorLogAsync(service.PluginId, ex);
                 }
             }
 
@@ -154,25 +155,25 @@ namespace SS.CMS.Core.Services
 
             if (metadataMenu.Menus != null && metadataMenu.Menus.Count > 0)
             {
-                var chlildren = new List<Menu>();
+                var children = new List<Menu>();
                 var x = 1;
                 foreach (var childMetadataMenu in metadataMenu.Menus)
                 {
                     var child = GetMenu(urlManager, pluginId, siteId, channelId, contentId, childMetadataMenu, x++);
 
-                    chlildren.Add(child);
+                    children.Add(child);
                 }
-                menu.Menus = chlildren;
+                menu.Menus = children;
             }
 
             return menu;
         }
 
-        public List<Permission> GetTopPermissions()
+        public async Task<List<Permission>> GetTopPermissionsAsync()
         {
             var permissions = new List<Permission>();
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.SystemMenuFuncs != null)
                 {
@@ -187,11 +188,11 @@ namespace SS.CMS.Core.Services
             return permissions;
         }
 
-        public List<Permission> GetSitePermissions(int siteId)
+        public async Task<List<Permission>> GetSitePermissionsAsync(int siteId)
         {
             var permissions = new List<Permission>();
 
-            foreach (var service in Services)
+            foreach (var service in await GetServicesAsync())
             {
                 if (service.SiteMenuFuncs != null)
                 {

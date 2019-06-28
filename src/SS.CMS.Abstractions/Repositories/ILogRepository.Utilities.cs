@@ -1,7 +1,9 @@
-﻿namespace SS.CMS.Repositories
+﻿using System.Threading.Tasks;
+
+namespace SS.CMS.Repositories
 {
     public partial interface ILogRepository
     {
-        void AddAdminLog(string ipAddress, string adminName, string action, string summary = "");
+        Task AddAdminLogAsync(string ipAddress, string adminName, string action, string summary = "");
     }
 }

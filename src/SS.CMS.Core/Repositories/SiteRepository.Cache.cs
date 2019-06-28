@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Models;
 using SS.CMS.Services;
@@ -214,17 +215,17 @@ namespace SS.CMS.Core.Repositories
             return GetSiteInfo(siteId) != null;
         }
 
-        public List<string> GetSiteTableNames(IPluginManager pluginManager)
+        public async Task<List<string>> GetSiteTableNamesAsync(IPluginManager pluginManager)
         {
-            return GetTableNameList(pluginManager, true, false);
+            return await GetTableNameListAsync(pluginManager, true, false);
         }
 
-        public List<string> GetAllTableNameList(IPluginManager pluginManager)
+        public async Task<List<string>> GetAllTableNameListAsync(IPluginManager pluginManager)
         {
-            return GetTableNameList(pluginManager, true, true);
+            return await GetTableNameListAsync(pluginManager, true, true);
         }
 
-        private List<string> GetTableNameList(IPluginManager pluginManager, bool includeSiteTables, bool includePluginTables)
+        private async Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, bool includeSiteTables, bool includePluginTables)
         {
 
             var tableNames = new List<string>();
@@ -243,7 +244,7 @@ namespace SS.CMS.Core.Repositories
 
             if (includePluginTables)
             {
-                var pluginTableNames = pluginManager.GetContentTableNameList();
+                var pluginTableNames = await pluginManager.GetContentTableNameListAsync();
                 foreach (var pluginTableName in pluginTableNames)
                 {
                     if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
@@ -256,10 +257,10 @@ namespace SS.CMS.Core.Repositories
             return tableNames;
         }
 
-        public List<string> GetTableNameList(IPluginManager pluginManager, SiteInfo siteInfo)
+        public async Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, SiteInfo siteInfo)
         {
             var tableNames = new List<string> { siteInfo.TableName };
-            var pluginTableNames = pluginManager.GetContentTableNameList();
+            var pluginTableNames = await pluginManager.GetContentTableNameListAsync();
             foreach (var pluginTableName in pluginTableNames)
             {
                 if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))

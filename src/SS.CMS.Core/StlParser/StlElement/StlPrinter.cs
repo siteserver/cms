@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
@@ -25,7 +26,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         [StlAttribute(Title = "页面当前位置的 Id 属性")]
         private const string LocationId = nameof(LocationId);
 
-        public static string Parse(ParseContext parseContext)
+        public static async Task<object> ParseAsync(ParseContext parseContext)
         {
             var attributes = new NameValueCollection();
             var titleId = string.Empty;
@@ -59,10 +60,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, attributes, titleId, bodyId, logoId, locationId);
+            return await ParseImplAsync(parseContext, attributes, titleId, bodyId, logoId, locationId);
         }
 
-        private static string ParseImpl(ParseContext parseContext, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, NameValueCollection attributes, string titleId, string bodyId, string logoId, string locationId)
         {
             var jsUrl = SiteFilesAssets.GetUrl(SiteFilesAssets.Print.JsUtf8);
 
@@ -140,7 +141,7 @@ function stlLoadPrintJs()
             if (!string.IsNullOrEmpty(parseContext.InnerHtml))
             {
                 var innerBuilder = new StringBuilder(parseContext.InnerHtml);
-                parseContext.ParseInnerContent(innerBuilder);
+                await parseContext.ParseInnerContentAsync(innerBuilder);
                 innerHtml = innerBuilder.ToString();
             }
             attributes["href"] = "javascript:stlLoadPrintJs();";

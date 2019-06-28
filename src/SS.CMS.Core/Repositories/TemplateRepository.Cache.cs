@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Utils;
@@ -297,7 +298,7 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.IndexPageTemplate);
         }
 
-        public TemplateInfo GetChannelTemplateInfo(int siteId, int channelId)
+        public async Task<TemplateInfo> GetChannelTemplateInfoAsync(int siteId, int channelId)
         {
             var templateId = 0;
             if (siteId == channelId)
@@ -306,7 +307,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+                var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
                 if (channelInfo != null)
                 {
                     templateId = channelInfo.ChannelTemplateId;
@@ -322,10 +323,10 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
         }
 
-        public TemplateInfo GetContentTemplateInfo(int siteId, int channelId)
+        public async Task<TemplateInfo> GetContentTemplateInfoAsync(int siteId, int channelId)
         {
             var templateId = 0;
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ContentTemplateId;
@@ -378,11 +379,11 @@ namespace SS.CMS.Core.Repositories
             return GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
         }
 
-        public int GetChannelTemplateId(int siteId, int channelId)
+        public async Task<int> GetChannelTemplateIdAsync(int siteId, int channelId)
         {
             var templateId = 0;
 
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ChannelTemplateId;
@@ -396,11 +397,11 @@ namespace SS.CMS.Core.Repositories
             return templateId;
         }
 
-        public int GetContentTemplateId(int siteId, int channelId)
+        public async Task<int> GetContentTemplateIdAsync(int siteId, int channelId)
         {
             var templateId = 0;
 
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ContentTemplateId;
@@ -414,13 +415,13 @@ namespace SS.CMS.Core.Repositories
             return templateId;
         }
 
-        public string GetTemplateContent(SiteInfo siteInfo, TemplateInfo templateInfo)
+        public async Task<string> GetTemplateContentAsync(SiteInfo siteInfo, TemplateInfo templateInfo)
         {
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
-            return GetContentByFilePath(filePath);
+            return await GetContentByFilePathAsync(filePath);
         }
 
-        public string GetContentByFilePath(string filePath)
+        public async Task<string> GetContentByFilePathAsync(string filePath)
         {
             try
             {
@@ -429,7 +430,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (FileUtils.IsFileExists(filePath))
                 {
-                    content = FileUtils.ReadText(filePath, ECharset.utf_8);
+                    content = await FileUtils.ReadTextAsync(filePath);
                 }
 
                 _cacheManager.Insert(filePath, content, TimeSpan.FromHours(12), filePath);

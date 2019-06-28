@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -98,13 +99,13 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(siteId);
         }
 
-        public void Delete(int siteId, int id)
+        public async Task DeleteAsync(int siteId, int id)
         {
             var siteInfo = _siteRepository.GetSiteInfo(siteId);
             var templateInfo = GetTemplateInfo(siteId, id);
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
 
-            _repository.Delete(id);
+            await _repository.DeleteAsync(id);
 
             FileUtils.DeleteFileIfExists(filePath);
 

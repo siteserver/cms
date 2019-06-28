@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Core.Common;
 using SS.CMS.Data;
@@ -61,7 +62,7 @@ namespace SS.CMS.Core.Repositories
             return query;
         }
 
-        public Query GetWhereStringByStlSearch(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
+        public async Task<Query> GetWhereStringByStlSearchAsync(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form)
         {
             var query = Q.NewQuery();
 
@@ -79,8 +80,8 @@ namespace SS.CMS.Core.Repositories
                 siteInfo = _siteRepository.GetSiteInfo(siteId);
             }
 
-            var channelId = _channelRepository.GetChannelId(siteId, siteId, channelIndex, channelName);
-            var channelInfo = _channelRepository.GetChannelInfo(siteId, channelId);
+            var channelId = await _channelRepository.GetChannelIdAsync(siteId, siteId, channelIndex, channelName);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
 
             if (!string.IsNullOrEmpty(siteIds))
             {
@@ -98,7 +99,7 @@ namespace SS.CMS.Core.Repositories
                 {
                     var theSiteId = _channelRepository.GetSiteId(theChannelId);
                     channelIdList.AddRange(
-                        _channelRepository.GetChannelIdList(_channelRepository.GetChannelInfo(theSiteId, theChannelId),
+                        await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theSiteId, theChannelId),
                             ScopeType.All, string.Empty, string.Empty, string.Empty));
                 }
 
@@ -107,7 +108,7 @@ namespace SS.CMS.Core.Repositories
             else if (channelId != siteId)
             {
                 var theSiteId = _channelRepository.GetSiteId(channelId);
-                var channelIdList = _channelRepository.GetChannelIdList(_channelRepository.GetChannelInfo(theSiteId, channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theSiteId, channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
 
                 query.WhereIn(Attr.ChannelId, channelIdList);
             }
@@ -153,7 +154,7 @@ namespace SS.CMS.Core.Repositories
                 query.WhereBetween(dateAttribute, sinceDate, DateTime.Now);
             }
 
-            var tableName = _channelRepository.GetTableName(_pluginManager, siteInfo, channelInfo);
+            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
             //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
 
             foreach (string key in form.Keys)
