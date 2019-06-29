@@ -26,6 +26,13 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
+      const topMenu = store.getters.topMenu
+      const matchedTopMenu = to.matched && to.matched[0] && to.matched[0].path
+
+      if (matchedTopMenu && topMenu !== matchedTopMenu) {
+        await store.dispatch('app/setTopMenu', matchedTopMenu)
+      }
+
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {

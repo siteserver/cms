@@ -1,5 +1,33 @@
 export default {
+  'ss-cms-admin': 'SS CMS 管理后台',
+  'name': '名称',
+  'value': '值',
   route: {
+    sites: '站点管理',
+    plugins: '插件管理',
+    'plugins-install': '安装插件',
+    'plugins-manage': '插件管理',
+    settings: '系统设置',
+    'settings-create': '创建新站点',
+    'settings-sites': '站点',
+    'settings-sites-all': '站点管理',
+    'settings-sites-url': 'Web地址',
+    'settings-sites-assets': '文件地址',
+    'settings-sites-api': 'API地址',
+    'settings-sites-tables': '内容表管理',
+    'settings-sites-sitetemplates': '站点模板管理',
+    'settings-sites-templatesonline': '在线站点模板',
+    'settings-users': '用户',
+    'settings-users-all': '用户管理',
+    'settings-users-roles': '角色管理',
+    'settings-users-config': '配置',
+    'settings-users-departments': '部门管理',
+    'settings-users-areas': '区域管理',
+    'settings-users-tokens': '访问令牌',
+    'settings-tools': '实用工具',
+    'settings-tools-info': '系统参数',
+    'settings-tools-cache': '系统缓存',
+
     dashboard: '首页',
     documentation: '文档',
     guide: '引导页',
@@ -171,5 +199,20 @@ export default {
     tagsView: '开启 Tags-View',
     fixedHeader: '固定 Header',
     sidebarLogo: '侧边栏 Logo'
+  },
+  tools: {
+    info: {
+      serverName: '服务器名称',
+      contentRootPath: '系统根目录',
+      webRootPath: '主站根目录',
+      adminHostName: '后台域名',
+      remoteIpAddress: '访问IP',
+      targetFramework: '.NET Core 版本',
+      productVersion: 'CMS 版本',
+      pluginVersion: '插件版本',
+      updateDate: '最近升级时间',
+      databaseType: '数据库类型',
+      database: '数据库'
+    }
   }
 }

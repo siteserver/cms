@@ -3,8 +3,8 @@
     <transition-group name="breadcrumb">
       <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
         <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{
-          generateTitle(item.meta.title) }}</span>
-        <a v-else @click.prevent="handleLink(item)">{{ generateTitle(item.meta.title) }}</a>
+          generateTitle(item) }}</span>
+        <a v-else @click.prevent="handleLink(item)">{{ generateTitle(item) }}</a>
       </el-breadcrumb-item>
     </transition-group>
   </el-breadcrumb>

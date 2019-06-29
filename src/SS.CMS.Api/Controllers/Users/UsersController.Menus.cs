@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Api.Controllers.Users
@@ -68,37 +69,30 @@ namespace SS.CMS.Api.Controllers.Users
 
             if (string.IsNullOrEmpty(topId)) return menus;
 
-            if (StringUtils.EqualsIgnoreCase(topId, AuthTypes.Menus.Site))
+            var topMenu = _settingsManager.Menus.FirstOrDefault(x => x.Id == topId);
+            if (topMenu?.Menus != null)
             {
-
-            }
-            else
-            {
-                var topMenu = _settingsManager.Menus.FirstOrDefault(x => x.Id == topId);
-                if (topMenu?.Menus != null)
+                foreach (var leftMenu in topMenu.Menus)
                 {
-                    foreach (var leftMenu in topMenu.Menus)
+                    var valid = false;
+                    if (_userManager.IsSuperAdministrator())
                     {
-                        var valid = false;
-                        if (_userManager.IsSuperAdministrator())
+                        valid = true;
+                    }
+                    else
+                    {
+                        if (leftMenu.Permissions != null)
                         {
-                            valid = true;
-                        }
-                        else
-                        {
-                            if (leftMenu.Permissions != null)
+                            if (leftMenu.Permissions.Any(permission => _userManager.HasAppPermissions(permission)))
                             {
-                                if (leftMenu.Permissions.Any(permission => _userManager.HasAppPermissions(permission)))
-                                {
-                                    valid = true;
-                                }
+                                valid = true;
                             }
                         }
+                    }
 
-                        if (valid)
-                        {
-                            menus.Add(leftMenu);
-                        }
+                    if (valid)
+                    {
+                        menus.Add(leftMenu);
                     }
                 }
             }
@@ -106,9 +100,25 @@ namespace SS.CMS.Api.Controllers.Users
             return menus;
         }
 
-        private IList<Menu> GetSiteMenus(int siteId)
+        private async Task<IList<Menu>> GetSiteMenusAsync(int siteId)
         {
             var menus = new List<Menu>();
+
+            var isSuperAdmin = _userManager.IsSuperAdministrator();
+
+            if (siteId == 0)
+            {
+                var siteIdList = await _userManager.GetSiteIdsAsync();
+                if (siteIdList.Count == 0 && isSuperAdmin)
+                {
+                    menus.Add(new Menu
+                    {
+                        Id = "sites/create",
+                        Text = "Create New Site"
+                    });
+                    return menus;
+                }
+            }
 
             var topMenu = _settingsManager.Menus.FirstOrDefault(x => x.Id == TopMenuIdSite);
             if (topMenu?.Menus != null)
@@ -116,7 +126,7 @@ namespace SS.CMS.Api.Controllers.Users
                 foreach (var leftMenu in topMenu.Menus)
                 {
                     var valid = false;
-                    if (_userManager.IsSuperAdministrator() || _userManager.IsSiteAdministrator(siteId))
+                    if (isSuperAdmin || _userManager.IsSiteAdministrator(siteId))
                     {
                         valid = true;
                     }

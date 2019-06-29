@@ -18,6 +18,8 @@ namespace SS.CMS.Data
 
         public string ConnectionString { get; }
 
+        public string DatabaseName => Utilities.GetConnectionStringDatabase(ConnectionString);
+
         public Database(DatabaseType databaseType, string connectionString)
         {
             if (databaseType == null || connectionString == null) return;

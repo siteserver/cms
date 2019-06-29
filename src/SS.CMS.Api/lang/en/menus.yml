@@ -1,4 +1,4 @@
-- id: site
+- id: sites
   text: 站点管理
   menus:
   - id: Content

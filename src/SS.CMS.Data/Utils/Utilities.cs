@@ -180,10 +180,26 @@ namespace SS.CMS.Data.Utils
             return list.Any(element => EqualsIgnoreCase(element, target));
         }
 
+        public static string GetConnectionStringDatabase(string connectionString)
+        {
+            foreach (var pair in StringCollectionToStringList(connectionString, ';'))
+            {
+                if (string.IsNullOrEmpty(pair) || pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
+                var key = pair.Substring(0, pair.IndexOf("=", StringComparison.Ordinal));
+                var value = pair.Substring(pair.IndexOf("=", StringComparison.Ordinal) + 1);
+                if (EqualsIgnoreCase(key, "Database") ||
+                    EqualsIgnoreCase(key, "Data Source") ||
+                    EqualsIgnoreCase(key, "Initial Catalog"))
+                {
+                    return value;
+                }
+            }
+
+            return string.Empty;
+        }
+
         public static string GetConnectionStringUserName(string connectionString)
         {
-            var userId = string.Empty;
-
             foreach (var pair in StringCollectionToStringList(connectionString, ';'))
             {
                 if (string.IsNullOrEmpty(pair) || pair.IndexOf("=", StringComparison.Ordinal) == -1) continue;
@@ -197,7 +213,7 @@ namespace SS.CMS.Data.Utils
                 }
             }
 
-            return userId;
+            return string.Empty;
         }
     }
 }

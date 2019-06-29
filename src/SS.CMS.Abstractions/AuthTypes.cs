@@ -20,7 +20,7 @@
 
         public static class Menus
         {
-            public const string Site = nameof(Site);
+            public const string Sites = nameof(Sites);
         }
 
         public static class AppPermissions

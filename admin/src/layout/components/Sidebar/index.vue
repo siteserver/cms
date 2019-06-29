@@ -12,7 +12,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
+        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="topMenu + '/' + route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -24,6 +24,9 @@ import { getMenus } from '@/api/user'
 import { parseRoutes } from '@/utils/permission'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
+import sitesRouters from '@/router/sites'
+import pluginsRouters from '@/router/plugins'
+import settingsRouters from '@/router/settings'
 import variables from '@/styles/variables.scss'
 
 export default {
@@ -39,13 +42,6 @@ export default {
       'permission_routes',
       'sidebar'
     ]),
-    // leftMenus() {
-    //   if (!this.topMenu) {
-    //     return this.permission_routes
-    //   } else {
-    //     return [this.permission_routes[0], this.permission_routes[1], this.permission_routes[2], this.permission_routes[3], this.permission_routes[4], this.permission_routes[5], this.permission_routes[6], this.permission_routes[7]]
-    //   }
-    // },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
@@ -66,14 +62,25 @@ export default {
     }
   },
   watch: {
-    topMenu: function(val) {
+    topMenu(val) {
       this.getRoutes(val)
     }
   },
+  created() {
+    this.getRoutes(this.topMenu)
+  },
   methods: {
     async getRoutes(topMenu) {
-      const menus = await getMenus(topMenu, 0)
-      this.routes = parseRoutes(menus)
+      if (topMenu === '/sites') {
+        this.routes = sitesRouters
+      } else if (topMenu === '/plugins') {
+        this.routes = pluginsRouters
+      } else if (topMenu === '/settings') {
+        this.routes = settingsRouters
+      } else {
+        const menus = await getMenus(topMenu, 0)
+        this.routes = parseRoutes(menus)
+      }
     }
   }
 }

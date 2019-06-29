@@ -57,9 +57,13 @@ namespace SS.CMS.Api.Controllers.Users
 
         [Authorize]
         [HttpGet(RouteMenus)]
-        public IList<Menu> GetMenus(string topMenu, int siteId)
+        public async Task<IList<Menu>> GetMenus(string topMenu, int siteId)
         {
-            return siteId > 0 ? GetSiteMenus(siteId) : GetAppMenus(topMenu);
+            if (StringUtils.EqualsIgnoreCase(topMenu, AuthTypes.Menus.Sites))
+            {
+                return await GetSiteMenusAsync(siteId);
+            }
+            return GetAppMenus(topMenu);
         }
 
         [HttpGet(RouteLoginCaptcha)]

@@ -1,10 +1,7 @@
 {
 	"recommendations": [
 		"ms-vscode.csharp",
-		"dbaeumer.vscode-eslint",
 		"warren-buckley.iis-express",
-		"esbenp.prettier-vscode",
-		"octref.vetur",
 		"formulahendry.dotnet-test-explorer"
 	]
 }

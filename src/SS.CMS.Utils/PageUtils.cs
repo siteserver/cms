@@ -329,7 +329,47 @@ namespace SS.CMS.Utils
             return AddQueryString(url, attributes);
         }
 
+        public static string GetIpAddress(string remoteIpAddress)
+        {
+            var result = string.Empty;
 
+            //取CDN用户真实IP的方法
+            //当用户使用代理时，取到的是代理IP
+            result = remoteIpAddress;
+            if (!string.IsNullOrEmpty(result))
+            {
+                //可能有代理
+                if (result.IndexOf(".", StringComparison.Ordinal) == -1)
+                    result = null;
+                else
+                {
+                    if (result.IndexOf(",", StringComparison.Ordinal) != -1)
+                    {
+                        result = result.Replace("  ", "").Replace("'", "");
+                        var temparyip = result.Split(",;".ToCharArray());
+                        foreach (var t in temparyip)
+                        {
+                            if (IsIpAddress(t) && t.Substring(0, 3) != "10." && t.Substring(0, 7) != "192.168" && t.Substring(0, 7) != "172.16.")
+                            {
+                                result = t;
+                            }
+                        }
+                        var str = result.Split(',');
+                        if (str.Length > 0)
+                            result = str[0].Trim();
+                    }
+                    else if (IsIpAddress(result))
+                        return result;
+                }
+            }
+
+            if (string.IsNullOrEmpty(result) || result == "::1" || result == "127.0.0.1")
+            {
+                result = "localhost";
+            }
+
+            return result;
+        }
 
         public static bool IsIpAddress(string ip)
         {

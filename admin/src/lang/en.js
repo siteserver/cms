@@ -1,5 +1,33 @@
 export default {
+  'ss-cms-admin': 'SS CMS Admin',
+  'name': 'Name',
+  'value': 'Value',
   route: {
+    sites: 'Sites',
+    plugins: 'Plugins',
+    'plugins-install': 'Install Plugins',
+    'plugins-manage': 'Plugins Manage',
+    settings: 'Settings',
+    'settings-create': 'Create New Site',
+    'settings-sites': 'Sites',
+    'settings-sites-all': 'All Sites',
+    'settings-sites-url': 'Url Settings',
+    'settings-sites-assets': 'Assets Settings',
+    'settings-sites-api': 'API Settings',
+    'settings-sites-tables': 'Site Tables',
+    'settings-sites-sitetemplates': 'Site Templates',
+    'settings-sites-templatesonline': 'Online Site Templates',
+    'settings-users': 'Users',
+    'settings-users-all': 'Users',
+    'settings-users-roles': 'Roles',
+    'settings-users-config': 'Configuration',
+    'settings-users-departments': 'Departments',
+    'settings-users-areas': 'Areas',
+    'settings-users-tokens': 'Access Tokens',
+    'settings-tools': 'Tools',
+    'settings-tools-info': 'Information',
+    'settings-tools-cache': 'Caches',
+
     dashboard: 'Dashboard',
     documentation: 'Documentation',
     guide: 'Guide',
@@ -171,5 +199,20 @@ export default {
     tagsView: 'Open Tags-View',
     fixedHeader: 'Fixed Header',
     sidebarLogo: 'Sidebar Logo'
+  },
+  tools: {
+    info: {
+      serverName: 'Server name',
+      contentRootPath: 'App root path',
+      webRootPath: 'Web root path',
+      adminHostName: 'Admin host name',
+      remoteIpAddress: 'Client IP',
+      targetFramework: '.NET Core version',
+      productVersion: 'CMS version',
+      pluginVersion: 'Plugin version',
+      updateDate: 'Last update',
+      databaseType: 'Database type',
+      database: 'Database'
+    }
   }
 }

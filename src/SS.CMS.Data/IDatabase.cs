@@ -10,6 +10,8 @@ namespace SS.CMS.Data
 
         string ConnectionString { get; }
 
+        string DatabaseName { get; }
+
         bool IsTableExists(string tableName);
 
         Task<bool> IsTableExistsAsync(string tableName);

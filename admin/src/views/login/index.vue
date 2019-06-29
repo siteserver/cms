@@ -52,22 +52,9 @@
         {{ $t('login.logIn') }}
       </el-button>
 
-      <div style="position:relative">
-        <div class="tips">
-          <span>{{ $t('login.username') }} : admin</span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">
-            {{ $t('login.username') }} : editor
-          </span>
-          <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          {{ $t('login.thirdparty') }}
-        </el-button>
-      </div>
+      <el-button type="text" @click="showDialog=true">
+        {{ $t('login.thirdparty') }}
+      </el-button>
     </el-form>
 
     <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
@@ -332,12 +319,6 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
-  }
-
-  .thirdparty-button {
-    position: absolute;
-    right: 0;
-    bottom: 6px;
   }
 
   @media only screen and (max-width: 470px) {
