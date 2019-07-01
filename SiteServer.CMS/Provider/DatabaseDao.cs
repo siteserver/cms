@@ -1951,34 +1951,36 @@ SET IDENTITY_INSERT {tableName} OFF
             }
         }
 
-        private ETriState _sqlServerVersionState = ETriState.All;
+        private decimal? _sqlServerVersion;
 
-        public bool IsSqlServer2012
+        private decimal SqlServerVersion
         {
             get
             {
-                if (_sqlServerVersionState != ETriState.All) return _sqlServerVersionState == ETriState.True;
-
                 if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
                 {
-                    _sqlServerVersionState = ETriState.False;
+                    return 0;
                 }
 
-                try
+                if (_sqlServerVersion == null)
                 {
-                    var version =
-                        TranslateUtils.ToDecimal(
-                            GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
-                    _sqlServerVersionState = version >= 11 ? ETriState.True : ETriState.False;
-                }
-                catch
-                {
-                    _sqlServerVersionState = ETriState.False;
+                    try
+                    {
+                        _sqlServerVersion =
+                            TranslateUtils.ToDecimal(
+                                GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
+                    }
+                    catch
+                    {
+                        _sqlServerVersion = 0;
+                    }
                 }
 
-                return _sqlServerVersionState == ETriState.True;
+                return _sqlServerVersion.Value;
             }
         }
+
+        public bool IsSqlServer2012 => SqlServerVersion >= 11;
 
         public int GetPageTotalCount(string tableName, string whereSqlString)
         {
@@ -2021,25 +2023,28 @@ SET IDENTITY_INSERT {tableName} OFF
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
-                retval = limit == 0
-                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
-                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-            }
-            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
-            {
-                if (offset == 0)
+                if (IsSqlServer2012)
                 {
-                    retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+                    retval = limit == 0
+                        ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                        : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
                 }
                 else
                 {
-                    var rowWhere = limit == 0
-                        ? $@"WHERE [row_num] > {offset}"
-                        : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
+                    if (offset == 0)
+                    {
+                        retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+                    }
+                    else
+                    {
+                        var rowWhere = limit == 0
+                            ? $@"WHERE [row_num] > {offset}"
+                            : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                    retval = $@"SELECT * FROM (
+                        retval = $@"SELECT * FROM (
     SELECT {columnNames}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
 ) as T {rowWhere}";
+                    }
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)

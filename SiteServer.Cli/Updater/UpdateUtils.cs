@@ -20,7 +20,7 @@ namespace SiteServer.Cli.Updater
             return $"{key}${oldValue}";
         }
 
-        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict)
+        public static List<Dictionary<string, object>> UpdateRows(List<JObject> oldRows, Dictionary<string, string> convertKeyDict, Dictionary<string, string> convertValueDict, Func<Dictionary<string, object>, Dictionary<string, object>> process)
         {
             var newRows = new List<Dictionary<string, object>>();
 
@@ -50,6 +50,11 @@ namespace SiteServer.Cli.Updater
                     //}
 
                     //newRow[key] = value;
+                }
+
+                if (process != null)
+                {
+                    newRow = process(newRow);
                 }
 
                 newRows.Add(newRow);

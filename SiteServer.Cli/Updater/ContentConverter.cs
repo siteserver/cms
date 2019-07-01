@@ -4,6 +4,7 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -136,7 +137,8 @@ namespace SiteServer.Cli.Updater
                 NewTableName = oldTableName,
                 NewColumns = GetNewColumns(oldColumns),
                 ConvertKeyDict = ConvertKeyDict,
-                ConvertValueDict = ConvertValueDict
+                ConvertValueDict = ConvertValueDict,
+                Process = Process
             };
         }
 
@@ -181,5 +183,23 @@ namespace SiteServer.Cli.Updater
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
+
+        private static Dictionary<string, object> Process(Dictionary<string, object> row)
+        {
+            if (row.TryGetValue(nameof(ContentInfo.Content), out var contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[nameof(ContentInfo.Content)] = content;
+            }
+            if (row.TryGetValue(ContentAttribute.SettingsXml, out contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[nameof(ContentAttribute.SettingsXml)] = content;
+            }
+
+            return row;
+        }
     }
 }
