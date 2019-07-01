@@ -268,6 +268,14 @@ var methods = {
     location.reload();
   },
 
+  btnReturnClick: function () {
+    var url = "contents.html?siteId=" +
+      this.site.id +
+      "&channelId=" +
+      this.channel.id;
+    location.href = url;
+  },
+
   btnSubmitClick: function () {
     var $this = this;
     this.pageAlert = null;
