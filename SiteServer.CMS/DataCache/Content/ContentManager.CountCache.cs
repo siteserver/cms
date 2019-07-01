@@ -145,7 +145,7 @@ namespace SiteServer.CMS.DataCache.Content
                     foreach (var tableName in tableNames)
                     {
                         var list = GetContentCountInfoList(tableName);
-                        count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked && x.CheckedLevel != -siteInfo.Additional.CheckContentLevel)
+                        count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked && x.CheckedLevel != -siteInfo.Additional.CheckContentLevel && x.CheckedLevel != CheckManager.LevelInt.CaoGao)
                             .Sum(x => x.Count);
                     }
 
