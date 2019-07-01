@@ -75,7 +75,7 @@ namespace SiteServer.Cli.Updater
                             var oldRows =
                                 TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
 
-                            var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict);
+                            var newRows = UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process);
 
                             await FileUtils.WriteTextAsync(newFilePath, Encoding.UTF8, TranslateUtils.JsonSerialize(newRows));
                         }
@@ -126,7 +126,7 @@ namespace SiteServer.Cli.Updater
                         var oldRows =
                             TranslateUtils.JsonDeserialize<List<JObject>>(await FileUtils.ReadTextAsync(oldFilePath, Encoding.UTF8));
 
-                        newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict));
+                        newRows.AddRange(UpdateUtils.UpdateRows(oldRows, converter.ConvertKeyDict, converter.ConvertValueDict, converter.Process));
 
                         var siteIdWithRows = new Dictionary<int, List<Dictionary<string, object>>>();
                         foreach (var siteId in siteIdList)

@@ -80,7 +80,10 @@ namespace SiteServer.BackgroundPages.Controls
                         {
                             try
                             {
-                                html = service.OnContentFormLoad(eventArgs);
+                                if (service.OnContentFormLoad(eventArgs, out var val))
+                                {
+                                    html = val;
+                                }
                             }
                             catch (Exception ex)
                             {

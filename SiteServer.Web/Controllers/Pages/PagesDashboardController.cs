@@ -6,7 +6,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -58,16 +57,16 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
-                var unCheckedList = new List<object>();
+                var checkingList = new List<object>();
 
                 if (request.AdminPermissionsImpl.IsConsoleAdministrator)
                 {
                     foreach(var siteInfo in SiteManager.GetSiteInfoList())
                     {
-                        var count = ContentManager.GetCount(siteInfo, false);
+                        var count = ContentManager.GetCountChecking(siteInfo);
                         if (count > 0)
                         {
-                            unCheckedList.Add(new
+                            checkingList.Add(new
                             {
                                 Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
                                 siteInfo.SiteName,
@@ -83,10 +82,10 @@ namespace SiteServer.API.Controllers.Pages
                         var siteInfo = SiteManager.GetSiteInfo(siteId);
                         if (siteInfo == null) continue;
 
-                        var count = ContentManager.GetCount(siteInfo, false);
+                        var count = ContentManager.GetCountChecking(siteInfo);
                         if (count > 0)
                         {
-                            unCheckedList.Add(new
+                            checkingList.Add(new
                             {
                                 Url = PageContentSearch.GetRedirectUrlCheck(siteInfo.Id),
                                 siteInfo.SiteName,
@@ -98,7 +97,7 @@ namespace SiteServer.API.Controllers.Pages
 
                 return Ok(new
                 {
-                    Value = unCheckedList
+                    Value = checkingList
                 });
             }
             catch (Exception ex)

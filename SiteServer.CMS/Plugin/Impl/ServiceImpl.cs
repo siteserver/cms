@@ -53,9 +53,12 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public event ContentFormLoadEventHandler ContentFormLoad;
 
-        public string OnContentFormLoad(ContentFormLoadEventArgs e)
+        public bool OnContentFormLoad(ContentFormLoadEventArgs e, out string html)
         {
-            return ContentFormLoad?.Invoke(this, e);
+            html = null;
+            if (ContentFormLoad == null) return false;
+            html = ContentFormLoad.Invoke(this, e);
+            return true;
         }
 
         public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;

@@ -19,7 +19,7 @@ var data = {
 
 var methods = {
   getIconUrl: function (url) {
-    return 'https://plugins.siteserver.cn/' + url;
+    return 'https://www.siteserver.cn/plugins/' + url;
   },
 
   load: function () {

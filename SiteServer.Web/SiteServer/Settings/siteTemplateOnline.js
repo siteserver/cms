@@ -19,7 +19,7 @@ var methods = {
   },
 
   getTemplateUrl: function (relatedUrl) {
-    return 'https://templates.siteserver.cn/' + relatedUrl;
+    return 'https://www.siteserver.cn/templates/' + relatedUrl;
   },
 
   getPreviewUrl: function (templateId) {

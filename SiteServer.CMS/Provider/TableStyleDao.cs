@@ -177,7 +177,7 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
+                        ExecuteNonQuery(trans, SqlUpdateTableStyle, updateParms);
 
                         if (deleteAndInsertStyleItems)
                         {

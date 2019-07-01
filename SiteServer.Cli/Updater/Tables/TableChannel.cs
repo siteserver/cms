@@ -4,7 +4,9 @@ using Datory;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
+using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -108,7 +110,8 @@ namespace SiteServer.Cli.Updater.Tables
             NewTableName = NewTableName,
             NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict
+            ConvertValueDict = ConvertValueDict,
+            Process = Process
         };
 
         private static readonly string NewTableName = DataProvider.ChannelDao.TableName;
@@ -132,5 +135,23 @@ namespace SiteServer.Cli.Updater.Tables
             {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "GovPublic"), "SS.GovPublic"},
             {UpdateUtils.GetConvertValueDictKey(nameof(ChannelInfo.ContentModelPluginId), "Job"), "SS.Jobs"},
         };
+
+        private static Dictionary<string, object> Process(Dictionary<string, object> row)
+        {
+            if (row.TryGetValue(ChannelAttribute.Content, out var contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[ChannelAttribute.Content] = content;
+            }
+            if (row.TryGetValue(ChannelAttribute.ExtendValues, out contentObj))
+            {
+                var content = contentObj.ToString();
+                content = content.Replace("@upload", "@/upload");
+                row[ChannelAttribute.ExtendValues] = content;
+            }
+
+            return row;
+        }
     }
 }

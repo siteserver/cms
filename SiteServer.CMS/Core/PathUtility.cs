@@ -200,22 +200,16 @@ namespace SiteServer.CMS.Core
 
         public static string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
         {
-            var retVal = isUploadChangeFileName
-                ? $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}"
-                : PathUtils.GetFileName(filePath);
+            if (isUploadChangeFileName)
+            {
+                return $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}";
+            }
 
-            retVal = StringUtils.ReplaceIgnoreCase(retVal, "as", string.Empty);
-            retVal = StringUtils.ReplaceIgnoreCase(retVal, ";", string.Empty);
-            return retVal;
-        }
+            var fileName = PathUtils.GetFileNameWithoutExtension(filePath);
 
-        public static string GetUploadSpecialName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
-        {
-            var retVal = isUploadChangeFileName ? $"{StringUtils.GetShortGuid(false)}{PathUtils.GetExtension(filePath)}" : PathUtils.GetFileName(filePath);
-
-            retVal = StringUtils.ReplaceIgnoreCase(retVal, "as", string.Empty);
-            retVal = StringUtils.ReplaceIgnoreCase(retVal, ";", string.Empty);
-            return retVal;
+            fileName = StringUtils.ReplaceIgnoreCase(fileName, "as", string.Empty);
+            fileName = StringUtils.ReplaceIgnoreCase(fileName, ";", string.Empty);
+            return $"{fileName}{PathUtils.GetExtension(filePath)}";
         }
 
         public static SiteInfo GetSiteInfo(string path)

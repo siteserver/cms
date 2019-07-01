@@ -158,7 +158,9 @@ namespace SiteServer.CMS.Model.Attributes
             "Reply",
             "CheckTaskDate",
             "UnCheckTaskDate",
-            "Photos"
+            "Photos",
+            "Teleplays",
+            "MemberName"
         });
     }
 }

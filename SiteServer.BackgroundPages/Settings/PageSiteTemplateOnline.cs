@@ -68,7 +68,8 @@ namespace SiteServer.BackgroundPages.Settings
 
             ltlPreviewUrl.Text = $@"<a href=""{templateUrl}"" target=""_blank"">模板详情</a>";
 
-            var urlAdd = PageSiteAdd.GetRedirectUrl(string.Empty, title);
+            var urlAdd = PageUtils.GetSettingsUrl("siteAdd");
+            PageSiteAdd.GetRedirectUrl(string.Empty, title);
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
             //if (_directoryNameLowerList.Contains($"T_{title}".ToLower().Trim()))
