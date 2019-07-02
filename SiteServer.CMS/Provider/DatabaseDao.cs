@@ -2023,28 +2023,25 @@ SET IDENTITY_INSERT {tableName} OFF
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
-                if (IsSqlServer2012)
+                retval = limit == 0
+                    ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
+                    : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+            }
+            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && !IsSqlServer2012)
+            {
+                if (offset == 0)
                 {
-                    retval = limit == 0
-                        ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
-                        : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
+                    retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
                 }
                 else
                 {
-                    if (offset == 0)
-                    {
-                        retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
-                    }
-                    else
-                    {
-                        var rowWhere = limit == 0
-                            ? $@"WHERE [row_num] > {offset}"
-                            : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
+                    var rowWhere = limit == 0
+                        ? $@"WHERE [row_num] > {offset}"
+                        : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                        retval = $@"SELECT * FROM (
+                    retval = $@"SELECT * FROM (
     SELECT {columnNames}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
 ) as T {rowWhere}";
-                    }
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
