@@ -3,8 +3,6 @@ using System.Web.UI;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
@@ -26,7 +24,7 @@ namespace SiteServer.BackgroundPages
 
         protected bool IsForbidden { get; private set; }
 
-        public RequestImpl AuthRequest { get; private set; }
+        public AuthenticatedRequest AuthRequest { get; private set; }
 
         private void SetMessage(MessageUtils.Message.EMessageType messageType, Exception ex, string message)
         {
@@ -38,7 +36,7 @@ namespace SiteServer.BackgroundPages
         {
             base.OnInit(e);
 
-            AuthRequest = new RequestImpl(Request);
+            AuthRequest = new AuthenticatedRequest(Request);
 
             if (!IsInstallerPage)
             {
@@ -49,7 +47,7 @@ namespace SiteServer.BackgroundPages
                 }
 
                 #if !DEBUG
-                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+                if (ConfigManager.Instance.IsInitialized && ConfigManager.Instance.DatabaseVersion != SystemManager.ProductVersion)
                 {
                     PageUtils.Redirect(PageSyncDatabase.GetRedirectUrl());
                     return;
@@ -85,8 +83,8 @@ namespace SiteServer.BackgroundPages
             if (!IsAccessable && !IsSinglePage) // 页面不能直接访问且不是单页，需要加一段框架检测代码，检测页面是否运行在框架内
             {
                 writer.Write($@"<script type=""text/javascript"">
-if (window.top.location.href.toLowerCase().indexOf(""main.aspx"") == -1){{
-	window.top.location.href = ""{PageInitialization.GetRedirectUrl()}"";
+if (window.top.location.href.toLowerCase().indexOf(""main.cshtml"") == -1){{
+	window.top.location.href = ""{PageUtils.GetMainUrl(0)}"";
 }}
 </script>");
             }

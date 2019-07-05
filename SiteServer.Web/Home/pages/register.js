@@ -88,13 +88,13 @@ var methods = {
         return;
       }
 
-      if (res.isChecked) {
+      if (res.value.isChecked) {
         alert({
           title: "恭喜，账号注册成功",
           type: "success",
           confirmButtonText: "进入登录页"
         }).then(function () {
-          location.href = 'login.html';
+          location.href = 'login.html?returnUrl=' + (utils.getQueryString('returnUrl') || '../index.html');
         });
       } else {
         alert({
@@ -102,7 +102,7 @@ var methods = {
           type: "success",
           confirmButtonText: "进入登录页"
         }).then(function () {
-          location.href = 'login.html';
+          location.href = 'login.html?returnUrl=' + (utils.getQueryString('returnUrl') || '../index.html');
         });
       }
     });

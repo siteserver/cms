@@ -48,7 +48,7 @@ namespace SiteServer.CMS.Plugin.Apis
 
         public int Insert(int siteId, IChannelInfo nodeInfo)
         {
-            return DataProvider.ChannelDao.Insert(nodeInfo);
+            return DataProvider.ChannelDao.Insert((ChannelInfo)nodeInfo);
         }
 
         public List<int> GetChannelIdList(int siteId)
@@ -60,6 +60,8 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             return ChannelManager.GetChannelIdList(ChannelManager.GetChannelInfo(siteId, parentId == 0 ? siteId : parentId), EScopeType.Children, string.Empty, string.Empty, string.Empty);
         }
+
+        
 
         //public List<int> GetChannelIdListByAdminName(int siteId, string adminName)
         //{

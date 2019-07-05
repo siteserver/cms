@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -38,6 +39,16 @@ namespace SiteServer.CMS.Plugin.Apis
             return AdminManager.GetAdminInfoByAccount(account);
         }
 
+        public List<string> GetUserNameList()
+        {
+            return DataProvider.AdministratorDao.GetUserNameList();
+        }
+
+        public IPermissions GetPermissions(string userName)
+        {
+            return new PermissionsImpl(AdminManager.GetAdminInfoByUserName(userName));
+        }
+
         public bool IsUserNameExists(string userName)
         {
             return DataProvider.AdministratorDao.IsUserNameExists(userName);
@@ -53,14 +64,19 @@ namespace SiteServer.CMS.Plugin.Apis
             return DataProvider.AdministratorDao.IsMobileExists(mobile);
         }
 
+        public string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
+        {
+            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
+        }
+
         public string GetAccessToken(int userId, string userName, DateTime expiresAt)
         {
-            return RequestImpl.GetAccessToken(userId, userName, expiresAt);
+            return AuthenticatedRequest.GetAccessToken(userId, userName, expiresAt);
         }
 
         public IAccessToken ParseAccessToken(string accessToken)
         {
-            return RequestImpl.ParseAccessToken(accessToken);
+            return AuthenticatedRequest.ParseAccessToken(accessToken);
         }
     }
 }

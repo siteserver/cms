@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Xml;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
@@ -740,10 +741,6 @@ namespace SiteServer.CMS.Plugin.Apis
 
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-#if (DEBUG)
-            DataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteNonQuery));
-#endif
-
             int returnVal = command.ExecuteNonQuery();
 
             if (mustCloseConnection)
@@ -1169,10 +1166,6 @@ namespace SiteServer.CMS.Plugin.Apis
 
             // Create a reader
 
-#if (DEBUG)
-            DataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteReader));
-#endif
-
             // Call ExecuteReader with the appropriate CommandBehavior
             var dataReader = connectionOwnership == AdoConnectionOwnership.External
                 ? command.ExecuteReader()
@@ -1390,10 +1383,6 @@ namespace SiteServer.CMS.Plugin.Apis
                 command.Connection.Open();
                 mustCloseConnection = true;
             }
-
-#if (DEBUG)
-            DataProvider.RecordDao.RecordCommandExecute(command, nameof(ExecuteScalar));
-#endif
 
             // Execute the command & return the results
             var retval = command.ExecuteScalar();

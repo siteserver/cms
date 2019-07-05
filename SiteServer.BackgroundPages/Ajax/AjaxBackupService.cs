@@ -75,7 +75,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
             var retval = new NameValueCollection();
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             if (type == TypeBackup)
             {
@@ -105,7 +105,7 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;
-            var request = new RequestImpl(Request);
+            var request = new AuthenticatedRequest(Request);
 
             try
             {
@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, RequestImpl request)
+        public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
             NameValueCollection retval;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
@@ -6,7 +7,6 @@ using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
-using TableColumn = SiteServer.Plugin.TableColumn;
 
 namespace SiteServer.CMS.Plugin
 {
@@ -50,22 +50,17 @@ namespace SiteServer.CMS.Plugin
                 DataProvider.DatabaseDao.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
-            ContentTableCreateOrUpdateStyles(tableName, service.ContentTableColumns);
+            ContentTableCreateOrUpdateStyles(tableName, service.ContentInputStyles);
         }
 
-        private static void ContentTableCreateOrUpdateStyles(string tableName, List<TableColumn> tableColumns)
+        private static void ContentTableCreateOrUpdateStyles(string tableName, List<InputStyle> inputStyles)
         {
             var styleInfoList = new List<TableStyleInfo>();
             var columnTaxis = 0;
-            foreach (var tableColumn in tableColumns)
+            foreach (var inputStyle in inputStyles)
             {
-                var inputStyle = tableColumn.InputStyle ?? new InputStyle
-                {
-                    InputType = InputType.Hidden
-                };
-
                 columnTaxis++;
-                var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, tableColumn.AttributeName, new List<int> { 0 });
+                var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
 
                 var isEquals = true;
 

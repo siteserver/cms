@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
@@ -35,13 +34,11 @@
           <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+          <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
       <div class="form-group">
         <label class="col-form-label">API部署方式</label>
@@ -49,7 +46,6 @@
           OnSelectedIndexChanged="RblIsSeparatedApi_SelectedIndexChanged" class="radio radio-primary" runat="server"></asp:RadioButtonList>
         <small class="form-text text-muted">设置API服务器部署方式</small>
       </div>
-
       <asp:PlaceHolder ID="PhSeparatedApi" runat="server">
         <div class="form-group">
           <label class="col-form-label">独立部署API访问地址
@@ -61,13 +57,9 @@
           <asp:TextBox id="TbSeparatedApiUrl" class="form-control" runat="server"></asp:TextBox>
         </div>
       </asp:PlaceHolder>
-
       <hr />
-
       <asp:Button class="btn btn-primary" text="确 定" onclick="Submit_OnClick" runat="server" />
-
     </div>
-
   </form>
 </body>
 

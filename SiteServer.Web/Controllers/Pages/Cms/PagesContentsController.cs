@@ -4,6 +4,7 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -22,7 +23,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -41,13 +42,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var onlyAdminId = request.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
 
                 var pageContentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -56,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var offset = siteInfo.Additional.PageSize * (page - 1);
                     var limit = siteInfo.Additional.PageSize;
 
-                    var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, offset, limit);
+                    var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
 
                     var sequence = offset + 1;
                     foreach (var contentId in pageContentIds)
@@ -103,7 +106,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");

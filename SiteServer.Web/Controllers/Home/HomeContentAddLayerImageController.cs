@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -56,7 +56,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
@@ -120,7 +120,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
@@ -158,8 +158,8 @@ namespace SiteServer.API.Controllers.Home
                     var fileName = PathUtility.GetUploadFileName(siteInfo, filePath);
 
                     var directoryPath = PathUtility.GetUploadDirectoryPath(siteInfo, fileExtName);
-                    var fixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.TitleImageAppendix + fileName);
-                    var editorFixFilePath = PathUtils.Combine(directoryPath, StringUtils.Constants.SmallImageAppendix + fileName);
+                    var fixFilePath = PathUtils.Combine(directoryPath, Constants.TitleImageAppendix + fileName);
+                    var editorFixFilePath = PathUtils.Combine(directoryPath, Constants.SmallImageAppendix + fileName);
 
                     var isImage = EFileSystemTypeUtils.IsImage(fileExtName);
 

@@ -1,0 +1,6 @@
+{
+  "port": 23709,
+  "path": "d:\\siteserver\\netfx-staging",
+  "clr": "v4.0",
+  "protocol": "http"
+}

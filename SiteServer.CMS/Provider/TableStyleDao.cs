@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        ExecuteNonQuery(SqlUpdateTableStyle, updateParms);
+                        ExecuteNonQuery(trans, SqlUpdateTableStyle, updateParms);
 
                         if (deleteAndInsertStyleItems)
                         {

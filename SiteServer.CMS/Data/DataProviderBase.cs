@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Core;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Data
@@ -48,6 +48,11 @@ namespace SiteServer.CMS.Data
         }
 
         protected IDbDataParameter GetParameter(string parameterName, DataType dataType, DateTime value)
+        {
+            return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
+        }
+
+        protected IDbDataParameter GetParameter(string parameterName, DataType dataType, DateTime? value)
         {
             return SqlUtils.GetIDbDataParameter(parameterName, dataType, 0, value);
         }

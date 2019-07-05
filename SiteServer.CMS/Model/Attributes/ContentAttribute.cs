@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Datory;
 
 namespace SiteServer.CMS.Model.Attributes
 {
@@ -25,6 +26,7 @@ namespace SiteServer.CMS.Model.Attributes
         public const string HitsByWeek = nameof(ContentInfo.HitsByWeek);
         public const string HitsByMonth = nameof(ContentInfo.HitsByMonth);
         public const string LastHitsDate = nameof(ContentInfo.LastHitsDate);
+        public const string Downloads = nameof(ContentInfo.Downloads);
         public const string SettingsXml = nameof(ContentInfo.SettingsXml);
         public const string Title = nameof(ContentInfo.Title);
         public const string IsTop = nameof(ContentInfo.IsTop);
@@ -78,6 +80,7 @@ namespace SiteServer.CMS.Model.Attributes
             HitsByWeek,
             HitsByMonth,
             LastHitsDate,
+            Downloads,
             SettingsXml,
             Title,
             IsTop,
@@ -110,6 +113,7 @@ namespace SiteServer.CMS.Model.Attributes
             HitsByWeek,
             HitsByMonth,
             LastHitsDate,
+            Downloads,
             SettingsXml,
             IsTop,
             IsRecommend,
@@ -153,7 +157,10 @@ namespace SiteServer.CMS.Model.Attributes
             "Comments",
             "Reply",
             "CheckTaskDate",
-            "UnCheckTaskDate"
+            "UnCheckTaskDate",
+            "Photos",
+            "Teleplays",
+            "MemberName"
         });
     }
 }

@@ -17,7 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetQueryString("tableName");
@@ -48,7 +48,7 @@ namespace SiteServer.API.Controllers.Pages.Shared
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin) return Unauthorized();
 
                 var tableName = request.GetPostString("tableName");

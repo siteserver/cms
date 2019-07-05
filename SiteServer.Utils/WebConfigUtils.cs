@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Xml;
-using SiteServer.Plugin;
+using Datory;
 
 namespace SiteServer.Utils
 {
@@ -37,7 +37,7 @@ namespace SiteServer.Utils
 
         public static bool IsNightlyUpdate { get; private set; }
 
-        public static void Load(string physicalApplicationPath, string webConfigFileName = WebConfigFileName)
+        public static void Load(string physicalApplicationPath, string webConfigPath)
         {
             PhysicalApplicationPath = physicalApplicationPath;
 
@@ -48,9 +48,7 @@ namespace SiteServer.Utils
             {
                 var doc = new XmlDocument();
 
-                var configFile = PathUtils.Combine(PhysicalApplicationPath, webConfigFileName);
-
-                doc.Load(configFile);
+                doc.Load(webConfigPath);
 
                 var appSettings = doc.SelectSingleNode("configuration/appSettings");
                 if (appSettings != null)
@@ -347,7 +345,7 @@ namespace SiteServer.Utils
                 {
                     connectionString += $"Database={database};";
                 }
-                connectionString += "SslMode=none;CharSet=utf8;";
+                connectionString += "SslMode=Preferred;CharSet=utf8;";
             }
             else if (databaseType == DatabaseType.SqlServer)
             {
@@ -394,7 +392,7 @@ namespace SiteServer.Utils
                 connectionString = connectionString.TrimEnd(';');
                 if (!StringUtils.ContainsIgnoreCase(connectionString, "SslMode="))
                 {
-                    connectionString += ";SslMode=none;";
+                    connectionString += ";SslMode=Preferred;";
                 }
                 if (!StringUtils.ContainsIgnoreCase(connectionString, "CharSet="))
                 {

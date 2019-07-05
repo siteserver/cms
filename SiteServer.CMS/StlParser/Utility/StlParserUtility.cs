@@ -78,6 +78,28 @@ namespace SiteServer.CMS.StlParser.Utility
             return exists;
         }
 
+        public static bool IsStlChannelElementWithTypePageContent(List<string> list)
+        {
+            foreach (var label in list)
+            {
+                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                return true;
+            }
+            return false;
+        }
+
+        public static string GetStlChannelElementWithTypePageContent(List<string> labelList)
+        {
+            var stlPageChannelElement = string.Empty;
+            foreach (var label in labelList)
+            {
+                if (!IsStlChannelElement(label, ChannelAttribute.PageContent)) continue;
+                stlPageChannelElement = label;
+                break;
+            }
+            return stlPageChannelElement;
+        }
+
         public static bool IsStlContentElementWithTypePageContent(List<string> list)
         {
             foreach (var label in list)
@@ -86,6 +108,18 @@ namespace SiteServer.CMS.StlParser.Utility
                 return true;
             }
             return false;
+        }
+
+        public static string GetStlContentElementWithTypePageContent(List<string> labelList)
+        {
+            var stlPageContentElement = string.Empty;
+            foreach (var label in labelList)
+            {
+                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
+                stlPageContentElement = label;
+                break;
+            }
+            return stlPageContentElement;
         }
 
         public static string GetStlElement(string stlElementName, List<string> labelList)
@@ -101,18 +135,6 @@ namespace SiteServer.CMS.StlParser.Utility
                 }
             }
             return stlElement;
-        }
-
-        public static string GetStlContentElementWithTypePageContent(List<string> labelList)
-        {
-            var stlPageContentElement = string.Empty;
-            foreach (var label in labelList)
-            {
-                if (!IsStlContentElement(label, ContentAttribute.PageContent)) continue;
-                stlPageContentElement = label;
-                break;
-            }
-            return stlPageContentElement;
         }
 
         public static string GetNameFromEntity(string stlEntity)
@@ -368,7 +390,7 @@ namespace SiteServer.CMS.StlParser.Utility
             return "ajaxElement_" + updaterId + "_" + StringUtils.GetRandomInt(100, 1000);
         }
 
-        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, IContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public static string GetStlCurrentUrl(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
@@ -398,6 +420,34 @@ namespace SiteServer.CMS.StlParser.Utility
             //currentUrl是当前页面的地址，前后台分离的时候，不允许带上protocol
             //return PageUtils.AddProtocolToUrl(currentUrl);
             return currentUrl;
+        }
+
+        public static void GetLoading(string innerHtml, out string loading, out string template)
+        {
+            loading = string.Empty;
+            template = string.Empty;
+            if (string.IsNullOrEmpty(innerHtml)) return;
+
+            var stlElementList = GetStlElementList(innerHtml);
+            if (stlElementList.Count > 0)
+            {
+                foreach (var stlElement in stlElementList)
+                {
+                    if (IsSpecifiedStlElement(stlElement, StlLoading.ElementName))
+                    {
+                        loading = GetInnerHtml(stlElement);
+                        template = innerHtml.Replace(stlElement, string.Empty);
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(loading) && string.IsNullOrEmpty(template))
+            {
+                template = innerHtml;
+            }
+
+            loading = StringUtils.Trim(loading);
+            template = StringUtils.Trim(template);
         }
 
         public static void GetYesNo(string innerHtml, out string yes, out string no)

@@ -131,5 +131,13 @@ namespace SiteServer.Cli.Core
 
             await FileUtils.AppendTextAsync(filePath, Encoding.UTF8, builder.ToString());
         }
+
+        public static string GetWebConfigPath(string configFile)
+        {
+            return PathUtils.IsFilePath(configFile)
+                ? configFile
+                : PathUtils.Combine(PhysicalApplicationPath,
+                    !string.IsNullOrEmpty(configFile) ? configFile : WebConfigUtils.WebConfigFileName);
+        }
     }
 }

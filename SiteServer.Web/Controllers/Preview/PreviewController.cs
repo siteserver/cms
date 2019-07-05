@@ -263,7 +263,7 @@ namespace SiteServer.API.Controllers.Preview
                             var thePageInfo = pageInfo.Clone();
                             thePageInfo.IsLocal = true;
 
-                            var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                            var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
                             StlParserManager.ReplacePageElementsInChannelPage(pagedBuilder, thePageInfo, stlLabelList, thePageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
@@ -384,7 +384,7 @@ namespace SiteServer.API.Controllers.Preview
                     var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                     var pageSqlContentsElementParser = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
-                    var pageCount = pageSqlContentsElementParser.GetPageCount(out var _);
+                    var pageCount = pageSqlContentsElementParser.GetPageCount(out var totalNum);
 
                     Parser.Parse(pageInfo, contextInfo, contentBuilder, visualInfo.FilePath, true);
 
@@ -395,7 +395,7 @@ namespace SiteServer.API.Controllers.Preview
                             var thePageInfo = pageInfo.Clone();
                             thePageInfo.IsLocal = true;
 
-                            var pageHtml = pageSqlContentsElementParser.Parse(currentPageIndex, pageCount);
+                            var pageHtml = pageSqlContentsElementParser.Parse(totalNum, currentPageIndex, pageCount, false);
                             var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
 
                             StlParserManager.ReplacePageElementsInContentPage(pagedBuilder, thePageInfo, stlLabelList, visualInfo.ChannelId, visualInfo.ContentId, currentPageIndex, pageCount);

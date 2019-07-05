@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -217,7 +218,7 @@ namespace SiteServer.CMS.Provider
         private const string ParmDescription = "@Description";
         private const string ParmExtendValues = "@ExtendValues";
 
-        private void InsertChannelInfoWithTrans(IChannelInfo parentChannelInfo, IChannelInfo channelInfo, IDbTransaction trans)
+        private void InsertChannelInfoWithTrans(ChannelInfo parentChannelInfo, ChannelInfo channelInfo, IDbTransaction trans)
         {
             if (parentChannelInfo != null)
             {
@@ -272,7 +273,7 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmContentTemplateId, DataType.Integer, channelInfo.ContentTemplateId),
                 GetParameter(ParmKeywords, DataType.VarChar, 255, channelInfo.Keywords),
                 GetParameter(ParmDescription, DataType.VarChar, 255, channelInfo.Description),
-                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Attributes.ToString())
+                GetParameter(ParmExtendValues, DataType.Text, channelInfo.Additional.ToString())
             };
 
             if (channelInfo.SiteId != 0)
@@ -624,7 +625,7 @@ namespace SiteServer.CMS.Provider
 
         }
 
-        public int Insert(IChannelInfo channelInfo)
+        public int Insert(ChannelInfo channelInfo)
         {
             if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
 
@@ -808,6 +809,8 @@ namespace SiteServer.CMS.Provider
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
             if (channelInfo == null) return;
 
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
             var idList = new List<int>();
             if (channelInfo.ChildrenCount > 0)
             {
@@ -820,8 +823,6 @@ namespace SiteServer.CMS.Provider
 
             int deletedNum;
 
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-
             using (var conn = GetConnection())
             {
                 conn.Open();
@@ -829,8 +830,6 @@ namespace SiteServer.CMS.Provider
                 {
                     try
                     {
-                        DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
-
                         deletedNum = ExecuteNonQuery(trans, deleteCmd);
 
                         if (channelInfo.ParentId != 0)
@@ -852,6 +851,12 @@ namespace SiteServer.CMS.Provider
             UpdateIsLastNode(channelInfo.ParentId);
             UpdateSubtractChildrenCount(channelInfo.ParentsPath, deletedNum);
 
+            foreach (var channelIdDeleted in idList)
+            {
+                DataProvider.ContentDao.UpdateTrashContentsByChannelId(siteInfo.Id, channelIdDeleted, tableName);
+            }
+            //DataProvider.ContentDao.DeleteContentsByDeletedChannelIdList(trans, siteInfo, idList);
+
             if (channelInfo.ParentId == 0)
             {
                 DataProvider.SiteDao.Delete(channelInfo.Id);
@@ -860,6 +865,11 @@ namespace SiteServer.CMS.Provider
             {
                 ChannelManager.RemoveCacheBySiteId(channelInfo.SiteId);
             }
+        }
+
+        public void DeleteAll(int siteId)
+        {
+            ExecuteNonQuery($"DELETE FROM siteserver_Channel WHERE {ChannelAttribute.SiteId} = {siteId} OR {ChannelAttribute.Id} = {siteId}");
         }
 
         /// <summary>
@@ -1041,8 +1051,6 @@ namespace SiteServer.CMS.Provider
                     foreach (var theGroup in groupArr)
                     {
                         var trimGroup = theGroup.Trim();
-                        //whereStringBuilder.Append(
-                        //    $" (siteserver_Channel.GroupNameCollection = '{trimGroup}' OR CHARINDEX('{trimGroup},',siteserver_Channel.GroupNameCollection) > 0 OR CHARINDEX(',{trimGroup},', siteserver_Channel.GroupNameCollection) > 0 OR CHARINDEX(',{trimGroup}', siteserver_Channel.GroupNameCollection) > 0) OR ");
 
                         whereStringBuilder.Append(
                                 $" (siteserver_Channel.GroupNameCollection = '{trimGroup}' OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", "," + trimGroup + ",")} OR {SqlUtils.GetInStr("siteserver_Channel.GroupNameCollection", "," + trimGroup)}) OR ");
@@ -1064,7 +1072,7 @@ namespace SiteServer.CMS.Provider
                     whereStringBuilder.Append(" AND (");
                     foreach (var theGroupNot in groupNotArr)
                     {
-                        var trimGroupNot = theGroupNot.Trim();
+                        var trimGroupNot = AttackUtils.FilterSql(theGroupNot.Trim());
                         //whereStringBuilder.Append(
                         //    $" (siteserver_Channel.GroupNameCollection <> '{trimGroupNot}' AND CHARINDEX('{trimGroupNot},',siteserver_Channel.GroupNameCollection) = 0 AND CHARINDEX(',{trimGroupNot},',siteserver_Channel.GroupNameCollection) = 0 AND CHARINDEX(',{trimGroupNot}',siteserver_Channel.GroupNameCollection) = 0) AND ");
 
@@ -1140,12 +1148,6 @@ namespace SiteServer.CMS.Provider
             string sqlString;
             if (totalNum > 0)
             {
-                //                sqlString = $@"SELECT TOP {totalNum} Id
-                //FROM siteserver_Channel 
-                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-                //";
-                //var where =
-                //    $"WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString})";
                 var where =
                     $"WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString})";
                 sqlString = SqlUtils.ToTopSqlString(TableName, "Id",
@@ -1155,10 +1157,6 @@ namespace SiteServer.CMS.Provider
             }
             else
             {
-                //                sqlString = $@"SELECT Id
-                //FROM siteserver_Channel 
-                //WHERE (Id IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) {whereString}) {orderByString}
-                //";
                 sqlString = $@"SELECT Id
 FROM siteserver_Channel 
 WHERE {SqlUtils.GetSqlColumnInList("Id", channelIdList)} {whereString} {orderByString}

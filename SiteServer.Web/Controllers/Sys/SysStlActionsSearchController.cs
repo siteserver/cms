@@ -21,7 +21,7 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(RequestImpl request)
+        public NameValueCollection GetPostCollection(AuthenticatedRequest request)
         {
             var formCollection = new NameValueCollection();
             foreach (var item in request.PostData)
@@ -39,7 +39,7 @@ namespace SiteServer.API.Controllers.Sys
             var template = string.Empty;
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var form = GetPostCollection(request);
 
                 var isAllSites = request.GetPostBool(StlSearch.IsAllSites.ToLower());
@@ -113,7 +113,6 @@ namespace SiteServer.API.Controllers.Sys
                 else if (StlParserUtility.IsStlElementExists(StlPageSqlContents.ElementName, stlLabelList))
                 {
                     var stlElement = StlParserUtility.GetStlElement(StlPageSqlContents.ElementName, stlLabelList);
-                    var stlElementTranslated = StlParserManager.StlEncrypt(stlElement);
 
                     var stlPageSqlContents = new StlPageSqlContents(stlElement, pageInfo, contextInfo);
                     
@@ -127,8 +126,8 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (currentPageIndex != pageIndex) continue;
 
-                        var pageHtml = stlPageSqlContents.Parse(currentPageIndex, pageCount);
-                        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElementTranslated, pageHtml));
+                        var pageHtml = stlPageSqlContents.Parse(totalNum, currentPageIndex, pageCount, false);
+                        var pagedBuilder = new StringBuilder(contentBuilder.ToString().Replace(stlElement, pageHtml));
 
                         StlParserManager.ReplacePageElementsInSearchPage(pagedBuilder, pageInfo, stlLabelList, ajaxDivId, pageInfo.PageChannelId, currentPageIndex, pageCount, totalNum);
 

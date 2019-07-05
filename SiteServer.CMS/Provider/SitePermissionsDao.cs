@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Provider
 {
@@ -152,9 +152,11 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
-        public Dictionary<int, List<string>> GetWebsitePermissionSortedList(string[] roles)
+        public Dictionary<int, List<string>> GetWebsitePermissionSortedList(IEnumerable<string> roles)
         {
-            var sortedlist = new Dictionary<int, List<string>>();
+            var sortedList = new Dictionary<int, List<string>>();
+            if (roles == null) return sortedList;
+
             foreach (var roleName in roles)
             {
                 var systemPermissionsList = GetSystemPermissionsInfoList(roleName);
@@ -166,16 +168,17 @@ namespace SiteServer.CMS.Provider
                     {
                         if (!list.Contains(websitePermission)) list.Add(websitePermission);
                     }
-                    sortedlist[systemPermissionsInfo.SiteId] = list;
+                    sortedList[systemPermissionsInfo.SiteId] = list;
                 }
             }
 
-            return sortedlist;
+            return sortedList;
         }
 
-        public Dictionary<string, List<string>> GetChannelPermissionSortedList(string[] roles)
+        public Dictionary<string, List<string>> GetChannelPermissionSortedList(IList<string> roles)
         {
             var dict = new Dictionary<string, List<string>>();
+            if (roles == null) return dict;
 
             foreach (var roleName in roles)
             {
@@ -205,12 +208,12 @@ namespace SiteServer.CMS.Provider
             return dict;
         }
 
-        public List<string> GetChannelPermissionListIgnoreChannelId(string[] roles)
+        public List<string> GetChannelPermissionListIgnoreChannelId(IList<string> roles)
         {
             var list = new List<string>();
-            var roleNameCollection = new List<string>(roles);
+            if (roles == null) return list;
 
-            foreach (var roleName in roleNameCollection)
+            foreach (var roleName in roles)
             {
                 var systemPermissionsInfoList = GetSystemPermissionsInfoList(roleName);
                 foreach (SitePermissionsInfo systemPermissionsInfo in systemPermissionsInfoList)

@@ -1,4 +1,5 @@
 using System;
+using Datory;
 using SiteServer.Plugin;
 
 namespace SiteServer.CMS.Model

@@ -9,7 +9,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils.Enumerations;
 
@@ -129,7 +128,7 @@ namespace SiteServer.BackgroundPages.Ajax
             var type = Request["type"];
             var retval = new NameValueCollection();
             string retString = null;
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
             if (!request.IsAdminLoggin) return;
 
             if (type == TypeGetCountArray)
@@ -395,7 +394,7 @@ namespace SiteServer.BackgroundPages.Ajax
             return retval;
         }
 
-        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, RequestImpl request)
+        public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)
         {
             var list = new List<string>();
 

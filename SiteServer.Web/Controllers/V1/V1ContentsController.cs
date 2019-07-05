@@ -5,6 +5,7 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -96,7 +97,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -130,7 +131,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -196,7 +197,7 @@ namespace SiteServer.API.Controllers.V1
                 {
                     try
                     {
-                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(attributes), contentInfo));
+                        service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, attributes, contentInfo));
                     }
                     catch (Exception ex)
                     {
@@ -230,7 +231,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -264,7 +265,9 @@ namespace SiteServer.API.Controllers.V1
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
 
-                DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
+                ContentUtility.Delete(tableName, siteInfo, channelId, id);
+
+                //DataProvider.ContentDao.DeleteContent(tableName, siteInfo, channelId, id);
 
                 return Ok(new
                 {
@@ -283,7 +286,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -332,7 +335,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -360,14 +363,11 @@ namespace SiteServer.API.Controllers.V1
 
                 var tableName = siteInfo.TableName;
 
-                var top = request.GetQueryInt("top", 20);
-                var skip = request.GetQueryInt("skip");
-                var like = request.GetQueryString("like");
-                var orderBy = request.GetQueryString("orderBy");
+                var parameters = new ApiContentsParameters(request);
 
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, top, skip, like, orderBy, request.QueryString, out var count);
+                var tupleList = DataProvider.ContentDao.ApiGetContentIdListBySiteId(tableName, siteId, parameters, out var count);
                 var value = new List<Dictionary<string, object>>();
-                foreach (var tuple in contentIdList)
+                foreach (var tuple in tupleList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, tuple.Item1, tuple.Item2);
                     if (contentInfo != null)
@@ -376,7 +376,7 @@ namespace SiteServer.API.Controllers.V1
                     }
                 }
 
-                return Ok(new PageResponse(value, top, skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
+                return Ok(new PageResponse(value, parameters.Top, parameters.Skip, request.HttpRequest.Url.AbsoluteUri) {Count = count});
             }
             catch (Exception ex)
             {
@@ -390,7 +390,7 @@ namespace SiteServer.API.Controllers.V1
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var sourceId = request.GetPostInt(ContentAttribute.SourceId.ToCamelCase());
                 bool isAuth;
                 if (sourceId == SourceManager.User)
@@ -426,12 +426,11 @@ namespace SiteServer.API.Controllers.V1
                 var like = request.GetQueryString("like");
                 var orderBy = request.GetQueryString("orderBy");
 
-                int count;
-                var contentIdList = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out count);
+                var list = DataProvider.ContentDao.ApiGetContentIdListByChannelId(tableName, siteId, channelId, top, skip, like, orderBy, request.QueryString, out var count);
                 var value = new List<Dictionary<string, object>>();
-                foreach(var contentId in contentIdList)
+                foreach(var (contentChannelId, contentId) in list)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelId, contentId);
                     if (contentInfo != null)
                     {
                         value.Add(contentInfo.ToDictionary());

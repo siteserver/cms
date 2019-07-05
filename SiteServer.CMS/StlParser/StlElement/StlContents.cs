@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Utils;
 using SiteServer.CMS.Model.Enumerations;
@@ -15,6 +16,9 @@ namespace SiteServer.CMS.StlParser.StlElement
     public class StlContents : StlListBase
     {
         public const string ElementName = "stl:contents";
+
+        [StlAttribute(Title = "显示相关内容列表")]
+        public const string IsRelatedContents = nameof(IsRelatedContents);
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)
         {

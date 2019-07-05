@@ -1,9 +1,12 @@
-﻿using SiteServer.Utils;
+﻿using System.Text;
+using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
 using SiteServer.CMS.StlParser.Utility;
@@ -91,7 +94,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
-            var ellipsis = StringUtils.Constants.Ellipsis;
+            var ellipsis = Constants.Ellipsis;
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
@@ -198,7 +201,18 @@ namespace SiteServer.CMS.StlParser.StlElement
                 return channel.ToDictionary();
             }
 
-            return ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+            var parsedContent = ParseImpl(pageInfo, contextInfo, leftText, rightText, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper, channel, channelId);
+
+            var innerBuilder = new StringBuilder(parsedContent);
+            StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+            parsedContent = innerBuilder.ToString();
+
+            if (!StringUtils.EqualsIgnoreCase(type, ChannelAttribute.PageContent))
+            {
+                parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            }
+
+            return parsedContent;
         }
 
         private static string ParseImpl(PageInfo pageInfo, ContextInfo contextInfo, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
@@ -439,7 +453,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return leftText + parsedContent + rightText;
         }
 
-        private static string GetValue(string attributeName, IAttributes attributes, bool isAddAndNotPostBack, string defaultValue)
+        private static string GetValue(string attributeName, AttributesImpl attributes, bool isAddAndNotPostBack, string defaultValue)
         {
             var value = attributes.Get(attributeName);
             if (isAddAndNotPostBack && value == null)

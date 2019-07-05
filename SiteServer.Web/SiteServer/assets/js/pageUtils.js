@@ -100,7 +100,7 @@ var pageUtils = {
         title: config.title,
         text: config.text,
         type: 'question',
-        confirmButtonText: config.button,
+        confirmButtonText: config.button || '删 除',
         confirmButtonClass: 'btn btn-danger',
         showCancelButton: true,
         cancelButtonText: '取 消'

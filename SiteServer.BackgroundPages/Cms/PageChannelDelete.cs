@@ -7,6 +7,7 @@ using SiteServer.CMS.Core;
 using System.Collections.Generic;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.BackgroundPages.Cms
 {
@@ -48,8 +49,9 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
 
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
+                var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelId);
                 var displayName = channelInfo.ChannelName;
-                var count = ContentManager.GetCount(SiteInfo, channelInfo);
+                var count = ContentManager.GetCount(SiteInfo, channelInfo, onlyAdminId);
                 if (count > 0)
                 {
                     displayName += $"({count})";

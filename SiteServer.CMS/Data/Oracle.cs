@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Xml;
+using Datory;
 using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Plugin.Apis;
 using SiteServer.Plugin;
@@ -9,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Data
 {
-    public class Oracle : DatabaseApi, IDatabaseApi
+    public class Oracle : DatabaseApi
     {
         #region Overrides
         /// <summary>

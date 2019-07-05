@@ -24,7 +24,7 @@ namespace SiteServer.CMS.StlParser.Model
 
         public TemplateInfo TemplateInfo { get; }
 
-        public IUserInfo UserInfo { get; set; }
+        public UserInfo UserInfo { get; set; }
 
         public int SiteId { get; private set; }
 

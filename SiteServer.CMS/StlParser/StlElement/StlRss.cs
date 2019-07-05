@@ -8,6 +8,8 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Utility;
 using SiteServer.Utils.Enumerations;
+using SiteServer.CMS.DataCache.Content;
+using SiteServer.CMS.Model.Enumerations;
 
 namespace SiteServer.CMS.StlParser.StlElement
 {
@@ -204,28 +206,28 @@ namespace SiteServer.CMS.StlParser.StlElement
             }
             channel.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetChannelUrl(pageInfo.SiteInfo, nodeInfo, pageInfo.IsLocal)));
 
-            var dataSource = StlDataUtility.GetContentsDataSource(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
+            var minContentInfoList = StlDataUtility.GetMinContentInfoList(pageInfo.SiteInfo, channelId, 0, groupContent, groupContentNot, tags, false, false, false, false, false, false, false, startNum, totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot, isColorExists, isColor, string.Empty, scopeType, groupChannel, groupChannelNot, null);
 
-            if (dataSource != null)
+            if (minContentInfoList != null)
             {
-                //foreach (var dataItem in dataSource)
-                //{
-                //    var item = new RssItem();
+                foreach (var minContentInfo in minContentInfoList)
+                {
+                    var item = new RssItem();
 
-                //    var contentInfo = new BackgroundContentInfo(dataItem);
-                //    item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
-                //    item.Description = contentInfo.Summary;
-                //    if (string.IsNullOrEmpty(item.Description))
-                //    {
-                //        item.Description = StringUtils.StripTags(contentInfo.Content);
-                //        item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
-                //    }
-                //    item.Description = StringUtils.Replace("&", item.Description, "&amp;");
-                //    item.PubDate = contentInfo.AddDate;
-                //    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo)));
+                    var contentInfo = ContentManager.GetContentInfo(pageInfo.SiteInfo, minContentInfo.ChannelId, minContentInfo.Id);
+                    item.Title = StringUtils.Replace("&", contentInfo.Title, "&amp;");
+                    item.Description = contentInfo.Summary;
+                    if (string.IsNullOrEmpty(item.Description))
+                    {
+                        item.Description = StringUtils.StripTags(contentInfo.Content);
+                        item.Description = string.IsNullOrEmpty(item.Description) ? contentInfo.Title : StringUtils.MaxLengthText(item.Description, 200);
+                    }
+                    item.Description = StringUtils.Replace("&", item.Description, "&amp;");
+                    item.PubDate = contentInfo.AddDate.Value;
+                    item.Link = new Uri(PageUtils.AddProtocolToUrl(PageUtility.GetContentUrl(pageInfo.SiteInfo, contentInfo, false)));
 
-                //    channel.Items.Add(item);
-                //}
+                    channel.Items.Add(item);
+                }
             }
 
             feed.Channels.Add(channel);

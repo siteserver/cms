@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using SiteServer.CMS.Api;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
@@ -69,7 +70,7 @@ namespace SiteServer.CMS.Plugin
 
                 try
                 {
-                    metadata = PackageUtils.GetPackageMetadataFromPlugins(directoryName, out errorMessage);
+                    metadata = PackageUtils.GetPackageMetadataFromPluginDirectory(directoryName, out errorMessage);
 
                     var dllDirectoryPath = PathUtils.GetPluginDllDirectoryPath(directoryName);
                     if (string.IsNullOrEmpty(dllDirectoryPath))
@@ -184,15 +185,13 @@ namespace SiteServer.CMS.Plugin
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
-            WebConfigUtils.Load(applicationPhysicalPath);
-            _pluginInfoListRunnable = PluginInfoListRunnable;
+            WebConfigUtils.Load(applicationPhysicalPath, PathUtils.Combine(applicationPhysicalPath, WebConfigUtils.WebConfigFileName));
 
-            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath), new ApiCollectionImpl
+            Context.Initialize(new EnvironmentImpl(WebConfigUtils.DatabaseType, WebConfigUtils.ConnectionString, WebConfigUtils.HomeDirectory, WebConfigUtils.AdminDirectory, WebConfigUtils.PhysicalApplicationPath, ApiManager.ApiUrl), new ApiCollectionImpl
             {
                 AdminApi = AdminApi.Instance,
                 ConfigApi = ConfigApi.Instance,
                 ContentApi = ContentApi.Instance,
-                DatabaseApi = DataProvider.DatabaseApi,
                 ChannelApi = ChannelApi.Instance,
                 ParseApi = ParseApi.Instance,
                 PluginApi = PluginApi.Instance,
@@ -200,6 +199,8 @@ namespace SiteServer.CMS.Plugin
                 UserApi = UserApi.Instance,
                 UtilsApi = UtilsApi.Instance
             });
+
+            _pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
         public static void ClearCache()

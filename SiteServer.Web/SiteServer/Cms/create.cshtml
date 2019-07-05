@@ -48,20 +48,20 @@
   <div class="form-inline">
 
     <div class="checkbox checkbox-primary mt-2">
-      <input class="ml-2" id="checkbox1" type="checkbox" v-on:click="selectAll()" v-model="isAllChecked">
-      <label for="checkbox1">
+      <input class="ml-2" id="checkbox_all" type="checkbox" v-on:click="selectAll()" v-model="isAllChecked">
+      <label for="checkbox_all">
         全选
       </label>
-      <input class="ml-2" id="checkbox2" type="checkbox" v-model="isDescendent">
-      <label for="checkbox2">
+      <input class="ml-2" id="checkbox_children" type="checkbox" v-model="isDescendent">
+      <label for="checkbox_children">
         同时生成下级
       </label>
-      <input class="ml-2" id="checkbox3" type="checkbox" v-model="isChannelPage">
-      <label for="checkbox3">
+      <input class="ml-2" id="checkbox_channels" type="checkbox" v-model="isChannelPage">
+      <label for="checkbox_channels">
         生成栏目页
       </label>
-      <input class="ml-2" id="checkbox4" type="checkbox" v-model="isContentPage">
-      <label for="checkbox4">
+      <input class="ml-2" id="checkbox_contents" type="checkbox" v-model="isContentPage">
+      <label for="checkbox_contents">
         生成内容页
       </label>
     </div>

@@ -90,11 +90,11 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.LastEditUserName, value);
         }
 
-        public DateTime LastEditDate
-		{
-            get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
-            set => Set(ContentAttribute.LastEditDate, value);
-        }
+	    public DateTime? LastEditDate
+	    {
+	        get => GetDateTime(ContentAttribute.LastEditDate, DateTime.Now);
+	        set => Set(ContentAttribute.LastEditDate, value);
+	    }
 
 	    public int AdminId
 	    {
@@ -114,7 +114,9 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.Taxis, value);
         }
 
-        public string GroupNameCollection
+	    public bool Color { get; set; }
+
+	    public string GroupNameCollection
         {
             get => GetString(ContentAttribute.GroupNameCollection);
             set => Set(ContentAttribute.GroupNameCollection, value);
@@ -126,7 +128,9 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.Tags, value);
         }
 
-        public int SourceId
+	    public bool Checked { get; set; }
+
+	    public int SourceId
         {
             get => GetInt(ContentAttribute.SourceId);
             set => Set(ContentAttribute.SourceId, value);
@@ -174,19 +178,29 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.HitsByMonth, value);
         }
 
-        public DateTime LastHitsDate
+	    public DateTime? LastHitsDate
         {
             get => GetDateTime(ContentAttribute.LastHitsDate, DateTime.Now);
             set => Set(ContentAttribute.LastHitsDate, value);
         }
+
+	    public int Downloads
+        {
+	        get => GetInt(ContentAttribute.Downloads);
+	        set => Set(ContentAttribute.Downloads, value);
+	    }
 
         public string Title
 		{
             get => GetString(ContentAttribute.Title);
             set => Set(ContentAttribute.Title, value);
         }
-      
-        public bool IsTop
+
+	    public bool Top { get; set; }
+	    public bool Recommend { get; set; }
+	    public bool Hot { get; set; }
+
+	    public bool IsTop
         {
             get => GetBool(ContentAttribute.IsTop);
             set => Set(ContentAttribute.IsTop, value);
@@ -210,7 +224,7 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.IsColor, value);
         }
 
-        public DateTime AddDate
+        public DateTime? AddDate
         {
             get => GetDateTime(ContentAttribute.AddDate, DateTime.Now);
             set => Set(ContentAttribute.AddDate, value);
@@ -274,6 +288,11 @@ namespace SiteServer.CMS.Model
         {
             get => GetString(ContentAttribute.SettingsXml);
             set => Set(ContentAttribute.SettingsXml, value);
+        }
+
+        public T Get<T>(string name)
+        {
+            return TranslateUtils.Cast<T>(Get(name));
         }
 
         public override Dictionary<string, object> ToDictionary()
@@ -370,12 +389,12 @@ namespace SiteServer.CMS.Model
 	    {
 	        public override bool CanConvert(Type objectType)
 	        {
-	            return objectType == typeof(IAttributes);
+	            return objectType == typeof(AttributesImpl);
 	        }
 
 	        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 	        {
-	            var attributes = value as IAttributes;
+	            var attributes = value as AttributesImpl;
 	            serializer.Serialize(writer, attributes?.ToDictionary());
 	        }
 

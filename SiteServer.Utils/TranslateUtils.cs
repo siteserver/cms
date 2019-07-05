@@ -16,6 +16,25 @@ namespace SiteServer.Utils
 {
     public static class TranslateUtils
     {
+        public static T Cast<T>(object value, T defaultValue = default(T))
+        {
+            switch (value)
+            {
+                case null:
+                    return defaultValue;
+                case T variable:
+                    return variable;
+                default:
+                    try
+                    {
+                        return (T)Convert.ChangeType(value, typeof(T));
+                    }
+                    catch (InvalidCastException)
+                    {
+                        return defaultValue;
+                    }
+            }
+        }
 
         //添加枚举：(fileAttributes | FileAttributes.ReadOnly)   判断枚举：((fileAttributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)   去除枚举：(fileAttributes ^ FileAttributes.ReadOnly)
 
@@ -207,6 +226,19 @@ namespace SiteServer.Utils
                 }
             }
             return list;
+        }
+
+        public static IDictionary<string, object> ToDictionary(NameValueCollection collection)
+        {
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (collection == null) return dict;
+
+            foreach (var key in collection.AllKeys)
+            {
+                dict[key] = collection[key];
+            }
+
+            return dict;
         }
 
         public static StringCollection StringCollectionToStringCollection(string collection, char separator = ',')
@@ -560,7 +592,7 @@ namespace SiteServer.Utils
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = new List<JsonConverter>
             {
-                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm"}
+                new IsoDateTimeConverter {DateTimeFormat = "yyyy-MM-dd HH:mm:ss"}
             }
         };
 
@@ -583,7 +615,7 @@ namespace SiteServer.Utils
             }
         }
 
-        public static T JsonDeserialize<T>(string json)
+        public static T JsonDeserialize<T>(string json, T defaultValue = default(T))
         {
             try
             {
@@ -595,7 +627,7 @@ namespace SiteServer.Utils
             }
             catch
             {
-                return default(T);
+                return defaultValue;
             }
         }
 

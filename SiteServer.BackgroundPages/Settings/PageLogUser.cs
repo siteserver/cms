@@ -28,7 +28,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (IsForbidden) return;
 
             SpContents.ControlToPaginate = RptContents;
-            SpContents.ItemsPerPage = StringUtils.Constants.PageSize;
+            SpContents.ItemsPerPage = Constants.PageSize;
 
             SpContents.SelectCommand = !AuthRequest.IsQueryExists("Keyword") ? DataProvider.UserLogDao.GetSelectCommend() : DataProvider.UserLogDao.GetSelectCommend(AuthRequest.GetQueryString("UserName"), AuthRequest.GetQueryString("Keyword"), AuthRequest.GetQueryString("DateFrom"), AuthRequest.GetQueryString("DateTo"));
 

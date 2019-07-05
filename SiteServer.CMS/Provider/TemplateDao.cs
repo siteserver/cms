@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -258,19 +259,19 @@ namespace SiteServer.CMS.Provider
         {
             var dictionary = new Dictionary<TemplateType, int>();
 
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
 			{
 				GetParameter(ParmSiteId, DataType.Integer, siteId)
 			};
 
-            using (var rdr = ExecuteReader(SqlSelectTemplateCount, parms))
+            using (var rdr = ExecuteReader(SqlSelectTemplateCount, parameters))
             {
                 while (rdr.Read())
                 {
                     var templateType = TemplateTypeUtils.GetEnumType(GetString(rdr, 0));
                     var count = GetInt(rdr, 1);
 
-                    dictionary.Add(templateType, count);
+                    dictionary[templateType] = count;
                 }
                 rdr.Close();
             }
@@ -487,7 +488,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     var info = new TemplateInfo(GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), TemplateTypeUtils.GetEnumType(GetString(rdr, i++)), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), ECharsetUtils.GetEnumType(GetString(rdr, i++)), GetBool(rdr, i));
-                    dictionary.Add(info.Id, info);
+                    dictionary[info.Id] = info;
                 }
                 rdr.Close();
             }

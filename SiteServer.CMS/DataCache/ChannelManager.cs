@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
@@ -92,6 +93,7 @@ namespace SiteServer.CMS.DataCache
         {
             ChannelInfo channelInfo = null;
             var dict = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            if (channelId == 0) channelId = siteId;
             dict?.TryGetValue(Math.Abs(channelId), out channelInfo);
             return channelInfo;
         }
@@ -190,6 +192,22 @@ namespace SiteServer.CMS.DataCache
         {
             var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
             return dic.Values.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public static List<int> GetChannelIdList(int siteId, string channelGroup)
+        {
+            var channelInfoList = new List<ChannelInfo>();
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+            foreach (var channelInfo in dic.Values)
+            {
+                if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
+
+                if (StringUtils.Contains(channelInfo.GroupNameCollection, channelGroup))
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+            return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
         public static List<int> GetChannelIdList(ChannelInfo channelInfo, EScopeType scopeType)
@@ -388,9 +406,9 @@ namespace SiteServer.CMS.DataCache
         {
             var retval = DateTime.MinValue;
             var nodeInfo = GetChannelInfo(siteId, channelId);
-            if (nodeInfo != null)
+            if (nodeInfo != null && nodeInfo.AddDate.HasValue)
             {
-                retval = nodeInfo.AddDate;
+                retval = nodeInfo.AddDate.Value;
             }
             return retval;
         }
@@ -484,7 +502,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -511,7 +529,7 @@ namespace SiteServer.CMS.DataCache
                 }
                 var nodeInfo = GetChannelInfo(siteInfo.Id, channelId);
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, isShowContentNum), nodeInfo.Id.ToString());
                 if (!enabled)
                 {
                     listitem.Attributes.Add("style", "color:gray;");
@@ -548,7 +566,7 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
@@ -578,12 +596,12 @@ namespace SiteServer.CMS.DataCache
                     continue;
                 }
 
-                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, isLastNodeArray, true), nodeInfo.Id.ToString());
+                var listitem = new ListItem(GetSelectText(siteInfo, nodeInfo, permissionsImpl, isLastNodeArray, true), nodeInfo.Id.ToString());
                 listItemCollection.Add(listitem);
             }
         }
 
-        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, bool[] isLastNodeArray, bool isShowContentNum)
+        public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
         {
             var retval = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
@@ -607,7 +625,8 @@ namespace SiteServer.CMS.DataCache
 
             if (isShowContentNum)
             {
-                var count = ContentManager.GetCount(siteInfo, channelInfo);
+                var onlyAdminId = adminPermissions.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
                 retval = string.Concat(retval, " (", count, ")");
             }
 

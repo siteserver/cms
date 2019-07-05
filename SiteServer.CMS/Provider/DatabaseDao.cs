@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Dapper;
+using Datory;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -14,7 +15,6 @@ using Oracle.ManagedDataAccess.Client;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -328,6 +328,25 @@ namespace SiteServer.CMS.Provider
             {
                 conn.Open();
                 using (var rdr = ExecuteReader(conn, sqlString))
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(GetString(rdr, 0));
+                    }
+                    rdr.Close();
+                }
+            }
+            return list;
+        }
+
+        public List<string> GetStringList(string sqlString, IDataParameter[] parameters)
+        {
+            var list = new List<string>();
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var rdr = ExecuteReader(conn, sqlString, parameters))
                 {
                     while (rdr.Read())
                     {
@@ -655,19 +674,43 @@ SELECT * FROM (
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName)) continue;
-
-                var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
-                var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
-
-                try
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
                 {
-                    DataProvider.DatabaseDao.ExecuteSql(sqlString);
-                    isAltered = true;
+                    var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
+                    if (databaseColumn != null && !tableColumn.IsIdentity)
+                    {
+                        if (tableColumn.DataType != databaseColumn.DataType ||
+                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
+                        {
+                            var sqlString = SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName,
+                                SqlUtils.GetColumnTypeString(tableColumn));
+
+                            try
+                            {
+                                DataProvider.DatabaseDao.ExecuteSql(sqlString);
+                                isAltered = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                            }
+                        }
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                    var columnSqlString = SqlUtils.GetColumnSqlString(tableColumn);
+                    var sqlString = SqlUtils.GetAddColumnsSqlString(tableName, columnSqlString);
+
+                    try
+                    {
+                        DataProvider.DatabaseDao.ExecuteSql(sqlString);
+                        isAltered = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogUtils.AddErrorLog(pluginId, ex, sqlString);
+                    }
                 }
             }
 
@@ -831,7 +874,19 @@ SELECT * FROM (
             var columnNameList = TableColumnManager.GetTableColumnNameList(tableName);
             foreach (var tableColumn in tableColumns)
             {
-                if (!StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                if (StringUtils.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
+                {
+                    var databaseColumn = TableColumnManager.GetTableColumnInfo(tableName, tableColumn.AttributeName);
+                    if (databaseColumn != null && !tableColumn.IsIdentity)
+                    {
+                        if (tableColumn.DataType != databaseColumn.DataType ||
+                            tableColumn.DataType == databaseColumn.DataType && tableColumn.DataLength > databaseColumn.DataLength)
+                        {
+                            list.Add(SqlUtils.GetModifyColumnsSqlString(tableName, tableColumn.AttributeName, SqlUtils.GetColumnTypeString(tableColumn)));
+                        }
+                    }
+                }
+                else
                 {
                     list.Add(SqlUtils.GetAddColumnsSqlString(tableName, SqlUtils.GetColumnSqlString(tableColumn)));
                 }
@@ -1896,34 +1951,36 @@ SET IDENTITY_INSERT {tableName} OFF
             }
         }
 
-        private ETriState _sqlServerVersionState = ETriState.All;
+        private decimal? _sqlServerVersion;
 
-        public bool IsSqlServer2012
+        private decimal SqlServerVersion
         {
             get
             {
-                if (_sqlServerVersionState != ETriState.All) return _sqlServerVersionState == ETriState.True;
-
                 if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
                 {
-                    _sqlServerVersionState = ETriState.False;
+                    return 0;
                 }
 
-                try
+                if (_sqlServerVersion == null)
                 {
-                    var version =
-                        TranslateUtils.ToDecimal(
-                            GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
-                    _sqlServerVersionState = version >= 11 ? ETriState.True : ETriState.False;
-                }
-                catch
-                {
-                    _sqlServerVersionState = ETriState.False;
+                    try
+                    {
+                        _sqlServerVersion =
+                            TranslateUtils.ToDecimal(
+                                GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
+                    }
+                    catch
+                    {
+                        _sqlServerVersion = 0;
+                    }
                 }
 
-                return _sqlServerVersionState == ETriState.True;
+                return _sqlServerVersion.Value;
             }
         }
+
+        public bool IsSqlServer2012 => SqlServerVersion >= 11;
 
         public int GetPageTotalCount(string tableName, string whereSqlString)
         {
@@ -1958,9 +2015,11 @@ SET IDENTITY_INSERT {tableName} OFF
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = limit == 0
-                    ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
-                    : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                if (limit == 0)
+                {
+                    limit = int.MaxValue;
+                }
+                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
@@ -1976,21 +2035,13 @@ SET IDENTITY_INSERT {tableName} OFF
                 }
                 else
                 {
-                    if (limit == 0)
-                    {
-                        limit = DataProvider.DatabaseDao.GetIntResult($"SELECT COUNT(*) FROM {tableName} {whereSqlString}");
-                    }
-                    orderSqlString = orderSqlString.ToUpper();
-                    var orderSqlStringReverse = orderSqlString.Replace(" DESC", " DESC2");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" ASC", " DESC");
-                    orderSqlStringReverse = orderSqlStringReverse.Replace(" DESC2", " ASC");
+                    var rowWhere = limit == 0
+                        ? $@"WHERE [row_num] > {offset}"
+                        : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                    retval = $@"
-SELECT * FROM (
-    SELECT TOP {limit} * FROM (
-        SELECT TOP {limit + offset} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}
-    ) AS t1 {orderSqlStringReverse}
-) AS t2 {orderSqlString}";
+                    retval = $@"SELECT * FROM (
+    SELECT {columnNames}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
+) as T {rowWhere}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)

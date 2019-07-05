@@ -12,76 +12,71 @@ using SiteServer.Utils.Auth;
 
 namespace SiteServer.CMS.Plugin.Impl
 {
-    public class RequestImpl : IRequest
+    public class RequestImpl
     {
-        private const string AuthKeyUserHeader = "X-SS-USER-TOKEN";
-        private const string AuthKeyUserCookie = "SS-USER-TOKEN";
-        private const string AuthKeyUserQuery = "userToken";
-        private const string AuthKeyAdminHeader = "X-SS-ADMIN-TOKEN";
-        private const string AuthKeyAdminCookie = "SS-ADMIN-TOKEN";
-        private const string AuthKeyAdminQuery = "adminToken";
-        private const string AuthKeyApiHeader = "X-SS-API-KEY";
-        private const string AuthKeyApiCookie = "SS-API-KEY";
-        private const string AuthKeyApiQuery = "apiKey";
-
-        public const int AccessTokenExpireDays = 7;
-
         public RequestImpl() : this(HttpContext.Current.Request)
         {
         }
 
         public RequestImpl(HttpRequest request)
         {
-            HttpRequest = request;
-
-            var apiToken = ApiToken;
-            if (!string.IsNullOrEmpty(apiToken))
+            try
             {
-                var tokenInfo = AccessTokenManager.GetAccessTokenInfo(apiToken);
-                if (tokenInfo != null)
+                HttpRequest = request;
+
+                var apiToken = ApiToken;
+                if (!string.IsNullOrEmpty(apiToken))
                 {
-                    if (!string.IsNullOrEmpty(tokenInfo.AdminName))
+                    var tokenInfo = AccessTokenManager.GetAccessTokenInfo(apiToken);
+                    if (tokenInfo != null)
                     {
-                        var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
-                        if (adminInfo != null && !adminInfo.IsLockedOut)
+                        if (!string.IsNullOrEmpty(tokenInfo.AdminName))
+                        {
+                            var adminInfo = AdminManager.GetAdminInfoByUserName(tokenInfo.AdminName);
+                            if (adminInfo != null && !adminInfo.IsLockedOut)
+                            {
+                                AdminInfo = adminInfo;
+                                IsAdminLoggin = true;
+                            }
+                        }
+
+                        IsApiAuthenticated = true;
+                    }
+                }
+
+                var userToken = UserToken;
+                if (!string.IsNullOrEmpty(userToken))
+                {
+                    var tokenImpl = ParseAccessToken(userToken);
+                    if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                    {
+                        var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
+                        if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
+                        {
+                            UserInfo = userInfo;
+                            IsUserLoggin = true;
+                        }
+                    }
+                }
+
+                var adminToken = AdminToken;
+                if (!string.IsNullOrEmpty(adminToken))
+                {
+                    var tokenImpl = ParseAccessToken(adminToken);
+                    if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
+                    {
+                        var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
+                        if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
                         {
                             AdminInfo = adminInfo;
                             IsAdminLoggin = true;
                         }
                     }
-
-                    IsApiAuthenticated = true;
                 }
             }
-
-            var userToken = UserToken;
-            if (!string.IsNullOrEmpty(userToken))
+            catch (Exception ex)
             {
-                var tokenImpl = ParseAccessToken(userToken);
-                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
-                {
-                    var userInfo = UserManager.GetUserInfoByUserId(tokenImpl.UserId);
-                    if (userInfo != null && !userInfo.IsLockedOut && userInfo.IsChecked && userInfo.UserName == tokenImpl.UserName)
-                    {
-                        UserInfo = userInfo;
-                        IsUserLoggin = true;
-                    }
-                }
-            }
-
-            var adminToken = AdminToken;
-            if (!string.IsNullOrEmpty(adminToken))
-            {
-                var tokenImpl = ParseAccessToken(adminToken);
-                if (tokenImpl.UserId > 0 && !string.IsNullOrEmpty(tokenImpl.UserName))
-                {
-                    var adminInfo = AdminManager.GetAdminInfoByUserId(tokenImpl.UserId);
-                    if (adminInfo != null && !adminInfo.IsLockedOut && adminInfo.UserName == tokenImpl.UserName)
-                    {
-                        AdminInfo = adminInfo;
-                        IsAdminLoggin = true;
-                    }
-                }
+                LogUtils.AddErrorLog(ex);
             }
         }
 
@@ -96,17 +91,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyApiHeader)))
+                if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyApiHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyApiHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyApiHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyApiQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyApiQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyApiQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyApiQuery];
                 }
-                else if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyApiCookie)))
+                else if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyApiCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyApiCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyApiCookie);
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -123,17 +118,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyUserCookie)))
+                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyUserCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyUserCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyUserCookie);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyUserHeader)))
+                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyUserHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyUserHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyUserHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyUserQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyUserQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyUserQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyUserQuery];
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -150,17 +145,17 @@ namespace SiteServer.CMS.Plugin.Impl
             get
             {
                 var accessTokenStr = string.Empty;
-                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(AuthKeyAdminCookie)))
+                if (!string.IsNullOrEmpty(CookieUtils.GetCookie(Constants.AuthKeyAdminCookie)))
                 {
-                    accessTokenStr = CookieUtils.GetCookie(AuthKeyAdminCookie);
+                    accessTokenStr = CookieUtils.GetCookie(Constants.AuthKeyAdminCookie);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(AuthKeyAdminHeader)))
+                else if (!string.IsNullOrEmpty(HttpRequest.Headers.Get(Constants.AuthKeyAdminHeader)))
                 {
-                    accessTokenStr = HttpRequest.Headers.Get(AuthKeyAdminHeader);
+                    accessTokenStr = HttpRequest.Headers.Get(Constants.AuthKeyAdminHeader);
                 }
-                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[AuthKeyAdminQuery]))
+                else if (!string.IsNullOrEmpty(HttpRequest.QueryString[Constants.AuthKeyAdminQuery]))
                 {
-                    accessTokenStr = HttpRequest.QueryString[AuthKeyAdminQuery];
+                    accessTokenStr = HttpRequest.QueryString[Constants.AuthKeyAdminQuery];
                 }
 
                 if (StringUtils.EndsWith(accessTokenStr, TranslateUtils.EncryptStingIndicator))
@@ -237,8 +232,7 @@ namespace SiteServer.CMS.Plugin.Impl
         public bool GetQueryBool(string name, bool defaultValue = false)
         {
             var str = HttpRequest.QueryString[name];
-            var retval = !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
-            return retval;
+            return !string.IsNullOrEmpty(str) ? TranslateUtils.ToBool(str) : defaultValue;
         }
 
         public bool IsPostExists(string name)
@@ -351,6 +345,11 @@ namespace SiteServer.CMS.Plugin.Impl
             CookieUtils.SetCookie(name, value);
         }
 
+        public void SetCookie(string name, string value, TimeSpan expiresAt)
+        {
+            CookieUtils.SetCookie(name, value, expiresAt);
+        }
+
         public void SetCookie(string name, string value, DateTime expires)
         {
             CookieUtils.SetCookie(name, value, expires);
@@ -376,21 +375,16 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (_userPermissionsImpl != null) return _userPermissionsImpl;
 
-                var adminName = string.Empty;
                 if (UserInfo != null)
                 {
                     var groupInfo = UserGroupManager.GetUserGroupInfo(UserInfo.GroupId);
                     if (groupInfo != null)
                     {
-                        adminName = groupInfo.AdminName;
+                        AdminInfo = AdminManager.GetAdminInfoByUserName(groupInfo.AdminName);
                     }
                 }
 
-                if (!string.IsNullOrEmpty(adminName))
-                {
-                    _userPermissionsImpl = new PermissionsImpl(adminName);
-                    AdminInfo = AdminManager.GetAdminInfoByUserName(adminName);
-                }
+                _userPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _userPermissionsImpl;
             }
@@ -406,12 +400,7 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 if (_adminPermissionsImpl != null) return _adminPermissionsImpl;
 
-                var adminName = string.Empty;
-                if (AdminInfo != null)
-                {
-                    adminName = AdminInfo.UserName;
-                }
-                _adminPermissionsImpl = new PermissionsImpl(adminName);
+                _adminPermissionsImpl = new PermissionsImpl(AdminInfo);
 
                 return _adminPermissionsImpl;
             }
@@ -456,18 +445,18 @@ namespace SiteServer.CMS.Plugin.Impl
             AdminInfo = adminInfo;
             IsAdminLoggin = true;
 
-            var expiresAt = DateTime.Now.AddDays(AccessTokenExpireDays);
+            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
             var accessToken = GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
 
             LogUtils.AddAdminLog(adminInfo.UserName, "管理员登录");
 
             if (isAutoLogin)
             {
-                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken, expiresAt);
+                CookieUtils.SetCookie(Constants.AuthKeyAdminCookie, accessToken, expiresAt);
             }
             else
             {
-                CookieUtils.SetCookie(AuthKeyAdminCookie, accessToken);
+                CookieUtils.SetCookie(Constants.AuthKeyAdminCookie, accessToken);
             }
 
             return accessToken;
@@ -475,7 +464,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public void AdminLogout()
         {
-            CookieUtils.Erase(AuthKeyAdminCookie);
+            CookieUtils.Erase(Constants.AuthKeyAdminCookie);
         }
 
         #endregion
@@ -497,7 +486,7 @@ namespace SiteServer.CMS.Plugin.Impl
 
             UserInfo = userInfo;
 
-            var expiresAt = DateTime.Now.AddDays(AccessTokenExpireDays);
+            var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
             var accessToken = GetAccessToken(UserId, UserName, expiresAt);
 
             DataProvider.UserDao.UpdateLastActivityDateAndCountOfLogin(UserInfo);
@@ -505,11 +494,11 @@ namespace SiteServer.CMS.Plugin.Impl
 
             if (isAutoLogin)
             {
-                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken, expiresAt);
+                CookieUtils.SetCookie(Constants.AuthKeyUserCookie, accessToken, expiresAt);
             }
             else
             {
-                CookieUtils.SetCookie(AuthKeyUserCookie, accessToken);
+                CookieUtils.SetCookie(Constants.AuthKeyUserCookie, accessToken);
             }
 
             return accessToken;
@@ -518,12 +507,26 @@ namespace SiteServer.CMS.Plugin.Impl
         public void UserLogout()
         {
             UserInfo = null;
-            CookieUtils.Erase(AuthKeyUserCookie);
+            CookieUtils.Erase(Constants.AuthKeyUserCookie);
         }
 
         #endregion
 
         #region Utils
+
+        public static string GetAccessToken(int userId, string userName, TimeSpan expiresAt)
+        {
+            if (userId <= 0 || string.IsNullOrEmpty(userName)) return null;
+
+            var userToken = new AccessTokenImpl
+            {
+                UserId = userId,
+                UserName = userName,
+                ExpiresAt = DateUtils.GetExpiresAt(expiresAt)
+            };
+
+            return JsonWebToken.Encode(userToken, WebConfigUtils.SecretKey, JwtHashAlgorithm.HS256);
+        }
 
         public static string GetAccessToken(int userId, string userName, DateTime expiresAt)
         {
@@ -547,7 +550,7 @@ namespace SiteServer.CMS.Plugin.Impl
             {
                 var tokenObj = JsonWebToken.DecodeToObject<AccessTokenImpl>(accessToken, WebConfigUtils.SecretKey);
 
-                if (tokenObj?.ExpiresAt.AddDays(AccessTokenExpireDays) > DateTime.Now)
+                if (tokenObj?.ExpiresAt.AddDays(Constants.AccessTokenExpireDays) > DateTime.Now)
                 {
                     return tokenObj;
                 }
@@ -558,6 +561,41 @@ namespace SiteServer.CMS.Plugin.Impl
             }
 
             return new AccessTokenImpl();
+        }
+
+        public object AdminRedirectCheck(bool checkInstall = false, bool checkDatabaseVersion = false,
+            bool checkLogin = false)
+        {
+            var redirect = false;
+            var redirectUrl = string.Empty;
+
+            if (checkInstall && string.IsNullOrEmpty(WebConfigUtils.ConnectionString))
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("Installer/");
+            }
+            else if (checkDatabaseVersion && ConfigManager.Instance.IsInitialized &&
+                     ConfigManager.Instance.DatabaseVersion != SystemManager.Version)
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("pageSyncDatabase.aspx");
+            }
+            else if (checkLogin && (!IsAdminLoggin || AdminInfo == null || AdminInfo.IsLockedOut))
+            {
+                redirect = true;
+                redirectUrl = PageUtils.GetAdminUrl("pageLogin.cshtml");
+            }
+
+            if (redirect)
+            {
+                return new
+                {
+                    Value = false,
+                    RedirectUrl = redirectUrl
+                };
+            }
+
+            return null;
         }
 
         #endregion

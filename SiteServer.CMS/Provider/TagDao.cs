@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Text;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
@@ -167,10 +167,19 @@ namespace SiteServer.CMS.Provider
 
         public List<string> GetTagListByStartString(int siteId, string startString, int totalNum)
         {
+            var sqlWithParameter = SqlUtils.GetInStrWithParameter("Tag", AttackUtils.FilterSql(startString));
+
             var sqlString = SqlUtils.GetDistinctTopSqlString("siteserver_Tag", "Tag, UseNum",
-                $"WHERE SiteId = {siteId} AND {SqlUtils.GetInStr("Tag", AttackUtils.FilterSql(startString))}",
+                $"WHERE SiteId = @SiteId AND {sqlWithParameter.Key}",
                 "ORDER BY UseNum DESC", totalNum);
-            return DataProvider.DatabaseDao.GetStringList(sqlString);
+
+            IDataParameter[] parameters =
+            {
+                GetParameter("@SiteId", DataType.Integer, siteId),
+                sqlWithParameter.Value
+            };
+
+            return DataProvider.DatabaseDao.GetStringList(sqlString, parameters);
         }
 
         public List<string> GetTagList(int siteId)
@@ -244,13 +253,13 @@ namespace SiteServer.CMS.Provider
             return idList;
         }
 
-        public List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int siteId)
+        public List<int> GetContentIdListByTagCollection(List<string> tagList, int siteId)
         {
             var contentIdList = new List<int>();
-            if (tagCollection.Count > 0)
+            if (tagList.Count > 0)
             {
                 string parameterNameList;
-                var parameterList = GetInParameterList(ParmTag, DataType.VarChar, 255, tagCollection, out parameterNameList);
+                var parameterList = GetInParameterList(ParmTag, DataType.VarChar, 255, tagList, out parameterNameList);
 
                 string sqlString =
                     $"SELECT ContentIdCollection FROM siteserver_Tag WHERE Tag IN ({parameterNameList}) AND SiteId = @SiteId";

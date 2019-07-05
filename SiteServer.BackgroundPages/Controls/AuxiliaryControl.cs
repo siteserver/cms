@@ -9,6 +9,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
@@ -16,7 +17,7 @@ namespace SiteServer.BackgroundPages.Controls
 {
     public class AuxiliaryControl : Control
     {
-        public IAttributes Attributes { get; set; }
+        public AttributesImpl Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 
@@ -74,12 +75,15 @@ namespace SiteServer.BackgroundPages.Controls
 
                     if (styleInfo.InputType == InputType.Customize)
                     {
-                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes, styleInfo.AttributeName, html);
+                        var eventArgs = new ContentFormLoadEventArgs(SiteInfo.Id, ChannelId, ContentId, Attributes.ToDictionary(), styleInfo.AttributeName, html);
                         foreach (var service in PluginManager.Services)
                         {
                             try
                             {
-                                html = service.OnContentFormLoad(eventArgs);
+                                if (service.OnContentFormLoad(eventArgs, out var val))
+                                {
+                                    html = val;
+                                }
                             }
                             catch (Exception ex)
                             {

@@ -8,7 +8,6 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Model;
 
 namespace SiteServer.BackgroundPages.Settings
 {
@@ -156,7 +155,8 @@ namespace SiteServer.BackgroundPages.Settings
                     $@"<a href=""javascript:;"" onclick=""{ModalProgressBar.GetOpenWindowStringWithSiteTemplateZip(0, dirInfo.Name)}"">压缩</a>";
             }
 
-            var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
+            //var urlAdd = PageSiteAdd.GetRedirectUrl(dirInfo.Name, string.Empty);
+            var urlAdd = $"siteAdd.cshtml?type=create&createType=local&createTemplateId={dirInfo.Name}";
             ltlCreateUrl.Text = $@"<a href=""{urlAdd}"">创建站点</a>";
 
             var urlDelete = PageUtils.GetSettingsUrl(nameof(PageSiteTemplate), new NameValueCollection

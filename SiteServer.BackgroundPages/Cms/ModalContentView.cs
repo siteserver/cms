@@ -5,6 +5,7 @@ using SiteServer.Utils;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Model.Enumerations;
@@ -97,7 +98,7 @@ namespace SiteServer.BackgroundPages.Cms
                     var referenceNodeInfo = ChannelManager.GetChannelInfo(referenceContentInfo.SiteId, referenceContentInfo.ChannelId);
                     var addEditUrl =
                         WebUtils.GetContentAddEditUrl(referenceSiteInfo.Id,
-                            referenceNodeInfo, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
+                            referenceNodeInfo.Id, _contentInfo.ReferenceId, AuthRequest.GetQueryString("ReturnUrl"));
 
                     LtlScripts.Text += $@"
 <div class=""tips"">此内容为对内容 （站点：{referenceSiteInfo.SiteName},栏目：{referenceNodeInfo.ChannelName}）“<a href=""{pageUrl}"" target=""_blank"">{_contentInfo.Title}</a>”（<a href=""{addEditUrl}"">编辑</a>） 的引用，内容链接将和原始内容链接一致</div>";

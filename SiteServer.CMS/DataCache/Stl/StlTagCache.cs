@@ -11,7 +11,7 @@ namespace SiteServer.CMS.DataCache.Stl
     {
         private static readonly object LockObject = new object();
 
-        public static List<int> GetContentIdListByTagCollection(StringCollection tagCollection, int siteId)
+        public static List<int> GetContentIdListByTagCollection(List<string> tagCollection, int siteId)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlTagCache),
                        nameof(GetContentIdListByTagCollection), TranslateUtils.ObjectCollectionToString(tagCollection),

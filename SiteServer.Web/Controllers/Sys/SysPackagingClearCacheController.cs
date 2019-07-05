@@ -11,7 +11,7 @@ namespace SiteServer.API.Controllers.Sys
         [HttpPost, Route(ApiRouteClearCache.Route)]
         public IHttpActionResult Main()
         {
-            var request = new RequestImpl();
+            var request = new AuthenticatedRequest();
 
             if (!request.IsAdminLoggin)
             {

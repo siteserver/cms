@@ -407,7 +407,7 @@ namespace SiteServer.CMS.StlParser.StlElement
 //                    var uniqueId = pageInfo.UniqueId;
 //                    foreach (var key in contextInfo.Attributes.AllKeys)
 //                    {
-//                        paramBuilder.Append($@"    so_{uniqueId}.addParam(""{key}"", ""{contextInfo.Attributes[key]}"");").Append(StringUtils.Constants.ReturnAndNewline);
+//                        paramBuilder.Append($@"    so_{uniqueId}.addParam(""{key}"", ""{contextInfo.Attributes[key]}"");").Append(Constants.ReturnAndNewline);
 //                    }
 
 //                    parsedContent = $@"

@@ -1,5 +1,5 @@
 ﻿using System.Web.UI.WebControls;
-using SiteServer.Plugin;
+using Datory;
 
 namespace SiteServer.Utils
 {

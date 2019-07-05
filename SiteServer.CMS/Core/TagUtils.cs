@@ -11,13 +11,13 @@ namespace SiteServer.CMS.Core
 {
     public static class TagUtils
     {
-        public static void AddTags(StringCollection tags, int siteId, int contentId)
+        private static void AddTags(List<string> tags, int siteId, int contentId)
         {
             if (tags == null || tags.Count == 0) return;
 
             foreach (var tagName in tags)
             {
-                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, AttackUtils.FilterXss(tagName));
+                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, tagName);
                 if (tagInfo != null)
                 {
                     var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
@@ -37,36 +37,57 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void UpdateTags(string tagsLast, string tagsNow, StringCollection tagCollection, int siteId, int contentId)
+        private static void RemoveTags(List<string> tags, int siteId, int contentId)
         {
-            if (tagsLast == tagsNow) return;
+            if (tags == null || tags.Count == 0) return;
 
-            var tagsList = TranslateUtils.StringCollectionToStringList(tagsLast);
-            foreach (string tag in tagsList)
+            foreach (var tagName in tags)
             {
-                if (!tagCollection.Contains(tag))//删除
+                var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, tagName);
+                if (tagInfo == null) continue;
+
+                var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
+                contentIdList.Remove(contentId);
+                tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
+                tagInfo.UseNum = contentIdList.Count;
+
+                if (tagInfo.UseNum == 0)
                 {
-                    var tagInfo = DataProvider.TagDao.GetTagInfo(siteId, tag);
-                    if (tagInfo != null)
-                    {
-                        var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
-                        contentIdList.Remove(contentId);
-                        tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
-                        tagInfo.UseNum = contentIdList.Count;
-                        DataProvider.TagDao.Update(tagInfo);
-                    }
+                    DataProvider.TagDao.DeleteTag(tagName, siteId);
+                }
+                else
+                {
+                    DataProvider.TagDao.Update(tagInfo);
                 }
             }
+        }
 
-            var tagsToAdd = new StringCollection();
-            foreach (var tag in tagCollection)
+        public static void UpdateTags(string tagsPrevious, string tagsNow, int siteId, int contentId)
+        {
+            if (tagsPrevious == tagsNow) return;
+
+            var previousTags = ParseTagsString(tagsPrevious);
+            var nowTags = ParseTagsString(tagsNow);
+
+            var tagsToRemove = new List<string>();
+            var tagsToAdd = new List<string>();
+
+            foreach (var tag in previousTags)
             {
-                if (!tagsList.Contains(tag))
+                if (!nowTags.Contains(tag))
+                {
+                    tagsToRemove.Add(tag);
+                }
+            }
+            foreach (var tag in nowTags)
+            {
+                if (!previousTags.Contains(tag))
                 {
                     tagsToAdd.Add(tag);
                 }
             }
 
+            RemoveTags(tagsToRemove, siteId, contentId);
             AddTags(tagsToAdd, siteId, contentId);
         }
 
@@ -107,9 +128,9 @@ namespace SiteServer.CMS.Core
             return tagsBuilder.ToString();
         }
 
-        public static StringCollection ParseTagsString(string tagsString)
+        public static List<string> ParseTagsString(string tagsString)
         {
-            var stringCollection = new StringCollection();
+            var stringCollection = new List<string>();
 
             if (string.IsNullOrEmpty(tagsString)) return stringCollection;
 

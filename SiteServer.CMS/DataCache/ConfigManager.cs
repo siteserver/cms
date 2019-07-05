@@ -1,4 +1,5 @@
-﻿using SiteServer.CMS.Core;
+﻿using System;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -124,8 +125,15 @@ namespace SiteServer.CMS.DataCache
                     retval = DataCacheManager.Get<ConfigInfo>(CacheKey);
                     if (retval == null)
                     {
-                        retval = DataProvider.ConfigDao.GetConfigInfo();
-                        DataCacheManager.Insert(CacheKey, retval);
+                        try
+                        {
+                            retval = DataProvider.ConfigDao.GetConfigInfo();
+                            DataCacheManager.Insert(CacheKey, retval);
+                        }
+                        catch
+                        {
+                            return new ConfigInfo(0, false, string.Empty, DateTime.Now, string.Empty);
+                        }
                     }
                 }
 

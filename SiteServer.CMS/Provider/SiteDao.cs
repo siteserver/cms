@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
@@ -7,7 +8,6 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
@@ -105,7 +105,7 @@ namespace SiteServer.CMS.Provider
 
             DataProvider.TagDao.DeleteTags(siteId);
 
-            DataProvider.ChannelDao.Delete(siteId, siteId);
+            DataProvider.ChannelDao.DeleteAll(siteId);
 
             UpdateParentIdToZero(siteId);
 

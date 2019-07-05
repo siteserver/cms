@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
@@ -35,13 +34,11 @@
           <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+          <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
       <div class="panel panel-default">
         <div class="panel-body p-0">
@@ -80,21 +77,15 @@
                 </asp:Repeater>
               </tbody>
             </table>
-
           </div>
         </div>
       </div>
-
       <ctrl:SqlPager ID="SpContents" runat="server" class="table table-pager" />
-
       <hr />
-
       <asp:Button class="btn btn-primary" ID="BtnAdd" Text="添加敏感词" runat="server" />
       <asp:Button class="btn" ID="BtnImport" Text="导入词库" runat="server" />
       <asp:Button class="btn" Text="导出词库" runat="server" OnClick="ExportWord_Click" />
-
     </div>
-
   </form>
 </body>
 

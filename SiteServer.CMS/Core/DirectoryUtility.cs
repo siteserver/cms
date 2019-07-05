@@ -28,6 +28,8 @@ namespace SiteServer.CMS.Core
 
         public static void DeleteSiteFiles(SiteInfo siteInfo)
         {
+            if (siteInfo == null) return;
+
             var sitePath = PathUtility.GetSitePath(siteInfo);
 
             if (siteInfo.IsRoot)

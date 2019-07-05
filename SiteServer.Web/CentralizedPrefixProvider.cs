@@ -1,5 +1,6 @@
 ﻿using System.Web.Http.Controllers;
 using System.Web.Http.Routing;
+using SiteServer.Utils;
 
 namespace SiteServer.API
 {
@@ -15,16 +16,14 @@ namespace SiteServer.API
 
         protected override string GetRoutePrefix(HttpControllerDescriptor controllerDescriptor)
         {
-            var prefix = _centralizedPrefix;
+            var dllName = controllerDescriptor.ControllerType.Assembly.GetName().Name;
 
-            var dllName = controllerDescriptor.ControllerType.Assembly.GetName().Name.ToLower();
-            if (dllName != "siteserver.api")
-            {
-                prefix += "/" + dllName;
-            }
+            var prefix = !StringUtils.EqualsIgnoreCase(dllName, "SiteServer.API")
+                ? PageUtils.Combine(_centralizedPrefix, dllName)
+                : _centralizedPrefix;
 
-            var existingPrefix = base.GetRoutePrefix(controllerDescriptor);
-            return existingPrefix == null ? prefix : $"{prefix}/{existingPrefix}";
+            var existingPrefix = StringUtils.TrimSlash(base.GetRoutePrefix(controllerDescriptor));
+            return PageUtils.Combine(prefix, existingPrefix).TrimEnd('/');
         }
     }
 }

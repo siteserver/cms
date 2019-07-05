@@ -13,16 +13,19 @@ namespace SiteServer.Cli.Jobs
     {
         public const string CommandName = "version";
 
+        private static string _configFile;
         private static bool _isHelp;
 
         private static readonly OptionSet Options = new OptionSet {
+            { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                v => _configFile = v },
             { "h|help",  "命令说明",
                 v => _isHelp = v != null }
         };
 
         public static void PrintUsage()
         {
-            Console.WriteLine("当前版本: siteserver version");
+            Console.WriteLine("显示当前版本: siteserver version");
             Options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -42,9 +45,11 @@ namespace SiteServer.Cli.Jobs
             await Console.Out.WriteLineAsync($"当前文件夹: {CliUtils.PhysicalApplicationPath}");
             await Console.Out.WriteLineAsync();
 
-            if (FileUtils.IsFileExists(PathUtils.Combine(CliUtils.PhysicalApplicationPath, "web.config")))
+            var webConfigPath = CliUtils.GetWebConfigPath(_configFile);
+
+            if (FileUtils.IsFileExists(webConfigPath))
             {
-                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, "web.config");
+                WebConfigUtils.Load(CliUtils.PhysicalApplicationPath, webConfigPath);
 
                 try
                 {

@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item active">
@@ -35,18 +34,13 @@
           <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+          <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
-      <div class="m-t-0 header-title">
-        修改站点
-      </div>
-
+      <div class="m-t-0 header-title"> 修改站点 </div>
       <div class="form-group">
         <label class="col-form-label">站点名称
           <asp:RequiredFieldValidator ControlToValidate="TbSiteName" errorMessage=" *" foreColor="red" Display="Dynamic"
@@ -56,8 +50,6 @@
         </label>
         <asp:TextBox cssClass="form-control" id="TbSiteName" runat="server" />
       </div>
-
-
       <asp:PlaceHolder id="PhSiteDir" runat="server">
         <div class="form-group">
           <label class="col-form-label">文件夹名称
@@ -70,18 +62,14 @@
           <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名。</small>
         </div>
       </asp:PlaceHolder>
-
       <asp:PlaceHolder id="PhParentId" runat="server">
         <div class="form-group">
           <label class="col-form-label">上级站点</label>
           <asp:DropDownList ID="DdlParentId" class="form-control" runat="server"></asp:DropDownList>
         </div>
       </asp:PlaceHolder>
-
       <div class="form-group">
-        <label class="col-form-label">
-          内容表
-        </label>
+        <label class="col-form-label"> 内容表 </label>
         <asp:RadioButtonList id="RblTableRule" class="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblTableRule_OnSelectedIndexChanged"
           RepeatDirection="Horizontal" runat="server"></asp:RadioButtonList>
         <asp:PlaceHolder id="PhTableChoose" runat="server">
@@ -93,7 +81,6 @@
           <small class="form-text text-muted">请输入内容表名称，系统将检测数据库是否已存在指定的内容表，如果不存在系统将创建此内容表。</small>
         </asp:PlaceHolder>
       </div>
-
       <div class="form-group">
         <label class="col-form-label">站点排序
           <asp:RequiredFieldValidator ControlToValidate="TbTaxis" errorMessage=" *" foreColor="red" display="Dynamic"
@@ -104,13 +91,11 @@
         <asp:TextBox ID="TbTaxis" class="form-control" runat="server"></asp:TextBox>
         <small class="form-text text-muted">设置站点排序，排序数字大的站点将排在其他站点之前</small>
       </div>
-
       <div class="form-group">
         <label class="col-form-label">内容审核机制</label>
         <asp:RadioButtonList id="RblIsCheckContentUseLevel" AutoPostBack="true" OnSelectedIndexChanged="RblIsCheckContentUseLevel_OnSelectedIndexChanged"
           RepeatDirection="Horizontal" class="radio radio-primary" runat="server"></asp:RadioButtonList>
       </div>
-
       <asp:PlaceHolder id="PhCheckContentLevel" runat="server">
         <div class="form-group">
           <label class="col-form-label">内容审核级别</label>
@@ -122,14 +107,10 @@
           </asp:DropDownList>
         </div>
       </asp:PlaceHolder>
-
       <hr />
-
       <asp:Button class="btn btn-danger" id="BtnSubmit" text="修 改" OnClick="Submit_OnClick" runat="server" />
       <asp:Button class="btn" text="返 回" onclick="Return_OnClick" runat="server" />
-
     </div>
-
   </form>
 </body>
 

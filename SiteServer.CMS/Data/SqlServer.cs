@@ -37,7 +37,7 @@ namespace SiteServer.CMS.Data
 	/// The SqlServer class is intended to encapsulate high performance, scalable best practices for 
 	/// common uses of the SqlClient ADO.NET provider.  It is created using the abstract factory in AdoHelper.
 	/// </summary>
-	public class SqlServer : DatabaseApi, IDatabaseApi
+	public class SqlServer : DatabaseApi
     {
 		#region Overrides
 		/// <summary>

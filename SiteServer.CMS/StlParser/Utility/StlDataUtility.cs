@@ -7,6 +7,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -330,15 +331,14 @@ namespace SiteServer.CMS.StlParser.Utility
 
             if (isRelatedContents && contentId > 0)
             {
-                var isTags = false;
                 var tagCollection = StlContentCache.GetValue(tableName, contentId, ContentAttribute.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringCollection(tagCollection), siteInfo.Id);
+                    var contentIdList = StlTagCache.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteInfo.Id);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
-                        isTags = true;
+                        
                         if (string.IsNullOrEmpty(where))
                         {
                             where =
@@ -351,8 +351,7 @@ namespace SiteServer.CMS.StlParser.Utility
                         }
                     }
                 }
-
-                if (!isTags)
+                else
                 {
                     if (string.IsNullOrEmpty(where))
                     {
@@ -375,6 +374,28 @@ namespace SiteServer.CMS.StlParser.Utility
 
             var channelIdList = ChannelManager.GetChannelIdList(nodeInfo, scopeType, groupChannel, groupChannelNot, string.Empty);
             return StlContentCache.GetStlDataSourceChecked(channelIdList, tableName, startNum, totalNum, orderByString, sqlWhereString, others);
+        }
+
+        public static List<MinContentInfo> GetMinContentInfoList(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool isImageExists, bool isImage, bool isVideoExists, bool isVideo, bool isFileExists, bool isFile, bool isRelatedContents, int startNum, int totalNum, string orderByString, bool isTopExists, bool isTop, bool isRecommendExists, bool isRecommend, bool isHotExists, bool isHot, bool isColorExists, bool isColor, string where, EScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        {
+            var dataSource = GetContentsDataSource(siteInfo, channelId, contentId, groupContent, groupContentNot, tags,
+                isImageExists, isImage, isVideoExists, isVideo, isFileExists, isFile, isRelatedContents, startNum,
+                totalNum, orderByString, isTopExists, isTop, isRecommendExists, isRecommend, isHotExists, isHot,
+                isColorExists, isColor, where, scopeType, groupChannel, groupChannelNot, others);
+
+            var list = new List<MinContentInfo>();
+
+            foreach (DataRow dataItem in dataSource.Tables[0].Rows)
+            {
+                var minContentInfo = new MinContentInfo
+                {
+                    Id = (int) dataItem[ContentAttribute.Id],
+                    ChannelId = (int) dataItem[ContentAttribute.ChannelId]
+                };
+                list.Add(minContentInfo);
+            }
+
+            return list;
         }
 
         public static DataSet GetChannelsDataSource(int siteId, int channelId, string group, string groupNot, bool isImageExists, bool isImage, int startNum, int totalNum, string orderByString, EScopeType scopeType, bool isTotal, string where)

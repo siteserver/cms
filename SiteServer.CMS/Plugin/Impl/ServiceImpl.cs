@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Datory;
 using SiteServer.Plugin;
 using Menu = SiteServer.Plugin.Menu;
 
@@ -24,6 +25,9 @@ namespace SiteServer.CMS.Plugin.Impl
         public bool IsApiAuthorization { get; private set; }
 
         public List<TableColumn> ContentTableColumns { get; private set; }
+
+        public List<InputStyle> ContentInputStyles { get; private set; }
+
         public Dictionary<string, List<TableColumn>> DatabaseTables { get; private set; }
 
         public event EventHandler<ContentEventArgs> ContentAddCompleted;
@@ -49,9 +53,12 @@ namespace SiteServer.CMS.Plugin.Impl
 
         public event ContentFormLoadEventHandler ContentFormLoad;
 
-        public string OnContentFormLoad(ContentFormLoadEventArgs e)
+        public bool OnContentFormLoad(ContentFormLoadEventArgs e, out string html)
         {
-            return ContentFormLoad?.Invoke(this, e);
+            html = null;
+            if (ContentFormLoad == null) return false;
+            html = ContentFormLoad.Invoke(this, e);
+            return true;
         }
 
         public event EventHandler<ContentFormSubmitEventArgs> ContentFormSubmit;
@@ -73,7 +80,7 @@ namespace SiteServer.CMS.Plugin.Impl
             Metadata = metadata;
         }
 
-        public IService SetSystemDefaltPage(string pageUrl)
+        public IService SetSystemDefaultPage(string pageUrl)
         {
             SystemDefaultPageUrl = pageUrl;
             return this;
@@ -127,10 +134,11 @@ namespace SiteServer.CMS.Plugin.Impl
             return this;
         }
 
-        public IService AddContentModel(string tableName, List<TableColumn> tableColumns)
+        public IService AddContentModel(string tableName, List<TableColumn> tableColumns, List<InputStyle> inputStyles)
         {
             ContentTableName = tableName;
             ContentTableColumns = tableColumns;
+            ContentInputStyles = inputStyles;
 
             return this;
         }
@@ -188,31 +196,6 @@ namespace SiteServer.CMS.Plugin.Impl
             IsApiAuthorization = true;
 
             return this;
-        }
-
-        public event RestApiEventHandler RestApiGet;
-        public event RestApiEventHandler RestApiPost;
-        public event RestApiEventHandler RestApiPut;
-        public event RestApiEventHandler RestApiDelete;
-
-        public object OnRestApiGet(RestApiEventArgs e)
-        {
-            return RestApiGet?.Invoke(this, e);
-        }
-
-        public object OnRestApiPost(RestApiEventArgs e)
-        {
-            return RestApiPost?.Invoke(this, e);
-        }
-
-        public object OnRestApiPut(RestApiEventArgs e)
-        {
-            return RestApiPut?.Invoke(this, e);
-        }
-
-        public object OnRestApiDelete(RestApiEventArgs e)
-        {
-            return RestApiDelete?.Invoke(this, e);
         }
 
         public event EventHandler<ParseEventArgs> BeforeStlParse;

@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using Datory;
 using SiteServer.CMS.Data;
+using SiteServer.CMS.Plugin.Apis;
 using SiteServer.CMS.Provider;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Core
 {
     public static class DataProvider
     {
-        private static IDatabaseApi _databaseApi;
-        public static IDatabaseApi DatabaseApi
+        private static DatabaseApi _databaseApi;
+        public static DatabaseApi DatabaseApi
         {
             get
             {
@@ -66,8 +67,8 @@ namespace SiteServer.CMS.Core
         private static ContentGroupDao _contentGroupDao;
         public static ContentGroupDao ContentGroupDao => _contentGroupDao ?? (_contentGroupDao = new ContentGroupDao());
 
-        private static ContentTagDao _contentTagDao;
-        public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
+        //private static ContentTagDao _contentTagDao;
+        //public static ContentTagDao ContentTagDao => _contentTagDao ?? (_contentTagDao = new ContentTagDao());
 
         private static DatabaseDao _databaseDao;
         public static DatabaseDao DatabaseDao => _databaseDao ?? (_databaseDao = new DatabaseDao());
@@ -95,9 +96,6 @@ namespace SiteServer.CMS.Core
 
         private static PluginDao _pluginDao;
         public static PluginDao PluginDao => _pluginDao ?? (_pluginDao = new PluginDao());
-
-        private static RecordDao _recordDao;
-        public static RecordDao RecordDao => _recordDao ?? (_recordDao = new RecordDao());
 
         private static RelatedFieldDao _relatedFieldDao;
         public static RelatedFieldDao RelatedFieldDao => _relatedFieldDao ?? (_relatedFieldDao = new RelatedFieldDao());
@@ -164,7 +162,7 @@ namespace SiteServer.CMS.Core
             _contentCheckDao = null;
             _contentDao = null;
             _contentGroupDao = null;
-            _contentTagDao = null;
+            //_contentTagDao = null;
             _databaseDao = null;
             _dbCacheDao = null;
             _departmentDao = null;
@@ -174,7 +172,6 @@ namespace SiteServer.CMS.Core
             _permissionsInRolesDao = null;
             _pluginConfigDao = null;
             _pluginDao = null;
-            _recordDao = null;
             _relatedFieldDao = null;
             _relatedFieldItemDao = null;
             _roleDao = null;
@@ -206,7 +203,7 @@ namespace SiteServer.CMS.Core
             ContentCheckDao,
             ContentDao,
             ContentGroupDao,
-            ContentTagDao,
+            //ContentTagDao,
             DatabaseDao,
             DbCacheDao,
             DepartmentDao,
@@ -216,7 +213,6 @@ namespace SiteServer.CMS.Core
             PermissionsInRolesDao,
             PluginConfigDao,
             PluginDao,
-            RecordDao,
             RelatedFieldDao,
             RelatedFieldItemDao,
             RoleDao,

@@ -81,7 +81,7 @@
       <asp:PlaceHolder id="PhOnlineTemplates" visible="false" runat="server">
         <p class="text-muted font-13 m-b-25">
           请选择在线模板，本页面只显示部分免费模板，更多站点模板请访问官网：
-          <a href="http://templates.siteserver.cn" target="_blank">http://templates.siteserver.cn</a>
+          <a href="https://www.siteserver.cn/templates/" target="_blank">https://www.siteserver.cn/templates/</a>
         </p>
 
         <div class="panel panel-default">

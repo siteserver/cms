@@ -1,4 +1,9 @@
-﻿namespace SiteServer.Utils
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using SiteServer.Plugin;
+
+namespace SiteServer.Utils
 {
     public static class Extensions
     {

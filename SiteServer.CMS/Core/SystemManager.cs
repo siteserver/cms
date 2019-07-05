@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -15,8 +17,19 @@ namespace SiteServer.CMS.Core
         {
             try
             {
-                Version = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
+                ProductVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.CMS.dll")).ProductVersion;
                 PluginVersion = FileVersionInfo.GetVersionInfo(PathUtils.GetBinDirectoryPath("SiteServer.Plugin.dll")).ProductVersion;
+
+                if (Assembly.GetExecutingAssembly()
+                    .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
+                    .SingleOrDefault() is TargetFrameworkAttribute targetFrameworkAttribute)
+                {
+                    TargetFramework = targetFrameworkAttribute.FrameworkName;
+                }
+
+                EnvironmentVersion = Environment.Version.ToString();
+
+                //DotNetVersion = FileVersionInfo.GetVersionInfo(typeof(Uri).Assembly.Location).ProductVersion;
             }
             catch
             {
@@ -33,9 +46,13 @@ namespace SiteServer.CMS.Core
             //Version = version;
         }
 
-        public static string Version { get; }
+        public static string ProductVersion { get; }
 
         public static string PluginVersion { get; }
+
+        public static string TargetFramework { get; }
+
+        public static string EnvironmentVersion { get; }
 
         public static void InstallDatabase(string adminName, string adminPassword)
         {
@@ -92,12 +109,12 @@ namespace SiteServer.CMS.Core
             var configInfo = DataProvider.ConfigDao.GetConfigInfo();
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo(0, true, Version, DateTime.Now, string.Empty);
+                configInfo = new ConfigInfo(0, true, ProductVersion, DateTime.Now, string.Empty);
                 DataProvider.ConfigDao.Insert(configInfo);
             }
             else
             {
-                configInfo.DatabaseVersion = Version;
+                configInfo.DatabaseVersion = ProductVersion;
                 configInfo.IsInitialized = true;
                 configInfo.UpdateDate = DateTime.Now;
                 DataProvider.ConfigDao.Update(configInfo);
@@ -118,7 +135,7 @@ namespace SiteServer.CMS.Core
 
         public static bool IsNeedUpdate()
         {
-            return !StringUtils.EqualsIgnoreCase(Version, DataProvider.ConfigDao.GetDatabaseVersion());
+            return !StringUtils.EqualsIgnoreCase(ProductVersion, DataProvider.ConfigDao.GetDatabaseVersion());
         }
 
         public static bool IsNeedInstall()

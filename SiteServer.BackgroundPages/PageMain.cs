@@ -5,66 +5,23 @@ using System.Text;
 using System.Web.UI.WebControls;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Controls;
-using SiteServer.BackgroundPages.Core;
 using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api;
 using SiteServer.CMS.Api.Preview;
-using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin;
 using System.Linq;
+using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.BackgroundPages
 {
     public class PageMain : BasePageCms
     {
-        public Literal LtlTopMenus;
-        public PlaceHolder PhSite;
-        public NavigationTree NtLeftManagement;
-        public NavigationTree NtLeftFunctions;
-
-        private SiteInfo _siteInfo = new SiteInfo();
-        private SiteInfo _hqSiteInfo;
-        private readonly List<int> _addedSiteIdList = new List<int>();
-
         protected override bool IsSinglePage => true;
 
         public string InnerApiUrl => ApiManager.InnerApiUrl.TrimEnd('/');
-
-        public string PackageIdSsCms = PackageUtils.PackageIdSsCms;
-
-        public string PackageList
-        {
-            get
-            {
-                var list = new List<object>();
-                var dict = PluginManager.GetPluginIdAndVersionDict();
-                foreach (var id in dict.Keys)
-                {
-                    var version = dict[id];
-                    list.Add(new
-                    {
-                        id,
-                        version
-                    });
-                }
-                return TranslateUtils.JsonSerialize(list);
-            }
-        }
-
-        public string DownloadApiUrl => ApiRouteDownload.GetUrl(ApiManager.InnerApiUrl);
-
-        public string CurrentVersion => SystemManager.Version;
-
-        public string UpdateSystemUrl => PageUpdateSystem.GetRedirectUrl();
-
-        public bool IsConsoleAdministrator => AuthRequest.AdminPermissionsImpl.IsConsoleAdministrator;
-
-        public string DefaultPageUrl => PluginMenuManager.GetSystemDefaultPageUrl(SiteId) ?? "dashboard.cshtml";
 
         public static string GetRedirectUrl()
         {
@@ -84,43 +41,69 @@ namespace SiteServer.BackgroundPages
             if (IsForbidden) return;
 
             var isLeft = false;
-            var siteId = 0;
             var adminInfo = AuthRequest.AdminInfo;
+            var permissions = AuthRequest.AdminPermissionsImpl;
 
-            var siteIdList = AuthRequest.AdminPermissionsImpl.GetSiteIdList();
-            if (siteIdList.Contains(SiteId))
+            var pageSiteId = SiteId;
+            var currentSiteId = 0;
+            var siteIdList = permissions.GetSiteIdList();
+            var siteInfoList = new List<SiteInfo>();
+            SiteInfo rootSiteInfo = null;
+            foreach (var theSiteId in siteIdList)
             {
-                siteId = SiteId;
+                var siteInfo = SiteManager.GetSiteInfo(theSiteId);
+                if (siteInfo == null) continue;
+                if (siteInfo.IsRoot)
+                {
+                    rootSiteInfo = siteInfo;
+                }
+                siteInfoList.Add(siteInfo);
+            }
+
+            if (siteIdList.Contains(pageSiteId))
+            {
+                currentSiteId = pageSiteId;
             }
             else if (siteIdList.Contains(adminInfo.SiteId))
             {
-                siteId = adminInfo.SiteId;
+                currentSiteId = adminInfo.SiteId;
             }
 
-            //站点要判断是否存在，是否有权限
-            if (siteId == 0 || !SiteManager.IsExists(siteId) || !siteIdList.Contains(siteId))
+            if (currentSiteId == 0 || !SiteManager.IsExists(currentSiteId) || !siteIdList.Contains(currentSiteId))
             {
                 if (siteIdList.Count > 0)
                 {
-                    siteId = siteIdList[0];
+                    currentSiteId = siteIdList[0];
                 }
             }
 
-            _siteInfo = SiteManager.GetSiteInfo(siteId);
+            var currentSiteInfo = SiteManager.GetSiteInfo(currentSiteId);
+            var addedSiteIdList = new List<int>();
 
-            if (_siteInfo != null && _siteInfo.Id > 0)
+            if (currentSiteInfo != null && currentSiteInfo.Id > 0)
             {
-                if (SiteId == 0)
+                if (pageSiteId == 0)
                 {
-                    PageUtils.Redirect(GetRedirectUrl(_siteInfo.Id));
+                    PageUtils.Redirect(GetRedirectUrl(currentSiteInfo.Id));
                     return;
                 }
-
-                var permissionList = new List<string>(AuthRequest.AdminPermissionsImpl.PermissionList);
-
-                if (AuthRequest.AdminPermissionsImpl.HasSitePermissions(_siteInfo.Id))
+            }
+            else
+            {
+                if (permissions.IsConsoleAdministrator)
                 {
-                    var websitePermissionList = AuthRequest.AdminPermissionsImpl.GetSitePermissions(_siteInfo.Id);
+                    PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
+                    return;
+                }
+            }
+
+            if (currentSiteInfo != null && currentSiteInfo.Id > 0)
+            {
+                var permissionList = new List<string>(permissions.PermissionList);
+
+                if (permissions.HasSitePermissions(currentSiteInfo.Id))
+                {
+                    var websitePermissionList = permissions.GetSitePermissions(currentSiteInfo.Id);
                     if (websitePermissionList != null)
                     {
                         isLeft = true;
@@ -128,74 +111,45 @@ namespace SiteServer.BackgroundPages
                     }
                 }
 
-                var channelPermissions = AuthRequest.AdminPermissionsImpl.GetChannelPermissions(_siteInfo.Id);
+                var channelPermissions = permissions.GetChannelPermissions(currentSiteInfo.Id);
                 if (channelPermissions.Count > 0)
                 {
                     isLeft = true;
                     permissionList.AddRange(channelPermissions);
                 }
 
-                PhSite.Visible = isLeft;
+                //LtlLeftManagement.Text =
+                //    NavigationTree.BuildNavigationTree(currentSiteInfo.Id, ConfigManager.TopMenu.IdSite,
+                //        permissionList);
 
-                NtLeftManagement.TopId = ConfigManager.TopMenu.IdSite;
-                NtLeftManagement.SiteId = _siteInfo.Id;
-                NtLeftManagement.PermissionList = permissionList;
+                //LtlLeftFunctions.Text = NavigationTree.BuildNavigationTree(currentSiteInfo.Id, string.Empty,
+                //    permissionList);
 
-                NtLeftFunctions.TopId = string.Empty;
-                NtLeftFunctions.SiteId = _siteInfo.Id;
-                NtLeftFunctions.PermissionList = permissionList;
-
-                ClientScriptRegisterClientScriptBlock("NodeTreeScript", NodeNaviTreeItem.GetNavigationBarScript());
-            }
-            else
-            {
-                if (IsConsoleAdministrator)
+                if (adminInfo.SiteId != currentSiteInfo.Id)
                 {
-                    PageUtils.Redirect(PageSiteAdd.GetRedirectUrl());
-                    return;
+                    DataProvider.AdministratorDao.UpdateSiteId(adminInfo, currentSiteInfo.Id);
                 }
             }
 
-            if (_siteInfo != null && _siteInfo.Id > 0 && adminInfo.SiteId != _siteInfo.Id)
-            {
-                DataProvider.AdministratorDao.UpdateSiteId(adminInfo, _siteInfo.Id);
-            }
-
-            if (isLeft)
-            {
-                LtlTopMenus.Text = $@"
-<a href=""javascript:;"" class=""position-fixed"" onclick=""toggleMenu()"" style=""margin-top: 10px;margin-left: 30px;"">
-    <i class=""ion-navicon"" style=""font-size: 28px;color: #fff;""></i>
-</a>
-<ul id=""topMenus"" class=""navigation-menu"">
-    {GetTopMenuSitesHtml(siteIdList) + GetTopMenuLinksHtml() + GetTopMenusHtml()}
-</ul>
-";
-            }
-            else
-            {
-                LtlTopMenus.Text = $@"
-<script>toggleMenu();</script>
-<ul id=""topMenus"" class=""navigation-menu"" style=""margin-left: 210px;"">
-    {GetTopMenusHtml()}
-</ul>
-";
-            }
+            //LtlTopMenus.Text = isLeft
+            //    ? GetTopMenuSitesHtml(permissions, siteInfoList, rootSiteInfo, addedSiteIdList, currentSiteInfo) +
+            //      GetTopMenuLinksHtml(currentSiteInfo) + GetTopMenusHtml(permissions, pageSiteId)
+            //    : GetTopMenusHtml(permissions, pageSiteId);
         }
 
-        private void AddSite(StringBuilder builder, SiteInfo siteInfo, Dictionary<int, List<SiteInfo>> parentWithChildren, int level)
+        private static void AddSite(StringBuilder builder, SiteInfo siteInfoToAdd, Dictionary<int, List<SiteInfo>> parentWithChildren, int level, List<int> addedSiteIdList, SiteInfo currentSiteInfo)
         {
-            if (_addedSiteIdList.Contains(siteInfo.Id)) return;
+            if (addedSiteIdList.Contains(siteInfoToAdd.Id)) return;
 
-            var loadingUrl = PageUtils.GetLoadingUrl(GetRedirectUrl(siteInfo.Id));
+            var loadingUrl = PageUtils.GetLoadingUrl(GetRedirectUrl(siteInfoToAdd.Id));
 
-            if (parentWithChildren.ContainsKey(siteInfo.Id))
+            if (parentWithChildren.ContainsKey(siteInfoToAdd.Id))
             {
-                var children = parentWithChildren[siteInfo.Id];
+                var children = parentWithChildren[siteInfoToAdd.Id];
 
                 builder.Append($@"
-<li class=""has-submenu {(siteInfo.Id == _siteInfo.Id ? "active" : "")}"">
-    <a href=""{loadingUrl}"">{siteInfo.SiteName}</a>
+<li class=""has-submenu {(siteInfoToAdd.Id == currentSiteInfo.Id ? "active" : "")}"">
+    <a href=""{loadingUrl}"">{siteInfoToAdd.SiteName}</a>
     <ul class=""submenu"">
 ");
 
@@ -205,7 +159,7 @@ namespace SiteServer.BackgroundPages
 
                 foreach (var subSiteInfo in list)
                 {
-                    AddSite(builder, subSiteInfo, parentWithChildren, level);
+                    AddSite(builder, subSiteInfo, parentWithChildren, level, addedSiteIdList, currentSiteInfo);
                 }
 
                 builder.Append(@"
@@ -215,63 +169,63 @@ namespace SiteServer.BackgroundPages
             else
             {
                 builder.Append(
-                    $@"<li class=""{(siteInfo.Id == _siteInfo.Id ? "active" : "")}""><a href=""{loadingUrl}"">{siteInfo.SiteName}</a></li>");
+                    $@"<li class=""{(siteInfoToAdd.Id == currentSiteInfo.Id ? "active" : "")}""><a href=""{loadingUrl}"">{siteInfoToAdd.SiteName}</a></li>");
             }
 
-            _addedSiteIdList.Add(siteInfo.Id);
+            addedSiteIdList.Add(siteInfoToAdd.Id);
         }
 
-        private string GetTopMenuSitesHtml(List<int> siteIdList)
+        private static string GetTopMenuSitesHtml(PermissionsImpl permissions, List<SiteInfo> siteInfoList, SiteInfo rootSiteInfo, List<int> addedSiteIdList, SiteInfo currentSiteInfo)
         {
-            if (siteIdList.Count == 0)
+            if (siteInfoList.Count == 0)
             {
                 return string.Empty;
             }
 
             //操作者拥有的站点列表
-            var mySystemInfoList = new List<SiteInfo>();
+            var mySiteInfoList = new List<SiteInfo>();
 
             var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
 
-            if (AuthRequest.AdminPermissionsImpl.IsSystemAdministrator)
+            if (permissions.IsSystemAdministrator)
             {
-                foreach (var siteId in siteIdList)
+                foreach (var siteInfo in siteInfoList)
                 {
-                    AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
+                    AddToMySiteInfoList(mySiteInfoList, siteInfo, parentWithChildren);
                 }
             }
             else
             {
-                var permissionChannelIdList = AuthRequest.AdminPermissionsImpl.ChannelPermissionChannelIdList;
-                foreach (var siteId in siteIdList)
+                var permissionChannelIdList = permissions.ChannelPermissionChannelIdList;
+                foreach (var siteInfo in siteInfoList)
                 {
-                    var showSite = IsShowSite(siteId, permissionChannelIdList);
+                    var showSite = IsShowSite(siteInfo.Id, permissionChannelIdList);
                     if (showSite)
                     {
-                        AddToMySystemInfoList(mySystemInfoList, parentWithChildren, siteId);
+                        AddToMySiteInfoList(mySiteInfoList, siteInfo, parentWithChildren);
                     }
                 }
             }
 
             var builder = new StringBuilder();
 
-            if (_hqSiteInfo != null || mySystemInfoList.Count > 0)
+            if (rootSiteInfo != null || mySiteInfoList.Count > 0)
             {
-                if (_hqSiteInfo != null)
+                if (rootSiteInfo != null)
                 {
-                    AddSite(builder, _hqSiteInfo, parentWithChildren, 0);
+                    AddSite(builder, rootSiteInfo, parentWithChildren, 0, addedSiteIdList, currentSiteInfo);
                 }
 
-                if (mySystemInfoList.Count > 0)
+                if (mySiteInfoList.Count > 0)
                 {
                     var count = 0;
-                    var list = mySystemInfoList.OrderByDescending(o => o.Taxis).ToList();
+                    var list = mySiteInfoList.OrderByDescending(o => o.Taxis).ToList();
                     foreach (var siteInfo in list)
                     {
                         if (siteInfo.IsRoot == false)
                         {
                             count++;
-                            AddSite(builder, siteInfo, parentWithChildren, 0);
+                            AddSite(builder, siteInfo, parentWithChildren, 0, addedSiteIdList, currentSiteInfo);
                         }
                         if (count == 13)
                         {
@@ -279,19 +233,19 @@ namespace SiteServer.BackgroundPages
                         }
                     }
                     builder.Append(
-                        $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(SiteId)}"">全部站点...</a></li>");
+                        $@"<li><a href=""javascript:;"" onclick=""{ModalSiteSelect.GetOpenLayerString(currentSiteInfo.Id)}"">全部站点...</a></li>");
                 }
             }
 
             var clazz = "has-submenu";
             var menuText = "站点管理";
-            if (_siteInfo != null && _siteInfo.Id > 0)
+            if (currentSiteInfo != null && currentSiteInfo.Id > 0)
             {
                 clazz = "has-submenu active";
-                menuText = _siteInfo.SiteName;
-                if (_siteInfo.ParentId > 0)
+                menuText = currentSiteInfo.SiteName;
+                if (currentSiteInfo.ParentId > 0)
                 {
-                    menuText += $" ({SiteManager.GetSiteLevel(_siteInfo.Id) + 1}级)";
+                    menuText += $" ({SiteManager.GetSiteLevel(currentSiteInfo.Id) + 1}级)";
                 }
             }
 
@@ -303,9 +257,9 @@ namespace SiteServer.BackgroundPages
             </li>";
         }
 
-        private string GetTopMenuLinksHtml()
+        private static string GetTopMenuLinksHtml(SiteInfo currentSiteInfo)
         {
-            if (_siteInfo == null || _siteInfo.Id <= 0)
+            if (currentSiteInfo == null || currentSiteInfo.Id <= 0)
             {
                 return string.Empty;
             }
@@ -313,9 +267,9 @@ namespace SiteServer.BackgroundPages
             var builder = new StringBuilder();
 
             builder.Append(
-                    $@"<li><a href=""{PageUtility.GetSiteUrl(_siteInfo, false)}"" target=""_blank"">访问站点</a></li>");
+                    $@"<li><a href=""{PageUtility.GetSiteUrl(currentSiteInfo, false)}"" target=""_blank"">访问站点</a></li>");
             builder.Append(
-                    $@"<li><a href=""{ApiRoutePreview.GetSiteUrl(_siteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
+                    $@"<li><a href=""{ApiRoutePreview.GetSiteUrl(currentSiteInfo.Id)}"" target=""_blank"">预览站点</a></li>");
 
             return $@"<li class=""has-submenu"">
               <a href=""javascript:;"">站点链接</a>
@@ -325,7 +279,7 @@ namespace SiteServer.BackgroundPages
             </li>";
         }
 
-        private string GetTopMenusHtml()
+        private static string GetTopMenusHtml(PermissionsImpl permissions, int siteId)
         {
             var topMenuTabs = TabManager.GetTopMenuTabs();
 
@@ -335,32 +289,27 @@ namespace SiteServer.BackgroundPages
             }
 
             var permissionList = new List<string>();
-            if (AuthRequest.AdminPermissionsImpl.HasSitePermissions(SiteId))
+            if (permissions.HasSitePermissions(siteId))
             {
-                var websitePermissionList = AuthRequest.AdminPermissionsImpl.GetSitePermissions(SiteId);
+                var websitePermissionList = permissions.GetSitePermissions(siteId);
                 if (websitePermissionList != null)
                 {
                     permissionList.AddRange(websitePermissionList);
                 }
             }
 
-            permissionList.AddRange(AuthRequest.AdminPermissionsImpl.PermissionList);
+            permissionList.AddRange(permissions.PermissionList);
 
             var builder = new StringBuilder();
             foreach (var tab in topMenuTabs)
             {
-                if (!IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
-
-                if (tab.Id == "Account")
-                {
-                    tab.Text = AuthRequest.AdminName;
-                }
+                if (!permissions.IsConsoleAdministrator && !TabManager.IsValid(tab, permissionList)) continue;
 
                 var tabs = TabManager.GetTabList(tab.Id, 0);
                 var tabsBuilder = new StringBuilder();
                 foreach (var parent in tabs)
                 {
-                    if (!IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
+                    if (!permissions.IsConsoleAdministrator && !TabManager.IsValid(parent, permissionList)) continue;
 
                     var hasChildren = parent.Children != null && parent.Children.Length > 0;
 
@@ -422,26 +371,21 @@ namespace SiteServer.BackgroundPages
             return false;
         }
 
-        private void AddToMySystemInfoList(List<SiteInfo> mySystemInfoList, Dictionary<int, List<SiteInfo>> parentWithChildren, int siteId)
+        private static void AddToMySiteInfoList(List<SiteInfo> mySiteInfoList, SiteInfo mySiteInfo, Dictionary<int, List<SiteInfo>> parentWithChildren)
         {
-            var siteInfo = SiteManager.GetSiteInfo(siteId);
-            if (siteInfo == null) return;
+            if (mySiteInfo == null) return;
 
-            if (siteInfo.IsRoot)
-            {
-                _hqSiteInfo = siteInfo;
-            }
-            else if (siteInfo.ParentId > 0)
+            if (mySiteInfo.ParentId > 0)
             {
                 var children = new List<SiteInfo>();
-                if (parentWithChildren.ContainsKey(siteInfo.ParentId))
+                if (parentWithChildren.ContainsKey(mySiteInfo.ParentId))
                 {
-                    children = parentWithChildren[siteInfo.ParentId];
+                    children = parentWithChildren[mySiteInfo.ParentId];
                 }
-                children.Add(siteInfo);
-                parentWithChildren[siteInfo.ParentId] = children;
+                children.Add(mySiteInfo);
+                parentWithChildren[mySiteInfo.ParentId] = children;
             }
-            mySystemInfoList.Add(siteInfo);
+            mySiteInfoList.Add(mySiteInfo);
         }
     }
 }

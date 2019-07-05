@@ -3,6 +3,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -16,10 +17,9 @@ namespace SiteServer.API.Controllers.Sys
         [Route(ApiRouteActionsDownload.Route)]
         public void Main()
         {
-            var isSuccess = false;
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
 
                 if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")) && string.IsNullOrEmpty(request.GetQueryString("contentId")))
                 {
@@ -28,27 +28,25 @@ namespace SiteServer.API.Controllers.Sys
 
                     if (PageUtils.IsProtocolUrl(fileUrl))
                     {
-                        isSuccess = true;
                         PageUtils.Redirect(fileUrl);
+                        return;
+                    }
+
+                    var siteInfo = SiteManager.GetSiteInfo(siteId);
+                    var filePath = PathUtility.MapPath(siteInfo, fileUrl);
+                    var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                    if (EFileSystemTypeUtils.IsDownload(fileType))
+                    {
+                        if (FileUtils.IsFileExists(filePath))
+                        {
+                            PageUtils.Download(HttpContext.Current.Response, filePath);
+                            return;
+                        }
                     }
                     else
                     {
-                        var siteInfo = SiteManager.GetSiteInfo(siteId);
-                        var filePath = PathUtility.MapPath(siteInfo, fileUrl);
-                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                        if (EFileSystemTypeUtils.IsDownload(fileType))
-                        {
-                            if (FileUtils.IsFileExists(filePath))
-                            {
-                                isSuccess = true;
-                                PageUtils.Download(HttpContext.Current.Response, filePath);
-                            }
-                        }
-                        else
-                        {
-                            isSuccess = true;
-                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
-                        }
+                        PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                        return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(request.GetQueryString("filePath")))
@@ -59,15 +57,15 @@ namespace SiteServer.API.Controllers.Sys
                     {
                         if (FileUtils.IsFileExists(filePath))
                         {
-                            isSuccess = true;
                             PageUtils.Download(HttpContext.Current.Response, filePath);
+                            return;
                         }
                     }
                     else
                     {
-                        isSuccess = true;
                         var fileUrl = PageUtils.GetRootUrlByPhysicalPath(filePath);
                         PageUtils.Redirect(PageUtils.ParseNavigationUrl(fileUrl));
+                        return;
                     }
                 }
                 else if (!string.IsNullOrEmpty(request.GetQueryString("siteId")) && !string.IsNullOrEmpty(request.GetQueryString("channelId")) && !string.IsNullOrEmpty(request.GetQueryString("contentId")) && !string.IsNullOrEmpty(request.GetQueryString("fileUrl")))
@@ -80,30 +78,30 @@ namespace SiteServer.API.Controllers.Sys
                     var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
 
+                    DataProvider.ContentDao.AddDownloads(ChannelManager.GetTableName(siteInfo, channelInfo), channelId, contentId);
+
                     if (!string.IsNullOrEmpty(contentInfo?.GetString(BackgroundContentAttribute.FileUrl)))
                     {
                         if (PageUtils.IsProtocolUrl(fileUrl))
                         {
-                            isSuccess = true;
                             PageUtils.Redirect(fileUrl);
+                            return;
+                        }
+
+                        var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
+                        var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
+                        if (EFileSystemTypeUtils.IsDownload(fileType))
+                        {
+                            if (FileUtils.IsFileExists(filePath))
+                            {
+                                PageUtils.Download(HttpContext.Current.Response, filePath);
+                                return;
+                            }
                         }
                         else
                         {
-                            var filePath = PathUtility.MapPath(siteInfo, fileUrl, true);
-                            var fileType = EFileSystemTypeUtils.GetEnumType(PathUtils.GetExtension(filePath));
-                            if (EFileSystemTypeUtils.IsDownload(fileType))
-                            {
-                                if (FileUtils.IsFileExists(filePath))
-                                {
-                                    isSuccess = true;
-                                    PageUtils.Download(HttpContext.Current.Response, filePath);
-                                }
-                            }
-                            else
-                            {
-                                isSuccess = true;
-                                PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
-                            }
+                            PageUtils.Redirect(PageUtility.ParseNavigationUrl(siteInfo, fileUrl, false));
+                            return;
                         }
                     }
                 }
@@ -112,10 +110,8 @@ namespace SiteServer.API.Controllers.Sys
             {
                 // ignored
             }
-            if (!isSuccess)
-            {
-                HttpContext.Current.Response.Write("下载失败，不存在此文件！");
-            }
+
+            HttpContext.Current.Response.Write("下载失败，不存在此文件！");
         }
     }
 }

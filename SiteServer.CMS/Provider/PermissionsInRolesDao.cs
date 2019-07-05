@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.CMS.Provider
@@ -156,11 +156,12 @@ namespace SiteServer.CMS.Provider
 		}
 
 
-		public List<string> GetGeneralPermissionList(string[] roles)
+		public List<string> GetGeneralPermissionList(IEnumerable<string> roles)
 		{
             var list = new List<string>();
-            var roleNameCollection = new List<string>(roles);
-			foreach (var roleName in roleNameCollection)
+		    if (roles == null) return list;
+            
+			foreach (var roleName in roles)
 			{
                 var permissionsInRolesInfo = GetPermissionsInRolesInfo(roleName);
                 if (permissionsInRolesInfo != null)

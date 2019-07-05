@@ -4,13 +4,14 @@ using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
+using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 
 namespace SiteServer.BackgroundPages.Controls
 {
 	public class ChannelAuxiliaryControl : Control
 	{
-        public IAttributes Attributes { get; set; }
+        public AttributesImpl Attributes { get; set; }
 
         public SiteInfo SiteInfo { get; set; }
 

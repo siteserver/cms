@@ -8,9 +8,13 @@ SiteFiles/packages/
 SiteFiles/SiteTemplates/
 SiteFiles/TemporaryFiles/
 SiteFiles/UserFiles/
+SiteFiles/Administrators/
 Template
 /sapprft/
+/Mullen/
+/Matthew/
 Web.config
+.vscode/
 
 test/
 ## sqlserver

@@ -43,7 +43,7 @@ namespace SiteServer.CMS.Plugin.Apis
         {
             var siteInfo = SiteManager.GetSiteInfo(context.SiteId);
             return StlParserUtility.GetStlCurrentUrl(siteInfo, context.ChannelId, context.ContentId,
-                context.ContentInfo, context.TemplateType, context.TemplateId, false);
+                (ContentInfo)context.ContentInfo, context.TemplateType, context.TemplateId, false);
         }
     }
 }

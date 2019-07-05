@@ -42,40 +42,50 @@ namespace SiteServer.API.Controllers.V1
             response.AppendHeader("Pragma", "No-Cache"); //特别注意
             response.ContentType = "image/png";
 
-            var validateimage = new Bitmap(130, 53, PixelFormat.Format32bppRgb);
+            byte[] buffer;
 
-            var r = new Random();
-            var colors = Colors[r.Next(0, 5)];
-
-            var g = Graphics.FromImage(validateimage);
-            g.FillRectangle(new SolidBrush(Color.FromArgb(240, 243, 248)), 0, 0, 200, 200); //矩形框
-            g.DrawString(code, new Font(FontFamily.GenericSerif, 28, FontStyle.Bold | FontStyle.Italic), new SolidBrush(colors), new PointF(14, 3));//字体/颜色
-
-            var random = new Random();
-
-            for (var i = 0; i < 25; i++)
+            using (var image = new Bitmap(130, 53, PixelFormat.Format32bppRgb))
             {
-                var x1 = random.Next(validateimage.Width);
-                var x2 = random.Next(validateimage.Width);
-                var y1 = random.Next(validateimage.Height);
-                var y2 = random.Next(validateimage.Height);
+                var r = new Random();
+                var colors = Colors[r.Next(0, 5)];
 
-                g.DrawLine(new Pen(Color.Silver), x1, y1, x2, y2);
+                using (var g = Graphics.FromImage(image))
+                {
+                    g.FillRectangle(new SolidBrush(Color.FromArgb(240, 243, 248)), 0, 0, 200, 200); //矩形框
+                    g.DrawString(code, new Font(FontFamily.GenericSerif, 28, FontStyle.Bold | FontStyle.Italic), new SolidBrush(colors), new PointF(14, 3));//字体/颜色
+
+                    var random = new Random();
+
+                    for (var i = 0; i < 25; i++)
+                    {
+                        var x1 = random.Next(image.Width);
+                        var x2 = random.Next(image.Width);
+                        var y1 = random.Next(image.Height);
+                        var y2 = random.Next(image.Height);
+
+                        g.DrawLine(new Pen(Color.Silver), x1, y1, x2, y2);
+                    }
+
+                    for (var i = 0; i < 100; i++)
+                    {
+                        var x = random.Next(image.Width);
+                        var y = random.Next(image.Height);
+
+                        image.SetPixel(x, y, Color.FromArgb(random.Next()));
+                    }
+
+                    g.Save();
+                }
+                
+                using (var ms = new MemoryStream())
+                {
+                    image.Save(ms, ImageFormat.Png);
+                    buffer = ms.ToArray();
+                }
             }
-
-            for (var i = 0; i < 100; i++)
-            {
-                var x = random.Next(validateimage.Width);
-                var y = random.Next(validateimage.Height);
-
-                validateimage.SetPixel(x, y, Color.FromArgb(random.Next()));
-            }
-
-            g.Save();
-            var ms = new MemoryStream();
-            validateimage.Save(ms, ImageFormat.Png);
+            
             response.ClearContent();
-            response.BinaryWrite(ms.ToArray());
+            response.BinaryWrite(buffer);
             response.End();
         }
 

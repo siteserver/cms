@@ -40,6 +40,12 @@ namespace SiteServer.CMS.Model
         [XmlIgnore]
 		public string TableName { get; set; }
 
+	    public bool Root
+	    {
+	        get => IsRoot;
+	        set => IsRoot = value;
+	    }
+
         [XmlIgnore]
         public bool IsRoot { get; set; }
 
@@ -62,7 +68,5 @@ namespace SiteServer.CMS.Model
 
 	    [JsonIgnore]
         public SiteInfoExtend Additional => _additional ?? (_additional = new SiteInfoExtend(SiteDir, _settingsXml));
-
-	    public IAttributes Attributes => Additional;
 	}
 }

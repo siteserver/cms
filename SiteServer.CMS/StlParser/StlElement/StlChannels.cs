@@ -17,10 +17,10 @@ namespace SiteServer.CMS.StlParser.StlElement
     {
         public const string ElementName = "stl:channels";
 
-        [StlAttribute(Title = "是否从所有栏目中选择")]
+        [StlAttribute(Title = "从所有栏目中选择")]
         public const string IsTotal = nameof(IsTotal);
 
-        [StlAttribute(Title = "是否显示所有级别的子栏目")]
+        [StlAttribute(Title = "显示所有级别的子栏目")]
         public const string IsAllChildren = nameof(IsAllChildren);
 
         public static object Parse(PageInfo pageInfo, ContextInfo contextInfo)

@@ -74,7 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
                                     }
                                 }
 
-                                TagUtils.AddTags(tagCollection, SiteId, contentId);
+                                TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, contentId);
 
                                 var tuple = DataProvider.ContentDao.GetValue(SiteInfo.TableName, contentId, ContentAttribute.Tags);
 
@@ -112,8 +112,7 @@ namespace SiteServer.BackgroundPages.Cms
 			{
                 try
                 {
-                    var tagCollection = TagUtils.ParseTagsString(TbTags.Text);
-                    TagUtils.AddTags(tagCollection, SiteId, 0);
+                    TagUtils.UpdateTags(string.Empty, TbTags.Text, SiteId, 0);
                     AuthRequest.AddSiteLog(SiteId, "添加内容标签", $"内容标签:{TbTags.Text}");
                     isChanged = true;
                 }

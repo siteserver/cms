@@ -9,10 +9,10 @@
     <projectUrl>https://github.com/siteserver/cms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>SiteServer CMS</description>
-    <copyright>Copyright © SiteServer CMS 2018</copyright>
+    <copyright>Copyright © SiteServer CMS</copyright>
     <tags>SiteServer CMS</tags>
     <releaseNotes>
-      SiteServer CMS V6.7正式版
+      SiteServer CMS V6.11正式版
     </releaseNotes>
   </metadata>
 </package>

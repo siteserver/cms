@@ -312,7 +312,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var embedBuilder = new StringBuilder();
             foreach (string key in contextInfo.Attributes.Keys)
             {
-                paramBuilder.Append($@"<param name=""{key}"" value=""{contextInfo.Attributes[key]}"">").Append(StringUtils.Constants.ReturnAndNewline);
+                paramBuilder.Append($@"<param name=""{key}"" value=""{contextInfo.Attributes[key]}"">").Append(Constants.ReturnAndNewline);
                 embedBuilder.Append($@" {key}=""{contextInfo.Attributes[key]}""");
             }
 

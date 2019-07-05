@@ -14,6 +14,14 @@ namespace SiteServer.CMS.Packaging
         private readonly IReadOnlyCollection<FrameworkSpecificGroup> _frameworkReferenceGroups;
         private readonly IReadOnlyCollection<NuGet.Packaging.Core.PackageType> _packageTypes;
 
+        public PackageMetadata(string directoryName)
+        {
+            Id = directoryName;
+            Title = directoryName;
+            IconUrl = new Uri("https://www.siteserver.cn/assets/images/favicon.png");
+            Version = "0.0.0";
+        }
+
         public PackageMetadata(
             Dictionary<string, string> metadata,
             IEnumerable<PackageDependencyGroup> dependencyGroups,

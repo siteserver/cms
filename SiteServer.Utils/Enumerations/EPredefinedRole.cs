@@ -130,44 +130,34 @@ namespace SiteServer.Utils.Enumerations
 			return item;
 		}
 
-		public static bool IsConsoleAdministrator(string[] roles)
-		{
-			var retval = false;
-			if (roles != null && roles.Length > 0)
-			{
-				foreach (var role in roles)
-				{
-					if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-					{
-						retval = true;
-						break;
-					}
-				}
-			}
-			return retval;
-		}
+	    public static bool IsConsoleAdministrator(IList<string> roles)
+	    {
+	        return roles != null && roles.Contains(GetValue(EPredefinedRole.ConsoleAdministrator));
+	    }
 
-		public static bool IsSystemAdministrator(string[] roles)
-		{
-			var retval = false;
-			if (roles != null && roles.Length > 0)
-			{
-				foreach (var role in roles)
-				{
-				    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
-					{
-						retval = true;
-						break;
-					}
-				    if (Equals(EPredefinedRole.SystemAdministrator, role))
-				    {
-				        retval = true;
-				        break;
-				    }
-				}
-			}
-			return retval;
-		}
+	    public static bool IsSystemAdministrator(IList<string> roles)
+	    {
+	        return roles != null && (roles.Contains(GetValue(EPredefinedRole.ConsoleAdministrator)) || roles.Contains(GetValue(EPredefinedRole.SystemAdministrator)));
+
+	        //         var retval = false;
+	        //if (roles != null && roles.Length > 0)
+	        //{
+	        //	foreach (var role in roles)
+	        //	{
+	        //	    if (Equals(EPredefinedRole.ConsoleAdministrator, role))
+	        //		{
+	        //			retval = true;
+	        //			break;
+	        //		}
+	        //	    if (Equals(EPredefinedRole.SystemAdministrator, role))
+	        //	    {
+	        //	        retval = true;
+	        //	        break;
+	        //	    }
+	        //	}
+	        //}
+	        //return retval;
+	    }
 
         public static bool IsAdministrator(string[] roles)
         {

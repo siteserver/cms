@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Data;
+using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.Utils;
 using SiteServer.CMS.Model;
-using SiteServer.Plugin;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.CMS.Provider

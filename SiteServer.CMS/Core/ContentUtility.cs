@@ -12,6 +12,7 @@ using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using System.Linq;
+using SiteServer.CMS.DataCache.Content;
 
 namespace SiteServer.CMS.Core
 {
@@ -362,6 +363,12 @@ namespace SiteServer.CMS.Core
                 },
                 new TableStyleInfo
                 {
+                    AttributeName = ContentAttribute.Downloads,
+                    DisplayName = "下载量",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
                     AttributeName = ContentAttribute.CheckUserName,
                     DisplayName = "审核人",
                     Taxis = taxis++
@@ -497,6 +504,29 @@ namespace SiteServer.CMS.Core
             }
         }
 
+        public static void Delete(string tableName, SiteInfo siteInfo, int channelId, int contentId)
+        {
+            if (string.IsNullOrEmpty(tableName) || siteInfo == null || channelId <= 0 || contentId <= 0) return;
+            
+            DataProvider.ContentDao.Delete(tableName, siteInfo.Id, channelId, contentId);
+
+            TagUtils.RemoveTags(siteInfo.Id, contentId);
+
+            foreach (var service in PluginManager.Services)
+            {
+                try
+                {
+                    service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelId, contentId));
+                }
+                catch (Exception ex)
+                {
+                    LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
+                }
+            }
+
+            ContentManager.RemoveCache(tableName, channelId);
+        }
+
         public static void Translate(SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, ETranslateContentType translateType)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
@@ -549,7 +579,6 @@ namespace SiteServer.CMS.Core
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, ETranslateContentType.Cut.ToString());
 
                 var newContentId = DataProvider.ContentDao.Insert(targetTableName, targetSiteInfo, targetChannelInfo, contentInfo);
-                DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 foreach (var service in PluginManager.Services)
                 {
@@ -561,16 +590,11 @@ namespace SiteServer.CMS.Core
                     {
                         LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentTranslateCompleted));
                     }
-
-                    try
-                    {
-                        service.OnContentDeleteCompleted(new ContentEventArgs(siteInfo.Id, channelInfo.Id, contentId));
-                    }
-                    catch (Exception ex)
-                    {
-                        LogUtils.AddErrorLog(service.PluginId, ex, nameof(service.OnContentDeleteCompleted));
-                    }
                 }
+
+                Delete(tableName, siteInfo, channelId, contentId);
+
+                //DataProvider.ContentDao.DeleteContents(siteInfo.Id, tableName, TranslateUtils.ToIntList(contentId), channelId);
 
                 CreateManager.CreateContent(targetSiteInfo.Id, contentInfo.ChannelId, newContentId);
                 CreateManager.TriggerContentChangedEvent(targetSiteInfo.Id, contentInfo.ChannelId);
@@ -652,7 +676,7 @@ namespace SiteServer.CMS.Core
             return dic;
         }
 
-        public static string GetTitleHtml(string titleFormat, string titleAjaxUrl)
+        public static string GetTitleHtml(string titleFormat)
         {
             var builder = new StringBuilder();
             var formatStrong = false;
@@ -725,46 +749,6 @@ $('#{ContentAttribute.Title}_colorContainer').hide();
 <input id=""{ContentAttribute.Title}_formatEM"" name=""{ContentAttribute.Title}_formatEM"" type=""hidden"" value=""{formatEm.ToString().ToLower()}"" />
 <input id=""{ContentAttribute.Title}_formatU"" name=""{ContentAttribute.Title}_formatU"" type=""hidden"" value=""{formatU.ToString().ToLower()}"" />
 ");
-
-            builder.Append(@"
-<script type=""text/javascript"">
-function getTitles(title){
-	$.get('[url]&title=' + encodeURIComponent(title) + '&channelID=' + $('#channelID').val() + '&r=' + Math.random(), function(data) {
-		if(data !=''){
-			var arr = data.split('|');
-			var temp='';
-			for(i=0;i<arr.length;i++)
-			{
-				temp += '<li><a>'+arr[i].replace(title,'<b>' + title + '</b>') + '</a></li>';
-			}
-			var myli='<ul>'+temp+'</ul>';
-			$('#titleTips').html(myli);
-			$('#titleTips').show();
-		}else{
-            $('#titleTips').hide();
-        }
-		$('#titleTips li').click(function () {
-			$('#Title').val($(this).text());
-			$('#titleTips').hide();
-		})
-	});	
-}
-$(document).ready(function () {
-$('#Title').keyup(function (e) {
-    if (e.keyCode != 40 && e.keyCode != 38) {
-        var title = $('#Title').val();
-        if (title != ''){
-            window.setTimeout(""getTitles('"" + title + ""');"", 200);
-        }else{
-            $('#titleTips').hide();
-        }
-    }
-}).blur(function () {
-	window.setTimeout(""$('#titleTips').hide();"", 200);
-})});
-</script>
-<div id=""titleTips"" class=""inputTips""></div>");
-            builder.Replace("[url]", titleAjaxUrl);
 
             return builder.ToString();
         }

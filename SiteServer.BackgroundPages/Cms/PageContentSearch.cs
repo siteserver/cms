@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web.UI.WebControls;
+using Datory;
 using SiteServer.Utils;
 using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
@@ -10,6 +11,7 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
+using SiteServer.CMS.Model.Enumerations;
 using SiteServer.CMS.Plugin;
 using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
@@ -108,9 +110,12 @@ namespace SiteServer.BackgroundPages.Cms
             RptContents.ItemDataBound += RptContents_ItemDataBound;
 
             var allAttributeNameList = TableColumnManager.GetTableColumnNameList(tableName, DataType.Text);
+            var onlyAdminId = _isAdminOnly
+                ? AuthRequest.AdminId
+                : AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteInfo.Id, _channelInfo.Id);
             var whereString = DataProvider.ContentDao.GetPagerWhereSqlString(SiteInfo, _channelInfo,
                 searchType, keyword,
-                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, _isAdminOnly,
+                dateFrom, dateTo, state, _isCheckOnly, false, _isTrashOnly, _isWritingOnly, onlyAdminId,
                 AuthRequest.AdminPermissionsImpl,
                 allAttributeNameList);
 
@@ -132,7 +137,14 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 if (AuthRequest.IsQueryExists("IsDeleteAll"))
                 {
-                    DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
+                    //DataProvider.ContentDao.DeleteContentsByTrash(SiteId, _channelId, tableName);
+
+                    var list = DataProvider.ContentDao.GetContentIdListByTrash(SiteId, tableName);
+                    foreach (var (contentChannelId, contentId) in list)
+                    {
+                        ContentUtility.Delete(tableName, SiteInfo, contentChannelId, contentId);
+                    }
+
                     AuthRequest.AddSiteLog(SiteId, "清空回收站");
                     SuccessMessage("成功清空回收站!");
                 }

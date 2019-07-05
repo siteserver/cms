@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using SiteServer.Plugin;
+﻿using System;
+using System.Collections.Generic;
+using Datory;
 
 namespace SiteServer.Cli.Updater
 {
@@ -14,5 +15,7 @@ namespace SiteServer.Cli.Updater
         public Dictionary<string, string> ConvertKeyDict { get; set; }
 
         public Dictionary<string, string> ConvertValueDict { get; set; }
+
+        public Func<Dictionary<string, object>, Dictionary<string, object>> Process { get; set; }
     }
 }

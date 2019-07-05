@@ -12,7 +12,7 @@ namespace SiteServer.API.Controllers.Sys
             return Ok(new
             {
                 LogInfo = DataProvider.ErrorLogDao.GetErrorLogInfo(id),
-                SystemManager.Version
+                Version = SystemManager.ProductVersion
             });
         }
     }

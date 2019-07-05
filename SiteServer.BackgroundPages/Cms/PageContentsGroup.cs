@@ -7,6 +7,7 @@ using SiteServer.BackgroundPages.Controls;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 
@@ -94,7 +95,7 @@ namespace SiteServer.BackgroundPages.Cms
                 AuthRequest.AdminName != contentInfo.AddUserName) return;
 
             ltlItemEditUrl.Text =
-                $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _channelInfo, contentInfo.Id, PageUrl)}"">编辑</a>";
+                $@"<a href=""{WebUtils.GetContentAddEditUrl(SiteId, _channelInfo.Id, contentInfo.Id, PageUrl)}"">编辑</a>";
 
             var removeUrl = PageUtils.GetCmsUrl(SiteId, nameof(PageContentsGroup), new NameValueCollection
             {

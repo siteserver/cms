@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
@@ -26,7 +27,7 @@ namespace SiteServer.API.Controllers.Home
         {
             try
             {
-                var request = new RequestImpl();
+                var request = new AuthenticatedRequest();
                 var pageName = request.GetQueryString("pageName");
 
                 if (pageName == PageNameRegister)
@@ -63,7 +64,7 @@ namespace SiteServer.API.Controllers.Home
             }
         }
 
-        public object GetRegister(RequestImpl request)
+        public object GetRegister(AuthenticatedRequest request)
         {
             return new
             {
@@ -74,7 +75,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetIndex(RequestImpl request)
+        public object GetIndex(AuthenticatedRequest request)
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
@@ -125,7 +126,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetProfile(RequestImpl request)
+        public object GetProfile(AuthenticatedRequest request)
         {
             return new
             {
@@ -135,7 +136,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContents(RequestImpl request)
+        public object GetContents(AuthenticatedRequest request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -216,7 +217,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContentAdd(RequestImpl request)
+        public object GetContentAdd(AuthenticatedRequest request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -283,7 +284,7 @@ namespace SiteServer.API.Controllers.Home
                     };
 
                     groupNames = ContentGroupManager.GetGroupNameList(siteInfo.Id);
-                    tagNames = ContentTagManager.GetTagNameList(siteInfo.Id);
+                    tagNames = new List<string>();
                 }
 
                 if (channelInfo != null)

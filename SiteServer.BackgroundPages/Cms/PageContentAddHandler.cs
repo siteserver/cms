@@ -72,7 +72,7 @@ namespace SiteServer.BackgroundPages.Cms
             {
                 try
                 {
-                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, new AttributesImpl(form), contentInfo));
+                    service.OnContentFormSubmit(new ContentFormSubmitEventArgs(siteId, channelId, contentInfo.Id, TranslateUtils.ToDictionary(form), contentInfo));
                 }
                 catch (Exception ex)
                 {

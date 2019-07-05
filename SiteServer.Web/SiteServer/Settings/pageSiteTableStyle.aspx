@@ -10,7 +10,6 @@
 
 <body>
   <form class="m-l-15 m-r-15" runat="server">
-
     <div class="card-box" style="padding: 10px; margin-bottom: 10px;">
       <ul class="nav nav-pills nav-justified">
         <li class="nav-item">
@@ -35,18 +34,13 @@
           <a class="nav-link" href="pageSiteTemplate.aspx">站点模板管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteTemplateOnline.aspx">在线站点模板</a>
+          <a class="nav-link" href="siteTemplateOnline.cshtml">在线站点模板</a>
         </li>
       </ul>
     </div>
-
     <ctrl:alerts runat="server" />
-
     <div class="card-box">
-      <div class="m-t-0 header-title">
-        虚拟字段管理
-      </div>
-
+      <div class="m-t-0 header-title"> 虚拟字段管理 </div>
       <div class="panel panel-default m-t-20">
         <div class="panel-body p-0">
           <div class="table-responsive">
@@ -72,19 +66,15 @@
                       </td>
                       <td>
                         <asp:Literal ID="ltlDisplayName" runat="server"></asp:Literal>
-
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlInputType" runat="server"></asp:Literal>
-
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlFieldType" runat="server"></asp:Literal>
-
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlValidate" runat="server"></asp:Literal>
-
                       </td>
                       <td class="text-center">
                         <asp:Literal ID="ltlTaxis" runat="server"></asp:Literal>
@@ -100,21 +90,16 @@
                 </asp:Repeater>
               </tbody>
             </table>
-
           </div>
         </div>
       </div>
-
       <hr />
-
       <asp:Button class="btn btn-primary m-r-5" id="BtnAddStyle" Text="新增虚拟字段" runat="server" />
       <asp:Button class="btn m-r-5" id="BtnAddStyles" Text="批量新增虚拟字段" runat="server" />
       <asp:Button class="btn m-r-5" id="BtnImport" Text="导 入" runat="server" />
       <asp:Button class="btn m-r-5" id="BtnExport" Text="导 出" runat="server" />
       <asp:Button class="btn m-r-5" text="返 回" onclick="Return_OnClick" runat="server" />
-
     </div>
-
   </form>
 </body>
 

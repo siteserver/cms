@@ -4,6 +4,7 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Core.Office

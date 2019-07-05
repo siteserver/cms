@@ -2,6 +2,7 @@
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -79,7 +80,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             var startIndex = 0;
             var length = 0;
             var wordNum = 0;
-            var ellipsis = StringUtils.Constants.Ellipsis;
+            var ellipsis = Constants.Ellipsis;
             var replace = string.Empty;
             var to = string.Empty;
             var isClearTags = false;
@@ -119,14 +120,17 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
+                    isClearTags = true;
                     startIndex = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
+                    isClearTags = true;
                     length = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
+                    isClearTags = true;
                     wordNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
@@ -177,7 +181,10 @@ namespace SiteServer.CMS.StlParser.StlElement
             StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
             parsedContent = innerBuilder.ToString();
 
-            parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.PageContent))
+            {
+                parsedContent = parsedContent.Replace(ContentUtility.PagePlaceHolder, string.Empty);
+            }
 
             return parsedContent;
         }
@@ -355,7 +362,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
                             parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
@@ -406,7 +413,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (num <= 1)
                         {
                             parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
@@ -456,7 +463,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         else
                         {
                             //第一条
-                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false));
+                            sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                             //第n条
                             var extendAttributeName = ContentAttribute.GetExtendAttributeName(BackgroundContentAttribute.FileUrl);
                             var extendValues = contentInfo.GetString(extendAttributeName);
@@ -464,7 +471,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                             {
                                 foreach (string extendValue in TranslateUtils.StringCollectionToStringList(extendValues))
                                 {
-                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false));
+                                    sbParsedContent.Append(InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper));
                                 }
                             }
 
@@ -475,7 +482,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no, 0);
+                        var num = TranslateUtils.ToInt(no);
                         if (contextInfo.IsStlEntity)
                         {
                             if (num <= 1)
@@ -510,7 +517,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                         {
                             if (num <= 1)
                             {
-                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, contentInfo.GetString(BackgroundContentAttribute.FileUrl), contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                             }
                             else
                             {
@@ -523,7 +530,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                                     {
                                         if (index == num)
                                         {
-                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false);
+                                            parsedContent = InputParserUtility.GetFileHtmlWithCount(pageInfo.SiteInfo, contentInfo.ChannelId, contentInfo.Id, extendValue, contextInfo.Attributes, contextInfo.InnerHtml, false, isLower, isUpper);
                                             break;
                                         }
                                         index++;

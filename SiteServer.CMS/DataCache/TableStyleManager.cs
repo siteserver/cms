@@ -133,7 +133,7 @@ namespace SiteServer.CMS.DataCache
             return GetStyleInfoList(DataProvider.UserDao.TableName, relatedIdentities);
         }
 
-        public static IAttributes GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
+        public static AttributesImpl GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
         {
             var attributes = new AttributesImpl();
 

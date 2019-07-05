@@ -90,7 +90,5 @@ namespace SiteServer.CMS.Plugin.Apis
             }
             return true;
         }
-
-        public IAttributes Config => ConfigManager.SystemConfigInfo;
     }
 }
