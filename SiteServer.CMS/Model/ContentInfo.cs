@@ -290,11 +290,6 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.SettingsXml, value);
         }
 
-        public T Get<T>(string name)
-        {
-            return TranslateUtils.Cast<T>(Get(name));
-        }
-
         public override Dictionary<string, object> ToDictionary()
 	    {
 	        var dict = base.ToDictionary();

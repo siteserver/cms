@@ -115,10 +115,9 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static int GetSiteCountIsChecked(SiteInfo siteInfo)
+            public static int GetSiteCountByIsChecked(SiteInfo siteInfo, bool isChecked)
             {
                 var tableNames = SiteManager.GetTableNameList(siteInfo);
-                var isChecked = true.ToString();
 
                 lock (LockObject)
                 {
@@ -126,26 +125,7 @@ namespace SiteServer.CMS.DataCache.Content
                     foreach (var tableName in tableNames)
                     {
                         var list = GetContentCountInfoList(tableName);
-                        count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked)
-                            .Sum(x => x.Count);
-                    }
-
-                    return count;
-                }
-            }
-
-            public static int GetSiteCountIsChecking(SiteInfo siteInfo)
-            {
-                var tableNames = SiteManager.GetTableNameList(siteInfo);
-                var isChecked = false.ToString();
-
-                lock (LockObject)
-                {
-                    var count = 0;
-                    foreach (var tableName in tableNames)
-                    {
-                        var list = GetContentCountInfoList(tableName);
-                        count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked && x.CheckedLevel != -siteInfo.Additional.CheckContentLevel && x.CheckedLevel != CheckManager.LevelInt.CaoGao)
+                        count += list.Where(x => x.SiteId == siteInfo.Id && x.IsChecked == isChecked.ToString())
                             .Sum(x => x.Count);
                     }
 
@@ -188,14 +168,9 @@ namespace SiteServer.CMS.DataCache.Content
             }
         }
 
-        public static int GetCountIsChecked(SiteInfo siteInfo)
+        public static int GetCount(SiteInfo siteInfo, bool isChecked)
         {
-            return CountCache.GetSiteCountIsChecked(siteInfo);
-        }
-
-        public static int GetCountChecking(SiteInfo siteInfo)
-        {
-            return CountCache.GetSiteCountIsChecking(siteInfo);
+            return CountCache.GetSiteCountByIsChecked(siteInfo, isChecked);
         }
 
         public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)

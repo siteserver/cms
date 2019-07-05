@@ -7,9 +7,9 @@ namespace SiteServer.CMS.Core
 {
     public static class OnlineTemplateManager
     {
-        private const string UrlTemplatesXml = "https://www.siteserver.cn/templates/templates.xml";
+        private const string UrlTemplatesXml = "http://templates.siteserver.cn/templates.xml";
 
-        public const string UrlHome = "https://www.siteserver.cn/templates/";
+        public const string UrlHome = "http://templates.siteserver.cn";
 
         public static bool TryGetOnlineTemplates(out List<Dictionary<string, string>> list)
         {
@@ -34,7 +34,7 @@ namespace SiteServer.CMS.Core
 
                         while (ie.MoveNext())
                         {
-                            var childNode = (XmlNode)ie.Current;
+                            var childNode = (XmlNode) ie.Current;
                             if (childNode == null) continue;
 
                             var nodeName = childNode.Name;
@@ -84,7 +84,7 @@ namespace SiteServer.CMS.Core
 
         public static string GetTemplateUrl(string name)
         {
-            return $"https://www.siteserver.cn/templates/t-{name.ToLower()}/index.html";
+            return $"http://templates.siteserver.cn/t-{name.ToLower()}/index.html";
         }
 
         public static string GetDownloadUrl(string name)

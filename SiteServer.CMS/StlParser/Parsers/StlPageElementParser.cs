@@ -7,8 +7,13 @@ namespace SiteServer.CMS.StlParser.Parsers
 	/// <summary>
 	/// StlPageElementParser 的摘要说明。
 	/// </summary>
-	public static class StlPageElementParser
+	public class StlPageElementParser
 	{
+		private StlPageElementParser()
+		{
+		}
+
+
 		//在内容页中对“翻页项容器”（stl:pageItems）元素进行解析，此元素在生成页面时单独解析，不包含在ParseStlElement方法中。
 		public static string ParseStlPageInContentPage(string stlElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount)
 		{
@@ -26,9 +31,9 @@ namespace SiteServer.CMS.StlParser.Parsers
             return StlPageItems.ParseInSearchPage(stlElement, pageInfo, ajaxDivId, channelId, currentPageIndex, pageCount, totalNum);
         }
 
-        public static string ParseStlPageInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseStlPageInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
-            return StlPageItems.ParseInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+            return StlPageItems.ParseInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
 
 		public static string ParseStlPageItems(string htmlInStlPageElement, PageInfo pageInfo, int channelId, int contentId, int currentPageIndex, int pageCount, int totalNum, bool isXmlContent, EContextType contextType)
@@ -77,7 +82,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             return html;
         }
 
-        public static string ParseStlPageItemsInDynamicPage(string htmlInStlPageElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseStlPageItemsInDynamicPage(string htmlInStlPageElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var html = htmlInStlPageElement;
 
@@ -85,7 +90,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlEntity = mc[i].Value;
-                var pageHtml = StlPageItem.ParseEntityInDynamicPage(stlEntity, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                var pageHtml = StlPageItem.ParseEntityInDynamicPage(stlEntity, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                 html = html.Replace(stlEntity, pageHtml);
             }
 
@@ -93,7 +98,7 @@ namespace SiteServer.CMS.StlParser.Parsers
             for (var i = 0; i < mc.Count; i++)
             {
                 var stlElement = mc[i].Value;
-                var pageHtml = StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                var pageHtml = StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                 html = html.Replace(stlElement, pageHtml);
             }
 
@@ -118,9 +123,9 @@ namespace SiteServer.CMS.StlParser.Parsers
             return StlPageItem.ParseElementInSearchPage(stlElement, pageInfo, ajaxDivId, currentPageIndex, pageCount, totalNum);
         }
 
-        public static string ParseStlPageItemInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseStlPageItemInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
-            return StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+            return StlPageItem.ParseElementInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
         }
 	}
 }

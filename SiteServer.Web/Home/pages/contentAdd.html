@@ -10,7 +10,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <link rel="shortcut icon" href="../assets/images/favicon.ico">
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-  <link href="../assets/lib/vue-multiselect-2.1.0/style.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/lib/vue-multiselect/style-2.1.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/ionicons-2.0.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
@@ -63,10 +63,16 @@
                   <label for="ContinueAdd">继续添加内容</label>
                 </td>
               </tr>
-              <tr @click="btnReturnClick">
+              <tr>
                 <td>
                   <input id="Contents" type="radio" name="Operation" value="Contents">
                   <label for="Contents">返回管理界面</label>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input id="Translate" type="radio" name="Operation" value="Translate">
+                  <label for="Translate">转发到其他站点</label>
                 </td>
               </tr>
             </tbody>
@@ -277,7 +283,7 @@
 <script src="../assets/js/utils.js" type="text/javascript"></script>
 <script src="../config.js" type="text/javascript"></script>
 
-<script src="../assets/lib/vue-multiselect-2.1.0/script.min.js"></script>
+<script src="../assets/lib/vue-multiselect/script-2.1.0.min.js"></script>
 <script src="../assets/lib/vue2-datepicker-2.4.3.min.js"></script>
 <script type="text/javascript">
   window.UEDITOR_HOME_URL = "../assets/lib/ueditor/";

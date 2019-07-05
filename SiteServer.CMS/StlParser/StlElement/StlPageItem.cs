@@ -1016,7 +1016,7 @@ namespace SiteServer.CMS.StlParser.StlElement
         }
 
 
-        public static string ParseElementInDynamicPage(string stlElement, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseElementInDynamicPage(string stlElement, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1116,7 +1116,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                 }
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                 var isActive = false;
                 var isAddSpan = false;
@@ -1303,7 +1303,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index + pageLength < currentPageIndex + 1 && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1321,7 +1321,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     {
                         if (currentPageIndex + 1 != index)
                         {
-                            jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                            jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                             if (!string.IsNullOrEmpty(successTemplateString))
                             {
@@ -1359,7 +1359,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     //pre ellipsis
                     if (index < pageCount && !string.IsNullOrEmpty(listEllipsis))
                     {
-                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                        jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, index, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                         if (!string.IsNullOrEmpty(successTemplateString))
                         {
@@ -1415,7 +1415,7 @@ namespace SiteServer.CMS.StlParser.StlElement
             return parsedContent;
         }
 
-        public static string ParseEntityInDynamicPage(string stlEntity, PageInfo pageInfo, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static string ParseEntityInDynamicPage(string stlEntity, PageInfo pageInfo, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             var parsedContent = string.Empty;
             try
@@ -1429,7 +1429,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 var isHyperlink = false;
 
-                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
+                var jsMethod = PagerUtility.GetJsMethodInDynamicPage(type, pageInfo.SiteInfo, contextInfo.ChannelId, contextInfo.ContentId, pageUrl, 0, currentPageIndex, pageCount, isPageRefresh, ajaxDivId, pageInfo.IsLocal);
 
                 if (StringUtils.EqualsIgnoreCase(type, TypeFirstPage) || StringUtils.EqualsIgnoreCase(type, TypeLastPage) || StringUtils.EqualsIgnoreCase(type, TypePreviousPage) || StringUtils.EqualsIgnoreCase(type, TypeNextPage))
                 {

@@ -10,7 +10,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public class BackupJob
+    public static class BackupJob
     {
         public const string CommandName = "backup";
 
@@ -53,13 +53,12 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            var directory = _directory;
-            if (string.IsNullOrEmpty(directory))
+            if (string.IsNullOrEmpty(_directory))
             {
-                directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
+                _directory = $"backup/{DateTime.Now:yyyy-MM-dd}";
             }
 
-            var treeInfo = new TreeInfo(directory);
+            var treeInfo = new TreeInfo(_directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
             var webConfigPath = CliUtils.GetWebConfigPath(_configFile);

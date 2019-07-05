@@ -52,6 +52,15 @@ namespace SiteServer.CMS.StlParser.Utility
             contextInfo.IsInnerElement = isInnerElement;
         }
 
+        public static string ParseInnerContent(string template, PageInfo pageInfo, ContextInfo contextInfo)
+        {
+            if (string.IsNullOrEmpty(template)) return string.Empty;
+
+            var builder = new StringBuilder(template);
+            ParseInnerContent(builder, pageInfo, contextInfo);
+            return builder.ToString();
+        }
+
         public static string ParseInnerContent(string template, ParseContextImpl context)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
@@ -142,7 +151,7 @@ namespace SiteServer.CMS.StlParser.Utility
             }
         }
 
-        public static void ReplacePageElementsInDynamicPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
+        public static void ReplacePageElementsInDynamicPage(StringBuilder parsedBuilder, PageInfo pageInfo, List<string> labelList, string pageUrl, int channelId, int currentPageIndex, int pageCount, int totalNum, bool isPageRefresh, string ajaxDivId)
         {
             //替换分页模板
             foreach (var labelString in labelList)
@@ -150,13 +159,13 @@ namespace SiteServer.CMS.StlParser.Utility
                 if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItems.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = StlPageElementParser.ParseStlPageInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
                 else if (StlParserUtility.IsSpecifiedStlElement(labelString, StlPageItem.ElementName))
                 {
                     var stlElement = labelString;
-                    var pageHtml = StlPageElementParser.ParseStlPageItemInDynamicPage(stlElement, pageInfo, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
+                    var pageHtml = StlPageElementParser.ParseStlPageItemInDynamicPage(stlElement, pageInfo, pageUrl, channelId, currentPageIndex, pageCount, totalNum, isPageRefresh, ajaxDivId);
                     parsedBuilder.Replace(stlElement, pageHtml);
                 }
             }

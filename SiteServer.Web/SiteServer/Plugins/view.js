@@ -19,7 +19,7 @@ var data = {
 var methods = {
   getIconUrl: function (url) {
     if (url && url.indexOf('://') !== -1) return url;
-    return 'https://www.siteserver.cn/plugins/' + url;
+    return 'http://plugins.siteserver.cn/' + url;
   },
 
   getTagNames: function (pluginInfo) {

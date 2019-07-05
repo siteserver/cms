@@ -159,7 +159,7 @@
           <hr>
           <p class="mb-0">
             获取更多使用帮助请访问
-            <a href="https://www.siteserver.cn/docs/" target="_blank">SiteServer CMS 文档中心</a>
+            <a href="http://docs.siteserver.cn" target="_blank">SiteServer CMS 文档中心</a>
           </p>
         </div>
 
@@ -214,7 +214,7 @@
           $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
           var major = $this.package.version.split('.')[0];
           var minor = $this.package.version.split('.')[1];
-          $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+          $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
 
         }).catch(function (error) {
           $this.pageAlert = utils.getPageAlert(error);
@@ -232,7 +232,7 @@
         //   $this.isShouldUpdate = compareversion($this.installedVersion, $this.package.version) == -1;
         //   var major = $this.package.version.split('.')[0];
         //   var minor = $this.package.version.split('.')[1];
-        //   $this.updatesUrl = 'https://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
+        //   $this.updatesUrl = 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html';
         // }, 'packages', packageId);
       },
       check: function () {

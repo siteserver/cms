@@ -1951,36 +1951,34 @@ SET IDENTITY_INSERT {tableName} OFF
             }
         }
 
-        private decimal? _sqlServerVersion;
+        private ETriState _sqlServerVersionState = ETriState.All;
 
-        private decimal SqlServerVersion
+        public bool IsSqlServer2012
         {
             get
             {
+                if (_sqlServerVersionState != ETriState.All) return _sqlServerVersionState == ETriState.True;
+
                 if (WebConfigUtils.DatabaseType != DatabaseType.SqlServer)
                 {
-                    return 0;
+                    _sqlServerVersionState = ETriState.False;
                 }
 
-                if (_sqlServerVersion == null)
+                try
                 {
-                    try
-                    {
-                        _sqlServerVersion =
-                            TranslateUtils.ToDecimal(
-                                GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
-                    }
-                    catch
-                    {
-                        _sqlServerVersion = 0;
-                    }
+                    var version =
+                        TranslateUtils.ToDecimal(
+                            GetString("select left(cast(serverproperty('productversion') as varchar), 4)"));
+                    _sqlServerVersionState = version >= 11 ? ETriState.True : ETriState.False;
+                }
+                catch
+                {
+                    _sqlServerVersionState = ETriState.False;
                 }
 
-                return _sqlServerVersion.Value;
+                return _sqlServerVersionState == ETriState.True;
             }
         }
-
-        public bool IsSqlServer2012 => SqlServerVersion >= 11;
 
         public int GetPageTotalCount(string tableName, string whereSqlString)
         {

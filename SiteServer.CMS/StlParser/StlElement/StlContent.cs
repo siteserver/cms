@@ -120,17 +120,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
-                    isClearTags = true;
                     startIndex = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
-                    isClearTags = true;
                     length = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
-                    isClearTags = true;
                     wordNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
@@ -362,7 +359,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no);
+                        var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
                             parsedContent = contextInfo.IsStlEntity ? PageUtility.ParseNavigationUrl(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), pageInfo.IsLocal) : InputParserUtility.GetImageOrFlashHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.ImageUrl), contextInfo.Attributes, false);
@@ -413,7 +410,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no);
+                        var num = TranslateUtils.ToInt(no, 0);
                         if (num <= 1)
                         {
                             parsedContent = InputParserUtility.GetVideoHtml(pageInfo.SiteInfo, contentInfo.GetString(BackgroundContentAttribute.VideoUrl), contextInfo.Attributes, contextInfo.IsStlEntity);
@@ -482,7 +479,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                     }
                     else
                     {
-                        var num = TranslateUtils.ToInt(no);
+                        var num = TranslateUtils.ToInt(no, 0);
                         if (contextInfo.IsStlEntity)
                         {
                             if (num <= 1)

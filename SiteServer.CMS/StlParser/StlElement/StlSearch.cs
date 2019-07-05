@@ -162,10 +162,9 @@ namespace SiteServer.CMS.StlParser.StlElement
                 no = TemplateManager.GetContentByFilePath(SiteFilesAssets.Search.NoTemplatePath);
             }
 
-            pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.StlClient);
             pageInfo.AddPageBodyCodeIfNotExists(PageInfo.Const.Jquery);
-            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
 
+            var ajaxDivId = StlParserUtility.GetAjaxDivId(pageInfo.UniqueId);
             var apiUrl = ApiRouteActionsSearch.GetUrl(pageInfo.ApiUrl);
             var apiParameters = ApiRouteActionsSearch.GetParameters(isAllSites, siteName, siteDir, siteIds, channelIndex, channelName, channelIds, type, word, dateAttribute, dateFrom, dateTo, since, pageNum, isHighlight, pageInfo.SiteId, ajaxDivId, yes);
 
@@ -247,6 +246,11 @@ function stlRedirect{ajaxDivId}(page)
         parameters += 'page=' + page;
         location.href = location.protocol + '//' + location.host + location.pathname + location.hash + '?' + parameters;
     }}
+}}
+
+function stlJump{ajaxDivId}(selObj)
+{{
+    stlRedirect{ajaxDivId}(selObj.options[selObj.selectedIndex].value);
 }}
 </script>
 ");

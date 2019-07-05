@@ -1,13 +1,9 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Datory;
-using MySqlX.XDevAPI.Relational;
 using Newtonsoft.Json;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Model;
 using SiteServer.Plugin;
-using SiteServer.Utils;
 
 namespace SiteServer.Cli.Updater.Tables
 {
@@ -68,8 +64,7 @@ namespace SiteServer.Cli.Updater.Tables
             NewTableName = NewTableName,
             NewColumns = NewColumns,
             ConvertKeyDict = ConvertKeyDict,
-            ConvertValueDict = ConvertValueDict,
-            Process = Process
+            ConvertValueDict = ConvertValueDict
         };
 
         private static readonly string NewTableName = DataProvider.TableStyleDao.TableName;
@@ -85,21 +80,7 @@ namespace SiteServer.Cli.Updater.Tables
 
         private static readonly Dictionary<string, string> ConvertValueDict = new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName},
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_Node"), DataProvider.ChannelDao.TableName}
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), DataProvider.SiteDao.TableName}
         };
-
-        private static Dictionary<string, object> Process(Dictionary<string, object> row)
-        {
-            if (row.TryGetValue("IsVisible", out var isVisible))
-            {
-                if (isVisible != null && StringUtils.EqualsIgnoreCase(isVisible.ToString(), "False"))
-                {
-                    row[nameof(TableStyleInfo.InputType)] = Plugin.InputType.Hidden.Value;
-                }
-            }
-
-            return row;
-        }
     }
 }

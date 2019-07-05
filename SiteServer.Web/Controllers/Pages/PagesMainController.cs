@@ -67,7 +67,7 @@ namespace SiteServer.API.Controllers.Pages
                         return Ok(new
                         {
                             Value = false,
-                            RedirectUrl = PageUtils.GetSettingsUrl("siteAdd")
+                            RedirectUrl = PageSiteAdd.GetRedirectUrl()
                         });
                     }
 
