@@ -4,6 +4,7 @@ using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     public class ContentInfo : Entity
     {
         public ContentInfo() { }

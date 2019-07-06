@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Api.Sys.Stl;
+using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 
@@ -61,7 +62,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             try
             {
                 //totalNum = DatabaseApi.Instance.GetPageTotalCount(SqlString);
-                totalNum = _parseContext.CacheManager.GetPageTotalCount(_sqlString);
+                totalNum = CacheManager.GetPageTotalCount(_sqlString);
                 if (_listInfo.PageNum != 0 && _listInfo.PageNum < totalNum)//需要翻页
                 {
                     pageCount = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(totalNum) / Convert.ToDouble(_listInfo.PageNum)));//需要生成的总页数
@@ -112,7 +113,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 if (!string.IsNullOrEmpty(_sqlString))
                 {
                     //var pageSqlString = DatabaseApi.Instance.GetPageSqlString(SqlString, ListInfo.OrderByString, totalNum, ListInfo.PageNum, currentPageIndex);
-                    var pageSqlString = _parseContext.CacheManager.GetStlPageSqlString(_sqlString, _listInfo.Order, totalNum, _listInfo.PageNum, currentPageIndex);
+                    var pageSqlString = CacheManager.GetStlPageSqlString(_sqlString, _listInfo.Order, totalNum, _listInfo.PageNum, currentPageIndex);
 
                     var sqlList = _parseContext.GetPageContainerSqlList(_listInfo.ConnectionString, pageSqlString);
 

@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -6,22 +7,22 @@ namespace SS.CMS.Core.Services
 {
     public partial class UrlManager
     {
-        public string GetSiteUrl(int siteId)
+        public async Task<string> GetSiteUrlAsync(int siteId)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             return GetSiteUrl(siteInfo, false);
         }
 
-        public string GetSiteUrl(int siteId, string virtualPath)
+        public async Task<string> GetSiteUrlAsync(int siteId, string virtualPath)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             return ParseNavigationUrl(siteInfo, virtualPath, false);
         }
 
-        public string GetSiteUrlByFilePath(string filePath)
+        public async Task<string> GetSiteUrlByFilePathAsync(string filePath)
         {
-            var siteId = _pathManager.GetSiteIdByFilePath(filePath);
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteId = await _pathManager.GetSiteIdByFilePathAsync(filePath);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             return GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
 

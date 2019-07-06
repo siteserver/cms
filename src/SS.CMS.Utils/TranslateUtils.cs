@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -788,6 +790,42 @@ namespace SS.CMS.Utils
             {
                 target[attributeName] = attributeValue;
             }
+        }
+
+        public static byte[] BinarySerialize(object obj)
+        {
+            using (var stream = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(stream, obj);
+                var bytes = stream.ToArray();
+                return bytes;
+            }
+        }
+
+        public static T BinaryDeserialize<T>(byte[] bytes, T defaultValue = default(T)) where T : class
+        {
+            using (var stream = new MemoryStream(bytes))
+            {
+                return new BinaryFormatter().Deserialize(stream) as T;
+            }
+        }
+
+        public static byte[] BinarySerialize(string str)
+        {
+            if (str != null)
+            {
+                return Encoding.UTF8.GetBytes(str);
+            }
+            return null;
+        }
+
+        public static string BinaryDeserialize(byte[] bytes)
+        {
+            if (bytes != null)
+            {
+                return Encoding.UTF8.GetString(bytes);
+            }
+            return null;
         }
     }
 }

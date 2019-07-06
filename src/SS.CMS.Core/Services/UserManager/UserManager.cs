@@ -151,7 +151,7 @@ namespace SS.CMS.Core.Services
             var userName = GetUserName();
             if (userName == null) return null;
 
-            return await _userRepository.GetUserInfoByUserNameAsync(userName);
+            return await _userRepository.GetByUserNameAsync(userName);
         }
     }
 }

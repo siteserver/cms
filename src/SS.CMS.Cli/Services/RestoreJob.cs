@@ -99,7 +99,7 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var (db, errorMessage) = await CliUtils.GetDatabaseAsync(_databaseType, _connectionString, _configFile);
+            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
             if (db == null)
             {
                 await CliUtils.PrintErrorAsync(errorMessage);
@@ -112,7 +112,8 @@ namespace SS.CMS.Cli.Services
 
             if (!_dataOnly)
             {
-                if (_configRepository.Instance != null)
+                var configInfo = await _configRepository.GetConfigInfoAsync();
+                if (configInfo != null)
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;
@@ -153,11 +154,11 @@ namespace SS.CMS.Cli.Services
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!db.IsTableExists(tableName))
+                    if (!await db.IsTableExistsAsync(tableName))
                     {
                         try
                         {
-                            db.CreateTable(tableName, tableInfo.Columns);
+                            await db.CreateTableAsync(tableName, tableInfo.Columns);
                         }
                         catch (Exception ex)
                         {
@@ -173,7 +174,7 @@ namespace SS.CMS.Cli.Services
                     }
                     else
                     {
-                        _tableManager.AlterSystemTable(tableName, tableInfo.Columns);
+                        await _tableManager.AlterSystemTableAsync(tableName, tableInfo.Columns);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -222,7 +223,7 @@ namespace SS.CMS.Cli.Services
 
             if (db.DatabaseType == DatabaseType.Oracle)
             {
-                var tableNameList = db.GetTableNames();
+                var tableNameList = await db.GetTableNamesAsync();
                 foreach (var tableName in tableNameList)
                 {
                     try
@@ -246,7 +247,7 @@ namespace SS.CMS.Cli.Services
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
                 _tableManager.SyncContentTables();
-                _tableManager.UpdateConfigVersion();
+                await _tableManager.UpdateConfigVersionAsync();
             }
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");

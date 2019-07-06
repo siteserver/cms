@@ -47,7 +47,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var taxisType = parseContext.GetChannelTaxisType(_listInfo.Order, TaxisType.OrderByTaxis);
 
-            _channelList = await _parseContext.ChannelRepository.StlGetContainerChannelListAsync(_parseContext.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
+            _channelList = await _parseContext.ChannelRepository.GetContainerChannelListAsync(_parseContext.SiteId, channelId, _listInfo.GroupChannel, _listInfo.GroupChannelNot, _listInfo.IsImage, _listInfo.StartNum, _listInfo.TotalNum, taxisType, _listInfo.Scope, isTotal);
         }
 
         public int GetPageCount(out int totalNum)

@@ -1,7 +1,9 @@
+using System;
 using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_UserLog")]
     public class UserLogInfo : Entity
     {

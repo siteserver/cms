@@ -70,7 +70,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ApiUrl, attributeName))//API地址
                 {
-                    parsedContent = Constants.ApiUrl.TrimEnd('/');
+                    parsedContent = Constants.ApiPrefix.TrimEnd('/');
                 }
                 else if (StringUtils.EqualsIgnoreCase(SiteId, attributeName))//ID
                 {
@@ -95,7 +95,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 }
                 else if (StringUtils.EqualsIgnoreCase(ChannelUrl, attributeName))//栏目页地址
                 {
-                    parsedContent = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteInfo.Id, parseContext.ChannelId), parseContext.PageInfo.IsLocal);
+                    parsedContent = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId), parseContext.PageInfo.IsLocal);
                 }
                 else if (StringUtils.EqualsIgnoreCase(HomeUrl, attributeName))//用户中心地址
                 {
@@ -142,7 +142,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.SiteRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteInfo.Id));
+                            var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.SiteRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteInfo.Id));
 
                             // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                             if (styleInfo.Id > 0)

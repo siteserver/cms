@@ -11,7 +11,7 @@ namespace SS.CMS.Repositories.IContentRepository
     {
         List<ContentInfo> GetSelectCommandByHitsAnalysis(int siteId);
 
-        Query GetStlWhereString(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId);
+        Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId);
 
         Task<Query> GetWhereStringByStlSearchAsync(bool isAllSites, string siteName, string siteDir, string siteIds, string channelIndex, string channelName, string channelIds, string type, string word, string dateAttribute, string dateFrom, string dateTo, string since, int siteId, List<string> excludeAttributes, NameValueCollection form);
 
@@ -23,12 +23,12 @@ namespace SS.CMS.Repositories.IContentRepository
 
         List<ContentInfo> GetStlSqlStringCheckedBySearch(int startNum, int totalNum, string order, Query query);
 
-        Query GetStlWhereString(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId);
+        Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId);
 
         Query GetStlWhereStringBySearch(string group, string groupNot, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor);
 
         Query GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
 
-        List<ContentInfo> GetStlDataSourceChecked(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others);
+        Task<List<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others);
     }
 }

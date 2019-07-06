@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SS.CMS.Data;
+using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Services;
 using SS.CMS.Utils;
@@ -38,12 +40,12 @@ namespace SS.CMS.Core.Services
                 // ignored
             }
 
-            var menusPath = PathUtils.GetLangPath(contentRootPath, Language, "menus.yml");
+            var menusPath = PathUtils.GetLangPath(contentRootPath, "en", "menus.yml");
             if (FileUtils.IsFileExists(menusPath))
             {
                 Menus = YamlUtils.FileToObject<IList<Menu>>(menusPath);
             }
-            var permissionsPath = PathUtils.GetLangPath(contentRootPath, Language, "permissions.yml");
+            var permissionsPath = PathUtils.GetLangPath(contentRootPath, "en", "permissions.yml");
             if (FileUtils.IsFileExists(permissionsPath))
             {
                 Permissions = YamlUtils.FileToObject<PermissionsSettings>(permissionsPath);
@@ -58,14 +60,13 @@ namespace SS.CMS.Core.Services
 
         public string AdminUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(AdminUrl)));
         public string HomeUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(HomeUrl)));
-        public string Language => _config.GetValue<string>(nameof(Language));
         public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
         public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
         public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
         public DatabaseType DatabaseType => DatabaseType.Parse(_config.GetValue<string>("Database:Type"));
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
-        public bool RedisIsEnabled => _config.GetValue<bool>("Redis:IsEnabled");
-        public string RedisConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Redis:ConnectionString")) : _config.GetValue<string>("Redis:ConnectionString");
+        public CacheType CacheType => CacheType.Parse(_config.GetValue<string>("Cache:Type"));
+        public string CacheConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Cache:ConnectionString")) : _config.GetValue<string>("Cache:ConnectionString");
 
         public IList<Menu> Menus { get; }
         public PermissionsSettings Permissions { get; }
@@ -80,46 +81,36 @@ namespace SS.CMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, SecurityKey);
         }
 
-        public void SaveSettings(string adminUrl, string homeUrl, string language, bool isProtectData, DatabaseType databaseType, string databaseConnectionString, bool redisIdEnabled, string redisConnectionString)
+        public async Task SaveSettingsAsync(string adminUrl, string homeUrl, bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString)
         {
-            // AdminUrl = adminUrl;
-            // HomeUrl = homeUrl;
-            // Language = language;
-            // IsProtectData = isProtectData;
-            // DatabaseType = databaseType;
-            // DatabaseConnectionString = databaseConnectionString;
-            // RedisIsEnabled = redisIdEnabled;
-            // RedisConnectionString = redisConnectionString;
+            var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 
-            //             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
+            var databaseConnectionStringValue = databaseConnectionString;
+            var cacheConnectionStringValue = cacheConnectionString;
+            if (isProtectData)
+            {
+                databaseConnectionStringValue = Encrypt(databaseConnectionStringValue);
+                cacheConnectionStringValue = Encrypt(cacheConnectionString);
+            }
 
-            //             var databaseConnectionStringValue = databaseConnectionString;
-            //             var redisConnectionStringValue = redisConnectionString;
-            //             if (isProtectData)
-            //             {
-            //                 databaseConnectionStringValue = Encrypt(databaseConnectionStringValue);
-            //                 redisConnectionStringValue = Encrypt(redisConnectionStringValue);
-            //             }
+            var json = $@"{{
+              ""AdminUrl"": ""{adminUrl}"",
+              ""HomeUrl"": ""{homeUrl}"",
+              ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
+              ""IsProtectData"": {isProtectData.ToString().ToLower()},
+              ""SecurityKey"": ""{securityKey}"",
+              ""Database"": {{
+                ""Type"": ""{databaseType.Value}"",
+                ""ConnectionString"": ""{databaseConnectionStringValue}""
+              }},
+              ""Redis"": {{
+                ""Type"": ""{cacheType.Value}"",
+                ""ConnectionString"": ""{cacheConnectionStringValue}""
+              }}
+            }}
+            ";
 
-            //             var json = $@"{{
-            //   ""AdminUrl"": ""{adminUrl}"",
-            //   ""HomeUrl"": ""{homeUrl}"",
-            //   ""Language"": ""{language}"",
-            //   ""IsNightlyUpdate"": false,
-            //   ""IsProtectData"": {isProtectData.ToString().ToLower()},
-            //   ""SecretKey"": ""{SecretKey}"",
-            //   ""Database"": {{
-            //     ""Type"": ""{databaseType.Value}"",
-            //     ""ConnectionString"": ""{databaseConnectionStringValue}""
-            //   }},
-            //   ""Redis"": {{
-            //     ""IsEnabled"": {redisIdEnabled.ToString().ToLower()},
-            //     ""ConnectionString"": ""{redisConnectionStringValue}""
-            //   }}
-            // }}
-            // ";
-
-            //             await FileUtils.WriteTextAsync(path, json);
+            await FileUtils.WriteTextAsync(path, json);
         }
     }
 }

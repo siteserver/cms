@@ -1,0 +1,28 @@
+/* ===========
+   Tables
+ =============*/
+.error {
+  color: $danger;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.parsley-error {
+  border-color: $danger !important;
+}
+
+.parsley-errors-list {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+.parsley-errors-list.filled {
+  display: block;
+}
+
+.parsley-errors-list > li {
+  font-size: 12px;
+  list-style: none;
+  color: $danger;
+}

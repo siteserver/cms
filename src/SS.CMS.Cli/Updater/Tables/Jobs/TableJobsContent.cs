@@ -151,7 +151,7 @@ namespace SS.CMS.Cli.Updater.Tables.Jobs
             }
         };
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
             var tableColumns = (new Database(null, null)).GetTableColumns<ContentInfo>();
@@ -183,7 +183,7 @@ namespace SS.CMS.Cli.Updater.Tables.Jobs
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(IList<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {

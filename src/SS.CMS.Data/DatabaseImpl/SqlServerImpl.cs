@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Dapper;
 using SqlKata.Compilers;
 using SS.CMS.Data.Utils;
@@ -69,21 +70,49 @@ namespace SS.CMS.Data.DatabaseImpl
             return useLegacyPagination;
         }
 
-        public List<string> GetTableNames(string connectionString)
+        public async Task<IList<string>> GetDatabaseNamesAsync(string connectionString)
         {
-            IEnumerable<string> tableNames;
+            var databaseNames = new List<string>();
+
+            using (var connection = GetConnection(connectionString))
+            {
+                connection.Open();
+                connection.ChangeDatabase("master");
+
+                using (var rdr = await connection.ExecuteReaderAsync("select name from master..sysdatabases order by name asc"))
+                {
+                    while (rdr.Read())
+                    {
+                        var dbName = rdr["name"] as string;
+                        if (dbName == null) continue;
+                        if (dbName != "master" &&
+                            dbName != "msdb" &&
+                            dbName != "tempdb" &&
+                            dbName != "model")
+                        {
+                            databaseNames.Add(dbName);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            return databaseNames;
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames = null;
 
             using (var connection = GetConnection(connectionString))
             {
                 var sqlString =
                     $"SELECT name FROM [{connection.Database}]..sysobjects WHERE type = 'U' AND category<>2 ORDER BY Name";
 
-                if (string.IsNullOrEmpty(sqlString)) return new List<string>();
-
-                tableNames = connection.Query<string>(sqlString);
+                tableNames = await connection.QueryAsync<string>(sqlString);
             }
 
-            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
         }
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
@@ -191,7 +220,7 @@ namespace SS.CMS.Data.DatabaseImpl
             return dataType;
         }
 
-        public List<TableColumn> GetTableColumns(string connectionString, string tableName)
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -202,7 +231,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 var sqlString =
                 $"select id from [{databaseName}]..sysobjects where type = 'U' and category <> 2 and name = '{tableName}'";
 
-                var tableId = connection.QueryFirstOrDefault<string>(sqlString);
+                var tableId = await connection.QueryFirstOrDefaultAsync<string>(sqlString);
                 if (string.IsNullOrEmpty(tableId)) return new List<TableColumn>();
 
                 var isIdentityExist = false;
@@ -210,7 +239,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 sqlString =
                     $"select C.name AS ColumnName, T.name AS DataTypeName, C.length AS Length, C.colstat AS IsPrimaryKeyInt, case when C.autoval is null then 0 else 1 end AS IsIdentityInt from systypes T, syscolumns C where C.id = {tableId} and C.xtype = T.xusertype order by C.colid";
 
-                var columns = connection.Query<dynamic>(sqlString);
+                var columns = await connection.QueryAsync<dynamic>(sqlString);
                 foreach (var column in columns)
                 {
                     var columnName = column.ColumnName;

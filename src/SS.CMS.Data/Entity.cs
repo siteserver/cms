@@ -8,7 +8,8 @@ using SS.CMS.Data.Utils;
 namespace SS.CMS.Data
 {
     [JsonConverter(typeof(EntityBaseConverter))]
-    public class Entity : DynamicObject, IEntity
+    [Serializable]
+    public class Entity : IEntity
     {
         [TableColumn]
         public int Id { get; set; }
@@ -208,17 +209,17 @@ namespace SS.CMS.Data
             return Utilities.Get(Get(name), defaultValue);
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            result = Get(binder.Name);
-            return true;
-        }
+        // public override bool TryGetMember(GetMemberBinder binder, out object result)
+        // {
+        //     result = Get(binder.Name);
+        //     return true;
+        // }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            Set(binder.Name, value);
-            return true;
-        }
+        // public override bool TrySetMember(SetMemberBinder binder, object value)
+        // {
+        //     Set(binder.Name, value);
+        //     return true;
+        // }
     }
 
     public class EntityBaseConverter : JsonConverter

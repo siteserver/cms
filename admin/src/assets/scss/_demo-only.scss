@@ -1,0 +1,65 @@
+/* Demo Only */
+.icon-list-demo {
+  div {
+    cursor: pointer;
+    line-height: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #75798B;
+    font-size: 14px;
+
+    p {
+      margin-bottom: 0;
+      line-height: inherit;
+    }
+  }
+  i {
+    -webkit-transition: all 0.2s;
+    display: inline-block;
+    font-size: 20px;
+    margin: 0;
+    text-align: center;
+    transition: all 0.2s;
+    vertical-align: middle;
+    width: 40px;
+  }
+  .col-md-4 {
+    &:hover {
+      color: $primary;
+
+      i {
+        -o-transform: scale(1.5);
+        -webkit-transform: scale(1.5);
+        -moz-transform: scale(1.5);
+        transform: scale(1.5);
+      }
+    }
+  }
+}
+
+.ionicon-list {
+  i {
+    font-size: 16px;
+  }
+  .col-md-3 {
+    &:hover {
+      i {
+        -o-transform: scale(2);
+        -webkit-transform: scale(2);
+        -moz-transform: scale(2);
+        transform: scale(2);
+      }
+    }
+  }
+}
+
+.button-list {
+  margin-left: -8px;
+  margin-bottom: -12px;
+
+  .btn {
+    margin-bottom: 12px;
+    margin-left: 8px;
+  }
+}

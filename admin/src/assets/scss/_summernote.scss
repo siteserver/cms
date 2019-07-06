@@ -1,0 +1,84 @@
+/* ==============
+  Summernote
+===================*/
+
+.note-btn-group {
+  .dropdown-menu {
+    > li {
+      > a {
+        display: block;
+        padding: 5px 20px;
+        clear: both;
+        font-weight: normal;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+
+        &:hover {
+          background-color: lighten($light, 2%);
+        }
+      }
+    }
+  }
+}
+
+.note-image-popover, .note-air-popover, .note-link-popover {
+  display: none;
+
+  .dropdown-toggle::after {
+    margin-left: 0;
+  }
+}
+
+.note-icon-caret {
+  display: none;
+}
+
+.note-editor {
+  position: relative;
+
+  .btn-default {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .btn-group-sm > .btn, .btn-sm {
+    padding: 8px 12px;
+  }
+  .note-toolbar {
+    background-color: $light3;
+    border-bottom: 1px solid $light;
+    margin: 0;
+  }
+  .note-statusbar {
+    background-color: $white;
+    .note-resizebar {
+      border-top: none;
+      height: 15px;
+      padding-top: 3px;
+    }
+  }
+}
+
+.note-editor.note-frame {
+  border: 1px solid $light;
+}
+
+.note-popover {
+  .popover {
+    .popover-content {
+      padding: 5px 0 10px 5px;
+    }
+  }
+
+  .btn-default {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .btn-group-sm > .btn, .btn-sm {
+    padding: 8px 12px;
+  }
+}
+
+.note-toolbar {
+  padding: 5px 0 10px 5px;
+}

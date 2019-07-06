@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using SqlKata;
 using SS.CMS.Data;
 using SS.CMS.Enums;
@@ -13,8 +15,8 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository : IContentRepository
     {
+        private readonly IDistributedCache _cache;
         private readonly ISettingsManager _settingsManager;
-        private readonly ICacheManager _cacheManager;
         private readonly ITableManager _tableManager;
         private readonly IPluginManager _pluginManager;
         private readonly IContentCheckRepository _contentCheckRepository;
@@ -27,12 +29,10 @@ namespace SS.CMS.Core.Repositories
 
         private readonly Repository<ContentInfo> _repository;
 
-        public ContentRepository(ISettingsManager settingsManager, ICacheManager cacheManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
+        public ContentRepository(IDistributedCache cache, ISettingsManager settingsManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
         {
-            _repository = new Repository<ContentInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
-
             _settingsManager = settingsManager;
-            _cacheManager = cacheManager;
+            _cache = cache;
             _tableManager = tableManager;
             _pluginManager = pluginManager;
             _contentCheckRepository = contentCheckRepository;
@@ -43,6 +43,8 @@ namespace SS.CMS.Core.Repositories
             _tableStyleRepository = tableStyleRepository;
             _tagRepository = tagRepository;
             _errorLogRepository = errorLogRepository;
+
+            _repository = new Repository<ContentInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
         }
 
         public IDatabase Database => _repository.Database;
@@ -171,12 +173,12 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void QueryWhereTags(Query query, int siteId, string tags)
+        private async Task QueryWhereTagsAsync(Query query, int siteId, string tags)
         {
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagList = _tagRepository.ParseTagsString(tags);
-                var contentIdList = _tagRepository.GetContentIdListByTagCollection(tagList, siteId);
+                var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(tagList, siteId);
                 if (contentIdList.Count > 0)
                 {
                     query.WhereIn(Attr.Id, contentIdList);
@@ -184,14 +186,14 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void QueryWhereIsRelatedContents(Query query, bool isRelatedContents, int siteId, ChannelInfo channelInfo, int contentId)
+        private async Task QueryWhereIsRelatedContentsAsync(Query query, bool isRelatedContents, int siteId, ChannelInfo channelInfo, int contentId)
         {
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = StlGetValue(channelInfo, contentId, Attr.Tags);
+                var tagCollection = GetValue<string>(contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = _tagRepository.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
+                    var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);

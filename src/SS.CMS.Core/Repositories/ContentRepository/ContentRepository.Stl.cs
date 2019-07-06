@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using SqlKata;
 using SS.CMS.Core.StlParser.Models;
@@ -14,7 +15,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        private List<KeyValuePair<int, ContentInfo>> GetContainerContentListChecked(List<int> channelIdList, int startNum, int totalNum, string order, Query query, NameValueCollection others)
+        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListCheckedAsync(List<int> channelIdList, int startNum, int totalNum, string order, Query query, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0) return null;
 
@@ -22,7 +23,7 @@ namespace SS.CMS.Core.Repositories
 
             if (others != null && others.Count > 0)
             {
-                var columnNameList = _tableManager.GetTableColumnNameList(TableName);
+                var columnNameList = await _tableManager.GetTableColumnNameListAsync(TableName);
 
                 foreach (var attributeName in others.AllKeys)
                 {
@@ -135,7 +136,7 @@ namespace SS.CMS.Core.Repositories
             return startNum <= 1 ? GetContainerContentListByContentNumAndWhereString(totalNum, query, order) : GetContainerContentListByStartNum(startNum, totalNum, query, order);
         }
 
-        private List<KeyValuePair<int, ContentInfo>> GetContainerContentListByContentNumAndWhereString(int totalNum, Query query, string order)
+        public List<KeyValuePair<int, ContentInfo>> GetContainerContentListByContentNumAndWhereString(int totalNum, Query query, string order)
         {
             var list = new List<KeyValuePair<int, ContentInfo>>();
             var itemIndex = 0;
@@ -154,7 +155,7 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        private List<KeyValuePair<int, ContentInfo>> GetContainerContentListByStartNum(int startNum, int totalNum, Query query, string order)
+        public List<KeyValuePair<int, ContentInfo>> GetContainerContentListByStartNum(int startNum, int totalNum, Query query, string order)
         {
             var list = new List<KeyValuePair<int, ContentInfo>>();
             var itemIndex = 0;

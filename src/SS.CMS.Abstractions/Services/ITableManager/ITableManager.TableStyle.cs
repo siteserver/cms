@@ -6,24 +6,24 @@ namespace SS.CMS.Services
 {
     public partial interface ITableManager
     {
-        List<TableStyleInfo> GetStyleInfoList(string tableName, List<int> relatedIdentities);
+        Task<List<TableStyleInfo>> GetStyleInfoListAsync(string tableName, List<int> relatedIdentities);
 
-        List<TableStyleInfo> GetSiteStyleInfoList(int siteId);
+        Task<List<TableStyleInfo>> GetSiteStyleInfoListAsync(int siteId);
 
-        List<TableStyleInfo> GetChannelStyleInfoList(ChannelInfo channelInfo);
+        Task<List<TableStyleInfo>> GetChannelStyleInfoListAsync(ChannelInfo channelInfo);
 
         Task<List<TableStyleInfo>> GetContentStyleInfoListAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
 
-        List<TableStyleInfo> GetUserStyleInfoList();
+        Task<List<TableStyleInfo>> GetUserStyleInfoListAsync();
 
         IDictionary<string, object> GetDefaultAttributes(List<TableStyleInfo> styleInfoList);
 
         //relatedIdentities从大到小，最后是0
-        TableStyleInfo GetTableStyleInfo(string tableName, string attributeName, List<int> relatedIdentities);
+        Task<TableStyleInfo> GetTableStyleInfoAsync(string tableName, string attributeName, List<int> relatedIdentities);
 
-        TableStyleInfo GetTableStyleInfo(int id);
+        Task<TableStyleInfo> GetTableStyleInfoAsync(int id);
 
-        Dictionary<string, List<TableStyleInfo>> GetTableStyleInfoWithItemsDictionary(string tableName, List<int> allRelatedIdentities);
+        Task<Dictionary<string, List<TableStyleInfo>>> GetTableStyleInfoWithItemsDictionaryAsync(string tableName, List<int> allRelatedIdentities);
 
         string GetValidateInfo(TableStyleInfo styleInfo);
 
@@ -32,6 +32,8 @@ namespace SS.CMS.Services
         List<int> GetRelatedIdentities(ChannelInfo channelInfo);
 
         List<int> EmptyRelatedIdentities { get; }
+
+
     }
 
 }

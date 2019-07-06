@@ -1,5 +1,8 @@
-﻿namespace SS.CMS.Models
+﻿using System;
+
+namespace SS.CMS.Models
 {
+    [Serializable]
     public class ContentCountInfo
     {
         public int SiteId { get; set; }

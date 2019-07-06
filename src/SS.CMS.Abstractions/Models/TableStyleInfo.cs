@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_TableStyle")]
     public class TableStyleInfo : Entity
     {

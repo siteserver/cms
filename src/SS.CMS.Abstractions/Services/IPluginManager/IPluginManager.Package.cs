@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SS.CMS.Enums;
 
 namespace SS.CMS.Services
@@ -10,6 +11,6 @@ namespace SS.CMS.Services
 
         void DownloadPackage(string packageId, string version);
 
-        bool UpdatePackage(string idWithVersion, PackageType packageType, out string errorMessage);
+        Task<(bool IsSuccess, string ErrorMessage)> UpdatePackageAsync(string idWithVersion, PackageType packageType);
     }
 }

@@ -44,7 +44,7 @@ namespace SS.CMS.Services
 
         Task<IService> GetServiceAsync(string pluginId);
 
-        void Delete(string pluginId);
+        Task DeleteAsync(string pluginId);
 
         Task UpdateDisabledAsync(string pluginId, bool isDisabled);
 
@@ -53,8 +53,6 @@ namespace SS.CMS.Services
         Task<string> GetPluginIconUrlAsync(string pluginId);
 
         string GetPluginIconUrl(IService service);
-
-        void ClearCache();
 
         Task<SortedList<string, IPluginInstance>> GetPluginSortedListAsync();
     }

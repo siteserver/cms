@@ -144,7 +144,7 @@ namespace SS.CMS.Utils
             return text.ToLower().IndexOf(inner.ToLower(), StringComparison.Ordinal) >= 0;
         }
 
-        public static bool ContainsIgnoreCase(List<string> list, string target)
+        public static bool ContainsIgnoreCase(IList<string> list, string target)
         {
             if (list == null || list.Count == 0) return false;
 

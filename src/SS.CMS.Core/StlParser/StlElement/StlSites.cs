@@ -28,11 +28,11 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             // var dataSource = StlDataUtility.GetSitesDataSource(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Where, listInfo.Scope, listInfo.OrderByString);
 
-            var siteList = parseContext.GetContainerSiteList(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.Order);
+            var siteList = await parseContext.GetContainerSiteListAsync(siteName, siteDir, listInfo.StartNum, listInfo.TotalNum, listInfo.Scope, listInfo.Order);
 
             if (context.IsStlEntity)
             {
-                return ParseEntity(context, siteList);
+                return await ParseEntityAsync(context, siteList);
             }
 
             return await ParseElementAsync(context, listInfo, siteList);
@@ -220,13 +220,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static List<SiteInfo> ParseEntity(ParseContext context, List<KeyValuePair<int, SiteInfo>> siteList)
+        private static async Task<List<SiteInfo>> ParseEntityAsync(ParseContext context, List<KeyValuePair<int, SiteInfo>> siteList)
         {
             var siteInfoList = new List<SiteInfo>();
 
             foreach (var site in siteList)
             {
-                var siteInfo = context.SiteRepository.GetSiteInfo(site.Value.Id);
+                var siteInfo = await context.SiteRepository.GetSiteInfoAsync(site.Value.Id);
                 if (siteInfo != null)
                 {
                     siteInfoList.Add(siteInfo);

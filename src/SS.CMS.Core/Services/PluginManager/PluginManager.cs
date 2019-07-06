@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using SS.CMS.Core.Plugin;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
@@ -18,8 +19,9 @@ namespace SS.CMS.Core.Services
     /// </summary>
     public partial class PluginManager : IPluginManager
     {
+        private readonly IDistributedCache _cache;
+        private readonly string _cacheKey;
         private readonly ISettingsManager _settingsManager;
-        private readonly ICacheManager _cacheManager;
         private readonly IPathManager _pathManager;
         private readonly ITableManager _tableManager;
         private readonly IPluginRepository _pluginRepository;
@@ -28,10 +30,11 @@ namespace SS.CMS.Core.Services
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public PluginManager(ISettingsManager settingsManager, ICacheManager cacheManager, IPathManager pathManager, ITableManager tableManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
+        public PluginManager(IDistributedCache cache, ISettingsManager settingsManager, IPathManager pathManager, ITableManager tableManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
         {
+            _cache = cache;
+            _cacheKey = _cache.GetKey(nameof(PluginManager));
             _settingsManager = settingsManager;
-            _cacheManager = cacheManager;
             _pathManager = pathManager;
             _tableManager = tableManager;
             _pluginRepository = pluginRepository;
@@ -255,10 +258,10 @@ namespace SS.CMS.Core.Services
             return null;
         }
 
-        public void Delete(string pluginId)
+        public async Task DeleteAsync(string pluginId)
         {
             DirectoryUtils.DeleteDirectoryIfExists(_pathManager.GetPluginPath(pluginId));
-            ClearCache();
+            await _cache.RemoveAsync(_cacheKey);
         }
 
         public async Task UpdateDisabledAsync(string pluginId, bool isDisabled)
@@ -268,7 +271,7 @@ namespace SS.CMS.Core.Services
             {
                 pluginInfo.IsDisabled = isDisabled;
                 _pluginRepository.UpdateIsDisabled(pluginId, isDisabled);
-                ClearCache();
+                await _cache.RemoveAsync(_cacheKey);
             }
         }
 
@@ -279,7 +282,7 @@ namespace SS.CMS.Core.Services
             {
                 pluginInfo.Taxis = taxis;
                 _pluginRepository.UpdateTaxis(pluginId, taxis);
-                ClearCache();
+                await _cache.RemoveAsync(_cacheKey);
             }
         }
 
@@ -307,8 +310,7 @@ namespace SS.CMS.Core.Services
 
         // cache
 
-        private readonly object LockObject = new object();
-        private const string CacheKey = "SiteServer.CMS.Plugin.PluginCache";
+
 
         private async Task<SortedList<string, IPluginInstance>> LoadAsync()
         {
@@ -442,24 +444,12 @@ namespace SS.CMS.Core.Services
             return new PluginInstance(metadata, service, plugin, s.ElapsedMilliseconds, _pluginRepository);
         }
 
-        public void ClearCache()
-        {
-            _cacheManager.Remove(CacheKey);
-        }
-
         public async Task<SortedList<string, IPluginInstance>> GetPluginSortedListAsync()
         {
-            var retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
-            if (retval != null) return retval;
-
-            retval = _cacheManager.Get<SortedList<string, IPluginInstance>>(CacheKey);
-            if (retval == null)
+            return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {
-                retval = await LoadAsync();
-                _cacheManager.InsertHours(CacheKey, retval, 24);
-            }
-
-            return retval;
+                return await LoadAsync();
+            });
         }
     }
 }

@@ -1,0 +1,23 @@
+/* =============
+   Print css
+============= */
+@media print {
+  .logo,.breadcrumb,.page-title,.footer,.topbar,.btn-group.pull-right.m-t-15,#topnav {
+    display: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .left,.right-bar {
+    display: none;
+  }
+  .content,.card-box,.wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+  .content-page {
+    margin-left: 0;
+    margin-top: 0 !important;
+  }
+}

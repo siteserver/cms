@@ -214,7 +214,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task SetAutoPageContentToSiteAsync(int siteId)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             if (!siteInfo.IsAutoPageInTextEditor) return;
 
             var resultList = _repository.GetAll<(int Id, int ChannelId, string Content)>(Q.Where(Attr.SiteId, siteId));

@@ -1,7 +1,9 @@
-﻿using SS.CMS.Data;
+﻿using System;
+using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_UserMenu")]
     public class UserMenuInfo : Entity
     {

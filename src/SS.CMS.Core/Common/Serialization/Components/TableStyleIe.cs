@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var allRelatedIdentities = await _channelRepository.GetChannelIdListAsync(siteId);
             allRelatedIdentities.Insert(0, 0);
-            var tableStyleInfoWithItemsDict = _tableManager.GetTableStyleInfoWithItemsDictionary(tableName, allRelatedIdentities);
+            var tableStyleInfoWithItemsDict = await _tableManager.GetTableStyleInfoWithItemsDictionaryAsync(tableName, allRelatedIdentities);
             if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;
 
             var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
@@ -55,7 +55,7 @@ namespace SS.CMS.Core.Serialization.Components
                     //仅导出当前系统内的表样式
                     if (tableStyleInfo.RelatedIdentity != 0)
                     {
-                        if (!await _channelRepository.IsAncestorOrSelfAsync(siteId, siteId, tableStyleInfo.RelatedIdentity))
+                        if (!await _channelRepository.IsAncestorOrSelfAsync(siteId, tableStyleInfo.RelatedIdentity))
                         {
                             continue;
                         }
@@ -120,13 +120,13 @@ namespace SS.CMS.Core.Serialization.Components
 
         public static async Task SingleExportTableStylesAsync(ITableManager tableManager, IChannelRepository channelRepository, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var channelInfo = await channelRepository.GetChannelInfoAsync(siteId, relatedIdentity);
+            var channelInfo = await channelRepository.GetChannelInfoAsync(relatedIdentity);
             var relatedIdentities = tableManager.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = tableManager.GetStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = await tableManager.GetStyleInfoListAsync(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -144,14 +144,14 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public static void SingleExportTableStyles(ITableManager tableManager, IChannelRepository channelRepository, string tableName, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(ITableManager tableManager, IChannelRepository channelRepository, string tableName, string styleDirectoryPath)
         {
             var relatedIdentities = new List<int> { 0 };
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = tableManager.GetStyleInfoList(tableName, relatedIdentities);
+            var styleInfoList = await tableManager.GetStyleInfoListAsync(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -226,19 +226,20 @@ namespace SS.CMS.Core.Serialization.Components
                     styleInfo.StyleItems = styleItems;
                 }
 
-                if (tableStyleRepository.IsExists(relatedIdentity, tableName, attributeName))
+                if (await tableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName))
                 {
                     await tableStyleRepository.DeleteAsync(relatedIdentity, tableName, attributeName);
                 }
-                tableStyleRepository.Insert(styleInfo);
+                await tableStyleRepository.InsertAsync(styleInfo);
             }
         }
 
-        public void ImportTableStyles(int siteId)
+        public async Task ImportTableStylesAsync(int siteId)
         {
             if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
-            var importObject = new ImportObject(siteId, _adminName);
+            var importObject = new ImportObject();
+            await importObject.LoadAsync(siteId, _adminName);
             var tableNameCollection = importObject.GetTableNameCache();
 
             var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);
@@ -277,7 +278,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                         var relatedIdentity = !string.IsNullOrEmpty(orderString) ? _channelRepository.GetId(siteId, orderString) : siteId;
 
-                        if (relatedIdentity <= 0 || _tableStyleRepository.IsExists(relatedIdentity, tableName, attributeName)) continue;
+                        if (relatedIdentity <= 0 || await _tableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
 
                         var styleInfo = new TableStyleInfo
                         {
@@ -315,7 +316,7 @@ namespace SS.CMS.Core.Serialization.Components
                             styleInfo.StyleItems = styleItems;
                         }
 
-                        _tableStyleRepository.Insert(styleInfo);
+                        await _tableStyleRepository.InsertAsync(styleInfo);
                     }
                 }
             }

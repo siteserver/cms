@@ -254,8 +254,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, content.Value.ChannelId);
-                var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, content.Value.Id);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(content.Value.ChannelId);
+                var contentInfo = channelInfo.ContentRepository.GetContentInfo(content.Value.Id);
 
                 if (contentInfo != null)
                 {

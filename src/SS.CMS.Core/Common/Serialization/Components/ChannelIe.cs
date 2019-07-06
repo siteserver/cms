@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Enums;
@@ -72,7 +73,7 @@ namespace SS.CMS.Core.Serialization.Components
             channelInfo.ExtendValues = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues);
         }
 
-        public AtomFeed ExportNodeInfo(ChannelInfo channelInfo)
+        public async Task<AtomFeed> ExportNodeInfoAsync(ChannelInfo channelInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -104,13 +105,13 @@ namespace SS.CMS.Core.Serialization.Components
 
             if (channelInfo.ChannelTemplateId != 0)
             {
-                var channelTemplateName = _templateRepository.GetTemplateName(channelInfo.SiteId, channelInfo.ChannelTemplateId);
+                var channelTemplateName = await _templateRepository.GetTemplateNameAsync(channelInfo.ChannelTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ChannelTemplateName, channelTemplateName);
             }
 
             if (channelInfo.ContentTemplateId != 0)
             {
-                var contentTemplateName = _templateRepository.GetTemplateName(channelInfo.SiteId, channelInfo.ContentTemplateId);
+                var contentTemplateName = await _templateRepository.GetTemplateNameAsync(channelInfo.ContentTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, ContentTemplateName, contentTemplateName);
             }
 

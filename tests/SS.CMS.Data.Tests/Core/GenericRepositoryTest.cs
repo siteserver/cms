@@ -25,13 +25,13 @@ namespace SS.CMS.Data.Tests.Core
 
             if (!TestEnv.IsTestMachine) return;
 
-            var isExists = db.IsTableExists(_repository.TableName);
+            var isExists = db.IsTableExistsAsync(_repository.TableName).GetAwaiter().GetResult();
             if (isExists)
             {
-                db.DropTable(_repository.TableName);
+                db.DropTableAsync(_repository.TableName).GetAwaiter().GetResult();
             }
 
-            db.CreateTable(_repository.TableName, _repository.TableColumns);
+            db.CreateTableAsync(_repository.TableName, _repository.TableColumns).GetAwaiter().GetResult();
         }
 
         public void Dispose()

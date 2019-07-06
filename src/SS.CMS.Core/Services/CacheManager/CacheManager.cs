@@ -6,33 +6,26 @@ using SS.CMS.Services;
 
 namespace SS.CMS.Core.Services
 {
-    public partial class CacheManager : ICacheManager
+    public partial class CacheManager
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly IDistributedCache _distributedCache;
+        private static readonly IMemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
 
-        public CacheManager(IMemoryCache memoryCache, IDistributedCache distributedCache)
-        {
-            _memoryCache = memoryCache;
-            _distributedCache = distributedCache;
-        }
-
-        public void Remove(string key)
+        public static void Remove(string key)
         {
             _memoryCache.Remove(key);
         }
 
-        public T Get<T>(string key)
+        public static T Get<T>(string key)
         {
             return _memoryCache.Get<T>(key);
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string key, Func<ICacheEntry, Task<T>> factory)
+        public static async Task<T> GetOrCreateAsync<T>(string key, Func<ICacheEntry, Task<T>> factory)
         {
             return await _memoryCache.GetOrCreateAsync(key, factory);
         }
 
-        public bool TryGetValue<T>(string key, out T value)
+        public static bool TryGetValue<T>(string key, out T value)
         {
             return _memoryCache.TryGetValue(key, out value);
         }

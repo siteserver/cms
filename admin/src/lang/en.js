@@ -202,15 +202,14 @@ export default {
   },
   tools: {
     info: {
-      serverName: 'Server name',
+      apiUrl: 'API URL',
+      apiServerName: 'API server',
       contentRootPath: 'App root path',
       webRootPath: 'Web root path',
-      adminHostName: 'Admin host name',
       remoteIpAddress: 'Client IP',
       targetFramework: '.NET Core version',
       productVersion: 'CMS version',
       pluginVersion: 'Plugin version',
-      updateDate: 'Last update',
       databaseType: 'Database type',
       database: 'Database'
     }

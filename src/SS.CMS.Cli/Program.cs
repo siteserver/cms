@@ -45,7 +45,6 @@ namespace SS.CMS.Cli
 
                 var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
 
-                services.AddCacheManager();
                 services.AddRepositories();
                 services.AddPathManager();
                 services.AddPluginManager();

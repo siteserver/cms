@@ -6,6 +6,7 @@ namespace SS.CMS.Data
     /// Defines the name of a table to use in Datory commands.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
+    [Serializable]
     public class TableAttribute : Attribute
     {
         /// <summary>

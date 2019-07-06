@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Models;
@@ -11,8 +12,8 @@ namespace SS.CMS.Core.StlParser
     public partial class ParseContext
     {
         public IConfiguration Configuration { get; }
+        public IDistributedCache Cache { get; }
         public ISettingsManager SettingsManager { get; }
-        public ICacheManager CacheManager { get; }
         public IPluginManager PluginManager { get; }
         public IPathManager PathManager { get; }
         public IUrlManager UrlManager { get; }
@@ -26,15 +27,15 @@ namespace SS.CMS.Core.StlParser
         public ITagRepository TagRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
 
-        public ParseContext(PageInfo pageInfo, IConfiguration configuration, ISettingsManager settingsManager, ICacheManager cacheManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
+        public ParseContext(PageInfo pageInfo, IConfiguration configuration, IDistributedCache cache, ISettingsManager settingsManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
         {
             PageInfo = pageInfo;
             ChannelId = pageInfo.PageChannelId;
             ContentId = pageInfo.PageContentId;
 
             Configuration = configuration;
+            Cache = cache;
             SettingsManager = settingsManager;
-            CacheManager = CacheManager;
             PluginManager = pluginManager;
             PathManager = pathManager;
             UrlManager = urlManager;
@@ -111,7 +112,7 @@ namespace SS.CMS.Core.StlParser
         {
             if (_channelInfo != null) return _channelInfo;
             if (ChannelId <= 0) return null;
-            _channelInfo = await ChannelRepository.GetChannelInfoAsync(SiteId, ChannelId);
+            _channelInfo = await ChannelRepository.GetChannelInfoAsync(ChannelId);
             return _channelInfo;
         }
 
@@ -126,7 +127,7 @@ namespace SS.CMS.Core.StlParser
             if (_contentInfo != null) return _contentInfo;
             if (ContentId <= 0) return null;
             var channelInfo = await GetChannelInfoAsync();
-            _contentInfo = channelInfo.ContentRepository.GetContentInfo(SiteInfo, channelInfo, ContentId);
+            _contentInfo = channelInfo.ContentRepository.GetContentInfo(ContentId);
             return _contentInfo;
         }
 

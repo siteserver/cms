@@ -310,7 +310,7 @@ namespace SS.CMS.Core.Serialization.Components
         public async Task<bool> ExportContentsAsync(SiteInfo siteInfo, int channelId, IList<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
             if (contentIdList == null || contentIdList.Count == 0)
@@ -323,7 +323,7 @@ namespace SS.CMS.Core.Serialization.Components
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+                var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
                 try
                 {
                     _urlManager.PutImagePaths(siteInfo, contentInfo, collection);

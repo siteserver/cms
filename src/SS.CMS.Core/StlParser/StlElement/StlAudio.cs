@@ -77,13 +77,13 @@ namespace SS.CMS.Core.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = channelInfo.ContentRepository.StlGetValue(channelInfo, contentId, type);
+                        playUrl = channelInfo.ContentRepository.GetValue<string>(contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = channelInfo.ContentRepository.StlGetValue(channelInfo, contentId, ContentAttribute.VideoUrl);
+                                playUrl = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
@@ -91,7 +91,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = channelInfo.ContentRepository.StlGetValue(channelInfo, contentId, ContentAttribute.FileUrl);
+                                playUrl = channelInfo.ContentRepository.GetValue<string>(contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }

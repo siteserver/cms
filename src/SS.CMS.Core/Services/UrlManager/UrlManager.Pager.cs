@@ -177,7 +177,7 @@ namespace SS.CMS.Core.Services
                 }
                 else
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                     var redirectUrl = contentId > 0 ? await _pathManager.GetContentPageFilePathAsync(siteInfo, nodeInfo.Id, contentId, pageIndex) : await _pathManager.GetChannelPageFilePathAsync(siteInfo, nodeInfo.Id, pageIndex);
                     redirectUrl = GetSiteUrlByPhysicalPath(siteInfo, redirectUrl, isLocal);
                     jsMethod = $"window.location.href='{redirectUrl}';";

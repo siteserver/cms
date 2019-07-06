@@ -3,8 +3,8 @@ using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
-    [Table("siteserver_ErrorLog")]
     [Serializable]
+    [Table("siteserver_ErrorLog")]
     public class ErrorLogInfo : Entity
     {
         [TableColumn]

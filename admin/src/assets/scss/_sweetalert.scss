@@ -1,0 +1,73 @@
+/* =========== */
+/* Sweet Alert */
+/* =========== */
+
+.swal2-modal {
+  font-family: $font-primary;
+  box-shadow: 0 10px 33px rgba(0,0,0,.1);
+
+  .swal2-title {
+    font-size: 28px;
+  }
+  .swal2-content {
+    font-size: 16px;
+  }
+  .swal2-spacer {
+    margin: 10px 0;
+  }
+  .swal2-file, .swal2-input, .swal2-textarea {
+    border: 2px solid $muted;
+    font-size: 16px;
+    box-shadow: none;
+  }
+  .swal2-confirm.btn-confirm {
+    background-color: $primary !important;
+  }
+
+  .swal2-cancel.btn-cancel {
+    background-color: $danger !important;
+  }
+
+  .swal2-styled:focus {
+    box-shadow: none !important;
+  }
+}
+
+.swal2-icon.swal2-question {
+  color: $primary;
+  border-color: $primary;
+}
+
+.swal2-icon.swal2-success {
+  border-color: $success;
+
+  .line,[class^=swal2-success-line][class$=long],
+  [class^=swal2-success-line]{
+    background-color: $success;
+  }
+
+  .placeholder,.swal2-success-ring  {
+    border-color: $success;
+  }
+}
+
+
+.swal2-icon.swal2-warning {
+  color: $warning;
+  border-color: $warning;
+}
+
+.swal2-icon.swal2-error {
+  border-color: $danger;
+  .line {
+    background-color: $danger;
+  }
+}
+.swal2-modal .swal2-file:focus, .swal2-modal .swal2-input:focus, .swal2-modal .swal2-textarea:focus {
+  outline: 0;
+  border: 2px solid $primary;
+}
+
+.swal2-container.swal2-shown {
+  background-color: rgba($dark, 0.9);
+}

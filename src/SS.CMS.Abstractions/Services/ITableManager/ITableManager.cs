@@ -7,29 +7,29 @@ namespace SS.CMS.Services
 {
     public partial interface ITableManager
     {
-        List<TableColumn> GetTableColumnInfoList(string tableName);
+        Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName);
 
-        List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList);
+        Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, List<string> excludeAttributeNameList);
 
-        List<TableColumn> GetTableColumnInfoList(string tableName, DataType excludeDataType);
+        Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, DataType excludeDataType);
 
-        TableColumn GetTableColumnInfo(string tableName, string attributeName);
+        Task<TableColumn> GetTableColumnInfoAsync(string tableName, string attributeName);
 
-        bool IsAttributeNameExists(string tableName, string attributeName);
+        Task<bool> IsAttributeNameExistsAsync(string tableName, string attributeName);
 
-        List<string> GetTableColumnNameList(string tableName);
+        Task<List<string>> GetTableColumnNameListAsync(string tableName);
 
-        List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList);
+        Task<List<string>> GetTableColumnNameListAsync(string tableName, List<string> excludeAttributeNameList);
 
-        List<string> GetTableColumnNameList(string tableName, DataType excludeDataType);
+        Task<List<string>> GetTableColumnNameListAsync(string tableName, DataType excludeDataType);
 
-        Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable);
+        Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, bool isContentTable);
 
-        Task AlterTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null);
+        Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, IList<string> dropColumnNames = null);
 
-        void CreateContentTable(string tableName, List<TableColumn> tableColumns);
+        Task CreateContentTableAsync(string tableName, IList<TableColumn> tableColumns);
 
-        void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null);
+        Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
 
         void InstallDatabase(string userName, string password);
 
@@ -37,7 +37,7 @@ namespace SS.CMS.Services
 
         void SyncContentTables();
 
-        void UpdateConfigVersion();
+        Task UpdateConfigVersionAsync();
 
         Task SyncDatabaseAsync();
     }

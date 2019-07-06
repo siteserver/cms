@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Services;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Enums;
@@ -171,7 +172,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (!string.IsNullOrEmpty(queryString))
                 {
-                    var dataTable = parseContext.CacheManager.GetDataTable(connectionString, queryString);
+                    var dataTable = CacheManager.GetDataTable(connectionString, queryString);
                     var dictList = TranslateUtils.DataTableToDictionaryList(dataTable);
                     if (dictList != null && dictList.Count >= 1)
                     {
@@ -230,7 +231,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
 
                 //parsedContent = DatabaseUtils.GetString(connectionString, queryString);
-                parsedContent = parseContext.CacheManager.GetString(connectionString, queryString);
+                parsedContent = CacheManager.GetString(connectionString, queryString);
             }
 
             if (!string.IsNullOrEmpty(parsedContent))

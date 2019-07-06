@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
+using SS.CMS.Data;
+using SS.CMS.Enums;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
 
@@ -17,10 +20,40 @@ namespace Microsoft.Extensions.DependencyInjection
             return settingsManager;
         }
 
-        public static IServiceCollection AddCacheManager(this IServiceCollection services)
+        public static IServiceCollection AddDistributedCache(this IServiceCollection services, ISettingsManager settingsManager)
         {
-            services.TryAdd(ServiceDescriptor.Singleton<ICacheManager, CacheManager>());
+            var isSettings = false;
+            if (settingsManager.CacheType == CacheType.Redis && !string.IsNullOrEmpty(settingsManager.CacheConnectionString))
+            {
+                var (isConnectionWorks, _) = RedisManager.IsConnectionWorksAsync(settingsManager.CacheConnectionString).GetAwaiter().GetResult();
+                if (isConnectionWorks)
+                {
+                    isSettings = true;
+                    services.AddStackExchangeRedisCache(options =>
+                                    {
+                                        options.Configuration = settingsManager.CacheConnectionString;
+                                        options.InstanceName = "";
+                                    });
+                }
+            }
+            else if (settingsManager.CacheType == CacheType.SqlServer && !string.IsNullOrEmpty(settingsManager.CacheConnectionString))
+            {
+                var db = new Database(DatabaseType.SqlServer, settingsManager.CacheConnectionString);
+                var (isConnectionWorks, _) = db.IsConnectionWorks();
+                if (isConnectionWorks)
+                {
+                    isSettings = true;
+                    services.AddDistributedSqlServerCache(options =>
+                                    {
+                                        options.ConnectionString = settingsManager.CacheConnectionString;
+                                    });
+                }
+            }
 
+            if (!isSettings)
+            {
+                services.AddDistributedMemoryCache();
+            }
             return services;
         }
 

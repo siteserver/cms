@@ -4,6 +4,7 @@ using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_User")]
     public class UserInfo : Entity
     {

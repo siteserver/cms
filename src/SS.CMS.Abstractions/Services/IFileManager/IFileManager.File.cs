@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
@@ -16,8 +17,8 @@ namespace SS.CMS.Services
 
         void MoveFileByVirtualUrl(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, string fileVirtualUrl);
 
-        void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls);
+        Task MoveFilesAsync(int sourceSiteId, int targetSiteId, List<string> relatedUrls);
 
-        void AddWaterMark(int siteId, string filePath);
+        Task AddWaterMarkAsync(int siteId, string filePath);
     }
 }

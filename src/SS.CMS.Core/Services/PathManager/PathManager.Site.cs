@@ -9,9 +9,9 @@ namespace SS.CMS.Core.Services
 {
     public partial class PathManager
     {
-        public string GetSitePath(int siteId, string virtualPath)
+        public async Task<string> GetSitePathAsync(int siteId, string virtualPath)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             return MapPath(siteInfo, virtualPath);
         }
 
@@ -112,7 +112,7 @@ namespace SS.CMS.Core.Services
         private async Task<string> GetChannelFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ChannelFilePathRule;
@@ -142,7 +142,7 @@ namespace SS.CMS.Core.Services
         private async Task<string> GetContentFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ContentFilePathRule;
@@ -156,7 +156,7 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetChannelPageFilePathAsync(SiteInfo siteInfo, int channelId, int currentPageIndex)
         {
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = _templateRepository.GetDefaultTemplateInfo(siteInfo.Id, TemplateType.IndexPageTemplate);
@@ -188,8 +188,8 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
             return await GetContentPageFilePathAsync(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 
@@ -286,9 +286,9 @@ namespace SS.CMS.Core.Services
             return PathUtils.Combine(_settingsManager.WebRootPath, siteInfo.SiteDir);
         }
 
-        public string GetSitePath(int siteId, params string[] paths)
+        public async Task<string> GetSitePathAsync(int siteId, params string[] paths)
         {
-            return GetSitePath(_siteRepository.GetSiteInfo(siteId), paths);
+            return GetSitePath(await _siteRepository.GetSiteInfoAsync(siteId), paths);
         }
 
         public string GetSitePath(SiteInfo siteInfo, params string[] paths)
@@ -427,36 +427,36 @@ namespace SS.CMS.Core.Services
             return directoryPath;
         }
 
-        public int GetSiteIdByFilePath(string path)
+        public async Task<int> GetSiteIdByFilePathAsync(string path)
         {
-            var siteInfo = GetSiteInfoByFilePath(path);
+            var siteInfo = await GetSiteInfoByFilePathAsync(path);
             return siteInfo?.Id ?? 0;
         }
 
-        public string GetSitePath(int siteId)
+        public async Task<string> GetSitePathAsync(int siteId)
         {
             if (siteId <= 0) return null;
 
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             return siteInfo == null ? null : GetSitePath(siteInfo);
         }
 
-        public string GetUploadFilePath(int siteId, string fileName)
+        public async Task<string> GetUploadFilePathAsync(int siteId, string fileName)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             var localDirectoryPath = GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(fileName));
             var localFileName = GetUploadFileName(siteInfo, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
         }
 
-        public SiteInfo GetSiteInfoByFilePath(string path)
+        public async Task<SiteInfo> GetSiteInfoByFilePathAsync(string path)
         {
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
             var applicationPath = _settingsManager.WebRootPath.ToLower().Trim(' ', '/', '\\');
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var siteInfoList = _siteRepository.GetSiteInfoList();
+            var siteInfoList = await _siteRepository.GetSiteInfoListAsync();
 
             SiteInfo headquarter = null;
             foreach (var siteInfo in siteInfoList)
@@ -477,7 +477,7 @@ namespace SS.CMS.Core.Services
             return headquarter;
         }
 
-        public string GetSiteDirByFilePath(string path)
+        public async Task<string> GetSiteDirByFilePathAsync(string path)
         {
             var siteDir = string.Empty;
             var directoryPath = DirectoryUtils.GetDirectoryPath(path).ToLower().Trim(' ', '/', '\\');
@@ -488,7 +488,7 @@ namespace SS.CMS.Core.Services
                 return string.Empty;
             }
 
-            var siteInfoList = _siteRepository.GetSiteInfoList();
+            var siteInfoList = await _siteRepository.GetSiteInfoListAsync();
             foreach (var siteInfo in siteInfoList)
             {
                 if (siteInfo?.IsRoot != false) continue;

@@ -218,7 +218,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
 
             var uniqueId = "Select_" + parseContext.UniqueId;
             attributes["id"] = uniqueId;
@@ -257,13 +257,13 @@ selObj.selectedIndex=0;
                 if (isChannel)
                 {
                     var taxisType = parseContext.GetChannelTaxisType(order, TaxisType.OrderByTaxis);
-                    var channelIdList = await parseContext.ChannelRepository.StlGetIdListByTotalNumAsync(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
+                    var channelIdList = await parseContext.ChannelRepository.GetIdListByTotalNumAsync(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
 
                     if (channelIdList != null && channelIdList.Count > 0)
                     {
                         foreach (var channelIdInSelect in channelIdList)
                         {
-                            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelIdInSelect);
+                            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channelIdInSelect);
 
                             if (nodeInfo != null)
                             {
@@ -287,8 +287,8 @@ selObj.selectedIndex=0;
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
-                            var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, minContentInfo.ChannelId);
-                            var contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, minContentInfo.Id);
+                            var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
+                            var contentInfo = channelInfo.ContentRepository.GetContentInfo(minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))

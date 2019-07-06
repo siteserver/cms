@@ -29,12 +29,15 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.13.0-alpha-748" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
+    <PackageReference Include="Foundatio" Version="8.1.2058" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="3.0.0-preview6.19304.6" />
+    <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.0.0-preview6.19304.6" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
     <PackageReference Include="NuGet.Common" Version="5.1.0" />
     <PackageReference Include="NuGet.Packaging" Version="5.1.0" />

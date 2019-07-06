@@ -5,12 +5,12 @@ namespace SS.CMS.Core.Services
 {
     public partial class CacheManager
     {
-        public void RemoveByClassName(string className)
+        public static void RemoveByClassName(string className)
         {
             RemoveByStartString(StringUtils.GetCacheKey(className));
         }
 
-        public void RemoveByPrefix(string prefix)
+        public static void RemoveByPrefix(string prefix)
         {
             RemoveByStartString(prefix);
         }

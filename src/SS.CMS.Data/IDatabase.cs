@@ -12,40 +12,32 @@ namespace SS.CMS.Data
 
         string DatabaseName { get; }
 
-        bool IsTableExists(string tableName);
+        DbConnection GetConnection();
 
         Task<bool> IsTableExistsAsync(string tableName);
 
-        string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumn> columns);
-
-        void AlterTable(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
+        Task<string> AddIdentityColumnIdIfNotExistsAsync(string tableName, IList<TableColumn> columns);
 
         Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
 
-        void CreateTable(string tableName, List<TableColumn> tableColumns);
-
-        Task CreateTableAsync(string tableName, List<TableColumn> tableColumns);
-
-        void CreateIndex(string tableName, string indexName, params string[] columns);
+        Task CreateTableAsync(string tableName, IList<TableColumn> tableColumns);
 
         Task CreateIndexAsync(string tableName, string indexName, params string[] columns);
 
-        List<string> GetColumnNames(string tableName);
+        Task<List<string>> GetColumnNamesAsync(string tableName);
 
         string GetTableName<T>() where T : Entity;
 
         List<TableColumn> GetTableColumns<T>() where T : Entity;
 
-        void DropTable(string tableName);
-
         Task DropTableAsync(string tableName);
 
-        DbConnection GetConnection();
+        Task<IList<TableColumn>> GetTableColumnsAsync(string tableName);
 
-        List<TableColumn> GetTableColumns(string tableName);
+        Task<IList<string>> GetDatabaseNamesAsync();
 
-        List<string> GetTableNames();
+        Task<IList<string>> GetTableNamesAsync();
 
-        Task<(bool IsConnectionWorks, string ErrorMessage)> IsConnectionWorksAsync();
+        (bool IsConnectionWorks, string ErrorMessage) IsConnectionWorks();
     }
 }

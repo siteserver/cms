@@ -1,0 +1,162 @@
+/* ===========
+   Wizard
+ =============*/
+.wizard > .content {
+  background: $white;
+  min-height: 240px;
+  padding: 20px;
+}
+
+.wizard > .content > .body {
+  padding: 0;
+  position: relative;
+
+  input {
+    border: 1px solid $light3;
+  }
+  ul > li {
+    display: block;
+    line-height: 30px;
+  }
+  label.error {
+    color: $danger;
+    margin-left: 0;
+
+  }
+  label {
+    display: inline-block;
+    margin-top: 10px;
+  }
+}
+
+.wizard > .steps {
+  .number {
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    line-height: 30px;
+    margin-right: 10px;
+    width: 30px;
+    text-align: center;
+  }
+  .disabled {
+    a {
+      background: $white;
+      color: $lightdark3;
+      cursor: default;
+      border: 1px solid #eaeaea;
+      &:hover {
+        background: $light9;
+        color: $lightdark3;
+        cursor: default;
+        border: 1px solid #eaeaea;
+      }
+      &:active {
+        background: $light9;
+        color: $lightdark3;
+        cursor: default;
+        border: 1px solid #eaeaea;
+      }
+    }
+  }
+  .current {
+    a {
+      background: $primary;
+      &:hover {
+        background: $primary;
+        .number {
+          color: $white;
+        }
+      }
+      &:active {
+        background: $primary;
+        .number {
+          color: $white;
+        }
+      }
+      .number {
+        color: $white;
+      }
+    }
+  }
+  .done {
+    a {
+      background: $lightgray;
+      &:hover {
+        background: $lightgray;
+      }
+      &:active {
+        background: $lightgray;
+      }
+    }
+  }
+}
+
+.wizard > .steps a, .wizard > .steps a:hover, .wizard > .steps a:active, .wizard > .content {
+  border-radius: 2px;
+}
+
+.wizard > .actions {
+  a {
+    background: $primary;
+    border-radius: 2px;
+    color: $white;
+    &:hover {
+      background: $primary;
+      border-radius: 2px;
+      color: $white;
+    }
+    &:active {
+      background: $primary;
+      border-radius: 2px;
+      color: $white;
+    }
+  }
+  .disabled {
+    a {
+      background: $white;
+      color: $lightdark3;
+      cursor: default;
+      border: 1px solid #eaeaea;
+      &:hover {
+        background: $light9;
+        color: $lightdark3;
+        cursor: default;
+        border: 1px solid #eaeaea;
+      }
+      &:active {
+        background: $light9;
+        color: $lightdark3;
+        cursor: default;
+        border: 1px solid #eaeaea;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .wizard > .steps > ul > li {
+    width: 100%;
+  }
+  .wizard > .content {
+    padding: 0 !important;
+  }
+  .wizard > .content > .body {
+    float: none;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+  .wizard.vertical > .steps {
+    display: inline;
+    float: none;
+    width: 100%;
+  }
+  .wizard.vertical > .content {
+    display: inline;
+    float: none;
+    margin: 0;
+    width: 100%;
+  }
+}

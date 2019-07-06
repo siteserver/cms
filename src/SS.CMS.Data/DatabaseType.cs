@@ -8,6 +8,7 @@ namespace SS.CMS.Data
     /// Type of database supported by the datory
     /// </summary>
     [JsonConverter(typeof(DatabaseTypeConverter))]
+    [Serializable]
     public class DatabaseType : IEquatable<DatabaseType>, IComparable<DatabaseType>
     {
         /// <summary>

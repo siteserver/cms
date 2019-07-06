@@ -1,0 +1,30 @@
+/* =============
+   Tooltips & Popovers
+============= */
+
+/* Tooltips */
+.tooltip-inner {
+  border-radius: 1px;
+  padding: 6px 10px;
+}
+
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Popover */
+.popover {
+  font-family: inherit;
+}
+
+.popover .popover-title {
+  background-color: transparent;
+  color: $primary;
+  margin: 0;
+  font-weight: 600;
+
+}

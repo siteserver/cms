@@ -1,0 +1,36 @@
+/* =============
+   Progressbars
+============= */
+
+.progress {
+  -webkit-box-shadow: none !important;
+  background-color: $light3;
+  box-shadow: none !important;
+  height: 10px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  box-shadow: none;
+  font-size: 8px;
+  font-weight: 600;
+  background-color: $primary;
+  line-height: 12px;
+}
+
+.progress.progress-sm {
+  height: 5px !important;
+  .progress-bar {
+    font-size: 8px;
+    line-height: 5px;
+  }
+}
+
+.progress.progress-md {
+  height: 15px !important;
+  .progress-bar {
+    font-size: 10.8px;
+    line-height: 14.4px;
+  }
+}

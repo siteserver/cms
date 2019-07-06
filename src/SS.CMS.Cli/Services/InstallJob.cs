@@ -68,7 +68,7 @@ namespace SS.CMS.Cli.Services
                 return;
             }
 
-            var (db, errorMessage) = await CliUtils.GetDatabaseAsync(_databaseType, _connectionString, _configFile);
+            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
             if (db == null)
             {
                 await CliUtils.PrintErrorAsync(errorMessage);
@@ -103,7 +103,9 @@ namespace SS.CMS.Cli.Services
             await Console.Out.WriteLineAsync($"连接字符串: {db.ConnectionString}");
             await Console.Out.WriteLineAsync($"系统文件夹: {CliUtils.PhysicalApplicationPath}");
 
-            if (_configRepository.Instance != null)
+            var configInfo = await _configRepository.GetConfigInfoAsync();
+
+            if (configInfo != null)
             {
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;

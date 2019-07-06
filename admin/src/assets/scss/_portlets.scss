@@ -1,0 +1,107 @@
+/* ===========
+   Portlets
+ =============*/
+
+.portlet {
+  -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  -moz-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  -webkit-transition: all 0.4s;
+  background: $white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: all 0.4s;
+
+  .portlet-heading {
+    border-radius: 3px;
+    color: $white;
+    padding: 12px 20px;
+
+    .portlet-title {
+      color: $white;
+      float: left;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 0;
+      margin-top: 6px;
+      letter-spacing: 0.03em;
+    }
+    .portlet-widgets {
+      display: inline-block;
+      float: right;
+      font-size: 15px;
+      line-height: 30px;
+      padding-left: 15px;
+      position: relative;
+      text-align: right;
+      .divider {
+        margin: 0 5px;
+      }
+    }
+    a {
+      color: #999999;
+    }
+  }
+  .portlet-body {
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    background: $white;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding: 15px;
+  }
+}
+
+.portlet-default {
+  .portlet-title {
+    color: $lightdark7 !important;
+  }
+}
+
+.portlet .portlet-heading .portlet-widgets .collapsed .ion-minus-round:before {
+  content: "\f217" !important;
+}
+
+.portlet .portlet-heading.bg-purple a, .portlet .portlet-heading.bg-info a, .portlet .portlet-heading.bg-success a, .portlet .portlet-heading.bg-primary a, .portlet .portlet-heading.bg-danger a, .portlet .portlet-heading.bg-warning a, .portlet .portlet-heading.bg-inverse a, .portlet .portlet-heading.bg-pink a {
+  color: $white;
+}
+
+.panel-disabled {
+  background: rgba(243, 242, 241, 0.5);
+  cursor: progress;
+  bottom: 15px;
+  left: 0;
+  position: absolute;
+  right: -5px;
+  top: 0;
+}
+
+.loader-1 {
+  -moz-animation: loaderAnimate 1000ms linear infinite;
+  -o-animation: loaderAnimate 1000ms linear infinite;
+  -webkit-animation: loaderAnimate 1000ms linear infinite;
+  animation: loaderAnimate 1000ms linear infinite;
+  clip: rect(0, 30px, 30px, 15px);
+  height: 30px;
+  left: 50%;
+  margin-left: -15px;
+  margin-top: -15px;
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  &:after {
+    -moz-animation: loaderAnimate2 1000ms ease-in-out infinite;
+    -o-animation: loaderAnimate2 1000ms ease-in-out infinite;
+    -webkit-animation: loaderAnimate2 1000ms ease-in-out infinite;
+    animation: loaderAnimate2 1000ms ease-in-out infinite;
+    border-radius: 50%;
+    clip: rect(0, 30px, 30px, 15px);
+    content: '';
+    height: 30px;
+    position: absolute;
+    width: 30px;
+  }
+}

@@ -5,6 +5,7 @@ using SS.CMS.Repositories.IContentRepository;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_Site")]
     public class SiteInfo : Entity
     {

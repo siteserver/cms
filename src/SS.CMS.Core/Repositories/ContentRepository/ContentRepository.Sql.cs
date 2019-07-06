@@ -45,7 +45,7 @@ namespace SS.CMS.Core.Repositories
         //             return sqlString;
         //         }
 
-        public Query GetStlWhereString(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId)
+        public async Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId)
         {
             var query = Q.NewQuery();
 
@@ -55,9 +55,9 @@ namespace SS.CMS.Core.Repositories
 
             QueryWhereGroupNot(query, groupNot);
 
-            QueryWhereTags(query, siteId, tags);
+            await QueryWhereTagsAsync(query, siteId, tags);
 
-            QueryWhereIsRelatedContents(query, isRelatedContents, siteId, channelInfo, contentId);
+            await QueryWhereIsRelatedContentsAsync(query, isRelatedContents, siteId, channelInfo, contentId);
 
             return query;
         }
@@ -69,19 +69,19 @@ namespace SS.CMS.Core.Repositories
             SiteInfo siteInfo = null;
             if (!string.IsNullOrEmpty(siteName))
             {
-                siteInfo = _siteRepository.GetSiteInfoBySiteName(siteName);
+                siteInfo = await _siteRepository.GetSiteInfoBySiteNameAsync(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = _siteRepository.GetSiteInfoByDirectory(siteDir);
+                siteInfo = await _siteRepository.GetSiteInfoByDirectoryAsync(siteDir);
             }
             if (siteInfo == null)
             {
-                siteInfo = _siteRepository.GetSiteInfo(siteId);
+                siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             }
 
             var channelId = await _channelRepository.GetChannelIdAsync(siteId, siteId, channelIndex, channelName);
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
 
             if (!string.IsNullOrEmpty(siteIds))
             {
@@ -97,9 +97,9 @@ namespace SS.CMS.Core.Repositories
                 var channelIdList = new List<int>();
                 foreach (var theChannelId in TranslateUtils.StringCollectionToIntList(channelIds))
                 {
-                    var theSiteId = _channelRepository.GetSiteId(theChannelId);
+                    var theSiteId = await _channelRepository.GetSiteIdAsync(theChannelId);
                     channelIdList.AddRange(
-                        await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theSiteId, theChannelId),
+                        await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theChannelId),
                             ScopeType.All, string.Empty, string.Empty, string.Empty));
                 }
 
@@ -107,8 +107,8 @@ namespace SS.CMS.Core.Repositories
             }
             else if (channelId != siteId)
             {
-                var theSiteId = _channelRepository.GetSiteId(channelId);
-                var channelIdList = await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theSiteId, channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
+                var theSiteId = await _channelRepository.GetSiteIdAsync(channelId);
+                var channelIdList = await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
 
                 query.WhereIn(Attr.ChannelId, channelIdList);
             }
@@ -165,7 +165,7 @@ namespace SS.CMS.Core.Repositories
                 var value = StringUtils.Trim(form[key]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                var columnInfo = _tableManager.GetTableColumnInfo(tableName, key);
+                var columnInfo = await _tableManager.GetTableColumnInfoAsync(tableName, key);
 
                 if (columnInfo != null && (columnInfo.DataType == DataType.VarChar || columnInfo.DataType == DataType.Text))
                 {
@@ -260,7 +260,7 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(query).ToList();
         }
 
-        public Query GetStlWhereString(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId)
+        public async Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId)
         {
             var query = Q.Where(Attr.SiteId, siteId);
 
@@ -375,7 +375,7 @@ namespace SS.CMS.Core.Repositories
             if (!string.IsNullOrEmpty(tags))
             {
                 var tagCollection = _tagRepository.ParseTagsString(tags);
-                var contentIdList = _tagRepository.GetContentIdListByTagCollection(tagCollection, siteId);
+                var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(tagCollection, siteId);
                 if (contentIdList.Count > 0)
                 {
                     query.WhereIn(Attr.Id, contentIdList);
@@ -384,10 +384,10 @@ namespace SS.CMS.Core.Repositories
 
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = StlGetValue(channelInfo, contentId, Attr.Tags);
+                var tagCollection = GetValue<string>(contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
-                    var contentIdList = _tagRepository.GetContentIdListByTagCollection(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
+                    var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
                     if (contentIdList.Count > 0)
                     {
                         contentIdList.Remove(contentId);
@@ -733,7 +733,7 @@ namespace SS.CMS.Core.Repositories
             return query;
         }
 
-        public List<ContentInfo> GetStlDataSourceChecked(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
+        public async Task<List<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -745,7 +745,7 @@ namespace SS.CMS.Core.Repositories
 
             if (others != null && others.Count > 0)
             {
-                var columnNameList = _tableManager.GetTableColumnNameList(TableName);
+                var columnNameList = await _tableManager.GetTableColumnNameListAsync(TableName);
 
                 foreach (var attributeName in others.AllKeys)
                 {

@@ -8,124 +8,57 @@ namespace SS.CMS.Core.Services
 {
     public partial class CacheManager
     {
-        public int GetPageTotalCount(string sqlString)
+        public static int GetPageTotalCount(string sqlString)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetPageTotalCount),
-                    sqlString);
-            var retval = GetInt(cacheKey);
-            if (retval != -1) return retval;
-
-            retval = GetInt(cacheKey);
-            if (retval == -1)
-            {
-                // retval = DatabaseUtils.GetPageTotalCount(sqlString);
-                Set(cacheKey, retval);
-            }
-
-            return retval;
+            // retval = DatabaseUtils.GetPageTotalCount(sqlString);
+            return 0;
         }
 
-        public string GetStlPageSqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex)
+        public static string GetStlPageSqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetStlPageSqlString),
-                       sqlString, orderByString, totalNum.ToString(), pageNum.ToString(), currentPageIndex.ToString());
-            var retval = Get<string>(cacheKey);
-            if (retval != null) return retval;
-
-            retval = Get<string>(cacheKey);
-            if (retval == null)
-            {
-                // retval = DatabaseUtils.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
-                // currentPageIndex);
-                Set(cacheKey, retval);
-            }
-
-            return retval;
+            // retval = DatabaseUtils.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
+            // currentPageIndex);
+            return string.Empty;
         }
 
-        public string GetString(string connectionString, string queryString)
+        public static string GetString(string connectionString, string queryString)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetString),
-                       connectionString, queryString);
-            var retval = Get<string>(cacheKey);
-            if (retval != null) return retval;
-
-            retval = Get<string>(cacheKey);
-            if (retval == null)
-            {
-                // retval = DatabaseUtils.GetString(connectionString, queryString);
-                Set(cacheKey, retval);
-            }
-
-            return retval;
+            // retval = DatabaseUtils.GetString(connectionString, queryString);
+            return string.Empty;
         }
 
-        public DataSet GetDataSet(string connectionString, string queryString)
+        public static DataSet GetDataSet(string connectionString, string queryString)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetDataSet),
-                connectionString, queryString);
-            var retval = Get<DataSet>(cacheKey);
-            if (retval != null) return retval;
-
-            retval = Get<DataSet>(cacheKey);
-            if (retval == null)
-            {
-                // retval = DatabaseUtils.GetDataSet(connectionString, queryString);
-                Set(cacheKey, retval);
-            }
-
-            return retval;
+            // retval = DatabaseUtils.GetDataSet(connectionString, queryString);
+            return null;
         }
 
-        public List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDatabase database, string queryString)
+        public static List<KeyValuePair<int, Dictionary<string, object>>> GetContainerSqlList(IDatabase database, string queryString)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetContainerSqlList),
-                database.DatabaseType.Value, database.ConnectionString, queryString);
-            var retval = Get<List<KeyValuePair<int, Dictionary<string, object>>>>(cacheKey);
-            if (retval != null) return retval;
-
-            retval = Get<List<KeyValuePair<int, Dictionary<string, object>>>>(cacheKey);
-            if (retval == null)
+            var rows = new List<KeyValuePair<int, Dictionary<string, object>>>();
+            var itemIndex = 0;
+            using (var connection = database.GetConnection())
             {
-                var rows = new List<KeyValuePair<int, Dictionary<string, object>>>();
-                var itemIndex = 0;
-                using (var connection = database.GetConnection())
+                using (var reader = connection.ExecuteReader(queryString))
                 {
-                    using (var reader = connection.ExecuteReader(queryString))
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        var dict = new Dictionary<string, object>();
+                        for (var i = 0; i < reader.FieldCount; i++)
                         {
-                            var dict = new Dictionary<string, object>();
-                            for (var i = 0; i < reader.FieldCount; i++)
-                            {
-                                dict[reader.GetName(i)] = reader.GetValue(i);
-                            }
-                            rows.Add(new KeyValuePair<int, Dictionary<string, object>>(itemIndex, dict));
+                            dict[reader.GetName(i)] = reader.GetValue(i);
                         }
+                        rows.Add(new KeyValuePair<int, Dictionary<string, object>>(itemIndex, dict));
                     }
                 }
-                retval = rows;
-                Set(cacheKey, retval);
             }
-
-            return retval;
+            return rows;
         }
 
-        public DataTable GetDataTable(string connectionString, string queryString)
+        public static DataTable GetDataTable(string connectionString, string queryString)
         {
-            var cacheKey = StringUtils.GetCacheKey(nameof(CacheManager), nameof(GetDataTable),
-                connectionString, queryString);
-            var retval = Get<DataTable>(cacheKey);
-            if (retval != null) return retval;
-
-            retval = Get<DataTable>(cacheKey);
-            if (retval == null)
-            {
-                // retval = DatabaseUtils.GetDataTable(connectionString, queryString);
-                Set(cacheKey, retval);
-            }
-
-            return retval;
+            // retval = DatabaseUtils.GetDataTable(connectionString, queryString);
+            return null;
         }
     }
 }

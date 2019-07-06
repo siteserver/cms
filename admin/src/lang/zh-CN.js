@@ -202,15 +202,14 @@ export default {
   },
   tools: {
     info: {
-      serverName: '服务器名称',
+      apiUrl: 'API 地址',
+      apiServerName: 'API 服务器',
       contentRootPath: '系统根目录',
       webRootPath: '主站根目录',
-      adminHostName: '后台域名',
       remoteIpAddress: '访问IP',
       targetFramework: '.NET Core 版本',
       productVersion: 'CMS 版本',
       pluginVersion: '插件版本',
-      updateDate: '最近升级时间',
       databaseType: '数据库类型',
       database: '数据库'
     }

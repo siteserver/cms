@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SS.CMS.Repositories;
 using SS.CMS.Utils;
 
@@ -107,10 +108,10 @@ namespace SS.CMS.Core.Common
         /// 分词
         /// </summary>
         /// <returns></returns>
-        private static ArrayList StringSpliter(ITagRepository tagRepository, string[] key, int siteId)
+        private static async Task<ArrayList> StringSpliterAsync(ITagRepository tagRepository, string[] key, int siteId)
         {
             var list = new ArrayList();
-            var dict = tagRepository.ReadContent(siteId);//载入词典
+            var dict = await tagRepository.ReadContentAsync(siteId);//载入词典
             //
             for (var i = 0; i < key.Length; i++)
             {
@@ -151,9 +152,9 @@ namespace SS.CMS.Core.Common
         /// <summary>
         /// 得到分词结果
         /// </summary>
-        public static string[] DoSplit(ITagRepository tagRepository, string content, int siteId)
+        public static async Task<string[]> DoSplitAsync(ITagRepository tagRepository, string content, int siteId)
         {
-            var keyList = StringSpliter(tagRepository, FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
+            var keyList = await StringSpliterAsync(tagRepository, FormatStr(content).Split(SplitChar.ToCharArray()), siteId);
             keyList.Insert(0, content);
             //去掉重复的关键词
             for (var i = 0; i < keyList.Count; i++)
@@ -174,10 +175,10 @@ namespace SS.CMS.Core.Common
         /// <summary>
         /// 得到分词关键字，以逗号隔开
         /// </summary>
-        public static string GetKeywords(ITagRepository tagRepository, string content, int siteId, int totalNum)
+        public static async Task<string> GetKeywordsAsync(ITagRepository tagRepository, string content, int siteId, int totalNum)
         {
             var value = "";
-            var _key = DoSplit(tagRepository, content, siteId);
+            var _key = await DoSplitAsync(tagRepository, content, siteId);
             var currentNum = 1;
             for (var i = 1; i < _key.Length; i++)
             {

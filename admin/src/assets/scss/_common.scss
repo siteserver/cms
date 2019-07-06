@@ -1,0 +1,99 @@
+/* ===========
+   Common
+ =============*/
+
+body {
+  background: $light5;
+  margin: 0;
+  color: #4c5667;
+  overflow-x: hidden !important;
+  font-size: 0.95rem;
+  font-family: $font-primary;
+  padding-bottom: 65px;
+}
+
+html {
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100%;
+  background: $light5;
+}
+
+* {
+  outline: none !important;
+}
+
+a {
+  &:hover,&:active,&:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+}
+
+
+.container-alt {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.footer {
+  background-color: $light9;
+  bottom: 0;
+  color: $dark;
+  padding: 20px 30px;
+  position: absolute;
+  right: 0;
+  left: 0;
+  text-align: center;
+}
+
+#wrapper {
+  height: $height;
+  overflow: hidden;
+  width: $width;
+}
+
+.page {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.card-box {
+  padding: 20px;
+  border: 1px solid rgba(54, 64, 74, .08);
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  background-clip: padding-box;
+  margin-bottom: 20px;
+  background-color: $white;
+}
+
+.header-title {
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.social-links {
+  li {
+    a {
+      -webkit-border-radius: 50%;
+      background: #EFF0F4;
+      border-radius: 50%;
+      color: #7A7676;
+      display: inline-block;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      width: 30px;
+    }
+  }
+}

@@ -10,7 +10,7 @@ namespace SS.CMS.Cli.Updater
 
         public string NewTableName { get; set; }
 
-        public List<TableColumn> NewColumns { get; set; }
+        public IList<TableColumn> NewColumns { get; set; }
 
         public Dictionary<string, string> ConvertKeyDict { get; set; }
 

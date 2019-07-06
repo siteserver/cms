@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Utils;
@@ -20,18 +21,19 @@ namespace SS.CMS.Core.Serialization.Components
             return entry;
         }
 
-        public static bool Import(AtomEntry entry, int siteId, IContentGroupRepository contentGroupRepository)
+        public static async Task<bool> ImportAsync(AtomEntry entry, int siteId, IContentGroupRepository contentGroupRepository)
         {
             var isNodeGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsContentGroup"));
             if (!isNodeGroup) return false;
 
             var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroupInfo.GroupName), "ContentGroupName" });
             if (string.IsNullOrEmpty(groupName)) return true;
-            if (contentGroupRepository.IsExists(siteId, groupName)) return true;
+            if (await contentGroupRepository.IsExistsAsync(siteId, groupName)) return true;
 
             var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Taxis)));
             var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Description));
-            contentGroupRepository.Insert(new ContentGroupInfo
+
+            await contentGroupRepository.InsertAsync(new ContentGroupInfo
             {
                 GroupName = groupName,
                 SiteId = siteId,

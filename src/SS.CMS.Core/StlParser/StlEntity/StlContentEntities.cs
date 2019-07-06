@@ -68,11 +68,11 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     if (contentInfo != null && contentInfo.ReferenceId > 0 && contentInfo.SourceId > 0 && contentInfo.TranslateContentType != TranslateContentType.ReferenceContent.ToString())
                     {
                         var targetChannelId = contentInfo.SourceId;
-                        var targetSiteId = parseContext.ChannelRepository.StlGetSiteId(targetChannelId);
-                        var targetSiteInfo = parseContext.SiteRepository.GetSiteInfo(targetSiteId);
-                        var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetSiteId, targetChannelId);
+                        var targetSiteId = await parseContext.ChannelRepository.GetSiteIdAsync(targetChannelId);
+                        var targetSiteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(targetSiteId);
+                        var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
 
-                        var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
+                        var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(contentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                         {
                             //标题可以使用自己的
@@ -94,7 +94,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Id);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.Id);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Id);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Title, attributeName))//内容标题
@@ -106,7 +106,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.Title);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Title);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FullTitle, attributeName))//内容标题全称
@@ -118,7 +118,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.Title);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Title);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//内容链接地址
@@ -129,7 +129,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         }
                         else
                         {
-                            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+                            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
                             parsedContent = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, nodeInfo, parseContext.ContentId, parseContext.IsLocal);
                         }
                     }
@@ -142,7 +142,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ImageUrl);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.ImageUrl);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.ImageUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -159,7 +159,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.VideoUrl);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.VideoUrl);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.VideoUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -176,7 +176,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.FileUrl);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -193,7 +193,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.FileUrl);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -224,7 +224,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Content);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.Content);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Content);
                         }
                         parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, parsedContent, parseContext.IsLocal);
                     }
@@ -237,7 +237,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.GroupNameCollection);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
@@ -249,7 +249,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Tags);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.Tags);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Tags);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(AddUserName, attributeName))
@@ -262,7 +262,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //addUserName = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.AddUserName);
-                            addUserName = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.AddUserName);
+                            addUserName = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.AddUserName);
                         }
                         if (!string.IsNullOrEmpty(addUserName))
                         {
@@ -286,19 +286,19 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         }
                         else
                         {
-                            contentChannelId = channelInfo.ContentRepository.StlGetChannelId(channelInfo, parseContext.ContentId);
+                            contentChannelId = channelInfo.ContentRepository.GetChannelId(parseContext.ContentId);
 
-                            channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, contentChannelId);
+                            channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentChannelId);
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, attributeName);
-                            parsedContent = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, attributeName);
+                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
                         {
-                            channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, contentChannelId);
+                            channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentChannelId);
                             var tableName = await parseContext.ChannelRepository.GetTableNameAsync(parseContext.PluginManager, parseContext.SiteInfo, channelInfo);
                             var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(channelInfo);
-                            var styleInfo = parseContext.TableManager.GetTableStyleInfo(tableName, attributeName, relatedIdentities);
+                            var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(tableName, attributeName, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, parsedContent, ",", parseContext.SiteInfo, styleInfo, string.Empty, null, string.Empty, true);

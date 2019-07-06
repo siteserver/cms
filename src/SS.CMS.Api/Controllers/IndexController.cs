@@ -34,13 +34,14 @@ namespace SS.CMS.Api.Controllers.Admin
         [HttpGet(Route)]
         public async Task<ActionResult<GetModel>> Get()
         {
+            var configInfo = await _configRepository.GetConfigInfoAsync();
             var accountInfo = await _userManager.GetUserAsync();
 
             return new GetModel
             {
                 Version = _settingsManager.ProductVersion,
                 LastActivityDate = accountInfo.LastActivityDate,
-                UpdateDate = _configRepository.Instance.UpdateDate
+                UpdateDate = configInfo.UpdateDate
             };
         }
 
@@ -49,7 +50,7 @@ namespace SS.CMS.Api.Controllers.Admin
         {
             var unCheckedList = new List<object>();
 
-            foreach (var siteInfo in _siteRepository.GetSiteInfoList())
+            foreach (var siteInfo in await _siteRepository.GetSiteInfoListAsync())
             {
                 if (!_userManager.IsSiteAdministrator(siteInfo.Id)) continue;
 

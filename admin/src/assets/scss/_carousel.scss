@@ -1,0 +1,21 @@
+/* =============
+   Carousel
+============= */
+
+.carousel-control {
+  width: 10%;
+
+  span {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+    display: inline-block;
+    font-size: 30px;
+  }
+}
+
+.carousel-item.active,
+.carousel-item-next,
+.carousel-item-prev {
+  display: block;
+}

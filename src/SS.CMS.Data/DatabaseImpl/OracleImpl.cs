@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Dapper;
 using Oracle.ManagedDataAccess.Client;
 using SqlKata.Compilers;
@@ -43,20 +43,37 @@ namespace SS.CMS.Data.DatabaseImpl
             return false;
         }
 
-        public List<string> GetTableNames(string connectionString)
+        public async Task<IList<string>> GetDatabaseNamesAsync(string connectionString)
         {
-            IEnumerable<string> tableNames;
+            IEnumerable<string> databaseNames = null;
+
+            using (var connection = GetConnection(connectionString))
+            {
+                try
+                {
+                    databaseNames = await connection.QueryAsync<string>("select name from v$database");
+                }
+                catch
+                {
+                    databaseNames = await connection.QueryAsync<string>("select ora_database_name from dual");
+                }
+            }
+
+            return databaseNames != null ? databaseNames.Where(name => !string.IsNullOrEmpty(name)).ToList() : new List<string>();
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames = null;
 
             using (var connection = GetConnection(connectionString))
             {
                 var sqlString = "select TABLE_NAME from user_tables";
 
-                if (string.IsNullOrEmpty(sqlString)) return new List<string>();
-
-                tableNames = connection.Query<string>(sqlString);
+                tableNames = await connection.QueryAsync<string>(sqlString);
             }
 
-            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
         }
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
@@ -154,7 +171,7 @@ namespace SS.CMS.Data.DatabaseImpl
             return dataType;
         }
 
-        public List<TableColumn> GetTableColumns(string connectionString, string tableName)
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -166,7 +183,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 var sqlString =
                     $"SELECT COLUMN_NAME AS columnName, DATA_TYPE AS DataType, DATA_PRECISION AS DataPrecision, DATA_SCALE AS DataScale, CHAR_LENGTH AS CharLength, DATA_DEFAULT AS DataDefault FROM all_tab_cols WHERE OWNER = '{owner}' and table_name = '{tableName}' and user_generated = 'YES' ORDER BY COLUMN_ID";
 
-                IEnumerable<dynamic> columns = connection.Query<dynamic>(sqlString);
+                IEnumerable<dynamic> columns = await connection.QueryAsync<dynamic>(sqlString);
 
                 foreach (var column in columns)
                 {

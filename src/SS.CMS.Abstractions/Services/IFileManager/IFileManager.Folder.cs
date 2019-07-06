@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 
@@ -12,10 +13,10 @@ namespace SS.CMS.Services
 
         void ImportSiteFiles(SiteInfo siteInfo, string siteTemplatePath, bool isOverride);
 
-        void ChangeParentSite(ISiteRepository siteRepository, int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
+        Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
 
-        void ChangeToHeadquarters(SiteInfo siteInfo, bool isMoveFiles);
+        Task ChangeToHeadquartersAsync(SiteInfo siteInfo, bool isMoveFiles);
 
-        void ChangeToSubSite(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList);
+        Task ChangeToSubSiteAsync(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList);
     }
 }

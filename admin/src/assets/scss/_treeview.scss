@@ -1,0 +1,14 @@
+/* =============
+   Tree view page
+============= */
+.jstree-default {
+  .jstree-clicked, .jstree-wholerow-clicked {
+    background: rgba($primary, 0.4);
+    box-shadow: none;
+  }
+
+  .jstree-hovered, .jstree-wholerow-hovered {
+    background: rgba($primary, 0.2);
+    box-shadow: none;
+  }
+}

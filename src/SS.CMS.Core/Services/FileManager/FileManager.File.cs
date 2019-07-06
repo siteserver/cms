@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models;
 using SS.CMS.Core.Models.Attributes;
@@ -177,12 +178,12 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void MoveFiles(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
+        public async Task MoveFilesAsync(int sourceSiteId, int targetSiteId, List<string> relatedUrls)
         {
             if (sourceSiteId == targetSiteId) return;
 
-            var siteInfo = _siteRepository.GetSiteInfo(sourceSiteId);
-            var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(sourceSiteId);
+            var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
             if (siteInfo == null || targetSiteInfo == null) return;
 
             foreach (var relatedUrl in relatedUrls)
@@ -194,9 +195,9 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void AddWaterMark(int siteId, string filePath)
+        public async Task AddWaterMarkAsync(int siteId, string filePath)
         {
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             AddWaterMark(siteInfo, filePath);
         }
     }

@@ -72,7 +72,7 @@ namespace SS.CMS.Core.Serialization.Components
             if (parentIdOriginal == 0)
             {
                 channelId = _siteInfo.Id;
-                var nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, _siteInfo.Id);
+                var nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id);
                 _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                 await _channelRepository.UpdateAsync(nodeInfo);
@@ -105,7 +105,7 @@ namespace SS.CMS.Core.Serialization.Components
                 else
                 {
                     channelId = theSameNameChannelId;
-                    nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, theSameNameChannelId);
+                    nodeInfo = await _channelRepository.GetChannelInfoAsync(theSameNameChannelId);
                     var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, _siteInfo, nodeInfo);
                     _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
@@ -125,23 +125,23 @@ namespace SS.CMS.Core.Serialization.Components
 
         public async Task ExportAsync(int siteId, int channelId, bool isSaveContents)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             if (channelInfo == null) return;
 
-            var siteInfo = _siteRepository.GetSiteInfo(siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
 
             var fileName = _channelRepository.GetOrderStringInSite(channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 
-            var feed = _channelIe.ExportNodeInfo(channelInfo);
+            var feed = await _channelIe.ExportNodeInfoAsync(channelInfo);
 
             if (isSaveContents)
             {
                 var contentIdList = channelInfo.ContentRepository.GetContentIdListChecked(channelId, TaxisType.OrderByTaxis);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
                     //ContentUtility.PutImagePaths(siteInfo, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

@@ -50,7 +50,7 @@ namespace SS.CMS.Core.Services
                     {ContentRulesLowerChannelIndex, "栏目索引(小写)"}
                 };
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var styleInfoList = await _tableManager.GetContentStyleInfoListAsync(pluginManager, siteInfo, channelInfo);
             foreach (var styleInfo in styleInfoList)
             {
@@ -66,9 +66,9 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, int contentId)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
             var filePath = await ContentRulesParseContentPathAsync(siteInfo, channelId, contentInfo, contentFilePathRule);
             return filePath;
         }
@@ -101,13 +101,13 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesSequence))
                 {
-                    var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
-                    value = channelInfo.ContentRepository.StlGetSequence(channelInfo, contentId).ToString();
+                    var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+                    value = channelInfo.ContentRepository.GetSequence(channelInfo.Id, contentId).ToString();
                 }
-                else if (StringUtils.EqualsIgnoreCase(element, ContentRulesParentRule))//继承父级设置 20151113 sessionliang
+                else if (StringUtils.EqualsIgnoreCase(element, ContentRulesParentRule))
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
-                    var parentInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, nodeInfo.ParentId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+                    var parentInfo = await _channelRepository.GetChannelInfoAsync(nodeInfo.ParentId);
                     if (parentInfo != null)
                     {
                         var parentRule = await GetContentFilePathRuleAsync(siteInfo, parentInfo.Id);
@@ -116,7 +116,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelName))
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName;
@@ -124,7 +124,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelName))
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.ChannelName.ToLower();
@@ -132,7 +132,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesChannelIndex))
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName;
@@ -140,7 +140,7 @@ namespace SS.CMS.Core.Services
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesLowerChannelIndex))
                 {
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                     if (nodeInfo != null)
                     {
                         value = nodeInfo.IndexName.ToLower();

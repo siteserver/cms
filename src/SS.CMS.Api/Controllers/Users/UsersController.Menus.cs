@@ -17,7 +17,7 @@ namespace SS.CMS.Api.Controllers.Users
         public const string SiteMenuIdConfiguration = "Configuration";
         public const string SiteMenuIdCreate = "Create";
 
-        private IList<Menu> GetTopMenus()
+        private async Task<IList<Menu>> GetTopMenusAsync()
         {
             var menus = new List<Menu>();
 
@@ -36,7 +36,7 @@ namespace SS.CMS.Api.Controllers.Users
                     if (StringUtils.EqualsIgnoreCase(menu.Id, TopMenuIdSite) ||
                     StringUtils.EqualsIgnoreCase(menu.Id, TopMenuIdLink))
                     {
-                        valid = _userManager.HasSitePermissions();
+                        valid = await _userManager.HasSitePermissionsAsync();
                     }
                     else
                     {

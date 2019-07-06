@@ -115,13 +115,14 @@ namespace SS.CMS.Core.Common
                 var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
                 var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
-                var importObject = new ImportObject(siteId, administratorName);
+                var importObject = new ImportObject();
+                await importObject.LoadAsync(siteId, administratorName);
 
                 importObject.ImportFiles(siteTemplatePath, true);
 
                 await importObject.ImportTemplatesAsync(templateFilePath, true, administratorName);
 
-                importObject.ImportConfiguration(configurationFilePath);
+                await importObject.ImportConfigurationAsync(configurationFilePath);
 
                 var filePathList = ImportObject.GetSiteContentFilePathList(siteContentDirectoryPath);
 
@@ -132,7 +133,7 @@ namespace SS.CMS.Core.Common
 
                 if (isImportTableStyles)
                 {
-                    importObject.ImportTableStyles(tableDirectoryPath);
+                    await importObject.ImportTableStylesAsync(tableDirectoryPath);
                 }
 
                 await importObject.RemoveDbCacheAsync();
@@ -141,7 +142,8 @@ namespace SS.CMS.Core.Common
 
         public async Task ExportSiteToSiteTemplateAsync(SiteInfo siteInfo, string siteTemplateDir, string adminName)
         {
-            var exportObject = new ExportObject(siteInfo.Id, adminName);
+            var exportObject = new ExportObject();
+            await exportObject.LoadAsync(siteInfo.Id, adminName);
 
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
 
@@ -153,7 +155,7 @@ namespace SS.CMS.Core.Common
             await exportObject.ExportTablesAndStylesAsync(tableDirectoryPath);
             //导出站点属性以及站点属性表单
             var configurationFilePath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.FileConfiguration);
-            exportObject.ExportConfiguration(configurationFilePath);
+            await exportObject.ExportConfigurationAsync(configurationFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
             exportObject.ExportRelatedField(relatedFieldDirectoryPath);

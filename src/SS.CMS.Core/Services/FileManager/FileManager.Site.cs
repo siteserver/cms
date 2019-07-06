@@ -34,12 +34,12 @@ namespace SS.CMS.Core.Services
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
-            var targetSiteInfo = _siteRepository.GetSiteInfo(targetSiteId);
-            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetSiteId, targetChannelId);
+            var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
+            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
             var targetTableName = await _channelRepository.GetTableNameAsync(_pluginManager, targetSiteInfo, targetChannelInfo);
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
 
             if (contentInfo == null) return;
 
@@ -229,7 +229,7 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                 var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
                 if (contentIdList.Count > 0)
                 {
@@ -262,7 +262,7 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                 var filePath = await _pathManager.GetChannelPageFilePathAsync(siteInfo, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
@@ -309,11 +309,11 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void DeleteFiles(SiteInfo siteInfo, List<int> templateIdList)
+        public async Task DeleteFilesAsync(SiteInfo siteInfo, List<int> templateIdList)
         {
             foreach (var templateId in templateIdList)
             {
-                var templateInfo = _templateRepository.GetTemplateInfo(siteInfo.Id, templateId);
+                var templateInfo = await _templateRepository.GetTemplateInfoAsync(templateId);
                 if (templateInfo == null || templateInfo.Type != TemplateType.FileTemplate)
                 {
                     return;

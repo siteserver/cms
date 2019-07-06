@@ -94,7 +94,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 contentId = parseContext.ContentId;
             }
 
-            var tagInfoList = parseContext.TagRepository.GetTagInfoList(parseContext.SiteId, contentId, isOrderByCount, totalNum);
+            var tagInfoList = await parseContext.TagRepository.GetTagInfoListAsync(parseContext.SiteId, contentId, isOrderByCount, totalNum);
             tagInfoList = parseContext.TagRepository.GetTagInfoList(tagInfoList, totalNum, tagLevel);
             if (parseContext.ContextType == EContextType.Content)
             {

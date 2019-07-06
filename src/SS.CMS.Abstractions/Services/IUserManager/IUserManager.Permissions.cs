@@ -10,11 +10,11 @@ namespace SS.CMS.Services
         bool IsSuperAdministrator();
         Task<IList<int>> GetSiteIdsAsync();
         bool HasAppPermissions(params string[] permissions);
-        bool HasSitePermissions();
+        Task<bool> HasSitePermissionsAsync();
         bool HasSitePermissions(int siteId);
         bool HasSitePermissions(int siteId, params string[] permissions);
         bool HasChannelPermissions(int siteId, int channelId, params string[] permissions);
-        int? GetOnlyAdminId(int siteId, int channelId);
+        Task<int?> GetOnlyAdminIdAsync(int siteId, int channelId);
 
         IList<string> GetRoles();
     }

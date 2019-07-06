@@ -8,6 +8,7 @@ using Moq;
 using SS.CMS.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using SS.CMS.Models;
+using SS.CMS.Api.Controllers.Cms;
 
 namespace SS.CMS.Api.Tests.Controllers.Admin
 {
@@ -33,16 +34,16 @@ namespace SS.CMS.Api.Tests.Controllers.Admin
             var mockConfigRepository = new Mock<IConfigRepository>();
 
             mockUserManager.Setup(x => x.GetUserAsync()).ReturnsAsync(() => new UserInfo());
-            mockConfigRepository.Setup(x => x.Instance).Returns(new ConfigInfo());
+            mockConfigRepository.Setup(x => x.GetConfigInfoAsync()).ReturnsAsync(() => new ConfigInfo());
 
             // var controller = new InstallController(_fixture.SettingsManager, mockPluginManager.Object, mockUserManager.Object, mockUserRepository.Object, mockSiteRepository.Object, mockConfigRepository.Object);
-            InstallController controller = null;
+            CmsController controller = null;
 
             // Act
-            var actionResult = controller.GetEnvironment();
+            var actionResult = controller.GetInfo();
 
             // Assert
-            var result = Assert.IsType<InstallController.ResultModel>(actionResult.Result);
+            var result = Assert.IsType<CmsController.ResultResponse>(actionResult.Result);
 
             _output.WriteLine($"version:{result.IsSuccess}");
             Assert.True(result.IsSuccess);

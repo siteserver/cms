@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SS.CMS.Core.Services;
 using SS.CMS.Models;
 using SS.CMS.Utils;
 
@@ -16,14 +17,14 @@ namespace SS.CMS.Core.Repositories
         {
             lock (CountLockObject)
             {
-                var retVal = _cacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
+                var retVal = CacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
                 if (retVal != null) return retVal;
 
-                retVal = _cacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
+                retVal = CacheManager.Get<Dictionary<string, List<ContentCountInfo>>>(CountCacheKey);
                 if (retVal == null)
                 {
                     retVal = new Dictionary<string, List<ContentCountInfo>>();
-                    _cacheManager.Insert(CountCacheKey, retVal);
+                    CacheManager.Insert(CountCacheKey, retVal);
                 }
 
                 return retVal;

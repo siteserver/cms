@@ -41,7 +41,7 @@ namespace SS.CMS.Api.Controllers.Users
         public async Task<ActionResult<InfoResponse>> GetInfo()
         {
             var userInfo = await _userManager.GetUserAsync();
-            var menus = GetTopMenus();
+            var menus = await GetTopMenusAsync();
 
             return new InfoResponse
             {
@@ -132,12 +132,14 @@ namespace SS.CMS.Api.Controllers.Users
         {
             UserInfo userInfo;
 
-            if (!_userRepository.Validate(request.UserName, request.Password, true, out var userName, out var errorMessage))
+            var (isSuccess, userName, errorMessage) = await _userRepository.ValidateAsync(request.UserName, request.Password, true);
+
+            if (!isSuccess)
             {
-                userInfo = _userRepository.GetUserInfoByUserName(userName);
+                userInfo = await _userRepository.GetByUserNameAsync(userName);
                 if (userInfo != null)
                 {
-                    _userRepository.UpdateLastActivityDateAndCountOfFailedLogin(userInfo); // 记录最后登录时间、失败次数+1
+                    await _userRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(userInfo); // 记录最后登录时间、失败次数+1
                 }
                 return BadRequest(new
                 {
@@ -146,8 +148,8 @@ namespace SS.CMS.Api.Controllers.Users
                 });
             }
 
-            userInfo = _userRepository.GetUserInfoByUserName(userName);
-            _userRepository.UpdateLastActivityDateAndCountOfLogin(userInfo); // 记录最后登录时间、失败次数清零
+            userInfo = await _userRepository.GetByUserNameAsync(userName);
+            await _userRepository.UpdateLastActivityDateAndCountOfLoginAsync(userInfo); // 记录最后登录时间、失败次数清零
             //var accessToken = AdminLogin(userInfo.UserName, context.IsAutoLogin);
             //var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 

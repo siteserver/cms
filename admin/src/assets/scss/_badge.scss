@@ -1,0 +1,56 @@
+/* ===========
+   Badge
+ =============*/
+.badge {
+  font-weight: 600;
+  padding: 3px 5px;
+  font-size: 12px;
+  margin-top: 1px;
+}
+
+.badge-xs {
+  font-size: 9px;
+}
+
+.badge-xs, .badge-sm {
+  -webkit-transform: translate(0, -2px);
+  -ms-transform: translate(0, -2px);
+  -o-transform: translate(0, -2px);
+  transform: translate(0, -2px);
+}
+
+.badge-primary {
+  background-color: $primary;
+}
+
+.badge-success {
+  background-color: $success;
+}
+
+.badge-info {
+  background-color: $info;
+}
+
+.badge-warning {
+  background-color: $warning;
+  color: $white;
+}
+
+.badge-danger {
+  background-color: $danger;
+}
+
+.badge-purple {
+  background-color: $purple;
+  color: $white;
+}
+
+.badge-pink {
+  background-color: $pink;
+  color: $white;
+}
+
+.badge-inverse {
+  background-color: $inverse;
+  color: $white;
+}

@@ -7,7 +7,7 @@ namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {
-        string GetSitePath(int siteId, string virtualPath);
+        Task<string> GetSitePathAsync(int siteId, string virtualPath);
 
         string MapPath(SiteInfo siteInfo, string virtualPath);
 
@@ -18,10 +18,6 @@ namespace SS.CMS.Services
         string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName);
 
         string GetUploadSpecialName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName);
-
-        
-
-        
 
         Task<string> GetChannelPageFilePathAsync(SiteInfo siteInfo, int channelId, int currentPageIndex);
 
@@ -47,7 +43,7 @@ namespace SS.CMS.Services
 
         string GetSitePath(SiteInfo siteInfo);
 
-        string GetSitePath(int siteId, params string[] paths);
+        Task<string> GetSitePathAsync(int siteId, params string[] paths);
 
         string GetSitePath(SiteInfo siteInfo, params string[] paths);
 
@@ -61,14 +57,14 @@ namespace SS.CMS.Services
 
         string GetUploadDirectoryPath(SiteInfo siteInfo, DateTime datetime, UploadType uploadType);
 
-        int GetSiteIdByFilePath(string path);
+        Task<int> GetSiteIdByFilePathAsync(string path);
 
-        string GetSitePath(int siteId);
+        Task<string> GetSitePathAsync(int siteId);
 
-        string GetUploadFilePath(int siteId, string fileName);
+        Task<string> GetUploadFilePathAsync(int siteId, string fileName);
 
-        SiteInfo GetSiteInfoByFilePath(string path);
+        Task<SiteInfo> GetSiteInfoByFilePathAsync(string path);
 
-        string GetSiteDirByFilePath(string path);
+        Task<string> GetSiteDirByFilePathAsync(string path);
     }
 }

@@ -1,0 +1,286 @@
+/* ===========
+   Wysiwig
+ =============*/
+.mce-content-body p {
+  color: #9398a0;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.mce-popover .mce-arrow:after {
+  border-bottom-color: red;
+}
+
+.mce-popover .mce-colorbutton-grid {
+  margin: 0;
+  border: 1px solid #d7dce5 !important;
+  padding: 4px;
+}
+
+.mce-reset .mce-window-head {
+  border-bottom: 1px solid #d7dce5;
+}
+
+.mce-reset .mce-window-head .mce-title {
+  color: #707780;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.mce-reset .mce-textbox {
+  border-radius: 0;
+  box-shadow: none;
+  outline: 0;
+  border-color: #d7dce5;
+  height: 30px;
+  font-weight: 300;
+  line-height: 30px;
+  color: #aaaaaa;
+  font-size: 14px;
+}
+
+.mce-reset .mce-textbox:focus {
+  box-shadow: none;
+  border-color: $primary;
+}
+
+.mce-reset .mce-checkbox .mce-ico {
+  background-image: none;
+  background-color: $white;
+  border-radius: 0;
+  border: 1px solid #d7dce5;
+}
+
+.mce-reset .mce-checkbox .mce-label {
+  color: #707780;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.mce-container {
+  border-radius: 0 !important;
+  border-width: 0 !important;
+}
+
+.mce-container .mce-menubar {
+  background-color: #f2f4f7 !important;
+  border: 1px solid #d7dce5 !important;
+  padding: 2px;
+}
+
+.mce-container .mce-menubar .mce-btn button span {
+  color: #707780;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.mce-container .mce-menubar .mce-btn button .mce-caret {
+  border-top-color: #707780;
+}
+
+.mce-container .mce-menubar .mce-btn button:hover {
+  background-color: #e8ebf1;
+}
+
+.mce-container .mce-menubar .mce-btn.mce-active button {
+  background-color: #e8ebf1;
+}
+
+.mce-container .mce-btn {
+  background-color: #d7dce5;
+  background-image: none;
+  outline: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.mce-container .mce-btn button {
+  color: $white;
+  font-size: 14px;
+  font-weight: 400;
+  text-shadow: none;
+}
+
+.mce-container .mce-btn:hover {
+  background-color: #b8c1d1;
+  background-image: none;
+}
+
+.mce-container .mce-primary {
+  background-color: $primary;
+  background-image: none;
+  outline: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.mce-container .mce-primary button {
+  color: $white;
+  font-size: 14px;
+  font-weight: 400;
+  text-shadow: none;
+}
+
+.mce-container .mce-primary:hover {
+  background-color: #0c7cd5;
+  background-image: none;
+}
+
+.mce-container .mce-toolbar-grp {
+  background-color: #f2f4f7 !important;
+  border: 1px solid #d7dce5 !important;
+  border-top-width: 0 !important;
+  padding: 6px;
+}
+
+.mce-container .mce-edit-area {
+  border: 1px solid #d7dce5 !important;
+  border-width: 0px 1px !important;
+}
+
+.mce-container .mce-statusbar {
+  background-color: #f2f4f7 !important;
+  border: 1px solid #d7dce5 !important;
+}
+
+.mce-container .mce-statusbar .mce-path .mce-path-item {
+  color: #707780;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.mce-container .mce-widget {
+  color: #9398a0;
+  font-size: 14px;
+  font-weight: 400;
+  border-left: 1px solid transparent;
+}
+
+.mce-container .mce-btn-group {
+  border: 1px solid #e9ecf2 !important;
+}
+
+.mce-container .mce-btn-group .mce-btn {
+  box-shadow: none;
+  background-image: none;
+  background-color: $white;
+  border-width: 0;
+  border-radius: 0 !important;
+}
+
+.mce-container .mce-btn-group .mce-btn:hover,
+.mce-container .mce-btn-group .mce-btn:focus {
+  box-shadow: none;
+  background-image: none;
+  background-color: $white;
+}
+
+.mce-container .mce-btn-group .mce-btn button span {
+  color: #707780;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.mce-container .mce-btn-group .mce-btn button .mce-caret {
+  color: #707780;
+  font-size: 14px;
+}
+
+.mce-container .mce-ico {
+  color: #707780;
+  font-size: 14px;
+}
+
+.mce-container .mce-panel {
+  background-image: none;
+}
+
+.mce-container.mce-menu {
+  border: 1px solid #d7dce5 !important;
+}
+
+.mce-container.mce-menu .mce-menu-item {
+  background-image: none;
+}
+
+.mce-container.mce-menu .mce-menu-item .mce-ico {
+  color: $primary;
+  font-size: 14px;
+}
+
+.mce-container.mce-menu .mce-menu-item .mce-text {
+  color: #707780;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.mce-container.mce-menu .mce-menu-item .mce-menu-shortcut {
+  color: #aaaaaa;
+  font-size: 12px;
+  font-weight: 300;
+  text-transform: capitalize;
+}
+
+.mce-container.mce-menu .mce-menu-item:hover,
+.mce-container.mce-menu .mce-menu-item:focus,
+.mce-container.mce-menu .mce-menu-item.mce-selected {
+  background-color: $primary;
+}
+
+.mce-container.mce-menu .mce-menu-item:hover .mce-ico,
+.mce-container.mce-menu .mce-menu-item:focus .mce-ico,
+.mce-container.mce-menu .mce-menu-item.mce-selected .mce-ico,
+.mce-container.mce-menu .mce-menu-item:hover .mce-text,
+.mce-container.mce-menu .mce-menu-item:focus .mce-text,
+.mce-container.mce-menu .mce-menu-item.mce-selected .mce-text,
+.mce-container.mce-menu .mce-menu-item:hover .mce-menu-shortcut,
+.mce-container.mce-menu .mce-menu-item:focus .mce-menu-shortcut,
+.mce-container.mce-menu .mce-menu-item.mce-selected .mce-menu-shortcut {
+  color: $white;
+}
+
+.mce-container.mce-menu .mce-menu-item.mce-disabled .mce-ico,
+.mce-container.mce-menu .mce-menu-item.mce-disabled .mce-text,
+.mce-container.mce-menu .mce-menu-item.mce-disabled .mce-menu-shortcut {
+  color: #aaaaaa;
+}
+
+.mce-container.mce-menu .mce-menu-item.mce-disabled:hover,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:focus,
+.mce-container.mce-menu .mce-menu-item.mce-disabled.mce-selected {
+  background-color: #d7dce5;
+}
+
+.mce-container.mce-menu .mce-menu-item.mce-disabled:hover .mce-ico,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:focus .mce-ico,
+.mce-container.mce-menu .mce-menu-item.mce-disabled.mce-selected .mce-ico,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:hover .mce-text,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:focus .mce-text,
+.mce-container.mce-menu .mce-menu-item.mce-disabled.mce-selected .mce-text,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:hover .mce-menu-shortcut,
+.mce-container.mce-menu .mce-menu-item.mce-disabled:focus .mce-menu-shortcut,
+.mce-container.mce-menu .mce-menu-item.mce-disabled.mce-selected .mce-menu-shortcut {
+  color: $white;
+}
+
+.mce-container.mce-menu .mce-menu-item-sep {
+  background-color: #d7dce5;
+}
+
+.mce-container.mce-menu .mce-menu-item-sep:hover {
+  background-color: #d7dce5;
+}
+
+.mce-menubtn button {
+  color: $lightdark7 !important;
+}
+
+.mce-menu-item-normal.mce-active {
+  background-color: $primary !important;
+
+  .mce-text {
+    color: $white !important;
+  }
+}

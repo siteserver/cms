@@ -1,0 +1,190 @@
+/* =============
+   Charts
+============= */
+
+.morris-hover.morris-default-style {
+  border-radius: 5px;
+  padding: 10px 12px;
+  background: #36404a;
+  border: none;
+  color: $white !important;
+
+}
+
+.chart-detail-list {
+  li {
+    margin: 0 10px;
+
+    h5 {
+      font-size: 15px;
+    }
+  }
+}
+
+.pieLabel {
+  div {
+    font-size: 14px !important;
+  }
+}
+
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.chart {
+  position: relative;
+  display: inline-block;
+  width: 110px;
+  height: 110px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+.chart.chart-widget-pie {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.percent {
+  display: inline-block;
+  line-height: 110px;
+  z-index: 2;
+  font-weight: 600;
+  font-size: 18px;
+  color: $lightdark7;
+
+  &:after {
+    content: '%';
+    margin-left: 0.1em;
+    font-size: .8em;
+  }
+}
+
+/* Flot chart */
+#flotTip {
+  padding: 8px 12px;
+  background-color: #36404a;
+  z-index: 100;
+  color: #ffffff;
+  opacity: 0.9;
+  font-size: 13px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.legend {
+  tr {
+    height: 20px;
+  }
+}
+
+.legendLabel {
+  padding-left: 10px !important;
+  line-height: 10px;
+  padding-right: 10px;
+}
+
+
+/* Chartist chart */
+.ct-golden-section:before {
+  float: none;
+}
+
+.ct-chart {
+
+  max-height: 300px;
+
+  .ct-label {
+    fill: #a3afb7;
+    color: #a3afb7;
+    font-size: 12px;
+    line-height: 1;
+  }
+}
+
+.ct-chart.simple-pie-chart-chartist {
+  .ct-label {
+    color: $white;
+    fill: $white;
+    font-size: 16px;
+  }
+}
+
+.ct-chart .ct-series.ct-series-a .ct-bar, .ct-chart .ct-series.ct-series-a .ct-line, .ct-chart .ct-series.ct-series-a .ct-point, .ct-chart .ct-series.ct-series-a .ct-slice-donut {
+  stroke: $primary;
+}
+
+.ct-chart .ct-series.ct-series-b .ct-bar, .ct-chart .ct-series.ct-series-b .ct-line, .ct-chart .ct-series.ct-series-b .ct-point, .ct-chart .ct-series.ct-series-b .ct-slice-donut {
+  stroke: $pink;
+}
+
+.ct-chart .ct-series.ct-series-c .ct-bar, .ct-chart .ct-series.ct-series-c .ct-line, .ct-chart .ct-series.ct-series-c .ct-point, .ct-chart .ct-series.ct-series-c .ct-slice-donut {
+  stroke: $success;
+}
+
+.ct-chart .ct-series.ct-series-d .ct-bar, .ct-chart .ct-series.ct-series-d .ct-line, .ct-chart .ct-series.ct-series-d .ct-point, .ct-chart .ct-series.ct-series-d .ct-slice-donut {
+  stroke: $info;
+}
+
+.ct-chart .ct-series.ct-series-e .ct-bar, .ct-chart .ct-series.ct-series-e .ct-line, .ct-chart .ct-series.ct-series-e .ct-point, .ct-chart .ct-series.ct-series-e .ct-slice-donut {
+  stroke: $lightdark7;
+}
+
+.ct-chart .ct-series.ct-series-f .ct-bar, .ct-chart .ct-series.ct-series-f .ct-line, .ct-chart .ct-series.ct-series-f .ct-point, .ct-chart .ct-series.ct-series-f .ct-slice-donut {
+  stroke: $purple;
+}
+
+.ct-chart .ct-series.ct-series-g .ct-bar, .ct-chart .ct-series.ct-series-g .ct-line, .ct-chart .ct-series.ct-series-g .ct-point, .ct-chart .ct-series.ct-series-g .ct-slice-donut {
+  stroke: $warning;
+}
+
+.ct-series-a .ct-area, .ct-series-a .ct-slice-pie {
+  fill: $primary;
+}
+
+.ct-series-b .ct-area, .ct-series-b .ct-slice-pie {
+  fill: $pink;
+}
+
+.ct-series-c .ct-area, .ct-series-c .ct-slice-pie {
+  fill: $success;
+}
+
+.ct-series-d .ct-area, .ct-series-d .ct-slice-pie {
+  fill: $info;
+}
+
+/* Sparkline chart */
+.jqstooltip {
+  background-color: $dark !important;
+  padding: 5px 10px !important;
+  border-radius: 3px;
+  border-color: $dark !important;
+}
+
+.jqsfield {
+  font-size: 12px !important;
+  line-height: 18px !important;
+}
+
+/* Circliful charts */
+.circliful-chart {
+  margin: 0 auto;
+}
+
+.circle-text,
+.circle-info,
+.circle-text-half,
+.circle-info-half {
+  font-size: 12px;
+  font-weight: 600;
+}

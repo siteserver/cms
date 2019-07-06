@@ -14,12 +14,6 @@ namespace SS.CMS.Data
 {
     public class Database : IDatabase
     {
-        public DatabaseType DatabaseType { get; }
-
-        public string ConnectionString { get; }
-
-        public string DatabaseName => Utilities.GetConnectionStringDatabase(ConnectionString);
-
         public Database(DatabaseType databaseType, string connectionString)
         {
             if (databaseType == null || connectionString == null) return;
@@ -60,69 +54,39 @@ namespace SS.CMS.Data
             ConnectionString = connectionString;
         }
 
-        public bool IsTableExists(string tableName)
+        public DatabaseType DatabaseType { get; }
+
+        public string ConnectionString { get; }
+
+        public string DatabaseName => Utilities.GetConnectionStringDatabase(ConnectionString);
+
+        public DbConnection GetConnection()
         {
-            bool exists;
+            if (string.IsNullOrWhiteSpace(ConnectionString)) return null;
 
-            if (DatabaseType == DatabaseType.Oracle)
+            DbConnection conn = null;
+            if (DatabaseType == DatabaseType.MySql)
             {
-                tableName = tableName.ToUpper();
+                conn = MySqlImpl.Instance.GetConnection(ConnectionString);
             }
-            else if (DatabaseType == DatabaseType.MySql || DatabaseType == DatabaseType.PostgreSql)
+            else if (DatabaseType == DatabaseType.SqlServer)
             {
-                tableName = tableName.ToLower();
+                conn = SqlServerImpl.Instance.GetConnection(ConnectionString);
             }
-
-            try
+            else if (DatabaseType == DatabaseType.PostgreSql)
             {
-                if (DatabaseType == DatabaseType.Oracle)
-                {
-                    var userName = Utilities.GetConnectionStringUserName(ConnectionString);
-                    var sql = $"SELECT COUNT(*) FROM ALL_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = '{userName.ToUpper()}' and OBJECT_NAME = '{tableName}'";
-
-                    using (var connection = GetConnection())
-                    {
-                        exists = connection.ExecuteScalar<int>(sql) == 1;
-                    }
-
-                }
-                else if (DatabaseType == DatabaseType.SQLite)
-                {
-                    var sql = $"SELECT count(*) FROM sqlite_master WHERE type='table' AND name='{tableName}'";
-
-                    using (var connection = GetConnection())
-                    {
-                        exists = connection.ExecuteScalar<int>(sql) == 1;
-                    }
-                }
-                else // ANSI SQL way.  Works in PostgreSQL, MSSQL, MySQL.  
-                {
-                    var sql = $"select case when exists((select * from information_schema.tables where table_name = '{tableName}')) then 1 else 0 end";
-
-                    using (var connection = GetConnection())
-                    {
-                        exists = connection.ExecuteScalar<int>(sql) == 1;
-                    }
-                }
+                conn = PostgreSqlImpl.Instance.GetConnection(ConnectionString);
             }
-            catch
+            else if (DatabaseType == DatabaseType.Oracle)
             {
-                try
-                {
-                    var sql = $"select 1 from {tableName} where 1 = 0";
-
-                    using (var connection = GetConnection())
-                    {
-                        exists = connection.ExecuteScalar<int>(sql) == 1;
-                    }
-                }
-                catch
-                {
-                    exists = false;
-                }
+                conn = OracleImpl.Instance.GetConnection(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.SQLite)
+            {
+                conn = SQLiteImpl.Instance.GetConnection(ConnectionString);
             }
 
-            return exists;
+            return conn;
         }
 
         public async Task<bool> IsTableExistsAsync(string tableName)
@@ -189,18 +153,20 @@ namespace SS.CMS.Data
             return exists;
         }
 
-        public async Task<(bool IsConnectionWorks, string ErrorMessage)> IsConnectionWorksAsync()
+        public (bool IsConnectionWorks, string ErrorMessage) IsConnectionWorks()
         {
             var retval = false;
             var errorMessage = string.Empty;
             try
             {
-                var connection = GetConnection();
-                await connection.OpenAsync();
-                if (connection.State == ConnectionState.Open)
+                using (var connection = GetConnection())
                 {
-                    retval = true;
-                    connection.Close();
+                    connection.Open();
+                    if (connection.State == ConnectionState.Open)
+                    {
+                        retval = true;
+                        connection.Close();
+                    }
                 }
             }
             catch (Exception ex)
@@ -211,16 +177,23 @@ namespace SS.CMS.Data
             return (retval, errorMessage);
         }
 
-        public string AddIdentityColumnIdIfNotExists(string tableName, List<TableColumn> columns)
+        public async Task<string> AddIdentityColumnIdIfNotExistsAsync(string tableName, IList<TableColumn> columns)
         {
             var identityColumnName = string.Empty;
-            foreach (var column in columns)
+            if (columns != null)
             {
-                if (column.IsIdentity || Utilities.EqualsIgnoreCase(column.AttributeName, "id"))
+                foreach (var column in columns)
                 {
-                    identityColumnName = column.AttributeName;
-                    break;
+                    if (column.IsIdentity || Utilities.EqualsIgnoreCase(column.AttributeName, "id"))
+                    {
+                        identityColumnName = column.AttributeName;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                columns = new List<TableColumn>();
             }
 
             if (string.IsNullOrEmpty(identityColumnName))
@@ -231,7 +204,7 @@ namespace SS.CMS.Data
 
                 using (var connection = GetConnection())
                 {
-                    connection.Execute(sqlString);
+                    await connection.ExecuteAsync(sqlString);
                 }
 
                 columns.Insert(0, new TableColumn
@@ -246,11 +219,11 @@ namespace SS.CMS.Data
             return identityColumnName;
         }
 
-        public void AlterTable(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null)
+        public async Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null)
         {
             var list = new List<string>();
 
-            var columnNameList = GetColumnNames(tableName);
+            var columnNameList = await GetColumnNamesAsync(tableName);
             foreach (var tableColumn in tableColumns)
             {
                 if (!Utilities.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
@@ -281,135 +254,7 @@ namespace SS.CMS.Data
             }
         }
 
-        public async Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null)
-        {
-            var list = new List<string>();
-
-            var columnNameList = GetColumnNames(tableName);
-            foreach (var tableColumn in tableColumns)
-            {
-                if (!Utilities.ContainsIgnoreCase(columnNameList, tableColumn.AttributeName))
-                {
-                    list.Add(DbUtils.GetAddColumnsSqlString(DatabaseType, tableName, DbUtils.GetColumnSqlString(DatabaseType, tableColumn)));
-                }
-            }
-
-            if (dropColumnNames != null)
-            {
-                foreach (var columnName in columnNameList)
-                {
-                    if (Utilities.ContainsIgnoreCase(dropColumnNames, columnName))
-                    {
-                        list.Add(DbUtils.GetDropColumnsSqlString(DatabaseType, tableName, columnName));
-                    }
-                }
-            }
-
-            if (list.Count <= 0) return;
-
-            foreach (var sqlString in list)
-            {
-                using (var connection = GetConnection())
-                {
-                    await connection.ExecuteAsync(sqlString);
-                }
-            }
-        }
-
-        public void CreateTable(string tableName, List<TableColumn> tableColumns)
-        {
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append($@"CREATE TABLE {DbUtils.GetQuotedIdentifier(DatabaseType, tableName)} (").AppendLine();
-
-            var primaryKeyColumns = new List<TableColumn>();
-            TableColumn identityColumn = null;
-
-            foreach (var tableColumn in tableColumns)
-            {
-                if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id)))
-                {
-                    tableColumn.DataType = DataType.Integer;
-                    tableColumn.IsIdentity = true;
-                    tableColumn.IsPrimaryKey = true;
-                }
-                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Guid)))
-                {
-                    tableColumn.DataType = DataType.VarChar;
-                    tableColumn.DataLength = 50;
-                }
-                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.CreatedDate)))
-                {
-                    tableColumn.DataType = DataType.DateTime;
-                }
-                else if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.LastModifiedDate)))
-                {
-                    tableColumn.DataType = DataType.DateTime;
-                }
-            }
-
-            foreach (var tableColumn in tableColumns)
-            {
-                if (string.IsNullOrEmpty(tableColumn.AttributeName)) continue;
-
-                if (tableColumn.IsIdentity)
-                {
-                    identityColumn = tableColumn;
-                }
-
-                if (tableColumn.IsPrimaryKey)
-                {
-                    primaryKeyColumns.Add(tableColumn);
-                }
-
-                if (tableColumn.DataType == DataType.VarChar && tableColumn.DataLength == 0)
-                {
-                    tableColumn.DataLength = DbUtils.VarCharDefaultLength;
-                }
-
-                var columnSql = DbUtils.GetColumnSqlString(DatabaseType, tableColumn);
-                if (!string.IsNullOrEmpty(columnSql))
-                {
-                    sqlBuilder.Append(columnSql).Append(",");
-                }
-            }
-
-            if (DatabaseType != DatabaseType.SQLite)
-            {
-                if (identityColumn != null)
-                {
-                    var primaryKeySql = DbUtils.GetPrimaryKeySqlString(DatabaseType, tableName, identityColumn.AttributeName);
-                    if (!string.IsNullOrEmpty(primaryKeySql))
-                    {
-                        sqlBuilder.Append(primaryKeySql).Append(",");
-                    }
-                }
-                else if (primaryKeyColumns.Count > 0)
-                {
-                    foreach (var tableColumn in primaryKeyColumns)
-                    {
-                        var primaryKeySql = DbUtils.GetPrimaryKeySqlString(DatabaseType, tableName, tableColumn.AttributeName);
-                        if (!string.IsNullOrEmpty(primaryKeySql))
-                        {
-                            sqlBuilder.Append(primaryKeySql).Append(",");
-                        }
-                    }
-                }
-            }
-
-            sqlBuilder.Length--;
-
-            sqlBuilder.AppendLine().Append(DatabaseType == DatabaseType.MySql
-                ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-                : ")");
-
-            using (var connection = GetConnection())
-            {
-                connection.Execute(sqlBuilder.ToString());
-            }
-        }
-
-        public async Task CreateTableAsync(string tableName, List<TableColumn> tableColumns)
+        public async Task CreateTableAsync(string tableName, IList<TableColumn> tableColumns)
         {
             var sqlBuilder = new StringBuilder();
 
@@ -502,32 +347,6 @@ namespace SS.CMS.Data
             }
         }
 
-        public void CreateIndex(string tableName, string indexName, params string[] columns)
-        {
-            var sqlString = new StringBuilder($@"CREATE INDEX {DbUtils.GetQuotedIdentifier(DatabaseType, indexName)} ON {DbUtils.GetQuotedIdentifier(DatabaseType, tableName)}(");
-
-            foreach (var column in columns)
-            {
-                var columnName = column;
-                var columnOrder = "ASC";
-                var i = column.IndexOf(" ", StringComparison.Ordinal);
-                if (i != -1)
-                {
-                    columnName = column.Substring(0, i);
-                    columnOrder = column.Substring(i + 1);
-                }
-                sqlString.Append($"{DbUtils.GetQuotedIdentifier(DatabaseType, columnName)} {columnOrder}, ");
-            }
-
-            sqlString.Length--;
-            sqlString.Append(")");
-
-            using (var connection = GetConnection())
-            {
-                connection.Execute(sqlString.ToString());
-            }
-        }
-
         public async Task CreateIndexAsync(string tableName, string indexName, params string[] columns)
         {
             var sqlString = new StringBuilder($@"CREATE INDEX {DbUtils.GetQuotedIdentifier(DatabaseType, indexName)} ON {DbUtils.GetQuotedIdentifier(DatabaseType, tableName)}(");
@@ -554,9 +373,9 @@ namespace SS.CMS.Data
             }
         }
 
-        public List<string> GetColumnNames(string tableName)
+        public async Task<List<string>> GetColumnNamesAsync(string tableName)
         {
-            var allTableColumnInfoList = GetTableColumns(tableName);
+            var allTableColumnInfoList = await GetTableColumnsAsync(tableName);
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
@@ -570,14 +389,6 @@ namespace SS.CMS.Data
             return ReflectionUtils.GetTableColumns(typeof(T));
         }
 
-        public void DropTable(string tableName)
-        {
-            using (var connection = GetConnection())
-            {
-                connection.Execute($"DROP TABLE {DbUtils.GetQuotedIdentifier(DatabaseType, tableName)}");
-            }
-        }
-
         public async Task DropTableAsync(string tableName)
         {
             using (var connection = GetConnection())
@@ -586,86 +397,85 @@ namespace SS.CMS.Data
             }
         }
 
-        public DbConnection GetConnection()
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string tableName)
         {
-            if (string.IsNullOrWhiteSpace(ConnectionString)) return null;
-
-            DbConnection conn = null;
-            if (DatabaseType == DatabaseType.MySql)
-            {
-                conn = MySqlImpl.Instance.GetConnection(ConnectionString);
-            }
-            else if (DatabaseType == DatabaseType.SqlServer)
-            {
-                conn = SqlServerImpl.Instance.GetConnection(ConnectionString);
-            }
-            else if (DatabaseType == DatabaseType.PostgreSql)
-            {
-                conn = PostgreSqlImpl.Instance.GetConnection(ConnectionString);
-            }
-            else if (DatabaseType == DatabaseType.Oracle)
-            {
-                conn = OracleImpl.Instance.GetConnection(ConnectionString);
-            }
-            else if (DatabaseType == DatabaseType.SQLite)
-            {
-                conn = SQLiteImpl.Instance.GetConnection(ConnectionString);
-            }
-
-            return conn;
-        }
-
-        public List<TableColumn> GetTableColumns(string tableName)
-        {
-            List<TableColumn> list = null;
+            IList<TableColumn> list = null;
 
             if (DatabaseType == DatabaseType.MySql)
             {
-                list = MySqlImpl.Instance.GetTableColumns(ConnectionString, tableName);
+                list = await MySqlImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
-                list = SqlServerImpl.Instance.GetTableColumns(ConnectionString, tableName);
+                list = await SqlServerImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.PostgreSql)
             {
-                list = PostgreSqlImpl.Instance.GetTableColumns(ConnectionString, tableName);
+                list = await PostgreSqlImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.Oracle)
             {
-                list = OracleImpl.Instance.GetTableColumns(ConnectionString, tableName);
+                list = await OracleImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
             else if (DatabaseType == DatabaseType.SQLite)
             {
-                list = SQLiteImpl.Instance.GetTableColumns(ConnectionString, tableName);
+                list = await SQLiteImpl.Instance.GetTableColumnsAsync(ConnectionString, tableName);
             }
 
             return list;
         }
 
-        public List<string> GetTableNames()
+        public async Task<IList<string>> GetDatabaseNamesAsync()
         {
-            List<string> tableNames = null;
+            IList<string> tableNames = null;
 
             if (DatabaseType == DatabaseType.MySql)
             {
-                tableNames = MySqlImpl.Instance.GetTableNames(ConnectionString);
+                tableNames = await MySqlImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
             else if (DatabaseType == DatabaseType.SqlServer)
             {
-                tableNames = SqlServerImpl.Instance.GetTableNames(ConnectionString);
+                tableNames = await SqlServerImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
             else if (DatabaseType == DatabaseType.PostgreSql)
             {
-                tableNames = PostgreSqlImpl.Instance.GetTableNames(ConnectionString);
+                tableNames = await PostgreSqlImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
             else if (DatabaseType == DatabaseType.Oracle)
             {
-                tableNames = OracleImpl.Instance.GetTableNames(ConnectionString);
+                tableNames = await OracleImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
             }
             else if (DatabaseType == DatabaseType.SQLite)
             {
-                tableNames = SQLiteImpl.Instance.GetTableNames(ConnectionString);
+                tableNames = await SQLiteImpl.Instance.GetDatabaseNamesAsync(ConnectionString);
+            }
+
+            return tableNames;
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync()
+        {
+            IList<string> tableNames = null;
+
+            if (DatabaseType == DatabaseType.MySql)
+            {
+                tableNames = await MySqlImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.SqlServer)
+            {
+                tableNames = await SqlServerImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.PostgreSql)
+            {
+                tableNames = await PostgreSqlImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.Oracle)
+            {
+                tableNames = await OracleImpl.Instance.GetTableNamesAsync(ConnectionString);
+            }
+            else if (DatabaseType == DatabaseType.SQLite)
+            {
+                tableNames = await SQLiteImpl.Instance.GetTableNamesAsync(ConnectionString);
             }
 
             return tableNames;

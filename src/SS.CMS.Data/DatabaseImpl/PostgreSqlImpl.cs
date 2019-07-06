@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 using SqlKata.Compilers;
@@ -40,21 +41,40 @@ namespace SS.CMS.Data.DatabaseImpl
             return false;
         }
 
-        public List<string> GetTableNames(string connectionString)
+        public async Task<IList<string>> GetDatabaseNamesAsync(string connectionString)
         {
-            IEnumerable<string> tableNames;
+            var databaseNames = new List<string>();
+
+            using (var connection = GetConnection(connectionString))
+            {
+                using (var rdr = await connection.ExecuteReaderAsync("select datname from pg_database where datistemplate = false order by datname asc"))
+                {
+                    while (rdr.Read())
+                    {
+                        var dbName = rdr["datname"] as string;
+                        if (dbName == null) continue;
+
+                        databaseNames.Add(dbName);
+                    }
+                }
+            }
+
+            return databaseNames;
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames = null;
 
             using (var connection = GetConnection(connectionString))
             {
                 var sqlString =
                     $"SELECT table_name FROM information_schema.tables WHERE table_catalog = '{connection.Database}' AND table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')";
 
-                if (string.IsNullOrEmpty(sqlString)) return new List<string>();
-
-                tableNames = connection.Query<string>(sqlString);
+                tableNames = await connection.QueryAsync<string>(sqlString);
             }
 
-            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
         }
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
@@ -149,7 +169,7 @@ namespace SS.CMS.Data.DatabaseImpl
             return dataType;
         }
 
-        public List<TableColumn> GetTableColumns(string connectionString, string tableName)
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -158,7 +178,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 var sqlString =
                    $"SELECT COLUMN_NAME AS ColumnName, UDT_NAME AS UdtName, CHARACTER_MAXIMUM_LENGTH AS CharacterMaximumLength, COLUMN_DEFAULT AS ColumnDefault FROM information_schema.columns WHERE table_catalog = '{connection.Database}' AND table_name = '{tableName.ToLower()}' ORDER BY ordinal_position";
 
-                var columns = connection.Query<dynamic>(sqlString);
+                var columns = await connection.QueryAsync<dynamic>(sqlString);
                 foreach (var column in columns)
                 {
                     var columnName = column.ColumnName;

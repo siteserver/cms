@@ -21,8 +21,7 @@
 </template>
 
 <script>
-import { fetchInfo } from '@/api/cms'
-import { parseTime } from '@/utils'
+import { getInfo } from '@/api/cms'
 
 export default {
   name: 'Info',
@@ -36,10 +35,14 @@ export default {
   },
   methods: {
     getInfo() {
-      fetchInfo().then(response => {
+      getInfo().then(response => {
         this.tableData.push({
-          name: this.$t('tools.info.serverName'),
-          value: response.serverName
+          name: this.$t('tools.info.apiUrl'),
+          value: response.apiUrl
+        })
+        this.tableData.push({
+          name: this.$t('tools.info.apiServerName'),
+          value: response.apiServerName
         })
         this.tableData.push({
           name: this.$t('tools.info.contentRootPath'),
@@ -48,10 +51,6 @@ export default {
         this.tableData.push({
           name: this.$t('tools.info.webRootPath'),
           value: response.webRootPath
-        })
-        this.tableData.push({
-          name: this.$t('tools.info.adminHostName'),
-          value: response.adminHostName
         })
         this.tableData.push({
           name: this.$t('tools.info.remoteIpAddress'),
@@ -68,10 +67,6 @@ export default {
         this.tableData.push({
           name: this.$t('tools.info.pluginVersion'),
           value: response.pluginVersion
-        })
-        this.tableData.push({
-          name: this.$t('tools.info.updateDate'),
-          value: parseTime(response.updateDate)
         })
         this.tableData.push({
           name: this.$t('tools.info.databaseType'),

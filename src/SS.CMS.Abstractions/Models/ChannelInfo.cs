@@ -5,6 +5,7 @@ using SS.CMS.Repositories.IContentRepository;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_Channel")]
     public class ChannelInfo : Entity, ICloneable
     {

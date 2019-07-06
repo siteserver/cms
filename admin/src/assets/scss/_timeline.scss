@@ -1,0 +1,259 @@
+/* ===========
+  Timeline
+ =============*/
+
+.timeline {
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: table;
+  margin-bottom: 50px;
+  position: relative;
+  table-layout: fixed;
+  width: 100%;
+
+  .time-show {
+    margin-bottom: 30px;
+    margin-right: -75px;
+    margin-top: 30px;
+    position: relative;
+    a {
+      color: $white;
+    }
+  }
+  &:before {
+    background-color: #d8d9df;
+    bottom: 0;
+    content: "";
+    left: 50%;
+    position: absolute;
+    top: 30px;
+    width: 1px;
+    z-index: 0;
+  }
+  .timeline-icon {
+    -webkit-border-radius: 50%;
+    background: #d8d9df;
+    border-radius: 50%;
+    border: 1px solid #d8d9df;
+    color: $white;
+    display: block;
+    height: 20px;
+    left: -54px;
+    margin-top: -10px;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 20px;
+    i {
+      margin-top: 9px;
+    }
+  }
+  .time-icon {
+    &:before {
+      font-size: 16px;
+      margin-top: 5px;
+    }
+  }
+
+}
+
+h3.timeline-title {
+  color: #c8ccd7;
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.timeline-item {
+  display: table-row;
+  &:before {
+    content: "";
+    display: block;
+    width: 50%;
+  }
+  .timeline-desk {
+    .arrow {
+      border-bottom: 8px solid transparent;
+      border-right: 8px solid $white !important;
+      border-top: 8px solid transparent;
+      display: block;
+      height: 0;
+      left: -7px;
+      margin-top: -10px;
+      position: absolute;
+      top: 50%;
+      width: 0;
+    }
+  }
+}
+
+.timeline-item.alt {
+  &:after {
+    content: "";
+    display: block;
+    width: 50%;
+  }
+  .timeline-desk {
+    .arrow-alt {
+      border-bottom: 8px solid transparent;
+      border-left: 8px solid $white !important;
+      border-top: 8px solid transparent;
+      display: block;
+      height: 0;
+      left: auto;
+      margin-top: -10px;
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      width: 0;
+    }
+    .album {
+      float: right;
+      margin-top: 20px;
+      a {
+        float: right;
+        margin-left: 5px;
+      }
+    }
+  }
+  .timeline-icon {
+    left: auto;
+    right: -56px;
+  }
+  &:before {
+    display: none;
+  }
+  .panel {
+    margin-left: 0;
+    margin-right: 45px;
+    .panel-body p + p {
+      margin-top: 10px !important;
+    }
+  }
+  h4 {
+    text-align: right;
+  }
+  p {
+    text-align: right;
+  }
+  .timeline-date {
+    text-align: right;
+  }
+}
+
+.timeline-desk {
+  display: table-cell;
+  vertical-align: top;
+  width: 50%;
+  h4 {
+    font-size: 16px;
+    margin: 0;
+  }
+  .panel {
+    background: $white;
+    display: block;
+    margin-bottom: 5px;
+    margin-left: 45px;
+    position: relative;
+    text-align: left;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  h5 {
+    span {
+      color: $lightdark7;
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+  }
+  p {
+    color: #999999;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  .album {
+    margin-top: 12px;
+    a {
+      float: left;
+      margin-right: 5px;
+    }
+
+    img {
+      height: 36px;
+      width: auto;
+      border-radius: 3px;
+    }
+  }
+  .notification {
+    background: none repeat scroll 0 0 $white;
+    margin-top: 20px;
+    padding: 8px;
+  }
+}
+
+/* ===========
+   Timeline-2
+ =============*/
+.timeline-2 {
+  border-left: 2px solid $primary;
+  position: relative;
+  .time-item {
+    &:after {
+      background-color: $white;
+      border-color: $primary;
+      border-radius: 10px;
+      border-style: solid;
+      border-width: 2px;
+      bottom: 0;
+      content: '';
+      height: 10px;
+      left: 0;
+      margin-left: -6px;
+      position: absolute;
+      top: 5px;
+      width: 10px;
+    }
+  }
+}
+
+.time-item {
+  border-color: #dee5e7;
+  padding-bottom: 10px;
+  position: relative;
+  &:before {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    background-color: $white;
+    border-color: $primary;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 2px;
+    bottom: 0;
+    content: '';
+    height: 14px;
+    left: 0;
+    margin-left: -8px;
+    position: absolute;
+    top: 5px;
+    width: 14px;
+  }
+}
+
+.time-item-item {
+  &:after {
+    content: " ";
+    display: table;
+  }
+}
+
+.item-info {
+  margin-bottom: 15px;
+  margin-left: 15px;
+  p {
+    font-size: 13px;
+  }
+}

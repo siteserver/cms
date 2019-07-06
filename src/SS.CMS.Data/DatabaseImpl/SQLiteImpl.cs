@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Dapper;
 using SqlKata.Compilers;
 using SS.CMS.Data.Utils;
@@ -40,20 +41,23 @@ namespace SS.CMS.Data.DatabaseImpl
             return false;
         }
 
-        public List<string> GetTableNames(string connectionString)
+        public async Task<IList<string>> GetDatabaseNamesAsync(string connectionString)
         {
-            IEnumerable<string> tableNames;
+            return await Task.FromResult<IList<string>>(new List<string>());
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames = null;
 
             using (var connection = GetConnection(connectionString))
             {
                 var sqlString = "SELECT name FROM sqlite_master WHERE type='table'";
 
-                if (string.IsNullOrEmpty(sqlString)) return new List<string>();
-
-                tableNames = connection.Query<string>(sqlString);
+                tableNames = await connection.QueryAsync<string>(sqlString);
             }
 
-            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
         }
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
@@ -151,7 +155,7 @@ namespace SS.CMS.Data.DatabaseImpl
             return dataType;
         }
 
-        public List<TableColumn> GetTableColumns(string connectionString, string tableName)
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -160,7 +164,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 var sqlString =
                     $"PRAGMA table_info('{tableName}')";
 
-                IEnumerable<dynamic> columns = connection.Query<dynamic>(sqlString);
+                IEnumerable<dynamic> columns = await connection.QueryAsync<dynamic>(sqlString);
 
                 foreach (var column in columns)
                 {

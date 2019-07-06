@@ -45,6 +45,10 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 
+import VeeValidate from 'vee-validate'
+
+Vue.use(VeeValidate)
+
 new Vue({
   el: '#app',
   router,

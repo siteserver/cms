@@ -198,7 +198,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentAdd(siteId, channelIdList, begin, end, userName, checkedState);
         }
@@ -223,7 +223,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(siteId, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
             return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userName);
         }

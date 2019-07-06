@@ -4,7 +4,7 @@
     {
         public const string ConfigFileName = "ss.json";
         public const string ApplicationPath = "/";
-        public const string ApiUrl = "/api";
+        public const string ApiPrefix = "/api";
         public const string DefaultLanguage = "en";
         public const string CookieAdminToken = "SS-ADMIN-TOKEN";
         public const string CookieUserToken = "SS-USER-TOKEN";

@@ -131,7 +131,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
 
             var target = "";
 
@@ -144,7 +144,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isLastNodeArray = new bool[theChannelIdList.Count];
             var channelIdList = new List<int>();
 
-            var currentChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.PageChannelId);
+            var currentChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.PageChannelId);
             if (currentChannelInfo != null)
             {
                 channelIdList = TranslateUtils.StringCollectionToIntList(currentChannelInfo.ParentsPath);
@@ -153,7 +153,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var theChannelId in theChannelIdList)
             {
-                var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, theChannelId);
+                var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
                 var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == parseContext.SiteId && !string.IsNullOrEmpty(title))
                 {
@@ -581,7 +581,7 @@ var stltree_isNodeTree = {isNodeTree};
 
             channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
 
             var target = "";
 
@@ -594,7 +594,7 @@ var stltree_isNodeTree = {isNodeTree};
 
             foreach (var theChannelId in theChannelIdList)
             {
-                var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, theChannelId);
+                var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
                 var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
                 if (theChannelId == parseContext.SiteId && !string.IsNullOrEmpty(title))
                 {
@@ -941,7 +941,7 @@ function loadingChannelsOnLoad(path){{
             {
                 if (currentChannelId == 0 || currentChannelId == siteId || currentChannelId == topChannelId)
                     return string.Empty;
-                var nodeInfo = await channelRepository.GetChannelInfoAsync(siteId, currentChannelId);
+                var nodeInfo = await channelRepository.GetChannelInfoAsync(currentChannelId);
                 if (nodeInfo != null)
                 {
                     string path;

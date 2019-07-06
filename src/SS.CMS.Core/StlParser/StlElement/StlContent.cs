@@ -213,12 +213,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     var targetChannelId = contentInfo.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
-                    var targetSiteId = parseContext.ChannelRepository.StlGetSiteId(targetChannelId);
-                    var targetSiteInfo = parseContext.SiteRepository.GetSiteInfo(targetSiteId);
-                    var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetSiteId, targetChannelId);
+                    var targetSiteId = await parseContext.ChannelRepository.GetSiteIdAsync(targetChannelId);
+                    var targetSiteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(targetSiteId);
+                    var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
 
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(targetSiteInfo, targetNodeInfo, contentInfo.ReferenceId);
+                    var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -245,11 +245,11 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, contentInfo.ChannelId);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.ChannelId);
                     var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(nodeInfo);
                     var tableName = await parseContext.ChannelRepository.GetTableNameAsync(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
 
-                    var styleInfo = parseContext.TableManager.GetTableStyleInfo(tableName, type, relatedIdentities);
+                    var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
                     parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, contentInfo.Title, separator, parseContext.SiteInfo, styleInfo, formatString, parseContext.Attributes, parseContext.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
@@ -558,7 +558,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, contentInfo.ChannelId);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.ChannelId);
 
                     if (contentInfo.ContainsKey(type))
                     {
@@ -566,7 +566,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(nodeInfo);
                             var tableName = await parseContext.ChannelRepository.GetTableNameAsync(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
-                            var styleInfo = parseContext.TableManager.GetTableStyleInfo(tableName, type, relatedIdentities);
+                            var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);

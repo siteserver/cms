@@ -1,7 +1,9 @@
-﻿using SS.CMS.Data;
+﻿using System;
+using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_UserGroup")]
     public class UserGroupInfo : Entity
     {

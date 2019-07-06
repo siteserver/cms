@@ -358,12 +358,12 @@ namespace SS.CMS.Core.Common
                 }
                 else if (transType == ECrossSiteTransType.ParentSite)
                 {
-                    targetSiteId = siteRepository.GetParentSiteId(siteInfo.Id);
+                    targetSiteId = await siteRepository.GetParentSiteIdAsync(siteInfo.Id);
                 }
 
                 if (targetSiteId > 0)
                 {
-                    var targetSiteInfo = siteRepository.GetSiteInfo(targetSiteId);
+                    var targetSiteInfo = await siteRepository.GetSiteInfoAsync(targetSiteId);
                     if (targetSiteInfo != null)
                     {
                         var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);

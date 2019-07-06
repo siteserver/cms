@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Common
         {
             var visualInfo = new VisualInfo
             {
-                SiteInfo = siteRepository.GetSiteInfo(siteId),
+                SiteInfo = await siteRepository.GetSiteInfoAsync(siteId),
                 ChannelId = channelId,
                 ContentId = contentId,
                 TemplateInfo = null,
@@ -91,7 +91,7 @@ namespace SS.CMS.Core.Common
             }
             else if (templateType == TemplateType.FileTemplate)
             {
-                visualInfo.TemplateInfo = templateRepository.GetFileTemplateInfo(visualInfo.SiteInfo.Id, fileTemplateId);
+                visualInfo.TemplateInfo = await templateRepository.GetFileTemplateInfoAsync(visualInfo.SiteInfo.Id, fileTemplateId);
                 visualInfo.ContextType = EContextType.Undefined;
                 visualInfo.FilePath = pathManager.MapPath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName);
             }

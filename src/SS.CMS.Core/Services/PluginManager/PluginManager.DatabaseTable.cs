@@ -16,7 +16,7 @@ namespace SS.CMS.Core.Services
                 var tableColumns = service.DatabaseTables[tableName];
                 if (tableColumns == null || tableColumns.Count == 0) continue;
 
-                if (!db.IsTableExists(tableName))
+                if (!await db.IsTableExistsAsync(tableName))
                 {
                     await db.CreateTableAsync(tableName, tableColumns);
                 }

@@ -1,8 +1,8 @@
-﻿namespace SS.CMS.Data
+﻿using System;
+
+namespace SS.CMS.Data
 {
-    /// <summary>
-    /// 数据库表字段信息。
-    /// </summary>
+    [Serializable]
     public class TableColumn
     {
         /// <summary>

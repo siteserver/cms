@@ -8,6 +8,7 @@ namespace SS.CMS.Data
     /// Data types supported by datory
     /// </summary>
     [JsonConverter(typeof(DataTypeConverter))]
+    [Serializable]
     public class DataType : IEquatable<DataType>, IComparable<DataType>
     {
         /// <summary>

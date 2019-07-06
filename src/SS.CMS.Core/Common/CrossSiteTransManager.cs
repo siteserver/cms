@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Common
             _channelRepository = channelRepository;
         }
 
-        public bool IsCrossSiteTrans(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<bool> IsCrossSiteTransAsync(SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             var isCrossSiteTrans = false;
 
@@ -38,7 +38,7 @@ namespace SS.CMS.Core.Common
                     {
                         if (transType == ECrossSiteTransType.AllParentSite)
                         {
-                            var parentSiteId = _siteRepository.GetParentSiteId(siteInfo.Id);
+                            var parentSiteId = await _siteRepository.GetParentSiteIdAsync(siteInfo.Id);
                             if (parentSiteId != 0)
                             {
                                 isCrossSiteTrans = true;
@@ -56,7 +56,7 @@ namespace SS.CMS.Core.Common
                         {
                             if (channelInfo.TransSiteId > 0)
                             {
-                                var theSiteInfo = _siteRepository.GetSiteInfo(channelInfo.TransSiteId);
+                                var theSiteInfo = await _siteRepository.GetSiteInfoAsync(channelInfo.TransSiteId);
                                 if (theSiteInfo != null)
                                 {
                                     isCrossSiteTrans = true;
@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Common
                         }
                         else if (transType == ECrossSiteTransType.ParentSite)
                         {
-                            var parentSiteId = _siteRepository.GetParentSiteId(siteInfo.Id);
+                            var parentSiteId = await _siteRepository.GetParentSiteIdAsync(siteInfo.Id);
                             if (parentSiteId != 0)
                             {
                                 isCrossSiteTrans = true;
@@ -117,18 +117,18 @@ namespace SS.CMS.Core.Common
 
                     if (transType == ECrossSiteTransType.SelfSite)
                     {
-                        siteInfo = _siteRepository.GetSiteInfo(siteId);
+                        siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
                     }
                     else if (transType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        siteInfo = _siteRepository.GetSiteInfo(channelInfo.TransSiteId);
+                        siteInfo = await _siteRepository.GetSiteInfoAsync(channelInfo.TransSiteId);
                     }
                     else
                     {
-                        var parentSiteId = _siteRepository.GetParentSiteId(siteId);
+                        var parentSiteId = await _siteRepository.GetParentSiteIdAsync(siteId);
                         if (parentSiteId != 0)
                         {
-                            siteInfo = _siteRepository.GetSiteInfo(parentSiteId);
+                            siteInfo = await _siteRepository.GetSiteInfoAsync(parentSiteId);
                         }
                     }
 
@@ -138,7 +138,7 @@ namespace SS.CMS.Core.Common
                         var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
-                            var theNodeInfo = await _channelRepository.GetChannelInfoAsync(siteInfo.Id, channelId);
+                            var theNodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
                             if (theNodeInfo != null)
                             {
                                 nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
@@ -157,9 +157,9 @@ namespace SS.CMS.Core.Common
 
         public async Task TransContentInfoAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetChannelId)
         {
-            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetSiteInfo.Id, targetChannelId);
+            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
 
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
             _fileManager.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;

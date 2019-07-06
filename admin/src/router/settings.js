@@ -101,11 +101,6 @@ const routers = [
         path: 'info',
         component: () => import('@/settings/tools/info'),
         name: 'settings-tools-info'
-      },
-      {
-        path: 'cache',
-        component: () => import('@/settings/tools/cache'),
-        name: 'settings-tools-cache'
       }
     ]
   }

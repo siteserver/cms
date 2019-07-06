@@ -1,0 +1,64 @@
+/* ===========
+   Gallery
+ =============*/
+
+.portfolioFilter {
+  a {
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+    color: $dark;
+    padding: 5px 10px;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    &:hover {
+      background-color: $primary;
+      color: $white;
+    }
+  }
+  a.current {
+    background-color: $primary;
+    color: $white;
+  }
+}
+
+.thumb {
+  background-color: $white;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  padding: 10px;
+  width: $width;
+}
+
+.thumb-img {
+  border-radius: 2px;
+  overflow: hidden;
+  width: $width;
+}
+
+.gal-detail {
+  h4 {
+    margin: 16px auto 10px auto;
+    width: 80%;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    font-size: 18px;
+    text-overflow: ellipsis;
+  }
+
+  p {
+    margin-bottom: 10px;
+  }
+
+  .ga-border {
+    height: 3px;
+    width: 40px;
+    background-color: $primary;
+    margin: 10px auto;
+  }
+}

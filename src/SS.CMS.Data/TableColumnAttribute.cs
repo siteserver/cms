@@ -1,9 +1,9 @@
 ﻿using System;
-using Npgsql.TypeHandlers;
 
 namespace SS.CMS.Data
 {
     [AttributeUsage(AttributeTargets.Property)]
+    [Serializable]
     public class TableColumnAttribute : Attribute
     {
         public int Length { get; set; }

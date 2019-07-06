@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,11 +34,9 @@ namespace SS.CMS.Api
                 options.AllowSynchronousIO = true;
             });
 
-            services.AddMemoryCache();
-            services.AddDistributedMemoryCache();
-
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
-            services.AddCacheManager();
+
+            services.AddDistributedCache(settingsManager);
             services.AddRepositories();
             services.AddPathManager();
             services.AddPluginManager();
@@ -166,7 +163,7 @@ namespace SS.CMS.Api
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.Map(Constants.ApiUrl, api =>
+            app.Map(Constants.ApiPrefix, api =>
             {
                 api.Map("/ping", map => map.Run(async
                     ctx => await ctx.Response.WriteAsync("pong")));

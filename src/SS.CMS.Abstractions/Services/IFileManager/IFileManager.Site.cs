@@ -27,6 +27,6 @@ namespace SS.CMS.Services
 
         void DeletePagingFiles(string filePath);
 
-        void DeleteFiles(SiteInfo siteInfo, List<int> templateIdList);
+        Task DeleteFilesAsync(SiteInfo siteInfo, List<int> templateIdList);
     }
 }

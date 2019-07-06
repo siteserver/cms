@@ -1,0 +1,27 @@
+/* =============
+   FAQ
+============= */
+.question-q-box {
+  height: 30px;
+  width: 30px;
+  color: $white;
+  background-color: $danger;
+  text-align: center;
+  border-radius: 50%;
+  float: left;
+  line-height: 26px;
+  font-weight: 700;
+}
+
+.question {
+  margin-top: 0;
+  margin-left: 50px;
+  font-size: 16px;
+}
+
+.answer {
+  margin-left: 50px;
+  color: $muted;
+  margin-bottom: 40px;
+  line-height: 26px;
+}

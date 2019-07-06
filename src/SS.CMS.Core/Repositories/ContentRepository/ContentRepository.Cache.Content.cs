@@ -1,62 +1,27 @@
 ﻿using System.Collections.Generic;
 using SS.CMS.Models;
 using SS.CMS.Utils;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Threading.Tasks;
 
 namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        private readonly object ContentLockObject = new object();
-        private readonly string ContentCachePrefix = StringUtils.GetCacheKey(nameof(ContentRepository)) + "." + "Content";
-
-        private string ContentGetContentCacheKey(int channelId)
+        private string GetContentCacheKey(int channelId)
         {
-            return $"{ContentCachePrefix}.{channelId}";
+            return _cache.GetKey(nameof(ContentRepository), nameof(GetContentCacheKey), channelId.ToString());
         }
 
-        private void ContentRemove(int channelId)
+        private async Task ContentRemoveAsync(int channelId)
         {
-            lock (ContentLockObject)
-            {
-                var cacheKey = ContentGetContentCacheKey(channelId);
-                _cacheManager.Remove(cacheKey);
-            }
+            var cacheKey = GetContentCacheKey(channelId);
+            await _cache.RemoveAsync(cacheKey);
         }
 
-        private Dictionary<int, ContentInfo> ContentGetContentDict(int channelId)
+        public ContentInfo GetContentInfo(int contentId)
         {
-            lock (ContentLockObject)
-            {
-                var cacheKey = ContentGetContentCacheKey(channelId);
-                var dict = _cacheManager.Get<Dictionary<int, ContentInfo>>(cacheKey);
-                if (dict == null)
-                {
-                    dict = new Dictionary<int, ContentInfo>();
-                    _cacheManager.InsertHours(cacheKey, dict, 12);
-                }
-
-                return dict;
-            }
-        }
-
-        private ContentInfo ContentGetContent(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
-        {
-            lock (ContentLockObject)
-            {
-                var dict = ContentGetContentDict(channelInfo.Id);
-                dict.TryGetValue(contentId, out var contentInfo);
-                if (contentInfo != null && contentInfo.ChannelId == channelInfo.Id && contentInfo.Id == contentId) return contentInfo;
-
-                contentInfo = GetCacheContentInfo(contentId);
-                dict[contentId] = contentInfo;
-
-                return contentInfo;
-            }
-        }
-
-        public ContentInfo GetContentInfo(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
-        {
-            return ContentGetContent(siteInfo, channelInfo, contentId);
+            return GetCacheContentInfo(contentId);
         }
     }
 }

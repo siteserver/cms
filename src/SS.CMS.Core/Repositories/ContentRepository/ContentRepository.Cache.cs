@@ -18,24 +18,19 @@ namespace SS.CMS.Core.Repositories
             foreach (var channelId in await _channelRepository.GetChannelIdListAsync(siteId))
             {
                 ListRemove(channelId);
-                ContentRemove(channelId);
             }
             CountClear(tableName);
-            StlClearCache();
         }
 
         public void RemoveCache(string tableName, int channelId)
         {
             ListRemove(channelId);
-            ContentRemove(channelId);
             CountClear(tableName);
-            StlClearCache();
         }
 
         public void RemoveCountCache(string tableName)
         {
             CountClear(tableName);
-            StlClearCache();
         }
 
         private async Task InsertCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
@@ -44,20 +39,13 @@ namespace SS.CMS.Core.Repositories
 
             ListAdd(channelInfo, contentInfo);
 
-            var dict = ContentGetContentDict(contentInfo.ChannelId);
-            dict[contentInfo.Id] = contentInfo;
-
             var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
             CountAdd(tableName, contentInfo);
-
-            StlClearCache();
         }
 
         private async Task UpdateCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
         {
-            var dict = ContentGetContentDict(channelInfo.Id);
-
-            var contentInfo = GetContentInfo(siteInfo, channelInfo, contentInfoToUpdate.Id);
+            var contentInfo = GetContentInfo(contentInfoToUpdate.Id);
             if (contentInfo != null)
             {
                 if (ListIsChanged(channelInfo, contentInfo, contentInfoToUpdate))
@@ -72,10 +60,6 @@ namespace SS.CMS.Core.Repositories
                     CountAdd(tableName, contentInfoToUpdate);
                 }
             }
-
-            dict[contentInfoToUpdate.Id] = contentInfoToUpdate;
-
-            StlClearCache();
         }
 
         public async Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
@@ -97,7 +81,7 @@ namespace SS.CMS.Core.Repositories
                     var value = string.Empty;
                     if (contentInfo.UserId > 0)
                     {
-                        var userInfo = _userRepository.GetUserInfoByUserId(contentInfo.UserId);
+                        var userInfo = await _userRepository.GetByUserIdAsync(contentInfo.UserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
@@ -114,7 +98,7 @@ namespace SS.CMS.Core.Repositories
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.AddUserName))
                     {
-                        var userInfo = _userRepository.GetUserInfoByUserName(contentInfo.AddUserName);
+                        var userInfo = await _userRepository.GetByUserNameAsync(contentInfo.AddUserName);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
@@ -127,7 +111,7 @@ namespace SS.CMS.Core.Repositories
                     var value = string.Empty;
                     if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
                     {
-                        var userInfo = _userRepository.GetUserInfoByUserName(contentInfo.LastEditUserName);
+                        var userInfo = await _userRepository.GetByUserNameAsync(contentInfo.LastEditUserName);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;

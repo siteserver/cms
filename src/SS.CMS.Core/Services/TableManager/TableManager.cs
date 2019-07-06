@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Data;
 using SS.CMS.Models;
@@ -13,9 +14,8 @@ namespace SS.CMS.Core.Services
 {
     public partial class TableManager : ITableManager
     {
-        private static readonly string CacheKey = StringUtils.GetCacheKey(nameof(TableManager));
-
-        private readonly ICacheManager _cacheManager;
+        private readonly IDistributedCache _cache;
+        private readonly string _cacheKey;
         private readonly ISettingsManager _settingsManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAreaRepository _areaRepository;
@@ -50,8 +50,8 @@ namespace SS.CMS.Core.Services
         private readonly IList<IRepository> _repositories;
 
         public TableManager(
+            IDistributedCache cache,
             ISettingsManager settingsManager,
-            ICacheManager cacheManager,
             IAccessTokenRepository accessTokenRepository,
             IAreaRepository areaRepository,
             IChannelGroupRepository channelGroupRepository,
@@ -84,7 +84,8 @@ namespace SS.CMS.Core.Services
             IUserRoleRepository userRoleRepository
         )
         {
-            _cacheManager = cacheManager;
+            _cache = cache;
+            _cacheKey = _cache.GetKey(nameof(TableManager));
             _settingsManager = settingsManager;
 
             _repositories = new List<IRepository>();
@@ -151,26 +152,10 @@ namespace SS.CMS.Core.Services
             _repositories.Add(_userRoleRepository);
         }
 
-        private void ClearCache()
-        {
-            _cacheManager.Remove(CacheKey);
-            //FileWatcher.UpdateCacheFile();
-        }
-
         private void CacheUpdate(Dictionary<string, List<TableColumn>> allDict, List<TableColumn> list,
             string key)
         {
             allDict[key] = list;
-        }
-
-        private Dictionary<string, List<TableColumn>> CacheGetAllDictionary()
-        {
-            var allDict = _cacheManager.Get<Dictionary<string, List<TableColumn>>>(CacheKey);
-            if (allDict != null) return allDict;
-
-            allDict = new Dictionary<string, List<TableColumn>>();
-            _cacheManager.InsertHours(CacheKey, allDict, 24);
-            return allDict;
         }
 
         private IDatabase GetDatabase()
@@ -178,82 +163,76 @@ namespace SS.CMS.Core.Services
             return new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
         }
 
-        private List<TableColumn> CacheGetTableColumnInfoList(string tableName)
+        private async Task<IEnumerable<TableColumn>> CacheGetTableColumnInfoListAsync(string tableName)
         {
-            var allDict = CacheGetAllDictionary();
-
-            List<TableColumn> list;
-            allDict.TryGetValue(tableName, out list);
-
-            if (list != null) return list;
-
-            var database = GetDatabase();
-            list = database.GetTableColumns(tableName);
-            CacheUpdate(allDict, list, tableName);
-            return list;
+            return await _cache.GetOrCreateAsync(_cacheKey, async options =>
+            {
+                var database = GetDatabase();
+                return await database.GetTableColumnsAsync(tableName);
+            });
         }
 
-        public List<TableColumn> GetTableColumnInfoList(string tableName)
+        public async Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName)
         {
-            return CacheGetTableColumnInfoList(tableName);
+            return await CacheGetTableColumnInfoListAsync(tableName);
         }
 
-        public List<TableColumn> GetTableColumnInfoList(string tableName, List<string> excludeAttributeNameList)
+        public async Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, List<string> excludeAttributeNameList)
         {
-            var list = CacheGetTableColumnInfoList(tableName);
+            var list = await CacheGetTableColumnInfoListAsync(tableName);
             if (excludeAttributeNameList == null || excludeAttributeNameList.Count == 0) return list;
 
             return list.Where(tableColumnInfo =>
                 !StringUtils.ContainsIgnoreCase(excludeAttributeNameList, tableColumnInfo.AttributeName)).ToList();
         }
 
-        public List<TableColumn> GetTableColumnInfoList(string tableName, DataType excludeDataType)
+        public async Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, DataType excludeDataType)
         {
-            var list = CacheGetTableColumnInfoList(tableName);
+            var list = await CacheGetTableColumnInfoListAsync(tableName);
 
             return list.Where(tableColumnInfo =>
                 tableColumnInfo.DataType != excludeDataType).ToList();
         }
 
-        public TableColumn GetTableColumnInfo(string tableName, string attributeName)
+        public async Task<TableColumn> GetTableColumnInfoAsync(string tableName, string attributeName)
         {
-            var list = CacheGetTableColumnInfoList(tableName);
+            var list = await CacheGetTableColumnInfoListAsync(tableName);
             return list.FirstOrDefault(tableColumnInfo =>
                 StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, attributeName));
         }
 
-        public bool IsAttributeNameExists(string tableName, string attributeName)
+        public async Task<bool> IsAttributeNameExistsAsync(string tableName, string attributeName)
         {
-            var list = CacheGetTableColumnInfoList(tableName);
+            var list = await CacheGetTableColumnInfoListAsync(tableName);
             return list.Any(tableColumnInfo =>
                 StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, attributeName));
         }
 
-        public List<string> GetTableColumnNameList(string tableName)
+        public async Task<List<string>> GetTableColumnNameListAsync(string tableName)
         {
-            var allTableColumnInfoList = GetTableColumnInfoList(tableName);
+            var allTableColumnInfoList = await GetTableColumnInfoListAsync(tableName);
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
-        public List<string> GetTableColumnNameList(string tableName, List<string> excludeAttributeNameList)
+        public async Task<List<string>> GetTableColumnNameListAsync(string tableName, List<string> excludeAttributeNameList)
         {
-            var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeAttributeNameList);
+            var allTableColumnInfoList = await GetTableColumnInfoListAsync(tableName, excludeAttributeNameList);
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
-        public List<string> GetTableColumnNameList(string tableName, DataType excludeDataType)
+        public async Task<List<string>> GetTableColumnNameListAsync(string tableName, DataType excludeDataType)
         {
-            var allTableColumnInfoList = GetTableColumnInfoList(tableName, excludeDataType);
+            var allTableColumnInfoList = await GetTableColumnInfoListAsync(tableName, excludeDataType);
             return allTableColumnInfoList.Select(tableColumnInfo => tableColumnInfo.AttributeName).ToList();
         }
 
-        public async Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, bool isContentTable)
+        public async Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, bool isContentTable)
         {
             var database = GetDatabase();
 
             try
             {
-                database.CreateTable(tableName, tableColumns);
+                await database.CreateTableAsync(tableName, tableColumns);
             }
             catch (Exception ex)
             {
@@ -265,7 +244,7 @@ namespace SS.CMS.Core.Services
             {
                 try
                 {
-                    database.CreateIndex(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
 
 
                     //sqlString =
@@ -281,7 +260,7 @@ namespace SS.CMS.Core.Services
 
                 try
                 {
-                    database.CreateIndex(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
@@ -295,20 +274,20 @@ namespace SS.CMS.Core.Services
                 }
             }
 
-            ClearCache();
+            await _cache.RemoveAsync(_cacheKey);
             return (true, null);
         }
 
-        public async Task AlterTableAsync(string tableName, List<TableColumn> tableColumns, string pluginId, List<string> dropColumnNames = null)
+        public async Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, IList<string> dropColumnNames = null)
         {
             var database = GetDatabase();
 
             try
             {
-                database.AlterTable(tableName,
+                await database.AlterTableAsync(tableName,
                     GetRealTableColumns(tableColumns), dropColumnNames);
 
-                ClearCache();
+                await _cache.RemoveAsync(_cacheKey);
             }
             catch (Exception ex)
             {
@@ -363,26 +342,26 @@ namespace SS.CMS.Core.Services
             return realTableColumns;
         }
 
-        public void CreateContentTable(string tableName, List<TableColumn> tableColumns)
+        public async Task CreateContentTableAsync(string tableName, IList<TableColumn> tableColumns)
         {
             var database = GetDatabase();
 
-            var isDbExists = database.IsTableExists(tableName);
+            var isDbExists = await database.IsTableExistsAsync(tableName);
             if (isDbExists) return;
 
-            database.CreateTable(tableName, tableColumns);
-            database.CreateIndex(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            database.CreateIndex(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
+            await database.CreateTableAsync(tableName, tableColumns);
+            await database.CreateIndexAsync(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+            await database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
 
-            ClearCache();
+            await _cache.RemoveAsync(_cacheKey);
         }
 
-        public void AlterSystemTable(string tableName, List<TableColumn> tableColumns, List<string> dropColumnNames = null)
+        public async Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null)
         {
             var database = GetDatabase();
-            database.AlterTable(tableName, tableColumns, dropColumnNames);
+            await database.AlterTableAsync(tableName, tableColumns, dropColumnNames);
 
-            ClearCache();
+            await _cache.RemoveAsync(_cacheKey);
         }
 
         public void InstallDatabase(string userName, string password)
@@ -401,9 +380,10 @@ namespace SS.CMS.Core.Services
 
         public async Task SyncSystemTablesAsync()
         {
+            var configInfo = await _configRepository.GetConfigInfoAsync();
             var database = GetDatabase();
 
-            if (!database.IsTableExists(_configRepository.TableName))
+            if (!await database.IsTableExistsAsync(_configRepository.TableName))
             {
                 await CreateTableAsync(_configRepository.TableName, _configRepository.TableColumns, string.Empty, false);
             }
@@ -412,18 +392,17 @@ namespace SS.CMS.Core.Services
                 await AlterTableAsync(_configRepository.TableName, _configRepository.TableColumns, string.Empty);
             }
 
-            var configInfo = _configRepository.Instance;
             if (configInfo == null)
             {
                 configInfo = new ConfigInfo();
-                _configRepository.Insert(configInfo);
+                await _configRepository.InsertAsync(configInfo);
             }
 
             foreach (var repository in _repositories)
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableName == _configRepository.TableName || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!database.IsTableExists(repository.TableName))
+                if (!await database.IsTableExistsAsync(repository.TableName))
                 {
                     await CreateTableAsync(repository.TableName, repository.TableColumns, string.Empty, false);
                 }
@@ -450,9 +429,10 @@ namespace SS.CMS.Core.Services
             // }
         }
 
-        public void UpdateConfigVersion()
+        public async Task UpdateConfigVersionAsync()
         {
-            var configInfo = _configRepository.Instance;
+            var configInfo = await _configRepository.GetConfigInfoAsync();
+
             if (configInfo == null)
             {
                 configInfo = new ConfigInfo
@@ -460,25 +440,23 @@ namespace SS.CMS.Core.Services
                     DatabaseVersion = _settingsManager.ProductVersion,
                     UpdateDate = DateTime.Now
                 };
-                _configRepository.Insert(configInfo);
+                await _configRepository.InsertAsync(configInfo);
             }
             else
             {
                 configInfo.DatabaseVersion = _settingsManager.ProductVersion;
                 configInfo.UpdateDate = DateTime.Now;
-                _configRepository.Update(configInfo);
+                await _configRepository.UpdateAsync(configInfo);
             }
         }
 
         public async Task SyncDatabaseAsync()
         {
-            _cacheManager.ClearAll();
-
             await SyncSystemTablesAsync();
 
             SyncContentTables();
 
-            UpdateConfigVersion();
+            await UpdateConfigVersionAsync();
         }
     }
 }

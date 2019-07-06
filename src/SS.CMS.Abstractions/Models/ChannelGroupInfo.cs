@@ -1,7 +1,9 @@
+using System;
 using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_ChannelGroup")]
     public class ChannelGroupInfo : Entity
     {

@@ -139,10 +139,10 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
             }
 
-            return ParseImpl(parseContext, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
+            return await ParseImplAsync(parseContext, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static string ParseImpl(ParseContext parseContext, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (string.IsNullOrEmpty(type)) return string.Empty;
 
@@ -191,7 +191,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     parsedContent = parseContext.SiteInfo.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.SiteRepository.TableName, type, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteId));
+                        var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.SiteRepository.TableName, type, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)

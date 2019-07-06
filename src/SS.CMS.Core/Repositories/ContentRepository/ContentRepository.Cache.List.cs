@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Services;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Utils;
@@ -9,7 +10,6 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        private readonly object ListLockObject = new object();
         private readonly string ListCachePrefix = StringUtils.GetCacheKey(nameof(ContentRepository), "List");
 
         private string ListGetCacheKey(int channelId, int? onlyUserId = null)
@@ -21,26 +21,20 @@ namespace SS.CMS.Core.Repositories
 
         private void ListRemove(int channelId)
         {
-            lock (ListLockObject)
-            {
-                var cacheKey = ListGetCacheKey(channelId);
-                _cacheManager.Remove(cacheKey);
-                _cacheManager.RemoveByPrefix(cacheKey);
-            }
+            var cacheKey = ListGetCacheKey(channelId);
+            CacheManager.Remove(cacheKey);
+            CacheManager.RemoveByPrefix(cacheKey);
         }
 
         private List<int> ListGetContentIdList(int channelId, int? onlyUserId)
         {
-            lock (ListLockObject)
-            {
-                var cacheKey = ListGetCacheKey(channelId, onlyUserId);
-                var list = _cacheManager.Get<List<int>>(cacheKey);
-                if (list != null) return list;
+            var cacheKey = ListGetCacheKey(channelId, onlyUserId);
+            var list = CacheManager.Get<List<int>>(cacheKey);
+            if (list != null) return list;
 
-                list = new List<int>();
-                _cacheManager.Insert(cacheKey, list);
-                return list;
-            }
+            list = new List<int>();
+            CacheManager.Insert(cacheKey, list);
+            return list;
         }
 
         private void ListAdd(ChannelInfo channelInfo, ContentInfo contentInfo)
@@ -80,16 +74,9 @@ namespace SS.CMS.Core.Repositories
 
             if (list.Count == offset)
             {
-                var dict = ContentGetContentDict(channelInfo.Id);
-
                 var query = GetCacheWhereString(siteInfo, channelInfo, onlyUserId);
                 QueryOrder(query, channelInfo, string.Empty);
                 var pageContentInfoList = GetContentInfoList(query, offset, limit);
-
-                foreach (var contentInfo in pageContentInfoList)
-                {
-                    dict[contentInfo.Id] = contentInfo;
-                }
 
                 var pageContentIdList = pageContentInfoList.Select(x => x.Id).ToList();
                 list.AddRange(pageContentIdList);

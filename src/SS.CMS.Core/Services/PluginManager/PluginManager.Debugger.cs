@@ -34,7 +34,7 @@ namespace SS.CMS.Core.Services
             try
             {
                 _watcher.EnableRaisingEvents = false;
-                ClearCache();
+                await _cache.RemoveAsync(_cacheKey);
             }
             finally
             {

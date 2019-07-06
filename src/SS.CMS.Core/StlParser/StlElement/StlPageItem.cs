@@ -154,7 +154,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 string pageUrl;
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.PageChannelId);
+                    channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.PageChannelId);
                     pageUrl = await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else
@@ -474,7 +474,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                 if (parseContext.ContextType == EContextType.Channel)
                 {
-                    var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.PageChannelId);
+                    var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.PageChannelId);
                     pageUrl = await parseContext.UrlManager.GetPagerUrlInChannelPageAsync(type, parseContext.SiteInfo, channelInfo, 0, currentPageIndex, pageCount, parseContext.IsLocal);
                 }
                 else

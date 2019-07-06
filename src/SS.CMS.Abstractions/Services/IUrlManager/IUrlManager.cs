@@ -27,9 +27,9 @@ namespace SS.CMS.Services
 
         string GetSiteUrlByPhysicalPath(SiteInfo siteInfo, string physicalPath, bool isLocal);
 
-        string GetIndexPageUrl(SiteInfo siteInfo, bool isLocal);
+        Task<string> GetIndexPageUrlAsync(SiteInfo siteInfo, bool isLocal);
 
-        string GetFileUrl(SiteInfo siteInfo, int fileTemplateId, bool isLocal);
+        Task<string> GetFileUrlAsync(SiteInfo siteInfo, int fileTemplateId, bool isLocal);
 
         Task<string> GetContentUrlAsync(SiteInfo siteInfo, ContentInfo contentInfo, bool isLocal);
 

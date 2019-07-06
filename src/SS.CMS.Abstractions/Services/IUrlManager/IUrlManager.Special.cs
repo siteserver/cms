@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Services
@@ -6,8 +7,8 @@ namespace SS.CMS.Services
     {
         string GetSpecialUrl(SiteInfo siteInfo, string url);
 
-        string GetSpecialUrl(SiteInfo siteInfo, int specialId);
+        Task<string> GetSpecialUrlAsync(SiteInfo siteInfo, int specialId);
 
-        string GetSpecialUrl(SiteInfo siteInfo, int specialId, bool isLocal);
+        Task<string> GetSpecialUrlAsync(SiteInfo siteInfo, int specialId, bool isLocal);
     }
 }

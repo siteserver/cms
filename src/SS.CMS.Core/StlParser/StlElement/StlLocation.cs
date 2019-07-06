@@ -72,7 +72,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 separator = parseContext.InnerHtml;
             }
 
-            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
 
             var builder = new StringBuilder();
 
@@ -89,7 +89,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, currentId);
+                    var currentNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(currentId);
                     if (currentId == parseContext.SiteId)
                     {
                         var attributes = new NameValueCollection();
@@ -101,7 +101,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         {
                             attributes["class"] = linkClass;
                         }
-                        var url = parseContext.UrlManager.GetIndexPageUrl(parseContext.SiteInfo, parseContext.IsLocal);
+                        var url = await parseContext.UrlManager.GetIndexPageUrlAsync(parseContext.SiteInfo, parseContext.IsLocal);
                         if (url.Equals(PageUtils.UnClickableUrl))
                         {
                             attributes["target"] = string.Empty;

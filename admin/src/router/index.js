@@ -74,6 +74,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/install',
+    component: () => import('@/views/install/index'),
+    hidden: true
+  },
+  {
     path: '/sites',
     component: Layout,
     children: sitesChildren

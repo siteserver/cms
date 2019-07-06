@@ -61,14 +61,14 @@ namespace SS.CMS.Core.Services
             });
         }
 
-        public bool HasSitePermissions()
+        public async Task<bool> HasSitePermissionsAsync()
         {
             if (_context.User.IsInRole(AuthTypes.Roles.SuperAdministrator))
             {
                 return true;
             }
 
-            var siteIdList = _siteRepository.GetSiteIdList();
+            var siteIdList = await _siteRepository.GetSiteIdListAsync();
             return siteIdList.Any(HasSitePermissions);
         }
 
@@ -132,13 +132,13 @@ namespace SS.CMS.Core.Services
         public async Task<IList<int>> GetSiteIdsAsync()
         {
             var siteIdList = new List<int>();
-            var allSiteIdList = _siteRepository.GetSiteIdList();
+            var allSiteIdList = await _siteRepository.GetSiteIdListAsync();
 
             if (IsSuperAdministrator())
             {
                 siteIdList = allSiteIdList;
             }
-            else if (HasSitePermissions())
+            else if (await HasSitePermissionsAsync())
             {
                 var adminInfo = await GetUserAsync();
                 foreach (var siteId in TranslateUtils.StringCollectionToIntList(adminInfo.SiteIdCollection))
@@ -165,9 +165,11 @@ namespace SS.CMS.Core.Services
             return siteIdList;
         }
 
-        public int? GetOnlyAdminId(int siteId, int channelId)
+        public async Task<int?> GetOnlyAdminIdAsync(int siteId, int channelId)
         {
-            if (!_configRepository.Instance.IsViewContentOnlySelf
+            var configInfo = await _configRepository.GetConfigInfoAsync();
+
+            if (!configInfo.IsViewContentOnlySelf
                 || IsSuperAdministrator()
                 || IsSiteAdministrator(siteId)
                 || HasChannelPermissions(siteId, channelId, AuthTypes.ChannelPermissions.ContentCheck))

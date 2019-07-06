@@ -40,7 +40,7 @@ namespace SS.CMS.Core.Common.Office
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = channelInfo.ContentRepository.GetContentInfo(siteInfo, channelInfo, contentId);
+                var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -115,7 +115,7 @@ namespace SS.CMS.Core.Common.Office
             };
             var rows = new List<List<string>>();
 
-            foreach (var userInfo in userRepository.GetAll())
+            foreach (var userInfo in userRepository.GetAll(null))
             {
                 rows.Add(new List<string>
                 {

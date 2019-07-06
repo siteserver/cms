@@ -68,7 +68,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var taxisType = parseContext.GetChannelTaxisType(listInfo.Order, TaxisType.OrderByTaxis);
 
-            return await parseContext.ChannelRepository.StlGetContainerChannelListAsync(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+            return await parseContext.ChannelRepository.GetContainerChannelListAsync(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
         }
 
         public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)
@@ -198,7 +198,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var channelInfoList = new List<IDictionary<string, object>>();
             foreach (var channel in channelList)
             {
-                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channel.Value.SiteId, channel.Value.Id);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channel.Value.Id);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

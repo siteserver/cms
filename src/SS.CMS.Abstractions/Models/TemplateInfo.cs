@@ -1,8 +1,10 @@
+using System;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_Template")]
     public class TemplateInfo : Entity
     {

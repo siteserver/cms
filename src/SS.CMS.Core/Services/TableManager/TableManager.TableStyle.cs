@@ -23,12 +23,12 @@ namespace SS.CMS.Core.Services
             return $"{relatedIdentity}${tableName}$".ToLower();
         }
 
-        public List<TableStyleInfo> GetStyleInfoList(string tableName, List<int> relatedIdentities)
+        public async Task<List<TableStyleInfo>> GetStyleInfoListAsync(string tableName, List<int> relatedIdentities)
         {
             var allAttributeNames = new List<string>();
             var styleInfoList = new List<TableStyleInfo>();
 
-            var entries = _tableStyleRepository.GetAllTableStyles();
+            var entries = await _tableStyleRepository.GetAllTableStylesAsync();
             relatedIdentities = ParseRelatedIdentities(relatedIdentities);
             foreach (var relatedIdentity in relatedIdentities)
             {
@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Services
             }
             else
             {
-                var columnNames = GetTableColumnNameList(tableName, ContentAttribute.MetadataAttributes.Value);
+                var columnNames = await GetTableColumnNameListAsync(tableName, ContentAttribute.MetadataAttributes.Value);
 
                 foreach (var columnName in columnNames)
                 {
@@ -77,29 +77,29 @@ namespace SS.CMS.Core.Services
             return styleInfoList.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public List<TableStyleInfo> GetSiteStyleInfoList(int siteId)
+        public async Task<List<TableStyleInfo>> GetSiteStyleInfoListAsync(int siteId)
         {
             var relatedIdentities = GetRelatedIdentities(siteId);
-            return GetStyleInfoList(_siteRepository.TableName, relatedIdentities);
+            return await GetStyleInfoListAsync(_siteRepository.TableName, relatedIdentities);
         }
 
-        public List<TableStyleInfo> GetChannelStyleInfoList(ChannelInfo channelInfo)
+        public async Task<List<TableStyleInfo>> GetChannelStyleInfoListAsync(ChannelInfo channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
-            return GetStyleInfoList(_channelRepository.TableName, relatedIdentities);
+            return await GetStyleInfoListAsync(_channelRepository.TableName, relatedIdentities);
         }
 
         public async Task<List<TableStyleInfo>> GetContentStyleInfoListAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
             var tableName = await _channelRepository.GetTableNameAsync(pluginManager, siteInfo, channelInfo);
-            return GetStyleInfoList(tableName, relatedIdentities);
+            return await GetStyleInfoListAsync(tableName, relatedIdentities);
         }
 
-        public List<TableStyleInfo> GetUserStyleInfoList()
+        public async Task<List<TableStyleInfo>> GetUserStyleInfoListAsync()
         {
             var relatedIdentities = EmptyRelatedIdentities;
-            return GetStyleInfoList(_userRepository.TableName, relatedIdentities);
+            return await GetStyleInfoListAsync(_userRepository.TableName, relatedIdentities);
         }
 
         public IDictionary<string, object> GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
@@ -139,12 +139,12 @@ namespace SS.CMS.Core.Services
         }
 
         //relatedIdentities从大到小，最后是0
-        public TableStyleInfo GetTableStyleInfo(string tableName, string attributeName, List<int> relatedIdentities)
+        public async Task<TableStyleInfo> GetTableStyleInfoAsync(string tableName, string attributeName, List<int> relatedIdentities)
         {
             if (attributeName == null) attributeName = string.Empty;
 
             relatedIdentities = ParseRelatedIdentities(relatedIdentities);
-            var entries = _tableStyleRepository.GetAllTableStyles();
+            var entries = await _tableStyleRepository.GetAllTableStylesAsync();
             foreach (var relatedIdentity in relatedIdentities)
             {
                 var key = GetKey(relatedIdentity, tableName, attributeName);
@@ -180,9 +180,9 @@ namespace SS.CMS.Core.Services
             };
         }
 
-        public TableStyleInfo GetTableStyleInfo(int id)
+        public async Task<TableStyleInfo> GetTableStyleInfoAsync(int id)
         {
-            var entries = _tableStyleRepository.GetAllTableStyles();
+            var entries = await _tableStyleRepository.GetAllTableStylesAsync();
 
             var entry = entries.FirstOrDefault(x => x.Value != null && x.Value.Id == id);
             return entry.IsDefault() ? null : entry.Value;
@@ -214,11 +214,11 @@ namespace SS.CMS.Core.Services
             return relatedIdentities;
         }
 
-        public Dictionary<string, List<TableStyleInfo>> GetTableStyleInfoWithItemsDictionary(string tableName, List<int> allRelatedIdentities)
+        public async Task<Dictionary<string, List<TableStyleInfo>>> GetTableStyleInfoWithItemsDictionaryAsync(string tableName, List<int> allRelatedIdentities)
         {
             var dict = new Dictionary<string, List<TableStyleInfo>>();
 
-            var entries = _tableStyleRepository.GetAllTableStyles();
+            var entries = await _tableStyleRepository.GetAllTableStylesAsync();
             foreach (var pair in entries)
             {
                 var arr = pair.Key.Split('$');

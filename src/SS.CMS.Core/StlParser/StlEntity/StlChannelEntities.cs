@@ -94,7 +94,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     attributeName = attributeName.Substring(attributeName.IndexOf(".", StringComparison.Ordinal) + 1);
                 }
 
-                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, channelId, upLevel, topLevel));
+                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, channelId, upLevel, topLevel));
 
                 if (StringUtils.EqualsIgnoreCase(ChannelId, attributeName))//栏目ID
                 {
@@ -154,7 +154,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     //var styleInfo = TableStyleManager.GetTableStyleInfo(ETableStyle.Channel, DataProvider.ChannelDao.TableName, attributeName, RelatedIdentities.GetChannelRelatedIdentities(pageInfo.SiteId, nodeInfo.ChannelId));
                     //parsedContent = InputParserUtility.GetContentByTableStyle(parsedContent, ",", pageInfo.SiteInfo, ETableStyle.Channel, styleInfo, string.Empty, null, string.Empty, true);
 
-                    var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(nodeInfo));
+                    var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(nodeInfo));
                     if (styleInfo.Id > 0)
                     {
                         parsedContent = nodeInfo.Get(attributeName, styleInfo.DefaultValue);

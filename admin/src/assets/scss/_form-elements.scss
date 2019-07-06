@@ -1,0 +1,54 @@
+/* ===========
+   Form Elements
+ =============*/
+
+label {
+  font-weight: 500;
+}
+
+.form-control {
+  border: 1px solid darken($light, 12%);
+  box-shadow: none;
+  color: rgba(0, 0, 0, 0.6);
+
+  &:focus {
+    background: $white;
+    border-color: darken($light, 30%);
+    box-shadow: none;
+  }
+}
+
+.input-sm {
+  height: 30px;
+}
+
+.input-group-btn {
+  .btn {
+    padding: 7px 14px;
+  }
+}
+
+.has-success {
+  .form-control {
+    border-color: $success;
+    box-shadow: none !important;
+  }
+}
+
+.has-warning {
+  .form-control {
+    border-color: $warning;
+    box-shadow: none !important;
+  }
+}
+
+.has-error {
+  .form-control {
+    border-color: $danger;
+    box-shadow: none !important;
+  }
+}
+
+.input-group-addon {
+  border-radius: 2px;
+}

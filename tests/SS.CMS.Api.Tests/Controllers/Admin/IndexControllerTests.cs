@@ -31,7 +31,7 @@ namespace SS.CMS.Api.Tests.Controllers.Admin
             var mockConfigRepository = new Mock<IConfigRepository>();
 
             mockUserManager.Setup(x => x.GetUserAsync()).ReturnsAsync(() => new UserInfo());
-            mockConfigRepository.Setup(x => x.Instance).Returns(new ConfigInfo());
+            mockConfigRepository.Setup(x => x.GetConfigInfoAsync()).ReturnsAsync(() => new ConfigInfo());
 
             var controller = new IndexController(_fixture.SettingsManager, mockUserManager.Object, mockSiteRepository.Object, mockConfigRepository.Object);
 

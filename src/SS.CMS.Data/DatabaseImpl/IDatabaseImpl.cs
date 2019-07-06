@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading.Tasks;
 using SqlKata.Compilers;
 
 namespace SS.CMS.Data.DatabaseImpl
@@ -12,9 +13,11 @@ namespace SS.CMS.Data.DatabaseImpl
 
         bool IsUseLegacyPagination(string connectionString);
 
-        List<TableColumn> GetTableColumns(string connectionString, string tableName);
+        Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName);
 
-        List<string> GetTableNames(string connectionString);
+        Task<IList<string>> GetDatabaseNamesAsync(string connectionString);
+
+        Task<IList<string>> GetTableNamesAsync(string connectionString);
 
         string ColumnIncrement(string columnName, int plusNum = 1);
 

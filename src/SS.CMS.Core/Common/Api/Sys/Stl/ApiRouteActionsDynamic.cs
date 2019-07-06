@@ -8,7 +8,7 @@ namespace SS.CMS.Core.Api.Sys.Stl
 
         public static string GetUrl()
         {
-            return PageUtils.Combine(Constants.ApiUrl, Route);
+            return PageUtils.Combine(Constants.ApiPrefix, Route);
         }
     }
 }

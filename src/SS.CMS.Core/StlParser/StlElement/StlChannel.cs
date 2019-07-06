@@ -190,7 +190,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
             channelId = await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId, channelId, channelIndex, channelName);
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, channelId);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
 
             if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
             {
@@ -423,14 +423,14 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
             {
-                var count = channel.ContentRepository.StlGetCountCheckedImage(parseContext.SiteId, channel);
+                var count = channel.ContentRepository.GetCountCheckedImage(parseContext.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else
             {
                 var attributeName = type;
 
-                var styleInfo = parseContext.TableManager.GetTableStyleInfo(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(channel));
+                var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(channel));
                 if (styleInfo.Id > 0)
                 {
                     parsedContent = channel.Get(attributeName, styleInfo.DefaultValue);

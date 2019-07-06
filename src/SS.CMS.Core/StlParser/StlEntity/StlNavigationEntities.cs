@@ -36,17 +36,17 @@ namespace SS.CMS.Core.StlParser.StlEntity
                 var entityName = StlParserUtility.GetNameFromEntity(stlEntity);
                 var attributeName = entityName.Substring(12, entityName.Length - 13);
 
-                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
 
                 if (StringUtils.EqualsIgnoreCase(PreviousChannel, attributeName) || StringUtils.EqualsIgnoreCase(NextChannel, attributeName))
                 {
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(attributeName, PreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = parseContext.ChannelRepository.StlGetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = parseContext.ChannelRepository.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
-                        var siblingNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, siblingChannelId);
+                        var siblingNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(siblingChannelId);
                         parsedContent = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, siblingNodeInfo, parseContext.IsLocal);
                     }
                 }
@@ -58,10 +58,10 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         var contentInfo = await parseContext.GetContentInfoAsync();
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(attributeName, PreviousContent);
-                        var siblingContentId = channelInfo.ContentRepository.StlGetContentId(channelInfo, taxis, isNextContent);
+                        var siblingContentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
-                            contentInfo = channelInfo.ContentRepository.GetContentInfo(parseContext.SiteInfo, channelInfo, siblingContentId);
+                            contentInfo = channelInfo.ContentRepository.GetContentInfo(siblingContentId);
                             parsedContent = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, contentInfo, parseContext.IsLocal);
                         }
                     }

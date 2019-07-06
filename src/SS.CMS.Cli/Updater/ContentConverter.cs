@@ -127,7 +127,7 @@ namespace SS.CMS.Cli.Updater
             };
         }
 
-        public static ConvertInfo GetConverter(string oldTableName, List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(string oldTableName, IList<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {
@@ -139,7 +139,7 @@ namespace SS.CMS.Cli.Updater
             };
         }
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
             var tableColumns = (new Database(null, null)).GetTableColumns<ContentInfo>();

@@ -58,7 +58,7 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var entry = AtomUtility.GetEmptyEntry();
 
-            var siteInfo = _siteRepository.GetSiteInfo(_siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
 
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
@@ -80,7 +80,7 @@ namespace SS.CMS.Core.Serialization.Components
             if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-            var siteInfo = _siteRepository.GetSiteInfo(_siteId);
+            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
             foreach (AtomEntry entry in feed.Entries)
             {
                 var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateName));
@@ -112,18 +112,18 @@ namespace SS.CMS.Core.Serialization.Components
                         srcTemplateInfo.Type = templateInfo.Type;
                         srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
                         srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
-                        _templateRepository.Update(siteInfo, srcTemplateInfo, templateContent, administratorName);
+                        await _templateRepository.UpdateAsync(siteInfo, srcTemplateInfo, templateContent, administratorName);
                         templateId = srcTemplateInfo.Id;
                     }
                     else
                     {
                         templateInfo.TemplateName = _templateRepository.GetImportTemplateName(_siteId, templateInfo.TemplateName);
-                        templateId = _templateRepository.Insert(templateInfo, templateContent, administratorName);
+                        templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, administratorName);
                     }
                 }
                 else
                 {
-                    templateId = _templateRepository.Insert(templateInfo, templateContent, administratorName);
+                    templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, administratorName);
                 }
 
                 if (templateInfo.Type == TemplateType.FileTemplate)

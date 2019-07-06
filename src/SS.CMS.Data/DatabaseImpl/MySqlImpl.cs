@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Dapper;
 using MySql.Data.MySqlClient;
 using SqlKata.Compilers;
@@ -41,20 +42,46 @@ namespace SS.CMS.Data.DatabaseImpl
             return false;
         }
 
-        public List<string> GetTableNames(string connectionString)
+        public async Task<IList<string>> GetDatabaseNamesAsync(string connectionString)
         {
-            IEnumerable<string> tableNames;
+            var databaseNames = new List<string>();
+
+            using (var connection = GetConnection(connectionString))
+            {
+                using (var rdr = await connection.ExecuteReaderAsync("show databases"))
+                {
+                    while (rdr.Read())
+                    {
+                        var dbName = rdr.GetString(0);
+                        if (dbName == null) continue;
+                        if (dbName != "information_schema" &&
+                            dbName != "mysql" &&
+                            dbName != "performance_schema" &&
+                            dbName != "sakila" &&
+                            dbName != "sys" &&
+                            dbName != "world")
+                        {
+                            databaseNames.Add(dbName);
+                        }
+                    }
+                }
+            }
+
+            return databaseNames;
+        }
+
+        public async Task<IList<string>> GetTableNamesAsync(string connectionString)
+        {
+            IEnumerable<string> tableNames = null;
 
             using (var connection = GetConnection(connectionString))
             {
                 var sqlString = $"SELECT table_name FROM information_schema.tables WHERE table_schema='{connection.Database}' ORDER BY table_name";
 
-                if (string.IsNullOrEmpty(sqlString)) return new List<string>();
-
-                tableNames = connection.Query<string>(sqlString);
+                tableNames = await connection.QueryAsync<string>(sqlString);
             }
 
-            return tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList();
+            return tableNames != null ? tableNames.Where(tableName => !string.IsNullOrEmpty(tableName)).ToList() : new List<string>();
         }
 
         public string ColumnIncrement(string columnName, int plusNum = 1)
@@ -155,7 +182,7 @@ namespace SS.CMS.Data.DatabaseImpl
             return dataType;
         }
 
-        public List<TableColumn> GetTableColumns(string connectionString, string tableName)
+        public async Task<IList<TableColumn>> GetTableColumnsAsync(string connectionString, string tableName)
         {
             var list = new List<TableColumn>();
 
@@ -164,7 +191,7 @@ namespace SS.CMS.Data.DatabaseImpl
                 var sqlString =
                     $"select COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType, CHARACTER_MAXIMUM_LENGTH AS DataLength, COLUMN_KEY AS ColumnKey, EXTRA AS Extra from information_schema.columns where table_schema = '{connection.Database}' and table_name = '{tableName}' order by table_name,ordinal_position; ";
 
-                using (var rdr = connection.ExecuteReader(sqlString))
+                using (var rdr = await connection.ExecuteReaderAsync(sqlString))
                 {
                     while (rdr.Read())
                     {

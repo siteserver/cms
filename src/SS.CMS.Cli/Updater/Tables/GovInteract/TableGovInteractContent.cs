@@ -256,7 +256,7 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
             }
         };
 
-        private static List<TableColumn> GetNewColumns(List<TableColumn> oldColumns)
+        private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
             var tableColumns = (new Database(null, null)).GetTableColumns<ContentInfo>();
@@ -288,7 +288,7 @@ namespace SS.CMS.Cli.Updater.Tables.GovInteract
             return columns;
         }
 
-        public static ConvertInfo GetConverter(List<TableColumn> oldColumns)
+        public static ConvertInfo GetConverter(IList<TableColumn> oldColumns)
         {
             return new ConvertInfo
             {

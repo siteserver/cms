@@ -79,7 +79,7 @@ namespace SS.CMS.Cli.Services
             var treeInfo = new TreeInfo(directory);
             DirectoryUtils.CreateDirectoryIfNotExists(treeInfo.DirectoryPath);
 
-            var (db, errorMessage) = await CliUtils.GetDatabaseAsync(_databaseType, _connectionString, _configFile);
+            var (db, errorMessage) = CliUtils.GetDatabase(_databaseType, _connectionString, _configFile);
             if (db == null)
             {
                 await CliUtils.PrintErrorAsync(errorMessage);
@@ -100,7 +100,7 @@ namespace SS.CMS.Cli.Services
             _excludes.Add("siteserver_Log");
             _excludes.Add("siteserver_Tracking");
 
-            var allTableNames = db.GetTableNames();
+            var allTableNames = await db.GetTableNamesAsync();
             var tableNames = new List<string>();
 
             foreach (var tableName in allTableNames)
@@ -122,7 +122,7 @@ namespace SS.CMS.Cli.Services
                 var repository = new Repository(db, tableName);
                 var tableInfo = new TableInfo
                 {
-                    Columns = db.GetTableColumns(tableName),
+                    Columns = await db.GetTableColumnsAsync(tableName),
                     TotalCount = repository.Count(),
                     RowFiles = new List<string>()
                 };
@@ -134,7 +134,7 @@ namespace SS.CMS.Cli.Services
 
                 await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                var identityColumnName = db.AddIdentityColumnIdIfNotExists(tableName, tableInfo.Columns);
+                var identityColumnName = await db.AddIdentityColumnIdIfNotExistsAsync(tableName, tableInfo.Columns);
 
                 if (tableInfo.TotalCount > 0)
                 {

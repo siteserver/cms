@@ -19,8 +19,6 @@ namespace SS.CMS.Utils.Tests
                 .AddJsonFile("appSettings.json")
                 .Build();
 
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var cacheManager = new CacheManager(memoryCache, null);
             SettingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
         }
     }

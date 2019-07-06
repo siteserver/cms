@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using NuGet.Packaging;
 using SS.CMS.Core.Packaging;
 using SS.CMS.Enums;
@@ -193,7 +194,7 @@ namespace SS.CMS.Core.Services
             //    directoryPath, ".nuspec");
         }
 
-        public bool UpdatePackage(string idWithVersion, PackageType packageType, out string errorMessage)
+        public async Task<(bool IsSuccess, string ErrorMessage)> UpdatePackageAsync(string idWithVersion, PackageType packageType)
         {
             try
             {
@@ -201,10 +202,10 @@ namespace SS.CMS.Core.Services
 
                 string nuspecPath;
                 string dllDirectoryPath;
-                var metadata = GetPackageMetadataFromPackages(idWithVersion, out nuspecPath, out dllDirectoryPath, out errorMessage);
+                var metadata = GetPackageMetadataFromPackages(idWithVersion, out nuspecPath, out dllDirectoryPath, out var errorMessage);
                 if (metadata == null)
                 {
-                    return false;
+                    return (false, errorMessage);
                 }
 
                 if (packageType == PackageType.SsCms)
@@ -251,7 +252,7 @@ namespace SS.CMS.Core.Services
                     var configFilelPath = PathUtils.Combine(pluginPath, $"{metadata.Id}.nuspec");
                     FileUtils.CopyFile(nuspecPath, configFilelPath, true);
 
-                    ClearCache();
+                    await _cache.RemoveAsync(_cacheKey);
                 }
                 else if (packageType == PackageType.Library)
                 {
@@ -273,11 +274,10 @@ namespace SS.CMS.Core.Services
             }
             catch (Exception ex)
             {
-                errorMessage = ex.Message;
-                return false;
+                return (false, ex.Message);
             }
 
-            return true;
+            return (true, null);
         }
     }
 }

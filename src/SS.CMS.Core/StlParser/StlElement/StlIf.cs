@@ -181,14 +181,13 @@ namespace SS.CMS.Core.StlParser.StlElement
             var isSuccess = false;
             if (StringUtils.EqualsIgnoreCase(testType, TypeChannelName))
             {
-                var channelName = await parseContext.ChannelRepository.GetChannelNameAsync(parseContext.SiteId, parseContext.ChannelId);
+                var channelName = await parseContext.ChannelRepository.GetChannelNameAsync(parseContext.ChannelId);
                 isSuccess = TestTypeValue(testOperate, testValue, channelName);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeChannelIndex))
             {
                 var channelInfo =
-                    await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId,
-                        parseContext.ChannelId);
+                    await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
                 var channelIndex = channelInfo.IndexName;
                 isSuccess = TestTypeValue(testOperate, testValue, channelIndex);
             }
@@ -202,7 +201,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeTopLevel))
             {
-                var topLevel = await parseContext.ChannelRepository.GetTopLevelAsync(parseContext.SiteId, parseContext.ChannelId);
+                var topLevel = await parseContext.ChannelRepository.GetTopLevelAsync(parseContext.ChannelId);
                 isSuccess = IsNumber(topLevel, testOperate, testValue);
             }
             else if (StringUtils.EqualsIgnoreCase(testType, TypeUpChannel))
@@ -220,7 +219,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(testType, TypeGroupChannel))
             {
                 var channelInfo = await
-                    parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+                    parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
                 var groupChannels =
                 TranslateUtils.StringCollectionToStringList(channelInfo.GroupNameCollection);
                 isSuccess = TestTypeValues(testOperate, testValue, groupChannels);
@@ -231,7 +230,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     var channelInfo = await parseContext.GetChannelInfoAsync();
                     //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, ContentAttribute.GroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -516,7 +515,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
-                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parentId, parseContext.PageChannelId))
+                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parentId, parseContext.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -535,7 +534,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
-                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parentId, parseContext.PageChannelId))
+                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parentId, parseContext.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -550,7 +549,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (string.IsNullOrEmpty(testValue))
                 {
-                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parseContext.ChannelId, parseContext.PageChannelId))
+                    if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.ChannelId, parseContext.PageChannelId))
                     {
                         isSuccess = true;
                     }
@@ -562,7 +561,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     {
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(parseContext.SiteId, channelIndex);
                         var parentId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
-                        if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parentId, parseContext.PageChannelId))
+                        if (await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parentId, parseContext.PageChannelId))
                         {
                             isSuccess = true;
                             break;
@@ -586,7 +585,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                     var parentId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
                     if (parentId != parseContext.PageChannelId &&
-                        await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parentId, parseContext.PageChannelId))
+                        await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parentId, parseContext.PageChannelId))
                     {
                         isIn = true;
                         break;
@@ -602,7 +601,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 if (string.IsNullOrEmpty(testValue))
                 {
                     if (parseContext.ChannelId != parseContext.PageChannelId &&
-                        await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parseContext.ChannelId, parseContext.PageChannelId))
+                        await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.ChannelId, parseContext.PageChannelId))
                     {
                         isSuccess = true;
                     }
@@ -615,7 +614,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         //var parentId = DataProvider.ChannelDao.GetIdByIndexName(pageInfo.SiteId, channelIndex);
                         var parentId = await parseContext.ChannelRepository.GetChannelIdByIndexNameAsync(parseContext.SiteId, channelIndex);
                         if (parentId != parseContext.PageChannelId &&
-                            await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parseContext.SiteId, parentId, parseContext.PageChannelId))
+                            await parseContext.ChannelRepository.IsAncestorOrSelfAsync(parentId, parseContext.PageChannelId))
                         {
                             isSuccess = true;
                             break;
@@ -719,7 +718,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (!parseContext.Container.SiteItem.Equals(default(KeyValuePair<int, SiteInfo>)))
                 {
-                    var siteInfo = parseContext.SiteRepository.GetSiteInfo(parseContext.Container.SiteItem.Value.Id);
+                    var siteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(parseContext.Container.SiteItem.Value.Id);
                     if (siteInfo != null)
                     {
                         theValue = GetValueFromSite(parseContext, siteInfo, testTypeStr);
@@ -816,7 +815,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         {
             string theValue;
 
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
 
             if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CreatedDate, testTypeStr))
             {
@@ -846,7 +845,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(parseContext.SiteId, channel.ChannelId);
-                var count = channel.ContentRepository.StlGetCountCheckedImage(parseContext.SiteId, channel);
+                var count = channel.ContentRepository.GetCountCheckedImage(parseContext.SiteId, channel.Id);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -870,7 +869,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             if (contentInfo == null)
             {
                 //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = channelInfo.ContentRepository.StlGetValue(channelInfo, parseContext.ContentId, testTypeStr);
+                theValue = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, testTypeStr);
             }
             else
             {
@@ -895,7 +894,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (parseContext.ContextType == EContextType.Channel)
             {
-                var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+                var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
                 if (channel.CreatedDate.HasValue)
                 {
                     addDate = channel.CreatedDate.Value;
@@ -934,7 +933,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (parseContext.ChannelId != 0)//获取栏目
                 {
-                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.SiteId, parseContext.ChannelId);
+                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
                     if (channel.CreatedDate.HasValue)
                     {
                         addDate = channel.CreatedDate.Value;

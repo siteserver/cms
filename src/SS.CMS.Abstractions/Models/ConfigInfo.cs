@@ -3,6 +3,7 @@ using SS.CMS.Data;
 
 namespace SS.CMS.Models
 {
+    [Serializable]
     [Table("siteserver_Config")]
     public partial class ConfigInfo : Entity
     {

@@ -17,27 +17,27 @@ namespace SS.CMS.Core.Serialization
 {
     public class ImportObject
     {
-        private readonly SiteInfo _siteInfo;
-        private readonly string _sitePath;
-        private readonly string _adminName;
-        private readonly ISettingsManager _settingsManager;
-        private readonly IPluginManager _pluginManager;
-        private readonly ICreateManager _createManager;
-        private readonly IPathManager _pathManager;
-        private readonly IFileManager _fileManager;
-        private readonly ITableManager _tableManager;
-        private readonly IDbCacheRepository _dbCacheRepository;
-        private readonly ISiteRepository _siteRepository;
-        private readonly IChannelRepository _channelRepository;
-        private readonly IChannelGroupRepository _channelGroupRepository;
-        private readonly IContentGroupRepository _contentGroupRepository;
-        private readonly ISpecialRepository _specialRepository;
-        private readonly ITableStyleRepository _tableStyleRepository;
-        private readonly ITemplateRepository _templateRepository;
+        private SiteInfo _siteInfo;
+        private string _sitePath;
+        private string _adminName;
+        private ISettingsManager _settingsManager;
+        private IPluginManager _pluginManager;
+        private ICreateManager _createManager;
+        private IPathManager _pathManager;
+        private IFileManager _fileManager;
+        private ITableManager _tableManager;
+        private IDbCacheRepository _dbCacheRepository;
+        private ISiteRepository _siteRepository;
+        private IChannelRepository _channelRepository;
+        private IChannelGroupRepository _channelGroupRepository;
+        private IContentGroupRepository _contentGroupRepository;
+        private ISpecialRepository _specialRepository;
+        private ITableStyleRepository _tableStyleRepository;
+        private ITemplateRepository _templateRepository;
 
-        public ImportObject(int siteId, string adminName)
+        public async Task LoadAsync(int siteId, string adminName)
         {
-            _siteInfo = _siteRepository.GetSiteInfo(siteId);
+            _siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             _sitePath = PathUtils.Combine(_settingsManager.WebRootPath, _siteInfo.SiteDir);
             _adminName = adminName;
         }
@@ -140,12 +140,12 @@ namespace SS.CMS.Core.Serialization
             await relatedFieldIe.ImportRelatedFieldAsync(overwrite);
         }
 
-        public void ImportTableStyles(string tableDirectoryPath)
+        public async Task ImportTableStylesAsync(string tableDirectoryPath)
         {
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
                 var tableStyleIe = new TableStyleIe(tableDirectoryPath, _adminName);
-                tableStyleIe.ImportTableStyles(_siteInfo.Id);
+                await tableStyleIe.ImportTableStylesAsync(_siteInfo.Id);
             }
         }
 
@@ -160,10 +160,10 @@ namespace SS.CMS.Core.Serialization
             await TableStyleIe.SingleImportTableStyleAsync(tableStyleRepository, tableName, styleDirectoryPath, channelId);
         }
 
-        public void ImportConfiguration(string configurationFilePath)
+        public async Task ImportConfigurationAsync(string configurationFilePath)
         {
             var configIe = new ConfigurationIe(_siteInfo.Id, configurationFilePath);
-            configIe.Import();
+            await configIe.ImportAsync();
         }
 
 
@@ -287,7 +287,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
@@ -396,7 +396,7 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id, channelId);
+            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
 
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _siteInfo, channelInfo);
 

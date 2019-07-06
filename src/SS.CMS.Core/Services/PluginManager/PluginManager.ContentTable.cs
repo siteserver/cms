@@ -24,13 +24,13 @@ namespace SS.CMS.Core.Services
             tableColumns.AddRange(defaultContentTableColumns);
             tableColumns.AddRange(service.ContentTableColumns);
 
-            if (!db.IsTableExists(tableName))
+            if (!await db.IsTableExistsAsync(tableName))
             {
-                _tableManager.CreateContentTable(tableName, tableColumns);
+                await _tableManager.CreateContentTableAsync(tableName, tableColumns);
             }
             else
             {
-                _tableManager.AlterSystemTable(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                await _tableManager.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             await ContentTableCreateOrUpdateStylesAsync(tableName, service.ContentInputStyles);
@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Services
             foreach (var inputStyle in inputStyles)
             {
                 columnTaxis++;
-                var styleInfo = _tableManager.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
+                var styleInfo = await _tableManager.GetTableStyleInfoAsync(tableName, inputStyle.AttributeName, new List<int> { 0 });
 
                 var isEquals = true;
 
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.Services
             {
                 if (styleInfo.Id == 0)
                 {
-                    _tableStyleRepository.Insert(styleInfo);
+                    await _tableStyleRepository.InsertAsync(styleInfo);
                 }
                 else
                 {

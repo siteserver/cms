@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Tests.Repositories
             Skip.IfNot(TestEnv.IsTestMachine);
 
             var userInfo = new UserInfo();
-            var (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
+            var (isSuccess, id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
 
             Assert.True(id == 0);
 
@@ -38,7 +38,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest"
             };
 
-            (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
+            (isSuccess, id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
             _output.WriteLine(errorMessage);
 
             Assert.True(id == 0);
@@ -49,7 +49,7 @@ namespace SS.CMS.Core.Tests.Repositories
                 Password = "InsertTest@2"
             };
 
-            (id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
+            (isSuccess, id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
             _output.WriteLine(errorMessage);
 
             Assert.True(id > 0);
@@ -57,7 +57,7 @@ namespace SS.CMS.Core.Tests.Repositories
             Assert.True(userInfo.PasswordFormat == PasswordFormat.Encrypted.Value);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.PasswordSalt));
 
-            userInfo = _fixture.UserRepository.GetByUserName(TestUserName);
+            userInfo = await _fixture.UserRepository.GetByUserNameAsync(TestUserName);
 
             var password = userInfo.Password;
             var passwordFormat = userInfo.PasswordFormat;
@@ -65,23 +65,23 @@ namespace SS.CMS.Core.Tests.Repositories
 
             userInfo.Password = "cccc@d";
 
-            var updated = _fixture.UserRepository.Update(userInfo, out _);
+            var (updated, _) = await _fixture.UserRepository.UpdateAsync(userInfo);
             Assert.True(updated);
             Assert.True(userInfo.Password == password);
             Assert.True(userInfo.PasswordFormat == passwordFormat);
             Assert.True(userInfo.PasswordSalt == passwordSalt);
 
-            userInfo = _fixture.UserRepository.GetByUserName(TestUserName);
+            userInfo = await _fixture.UserRepository.GetByUserNameAsync(TestUserName);
             Assert.NotNull(userInfo);
             Assert.Equal(TestUserName, userInfo.UserName);
 
             var countOfFailedLogin = userInfo.CountOfFailedLogin;
 
-            updated = _fixture.UserRepository.UpdateLastActivityDateAndCountOfFailedLogin(userInfo);
+            updated = await _fixture.UserRepository.UpdateLastActivityDateAndCountOfFailedLoginAsync(userInfo);
             Assert.True(updated);
             Assert.Equal(countOfFailedLogin, userInfo.CountOfFailedLogin - 1);
 
-            userInfo = _fixture.UserRepository.GetByUserName(TestUserName);
+            userInfo = await _fixture.UserRepository.GetByUserNameAsync(TestUserName);
             Assert.NotNull(userInfo);
             Assert.Equal(TestUserName, userInfo.UserName);
 
