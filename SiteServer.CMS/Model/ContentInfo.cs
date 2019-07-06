@@ -290,11 +290,6 @@ namespace SiteServer.CMS.Model
             set => Set(ContentAttribute.SettingsXml, value);
         }
 
-        public T Get<T>(string name)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Dictionary<string, object> ToDictionary()
 	    {
 	        var dict = base.ToDictionary();

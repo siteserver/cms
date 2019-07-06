@@ -65,7 +65,9 @@ namespace SiteServer.CMS.Packaging
             {
                 throw new FormatException($"版本号不正确：{Version}");
             }
-            if (NuGetVersion.TryParse(Version, out NuGetVersion nugetVersion))
+
+            NuGetVersion nugetVersion;
+            if (NuGetVersion.TryParse(Version, out nugetVersion))
             {
                 NuGetVersion = nugetVersion;
             }
@@ -112,7 +114,8 @@ namespace SiteServer.CMS.Packaging
 
         private string GetValue(string key, string alternateValue)
         {
-            if (_metadata.TryGetValue(key, out string value))
+            string value;
+            if (_metadata.TryGetValue(key, out value))
             {
                 return value;
             }
@@ -124,7 +127,8 @@ namespace SiteServer.CMS.Packaging
         {
             var value = GetValue(key, alternateValue.ToString());
 
-            if (bool.TryParse(value, out bool result))
+            bool result;
+            if (bool.TryParse(value, out result))
             {
                 return result;
             }
@@ -137,7 +141,8 @@ namespace SiteServer.CMS.Packaging
             var value = GetValue(key, (string)null);
             if (!string.IsNullOrEmpty(value))
             {
-                if (Uri.TryCreate(value, UriKind.Absolute, out Uri result))
+                Uri result;
+                if (Uri.TryCreate(value, UriKind.Absolute, out result))
                 {
                     return result;
                 }
@@ -155,7 +160,7 @@ namespace SiteServer.CMS.Packaging
             return new PackageMetadata(
                 nuspecReader.GetMetadata().ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 nuspecReader.GetDependencyGroups(true),
-                nuspecReader.GetFrameworkAssemblyGroups(),
+                nuspecReader.GetFrameworkReferenceGroups(),
                 nuspecReader.GetPackageTypes(),
                 nuspecReader.GetMinClientVersion()
            );
