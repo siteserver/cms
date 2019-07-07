@@ -53,6 +53,10 @@ namespace SiteServer.CMS.Core
         public static string TargetFramework { get; }
 
         public static string EnvironmentVersion { get; }
+        /// <summary>
+        /// 系统是否已经安装
+        /// </summary>
+        public static Boolean IsInstalled { get; private set; } = false;
 
         public static void InstallDatabase(string adminName, string adminPassword)
         {
@@ -137,15 +141,17 @@ namespace SiteServer.CMS.Core
         {
             return !StringUtils.EqualsIgnoreCase(ProductVersion, DataProvider.ConfigDao.GetDatabaseVersion());
         }
-
-        public static bool IsNeedInstall()
+        /// <summary>
+        /// 检查系统是否已经安装
+        /// </summary>
+        /// <returns>系统是否已经安装</returns>
+        public static bool CheckIsInstalled()
         {
-            var isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
-            if (isNeedInstall)
+            if (!SystemManager.IsInstalled)
             {
-                isNeedInstall = !DataProvider.ConfigDao.IsInitialized();
+                SystemManager.IsInstalled = DataProvider.ConfigDao.IsInitialized();
             }
-            return isNeedInstall;
+            return SystemManager.IsInstalled;
         }
 
         //public static bool DetermineRedirectToInstaller()

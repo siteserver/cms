@@ -23,7 +23,7 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (SystemManager.IsNeedInstall())
+            if (!SystemManager.IsInstalled)
             {
                 Page.Response.Write("系统未安装，向导被禁用！");
                 Page.Response.End();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Datory;
@@ -95,9 +96,9 @@ namespace SiteServer.CMS.Provider
 					rdr.Close();
 				}
 			}
-		    catch
+		    catch(Exception _err)
 		    {
-		        // ignored
+                Console.WriteLine(_err);
 		    }
 
 		    return isInitialized;

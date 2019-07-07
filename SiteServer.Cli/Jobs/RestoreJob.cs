@@ -103,7 +103,7 @@ namespace SiteServer.Cli.Jobs
 
             if (!_dataOnly)
             {
-                if (!SystemManager.IsNeedInstall())
+                if (SystemManager.IsInstalled)
                 {
                     await CliUtils.PrintErrorAsync("数据无法在已安装系统的数据库中恢复，命令执行失败");
                     return;

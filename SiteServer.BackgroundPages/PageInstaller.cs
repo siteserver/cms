@@ -67,9 +67,9 @@ namespace SiteServer.BackgroundPages
         {
             if (IsPostBack) return;
 
-            if (!SystemManager.IsNeedInstall())
+            if (SystemManager.IsInstalled)
             {
-                Page.Response.Write("系统已安装成功，向导被禁用");
+                Page.Response.Write("系统已安装成功，向导被禁用。<a href=\""+ PageUtils.GetAdminUrl("/") + "\">返回后台管理首页</a>");
                 Page.Response.End();
                 return;
             }
@@ -241,6 +241,9 @@ namespace SiteServer.BackgroundPages
                 if (InstallDatabase(out errorMessage))
                 {
                     SetSetp(5);
+                    if (!SystemManager.IsInstalled) {
+                        SystemManager.CheckIsInstalled();
+                    }
                 }
                 else
                 {
