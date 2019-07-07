@@ -26,12 +26,9 @@ namespace SS.CMS.Models
 
         public bool IsViewContentOnlySelf { get; set; }
 
-        // �Ƿ���ʱ����ֵ
         public bool IsTimeThreshold { get; set; }
 
         public int TimeThreshold { get; set; } = 60;
-
-        /****************����Ա����********************/
 
         public int AdminUserNameMinLength { get; set; }
 
@@ -46,8 +43,6 @@ namespace SS.CMS.Models
         public string AdminLockLoginType { get; set; } = "Hours";
 
         public int AdminLockLoginHours { get; set; } = 3;
-
-        /****************�û�����********************/
 
         public bool IsUserRegistrationAllowed { get; set; } = true;
 
@@ -74,29 +69,6 @@ namespace SS.CMS.Models
         public int UserLockLoginHours { get; set; } = 3;
 
         public string UserDefaultGroupAdminName { get; set; }
-
-        /****************�û���������********************/
-
-        public bool IsHomeClosed { get; set; }
-
-        public string HomeTitle { get; set; } = "�û�����";
-
-        public bool IsHomeLogo { get; set; }
-
-        public string HomeLogoUrl { get; set; }
-
-        public bool IsHomeBackground { get; set; }
-
-        public string HomeBackgroundUrl { get; set; }
-
-        public string HomeDefaultAvatarUrl { get; set; }
-
-        public bool IsHomeAgreement { get; set; }
-
-        public string HomeAgreementHtml { get; set; } =
-            @"�Ķ�������<a href=""/agreement.html"" target=""_blank"">���û�Э�顷</a>";
-
-        /****************�Ʒ�������********************/
 
         public string RepositoryOwner { get; set; }
 

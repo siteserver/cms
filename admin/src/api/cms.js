@@ -23,6 +23,14 @@ export function installTryCache(data) {
   })
 }
 
+export function installSaveSettings(data) {
+  return request({
+    url: '/cms/install/saveSettings',
+    method: 'post',
+    data
+  })
+}
+
 export function install(data) {
   return request({
     url: '/cms/install',

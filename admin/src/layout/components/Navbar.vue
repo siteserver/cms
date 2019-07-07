@@ -2,7 +2,7 @@
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <top-menus v-if="menus && menus.length > 0" id="top-menu-container" :menus="menus" class="top-menu-container" />
+    <top-menus v-if="menus && menus.length > 0" :menus="menus" class="top-menu-container" />
     <breadcrumb v-else id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
@@ -101,6 +101,7 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
+  padding: 0;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
@@ -117,11 +118,8 @@ export default {
     }
   }
 
-  .breadcrumb-container {
-    float: left;
-  }
-
   .top-menu-container {
+    line-height: 46px;
     float: left;
   }
 

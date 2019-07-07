@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"ms-vscode.csharp",
-		"warren-buckley.iis-express",
-		"formulahendry.dotnet-test-explorer"
+		"warren-buckley.iis-express"
 	]
 }

@@ -43,10 +43,10 @@ namespace SS.CMS.Api.Tests.Controllers.Admin
             var actionResult = controller.GetInfo();
 
             // Assert
-            var result = Assert.IsType<CmsController.ResultResponse>(actionResult.Result);
+            var result = Assert.IsType<CmsController.InfoResponse>(actionResult.Result);
 
-            _output.WriteLine($"version:{result.IsSuccess}");
-            Assert.True(result.IsSuccess);
+            _output.WriteLine($"version:{result.ProductVersion}");
+            Assert.True(result.IsInstalled);
         }
     }
 }

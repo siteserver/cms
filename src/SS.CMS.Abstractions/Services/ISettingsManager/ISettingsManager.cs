@@ -14,8 +14,6 @@ namespace SS.CMS.Services
         string PluginVersion { get; }
         string TargetFramework { get; }
         bool IsProtectData { get; }
-        string AdminUrl { get; }
-        string HomeUrl { get; }
         string SecurityKey { get; }
         bool IsNightlyUpdate { get; }
         DatabaseType DatabaseType { get; }
@@ -26,6 +24,6 @@ namespace SS.CMS.Services
         PermissionsSettings Permissions { get; }
         string Encrypt(string inputString);
         string Decrypt(string inputString);
-        Task SaveSettingsAsync(string adminUrl, string homeUrl, bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString);
+        Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString);
     }
 }

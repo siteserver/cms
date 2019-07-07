@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
@@ -15,13 +17,9 @@ namespace SS.CMS.Api.Controllers.Cms
 {
     public partial class CmsController
     {
-        private const string RouteInstallTryDatabase = "install/tryDatabase";
-        private const string RouteInstallTryCache = "install/tryCache";
-        private const string RouteInstall = "install";
-
         [AllowAnonymous]
         [HttpPost(RouteInstallTryDatabase)]
-        public async Task<ActionResult<ResultResponse>> TryDatabase(DatabaseRequest database)
+        public async Task<ActionResult<TryDatabaseResponse>> TryDatabase(TryDatabaseRequest database)
         {
             var isInstalled = !string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString);
             if (isInstalled) return Forbid();
@@ -34,24 +32,25 @@ namespace SS.CMS.Api.Controllers.Cms
             }
 
             IDatabase db = new Database(databaseType, connectionString);
-            var result = db.IsConnectionWorks();
+            var (isConnectionWorks, errorMessage) = db.IsConnectionWorks();
+
             IList<string> databaseNames = null;
-            if (result.IsConnectionWorks)
+            if (isConnectionWorks)
             {
                 databaseNames = await db.GetDatabaseNamesAsync();
             }
 
-            return new ResultResponse
+            return new TryDatabaseResponse
             {
-                IsSuccess = result.IsConnectionWorks,
+                IsSuccess = isConnectionWorks,
                 DatabaseNames = databaseNames,
-                ErrorMessage = result.ErrorMessage
+                ErrorMessage = errorMessage
             };
         }
 
         [AllowAnonymous]
         [HttpPost(RouteInstallTryCache)]
-        public async Task<ActionResult<ResultResponse>> TryCache(CacheRequest cache)
+        public async Task<ActionResult<TryCacheResponse>> TryCache(TryCacheRequest cache)
         {
             var isInstalled = !string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString);
             if (isInstalled) return Forbid();
@@ -89,7 +88,7 @@ namespace SS.CMS.Api.Controllers.Cms
                 (isConnectionWorks, errorMessage) = await RedisManager.IsConnectionWorksAsync(connectionString);
             }
 
-            return new ResultResponse
+            return new TryCacheResponse
             {
                 IsSuccess = isConnectionWorks,
                 DatabaseNames = databaseNames,
@@ -98,258 +97,150 @@ namespace SS.CMS.Api.Controllers.Cms
         }
 
         [AllowAnonymous]
+        [HttpPost(RouteInstallSaveSettings)]
+        public async Task<ActionResult<SaveSettingsResponse>> InstallSaveSettings(SaveSettingsRequest settings)
+        {
+            var isInstalled = !string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString);
+            if (isInstalled) return Forbid();
+
+            var databaseType = DatabaseType.Parse(settings.DatabaseType);
+            var databaseConnectionString = settings.DatabaseConnectionString;
+            if (string.IsNullOrEmpty(databaseConnectionString))
+            {
+                databaseConnectionString = GetDatabaseConnectionString(databaseType, settings.DatabaseServer, settings.DatabasePort, settings.DatabaseUid, settings.DatabasePwd, settings.DatabaseName);
+            }
+            var cacheType = CacheType.Parse(settings.CacheType);
+            var cacheConnectionString = settings.CacheConnectionString;
+            if (string.IsNullOrEmpty(cacheConnectionString))
+            {
+                if (cacheType == CacheType.SqlServer)
+                {
+                    cacheConnectionString = GetDatabaseConnectionString(DatabaseType.SqlServer, settings.CacheServer, settings.CachePort, settings.CacheUid, settings.CachePwd);
+                }
+                else if (cacheType == CacheType.Redis)
+                {
+                    cacheConnectionString = GetRedisConnectionString(settings.CacheServer, settings.CachePort, settings.CachePwd);
+                }
+            }
+
+            var securityKey = StringUtils.GetShortGuid().ToLower();
+
+            await _settingsManager.SaveSettingsAsync(false, settings.IsProtectData, securityKey, databaseType, databaseConnectionString, cacheType, cacheConnectionString);
+
+            // _services.AddDistributedCache(cacheType, cacheConnectionString);
+
+            return new SaveSettingsResponse
+            {
+                SecurityKey = securityKey
+            };
+        }
+
+        [AllowAnonymous]
         [HttpPost(RouteInstall)]
-        public async Task<ActionResult<ResultResponse>> Install(InstallRequest install)
+        public async Task<ActionResult<InstallResponse>> Install(InstallRequest install)
         {
-            try
+            if (install.SecurityKey != _settingsManager.SecurityKey) return Forbid();
+
+            var accessTokenRepository = new AccessTokenRepository(_cache, _settingsManager);
+            var userRoleRepository = new UserRoleRepository(_settingsManager);
+            var areaRepository = new AreaRepository(_cache, _settingsManager);
+            var channelGroupRepository = new ChannelGroupRepository(_cache, _settingsManager);
+            var configRepository = new ConfigRepository(_cache, _settingsManager);
+            var contentCheckRepository = new ContentCheckRepository(_settingsManager);
+            var contentGroupRepository = new ContentGroupRepository(_cache, _settingsManager);
+            var dbCacheRepository = new DbCacheRepository(_settingsManager);
+            var departmentRepository = new DepartmentRepository(_cache, _settingsManager);
+            var errorLogRepository = new ErrorLogRepository(_settingsManager, configRepository);
+            var logRepository = new LogRepository(_settingsManager, configRepository, errorLogRepository);
+            var pluginConfigRepository = new PluginConfigRepository(_settingsManager);
+            var pluginRepository = new PluginRepository(_settingsManager);
+            var relatedFieldItemRepository = new RelatedFieldItemRepository(_settingsManager);
+            var relatedFieldRepository = new RelatedFieldRepository(_settingsManager);
+            var roleRepository = new RoleRepository(_settingsManager);
+            var siteLogRepository = new SiteLogRepository(_settingsManager, configRepository, errorLogRepository, logRepository);
+            var siteRepository = new SiteRepository(_cache, _settingsManager);
+            var specialRepository = new SpecialRepository(_cache, _settingsManager);
+            var tableStyleItemRepository = new TableStyleItemRepository(_settingsManager);
+            var tagRepository = new TagRepository(_cache, _settingsManager);
+            var templateLogRepository = new TemplateLogRepository(_settingsManager);
+            var userGroupRepository = new UserGroupRepository(_cache, _settingsManager, configRepository);
+            var userLogRepository = new UserLogRepository(_settingsManager, configRepository);
+            var userMenuRepository = new UserMenuRepository(_cache, _settingsManager);
+            var userRepository = new UserRepository(_cache, _settingsManager, configRepository, userRoleRepository);
+            var permissionRepository = new PermissionRepository(_settingsManager, roleRepository);
+            var channelRepository = new ChannelRepository(_cache, _settingsManager, userRepository, channelGroupRepository, siteRepository);
+            var templateRepository = new TemplateRepository(_cache, _settingsManager, siteRepository, channelRepository, templateLogRepository);
+            var tableStyleRepository = new TableStyleRepository(_cache, _settingsManager, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
+
+            var tableManager = new TableManager(
+                _cache,
+                _settingsManager,
+                accessTokenRepository,
+                areaRepository,
+                channelGroupRepository,
+                channelRepository,
+                configRepository,
+                contentCheckRepository,
+                contentGroupRepository,
+                dbCacheRepository,
+                departmentRepository,
+                errorLogRepository,
+                logRepository,
+                permissionRepository,
+                pluginConfigRepository,
+                pluginRepository,
+                relatedFieldItemRepository,
+                relatedFieldRepository,
+                roleRepository,
+                siteLogRepository,
+                siteRepository,
+                specialRepository,
+                tableStyleItemRepository,
+                tableStyleRepository,
+                tagRepository,
+                templateLogRepository,
+                templateRepository,
+                userGroupRepository,
+                userLogRepository,
+                userMenuRepository,
+                userRepository,
+                userRoleRepository);
+
+            await tableManager.SyncDatabaseAsync();
+
+            var configInfo = new ConfigInfo
             {
-                var isInstalled = !string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString);
-                if (isInstalled) return Forbid();
+                DatabaseVersion = _settingsManager.ProductVersion,
+                UpdateDate = DateTime.UtcNow,
+                ExtendValues = string.Empty
+            };
+            await _configRepository.DeleteAllAsync();
+            await _configRepository.InsertAsync(configInfo);
 
-                var databaseType = DatabaseType.Parse(install.DatabaseType);
-                var databaseConnectionString = install.DatabaseConnectionString;
-                if (string.IsNullOrEmpty(databaseConnectionString))
-                {
-                    databaseConnectionString = GetDatabaseConnectionString(databaseType, install.DatabaseServer, install.DatabasePort, install.DatabaseUid, install.DatabasePwd, install.DatabaseName);
-                }
-                var cacheType = CacheType.Parse(install.CacheType);
-                var cacheConnectionString = install.CacheConnectionString;
-                if (string.IsNullOrEmpty(cacheConnectionString))
-                {
-                    if (cacheType == CacheType.SqlServer)
-                    {
-                        cacheConnectionString = GetDatabaseConnectionString(DatabaseType.SqlServer, install.CacheServer, install.CachePort, install.CacheUid, install.CachePwd);
-                    }
-                    else if (cacheType == CacheType.Redis)
-                    {
-                        cacheConnectionString = GetRedisConnectionString(install.CacheServer, install.CachePort, install.CachePwd);
-                    }
-                }
-
-                var securityKey = StringUtils.GetShortGuid().ToLower();
-
-                await _settingsManager.SaveSettingsAsync(install.AdminUrl, install.HomeUrl, false, install.IsProtectData, securityKey, databaseType, databaseConnectionString, cacheType, cacheConnectionString);
-                // _tableManager.InstallDatabase(install.AdminName, install.AdminPassword);
-
-                var accessTokenRepository = new AccessTokenRepository(_cache, _settingsManager);
-                var userRoleRepository = new UserRoleRepository(_settingsManager);
-                var areaRepository = new AreaRepository(_cache, _settingsManager);
-                var channelGroupRepository = new ChannelGroupRepository(_cache, _settingsManager);
-                var configRepository = new ConfigRepository(_cache, _settingsManager);
-                var contentCheckRepository = new ContentCheckRepository(_settingsManager);
-                var contentGroupRepository = new ContentGroupRepository(_cache, _settingsManager);
-                var dbCacheRepository = new DbCacheRepository(_settingsManager);
-                var departmentRepository = new DepartmentRepository(_cache, _settingsManager);
-                var errorLogRepository = new ErrorLogRepository(_settingsManager, configRepository);
-                var logRepository = new LogRepository(_settingsManager, configRepository, errorLogRepository);
-                var pluginConfigRepository = new PluginConfigRepository(_settingsManager);
-                var pluginRepository = new PluginRepository(_settingsManager);
-                var relatedFieldItemRepository = new RelatedFieldItemRepository(_settingsManager);
-                var relatedFieldRepository = new RelatedFieldRepository(_settingsManager);
-                var roleRepository = new RoleRepository(_settingsManager);
-                var siteLogRepository = new SiteLogRepository(_settingsManager, configRepository, errorLogRepository, logRepository);
-                var siteRepository = new SiteRepository(_cache, _settingsManager);
-                var specialRepository = new SpecialRepository(_cache, _settingsManager);
-                var tableStyleItemRepository = new TableStyleItemRepository(_settingsManager);
-                var tagRepository = new TagRepository(_cache, _settingsManager);
-                var templateLogRepository = new TemplateLogRepository(_settingsManager);
-                var userGroupRepository = new UserGroupRepository(_cache, _settingsManager, configRepository);
-                var userLogRepository = new UserLogRepository(_settingsManager, configRepository);
-                var userMenuRepository = new UserMenuRepository(_cache, _settingsManager);
-                var userRepository = new UserRepository(_cache, _settingsManager, configRepository, userRoleRepository);
-                var permissionRepository = new PermissionRepository(_settingsManager, roleRepository);
-                var channelRepository = new ChannelRepository(_cache, _settingsManager, userRepository, channelGroupRepository, siteRepository);
-                var templateRepository = new TemplateRepository(_cache, _settingsManager, siteRepository, channelRepository, templateLogRepository);
-                var tableStyleRepository = new TableStyleRepository(_cache, _settingsManager, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
-
-                var tableManager = new TableManager(
-                    _cache,
-                    _settingsManager,
-                    accessTokenRepository,
-                    areaRepository,
-                    channelGroupRepository,
-                    channelRepository,
-                    configRepository,
-                    contentCheckRepository,
-                    contentGroupRepository,
-                    dbCacheRepository,
-                    departmentRepository,
-                    errorLogRepository,
-                    logRepository,
-                    permissionRepository,
-                    pluginConfigRepository,
-                    pluginRepository,
-                    relatedFieldItemRepository,
-                    relatedFieldRepository,
-                    roleRepository,
-                    siteLogRepository,
-                    siteRepository,
-                    specialRepository,
-                    tableStyleItemRepository,
-                    tableStyleRepository,
-                    tagRepository,
-                    templateLogRepository,
-                    templateRepository,
-                    userGroupRepository,
-                    userLogRepository,
-                    userMenuRepository,
-                    userRepository,
-                    userRoleRepository);
-
-                await tableManager.SyncDatabaseAsync();
-
-                var userInfo = new UserInfo
-                {
-                    UserName = install.AdminName,
-                    Password = install.AdminPassword
-                };
-
-                var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
-                userRoleRepository.AddUserToRole(install.AdminName, AuthTypes.Roles.SuperAdministrator);
-
-                if (!isSuccess)
-                {
-                    return new ResultResponse
-                    {
-                        IsSuccess = false,
-                        ErrorMessage = errorMessage
-                    };
-                }
-
-                var path = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
-
-                var databaseConnectionStringValue = databaseConnectionString;
-                var cacheConnectionStringValue = cacheConnectionString;
-                if (install.IsProtectData)
-                {
-                    databaseConnectionStringValue = _settingsManager.Encrypt(databaseConnectionStringValue);
-                    cacheConnectionStringValue = _settingsManager.Encrypt(cacheConnectionStringValue);
-                }
-
-                //                 var json = $@"{{
-                //   ""AdminUrl"": ""{_settingsManager.AdminUrl}"",
-                //   ""HomeUrl"": ""{_settingsManager.HomeUrl}"",
-                //   ""Language"": ""{_settingsManager.Language}"",
-                //   ""IsNightlyUpdate"": false,
-                //   ""IsProtectData"": {_settingsManager.IsProtectData.ToString().ToLower()},
-                //   ""SecretKey"": ""{_settingsManager.SecurityKey}"",
-                //   ""Database"": {{
-                //     ""Type"": ""{databaseType.Value}"",
-                //     ""ConnectionString"": ""{databaseConnectionStringValue}""
-                //   }},
-                //   ""Cache"": {{
-                //     ""Type"": {cacheType.Value},
-                //     ""ConnectionString"": ""{cacheConnectionStringValue}""
-                //   }}
-                // }}
-                // ";
-
-                //                 await FileUtils.WriteTextAsync(path, json);
-
-                return new ResultResponse
-                {
-                    IsSuccess = true,
-                    ErrorMessage = string.Empty
-                };
-            }
-            catch (Exception ex)
+            var userInfo = new UserInfo
             {
-                return new ResultResponse
-                {
-                    IsSuccess = false,
-                    ErrorMessage = ex.Message
-                };
-            }
-        }
+                UserName = install.AdminName,
+                Password = install.AdminPassword
+            };
 
-        public class DatabaseRequest
-        {
-            public string DatabaseType { get; set; }
-            public string Server { get; set; }
-            public int? Port { get; set; }
-            public string Uid { get; set; }
-            public string Pwd { get; set; }
-            public string ConnectionString { get; set; }
-        }
+            var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
+            userRoleRepository.AddUserToRole(install.AdminName, AuthTypes.Roles.SuperAdministrator);
 
-        public class CacheRequest
-        {
-            public string CacheType { get; set; }
-            public string Server { get; set; }
-            public int? Port { get; set; }
-            public string Uid { get; set; }
-            public string Pwd { get; set; }
-            public string ConnectionString { get; set; }
-        }
+            // var path = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
 
-        public class InstallRequest
-        {
-            public string DatabaseType { get; set; }
-            public string DatabaseServer { get; set; }
-            public int? DatabasePort { get; set; }
-            public string DatabaseUid { get; set; }
-            public string DatabasePwd { get; set; }
-            public string DatabaseName { get; set; }
-            public string DatabaseConnectionString { get; set; }
-            public string CacheType { get; set; }
-            public string CacheServer { get; set; }
-            public int? CachePort { get; set; }
-            public string CacheUid { get; set; }
-            public string CachePwd { get; set; }
-            public string CacheName { get; set; }
-            public string CacheConnectionString { get; set; }
-            public string AdminUrl { get; set; }
-            public string HomeUrl { get; set; }
-            public string AdminName { get; set; }
-            public string AdminPassword { get; set; }
-            public bool IsProtectData { get; set; }
-        }
+            // var databaseConnectionStringValue = databaseConnectionString;
+            // var cacheConnectionStringValue = cacheConnectionString;
+            // if (install.IsProtectData)
+            // {
+            //     databaseConnectionStringValue = _settingsManager.Encrypt(databaseConnectionStringValue);
+            //     cacheConnectionStringValue = _settingsManager.Encrypt(cacheConnectionStringValue);
+            // }
 
-        public class ResultResponse
-        {
-            public bool IsSuccess { get; set; }
-            public IList<string> DatabaseNames { get; set; }
-            public string ErrorMessage { get; set; }
-        }
-
-        private string GetDatabaseConnectionString(DatabaseType databaseType, string server, int? port, string uid, string pwd, string databaseName = null)
-        {
-            if (databaseType == DatabaseType.SQLite)
+            return new InstallResponse
             {
-                var dbFilePath = PathUtils.Combine(_settingsManager.ContentRootPath, "database.sqlite");
-                if (!FileUtils.IsFileExists(dbFilePath))
-                {
-                    FileUtils.WriteText(PathUtils.Combine(_settingsManager.ContentRootPath, "database.sqlite"), string.Empty);
-                }
-
-                return "Data Source=~/database.sqlite;Version=3;";
-            }
-
-            var connectionString = $"Server={server};";
-            if (port.HasValue && port.Value > 0)
-            {
-                connectionString += $"Port={port.Value};";
-            }
-            connectionString += $"Uid={uid};Pwd={pwd};";
-            if (!string.IsNullOrEmpty(databaseName))
-            {
-                connectionString += $"Database={databaseName};";
-            }
-            return connectionString;
-        }
-
-        private string GetRedisConnectionString(string server, int? port, string pwd)
-        {
-            var connectionString = server;
-            if (port.HasValue && port.Value > 0)
-            {
-                connectionString += $":{port.Value}";
-            }
-            if (!string.IsNullOrEmpty(pwd))
-            {
-                connectionString += $",password={pwd}";
-            }
-            return connectionString;
+                IsSuccess = isSuccess,
+                ErrorMessage = errorMessage
+            };
         }
     }
 }

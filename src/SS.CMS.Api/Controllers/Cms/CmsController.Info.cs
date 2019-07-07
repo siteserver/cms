@@ -29,65 +29,65 @@ namespace SS.CMS.Api.Controllers.Cms
             public DateTime? UpdateDate { get; set; }
             public string DatabaseType { get; set; }
             public string Database { get; set; }
+            public string CacheType { get; set; }
         }
 
         [AllowAnonymous]
         [HttpGet(Route)]
-        public async Task<ActionResult<InfoResponse>> GetInfo()
+        public ActionResult<InfoResponse> GetInfo()
         {
             var isInstalled = !string.IsNullOrEmpty(_settingsManager.DatabaseConnectionString);
 
-            var isContentRootPathWritable = false;
-            var isWebRootPathWritable = false;
+            // var isContentRootPathWritable = false;
+            // var isWebRootPathWritable = false;
 
-            if (!isInstalled)
-            {
-                try
-                {
-                    var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
-                    await FileUtils.WriteTextAsync(filePath, _settingsManager.ProductVersion);
+            // if (!isInstalled)
+            // {
+            //     try
+            //     {
+            //         var filePath = PathUtils.Combine(_settingsManager.ContentRootPath, "version.txt");
+            //         await FileUtils.WriteTextAsync(filePath, _settingsManager.ProductVersion);
 
-                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
-                    ioPermission.Demand();
+            //         var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.ContentRootPath);
+            //         ioPermission.Demand();
 
-                    isContentRootPathWritable = true;
-                }
-                catch
-                {
-                    // ignored
-                }
+            //         isContentRootPathWritable = true;
+            //     }
+            //     catch
+            //     {
+            //         // ignored
+            //     }
 
-                try
-                {
-                    var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "index.html");
-                    await FileUtils.WriteTextAsync(filePath, Constants.Html5Empty);
+            //     try
+            //     {
+            //         var filePath = PathUtils.Combine(_settingsManager.WebRootPath, "index.html");
+            //         await FileUtils.WriteTextAsync(filePath, Constants.Html5Empty);
 
-                    var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.WebRootPath);
-                    ioPermission.Demand();
+            //         var ioPermission = new FileIOPermission(FileIOPermissionAccess.Write, _settingsManager.WebRootPath);
+            //         ioPermission.Demand();
 
-                    isWebRootPathWritable = true;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
+            //         isWebRootPathWritable = true;
+            //     }
+            //     catch
+            //     {
+            //         // ignored
+            //     }
+            // }
 
             return new InfoResponse
             {
                 IsInstalled = isInstalled,
                 ApiUrl = PageUtils.Combine(Request.Host.Value, Constants.ApiPrefix),
-                ApiServerName = Dns.GetHostName().ToUpper(), // 系统主机名
+                ApiServerName = Dns.GetHostName().ToUpper(),
                 ProductVersion = _settingsManager.ProductVersion,
                 ContentRootPath = _settingsManager.ContentRootPath,
                 WebRootPath = _settingsManager.WebRootPath,
                 TargetFramework = _settingsManager.TargetFramework,
-                IsContentRootPathWritable = isContentRootPathWritable,
-                IsWebRootPathWritable = isWebRootPathWritable,
-                RemoteIpAddress = PageUtils.GetIpAddress(Request.HttpContext.Connection.RemoteIpAddress.ToString()), // 访问IP
-                PluginVersion = _settingsManager.PluginVersion, // Plugin 版本
-                DatabaseType = _settingsManager.DatabaseType.Value, // 数据库类型
-                Database = _configRepository.Database.DatabaseName // 数据库
+                RemoteIpAddress = PageUtils.GetIpAddress(Request.HttpContext.Connection.RemoteIpAddress.ToString()),
+                PluginVersion = _settingsManager.PluginVersion,
+                DatabaseType = _settingsManager.DatabaseType.Value,
+                Database = _configRepository.Database.DatabaseName,
+                CacheType = _settingsManager.CacheType.Value
             };
         }
     }

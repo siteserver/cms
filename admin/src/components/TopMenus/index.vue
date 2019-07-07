@@ -1,24 +1,20 @@
 <template>
-  <el-menu mode="horizontal">
+  <div>
     <router-link class="top-menu-link" :to="'/sites'">
-      <el-menu-item index="sites">
-        <svg-icon icon-class="site" />
-        <span>{{ $t('route.sites') }}</span>
-      </el-menu-item>
+      <svg-icon icon-class="site" />
+      <span>{{ $t('route.sites') }}</span>
     </router-link>
+
     <router-link class="top-menu-link" :to="'/plugins'">
-      <el-menu-item index="plugins">
-        <svg-icon icon-class="plugin" />
-        <span>{{ $t('route.plugins') }}</span>
-      </el-menu-item>
+      <svg-icon icon-class="plugin" />
+      <span>{{ $t('route.plugins') }}</span>
     </router-link>
+
     <router-link class="top-menu-link" :to="'/settings'">
-      <el-menu-item index="settings">
-        <svg-icon icon-class="settings" />
-        <span>{{ $t('route.settings') }}</span>
-      </el-menu-item>
+      <svg-icon icon-class="settings" />
+      <span>{{ $t('route.settings') }}</span>
     </router-link>
-  </el-menu>
+  </div>
 </template>
 
 <script>
@@ -37,12 +33,17 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .svg-icon {
   margin-right: 8px;
 }
 .top-menu-link {
-    display: inline-block;
+    float: left;
     overflow: hidden;
+    padding: 0 15px;
+
+    &:hover {
+      background: rgba(0, 0, 0, .025)
+    }
 }
 </style>

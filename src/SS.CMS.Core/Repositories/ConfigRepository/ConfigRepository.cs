@@ -56,6 +56,12 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
+        public async Task DeleteAllAsync()
+        {
+            await _repository.DeleteAsync();
+            await _cache.RemoveAsync(_cacheKey);
+        }
+
         public async Task<ConfigInfo> GetConfigInfoAsync()
         {
             return await _cache.GetOrCreateAsync<ConfigInfo>(_cacheKey, async options =>

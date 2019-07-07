@@ -4,13 +4,13 @@ const routers = [
   {
     path: 'install',
     component: () => import('@/views/charts/keyboard'),
-    name: 'plugins-install',
+    name: 'pluginsInstall',
     meta: { icon: 'add' }
   },
   {
     path: 'manage',
     component: () => import('@/views/charts/line'),
-    name: 'plugins-manage',
+    name: 'pluginsManage',
     meta: { icon: 'plugin' }
   }
 ]

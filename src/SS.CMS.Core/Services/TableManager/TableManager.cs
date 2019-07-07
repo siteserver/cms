@@ -433,19 +433,10 @@ namespace SS.CMS.Core.Services
         {
             var configInfo = await _configRepository.GetConfigInfoAsync();
 
-            if (configInfo == null)
-            {
-                configInfo = new ConfigInfo
-                {
-                    DatabaseVersion = _settingsManager.ProductVersion,
-                    UpdateDate = DateTime.Now
-                };
-                await _configRepository.InsertAsync(configInfo);
-            }
-            else
+            if (configInfo != null)
             {
                 configInfo.DatabaseVersion = _settingsManager.ProductVersion;
-                configInfo.UpdateDate = DateTime.Now;
+                configInfo.UpdateDate = DateTime.UtcNow;
                 await _configRepository.UpdateAsync(configInfo);
             }
         }

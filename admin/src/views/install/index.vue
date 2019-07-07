@@ -1,28 +1,26 @@
 <template>
   <div class="install-container">
 
-    <el-card class="box-card">
+    <el-alert
+      v-if="environment.isInstalled"
+      :title="$t('install.forbid')"
+      type="error"
+      effect="dark"
+      :closable="false"
+    />
+    <el-card v-else v-loading="loading" class="box-card">
       <div slot="header" class="clearfix">
-        <span>SS CMS 安装向导</span>
+        <span>SS CMS {{ $t('install.title') }}</span>
         <lang-select style="float: right; padding: 3px 0" class="set-language" />
       </div>
-      <div v-if="environment.isInstalled" class="text item">
-        <el-alert
-          title="系统已安装，向导被禁用"
-          type="error"
-          effect="dark"
-          :closable="false"
-        />
-      </div>
-      <div v-else v-loading="loading" class="text item">
+      <div class="text item">
 
         <el-steps :active="active" finish-status="success">
-          <el-step title="许可协议" />
-          <el-step title="环境检测" />
-          <el-step title="数据库设置" />
-          <el-step title="缓存设置" />
-          <el-step title="系统设置" />
-          <el-step title="安装系统" />
+          <el-step :title="$t('install.environment')" />
+          <el-step :title="$t('install.database')" />
+          <el-step :title="$t('install.cache')" />
+          <el-step :title="$t('install.settings')" />
+          <el-step :title="$t('install.installation')" />
         </el-steps>
 
         <el-alert
@@ -36,69 +34,43 @@
         <hr>
 
         <template v-if="active === 0">
-          <div class="form-group">
-            <label class="col-form-label">
-              <a href="https://github.com/siteserver/cms/blob/staging/LICENSE" target="_blank">SiteServer CMS 开源协议（GPL-3.0）</a>
-            </label>
-          </div>
-
-          <iframe style="border-color:#F5F5F5; border-width:1px;" scrolling="yes" src="/agreement.html" height="320" width="100%" />
-
-          <div class="text-center mt-3">
-            <div class="checkbox checkbox-primary">
-              <input id="autoLogin" v-model="isAgreement" type="checkbox">
-              <label for="autoLogin">
-                我已经阅读并同意此协议
-              </label>
-            </div>
-          </div>
-        </template>
-
-        <template v-else-if="active === 1">
-          <div class="form-group">
-            <label class="col-form-label">
-              服务器信息
-            </label>
-            <small class="form-text text-muted">下表显示当前服务器环境</small>
-          </div>
-
           <div class="panel panel-default">
             <div class="panel-body p-0">
               <div class="table-responsive">
                 <table class="tablesaw table table-hover m-b-0 tablesaw-stack">
                   <thead>
                     <tr>
-                      <th>参数</th>
-                      <th>值</th>
+                      <th>{{ $t('name') }}</th>
+                      <th>{{ $t('value') }}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>API 地址</td>
+                      <td>{{ $t('tools.info.apiUrl') }}</td>
                       <td>
                         {{ environment.apiUrl }}
                       </td>
                     </tr>
                     <tr>
-                      <td>SS CMS 版本</td>
+                      <td>{{ $t('tools.info.productVersion') }}</td>
                       <td>
                         {{ environment.productVersion }}
                       </td>
                     </tr>
                     <tr>
-                      <td>系统根目录</td>
+                      <td>{{ $t('tools.info.contentRootPath') }}</td>
                       <td>
                         {{ environment.contentRootPath }}
                       </td>
                     </tr>
                     <tr>
-                      <td>Web 根目录</td>
+                      <td>{{ $t('tools.info.webRootPath') }}</td>
                       <td>
                         {{ environment.webRootPath }}
                       </td>
                     </tr>
                     <tr>
-                      <td>运行环境</td>
+                      <td>{{ $t('tools.info.targetFramework') }}</td>
                       <td>
                         {{ environment.targetFramework }}
                       </td>
@@ -108,65 +80,13 @@
               </div>
             </div>
           </div>
-
-          <div class="form-group">
-            <label class="col-form-label">
-              目录权限检测
-            </label>
-            <small class="form-text text-muted">
-              系统要求必须满足下列所有的目录权限全部可读写的需求才能使用，如果没有相关权限请添加。
-            </small>
-          </div>
-
-          <div class="panel panel-default">
-            <div class="panel-body p-0">
-              <div class="table-responsive">
-                <table class="tablesaw table table-hover m-b-0 tablesaw-stack">
-                  <thead>
-                    <tr>
-                      <th>目录名</th>
-                      <th>读写权限</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        {{ environment.contentRootPath }}
-                      </td>
-                      <td>
-                        <font v-if="environment.isContentRootPathWritable" color="green">
-                          [√]
-                        </font>
-                        <font v-else color="red">
-                          [×]
-                        </font>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        {{ environment.webRootPath }}
-                      </td>
-                      <td>
-                        <font v-if="environment.isWebRootPathWritable" color="green">
-                          [√]
-                        </font>
-                        <font v-else color="red">
-                          [×]
-                        </font>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
         </template>
 
-        <template v-else-if="active === 2">
+        <template v-else-if="active === 1">
           <form class="form-horizontal" @submit="btnNextClick">
             <div class="form-group">
               <label class="col-form-label">
-                数据库类型
+                {{ $t('install.databaseType') }}
                 <small v-show="errors.has('databaseType')" class="text-danger">
                   {{ errors.first('databaseType') }}
                 </small>
@@ -176,15 +96,15 @@
                 v-model="databaseType"
                 v-validate="'required'"
                 name="databaseType"
-                data-vv-as="数据库类型"
+                :data-vv-as="$t('install.databaseType')"
                 class="form-control"
                 :class="{'is-invalid': errors.has('databaseType') }"
               >
                 <option value="MySql">
-                  MySQL
+                  MySQL 8+
                 </option>
                 <option value="SqlServer">
-                  SQL Server
+                  SQL Server 2012+
                 </option>
                 <option value="PostgreSql">
                   PostgreSQL
@@ -193,11 +113,11 @@
                   SQLite
                 </option>
                 <option value="Oracle">
-                  Oracle
+                  Oracle 12c+
                 </option>
               </select>
               <small class="form-text text-muted">
-                请选择需要安装的数据库类型。
+                {{ $t('install.databaseTypeTips') }}
               </small>
             </div>
 
@@ -206,14 +126,14 @@
               <div class="form-group">
                 <el-switch
                   v-model="databaseIsConnectionString"
-                  active-text="自定义连接字符串"
+                  :active-text="$t('install.setConnectionString')"
                 />
               </div>
 
               <template v-if="databaseIsConnectionString">
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库连接字符串
+                    {{ $t('install.connectionString') }}
                     <small v-show="errors.has('databaseConnectionString')" class="text-danger">
                       {{ errors.first('databaseConnectionString') }}
                     </small>
@@ -224,19 +144,16 @@
                     v-validate="'required'"
                     name="databaseConnectionString"
                     type="text"
-                    data-vv-as="数据库连接字符串"
+                    :data-vv-as="$t('install.connectionString')"
                     :class="{'is-invalid': errors.has('databaseConnectionString') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    Connection String
-                  </small>
                 </div>
               </template>
               <template v-else>
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库主机
+                    {{ $t('install.server') }}
                     <small v-show="errors.has('databaseServer')" class="text-danger">
                       {{ errors.first('databaseServer') }}
                     </small>
@@ -247,18 +164,15 @@
                     v-validate="'required'"
                     name="databaseServer"
                     type="text"
-                    data-vv-as="数据库主机"
+                    :data-vv-as="$t('install.server')"
                     :class="{'is-invalid': errors.has('databaseServer') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    IP地址或者服务器名
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库端口
+                    {{ $t('install.port') }}
                     <small v-show="errors.has('databaseIsDefaultPort')" class="text-danger">
                       {{ errors.first('databaseIsDefaultPort') }}
                     </small>
@@ -268,22 +182,22 @@
                     v-model="databaseIsDefaultPort"
                     v-validate="'required'"
                     name="databaseIsDefaultPort"
-                    data-vv-as="数据库端口"
+                    :data-vv-as="$t('install.port')"
                     class="form-control"
                     :class="{'is-invalid': errors.has('databaseIsDefaultPort') }"
                   >
                     <option :value="true">
-                      默认数据库端口
+                      {{ $t('install.defaultPort') }}
                     </option>
                     <option :value="false">
-                      自定义数据库端口
+                      {{ $t('install.customPort') }}
                     </option>
                   </select>
                 </div>
 
                 <div v-if="!databaseIsDefaultPort" class="form-group">
                   <label class="col-form-label">
-                    自定义端口
+                    {{ $t('install.customPort') }}
                     <small v-show="errors.has('databasePort')" class="text-danger">
                       {{ errors.first('databasePort') }}
                     </small>
@@ -294,18 +208,15 @@
                     v-validate="'required|numeric'"
                     name="databasePort"
                     type="text"
-                    data-vv-as="自定义端口"
+                    :data-vv-as="$t('install.customPort')"
                     :class="{'is-invalid': errors.has('databasePort') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的端口
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库用户名
+                    {{ $t('install.databaseUid') }}
                     <small v-show="errors.has('databaseUid')" class="text-danger">
                       {{ errors.first('databaseUid') }}
                     </small>
@@ -316,19 +227,16 @@
                     v-validate="'required'"
                     name="databaseUid"
                     type="text"
-                    data-vv-as="数据库用户名"
+                    :data-vv-as="$t('install.databaseUid')"
                     :class="{'is-invalid': errors.has('databaseUid') }"
                     autocomplete="false"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的用户名
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库密码
+                    {{ $t('install.databasePwd') }}
                     <small v-show="errors.has('databasePwd')" class="text-danger">
                       {{ errors.first('databasePwd') }}
                     </small>
@@ -339,18 +247,15 @@
                     v-validate="'required'"
                     name="databasePwd"
                     type="password"
-                    data-vv-as="数据库密码"
+                    :data-vv-as="$t('install.databasePwd')"
                     :class="{'is-invalid': errors.has('databasePwd') }"
                     autocomplete="false"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的密码
-                  </small>
                 </div>
                 <div v-if="databaseNames" class="form-group">
                   <label class="col-form-label">
-                    数据库
+                    {{ $t('install.database') }}
                     <small v-show="errors.has('databaseName')" class="text-danger">
                       {{ errors.first('databaseName') }}
                     </small>
@@ -360,7 +265,7 @@
                     v-model="databaseName"
                     v-validate="'required'"
                     name="databaseName"
-                    data-vv-as="数据库"
+                    :data-vv-as="$t('install.database')"
                     class="form-control"
                     :class="{'is-invalid': errors.has('databaseName') }"
                   >
@@ -369,7 +274,7 @@
                     </option>
                   </select>
                   <small class="form-text text-muted">
-                    请选择需要安装的数据库。
+                    {{ $t('install.databaseNameTips') }}
                   </small>
                 </div>
               </template>
@@ -377,11 +282,11 @@
           </form>
         </template>
 
-        <template v-else-if="active === 3">
+        <template v-else-if="active === 2">
           <form class="form-horizontal" @submit="btnNextClick">
             <div class="form-group">
               <label class="col-form-label">
-                缓存方式
+                {{ $t('install.cacheType') }}
                 <small v-show="errors.has('cacheType')" class="text-danger">
                   {{ errors.first('cacheType') }}
                 </small>
@@ -391,7 +296,7 @@
                 v-model="cacheType"
                 v-validate="'required'"
                 name="cacheType"
-                data-vv-as="缓存方式"
+                :data-vv-as="$t('install.cacheType')"
                 class="form-control"
                 :class="{'is-invalid': errors.has('cacheType') }"
               >
@@ -406,7 +311,7 @@
                 </option>
               </select>
               <small class="form-text text-muted">
-                请选择系统使用的缓存类型。
+                {{ $t('install.cacheTypeTips') }}
               </small>
             </div>
 
@@ -414,14 +319,14 @@
               <div class="form-group">
                 <el-switch
                   v-model="cacheIsConnectionString"
-                  active-text="自定义连接字符串"
+                  :active-text="$t('install.setConnectionString')"
                 />
               </div>
 
               <template v-if="cacheIsConnectionString">
                 <div class="form-group">
                   <label class="col-form-label">
-                    连接字符串
+                    {{ $t('install.connectionString') }}
                     <small v-show="errors.has('cacheConnectionString')" class="text-danger">
                       {{ errors.first('cacheConnectionString') }}
                     </small>
@@ -432,19 +337,16 @@
                     v-validate="'required'"
                     name="cacheConnectionString"
                     type="text"
-                    data-vv-as="连接字符串"
+                    :data-vv-as="$t('install.connectionString')"
                     :class="{'is-invalid': errors.has('cacheConnectionString') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    Connection String
-                  </small>
                 </div>
               </template>
               <template v-else-if="cacheType === 'SqlServer'">
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库主机
+                    {{ $t('install.server') }}
                     <small v-show="errors.has('cacheServer')" class="text-danger">
                       {{ errors.first('cacheServer') }}
                     </small>
@@ -455,18 +357,15 @@
                     v-validate="'required'"
                     name="cacheServer"
                     type="text"
-                    data-vv-as="数据库主机"
+                    :data-vv-as="$t('install.server')"
                     :class="{'is-invalid': errors.has('cacheServer') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    IP地址或者服务器名
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库端口
+                    {{ $t('install.port') }}
                     <small v-show="errors.has('cacheIsDefaultPort')" class="text-danger">
                       {{ errors.first('cacheIsDefaultPort') }}
                     </small>
@@ -476,22 +375,22 @@
                     v-model="cacheIsDefaultPort"
                     v-validate="'required'"
                     name="cacheIsDefaultPort"
-                    data-vv-as="数据库端口"
+                    :data-vv-as="$t('install.port')"
                     class="form-control"
                     :class="{'is-invalid': errors.has('cacheIsDefaultPort') }"
                   >
                     <option :value="true">
-                      默认数据库端口
+                      {{ $t('install.defaultPort') }}
                     </option>
                     <option :value="false">
-                      自定义数据库端口
+                      {{ $t('install.customPort') }}
                     </option>
                   </select>
                 </div>
 
                 <div v-if="!cacheIsDefaultPort" class="form-group">
                   <label class="col-form-label">
-                    自定义端口
+                    {{ $t('install.customPort') }}
                     <small v-show="errors.has('cachePort')" class="text-danger">
                       {{ errors.first('cachePort') }}
                     </small>
@@ -502,18 +401,15 @@
                     v-validate="'required|numeric'"
                     name="cachePort"
                     type="text"
-                    data-vv-as="自定义端口"
+                    :data-vv-as="$t('install.customPort')"
                     :class="{'is-invalid': errors.has('cachePort') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的端口
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库用户名
+                    {{ $t('install.databaseUid') }}
                     <small v-show="errors.has('cacheUid')" class="text-danger">
                       {{ errors.first('cacheUid') }}
                     </small>
@@ -524,19 +420,16 @@
                     v-validate="'required'"
                     name="cacheUid"
                     type="text"
-                    data-vv-as="数据库用户名"
+                    :data-vv-as="$t('install.databaseUid')"
                     :class="{'is-invalid': errors.has('cacheUid') }"
                     autocomplete="false"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的用户名
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库密码
+                    {{ $t('install.databasePwd') }}
                     <small v-show="errors.has('cachePwd')" class="text-danger">
                       {{ errors.first('cachePwd') }}
                     </small>
@@ -547,18 +440,15 @@
                     v-validate="'required'"
                     name="cachePwd"
                     type="password"
-                    data-vv-as="数据库密码"
+                    :data-vv-as="$t('install.databasePwd')"
                     :class="{'is-invalid': errors.has('cachePwd') }"
                     autocomplete="false"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的密码
-                  </small>
                 </div>
                 <div v-if="cacheNames" class="form-group">
                   <label class="col-form-label">
-                    数据库
+                    $t('install.database')
                     <small v-show="errors.has('cacheName')" class="text-danger">
                       {{ errors.first('cacheName') }}
                     </small>
@@ -568,7 +458,7 @@
                     v-model="cacheName"
                     v-validate="'required'"
                     name="cacheName"
-                    data-vv-as="数据库"
+                    :data-vv-as="$t('install.database')"
                     class="form-control"
                     :class="{'is-invalid': errors.has('cacheName') }"
                   >
@@ -576,15 +466,12 @@
                       {{ name }}
                     </option>
                   </select>
-                  <small class="form-text text-muted">
-                    请选择需要安装的数据库。
-                  </small>
                 </div>
               </template>
               <template v-else-if="cacheType === 'Redis'">
                 <div class="form-group">
                   <label class="col-form-label">
-                    Redis 主机
+                    {{ $t('install.server') }}
                     <small v-show="errors.has('cacheServer')" class="text-danger">
                       {{ errors.first('cacheServer') }}
                     </small>
@@ -595,18 +482,15 @@
                     v-validate="'required'"
                     name="cacheServer"
                     type="text"
-                    data-vv-as="Redis 主机"
+                    :data-vv-as="$t('install.server')"
                     :class="{'is-invalid': errors.has('cacheServer') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    IP地址或者服务器名
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    Redis 端口
+                    {{ $t('install.port') }}
                     <small v-show="errors.has('cacheIsDefaultPort')" class="text-danger">
                       {{ errors.first('cacheIsDefaultPort') }}
                     </small>
@@ -616,22 +500,22 @@
                     v-model="cacheIsDefaultPort"
                     v-validate="'required'"
                     name="cacheIsDefaultPort"
-                    data-vv-as="Redis 端口"
+                    :data-vv-as="$t('install.port')"
                     class="form-control"
                     :class="{'is-invalid': errors.has('cacheIsDefaultPort') }"
                   >
                     <option :value="true">
-                      默认 Redis 端口
+                      {{ $t('install.defaultPort') }}
                     </option>
                     <option :value="false">
-                      自定义 Redis 端口
+                      {{ $t('install.customPort') }}
                     </option>
                   </select>
                 </div>
 
                 <div v-if="!cacheIsDefaultPort" class="form-group">
                   <label class="col-form-label">
-                    自定义端口
+                    {{ $t('install.customPort') }}
                     <small v-show="errors.has('cachePort')" class="text-danger">
                       {{ errors.first('cachePort') }}
                     </small>
@@ -642,18 +526,15 @@
                     v-validate="'required|numeric'"
                     name="cachePort"
                     type="text"
-                    data-vv-as="自定义端口"
+                    :data-vv-as="$t('install.customPort')"
                     :class="{'is-invalid': errors.has('cachePort') }"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接数据库的端口
-                  </small>
                 </div>
 
                 <div class="form-group">
                   <label class="col-form-label">
-                    Redis 密码
+                    {{ $t('install.redisPwd') }}
                     <small v-show="errors.has('cachePwd')" class="text-danger">
                       {{ errors.first('cachePwd') }}
                     </small>
@@ -664,14 +545,11 @@
                     v-validate="'required'"
                     name="cachePwd"
                     type="password"
-                    data-vv-as="Redis 密码"
+                    :data-vv-as="$t('install.redisPwd')"
                     :class="{'is-invalid': errors.has('cachePwd') }"
                     autocomplete="false"
                     class="form-control"
                   >
-                  <small class="form-text text-muted">
-                    连接Redis 的密码
-                  </small>
                 </div>
               </template>
 
@@ -679,13 +557,13 @@
           </form>
         </template>
 
-        <template v-else-if="active === 4">
+        <template v-else-if="active === 3">
           <form class="form-horizontal" @submit="btnNextClick">
-            <h4>管理员设置</h4>
+            <h4>{{ $t('install.administratorSettings') }}</h4>
             <hr>
             <div class="form-group">
               <label class="col-form-label">
-                超级管理员用户名
+                {{ $t('install.superAdminUsername') }}
                 <small v-show="errors.has('adminName')" class="text-danger">
                   {{ errors.first('adminName') }}
                 </small>
@@ -696,19 +574,16 @@
                 v-validate="'required'"
                 name="adminName"
                 type="text"
-                data-vv-as="超级管理员用户名"
+                :data-vv-as="$t('install.superAdminUsername')"
                 :class="{'is-invalid': errors.has('adminName') }"
                 autocomplete="false"
                 class="form-control"
               >
-              <small class="form-text text-muted">
-                在此设置超级管理员的登录用户名
-              </small>
             </div>
 
             <div class="form-group">
               <label class="col-form-label">
-                超级管理员密码
+                {{ $t('install.superAdminPassword') }}
                 <small v-show="errors.has('adminPassword')" class="text-danger">
                   {{ errors.first('adminPassword') }}
                 </small>
@@ -720,29 +595,26 @@
                 v-validate="'required|min:6'"
                 name="adminPassword"
                 type="password"
-                data-vv-as="超级管理员密码"
+                :data-vv-as="$t('install.superAdminPassword')"
                 :class="{'is-invalid': errors.has('adminPassword') }"
                 autocomplete="false"
                 class="form-control"
               >
-              <small class="form-text text-muted">
-                6-16个字符，支持大小写字母、数字和符号
-              </small>
 
               <small v-if="passwordScore > 80" class="form-text text-primary">
-                密码强度：极好
+                {{ $t('install.passwordStrengthGreat') }}
               </small>
               <small v-else-if="passwordScore > 60" class="form-text text-primary">
-                密码强度：强
+                {{ $t('install.passwordStrengthStrong') }}
               </small>
               <small v-else-if="passwordScore > 0" class="form-text text-danger">
-                密码强度：弱
+                {{ $t('install.passwordStrengthWeak') }}
               </small>
             </div>
 
             <div class="form-group">
               <label class="col-form-label">
-                确认密码
+                {{ $t('install.confirmPassword') }}
                 <small v-show="errors.has('adminPasswordConfirm')" class="text-danger">
                   {{ errors.first('adminPasswordConfirm') }}
                 </small>
@@ -753,60 +625,58 @@
                 v-validate="'required|confirmed:adminPassword'"
                 name="adminPasswordConfirm"
                 type="password"
-                data-vv-as="确认密码"
+                :data-vv-as="$t('install.confirmPassword')"
                 :class="{'is-invalid': errors.has('adminPasswordConfirm') }"
                 autocomplete="false"
                 class="form-control"
               >
-              <small class="form-text text-muted">
-                6-16个字符，支持大小写字母、数字和符号
-              </small>
             </div>
 
-            <h4>安全设置</h4>
+            <h4>{{ $t('install.securitySettings') }}</h4>
             <hr>
 
             <div class="form-group">
               <el-switch
                 v-model="isProtectData"
-                active-text="加密连接字符串"
+                :active-text="$t('install.encryptConnectionString')"
               />
-              <small class="form-text text-muted">
-                设置是否加密 ss.json 中的数据库连接字符串
-              </small>
             </div>
 
           </form>
         </template>
 
-        <template v-else-if="active === 5">
-          <div class="alert alert-success">
-            <h4 class="alert-heading">
-              安装完成！
-            </h4>
+        <template v-else-if="active >= 4">
+
+          <el-alert
+            v-if="active > 4"
+            :title="$t('install.complete')"
+            type="success"
+            show-icon
+          >
             <p>
-              恭喜，您已经完成了 SS CMS 的安装
-              <router-link to="../">
-                进入管理后台
-              </router-link>
+              <el-button plain>
+                <router-link to="../">
+                  {{ $t('install.goToLogin') }}
+                </router-link>
+              </el-button>
+              <el-button plain>
+                <a href="https://www.sscms.com/docs/" target="_blank">SS CMS {{ $t('docs') }}</a>
+              </el-button>
             </p>
-            <hr>
-            <p class="mb-0">
-              获取更多使用帮助请访问
-              <a href="https://www.sscms.com/docs/" target="_blank">SS CMS 文档中心</a>
-            </p>
-          </div>
+          </el-alert>
+
         </template>
 
         <hr>
 
-        <div class="text-center">
-          <button :disabled="active === 0" class="btn btn-default btn-large btn-custom w-md mr-2" type="submit" @click="btnPrevClick">
-            上一步
-          </button>
-          <button :disabled="!isAgreement || !environment.isContentRootPathWritable || !environment.isWebRootPathWritable" class="btn btn-primary btn-large btn-custom w-md" type="submit" @click="btnNextClick">
-            下一步
-          </button>
+        <div v-if="active < 4" class="text-center">
+          <el-button :disabled="active === 0" type="primary" @click="btnPrevClick">
+            {{ $t('previous') }}
+          </el-button>
+
+          <el-button type="primary" @click="btnNextClick">
+            {{ $t('next') }}
+          </el-button>
         </div>
 
       </div>
@@ -815,8 +685,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { getInfo, installTryDatabase, installTryCache, install } from '@/api/cms'
+import { getInfo, installTryDatabase, installTryCache, installSaveSettings, install } from '@/api/cms'
 import LangSelect from '@/components/LangSelect'
 import '@/assets/css/bootstrap.min.css'
 import '@/assets/css/icons.min.css'
@@ -827,7 +696,7 @@ export default {
   components: { LangSelect },
   data() {
     return {
-      loading: false,
+      loading: true,
       active: 0,
       isAgreement: true,
       environment: {},
@@ -915,6 +784,7 @@ export default {
   },
   mounted() {
     getInfo().then(response => {
+      this.loading = false
       this.environment = response
     })
   },
@@ -928,7 +798,7 @@ export default {
         }).then(response => {
           this.loading = false
           if (response.isSuccess) {
-            this.active = 3
+            this.active = 2
           } else {
             this.errorMessage = response.errorMessage
           }
@@ -961,7 +831,7 @@ export default {
         }).then(response => {
           this.loading = false
           if (response.isSuccess) {
-            this.active = 4
+            this.active = 3
           } else {
             this.errorMessage = response.errorMessage
           }
@@ -977,7 +847,7 @@ export default {
           this.loading = false
           if (response.isSuccess) {
             if (this.cacheType === 'Redis') {
-              this.active = 4
+              this.active = 3
             } else {
               this.cacheNames = response.databaseNames
               this.cacheName = null
@@ -989,12 +859,13 @@ export default {
       }
     },
 
-    apiInstall() {
-      const adminUrl = _.trimEnd(location.href.toLowerCase(), '/').replace('/install/database', '')
-      const homeUrl = adminUrl.substring(0, adminUrl.lastIndexOf('/')) + '/home'
+    apiSaveSettings() {
+      // const adminUrl = _.trimEnd(location.href.toLowerCase(), '/').replace('/install/database', '')
+      // const homeUrl = adminUrl.substring(0, adminUrl.lastIndexOf('/')) + '/home'
 
       this.loading = true
-      install({
+      this.active = 4
+      installSaveSettings({
         databaseType: this.databaseType,
         databaseServer: this.databaseServer,
         databasePort: this.databaseIsDefaultPort ? null : this.databasePort,
@@ -1009,11 +880,19 @@ export default {
         cachePwd: this.cachePwd,
         cacheName: this.cacheName,
         cacheConnectionString: this.cacheConnectionString,
-        adminUrl: adminUrl,
-        homeUrl: homeUrl,
-        adminName: this.adminName,
-        adminPassword: this.adminPassword,
         isProtectData: this.isProtectData
+      }).then(response => {
+        setTimeout(() => {
+          this.apiInstall(response.securityKey)
+        }, 5000)
+      })
+    },
+
+    apiInstall(securityKey) {
+      install({
+        securityKey: securityKey,
+        adminName: this.adminName,
+        adminPassword: this.adminPassword
       }).then(response => {
         this.loading = false
         if (response.isSuccess) {
@@ -1060,41 +939,31 @@ export default {
     btnNextClick(e) {
       e.preventDefault()
       if (this.active === 0) {
-        if (this.isAgreement) {
-          this.active = 1
-        }
+        this.active = 1
       } else if (this.active === 1) {
-        if (this.environment.isContentRootPathWritable && this.environment.isWebRootPathWritable) {
-          this.active = 2
-        }
-      } else if (this.active === 2) {
         this.$validator.validateAll().then((result) => {
           if (result) {
             if (this.databaseType === 'SQLite' || this.databaseName) {
-              this.active = 3
+              this.active = 2
             } else {
               this.apiTryDatabase()
+            }
+          }
+        })
+      } else if (this.active === 2) {
+        this.$validator.validateAll().then((result) => {
+          if (result) {
+            if (this.cacheType === 'Memory' || this.cacheName) {
+              this.active = 3
+            } else {
+              this.apiTryCache()
             }
           }
         })
       } else if (this.active === 3) {
         this.$validator.validateAll().then((result) => {
           if (result) {
-            if (this.cacheType === 'Memory' || this.cacheName) {
-              this.active = 4
-            } else {
-              this.apiTryCache()
-            }
-          }
-        })
-      } else if (this.active === 4) {
-        this.$validator.validateAll().then((result) => {
-          if (result) {
-            if (this.redisIsEnabled) {
-              this.apiTryRedis()
-            } else {
-              this.apiInstall()
-            }
+            this.apiSaveSettings()
           }
         })
       }

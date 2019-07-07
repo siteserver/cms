@@ -10,6 +10,8 @@ namespace SS.CMS.Repositories
 
         Task<bool> UpdateAsync(ConfigInfo configInfo);
 
+        Task DeleteAllAsync();
+
         Task<ConfigInfo> GetConfigInfoAsync();
     }
 }

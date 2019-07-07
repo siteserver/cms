@@ -35,6 +35,11 @@ namespace SS.CMS.Core.Services
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.TemporaryFiles), paths);
         }
 
+        public string GetThemesPath(params string[] paths)
+        {
+            return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, "themes"), paths);
+        }
+
         public string GetSiteTemplatesPath(params string[] paths)
         {
             return PathUtils.Add(PathUtils.Combine(_settingsManager.ContentRootPath, DirectoryUtils.SiteFiles.DirectoryName, DirectoryUtils.SiteFiles.SiteTemplates), paths);

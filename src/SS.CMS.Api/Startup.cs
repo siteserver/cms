@@ -36,7 +36,7 @@ namespace SS.CMS.Api
 
             var settingsManager = services.AddSettingsManager(_config, _env.ContentRootPath, _env.WebRootPath);
 
-            services.AddDistributedCache(settingsManager);
+            services.AddDistributedCache(settingsManager.CacheType, settingsManager.CacheConnectionString);
             services.AddRepositories();
             services.AddPathManager();
             services.AddPluginManager();

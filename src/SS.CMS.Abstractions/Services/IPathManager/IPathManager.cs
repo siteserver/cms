@@ -6,6 +6,8 @@
 
         string GetTemporaryFilesPath(params string[] paths);
 
+        string GetThemesPath(params string[] paths);
+
         string GetSiteTemplatesPath(params string[] paths);
 
         string AddVirtualToPath(string path);

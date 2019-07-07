@@ -20,33 +20,33 @@ namespace Microsoft.Extensions.DependencyInjection
             return settingsManager;
         }
 
-        public static IServiceCollection AddDistributedCache(this IServiceCollection services, ISettingsManager settingsManager)
+        public static IServiceCollection AddDistributedCache(this IServiceCollection services, CacheType cacheType, string cacheConnectionString)
         {
             var isSettings = false;
-            if (settingsManager.CacheType == CacheType.Redis && !string.IsNullOrEmpty(settingsManager.CacheConnectionString))
+            if (cacheType == CacheType.Redis && !string.IsNullOrEmpty(cacheConnectionString))
             {
-                var (isConnectionWorks, _) = RedisManager.IsConnectionWorksAsync(settingsManager.CacheConnectionString).GetAwaiter().GetResult();
+                var (isConnectionWorks, _) = RedisManager.IsConnectionWorksAsync(cacheConnectionString).GetAwaiter().GetResult();
                 if (isConnectionWorks)
                 {
                     isSettings = true;
                     services.AddStackExchangeRedisCache(options =>
-                                    {
-                                        options.Configuration = settingsManager.CacheConnectionString;
-                                        options.InstanceName = "";
-                                    });
+                    {
+                        options.Configuration = cacheConnectionString;
+                        options.InstanceName = "";
+                    });
                 }
             }
-            else if (settingsManager.CacheType == CacheType.SqlServer && !string.IsNullOrEmpty(settingsManager.CacheConnectionString))
+            else if (cacheType == CacheType.SqlServer && !string.IsNullOrEmpty(cacheConnectionString))
             {
-                var db = new Database(DatabaseType.SqlServer, settingsManager.CacheConnectionString);
+                var db = new Database(DatabaseType.SqlServer, cacheConnectionString);
                 var (isConnectionWorks, _) = db.IsConnectionWorks();
                 if (isConnectionWorks)
                 {
                     isSettings = true;
                     services.AddDistributedSqlServerCache(options =>
-                                    {
-                                        options.ConnectionString = settingsManager.CacheConnectionString;
-                                    });
+                    {
+                        options.ConnectionString = cacheConnectionString;
+                    });
                 }
             }
 

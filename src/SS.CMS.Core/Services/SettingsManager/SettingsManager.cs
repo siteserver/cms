@@ -57,12 +57,9 @@ namespace SS.CMS.Core.Services
         public string ProductVersion { get; }
         public string PluginVersion { get; }
         public string TargetFramework { get; }
-
-        public string AdminUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(AdminUrl)));
-        public string HomeUrl => StringUtils.TrimSlash(_config.GetValue<string>(nameof(HomeUrl)));
         public bool IsNightlyUpdate => _config.GetValue<bool>(nameof(IsNightlyUpdate));
         public bool IsProtectData => _config.GetValue<bool>(nameof(IsProtectData));
-        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey));
+        public string SecurityKey => _config.GetValue<string>(nameof(SecurityKey)) ?? StringUtils.GetShortGuid().ToUpper();
         public DatabaseType DatabaseType => DatabaseType.Parse(_config.GetValue<string>("Database:Type"));
         public string DatabaseConnectionString => IsProtectData ? Decrypt(_config.GetValue<string>("Database:ConnectionString")) : _config.GetValue<string>("Database:ConnectionString");
         public CacheType CacheType => CacheType.Parse(_config.GetValue<string>("Cache:Type"));
@@ -81,7 +78,7 @@ namespace SS.CMS.Core.Services
             return TranslateUtils.DecryptStringBySecretKey(inputString, SecurityKey);
         }
 
-        public async Task SaveSettingsAsync(string adminUrl, string homeUrl, bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString)
+        public async Task SaveSettingsAsync(bool isNightlyUpdate, bool isProtectData, string securityKey, DatabaseType databaseType, string databaseConnectionString, CacheType cacheType, string cacheConnectionString)
         {
             var path = PathUtils.Combine(ContentRootPath, Constants.ConfigFileName);
 
@@ -93,24 +90,22 @@ namespace SS.CMS.Core.Services
                 cacheConnectionStringValue = Encrypt(cacheConnectionString);
             }
 
-            var json = $@"{{
-              ""AdminUrl"": ""{adminUrl}"",
-              ""HomeUrl"": ""{homeUrl}"",
-              ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
-              ""IsProtectData"": {isProtectData.ToString().ToLower()},
-              ""SecurityKey"": ""{securityKey}"",
-              ""Database"": {{
-                ""Type"": ""{databaseType.Value}"",
-                ""ConnectionString"": ""{databaseConnectionStringValue}""
-              }},
-              ""Redis"": {{
-                ""Type"": ""{cacheType.Value}"",
-                ""ConnectionString"": ""{cacheConnectionStringValue}""
-              }}
-            }}
-            ";
+            var json = $@"
+{{
+  ""IsNightlyUpdate"": {isNightlyUpdate.ToString().ToLower()},
+  ""IsProtectData"": {isProtectData.ToString().ToLower()},
+  ""SecurityKey"": ""{securityKey}"",
+  ""Database"": {{
+    ""Type"": ""{databaseType.Value}"",
+    ""ConnectionString"": ""{databaseConnectionStringValue}""
+  }},
+  ""Redis"": {{
+    ""Type"": ""{cacheType.Value}"",
+    ""ConnectionString"": ""{cacheConnectionStringValue}""
+  }}
+}}";
 
-            await FileUtils.WriteTextAsync(path, json);
+            await FileUtils.WriteTextAsync(path, json.Trim());
         }
     }
 }

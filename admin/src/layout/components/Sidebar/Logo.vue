@@ -6,7 +6,7 @@
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img src="@/assets/logo.png" class="sidebar-logo">
-        <h1 class="sidebar-title">{{ $t('ss-cms-admin') }} </h1>
+        <h1 class="sidebar-title">{{ $t('console') }} </h1>
       </router-link>
     </transition>
   </div>
