@@ -13,18 +13,10 @@ namespace SiteServer.API
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            if (!SystemManager.IsInstalled)
-            {
-                SystemManager.CheckIsInstalled();
-            }
         }
 
         protected void Session_Start(object sender, EventArgs e)
         {
-            if (!SystemManager.IsInstalled)
-            {
-                SystemManager.CheckIsInstalled();
-            }
         }
         protected void Application_BeginRequest(object sender, EventArgs e)
         {

@@ -235,13 +235,13 @@ namespace SiteServer.BackgroundPages
 
         public void BtnStep4_Click(object sender, EventArgs e)
         {
-            string errorMessage;
-            if (CheckLoginValid(out errorMessage))
+            if (CheckLoginValid(out string errorMessage))
             {
                 if (InstallDatabase(out errorMessage))
                 {
                     SetSetp(5);
-                    if (!SystemManager.IsInstalled) {
+                    if (!SystemManager.IsInstalled)
+                    {
                         SystemManager.CheckIsInstalled();
                     }
                 }

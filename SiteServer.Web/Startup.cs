@@ -3,6 +3,7 @@ using System.Web.Http;
 using Microsoft.Owin;
 using Owin;
 using SiteServer.API;
+using SiteServer.CMS.Core;
 using SiteServer.CMS.Plugin;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -15,6 +16,10 @@ namespace SiteServer.API
         {
             PluginManager.LoadPlugins(HostingEnvironment.ApplicationPhysicalPath);
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            if (!SystemManager.IsInstalled)
+            {
+                SystemManager.CheckIsInstalled();
+            }
         }
     }
 }

@@ -95,7 +95,7 @@ namespace SiteServer.Cli.Jobs
                 return;
             }
 
-            if (!SystemManager.IsNeedInstall())
+            if (SystemManager.IsInstalled)
             {
                 await CliUtils.PrintErrorAsync("系统已安装在 web.config 指定的数据库中，命令执行失败");
                 return;

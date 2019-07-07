@@ -31,9 +31,9 @@ namespace SiteServer.CMS.Core
 
                 //DotNetVersion = FileVersionInfo.GetVersionInfo(typeof(Uri).Assembly.Location).ProductVersion;
             }
-            catch
+            catch (Exception _err)
             {
-                // ignored
+                Console.WriteLine(_err);
             }
 
             //var ssemblyName = assembly.GetName();

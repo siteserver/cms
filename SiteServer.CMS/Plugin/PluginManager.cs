@@ -29,7 +29,7 @@ namespace SiteServer.CMS.Plugin
             {
                 var dict = new SortedList<string, PluginInstance>();
 
-                Thread.Sleep(2000);
+                //Thread.Sleep(2000);
 
                 try
                 {
@@ -38,7 +38,6 @@ namespace SiteServer.CMS.Plugin
                     {
                         return dict;
                     }
-
                     var directoryNames = DirectoryUtils.GetDirectoryNames(pluginsPath);
                     foreach (var directoryName in directoryNames)
                     {
@@ -50,7 +49,6 @@ namespace SiteServer.CMS.Plugin
                             dict[directoryName] = pluginInfo;
                         }
                     }
-
 #if DEBUG
                     PluginDebugger.Instance.Run();
 #endif
@@ -59,7 +57,6 @@ namespace SiteServer.CMS.Plugin
                 {
                     LogUtils.AddErrorLog(ex, "载入插件时报错");
                 }
-
                 return dict;
             }
 
