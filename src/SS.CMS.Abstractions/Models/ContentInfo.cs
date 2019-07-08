@@ -21,13 +21,10 @@ namespace SS.CMS.Models
         public int SiteId { get; set; }
 
         [TableColumn]
-        public string AddUserName { get; set; }
-
-        [TableColumn]
-        public string LastEditUserName { get; set; }
-
-        [TableColumn]
         public int UserId { get; set; }
+
+        [TableColumn]
+        public int LastModifiedUserId { get; set; }
 
         [TableColumn]
         public int Taxis { get; set; }
@@ -118,7 +115,7 @@ namespace SS.CMS.Models
 
         public string TitleFormatString { get; set; }
 
-        public string CheckUserName { get; set; } //审核者
+        public int CheckUserId { get; set; } //审核者
         public string CheckDate { get; set; }//审核时间
         public string CheckReasons { get; set; } //审核原因
         public string TranslateContentType { get; set; }//转移内容类型

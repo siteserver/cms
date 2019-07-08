@@ -7,13 +7,13 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class SiteLogRepository
     {
-        public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string ipAddress, string adminName, string action, string summary)
+        public async Task AddSiteLogAsync(int siteId, int channelId, int contentId, string ipAddress, int userId, string action, string summary)
         {
             // if (!ConfigManager.Instance.IsLogSite) return;
 
             if (siteId <= 0)
             {
-                await _logRepository.AddAdminLogAsync(adminName, action, summary);
+                await _logRepository.AddAdminLogAsync(ipAddress, userId, action, summary);
             }
             else
             {
@@ -39,7 +39,7 @@ namespace SS.CMS.Core.Repositories
                         SiteId = siteId,
                         ChannelId = channelId,
                         ContentId = contentId,
-                        UserName = adminName,
+                        UserId = userId,
                         IpAddress = ipAddress,
                         Action = action,
                         Summary = summary

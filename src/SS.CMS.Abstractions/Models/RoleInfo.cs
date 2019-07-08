@@ -11,7 +11,7 @@ namespace SS.CMS.Models
         public string RoleName { get; set; }
 
         [TableColumn]
-        public string CreatorUserName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
         public string Description { get; set; }

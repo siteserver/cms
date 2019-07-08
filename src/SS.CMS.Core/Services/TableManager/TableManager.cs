@@ -16,6 +16,7 @@ namespace SS.CMS.Core.Services
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
+        private readonly IDatabase _database;
         private readonly ISettingsManager _settingsManager;
         private readonly IAccessTokenRepository _accessTokenRepository;
         private readonly IAreaRepository _areaRepository;
@@ -51,6 +52,7 @@ namespace SS.CMS.Core.Services
 
         public TableManager(
             IDistributedCache cache,
+            IDatabase database,
             ISettingsManager settingsManager,
             IAccessTokenRepository accessTokenRepository,
             IAreaRepository areaRepository,
@@ -86,6 +88,7 @@ namespace SS.CMS.Core.Services
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(TableManager));
+            _database = database;
             _settingsManager = settingsManager;
 
             _repositories = new List<IRepository>();
@@ -158,17 +161,11 @@ namespace SS.CMS.Core.Services
             allDict[key] = list;
         }
 
-        private IDatabase GetDatabase()
-        {
-            return new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
-        }
-
         private async Task<IEnumerable<TableColumn>> CacheGetTableColumnInfoListAsync(string tableName)
         {
             return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {
-                var database = GetDatabase();
-                return await database.GetTableColumnsAsync(tableName);
+                return await _database.GetTableColumnsAsync(tableName);
             });
         }
 
@@ -228,11 +225,9 @@ namespace SS.CMS.Core.Services
 
         public async Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, bool isContentTable)
         {
-            var database = GetDatabase();
-
             try
             {
-                await database.CreateTableAsync(tableName, tableColumns);
+                await _database.CreateTableAsync(tableName, tableColumns);
             }
             catch (Exception ex)
             {
@@ -244,7 +239,7 @@ namespace SS.CMS.Core.Services
             {
                 try
                 {
-                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
+                    await _database.CreateIndexAsync(tableName, $"IX_{tableName}_General", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
 
 
                     //sqlString =
@@ -260,7 +255,7 @@ namespace SS.CMS.Core.Services
 
                 try
                 {
-                    await database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
+                    await _database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", $"{ContentAttribute.Taxis} DESC");
 
                     //sqlString =
                     //    $@"CREATE INDEX {DatorySql.GetQuotedIdentifier(DatabaseType, $"IX_{tableName}_Taxis")} ON {DatorySql.GetQuotedIdentifier(DatabaseType, tableName)}({DatorySql.GetQuotedIdentifier(DatabaseType, ContentAttribute.Taxis)} DESC)";
@@ -280,11 +275,9 @@ namespace SS.CMS.Core.Services
 
         public async Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, IList<string> dropColumnNames = null)
         {
-            var database = GetDatabase();
-
             try
             {
-                await database.AlterTableAsync(tableName,
+                await _database.AlterTableAsync(tableName,
                     GetRealTableColumns(tableColumns), dropColumnNames);
 
                 await _cache.RemoveAsync(_cacheKey);
@@ -342,24 +335,9 @@ namespace SS.CMS.Core.Services
             return realTableColumns;
         }
 
-        public async Task CreateContentTableAsync(string tableName, IList<TableColumn> tableColumns)
-        {
-            var database = GetDatabase();
-
-            var isDbExists = await database.IsTableExistsAsync(tableName);
-            if (isDbExists) return;
-
-            await database.CreateTableAsync(tableName, tableColumns);
-            await database.CreateIndexAsync(tableName, $"IX_{tableName}", $"{ContentAttribute.IsTop} DESC", $"{ContentAttribute.Taxis} DESC", $"{ContentAttribute.Id} DESC");
-            await database.CreateIndexAsync(tableName, $"IX_{tableName}_Taxis", ContentAttribute.Taxis);
-
-            await _cache.RemoveAsync(_cacheKey);
-        }
-
         public async Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null)
         {
-            var database = GetDatabase();
-            await database.AlterTableAsync(tableName, tableColumns, dropColumnNames);
+            await _database.AlterTableAsync(tableName, tableColumns, dropColumnNames);
 
             await _cache.RemoveAsync(_cacheKey);
         }
@@ -381,9 +359,8 @@ namespace SS.CMS.Core.Services
         public async Task SyncSystemTablesAsync()
         {
             var configInfo = await _configRepository.GetConfigInfoAsync();
-            var database = GetDatabase();
 
-            if (!await database.IsTableExistsAsync(_configRepository.TableName))
+            if (!await _database.IsTableExistsAsync(_configRepository.TableName))
             {
                 await CreateTableAsync(_configRepository.TableName, _configRepository.TableColumns, string.Empty, false);
             }
@@ -402,7 +379,7 @@ namespace SS.CMS.Core.Services
             {
                 if (string.IsNullOrEmpty(repository.TableName) || repository.TableName == _configRepository.TableName || repository.TableColumns == null || repository.TableColumns.Count <= 0) continue;
 
-                if (!await database.IsTableExistsAsync(repository.TableName))
+                if (!await _database.IsTableExistsAsync(repository.TableName))
                 {
                     await CreateTableAsync(repository.TableName, repository.TableColumns, string.Empty, false);
                 }
@@ -411,22 +388,6 @@ namespace SS.CMS.Core.Services
                     await AlterTableAsync(repository.TableName, repository.TableColumns, string.Empty);
                 }
             }
-        }
-
-        public void SyncContentTables()
-        {
-            // var contentDaoList = ContentRepository.GetContentDaoList();
-            // foreach (var contentDao in contentDaoList)
-            // {
-            //     if (!AppContext.Db.IsTableExists(contentDao.TableName))
-            //     {
-            //         TableColumnManager.CreateTable(contentDao.TableName, contentDao.TableColumns, string.Empty, true, out _);
-            //     }
-            //     else
-            //     {
-            //         TableColumnManager.AlterTable(contentDao.TableName, contentDao.TableColumns, string.Empty, ContentAttribute.DropAttributes.Value);
-            //     }
-            // }
         }
 
         public async Task UpdateConfigVersionAsync()

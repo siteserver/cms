@@ -17,36 +17,36 @@ namespace SS.CMS.Core.Serialization
         public const string UploadFolderName = "upload"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件夹目录
         public const string UploadFileName = "upload.xml"; // 用于栏目及内容备份时记录图片、视频、文件上传所在文件名
 
-        public static async Task BackupTemplatesAsync(int siteId, string filePath, string adminName)
+        public static async Task BackupTemplatesAsync(int siteId, string filePath, int userId)
         {
             var exportObject = new ExportObject();
-            await exportObject.LoadAsync(siteId, adminName);
+            await exportObject.LoadAsync(siteId, userId);
             await exportObject.ExportTemplatesAsync(filePath);
         }
 
-        public static async Task BackupChannelsAndContentsAsync(IChannelRepository channelRepository, int siteId, string filePath, string adminName)
+        public static async Task BackupChannelsAndContentsAsync(IChannelRepository channelRepository, int siteId, string filePath, int userId)
         {
             var exportObject = new ExportObject();
-            await exportObject.LoadAsync(siteId, adminName);
+            await exportObject.LoadAsync(siteId, userId);
 
             var channelIdList = await channelRepository.GetChannelIdListAsync(await channelRepository.GetChannelInfoAsync(siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
 
             await exportObject.ExportChannelsAsync(channelIdList, filePath);
         }
 
-        public static async Task BackupFilesAsync(int siteId, string filePath, string adminName)
+        public static async Task BackupFilesAsync(int siteId, string filePath, int userId)
         {
             var exportObject = new ExportObject();
-            await exportObject.LoadAsync(siteId, adminName);
+            await exportObject.LoadAsync(siteId, userId);
 
             exportObject.ExportFiles(filePath);
         }
 
 
-        public static async Task BackupSiteAsync(IPathManager pathManager, IUrlManager urlManager, ISiteRepository siteRepository, int siteId, string filePath, string adminName)
+        public static async Task BackupSiteAsync(IPathManager pathManager, IUrlManager urlManager, ISiteRepository siteRepository, int siteId, string filePath, int userId)
         {
             var exportObject = new ExportObject();
-            await exportObject.LoadAsync(siteId, adminName);
+            await exportObject.LoadAsync(siteId, userId);
             var siteInfo = await siteRepository.GetSiteInfoAsync(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
@@ -72,10 +72,10 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteTemplatePath);
         }
 
-        public static async Task RecoverySiteAsync(IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string administratorName)
+        public static async Task RecoverySiteAsync(IPathManager pathManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository, int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, int userId)
         {
             var importObject = new ImportObject();
-            await importObject.LoadAsync(siteId, administratorName);
+            await importObject.LoadAsync(siteId, userId);
 
             var siteInfo = await siteRepository.GetSiteInfoAsync(siteId);
 
@@ -121,7 +121,7 @@ namespace SS.CMS.Core.Serialization
 
             //导入模板
             var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTemplate);
-            await importObject.ImportTemplatesAsync(templateFilePath, isOverride, administratorName);
+            await importObject.ImportTemplatesAsync(templateFilePath, isOverride, userId);
 
             //导入辅助表
             var tableDirectoryPath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.Table);

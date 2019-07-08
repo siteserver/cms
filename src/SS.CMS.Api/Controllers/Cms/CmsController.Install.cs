@@ -141,6 +141,8 @@ namespace SS.CMS.Api.Controllers.Cms
         {
             if (install.SecurityKey != _settingsManager.SecurityKey) return Forbid();
 
+            var database = new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
+
             var accessTokenRepository = new AccessTokenRepository(_cache, _settingsManager);
             var userRoleRepository = new UserRoleRepository(_settingsManager);
             var areaRepository = new AreaRepository(_cache, _settingsManager);
@@ -174,6 +176,7 @@ namespace SS.CMS.Api.Controllers.Cms
 
             var tableManager = new TableManager(
                 _cache,
+                database,
                 _settingsManager,
                 accessTokenRepository,
                 areaRepository,
@@ -220,11 +223,11 @@ namespace SS.CMS.Api.Controllers.Cms
             var userInfo = new UserInfo
             {
                 UserName = install.AdminName,
-                Password = install.AdminPassword
+                Password = install.AdminPassword,
+                RoleName = AuthTypes.Roles.SuperAdministrator
             };
 
             var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
-            userRoleRepository.AddUserToRole(install.AdminName, AuthTypes.Roles.SuperAdministrator);
 
             // var path = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
 

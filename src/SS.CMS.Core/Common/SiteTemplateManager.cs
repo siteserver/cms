@@ -105,7 +105,7 @@ namespace SS.CMS.Core.Common
             return list;
         }
 
-        public async Task ImportSiteTemplateToEmptySiteAsync(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, string administratorName)
+        public async Task ImportSiteTemplateToEmptySiteAsync(int siteId, string siteTemplateDir, bool isImportContents, bool isImportTableStyles, int userId)
         {
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
             if (DirectoryUtils.IsDirectoryExists(siteTemplatePath))
@@ -116,11 +116,11 @@ namespace SS.CMS.Core.Common
                 var siteContentDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.SiteContent);
 
                 var importObject = new ImportObject();
-                await importObject.LoadAsync(siteId, administratorName);
+                await importObject.LoadAsync(siteId, userId);
 
                 importObject.ImportFiles(siteTemplatePath, true);
 
-                await importObject.ImportTemplatesAsync(templateFilePath, true, administratorName);
+                await importObject.ImportTemplatesAsync(templateFilePath, true, userId);
 
                 await importObject.ImportConfigurationAsync(configurationFilePath);
 
@@ -140,10 +140,10 @@ namespace SS.CMS.Core.Common
             }
         }
 
-        public async Task ExportSiteToSiteTemplateAsync(SiteInfo siteInfo, string siteTemplateDir, string adminName)
+        public async Task ExportSiteToSiteTemplateAsync(SiteInfo siteInfo, string siteTemplateDir, int userId)
         {
             var exportObject = new ExportObject();
-            await exportObject.LoadAsync(siteInfo.Id, adminName);
+            await exportObject.LoadAsync(siteInfo.Id, userId);
 
             var siteTemplatePath = _pathManager.GetSiteTemplatesPath(siteTemplateDir);
 

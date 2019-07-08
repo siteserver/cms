@@ -20,6 +20,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return settingsManager;
         }
 
+        public static IServiceCollection AddDatabase(this IServiceCollection services, DatabaseType databaseType, string connectionString)
+        {
+            services.TryAdd(ServiceDescriptor.Singleton<IDatabase>(sp =>
+            {
+                return new Database(databaseType, connectionString);
+            }));
+
+            return services;
+        }
+
         public static IServiceCollection AddDistributedCache(this IServiceCollection services, CacheType cacheType, string cacheConnectionString)
         {
             var isSettings = false;

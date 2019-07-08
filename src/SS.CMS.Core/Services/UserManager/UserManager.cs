@@ -3,8 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using SS.CMS.Models;
@@ -93,7 +91,7 @@ namespace SS.CMS.Core.Services
         //    return accessToken;
         //}
 
-        public async Task<string> SignInAsync(UserInfo userInfo)
+        public string GetToken(UserInfo userInfo)
         {
             if (userInfo == null || userInfo.IsLockedOut) return null;
 
@@ -109,7 +107,7 @@ namespace SS.CMS.Core.Services
 
             //AddAdminLog("管理员登录");
 
-            var claims = await this.GetUserClaimsAsync(userInfo);
+            var claims = this.GetUserClaims(userInfo);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settingsManager.SecurityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -126,10 +124,10 @@ namespace SS.CMS.Core.Services
             return accessToken;
         }
 
-        public async Task SignOutAsync()
-        {
-            await _context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        }
+        // public async Task SignOutAsync()
+        // {
+        //     await _context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        // }
 
         public string GetIpAddress()
         {

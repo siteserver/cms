@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div v-loading="loading" class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
@@ -48,7 +48,7 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
+      <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
 
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { getInfo } from '@/api/cms'
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
@@ -101,7 +102,7 @@ export default {
       },
       passwordType: 'password',
       capsTooltip: false,
-      loading: false,
+      loading: true,
       showDialog: false,
       redirect: undefined,
       otherQuery: {}
@@ -128,6 +129,13 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    getInfo().then(response => {
+      if (!response.isInstalled) {
+        this.$router.push('/install')
+      } else {
+        this.loading = false
+      }
+    })
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)

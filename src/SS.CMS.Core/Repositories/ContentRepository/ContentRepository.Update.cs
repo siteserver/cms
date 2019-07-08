@@ -152,7 +152,7 @@ namespace SS.CMS.Core.Repositories
             RemoveCache(TableName, channelId);
         }
 
-        public async Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons)
+        public async Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, int userId, bool isChecked, int checkedLevel, string reasons)
         {
             if (isChecked)
             {
@@ -169,7 +169,7 @@ namespace SS.CMS.Core.Repositories
 
                 var attributes = TranslateUtils.JsonDeserialize(settingsXml, new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
 
-                attributes[Attr.CheckUserName] = userName;
+                attributes[Attr.CheckUserId] = userId;
                 attributes[Attr.CheckDate] = DateUtils.GetDateAndTimeString(checkDate);
                 attributes[Attr.CheckReasons] = reasons;
 
@@ -201,7 +201,7 @@ namespace SS.CMS.Core.Repositories
                     SiteId = siteId,
                     ChannelId = channelId,
                     ContentId = contentId,
-                    UserName = userName,
+                    UserId = userId,
                     IsChecked = isChecked,
                     CheckedLevel = checkedLevel,
                     CheckDate = checkDate,

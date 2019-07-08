@@ -30,14 +30,14 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string Id = nameof(UserLogInfo.Id);
-            public const string UserName = nameof(UserLogInfo.UserName);
+            public const string UserId = nameof(UserLogInfo.UserId);
             public const string CreatedDate = nameof(UserLogInfo.CreatedDate);
             public const string Action = nameof(UserLogInfo.Action);
         }
 
-        private UserLogInfo Insert(string userName, UserLogInfo logInfo)
+        private UserLogInfo Insert(int userId, UserLogInfo logInfo)
         {
-            logInfo.UserName = userName;
+            logInfo.UserId = userId;
 
             logInfo.Id = _repository.Insert(logInfo);
 
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog";
         // }
 
-        // public string GetSelectCommend(string userName, string keyword, string dateFrom, string dateTo)
+        // public string GetSelectCommend(int userId, string keyword, string dateFrom, string dateTo)
         // {
         //     if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
         //     {
@@ -126,9 +126,9 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog " + whereString;
         // }
 
-        public IList<UserLogInfo> List(string userName, int totalNum, string action)
+        public IList<UserLogInfo> List(int userId, int totalNum, string action)
         {
-            var query = Q.Where(Attr.UserName, userName);
+            var query = Q.Where(Attr.UserId, userId);
             if (!string.IsNullOrEmpty(action))
             {
                 query.Where(Attr.Action, action);
@@ -140,16 +140,16 @@ namespace SS.CMS.Core.Repositories
             return _repository.GetAll(query).ToList();
         }
 
-        public IList<UserLogInfo> ApiGetLogs(string userName, int offset, int limit)
+        public IList<UserLogInfo> ApiGetLogs(int userId, int offset, int limit)
         {
             return _repository.GetAll(Q
-                .Where(Attr.UserName, userName)
+                .Where(Attr.UserId, userId)
                 .Offset(offset)
                 .Limit(limit)
                 .OrderByDesc(Attr.Id)).ToList();
         }
 
-        public async Task AddUserLogAsync(string ipAddress, string userName, string actionType, string summary)
+        public async Task AddUserLogAsync(string ipAddress, int userId, string actionType, string summary)
         {
             var configInfo = await _configRepository.GetConfigInfoAsync();
 
@@ -164,13 +164,13 @@ namespace SS.CMS.Core.Repositories
 
             var userLogInfo = new UserLogInfo
             {
-                UserName = userName,
+                UserId = userId,
                 IpAddress = ipAddress,
                 Action = actionType,
                 Summary = summary
             };
 
-            Insert(userName, userLogInfo);
+            Insert(userId, userLogInfo);
         }
     }
 }

@@ -72,6 +72,8 @@ namespace SS.CMS.Utils.Tests
             var provider = services.BuildServiceProvider();
             IDistributedCache cache = provider.GetService<IDistributedCache>();
 
+            var database = new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString);
+
             var accessTokenRepository = new AccessTokenRepository(cache, settingsManager);
             var userRoleRepository = new UserRoleRepository(settingsManager);
             var areaRepository = new AreaRepository(cache, settingsManager);
@@ -106,6 +108,7 @@ namespace SS.CMS.Utils.Tests
 
             var tableManager = new TableManager(
                 cache,
+                database,
                 settingsManager,
                 accessTokenRepository,
                 areaRepository,

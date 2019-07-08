@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Repositories
             public const string Id = nameof(TemplateLogInfo.Id);
             public const string TemplateId = nameof(TemplateLogInfo.TemplateId);
             public const string CreatedDate = nameof(TemplateLogInfo.CreatedDate);
-            public const string AddUserName = nameof(TemplateLogInfo.AddUserName);
+            public const string UserId = nameof(TemplateLogInfo.UserId);
             public const string ContentLength = nameof(TemplateLogInfo.ContentLength);
             public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
         }
@@ -50,29 +50,29 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.Id, logId));
         }
 
-        public Dictionary<int, string> GetLogIdWithNameDictionary(int templateId)
-        {
-            var dictionary = new Dictionary<int, string>();
+        // public Dictionary<int, string> GetLogIdWithNameDictionary(int templateId)
+        // {
+        //     var dictionary = new Dictionary<int, string>();
 
-            var dataList = _repository.GetAll<(int Id, DateTimeOffset? CreatedDate, string AddUserName, int ContentLength)>(Q
-                .Select(Attr.Id, Attr.CreatedDate, Attr.AddUserName, Attr.ContentLength)
-                .Where(Attr.TemplateId, templateId));
+        //     var dataList = _repository.GetAll<(int Id, DateTimeOffset? CreatedDate, string AddUserName, int ContentLength)>(Q
+        //         .Select(Attr.Id, Attr.CreatedDate, Attr.UserId, Attr.ContentLength)
+        //         .Where(Attr.TemplateId, templateId));
 
-            foreach (var result in dataList)
-            {
-                var id = result.Id;
-                var creationDate = result.CreatedDate;
-                var addUserName = result.AddUserName;
-                var contentLength = result.ContentLength;
+        //     foreach (var result in dataList)
+        //     {
+        //         var id = result.Id;
+        //         var creationDate = result.CreatedDate;
+        //         var addUserName = result.AddUserName;
+        //         var contentLength = result.ContentLength;
 
-                var name =
-                    $"修订时间：{DateUtils.GetDateAndTimeString(creationDate)}，修订人：{addUserName}，字符数：{contentLength}";
+        //         var name =
+        //             $"修订时间：{DateUtils.GetDateAndTimeString(creationDate)}，修订人：{addUserName}，字符数：{contentLength}";
 
-                dictionary.Add(id, name);
-            }
+        //         dictionary.Add(id, name);
+        //     }
 
-            return dictionary;
-        }
+        //     return dictionary;
+        // }
 
         public async Task DeleteAsync(List<int> idList)
         {

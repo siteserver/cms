@@ -111,7 +111,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 foreach (var theChannelId in channelIdList)
                 {
                     var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
-                    count += await channelInfo.ContentRepository.GetCountOfContentAddAsync(parseContext.SiteId, channelInfo.Id, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), string.Empty, true);
+                    count += await channelInfo.ContentRepository.GetCountOfContentAddAsync(parseContext.SiteId, channelInfo.Id, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), 0, true);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))

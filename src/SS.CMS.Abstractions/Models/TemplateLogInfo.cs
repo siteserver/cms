@@ -14,7 +14,7 @@ namespace SS.CMS.Models
         public int SiteId { get; set; }
 
         [TableColumn]
-        public string AddUserName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
         public int ContentLength { get; set; }

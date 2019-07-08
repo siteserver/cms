@@ -74,6 +74,8 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<ChannelInfo> GetChannelInfoAsync(int channelId)
         {
+            if (channelId == 0) return null;
+
             var cacheKey = GetCacheKeyById(channelId);
             return await _cache.GetOrCreateAsync(cacheKey, async options =>
             {

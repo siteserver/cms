@@ -23,6 +23,10 @@ namespace SS.CMS.Models
         [TableColumn]
         public string PasswordSalt { get; set; }
 
+        [JsonIgnore]
+        [TableColumn]
+        public string RoleName { get; set; }
+
         /// <summary>
         /// 最后一次重设密码时间。
         /// </summary>
@@ -45,7 +49,7 @@ namespace SS.CMS.Models
         public int CountOfFailedLogin { get; set; }
 
         [TableColumn]
-        public string CreatorUserName { get; set; }
+        public int CreatorUserId { get; set; }
 
         [TableColumn]
         public bool IsLockedOut { get; set; }

@@ -76,6 +76,10 @@ namespace SS.CMS.Core.Repositories
                 {
                     retVal.Set(ContentAttribute.Sequence, sequence);
                 }
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
+                {
+                    retVal.Set(ContentAttribute.SourceId, await _channelRepository.GetSourceNameAsync(contentInfo.SourceId));
+                }
                 else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.UserId))
                 {
                     var value = string.Empty;
@@ -89,35 +93,18 @@ namespace SS.CMS.Core.Repositories
                     }
                     retVal.Set(ContentAttribute.UserId, value);
                 }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.SourceId))
-                {
-                    retVal.Set(ContentAttribute.SourceId, await _channelRepository.GetSourceNameAsync(contentInfo.SourceId));
-                }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.AddUserName))
+                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.LastModifiedUserId))
                 {
                     var value = string.Empty;
-                    if (!string.IsNullOrEmpty(contentInfo.AddUserName))
+                    if (contentInfo.LastModifiedUserId > 0)
                     {
-                        var userInfo = await _userRepository.GetByUserNameAsync(contentInfo.AddUserName);
+                        var userInfo = await _userRepository.GetByUserIdAsync(contentInfo.LastModifiedUserId);
                         if (userInfo != null)
                         {
                             value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
                         }
                     }
-                    retVal.Set(ContentAttribute.AddUserName, value);
-                }
-                else if (StringUtils.EqualsIgnoreCase(column.AttributeName, ContentAttribute.LastEditUserName))
-                {
-                    var value = string.Empty;
-                    if (!string.IsNullOrEmpty(contentInfo.LastEditUserName))
-                    {
-                        var userInfo = await _userRepository.GetByUserNameAsync(contentInfo.LastEditUserName);
-                        if (userInfo != null)
-                        {
-                            value = string.IsNullOrEmpty(userInfo.DisplayName) ? userInfo.UserName : userInfo.DisplayName;
-                        }
-                    }
-                    retVal.Set(ContentAttribute.LastEditUserName, value);
+                    retVal.Set(ContentAttribute.LastModifiedUserId, value);
                 }
             }
 

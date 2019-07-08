@@ -533,8 +533,6 @@ namespace SS.CMS.Core.StlParser.StlElement
                             }
                         }
                     }
-
-
                 }
                 else if (ContentAttribute.NavigationUrl.ToLower().Equals(type))
                 {
@@ -548,13 +546,6 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     var itemIndex = StlParserUtility.ParseItemIndex(parseContext.Container.ContentItem.Key, type, parseContext);
                     parsedContent = !string.IsNullOrEmpty(formatString) ? string.Format(formatString, itemIndex) : itemIndex.ToString();
-                }
-                else if (ContentAttribute.AddUserName.ToLower().Equals(type))
-                {
-                    if (!string.IsNullOrEmpty(contentInfo.AddUserName))
-                    {
-                        parsedContent = contentInfo.AddUserName;
-                    }
                 }
                 else
                 {

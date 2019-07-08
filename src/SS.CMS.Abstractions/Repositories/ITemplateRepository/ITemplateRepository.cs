@@ -8,9 +8,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface ITemplateRepository : IRepository
     {
-        Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, string administratorName);
+        Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, int userId);
 
-        Task UpdateAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, string administratorName);
+        Task UpdateAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, int userId);
 
         Task SetDefaultAsync(int siteId, int templateId);
 
@@ -30,7 +30,7 @@ namespace SS.CMS.Repositories
 
         IList<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType);
 
-        Task CreateDefaultTemplateInfoAsync(int siteId, string administratorName);
+        Task CreateDefaultTemplateInfoAsync(int siteId, int userId);
 
         Task<string> GetCreatedFileFullNameAsync(int templateId);
 
@@ -54,7 +54,7 @@ namespace SS.CMS.Repositories
 
         Task<TemplateInfo> GetFileTemplateInfoAsync(int siteId, int fileTemplateId);
 
-        void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, string administratorName);
+        void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId);
 
         int GetIndexTemplateId(int siteId);
 

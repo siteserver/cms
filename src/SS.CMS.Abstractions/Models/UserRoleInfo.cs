@@ -8,9 +8,9 @@ namespace SS.CMS.Models
     public class UserRoleInfo : Entity
     {
         [TableColumn]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
-        public string RoleName { get; set; }
+        public int RoleId { get; set; }
     }
 }

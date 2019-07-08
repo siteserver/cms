@@ -32,7 +32,6 @@ namespace SS.CMS.Core.StlParser.StlEntity
         public const string Content = "Content";
         public const string Group = "Group";
         public const string Tags = "Tags";
-        public const string AddUserName = "AddUserName";
         public const string ItemIndex = "ItemIndex";
 
         public static SortedList<string, string> AttributeList => new SortedList<string, string>
@@ -50,7 +49,6 @@ namespace SS.CMS.Core.StlParser.StlEntity
             {LastEditDate, "内容最后修改日期"},
             {Group, "内容组别"},
             {Tags, "内容标签"},
-            {AddUserName, "内容添加人"},
             {ItemIndex, "内容排序"}
         };
 
@@ -250,23 +248,6 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Tags);
                             parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Tags);
-                        }
-                    }
-                    else if (StringUtils.EqualsIgnoreCase(AddUserName, attributeName))
-                    {
-                        string addUserName;
-                        if (contentInfo != null)
-                        {
-                            addUserName = contentInfo.AddUserName;
-                        }
-                        else
-                        {
-                            //addUserName = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.AddUserName);
-                            addUserName = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.AddUserName);
-                        }
-                        if (!string.IsNullOrEmpty(addUserName))
-                        {
-                            parsedContent = addUserName;
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && parseContext.Container?.ContentItem != null)

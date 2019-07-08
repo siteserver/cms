@@ -13,7 +13,7 @@ namespace SS.CMS.Repositories
 
         string GetTemplateContent(int logId);
 
-        Dictionary<int, string> GetLogIdWithNameDictionary(int templateId);
+        // Dictionary<int, string> GetLogIdWithNameDictionary(int templateId);
 
         Task DeleteAsync(List<int> idList);
     }

@@ -203,7 +203,7 @@ namespace SS.CMS.Core.Repositories
             {
                 await RemoveCacheAsync(userInfo);
 
-                await _userRoleRepository.RemoveUserAsync(userInfo.UserName);
+                await _userRoleRepository.RemoveUserAsync(userInfo.Id);
             }
 
             return deleted;

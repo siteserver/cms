@@ -6,7 +6,7 @@ import Layout from '@/layout'
 const routers = [
   {
     path: 'sites',
-    component: Layout,
+    component: () => import('@/settings/sites/index'),
     name: 'settingsSites',
     meta: { icon: 'site' },
     children: [

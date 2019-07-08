@@ -203,18 +203,6 @@ namespace SS.CMS.Core.Common
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.AddUserName,
-                    DisplayName = "添加人",
-                    Taxis = taxis++
-                },
-                new TableStyleInfo
-                {
-                    AttributeName = ContentAttribute.LastEditUserName,
-                    DisplayName = "最后修改人",
-                    Taxis = taxis++
-                },
-                new TableStyleInfo
-                {
                     AttributeName = ContentAttribute.GroupNameCollection,
                     DisplayName = "内容组",
                     Taxis = taxis++
@@ -229,6 +217,12 @@ namespace SS.CMS.Core.Common
                 {
                     AttributeName = ContentAttribute.UserId,
                     DisplayName = "添加人",
+                    Taxis = taxis++
+                },
+                new TableStyleInfo
+                {
+                    AttributeName = ContentAttribute.LastModifiedUserId,
+                    DisplayName = "最后修改人",
                     Taxis = taxis++
                 },
                 new TableStyleInfo
@@ -275,7 +269,7 @@ namespace SS.CMS.Core.Common
                 },
                 new TableStyleInfo
                 {
-                    AttributeName = ContentAttribute.CheckUserName,
+                    AttributeName = ContentAttribute.CheckUserId,
                     DisplayName = "审核人",
                     Taxis = taxis++
                 },
@@ -402,7 +396,7 @@ namespace SS.CMS.Core.Common
             {
                 foreach (var ids in TranslateUtils.StringCollectionToStringList(queryString["IDsCollection"]))
                 {
-                    var channelId = TranslateUtils.ToIntWithNagetive(ids.Split('_')[0]);
+                    var channelId = TranslateUtils.ToIntWithNegative(ids.Split('_')[0]);
                     var contentId = TranslateUtils.ToInt(ids.Split('_')[1]);
                     var contentIdList = new List<int>();
                     if (dic.ContainsKey(channelId))

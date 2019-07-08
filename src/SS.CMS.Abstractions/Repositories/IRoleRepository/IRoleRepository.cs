@@ -11,7 +11,7 @@ namespace SS.CMS.Repositories
 
         IList<string> GetRoleNameList();
 
-        IList<string> GetRoleNameListByCreatorUserName(string creatorUserName);
+        IList<string> GetRoleNameListByUserId(int userId);
 
         void InsertRole(RoleInfo roleInfo);
 

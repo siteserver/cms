@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Common\**" />
-    <Content Remove="Common\**" />
-    <EmbeddedResource Remove="Common\**" />
-    <None Remove="Common\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Controllers\Test\**" />
     <Content Remove="Controllers\Test\**" />
     <EmbeddedResource Remove="Controllers\Test\**" />

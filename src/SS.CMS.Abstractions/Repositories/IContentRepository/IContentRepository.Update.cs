@@ -18,7 +18,7 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Task UpdateRestoreContentsByTrashAsync(int siteId, int channelId);
 
-        Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, string userName, bool isChecked, int checkedLevel, string reasons);
+        Task UpdateIsCheckedAsync(int siteId, int channelId, List<int> contentIdList, int translateChannelId, int userId, bool isChecked, int checkedLevel, string reasons);
 
         Task SetAutoPageContentToSiteAsync(int siteId);
 

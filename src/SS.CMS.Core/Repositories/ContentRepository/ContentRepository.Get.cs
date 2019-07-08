@@ -196,21 +196,21 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public async Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState)
+        public async Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId, bool? checkedState)
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentAdd(siteId, channelIdList, begin, end, userName, checkedState);
+            return GetCountOfContentAdd(siteId, channelIdList, begin, end, userId, checkedState);
         }
 
-        private int GetCountOfContentAdd(int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName, bool? checkedState)
+        private int GetCountOfContentAdd(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId, bool? checkedState)
         {
             var query = Q.Where(Attr.SiteId, siteId);
             query.WhereIn(Attr.ChannelId, channelIdList);
             query.WhereBetween(Attr.AddDate, begin, end.AddDays(1));
-            if (!string.IsNullOrEmpty(userName))
+            if (userId > 0)
             {
-                query.Where(Attr.AddUserName, userName);
+                query.Where(Attr.UserId, userId);
             }
 
             if (checkedState.HasValue)
@@ -221,22 +221,22 @@ namespace SS.CMS.Core.Repositories
             return _repository.Count(query);
         }
 
-        public async Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName)
+        public async Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId)
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userName);
+            return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userId);
         }
 
-        private int GetCountOfContentUpdate(int siteId, List<int> channelIdList, DateTime begin, DateTime end, string userName)
+        private int GetCountOfContentUpdate(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId)
         {
             var query = Q.Where(Attr.SiteId, siteId);
             query.WhereIn(Attr.ChannelId, channelIdList);
             query.WhereBetween(Attr.LastModifiedDate, begin, end.AddDays(1));
             query.WhereRaw($"{Attr.LastModifiedDate} != {Attr.AddDate}");
-            if (!string.IsNullOrEmpty(userName))
+            if (userId > 0)
             {
-                query.Where(Attr.AddUserName, userName);
+                query.Where(Attr.UserId, userId);
             }
 
             return _repository.Count(query);

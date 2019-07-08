@@ -5,9 +5,7 @@ namespace SS.CMS.Services
 {
     public partial interface IUserManager
     {
-        Task<string> SignInAsync(UserInfo userInfo);
-
-        Task SignOutAsync();
+        string GetToken(UserInfo userInfo);
 
         string GetIpAddress();
 

@@ -7,7 +7,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class LogRepository
     {
-        public async Task AddAdminLogAsync(string ipAddress, string adminName, string action, string summary = "")
+        public async Task AddAdminLogAsync(string ipAddress, int userId, string action, string summary = "")
         {
             // if (!ConfigManager.Instance.IsLogAdmin) return;
 
@@ -26,7 +26,7 @@ namespace SS.CMS.Core.Repositories
 
                 var logInfo = new LogInfo
                 {
-                    UserName = adminName,
+                    UserId = userId,
                     IpAddress = ipAddress,
                     Action = action,
                     Summary = summary

@@ -86,7 +86,7 @@ namespace SS.CMS.Utils
             return i;
         }
 
-        public static int ToIntWithNagetive(string intStr, int defaultValue = 0)
+        public static int ToIntWithNegative(string intStr, int defaultValue = 0)
         {
             if (!int.TryParse(intStr?.Trim(), out var i))
             {
@@ -108,7 +108,7 @@ namespace SS.CMS.Utils
             return i;
         }
 
-        public static decimal ToDecimalWithNagetive(string intStr, decimal defaultValue = 0)
+        public static decimal ToDecimalWithNegative(string intStr, decimal defaultValue = 0)
         {
             if (!decimal.TryParse(intStr?.Trim(), out var i))
             {
@@ -519,7 +519,7 @@ namespace SS.CMS.Utils
 
         #region 汉字转拼音
 
-        private static readonly int[] Pyvalue =
+        private static readonly int[] PyValue =
         {
             -20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036, -20032,
             -20026, -20002, -19990, -19986, -19982, -19976, -19805, -19784, -19775, -19774, -19763, -19756, -19751,
@@ -572,7 +572,7 @@ namespace SS.CMS.Utils
             -10254
         };
 
-        private static readonly string[] Pystr =
+        private static readonly string[] PyStr =
         {
             "a", "ai", "an", "ang", "ao", "ba", "bai", "ban", "bang", "bao", "bei", "ben", "beng", "bi", "bian", "biao",
             "bie", "bin", "bing", "bo", "bu", "ca", "cai", "can", "cang", "cao", "ce", "ceng", "cha", "chai", "chan",
@@ -636,11 +636,11 @@ namespace SS.CMS.Utils
                 }
                 else
                 {
-                    for (var i = (Pyvalue.Length - 1); i >= 0; i--)
+                    for (var i = (PyValue.Length - 1); i >= 0; i--)
                     {
-                        if (Pyvalue[i] <= chrasc)
+                        if (PyValue[i] <= chrasc)
                         {
-                            returnstr += Pystr[i];
+                            returnstr += PyStr[i];
                             break;
                         }
                     }

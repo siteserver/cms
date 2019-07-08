@@ -6,16 +6,16 @@ namespace SS.CMS.Repositories
 {
     public interface IUserRoleRepository : IRepository
     {
-        IList<string> GetUserNameListByRoleName(string roleName);
+        IList<int> GetUserNameListByRoleName(int roleId);
 
-        Task<IList<string>> GetRolesAsync(string userName);
+        Task RemoveUserAsync(int userId);
 
-        Task RemoveUserAsync(string userName);
+        Task RemoveUserFromRoleAsync(int userId, int roleId);
 
-        Task RemoveUserFromRoleAsync(string userName, string roleName);
+        bool IsUserInRole(int userId, int roleId);
 
-        bool IsUserInRole(string userName, string roleName);
+        int AddUserToRole(int userId, int roleId);
 
-        int AddUserToRole(string userName, string roleName);
+        Task<IEnumerable<int>> GetRolesAsync(int userId);
     }
 }

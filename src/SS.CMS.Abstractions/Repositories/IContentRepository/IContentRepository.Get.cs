@@ -31,9 +31,9 @@ namespace SS.CMS.Repositories.IContentRepository
 
         int GetCountCheckedImage(int siteId, int channelId);
 
-        Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName, bool? checkedState);
+        Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId, bool? checkedState);
 
-        Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, string userName);
+        Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId);
 
         ContentInfo GetCacheContentInfo(int contentId);
     }

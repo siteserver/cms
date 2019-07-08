@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
@@ -64,13 +63,10 @@ namespace SS.CMS.Core.Repositories
                 channelInfo.Taxis = 1;
             }
 
-            if (channelInfo.SiteId != 0)
-            {
-                await _repository.IncrementAsync(Attr.Taxis, Q
-                    .Where(Attr.Taxis, ">=", channelInfo.Taxis)
-                    .Where(Attr.SiteId, channelInfo.SiteId)
-                );
-            }
+            await _repository.IncrementAsync(Attr.Taxis, Q
+                .Where(Attr.Taxis, ">=", channelInfo.Taxis)
+                .Where(Attr.SiteId, channelInfo.SiteId)
+            );
             channelInfo.Id = await _repository.InsertAsync(channelInfo);
 
             if (!string.IsNullOrEmpty(channelInfo.ParentsPath))
@@ -170,8 +166,6 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(ChannelInfo channelInfo)
         {
-            if (channelInfo.SiteId > 0 && channelInfo.ParentId == 0) return 0;
-
             var parentChannelInfo = await GetChannelInfoAsync(channelInfo.ParentId);
 
             await InsertChannelInfoAsync(parentChannelInfo, channelInfo);

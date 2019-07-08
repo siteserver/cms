@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Serialization.Components
     internal class TableStyleIe
     {
         private readonly string _directoryPath;
-        private readonly string _adminName;
+        private readonly int _userId;
         private readonly IPluginManager _pluginManager;
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
@@ -26,10 +26,10 @@ namespace SS.CMS.Core.Serialization.Components
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public TableStyleIe(string directoryPath, string adminName)
+        public TableStyleIe(string directoryPath, int userId)
         {
             _directoryPath = directoryPath;
-            _adminName = adminName;
+            _userId = userId;
         }
 
         public async Task ExportTableStylesAsync(int siteId, string tableName)
@@ -239,7 +239,7 @@ namespace SS.CMS.Core.Serialization.Components
             if (!DirectoryUtils.IsDirectoryExists(_directoryPath)) return;
 
             var importObject = new ImportObject();
-            await importObject.LoadAsync(siteId, _adminName);
+            await importObject.LoadAsync(siteId, _userId);
             var tableNameCollection = importObject.GetTableNameCache();
 
             var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);

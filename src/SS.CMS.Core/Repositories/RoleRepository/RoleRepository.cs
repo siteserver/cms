@@ -24,7 +24,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string RoleName = nameof(RoleInfo.RoleName);
-            public const string CreatorUserName = nameof(RoleInfo.CreatorUserName);
+            public const string UserId = nameof(RoleInfo.UserId);
             public const string Description = nameof(RoleInfo.Description);
         }
 
@@ -42,13 +42,13 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.RoleName)).ToList();
         }
 
-        public IList<string> GetRoleNameListByCreatorUserName(string creatorUserName)
+        public IList<string> GetRoleNameListByUserId(int userId)
         {
-            if (string.IsNullOrEmpty(creatorUserName)) return new List<string>();
+            if (userId == 0) return new List<string>();
 
             return _repository.GetAll<string>(Q
                 .Select(Attr.RoleName)
-                .Where(Attr.CreatorUserName, creatorUserName)
+                .Where(Attr.UserId, userId)
                 .OrderBy(Attr.RoleName)).ToList();
         }
 

@@ -14,7 +14,7 @@ namespace SS.CMS.Models
         public string Token { get; set; }
 
         [TableColumn]
-        public string AdminName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
         public string Scopes { get; set; }

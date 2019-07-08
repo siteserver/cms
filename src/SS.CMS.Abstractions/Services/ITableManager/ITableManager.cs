@@ -27,15 +27,11 @@ namespace SS.CMS.Services
 
         Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, IList<string> dropColumnNames = null);
 
-        Task CreateContentTableAsync(string tableName, IList<TableColumn> tableColumns);
-
         Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
 
         void InstallDatabase(string userName, string password);
 
         Task SyncSystemTablesAsync();
-
-        void SyncContentTables();
 
         Task UpdateConfigVersionAsync();
 

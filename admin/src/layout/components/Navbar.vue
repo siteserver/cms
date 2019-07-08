@@ -1,8 +1,8 @@
 <template>
-  <div class="navbar">
+  <div class="top">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <top-menus v-if="menus && menus.length > 0" :menus="menus" class="top-menu-container" />
+    <top-menus v-if="menus && menus.length > 0" :menus="menus" />
     <breadcrumb v-else id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
@@ -97,7 +97,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.navbar {
+.top {
   height: 50px;
   overflow: hidden;
   position: relative;
@@ -116,11 +116,6 @@ export default {
     &:hover {
       background: rgba(0, 0, 0, .025)
     }
-  }
-
-  .top-menu-container {
-    line-height: 46px;
-    float: left;
   }
 
   .errLog-container {

@@ -27,76 +27,76 @@ namespace SS.CMS.Core.Repositories
             public const string Id = nameof(UserRoleInfo.Id);
             public const string Guid = nameof(UserRoleInfo.Guid);
             public const string LastModifiedDate = nameof(UserRoleInfo.LastModifiedDate);
-            public const string RoleName = nameof(UserRoleInfo.RoleName);
-            public const string UserName = nameof(UserRoleInfo.UserName);
+            public const string RoleId = nameof(UserRoleInfo.RoleId);
+            public const string UserId = nameof(UserRoleInfo.UserId);
         }
 
-        public IList<string> GetUserNameListByRoleName(string roleName)
+        public IList<int> GetUserNameListByRoleName(int roleId)
         {
-            return _repository.GetAll<string>(Q
-                .Select(Attr.UserName)
-                .Where(Attr.RoleName, roleName)
+            return _repository.GetAll<int>(Q
+                .Select(Attr.UserId)
+                .Where(Attr.RoleId, roleId)
                 .Distinct()).ToList();
         }
 
-        public async Task RemoveUserAsync(string userName)
+        public async Task RemoveUserAsync(int userId)
         {
             await _repository.DeleteAsync(Q
-                .Where(Attr.UserName, userName));
+                .Where(Attr.UserId, userId));
         }
 
-        public async Task RemoveUserFromRoleAsync(string userName, string roleName)
+        public async Task RemoveUserFromRoleAsync(int userId, int roleId)
         {
             await _repository.DeleteAsync(Q
-                .Where(Attr.UserName, userName)
-                .Where(Attr.RoleName, roleName));
+                .Where(Attr.UserId, userId)
+                .Where(Attr.RoleId, roleId));
         }
 
-        public bool IsUserInRole(string userName, string roleName)
+        public bool IsUserInRole(int userId, int roleId)
         {
             return _repository.Exists(Q
-                .Where(Attr.UserName, userName)
-                .Where(Attr.RoleName, roleName));
+                .Where(Attr.UserId, userId)
+                .Where(Attr.RoleId, roleId));
         }
 
-        public int AddUserToRole(string userName, string roleName)
+        public int AddUserToRole(int userId, int roleId)
         {
-            if (!IsUserInRole(userName, roleName))
+            if (!IsUserInRole(userId, roleId))
             {
                 return _repository.Insert(new UserRoleInfo
                 {
-                    UserName = userName,
-                    RoleName = roleName
+                    UserId = userId,
+                    RoleId = roleId
                 });
             }
 
             return 0;
         }
 
-        public async Task<IList<string>> GetRolesAsync(string userName)
+        public async Task<IEnumerable<int>> GetRolesAsync(int userId)
         {
-            var roleNameList = new List<string>();
+            var roleIdList = new List<int>();
 
-            var roles = await _repository.GetAllAsync<string>(Q
-                .Select(Attr.RoleName)
-                .Where(Attr.UserName, userName)
+            return await _repository.GetAllAsync<int>(Q
+                .Select(Attr.RoleId)
+                .Where(Attr.UserId, userId)
                 .Distinct());
 
-            foreach (var role in roles)
-            {
-                if (role == AuthTypes.Roles.SuperAdministrator)
-                {
-                    return new List<string> {
-                        AuthTypes.Roles.SuperAdministrator
-                    };
-                }
-                else
-                {
-                    roleNameList.Add(role);
-                }
-            }
+            // foreach (var role in roles)
+            // {
+            //     if (role == AuthTypes.Roles.SuperAdministrator)
+            //     {
+            //         return new List<string> {
+            //             AuthTypes.Roles.SuperAdministrator
+            //         };
+            //     }
+            //     else
+            //     {
+            //         roleNameList.Add(role);
+            //     }
+            // }
 
-            return roleNameList;
+            // return roleNameList;
         }
     }
 }

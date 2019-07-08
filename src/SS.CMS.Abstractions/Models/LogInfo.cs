@@ -8,7 +8,7 @@ namespace SS.CMS.Models
     public class LogInfo : Entity
     {
         [TableColumn]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
         public string IpAddress { get; set; }

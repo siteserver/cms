@@ -46,7 +46,7 @@ namespace SS.CMS.Core.Repositories
             public const string IsDefault = "IsDefault";
         }
 
-        public async Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, string administratorName)
+        public async Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, int userId)
         {
             if (templateInfo.IsDefault)
             {
@@ -60,12 +60,12 @@ namespace SS.CMS.Core.Repositories
             var id = await _repository.InsertAsync(templateInfo);
 
             var siteInfo = await _siteRepository.GetSiteInfoAsync(templateInfo.SiteId);
-            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
+            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, userId);
 
             return id;
         }
 
-        public async Task UpdateAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, string administratorName)
+        public async Task UpdateAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, int userId)
         {
             if (templateInfo.IsDefault)
             {
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Repositories
 
             await _repository.UpdateAsync(templateInfo);
 
-            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, administratorName);
+            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, userId);
 
             var idList = await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
@@ -232,7 +232,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.TemplateType, templateType.Value)).ToList();
         }
 
-        public async Task CreateDefaultTemplateInfoAsync(int siteId, string administratorName)
+        public async Task CreateDefaultTemplateInfoAsync(int siteId, int userId)
         {
             var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
 
@@ -241,9 +241,9 @@ namespace SS.CMS.Core.Repositories
             var templateInfo = new TemplateInfo
             {
                 SiteId = siteInfo.Id,
-                TemplateName = "系统首页模板",
+                TemplateName = "Index",
                 Type = TemplateType.IndexPageTemplate,
-                RelatedFileName = "T_系统首页模板.html",
+                RelatedFileName = "T_Index.html",
                 CreatedFileFullName = "@/index.html",
                 CreatedFileExtName = ".html",
                 IsDefault = true
@@ -253,9 +253,9 @@ namespace SS.CMS.Core.Repositories
             templateInfo = new TemplateInfo
             {
                 SiteId = siteInfo.Id,
-                TemplateName = "系统栏目模板",
+                TemplateName = "Channel",
                 Type = TemplateType.ChannelTemplate,
-                RelatedFileName = "T_系统栏目模板.html",
+                RelatedFileName = "T_Channel.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
                 IsDefault = true
@@ -265,9 +265,9 @@ namespace SS.CMS.Core.Repositories
             templateInfo = new TemplateInfo
             {
                 SiteId = siteInfo.Id,
-                TemplateName = "系统内容模板",
+                TemplateName = "Content",
                 Type = TemplateType.ContentTemplate,
-                RelatedFileName = "T_系统内容模板.html",
+                RelatedFileName = "T_Content.html",
                 CreatedFileFullName = "index.html",
                 CreatedFileExtName = ".html",
                 IsDefault = true
@@ -276,7 +276,7 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var theTemplateInfo in templateInfoList)
             {
-                await InsertAsync(theTemplateInfo, theTemplateInfo.Content, administratorName);
+                await InsertAsync(theTemplateInfo, theTemplateInfo.Content, userId);
             }
         }
 
@@ -430,7 +430,7 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.FileTemplate);
         }
 
-        public void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, string administratorName)
+        public void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId)
         {
             if (content == null) content = string.Empty;
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
@@ -442,7 +442,7 @@ namespace SS.CMS.Core.Repositories
                 {
                     TemplateId = templateInfo.Id,
                     SiteId = templateInfo.SiteId,
-                    AddUserName = administratorName,
+                    UserId = userId,
                     ContentLength = content.Length,
                     TemplateContent = content
                 };

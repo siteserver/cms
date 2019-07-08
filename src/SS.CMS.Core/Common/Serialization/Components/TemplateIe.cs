@@ -75,7 +75,7 @@ namespace SS.CMS.Core.Serialization.Components
             return entry;
         }
 
-        public async Task ImportTemplatesAsync(bool overwrite, string administratorName)
+        public async Task ImportTemplatesAsync(bool overwrite, int userId)
         {
             if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
@@ -112,18 +112,18 @@ namespace SS.CMS.Core.Serialization.Components
                         srcTemplateInfo.Type = templateInfo.Type;
                         srcTemplateInfo.CreatedFileFullName = templateInfo.CreatedFileFullName;
                         srcTemplateInfo.CreatedFileExtName = templateInfo.CreatedFileExtName;
-                        await _templateRepository.UpdateAsync(siteInfo, srcTemplateInfo, templateContent, administratorName);
+                        await _templateRepository.UpdateAsync(siteInfo, srcTemplateInfo, templateContent, userId);
                         templateId = srcTemplateInfo.Id;
                     }
                     else
                     {
                         templateInfo.TemplateName = _templateRepository.GetImportTemplateName(_siteId, templateInfo.TemplateName);
-                        templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, administratorName);
+                        templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, userId);
                     }
                 }
                 else
                 {
-                    templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, administratorName);
+                    templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, userId);
                 }
 
                 if (templateInfo.Type == TemplateType.FileTemplate)

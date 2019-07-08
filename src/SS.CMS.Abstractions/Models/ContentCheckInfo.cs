@@ -20,7 +20,7 @@ namespace SS.CMS.Models
         public int ContentId { get; set; }
 
         [TableColumn]
-        public string UserName { get; set; }
+        public int UserId { get; set; }
 
         [TableColumn]
         public bool IsChecked { get; set; }

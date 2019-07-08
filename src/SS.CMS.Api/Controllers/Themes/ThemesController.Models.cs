@@ -1,6 +1,6 @@
-﻿namespace SS.CMS.Api.Controllers.Sites
+﻿namespace SS.CMS.Api.Controllers.Themes
 {
-    public partial class SitesController
+    public partial class ThemesController
     {
 
     }

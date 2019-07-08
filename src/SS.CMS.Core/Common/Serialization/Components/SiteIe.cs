@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Serialization.Components
             _contentIe = new ContentIe(siteInfo, siteContentDirectoryPath);
         }
 
-        public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, string adminName)
+        public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, int userId)
         {
             var psChildCount = _channelRepository.GetCount(_siteInfo.Id);
             var indexNameList = _channelRepository.GetIndexNameList(_siteInfo.Id);
@@ -79,7 +79,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                 if (isImportContents)
                 {
-                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, userId);
                 }
             }
             else
@@ -116,7 +116,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                 if (isImportContents)
                 {
-                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, adminName);
+                    await _contentIe.ImportContentsAsync(feed.Entries, nodeInfo, 0, isOverride, userId);
                 }
             }
 

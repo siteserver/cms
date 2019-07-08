@@ -7,7 +7,7 @@ namespace SS.CMS.Repositories
 {
     public interface IUserLogRepository : IRepository
     {
-        Task AddUserLogAsync(string ipAddress, string userName, string actionType, string summary);
+        Task AddUserLogAsync(string ipAddress, int userId, string actionType, string summary);
 
         Task DeleteAsync(List<int> idList);
 
@@ -15,8 +15,8 @@ namespace SS.CMS.Repositories
 
         int GetCount();
 
-        IList<UserLogInfo> List(string userName, int totalNum, string action);
+        IList<UserLogInfo> List(int userId, int totalNum, string action);
 
-        IList<UserLogInfo> ApiGetLogs(string userName, int offset, int limit);
+        IList<UserLogInfo> ApiGetLogs(int userId, int offset, int limit);
     }
 }

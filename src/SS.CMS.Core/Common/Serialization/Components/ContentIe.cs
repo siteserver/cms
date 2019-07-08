@@ -27,12 +27,12 @@ namespace SS.CMS.Core.Serialization.Components
             _siteInfo = siteInfo;
         }
 
-        public async Task ImportContentsAsync(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
+        public async Task ImportContentsAsync(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, int userId)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            await ImportContentsAsync(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
+            await ImportContentsAsync(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, userId);
         }
 
         public async Task ImportContentsAsync(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
@@ -43,13 +43,13 @@ namespace SS.CMS.Core.Serialization.Components
             await ImportContentsAsync(feed.Entries, nodeInfo, taxis, false, isChecked, checkedLevel, isOverride, userId, sourceId);
         }
 
-        public async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, string adminName)
+        public async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, int userId)
         {
-            await ImportContentsAsync(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
+            await ImportContentsAsync(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, userId);
         }
 
         // 内部消化掉错误
-        private async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
+        private async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -121,12 +121,12 @@ namespace SS.CMS.Core.Serialization.Components
                     {
                         {ContentAttribute.SiteId, _siteInfo.Id},
                         {ContentAttribute.ChannelId, channelInfo.Id},
-                        {ContentAttribute.AddUserName, adminName},
+                        {ContentAttribute.UserId, userId},
+                        {ContentAttribute.LastModifiedUserId, userId},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
                     var contentInfo = new ContentInfo(dict);
 
-                    contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
                     contentInfo.IsChecked = isChecked;
@@ -234,12 +234,12 @@ namespace SS.CMS.Core.Serialization.Components
                         {ContentAttribute.SiteId, _siteInfo.Id},
                         {ContentAttribute.ChannelId, channelInfo.Id},
                         {ContentAttribute.UserId, userId},
+                        {ContentAttribute.LastModifiedUserId, userId},
                         {ContentAttribute.SourceId, sourceId},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
                     var contentInfo = new ContentInfo(dict);
 
-                    contentInfo.LastEditUserName = contentInfo.AddUserName;
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
                     contentInfo.IsChecked = isChecked;
@@ -388,8 +388,6 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Id, contentInfo.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.ChannelId, "NodeId" }, contentInfo.ChannelId.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.SiteId, "PublishmentSystemId" }, contentInfo.SiteId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.AddUserName, contentInfo.AddUserName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.LastEditUserName, contentInfo.LastEditUserName);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Taxis, contentInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { ContentAttribute.GroupNameCollection, "ContentGroupNameCollection" }, contentInfo.GroupNameCollection);
             AtomUtility.AddDcElement(entry.AdditionalElements, ContentAttribute.Tags, AtomUtility.Encrypt(contentInfo.Tags));

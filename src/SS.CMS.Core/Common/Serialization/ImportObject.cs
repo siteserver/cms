@@ -19,7 +19,7 @@ namespace SS.CMS.Core.Serialization
     {
         private SiteInfo _siteInfo;
         private string _sitePath;
-        private string _adminName;
+        private int _userId;
         private ISettingsManager _settingsManager;
         private IPluginManager _pluginManager;
         private ICreateManager _createManager;
@@ -35,11 +35,11 @@ namespace SS.CMS.Core.Serialization
         private ITableStyleRepository _tableStyleRepository;
         private ITemplateRepository _templateRepository;
 
-        public async Task LoadAsync(int siteId, string adminName)
+        public async Task LoadAsync(int siteId, int userId)
         {
             _siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             _sitePath = PathUtils.Combine(_settingsManager.WebRootPath, _siteInfo.SiteDir);
-            _adminName = adminName;
+            _userId = userId;
         }
 
         //获取保存辅助表名称对应集合数据库缓存键
@@ -115,17 +115,17 @@ namespace SS.CMS.Core.Serialization
         public async Task ImportSiteContentAsync(string siteContentDirectoryPath, string filePath, bool isImportContents)
         {
             var siteIe = new SiteIe(_siteInfo, siteContentDirectoryPath);
-            await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _adminName);
+            await siteIe.ImportChannelsAndContentsAsync(filePath, isImportContents, false, 0, _userId);
         }
 
 
         /// <summary>
         /// 从指定的地址导入网站模板至站点中
         /// </summary>
-        public async Task ImportTemplatesAsync(string filePath, bool overwrite, string administratorName)
+        public async Task ImportTemplatesAsync(string filePath, bool overwrite, int userId)
         {
             var templateIe = new TemplateIe(_siteInfo.Id, filePath);
-            await templateIe.ImportTemplatesAsync(overwrite, administratorName);
+            await templateIe.ImportTemplatesAsync(overwrite, userId);
         }
 
         public async Task ImportRelatedFieldByZipFileAsync(string zipFilePath, bool overwrite)
@@ -144,7 +144,7 @@ namespace SS.CMS.Core.Serialization
         {
             if (DirectoryUtils.IsDirectoryExists(tableDirectoryPath))
             {
-                var tableStyleIe = new TableStyleIe(tableDirectoryPath, _adminName);
+                var tableStyleIe = new TableStyleIe(tableDirectoryPath, _userId);
                 await tableStyleIe.ImportTableStylesAsync(_siteInfo.Id);
             }
         }
@@ -228,7 +228,7 @@ namespace SS.CMS.Core.Serialization
                     };
                 }
 
-                var insertChannelId = await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, (int)levelHashtable[level], _adminName);
+                var insertChannelId = await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, (int)levelHashtable[level], _userId);
                 levelHashtable[level + 1] = insertChannelId;
             }
         }
@@ -249,12 +249,12 @@ namespace SS.CMS.Core.Serialization
 
                 if (StringUtils.StartsWithIgnoreCase(orderString, parentOrderString))
                 {
-                    parentId = await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, parentId, _adminName);
+                    parentId = await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, parentId, _userId);
                     parentOrderString = orderString;
                 }
                 else
                 {
-                    await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, parentId, _adminName);
+                    await siteIe.ImportChannelsAndContentsAsync(filePath, true, isOverride, parentId, _userId);
                 }
             }
         }
@@ -508,7 +508,7 @@ namespace SS.CMS.Core.Serialization
 
             var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
 
-            await contentIe.ImportContentsAsync(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel, _adminName);
+            await contentIe.ImportContentsAsync(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel, _userId);
 
             FileUtils.DeleteFileIfExists(filePath);
 

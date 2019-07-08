@@ -41,6 +41,7 @@ namespace SS.CMS.Api.Controllers.Users
         public async Task<ActionResult<InfoResponse>> GetInfo()
         {
             var userInfo = await _userManager.GetUserAsync();
+            if (userInfo == null || userInfo.IsLockedOut) return NotFound();
             var menus = await GetTopMenusAsync();
 
             return new InfoResponse
@@ -153,7 +154,7 @@ namespace SS.CMS.Api.Controllers.Users
             //var accessToken = AdminLogin(userInfo.UserName, context.IsAutoLogin);
             //var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
-            var token = await _userManager.SignInAsync(userInfo);
+            var token = _userManager.GetToken(userInfo);
 
             return Ok(new
             {

@@ -13,9 +13,8 @@ namespace SS.CMS.Core.Models.Attributes
         public const string LastModifiedDate = nameof(Entity.LastModifiedDate);
         public const string ChannelId = nameof(ContentInfo.ChannelId);
         public const string SiteId = nameof(ContentInfo.SiteId);
-        public const string AddUserName = nameof(ContentInfo.AddUserName);
-        public const string LastEditUserName = nameof(ContentInfo.LastEditUserName);
         public const string UserId = nameof(ContentInfo.UserId);
+        public const string LastModifiedUserId = nameof(ContentInfo.LastModifiedUserId);
         public const string Taxis = nameof(ContentInfo.Taxis);
         public const string GroupNameCollection = nameof(ContentInfo.GroupNameCollection);
         public const string Tags = nameof(ContentInfo.Tags);
@@ -63,7 +62,7 @@ namespace SS.CMS.Core.Models.Attributes
         public const string CheckState = nameof(CheckState);
 
         // 附加字段
-        public const string CheckUserName = nameof(CheckUserName);                  //审核者
+        public const string CheckUserId = nameof(CheckUserId);                  //审核者
         public const string CheckDate = nameof(CheckDate);                          //审核时间
         public const string CheckReasons = nameof(CheckReasons);                    //审核原因
         public const string TranslateContentType = nameof(TranslateContentType);    //转移内容类型
@@ -73,9 +72,8 @@ namespace SS.CMS.Core.Models.Attributes
             Id,
             ChannelId,
             SiteId,
-            AddUserName,
-            LastEditUserName,
             UserId,
+            LastModifiedUserId,
             Taxis,
             GroupNameCollection,
             Tags,
@@ -104,9 +102,8 @@ namespace SS.CMS.Core.Models.Attributes
             Id,
             ChannelId,
             SiteId,
-            AddUserName,
-            LastEditUserName,
             UserId,
+            LastModifiedUserId,
             Taxis,
             GroupNameCollection,
             Tags,
@@ -133,9 +130,8 @@ namespace SS.CMS.Core.Models.Attributes
         {
             Sequence,
             UserId,
-            SourceId,
-            AddUserName,
-            LastEditUserName
+            LastModifiedUserId,
+            SourceId
         });
 
         public static readonly Lazy<List<string>> DropAttributes = new Lazy<List<string>>(() => new List<string>

@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Serialization
     {
         private SiteInfo _siteInfo;
         private string _sitePath;
-        private string _adminName;
+        private int _userId;
         private ISettingsManager _settingsManager;
         private IPluginManager _pluginManager;
         private ICreateManager _createManager;
@@ -33,11 +33,11 @@ namespace SS.CMS.Core.Serialization
         private ITableStyleRepository _tableStyleRepository;
         private ITemplateRepository _templateRepository;
 
-        public async Task LoadAsync(int siteId, string adminName)
+        public async Task LoadAsync(int siteId, int userId)
         {
             _siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             _sitePath = PathUtils.Combine(_settingsManager.WebRootPath, _siteInfo.SiteDir);
-            _adminName = adminName;
+            _userId = userId;
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SS.CMS.Core.Serialization
         public async Task ExportTablesAndStylesAsync(string tableDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
-            var styleIe = new TableStyleIe(tableDirectoryPath, _adminName);
+            var styleIe = new TableStyleIe(tableDirectoryPath, _userId);
 
             var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteInfo.Id);
             var tableNameList = await _siteRepository.GetTableNameListAsync(_pluginManager, siteInfo);
