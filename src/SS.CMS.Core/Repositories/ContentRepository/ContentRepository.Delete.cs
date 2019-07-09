@@ -18,13 +18,13 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        private async Task DeleteReferenceContentsAsync(int siteId, int channelId, IList<int> contentIdList)
+        private async Task DeleteReferenceContentsAsync(int siteId, int channelId, IEnumerable<int> contentIdList)
         {
             var deleteNum = 0;
 
-            if (contentIdList != null && contentIdList.Count > 0)
+            if (contentIdList != null)
             {
-                _tagRepository.RemoveTags(siteId, contentIdList);
+                await _tagRepository.RemoveTagsAsync(siteId, contentIdList);
 
                 deleteNum = await _repository.DeleteAsync(Q
                     .Where(Attr.SiteId, siteId)

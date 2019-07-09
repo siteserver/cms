@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using SS.CMS.Core.Common;
 using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
+using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -29,19 +31,9 @@ namespace SS.CMS.Core.Repositories
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private static class Attr
-        {
-            public const string Id = nameof(SiteInfo.Id);
-            public const string SiteDir = nameof(SiteInfo.SiteDir);
-            public const string TableName = nameof(SiteInfo.TableName);
-            public const string IsRoot = "IsRoot";
-            public const string ParentId = nameof(SiteInfo.ParentId);
-            public const string Taxis = nameof(SiteInfo.Taxis);
-        }
-
         public async Task<int> InsertAsync(SiteInfo siteInfo)
         {
-            siteInfo.Taxis = GetMaxTaxis() + 1;
+            siteInfo.Taxis = await GetMaxTaxisAsync() + 1;
             siteInfo.Id = await _repository.InsertAsync(siteInfo);
 
             await _cache.RemoveAsync(_cacheKey);
@@ -107,53 +99,22 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(_cacheKey);
         }
 
-        public IList<string> GetLowerSiteDirListThatNotIsRoot()
+        public async Task<IEnumerable<string>> GetLowerSiteDirListThatNotIsRootAsync()
         {
-            var list = _repository.GetAll<string>(Q
+            var list = await _repository.GetAllAsync<string>(Q
                 .Select(Attr.SiteDir)
                 .WhereNot(Attr.IsRoot, true.ToString()));
 
-            return list.Select(x => x.ToLower()).ToList();
+            return list.Select(x => x.ToLower());
         }
 
-        private async Task UpdateAllIsRootAsync()
+        public async Task<IEnumerable<string>> GetLowerSiteDirListAsync(int parentId)
         {
-            await _repository.UpdateAsync(Q
-                .Set(Attr.IsRoot, false.ToString())
-            );
-
-            await _cache.RemoveAsync(_cacheKey);
-        }
-
-        private async Task<List<KeyValuePair<int, SiteInfo>>> GetSiteInfoKeyValuePairListToCacheAsync()
-        {
-            var list = new List<KeyValuePair<int, SiteInfo>>();
-
-            var siteInfoList = await GetSiteInfoListToCacheAsync();
-            foreach (var siteInfo in siteInfoList)
-            {
-                var entry = new KeyValuePair<int, SiteInfo>(siteInfo.Id, siteInfo);
-                list.Add(entry);
-            }
-
-            return list;
-        }
-
-        private async Task<IEnumerable<SiteInfo>> GetSiteInfoListToCacheAsync()
-        {
-            return await _repository.GetAllAsync(Q.OrderBy(Attr.Taxis, Attr.Id));
-        }
-
-        /// <summary>
-        /// 得到所有系统文件夹的列表，以小写表示。
-        /// </summary>
-        public List<string> GetLowerSiteDirList(int parentId)
-        {
-            return _repository.GetAll<string>(Q
+            var list = await _repository.GetAllAsync<string>(Q
                     .Select(Attr.SiteDir)
-                    .Where(Attr.ParentId, parentId))
-                .Select(x => x.ToLower())
-                .ToList();
+                    .Where(Attr.ParentId, parentId));
+
+            return list.Select(x => x.ToLower());
         }
 
         public async Task<List<KeyValuePair<int, SiteInfo>>> GetContainerSiteListAsync(string siteName, string siteDir, int startNum, int totalNum, ScopeType scopeType, string orderByString)
@@ -167,7 +128,7 @@ namespace SS.CMS.Core.Repositories
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = await GetSiteInfoByDirectoryAsync(siteDir);
+                siteInfo = await GetSiteInfoBySiteDirAsync(siteDir);
             }
 
             if (siteInfo != null)
@@ -202,14 +163,288 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        private int GetMaxTaxis()
+        public async Task<int> GetTableCountAsync(string tableName)
         {
-            return _repository.Max(Attr.Taxis) ?? 0;
+            return await _repository.CountAsync(Q.Where(Attr.TableName, tableName));
         }
 
-        public int GetTableCount(string tableName)
+        public async Task<IEnumerable<int>> GetSiteIdListAsync()
         {
-            return _repository.Count(Q.Where(Attr.TableName, tableName));
+            var cacheInfoList = await GetListCacheAsync();
+            return cacheInfoList.Select(x => x.Id).ToList();
+        }
+
+        public async Task<List<SiteInfo>> GetSiteInfoListAsync()
+        {
+            var list = new List<SiteInfo>();
+            var siteIdList = await GetSiteIdListAsync();
+            foreach (var siteId in siteIdList)
+            {
+                var siteInfo = await GetEntityCacheAsync(siteId);
+                if (siteInfo != null)
+                {
+                    list.Add(siteInfo);
+                }
+            }
+            return list;
+        }
+
+        public async Task<SiteInfo> GetSiteInfoAsync(int siteId)
+        {
+            if (siteId <= 0) return null;
+
+            return await GetEntityCacheAsync(siteId);
+        }
+
+        public async Task<SiteInfo> GetSiteInfoBySiteNameAsync(string siteName)
+        {
+            var cacheInfoList = await GetListCacheAsync();
+            var siteId = cacheInfoList.Where(x => x.SiteName == siteName).Select(x => x.Id).FirstOrDefault();
+            if (siteId == 0) return null;
+
+            return await GetEntityCacheAsync(siteId);
+        }
+
+        public async Task<SiteInfo> GetSiteInfoByIsRootAsync()
+        {
+            var cacheInfoList = await GetListCacheAsync();
+            var siteId = cacheInfoList.Where(x => x.IsRoot).Select(x => x.Id).FirstOrDefault();
+            if (siteId == 0) return null;
+
+            return await GetEntityCacheAsync(siteId);
+        }
+
+        public async Task<int> GetSiteIdByIsRootAsync()
+        {
+            var cacheInfoList = await GetListCacheAsync();
+            return cacheInfoList.Where(x => x.IsRoot).Select(x => x.Id).FirstOrDefault();
+        }
+
+        public async Task<SiteInfo> GetSiteInfoBySiteDirAsync(string siteDir)
+        {
+            var cacheInfoList = await GetListCacheAsync();
+            var siteId = cacheInfoList.Where(x => StringUtils.EqualsIgnoreCase(x.SiteDir, siteDir)).Select(x => x.Id).FirstOrDefault();
+            if (siteId == 0) return null;
+
+            return await GetEntityCacheAsync(siteId);
+        }
+
+        public async Task<int> GetSiteIdBySiteDirAsync(string siteDir)
+        {
+            var cacheInfoList = await GetListCacheAsync();
+            return cacheInfoList.Where(x => StringUtils.EqualsIgnoreCase(x.SiteDir, siteDir)).Select(x => x.Id).FirstOrDefault();
+        }
+
+        public async Task<List<int>> GetSiteIdListOrderByLevelAsync()
+        {
+            var retval = new List<int>();
+
+            var siteIdList = await GetSiteIdListAsync();
+            var siteInfoList = new List<SiteInfo>();
+            var parentWithChildren = new Dictionary<int, List<SiteInfo>>();
+            var hqSiteId = 0;
+            foreach (var siteId in siteIdList)
+            {
+                var siteInfo = await GetSiteInfoAsync(siteId);
+                if (siteInfo.IsRoot)
+                {
+                    hqSiteId = siteInfo.Id;
+                }
+                else
+                {
+                    if (siteInfo.ParentId == 0)
+                    {
+                        siteInfoList.Add(siteInfo);
+                    }
+                    else
+                    {
+                        if (!parentWithChildren.TryGetValue(siteInfo.ParentId, out var children))
+                        {
+                            children = new List<SiteInfo>();
+                        }
+                        children.Add(siteInfo);
+                        parentWithChildren[siteInfo.ParentId] = children;
+                    }
+                }
+            }
+
+            if (hqSiteId > 0)
+            {
+                retval.Add(hqSiteId);
+            }
+
+            var list = siteInfoList.OrderBy(siteInfo => siteInfo.Taxis == 0 ? int.MaxValue : siteInfo.Taxis).ToList();
+
+            foreach (var siteInfo in list)
+            {
+                AddSiteIdList(retval, siteInfo, parentWithChildren, 0);
+            }
+            return retval;
+        }
+
+        public async Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, List<int> siteIdCollection, int siteId)
+        {
+            var siteInfo = await GetSiteInfoAsync(siteId);
+            var parentSiteId = -1;
+            foreach (var psId in siteIdCollection)
+            {
+                if (psId != siteInfo.ParentId) continue;
+                parentSiteId = psId;
+                break;
+            }
+            if (parentSiteId == -1) return;
+
+            parentSiteIds.Add(parentSiteId);
+            await GetAllParentSiteIdListAsync(parentSiteIds, siteIdCollection, parentSiteId);
+        }
+
+        public async Task<bool> IsExistsAsync(int siteId)
+        {
+            if (siteId == 0) return false;
+            return await GetSiteInfoAsync(siteId) != null;
+        }
+
+        public async Task<List<string>> GetSiteTableNamesAsync(IPluginManager pluginManager)
+        {
+            return await GetTableNameListAsync(pluginManager, true, false);
+        }
+
+        public async Task<List<string>> GetAllTableNameListAsync(IPluginManager pluginManager)
+        {
+            return await GetTableNameListAsync(pluginManager, true, true);
+        }
+
+        public async Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, SiteInfo siteInfo)
+        {
+            var tableNames = new List<string> { siteInfo.TableName };
+            var pluginTableNames = await pluginManager.GetContentTableNameListAsync();
+            foreach (var pluginTableName in pluginTableNames)
+            {
+                if (!StringUtils.ContainsIgnoreCase(tableNames, pluginTableName))
+                {
+                    tableNames.Add(pluginTableName);
+                }
+            }
+            return tableNames;
+        }
+
+        //public ETableStyle GetTableStyle(SiteInfo siteInfo, string tableName)
+        //{
+        //    var tableStyle = ETableStyle.Custom;
+
+        //    if (StringUtils.EqualsIgnoreCase(tableName, siteInfo.AuxiliaryTableForContent))
+        //    {
+        //        tableStyle = ETableStyle.BackgroundContent;
+        //    }
+        //    else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.SiteDao.TableName))
+        //    {
+        //        tableStyle = ETableStyle.Site;
+        //    }
+        //    else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.ChannelDao.TableName))
+        //    {
+        //        tableStyle = ETableStyle.Channel;
+        //    }
+        //    //else if (StringUtils.EqualsIgnoreCase(tableName, DataProvider.InputContentDao.TableName))
+        //    //{
+        //    //    tableStyle = ETableStyle.InputContent;
+        //    //}
+        //    return tableStyle;
+        //}
+
+        public async Task<int> GetSiteLevelAsync(int siteId)
+        {
+            var level = 0;
+            var siteInfo = await GetSiteInfoAsync(siteId);
+            if (siteInfo.ParentId != 0)
+            {
+                level++;
+                level += await GetSiteLevelAsync(siteInfo.ParentId);
+            }
+            return level;
+        }
+
+        public async Task<int> GetParentSiteIdAsync(int siteId)
+        {
+            var parentSiteId = 0;
+            var siteInfo = await GetSiteInfoAsync(siteId);
+            if (siteInfo != null && siteInfo.IsRoot == false)
+            {
+                parentSiteId = siteInfo.ParentId;
+                if (parentSiteId == 0)
+                {
+                    parentSiteId = await GetSiteIdByIsRootAsync();
+                }
+            }
+            return parentSiteId;
+        }
+
+
+
+        //public List<int> GetWritingSiteIdList(PermissionsImpl permissionsImpl)
+        //{
+        //    var siteIdList = new List<int>();
+
+        //    if (!string.IsNullOrEmpty(permissionsImpl.UserName))
+        //    {
+        //        if (permissionsImpl.IsConsoleAdministrator || permissionsImpl.IsSystemAdministrator)//如果是超级管理员或站点管理员
+        //        {
+        //            foreach (var siteId in permissionsImpl.SiteIdList)
+        //            {
+        //                if (!siteIdList.Contains(siteId))
+        //                {
+        //                    siteIdList.Add(siteId);
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            foreach (var siteId in permissionsImpl.SiteIdList)
+        //            {
+        //                if (!siteIdList.Contains(siteId))
+        //                {
+        //                    var channelIdCollection = DataProvider.SitePermissionsDao.GetAllPermissionList(permissionsImpl.Roles, siteId, true);
+        //                    if (channelIdCollection.Count > 0)
+        //                    {
+        //                        siteIdList.Add(siteId);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return siteIdList;
+        //}
+
+        public async Task<string> GetSiteNameAsync(SiteInfo siteInfo)
+        {
+            var padding = string.Empty;
+
+            var level = await GetSiteLevelAsync(siteInfo.Id);
+            string psLogo;
+            if (siteInfo.IsRoot)
+            {
+                psLogo = "siteHQ.gif";
+            }
+            else
+            {
+                psLogo = "site.gif";
+                if (level > 0 && level < 10)
+                {
+                    psLogo = $"subsite{level + 1}.gif";
+                }
+            }
+            psLogo = SiteServerAssets.GetIconUrl("tree/" + psLogo);
+
+            for (var i = 0; i < level; i++)
+            {
+                padding += "　";
+            }
+            if (level > 0)
+            {
+                padding += "└ ";
+            }
+
+            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;{siteInfo.SiteName}";
         }
     }
 }

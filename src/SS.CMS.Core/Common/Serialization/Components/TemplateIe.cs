@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = _templateRepository.GetTemplateInfoListBySiteId(_siteId);
+            var templateInfoList = await _templateRepository.GetTemplateInfoListBySiteIdAsync(_siteId);
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -41,7 +41,7 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            var templateInfoList = _templateRepository.GetTemplateInfoListBySiteId(_siteId);
+            var templateInfoList = await _templateRepository.GetTemplateInfoListBySiteIdAsync(_siteId);
 
             foreach (var templateInfo in templateInfoList)
             {
@@ -100,7 +100,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                 var templateContent = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Content"));
 
-                var srcTemplateInfo = _templateRepository.GetTemplateInfoByTemplateName(_siteId, templateInfo.Type, templateInfo.TemplateName);
+                var srcTemplateInfo = await _templateRepository.GetTemplateInfoByTemplateNameAsync(_siteId, templateInfo.Type, templateInfo.TemplateName);
 
                 int templateId;
 
@@ -117,7 +117,7 @@ namespace SS.CMS.Core.Serialization.Components
                     }
                     else
                     {
-                        templateInfo.TemplateName = _templateRepository.GetImportTemplateName(_siteId, templateInfo.TemplateName);
+                        templateInfo.TemplateName = await _templateRepository.GetImportTemplateNameAsync(_siteId, templateInfo.TemplateName);
                         templateId = await _templateRepository.InsertAsync(templateInfo, templateContent, userId);
                     }
                 }

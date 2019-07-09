@@ -127,7 +127,7 @@ namespace SS.CMS.Core.StlParser
             if (_contentInfo != null) return _contentInfo;
             if (ContentId <= 0) return null;
             var channelInfo = await GetChannelInfoAsync();
-            _contentInfo = channelInfo.ContentRepository.GetContentInfo(ContentId);
+            _contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(ContentId);
             return _contentInfo;
         }
 

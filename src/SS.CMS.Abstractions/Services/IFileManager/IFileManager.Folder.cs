@@ -9,9 +9,9 @@ namespace SS.CMS.Services
     {
         void ChangeSiteDir(string parentPsPath, string oldPsDir, string newPsDir);
 
-        void DeleteSiteFiles(SiteInfo siteInfo);
+        Task DeleteSiteFilesAsync(SiteInfo siteInfo);
 
-        void ImportSiteFiles(SiteInfo siteInfo, string siteTemplatePath, bool isOverride);
+        Task ImportSiteFilesAsync(SiteInfo siteInfo, string siteTemplatePath, bool isOverride);
 
         Task ChangeParentSiteAsync(int oldParentSiteId, int newParentSiteId, int siteId, string siteDir);
 

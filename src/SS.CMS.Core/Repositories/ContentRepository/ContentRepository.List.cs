@@ -16,15 +16,15 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public IList<int> GetContentIdList(int channelId)
+        public async Task<IEnumerable<int>> GetContentIdListAsync(int channelId)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
-            ).ToList();
+            );
         }
 
-        public IList<int> GetContentIdList(int channelId, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
+        public async Task<IEnumerable<int>> GetContentIdListAsync(int channelId, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var query = Q
                 .Select(Attr.Id)
@@ -48,44 +48,44 @@ namespace SS.CMS.Core.Repositories
                 query.Where(Attr.IsChecked, checkedState);
             }
 
-            return _repository.GetAll<int>(query).ToList();
+            return await _repository.GetAllAsync<int>(query);
         }
 
-        public IList<int> GetContentIdListCheckedByChannelId(int siteId, int channelId)
+        public async Task<IEnumerable<int>> GetContentIdListCheckedByChannelIdAsync(int siteId, int channelId)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.IsChecked, true.ToString())
-            ).ToList();
+            );
         }
 
-        public IList<(int, int)> GetContentIdListByTrash(int siteId)
+        public async Task<IEnumerable<(int, int)>> GetContentIdListByTrashAsync(int siteId)
         {
-            var list = _repository.GetAll<(int contentId, int channelId)>(Q
+            var list = await _repository.GetAllAsync<(int contentId, int channelId)>(Q
                 .Select(Attr.Id, Attr.ChannelId)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, "<", 0));
 
-            return list.Select(o => (Math.Abs(o.channelId), o.contentId)).ToList();
+            return list.Select(o => (Math.Abs(o.channelId), o.contentId));
         }
 
-        public List<int> GetContentIdListChecked(int channelId, TaxisType taxisType)
+        public async Task<IEnumerable<int>> GetContentIdListCheckedAsync(int channelId, TaxisType taxisType)
         {
-            return GetContentIdListChecked(channelId, 0, taxisType);
+            return await GetContentIdListCheckedAsync(channelId, 0, taxisType);
         }
 
-        private List<int> GetContentIdListChecked(int channelId, int totalNum, TaxisType taxisType)
+        private async Task<IEnumerable<int>> GetContentIdListCheckedAsync(int channelId, int totalNum, TaxisType taxisType)
         {
             var channelIdList = new List<int>
             {
                 channelId
             };
-            return GetContentIdListChecked(channelIdList, totalNum, taxisType);
+            return await GetContentIdListCheckedAsync(channelIdList, totalNum, taxisType);
         }
 
-        private List<int> GetContentIdListChecked(List<int> channelIdList, int totalNum, TaxisType taxisType)
+        private async Task<IEnumerable<int>> GetContentIdListCheckedAsync(List<int> channelIdList, int totalNum, TaxisType taxisType)
         {
             var list = new List<int>();
 
@@ -106,9 +106,7 @@ namespace SS.CMS.Core.Repositories
                 query.Limit(totalNum);
             }
 
-            list = _repository.GetAll<int>(query).ToList();
-
-            return list;
+            return await _repository.GetAllAsync<int>(query);
         }
 
         // public List<Tuple<int, int>> ApiGetContentIdListBySiteId(int siteId, ApiContentsParameters parameters, out int totalCount)
@@ -262,77 +260,73 @@ namespace SS.CMS.Core.Repositories
         //    return retVal;
         //}
 
-        private IList<int> GetReferenceIdList(IList<int> contentIdList)
+        private async Task<IEnumerable<int>> GetReferenceIdListAsync(IEnumerable<int> contentIdList)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, ">", 0)
                 .WhereIn(Attr.ReferenceId, contentIdList)
-            ).ToList();
+            );
         }
 
-        public IList<int> GetIdListBySameTitle(int channelId, string title)
+        public async Task<IEnumerable<int>> GetIdListBySameTitleAsync(int channelId, string title)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Title, title)
-            ).ToList();
+            );
         }
 
-        public IList<int> GetChannelIdListCheckedByLastEditDateHour(int siteId, int hour)
+        public async Task<IEnumerable<int>> GetChannelIdListCheckedByLastEditDateHourAsync(int siteId, int hour)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.ChannelId)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.IsChecked, true.ToString())
                 .WhereBetween(Attr.LastModifiedDate, DateTime.Now.AddHours(-hour), DateTime.Now)
                 .Distinct()
-            ).ToList();
+            );
         }
 
-        public List<int> GetCacheContentIdList(Query query, int offset, int limit)
+        public async Task<IEnumerable<int>> GetCacheContentIdListAsync(Query query, int offset, int limit)
         {
             var list = new List<int>();
 
             QuerySelectMinColumns(query);
             query.Offset(offset).Limit(limit);
 
-            return _repository.GetAll<int>(query).ToList();
+            return await _repository.GetAllAsync<int>(query);
         }
 
-        public IList<string> GetValueListByStartString(int channelId, string name, string startString, int totalNum)
+        public async Task<IEnumerable<string>> GetValueListByStartStringAsync(int channelId, string name, string startString, int totalNum)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(name)
                 .Where(Attr.ChannelId, channelId)
                 .WhereInStr(_repository.Database.DatabaseType, name, startString)
                 .Distinct()
                 .Limit(totalNum)
-            ).ToList();
+            );
         }
 
-        public List<ContentInfo> GetContentInfoList(Query query, int offset, int limit)
+        public async Task<IEnumerable<ContentInfo>> GetContentInfoListAsync(Query query, int offset, int limit)
         {
-            return _repository.GetAll(query
+            return await _repository.GetAllAsync(query
                 .Offset(offset)
                 .Limit(limit)
-            ).ToList();
+            );
         }
 
-        public List<ContentCountInfo> GetContentCountInfoList()
+        public async Task<IEnumerable<ContentCountInfo>> GetContentCountInfoListAsync()
         {
-            List<ContentCountInfo> list;
-
             var sqlString =
                 $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}";
 
             using (var connection = _repository.Database.GetConnection())
             {
-                list = connection.Query<ContentCountInfo>(sqlString).ToList();
+                return await connection.QueryAsync<ContentCountInfo>(sqlString);
             }
-
-            return list;
         }
     }
 }

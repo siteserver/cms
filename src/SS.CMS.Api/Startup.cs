@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 using NSwag;
 using SS.CMS.Core.Services;
 using SS.CMS.Services;
@@ -84,7 +85,11 @@ namespace SS.CMS.Api
             });
 
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver
+                        = new CamelCasePropertyNamesContractResolver();
+                });
             // services.AddApiVersioning(o =>
             // {
             //     o.ReportApiVersions = true;

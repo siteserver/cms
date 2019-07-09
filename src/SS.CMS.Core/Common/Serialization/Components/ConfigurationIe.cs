@@ -44,28 +44,28 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.Taxis, siteInfo.Taxis.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, SiteAttribute.ExtendValues, siteInfo.ExtendValues);
 
-            var indexTemplateId = _templateRepository.GetDefaultTemplateId(siteInfo.Id, TemplateType.IndexPageTemplate);
+            var indexTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(siteInfo.Id, TemplateType.IndexPageTemplate);
             if (indexTemplateId != 0)
             {
                 var indexTemplateName = await _templateRepository.GetTemplateNameAsync(indexTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, DefaultIndexTemplateName, indexTemplateName);
             }
 
-            var channelTemplateId = _templateRepository.GetDefaultTemplateId(siteInfo.Id, TemplateType.ChannelTemplate);
+            var channelTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(siteInfo.Id, TemplateType.ChannelTemplate);
             if (channelTemplateId != 0)
             {
                 var channelTemplateName = await _templateRepository.GetTemplateNameAsync(channelTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, DefaultChannelTemplateName, channelTemplateName);
             }
 
-            var contentTemplateId = _templateRepository.GetDefaultTemplateId(siteInfo.Id, TemplateType.ContentTemplate);
+            var contentTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(siteInfo.Id, TemplateType.ContentTemplate);
             if (contentTemplateId != 0)
             {
                 var contentTemplateName = await _templateRepository.GetTemplateNameAsync(contentTemplateId);
                 AtomUtility.AddDcElement(feed.AdditionalElements, DefaultContentTemplateName, contentTemplateName);
             }
 
-            var fileTemplateId = _templateRepository.GetDefaultTemplateId(siteInfo.Id, TemplateType.FileTemplate);
+            var fileTemplateId = await _templateRepository.GetDefaultTemplateIdAsync(siteInfo.Id, TemplateType.FileTemplate);
             if (fileTemplateId != 0)
             {
                 var fileTemplateName = await _templateRepository.GetTemplateNameAsync(fileTemplateId);
@@ -129,7 +129,7 @@ namespace SS.CMS.Core.Serialization.Components
             var indexTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultIndexTemplateName);
             if (!string.IsNullOrEmpty(indexTemplateName))
             {
-                var indexTemplateId = _templateRepository.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.IndexPageTemplate, indexTemplateName);
+                var indexTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(siteInfo.Id, TemplateType.IndexPageTemplate, indexTemplateName);
                 if (indexTemplateId != 0)
                 {
                     await _templateRepository.SetDefaultAsync(siteInfo.Id, indexTemplateId);
@@ -139,7 +139,7 @@ namespace SS.CMS.Core.Serialization.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                var channelTemplateId = _templateRepository.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                var channelTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
                 if (channelTemplateId != 0)
                 {
                     await _templateRepository.SetDefaultAsync(siteInfo.Id, channelTemplateId);
@@ -149,7 +149,7 @@ namespace SS.CMS.Core.Serialization.Components
             var contentTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                var contentTemplateId = _templateRepository.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
+                var contentTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
                 if (contentTemplateId != 0)
                 {
                     await _templateRepository.SetDefaultAsync(siteInfo.Id, contentTemplateId);
@@ -159,7 +159,7 @@ namespace SS.CMS.Core.Serialization.Components
             var fileTemplateName = AtomUtility.GetDcElementContent(feed.AdditionalElements, DefaultFileTemplateName);
             if (!string.IsNullOrEmpty(fileTemplateName))
             {
-                var fileTemplateId = _templateRepository.GetTemplateIdByTemplateName(siteInfo.Id, TemplateType.FileTemplate, fileTemplateName);
+                var fileTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(siteInfo.Id, TemplateType.FileTemplate, fileTemplateName);
                 if (fileTemplateId != 0)
                 {
                     await _templateRepository.SetDefaultAsync(siteInfo.Id, fileTemplateId);

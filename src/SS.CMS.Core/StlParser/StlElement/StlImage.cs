@@ -169,7 +169,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(contentInfo.ReferenceId);
+                            var targetContentInfo = await targetNodeInfo.ContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -180,7 +180,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     if (contentInfo == null)
                     {
                         var channelInfo = await parseContext.GetChannelInfoAsync();
-                        contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+                        contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
                     }
 
                     if (contentInfo != null)

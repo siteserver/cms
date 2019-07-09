@@ -35,11 +35,11 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(PermissionInfo permissionsInfo)
         {
-            if (IsExists(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId))
+            if (await IsExistsAsync(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId))
             {
                 await DeleteAsync(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId);
             }
-            return _repository.Insert(permissionsInfo);
+            return await _repository.InsertAsync(permissionsInfo);
         }
 
         public async Task<bool> DeleteAsync(string roleName)
@@ -66,28 +66,28 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        private bool IsExists(string roleName, int siteId, int channelId)
+        private async Task<bool> IsExistsAsync(string roleName, int siteId, int channelId)
         {
-            return _repository.Exists(Q
+            return await _repository.ExistsAsync(Q
                 .Where(Attr.RoleName, roleName)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
             );
         }
 
-        public IEnumerable<PermissionInfo> GetRolePermissionsInfoList(string roleName)
+        private async Task<IEnumerable<PermissionInfo>> GetRolePermissionsInfoListAsync(string roleName)
         {
-            return _repository.GetAll(Q.Where(Attr.RoleName, roleName));
+            return await _repository.GetAllAsync(Q.Where(Attr.RoleName, roleName));
         }
 
-        public List<string> GetAppPermissions(IEnumerable<string> roles)
+        public async Task<List<string>> GetAppPermissionsAsync(IEnumerable<string> roles)
         {
             var list = new List<string>();
             if (roles == null) return list;
 
             foreach (var roleName in roles)
             {
-                var rolePermissionsInfoList = GetRolePermissionsInfoList(roleName);
+                var rolePermissionsInfoList = await GetRolePermissionsInfoListAsync(roleName);
                 foreach (var rolePermissionsInfo in rolePermissionsInfoList)
                 {
                     if (rolePermissionsInfo.SiteId > 0 || rolePermissionsInfo.ChannelId > 0) continue;
@@ -103,14 +103,14 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public List<string> GetSitePermissions(IEnumerable<string> roles, int siteId)
+        public async Task<List<string>> GetSitePermissionsAsync(IEnumerable<string> roles, int siteId)
         {
             var permissions = new List<string>();
             if (roles == null) return permissions;
 
             foreach (var roleName in roles)
             {
-                var rolePermissionsInfoList = GetRolePermissionsInfoList(roleName);
+                var rolePermissionsInfoList = await GetRolePermissionsInfoListAsync(roleName);
                 foreach (var rolePermissionsInfo in rolePermissionsInfoList)
                 {
                     if (rolePermissionsInfo.SiteId != siteId || rolePermissionsInfo.ChannelId > 0) continue;
@@ -126,14 +126,14 @@ namespace SS.CMS.Core.Repositories
             return permissions;
         }
 
-        public List<string> GetChannelPermissions(IEnumerable<string> roles, int siteId, int channelId)
+        public async Task<List<string>> GetChannelPermissionsAsync(IEnumerable<string> roles, int siteId, int channelId)
         {
             var permissions = new List<string>();
             if (roles == null) return permissions;
 
             foreach (var roleName in roles)
             {
-                var rolePermissionsInfoList = GetRolePermissionsInfoList(roleName);
+                var rolePermissionsInfoList = await GetRolePermissionsInfoListAsync(roleName);
                 foreach (var rolePermissionsInfo in rolePermissionsInfoList)
                 {
                     if (rolePermissionsInfo.SiteId != siteId || rolePermissionsInfo.ChannelId != channelId) continue;

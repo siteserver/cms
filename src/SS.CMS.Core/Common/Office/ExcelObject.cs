@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -12,7 +13,7 @@ namespace SS.CMS.Core.Common.Office
     public static class ExcelObject
     {
         public static async Task CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, SiteInfo siteInfo,
-            ChannelInfo channelInfo, IList<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+            ChannelInfo channelInfo, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, bool? checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -32,15 +33,14 @@ namespace SS.CMS.Core.Common.Office
                 }
             }
 
-            if (contentIdList == null || contentIdList.Count == 0)
+            if (contentIdList == null || contentIdList.Count() == 0)
             {
-                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelInfo.Id, isPeriods,
-                    startDate, endDate, checkedState);
+                contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelInfo.Id, isPeriods, startDate, endDate, checkedState);
             }
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+                var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
                 if (contentInfo != null)
                 {
                     var row = new List<string>();
@@ -99,7 +99,7 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static void CreateExcelFileForUsers(IUserRepository userRepository, string filePath, ETriState checkedState)
+        public static async Task CreateExcelFileForUsersAsync(IUserRepository userRepository, string filePath, ETriState checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -115,7 +115,7 @@ namespace SS.CMS.Core.Common.Office
             };
             var rows = new List<List<string>>();
 
-            foreach (var userInfo in userRepository.GetAll(null))
+            foreach (var userInfo in await userRepository.GetAllAsync(null))
             {
                 rows.Add(new List<string>
                 {

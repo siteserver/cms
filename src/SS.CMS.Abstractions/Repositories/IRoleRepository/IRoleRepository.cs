@@ -7,18 +7,18 @@ namespace SS.CMS.Repositories
 {
     public partial interface IRoleRepository : IRepository
     {
-        string GetRoleDescription(string roleName);
+        Task<string> GetRoleDescriptionAsync(string roleName);
 
-        IList<string> GetRoleNameList();
+        Task<IEnumerable<string>> GetRoleNameListAsync();
 
-        IList<string> GetRoleNameListByUserId(int userId);
+        Task<IEnumerable<string>> GetRoleNameListByUserIdAsync(int userId);
 
-        void InsertRole(RoleInfo roleInfo);
+        Task<int> InsertAsync(RoleInfo roleInfo);
 
-        void UpdateRole(string roleName, string description);
+        Task UpdateAsync(string roleName, string description);
 
         Task DeleteRoleAsync(string roleName);
 
-        bool IsRoleExists(string roleName);
+        Task<bool> IsRoleExistsAsync(string roleName);
     }
 }

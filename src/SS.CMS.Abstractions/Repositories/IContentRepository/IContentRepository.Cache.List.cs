@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 
 namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        List<int> GetContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId, int offset, int limit);
+        Task<IEnumerable<int>> GetContentIdListAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId, int offset, int limit);
     }
 }

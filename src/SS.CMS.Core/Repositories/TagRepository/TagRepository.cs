@@ -35,25 +35,25 @@ namespace SS.CMS.Core.Repositories
             public const string UseNum = nameof(TagInfo.UseNum);
         }
 
-        public void Insert(TagInfo tagInfo)
+        public async Task<int> InsertAsync(TagInfo tagInfo)
         {
-            _repository.Insert(tagInfo);
+            return await _repository.InsertAsync(tagInfo);
         }
 
-        public void Update(TagInfo tagInfo)
+        public async Task<bool> UpdateAsync(TagInfo tagInfo)
         {
-            _repository.Update(tagInfo);
+            return await _repository.UpdateAsync(tagInfo);
         }
 
-        public TagInfo GetTagInfo(int siteId, string tag)
+        public async Task<TagInfo> GetTagInfoAsync(int siteId, string tag)
         {
-            return _repository.Get(Q.Where(Attr.SiteId, siteId).Where(Attr.Tag, tag));
+            return await _repository.GetAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.Tag, tag));
         }
 
-        public IList<TagInfo> GetTagInfoList(int siteId, int contentId)
+        public async Task<IEnumerable<TagInfo>> GetTagInfoListAsync(int siteId, int contentId)
         {
             var query = GetQuery(null, siteId, contentId);
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
         // public string GetSqlString(int siteId, int contentId, bool isOrderByCount, int totalNum)
@@ -86,15 +86,15 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public IList<string> GetTagListByStartString(int siteId, string startString, int totalNum)
+        public async Task<IEnumerable<string>> GetTagListByStartStringAsync(int siteId, string startString, int totalNum)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.Tag)
                 .Where(Attr.SiteId, siteId)
                 .WhereContains(Attr.Tag, startString)
                 .OrderByDesc(Attr.UseNum)
                 .Distinct()
-                .Limit(totalNum)).ToList();
+                .Limit(totalNum));
         }
 
         public async Task<IEnumerable<string>> GetTagListAsync(int siteId)
@@ -118,10 +118,10 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(query);
         }
 
-        public int GetTagCount(string tag, int siteId)
+        public async Task<int> GetTagCountAsync(string tag, int siteId)
         {
-            var contentIdList = GetContentIdListByTag(tag, siteId);
-            return contentIdList.Count;
+            var contentIdList = await GetContentIdListByTagAsync(tag, siteId);
+            return contentIdList.Count();
         }
 
         private string GetWhereString(string tag, int siteId, int contentId)
@@ -160,13 +160,13 @@ namespace SS.CMS.Core.Repositories
             return query;
         }
 
-        public List<int> GetContentIdListByTag(string tag, int siteId)
+        public async Task<IEnumerable<int>> GetContentIdListByTagAsync(string tag, int siteId)
         {
             var idList = new List<int>();
             if (string.IsNullOrEmpty(tag)) return idList;
 
             var query = GetQuery(tag, siteId, 0);
-            var contentIdCollectionList = _repository.GetAll<string>(query.Select(Attr.ContentIdCollection));
+            var contentIdCollectionList = await _repository.GetAllAsync<string>(query.Select(Attr.ContentIdCollection));
             foreach (var contentIdCollection in contentIdCollectionList)
             {
                 var contentIdList = TranslateUtils.StringCollectionToIntList(contentIdCollection);

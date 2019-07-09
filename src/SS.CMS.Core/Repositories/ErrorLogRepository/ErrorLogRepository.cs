@@ -50,9 +50,9 @@ namespace SS.CMS.Core.Repositories
                 return list;
             });
 
-        private int Insert(ErrorLogInfo logInfo)
+        private async Task<int> InsertAsync(ErrorLogInfo logInfo)
         {
-            logInfo.Id = _repository.Insert(logInfo);
+            logInfo.Id = await _repository.InsertAsync(logInfo);
 
             return logInfo.Id;
         }
@@ -79,9 +79,9 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
-        public ErrorLogInfo GetErrorLogInfo(int logId)
+        public async Task<ErrorLogInfo> GetErrorLogInfoAsync(int logId)
         {
-            return _repository.Get(logId);
+            return await _repository.GetAsync(logId);
         }
 
         // public string GetSelectCommend(string category, string pluginId, string keyword, string dateFrom, string dateTo)
@@ -147,7 +147,7 @@ namespace SS.CMS.Core.Repositories
 
                 await DeleteIfThresholdAsync();
 
-                return Insert(logInfo);
+                return await InsertAsync(logInfo);
             }
             catch
             {

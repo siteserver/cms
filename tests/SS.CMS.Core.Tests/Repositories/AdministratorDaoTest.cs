@@ -11,12 +11,12 @@ namespace SS.CMS.Core.Tests.Repositories
     [Collection("Database collection")]
     public class UserRepositoryTest
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly IntegrationTestsFixture _fixture;
         private readonly ITestOutputHelper _output;
 
         private const string TestUserName = "Tests_UserName";
 
-        public UserRepositoryTest(DatabaseFixture fixture, ITestOutputHelper output)
+        public UserRepositoryTest(IntegrationTestsFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;
@@ -50,7 +50,10 @@ namespace SS.CMS.Core.Tests.Repositories
             };
 
             (isSuccess, id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
-            _output.WriteLine(errorMessage);
+            if (!isSuccess)
+            {
+                _output.WriteLine(errorMessage);
+            }
 
             Assert.True(id > 0);
             Assert.True(!string.IsNullOrWhiteSpace(userInfo.Password));

@@ -159,7 +159,7 @@ namespace SS.CMS.Core.Common
         {
             var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
 
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
             _fileManager.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;

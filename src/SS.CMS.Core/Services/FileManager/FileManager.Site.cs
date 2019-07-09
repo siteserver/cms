@@ -39,7 +39,7 @@ namespace SS.CMS.Core.Services
             var targetTableName = await _channelRepository.GetTableNameAsync(_pluginManager, targetSiteInfo, targetChannelInfo);
 
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
 
             if (contentInfo == null) return;
 
@@ -151,7 +151,7 @@ namespace SS.CMS.Core.Services
 
             await channelInfo.ContentRepository.DeleteAsync(siteInfo.Id, contentId);
 
-            _tagRepository.RemoveTags(siteInfo.Id, contentId);
+            await _tagRepository.RemoveTagsAsync(siteInfo.Id, contentId);
 
             foreach (var service in await _pluginManager.GetServicesAsync())
             {
@@ -230,21 +230,18 @@ namespace SS.CMS.Core.Services
             foreach (var channelId in channelIdList)
             {
                 var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
-                if (contentIdList.Count > 0)
+                var contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelId);
+                foreach (var contentId in contentIdList)
                 {
-                    foreach (var contentId in contentIdList)
-                    {
-                        var filePath = await _pathManager.GetContentPageFilePathAsync(siteInfo, channelId, contentId, 0);
-                        FileUtils.DeleteFileIfExists(filePath);
-                        DeletePagingFiles(filePath);
-                        DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
-                    }
+                    var filePath = await _pathManager.GetContentPageFilePathAsync(siteInfo, channelId, contentId, 0);
+                    FileUtils.DeleteFileIfExists(filePath);
+                    DeletePagingFiles(filePath);
+                    DirectoryUtils.DeleteEmptyDirectory(DirectoryUtils.GetDirectoryPath(filePath));
                 }
             }
         }
 
-        public async Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IList<int> contentIdList)
+        public async Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IEnumerable<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -267,11 +264,8 @@ namespace SS.CMS.Core.Services
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId);
-                if (contentIdList.Count > 0)
-                {
-                    await DeleteContentsAsync(siteInfo, channelId, contentIdList);
-                }
+                var contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelId);
+                await DeleteContentsAsync(siteInfo, channelId, contentIdList);
             }
         }
 

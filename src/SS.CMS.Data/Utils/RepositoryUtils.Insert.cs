@@ -12,37 +12,6 @@ namespace SS.CMS.Data.Utils
 {
     internal static partial class RepositoryUtils
     {
-        public static int InsertObject<T>(IDatabase database, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
-        {
-            if (dataInfo == null) return 0;
-            dataInfo.Guid = Utilities.GetGuid();
-            dataInfo.CreatedDate = DateTime.UtcNow;
-            dataInfo.LastModifiedDate = DateTime.UtcNow;
-
-            var dictionary = new Dictionary<string, object>();
-            foreach (var tableColumn in tableColumns)
-            {
-                if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id))) continue;
-
-                var value = tableColumn.IsExtend
-                    ? Utilities.JsonSerialize(dataInfo.ToDictionary(dataInfo.GetColumnNames()))
-                    : dataInfo.Get(tableColumn.AttributeName);
-
-                dictionary[tableColumn.AttributeName] = value;
-            }
-
-            var xQuery = NewQuery(tableName);
-            xQuery.AsInsert(dictionary, true);
-            var (sql, bindings) = Compile(database, tableName, xQuery);
-
-            using (var connection = database.GetConnection())
-            {
-                dataInfo.Id = connection.QueryFirst<int>(sql, bindings);
-            }
-
-            return dataInfo.Id;
-        }
-
         public static async Task<int> InsertObjectAsync<T>(IDatabase database, string tableName, IEnumerable<TableColumn> tableColumns, T dataInfo) where T : Entity
         {
             if (dataInfo == null) return 0;

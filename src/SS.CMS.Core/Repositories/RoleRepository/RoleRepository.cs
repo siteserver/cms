@@ -28,38 +28,38 @@ namespace SS.CMS.Core.Repositories
             public const string Description = nameof(RoleInfo.Description);
         }
 
-        public string GetRoleDescription(string roleName)
+        public async Task<string> GetRoleDescriptionAsync(string roleName)
         {
-            return _repository.Get<string>(Q
+            return await _repository.GetAsync<string>(Q
                 .Select(Attr.Description)
                 .Where(Attr.RoleName, roleName));
         }
 
-        public IList<string> GetRoleNameList()
+        public async Task<IEnumerable<string>> GetRoleNameListAsync()
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.RoleName)
-                .OrderBy(Attr.RoleName)).ToList();
+                .OrderBy(Attr.RoleName));
         }
 
-        public IList<string> GetRoleNameListByUserId(int userId)
+        public async Task<IEnumerable<string>> GetRoleNameListByUserIdAsync(int userId)
         {
             if (userId == 0) return new List<string>();
 
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.RoleName)
                 .Where(Attr.UserId, userId)
-                .OrderBy(Attr.RoleName)).ToList();
+                .OrderBy(Attr.RoleName));
         }
 
-        public void InsertRole(RoleInfo roleInfo)
+        public async Task<int> InsertAsync(RoleInfo roleInfo)
         {
-            _repository.Insert(roleInfo);
+            return await _repository.InsertAsync(roleInfo);
         }
 
-        public void UpdateRole(string roleName, string description)
+        public async Task UpdateAsync(string roleName, string description)
         {
-            _repository.Update(Q
+            await _repository.UpdateAsync(Q
                 .Set(Attr.Description, description)
                 .Where(Attr.RoleName, roleName)
             );
@@ -70,9 +70,9 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(Q.Where(Attr.RoleName, roleName));
         }
 
-        public bool IsRoleExists(string roleName)
+        public async Task<bool> IsRoleExistsAsync(string roleName)
         {
-            return _repository.Exists(Q.Where(Attr.RoleName, roleName));
+            return await _repository.ExistsAsync(Q.Where(Attr.RoleName, roleName));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SS.CMS.Repositories
     {
         Task DeleteAsync(List<int> idList);
 
-        ErrorLogInfo GetErrorLogInfo(int logId);
+        Task<ErrorLogInfo> GetErrorLogInfoAsync(int logId);
 
         Task DeleteAllAsync();
 

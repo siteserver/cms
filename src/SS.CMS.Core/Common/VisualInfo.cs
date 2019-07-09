@@ -73,7 +73,7 @@ namespace SS.CMS.Core.Common
 
             if (templateType == TemplateType.IndexPageTemplate)
             {
-                visualInfo.TemplateInfo = templateRepository.GetIndexPageTemplateInfo(visualInfo.SiteInfo.Id);
+                visualInfo.TemplateInfo = await templateRepository.GetIndexPageTemplateInfoAsync(visualInfo.SiteInfo.Id);
                 visualInfo.ContextType = EContextType.Channel;
                 visualInfo.FilePath = pathManager.GetIndexPageFilePath(visualInfo.SiteInfo, visualInfo.TemplateInfo.CreatedFileFullName, visualInfo.SiteInfo.IsRoot, visualInfo.PageIndex);
             }

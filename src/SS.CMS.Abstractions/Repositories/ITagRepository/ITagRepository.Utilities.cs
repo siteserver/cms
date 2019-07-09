@@ -13,9 +13,9 @@ namespace SS.CMS.Repositories
     {
         Task UpdateTagsAsync(string tagsPrevious, string tagsNow, int siteId, int contentId);
 
-        void RemoveTags(int siteId, IList<int> contentIdList);
+        Task RemoveTagsAsync(int siteId, IEnumerable<int> contentIdList);
 
-        void RemoveTags(int siteId, int contentId);
+        Task RemoveTagsAsync(int siteId, int contentId);
 
         string GetTagsString(StringCollection tags);
 

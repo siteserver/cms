@@ -31,12 +31,12 @@ namespace SS.CMS.Core.Repositories
             public const string UserId = nameof(UserRoleInfo.UserId);
         }
 
-        public IList<int> GetUserNameListByRoleName(int roleId)
+        public async Task<IEnumerable<int>> GetUserNameListByRoleNameAsync(int roleId)
         {
-            return _repository.GetAll<int>(Q
+            return await _repository.GetAllAsync<int>(Q
                 .Select(Attr.UserId)
                 .Where(Attr.RoleId, roleId)
-                .Distinct()).ToList();
+                .Distinct());
         }
 
         public async Task RemoveUserAsync(int userId)
@@ -52,18 +52,18 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.RoleId, roleId));
         }
 
-        public bool IsUserInRole(int userId, int roleId)
+        public async Task<bool> IsUserInRoleAsync(int userId, int roleId)
         {
-            return _repository.Exists(Q
+            return await _repository.ExistsAsync(Q
                 .Where(Attr.UserId, userId)
                 .Where(Attr.RoleId, roleId));
         }
 
-        public int AddUserToRole(int userId, int roleId)
+        public async Task<int> AddUserToRoleAsync(int userId, int roleId)
         {
-            if (!IsUserInRole(userId, roleId))
+            if (!await IsUserInRoleAsync(userId, roleId))
             {
-                return _repository.Insert(new UserRoleInfo
+                return await _repository.InsertAsync(new UserRoleInfo
                 {
                     UserId = userId,
                     RoleId = roleId

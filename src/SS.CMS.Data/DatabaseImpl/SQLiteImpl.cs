@@ -127,29 +127,21 @@ namespace SS.CMS.Data.DatabaseImpl
             var dataType = DataType.VarChar;
 
             dataTypeStr = Utilities.TrimAndToUpper(dataTypeStr);
-            if (dataTypeStr.StartsWith("TIMESTAMP("))
+            if (dataTypeStr.StartsWith("REAL"))
             {
-                dataType = DataType.DateTime;
+                dataType = DataType.Decimal;
             }
-            else if (dataTypeStr == "NUMBER")
+            else if (dataTypeStr == "INTEGER")
             {
                 dataType = DataType.Integer;
             }
-            else if (dataTypeStr == "NCLOB")
+            else if (dataTypeStr == "TEXT")
             {
                 dataType = DataType.Text;
             }
-            else if (dataTypeStr == "NVARCHAR2")
+            else if (dataTypeStr == "DATETIME")
             {
-                dataType = DataType.VarChar;
-            }
-            else if (dataTypeStr == "CLOB")
-            {
-                dataType = DataType.Text;
-            }
-            else if (dataTypeStr == "VARCHAR2")
-            {
-                dataType = DataType.VarChar;
+                dataType = DataType.DateTime;
             }
 
             return dataType;
@@ -170,22 +162,6 @@ namespace SS.CMS.Data.DatabaseImpl
                 {
                     var columnName = column.name;
                     var dataType = ToDataType(column.type);
-                    var percision = column.DataPrecision;
-                    var scale = column.DataScale;
-                    var charLength = column.CharLength;
-                    var dataDefault = column.DataDefault;
-
-                    if (dataType == DataType.Integer)
-                    {
-                        if (scale == 2)
-                        {
-                            dataType = DataType.Decimal;
-                        }
-                        else if (percision == 1)
-                        {
-                            dataType = DataType.Boolean;
-                        }
-                    }
 
                     var isPrimaryKey = Utilities.EqualsIgnoreCase(columnName, "id");
 
@@ -193,7 +169,7 @@ namespace SS.CMS.Data.DatabaseImpl
                     {
                         AttributeName = columnName,
                         DataType = dataType,
-                        DataLength = charLength,
+                        DataLength = 2000,
                         IsPrimaryKey = isPrimaryKey,
                         IsIdentity = isPrimaryKey
                     };

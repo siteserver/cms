@@ -259,7 +259,7 @@ selObj.selectedIndex=0;
                     var taxisType = parseContext.GetChannelTaxisType(order, TaxisType.OrderByTaxis);
                     var channelIdList = await parseContext.ChannelRepository.GetIdListByTotalNumAsync(parseContext.SiteId, channel.Id, taxisType, scopeType, groupChannel, groupChannelNot, null, totalNum);
 
-                    if (channelIdList != null && channelIdList.Count > 0)
+                    if (channelIdList != null)
                     {
                         foreach (var channelIdInSelect in channelIdList)
                         {
@@ -288,7 +288,7 @@ selObj.selectedIndex=0;
                         foreach (var minContentInfo in minContentInfoList)
                         {
                             var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                            var contentInfo = channelInfo.ContentRepository.GetContentInfo(minContentInfo.Id);
+                            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))

@@ -37,7 +37,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(UserGroupInfo groupInfo)
         {
-            groupInfo.Id = _repository.Insert(groupInfo);
+            groupInfo.Id = await _repository.InsertAsync(groupInfo);
 
             await _cache.RemoveAsync(_cacheKey);
 
@@ -46,7 +46,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<bool> UpdateAsync(UserGroupInfo groupInfo)
         {
-            var updated = _repository.Update(groupInfo);
+            var updated = await _repository.UpdateAsync(groupInfo);
 
             await _cache.RemoveAsync(_cacheKey);
 

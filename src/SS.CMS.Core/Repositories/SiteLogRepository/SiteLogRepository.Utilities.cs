@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
                         Action = action,
                         Summary = summary
                     };
-                    Insert(siteLogInfo);
+                    await InsertAsync(siteLogInfo);
                 }
                 catch (Exception ex)
                 {

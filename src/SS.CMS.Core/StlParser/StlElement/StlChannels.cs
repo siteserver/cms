@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Models.Enumerations;
@@ -68,7 +69,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var taxisType = parseContext.GetChannelTaxisType(listInfo.Order, TaxisType.OrderByTaxis);
 
-            return await parseContext.ChannelRepository.GetContainerChannelListAsync(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+            var list = await parseContext.ChannelRepository.GetContainerChannelListAsync(parseContext.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, taxisType, listInfo.Scope, isTotal);
+            return list.ToList();
         }
 
         public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)

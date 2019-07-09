@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SS.CMS.Data;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Models;
-using SS.CMS.Utils;
 using SS.CMS.Utils.Tests;
 using Xunit;
 
@@ -12,9 +9,9 @@ namespace SS.CMS.Core.Tests.Repositories
     [Collection("Database collection")]
     public class AccessTokenRepositoryTest
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly IntegrationTestsFixture _fixture;
 
-        public AccessTokenRepositoryTest(DatabaseFixture fixture)
+        public AccessTokenRepositoryTest(IntegrationTestsFixture fixture)
         {
             _fixture = fixture;
 
@@ -22,38 +19,38 @@ namespace SS.CMS.Core.Tests.Repositories
         }
 
         [SkippableFact]
-        public void TestBasic()
+        public async Task TestBasic()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
             var accessTokenInfo = new AccessTokenInfo();
-            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            await _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo);
             Assert.True(accessTokenInfo.Id > 0);
             var token = accessTokenInfo.Token;
             Assert.False(string.IsNullOrWhiteSpace(token));
 
-            accessTokenInfo = _fixture.AccessTokenRepository.GetAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            accessTokenInfo = await _fixture.AccessTokenRepository.GetAsync(accessTokenInfo.Id);
             Assert.NotNull(accessTokenInfo);
 
             accessTokenInfo.Title = "title";
-            var updated = _fixture.AccessTokenRepository.UpdateAsync(accessTokenInfo).GetAwaiter().GetResult();
+            var updated = await _fixture.AccessTokenRepository.UpdateAsync(accessTokenInfo);
             Assert.True(updated);
 
-            _fixture.AccessTokenRepository.RegenerateAsync(accessTokenInfo).GetAwaiter().GetResult();
+            await _fixture.AccessTokenRepository.RegenerateAsync(accessTokenInfo);
             Assert.NotEqual(token, accessTokenInfo.Token);
 
-            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = await _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
 
         [SkippableFact]
-        public void TestIsTitleExists()
+        public async Task TestIsTitleExists()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
             const string testTitle = "IsTitleExists";
 
-            var exists = _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
+            var exists = await _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle);
 
             Assert.False(exists);
 
@@ -61,18 +58,18 @@ namespace SS.CMS.Core.Tests.Repositories
             {
                 Title = testTitle
             };
-            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            await _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo);
 
-            exists = _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle).GetAwaiter().GetResult();
+            exists = await _fixture.AccessTokenRepository.IsTitleExistsAsync(testTitle);
 
             Assert.True(exists);
 
-            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = await _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
 
         [SkippableFact]
-        public void TestGetAccessTokenInfoList()
+        public async Task TestGetAccessTokenInfoList()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
@@ -80,13 +77,13 @@ namespace SS.CMS.Core.Tests.Repositories
             {
                 Title = "title"
             };
-            _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo).GetAwaiter().GetResult();
+            await _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo);
 
-            var list = _fixture.AccessTokenRepository.GetAllAsync().GetAwaiter().GetResult();
+            var list = await _fixture.AccessTokenRepository.GetAllAsync();
 
             Assert.True(list.Any());
 
-            var deleted = _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id).GetAwaiter().GetResult();
+            var deleted = await _fixture.AccessTokenRepository.DeleteAsync(accessTokenInfo.Id);
             Assert.True(deleted);
         }
     }

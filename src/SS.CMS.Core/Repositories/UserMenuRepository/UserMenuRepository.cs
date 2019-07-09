@@ -37,7 +37,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(UserMenuInfo menuInfo)
         {
-            menuInfo.Id = _repository.Insert(menuInfo);
+            menuInfo.Id = await _repository.InsertAsync(menuInfo);
 
             await _cache.RemoveAsync(_cacheKey);
 
@@ -46,7 +46,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<bool> UpdateAsync(UserMenuInfo menuInfo)
         {
-            var updated = _repository.Update(menuInfo);
+            var updated = await _repository.UpdateAsync(menuInfo);
 
             await _cache.RemoveAsync(_cacheKey);
 
@@ -64,7 +64,8 @@ namespace SS.CMS.Core.Repositories
 
         private async Task<List<UserMenuInfo>> GetUserMenuInfoListToCacheAsync()
         {
-            var list = _repository.GetAll().ToList();
+            var list = new List<UserMenuInfo>();
+            list.AddRange(await _repository.GetAllAsync());
 
             var systemMenus = SystemMenus.Value;
             foreach (var kvp in systemMenus)

@@ -43,11 +43,11 @@ namespace SS.CMS.Core.Serialization
         /// <summary>
         /// 将发布系统文件保存到站点模板中
         /// </summary>
-        public void ExportFilesToSite(string siteTemplatePath, bool isSaveAll, ArrayList lowerFileSystemArrayList, bool isCreateMetadataDirectory)
+        public async Task ExportFilesToSiteAsync(string siteTemplatePath, bool isSaveAll, ArrayList lowerFileSystemArrayList, bool isCreateMetadataDirectory)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = _siteRepository.GetLowerSiteDirListThatNotIsRoot();
+            var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
 
             var fileSystems = FileSystemUtils.GetFileSystemInfoExtendCollection(_pathManager.GetSitePath(_siteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -154,19 +154,19 @@ namespace SS.CMS.Core.Serialization
             await templateIe.ExportTemplatesAsync(templateIdList);
         }
 
-        public void ExportRelatedField(string relatedFieldDirectoryPath)
+        public async Task ExportRelatedFieldAsync(string relatedFieldDirectoryPath)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(relatedFieldDirectoryPath);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, relatedFieldDirectoryPath);
-            var relatedFieldInfoList = _relatedFieldRepository.GetRelatedFieldInfoList(_siteInfo.Id);
+            var relatedFieldInfoList = await _relatedFieldRepository.GetRelatedFieldInfoListAsync(_siteInfo.Id);
             foreach (var relatedFieldInfo in relatedFieldInfoList)
             {
-                relatedFieldIe.ExportRelatedField(relatedFieldInfo);
+                await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
             }
         }
 
-        public string ExportRelatedField(int relatedFieldId)
+        public async Task<string> ExportRelatedFieldAsync(int relatedFieldId)
         {
             var directoryPath = _pathManager.GetTemporaryFilesPath("relatedField");
             var filePath = _pathManager.GetTemporaryFilesPath("relatedField.zip");
@@ -175,10 +175,10 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(directoryPath);
 
-            var relatedFieldInfo = _relatedFieldRepository.GetRelatedFieldInfo(relatedFieldId);
+            var relatedFieldInfo = await _relatedFieldRepository.GetRelatedFieldInfoAsync(relatedFieldId);
 
             var relatedFieldIe = new RelatedFieldIe(_siteInfo.Id, directoryPath);
-            relatedFieldIe.ExportRelatedField(relatedFieldInfo);
+            await relatedFieldIe.ExportRelatedFieldAsync(relatedFieldInfo);
 
             ZipUtils.CreateZip(filePath, directoryPath);
 

@@ -60,7 +60,7 @@ namespace SS.CMS.Core.Repositories
             var id = await _repository.InsertAsync(templateInfo);
 
             var siteInfo = await _siteRepository.GetSiteInfoAsync(templateInfo.SiteId);
-            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, userId);
+            await WriteContentToTemplateFileAsync(siteInfo, templateInfo, templateContent, userId);
 
             return id;
         }
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Repositories
 
             await _repository.UpdateAsync(templateInfo);
 
-            WriteContentToTemplateFile(siteInfo, templateInfo, templateContent, userId);
+            await WriteContentToTemplateFileAsync(siteInfo, templateInfo, templateContent, userId);
 
             var idList = await _repository.GetAllAsync<int>(Q
                 .Select(Attr.Id)
@@ -132,7 +132,7 @@ namespace SS.CMS.Core.Repositories
             await RemoveCacheAsync(templateId);
         }
 
-        public string GetImportTemplateName(int siteId, string templateName)
+        public async Task<string> GetImportTemplateNameAsync(int siteId, string templateName)
         {
             string importTemplateName;
             if (templateName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -156,20 +156,20 @@ namespace SS.CMS.Core.Repositories
                 importTemplateName = templateName + "_1";
             }
 
-            var isExists = _repository.Exists(Q.Where(Attr.SiteId, siteId).Where(Attr.TemplateName, importTemplateName));
+            var isExists = await _repository.ExistsAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.TemplateName, importTemplateName));
             if (isExists)
             {
-                importTemplateName = GetImportTemplateName(siteId, importTemplateName);
+                importTemplateName = await GetImportTemplateNameAsync(siteId, importTemplateName);
             }
 
             return importTemplateName;
         }
 
-        public Dictionary<TemplateType, int> GetCountDictionary(int siteId)
+        public async Task<Dictionary<TemplateType, int>> GetCountDictionaryAsync(int siteId)
         {
             var dictionary = new Dictionary<TemplateType, int>();
 
-            var dataList = _repository.GetAll<(string TemplateType, int Count)>(Q
+            var dataList = await _repository.GetAllAsync<(string TemplateType, int Count)>(Q
                 .Select(Attr.TemplateType)
                 .SelectRaw("COUNT(*) as Count")
                 .Where(Attr.SiteId, siteId)
@@ -193,43 +193,43 @@ namespace SS.CMS.Core.Repositories
             return dictionary;
         }
 
-        public IList<TemplateInfo> GetTemplateInfoListByType(int siteId, TemplateType type)
+        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListByTypeAsync(int siteId, TemplateType type)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, type.Value)
-                .OrderBy(Attr.RelatedFileName)).ToList();
+                .OrderBy(Attr.RelatedFileName));
         }
 
-        public IList<TemplateInfo> GetTemplateInfoListOfFile(int siteId)
+        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListOfFileAsync(int siteId)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, TemplateType.FileTemplate.Value)
-                .OrderBy(Attr.RelatedFileName)).ToList();
+                .OrderBy(Attr.RelatedFileName));
         }
 
-        public IList<TemplateInfo> GetTemplateInfoListBySiteId(int siteId)
+        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListBySiteIdAsync(int siteId)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.TemplateType, Attr.RelatedFileName)).ToList();
+                .OrderBy(Attr.TemplateType, Attr.RelatedFileName));
         }
 
-        public IList<string> GetTemplateNameList(int siteId, TemplateType templateType)
+        public async Task<IEnumerable<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.TemplateName)
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.TemplateType, templateType.Value)).ToList();
+                .Where(Attr.TemplateType, templateType.Value));
         }
 
-        public IList<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType)
+        public async Task<IEnumerable<string>> GetLowerRelatedFileNameListAsync(int siteId, TemplateType templateType)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.RelatedFileName)
                 .Where(Attr.SiteId, siteId)
-                .Where(Attr.TemplateType, templateType.Value)).ToList();
+                .Where(Attr.TemplateType, templateType.Value));
         }
 
         public async Task CreateDefaultTemplateInfoAsync(int siteId, int userId)
@@ -306,18 +306,18 @@ namespace SS.CMS.Core.Repositories
             return templateName;
         }
 
-        public TemplateInfo GetTemplateInfoByTemplateName(int siteId, TemplateType templateType, string templateName)
+        public async Task<TemplateInfo> GetTemplateInfoByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
         {
-            return _repository.Get(Q
+            return await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value)
                 .Where(Attr.TemplateName, templateName)
             );
         }
 
-        public TemplateInfo GetDefaultTemplateInfo(int siteId, TemplateType templateType)
+        public async Task<TemplateInfo> GetDefaultTemplateInfoAsync(int siteId, TemplateType templateType)
         {
-            var templateInfo = _repository.Get(Q
+            var templateInfo = await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value)
                 .Where(Attr.IsDefault, true)
@@ -330,14 +330,15 @@ namespace SS.CMS.Core.Repositories
             };
         }
 
-        public int GetDefaultTemplateId(int siteId, TemplateType templateType)
+        public async Task<int> GetDefaultTemplateIdAsync(int siteId, TemplateType templateType)
         {
-            return GetDefaultTemplateInfo(siteId, templateType).Id;
+            var templateInfo = await GetDefaultTemplateInfoAsync(siteId, templateType);
+            return templateInfo.Id;
         }
 
-        public int GetTemplateIdByTemplateName(int siteId, TemplateType templateType, string templateName)
+        public async Task<int> GetTemplateIdByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
         {
-            return _repository.Get<int>(Q
+            return await _repository.GetAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, templateType.Value)
@@ -363,15 +364,15 @@ namespace SS.CMS.Core.Repositories
             return filePath;
         }
 
-        public TemplateInfo GetIndexPageTemplateInfo(int siteId)
+        public async Task<TemplateInfo> GetIndexPageTemplateInfoAsync(int siteId)
         {
-            var templateInfo = _repository.Get(Q
+            var templateInfo = await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.TemplateType, TemplateType.IndexPageTemplate)
                 .Where(Attr.IsDefault, true)
             );
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.IndexPageTemplate);
+            return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.IndexPageTemplate);
         }
 
         public async Task<TemplateInfo> GetChannelTemplateInfoAsync(int siteId, int channelId)
@@ -379,7 +380,7 @@ namespace SS.CMS.Core.Repositories
             var templateId = 0;
             if (siteId == channelId)
             {
-                templateId = GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
+                templateId = await GetDefaultTemplateIdAsync(siteId, TemplateType.IndexPageTemplate);
             }
             else
             {
@@ -396,7 +397,7 @@ namespace SS.CMS.Core.Repositories
                 templateInfo = await GetTemplateInfoAsync(templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.ChannelTemplate);
+            return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.ChannelTemplate);
         }
 
         public async Task<TemplateInfo> GetContentTemplateInfoAsync(int siteId, int channelId)
@@ -414,7 +415,7 @@ namespace SS.CMS.Core.Repositories
                 templateInfo = await GetTemplateInfoAsync(templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.ContentTemplate);
+            return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.ContentTemplate);
         }
 
         public async Task<TemplateInfo> GetFileTemplateInfoAsync(int siteId, int fileTemplateId)
@@ -427,10 +428,10 @@ namespace SS.CMS.Core.Repositories
                 templateInfo = await GetTemplateInfoAsync(templateId);
             }
 
-            return templateInfo ?? GetDefaultTemplateInfo(siteId, TemplateType.FileTemplate);
+            return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.FileTemplate);
         }
 
-        public void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId)
+        public async Task WriteContentToTemplateFileAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId)
         {
             if (content == null) content = string.Empty;
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
@@ -446,13 +447,13 @@ namespace SS.CMS.Core.Repositories
                     ContentLength = content.Length,
                     TemplateContent = content
                 };
-                _templateLogRepository.Insert(logInfo);
+                await _templateLogRepository.InsertAsync(logInfo);
             }
         }
 
-        public int GetIndexTemplateId(int siteId)
+        public async Task<int> GetIndexTemplateIdAsync(int siteId)
         {
-            return GetDefaultTemplateId(siteId, TemplateType.IndexPageTemplate);
+            return await GetDefaultTemplateIdAsync(siteId, TemplateType.IndexPageTemplate);
         }
 
         public async Task<int> GetChannelTemplateIdAsync(int siteId, int channelId)
@@ -467,7 +468,7 @@ namespace SS.CMS.Core.Repositories
 
             if (templateId == 0)
             {
-                templateId = GetDefaultTemplateId(siteId, TemplateType.ChannelTemplate);
+                templateId = await GetDefaultTemplateIdAsync(siteId, TemplateType.ChannelTemplate);
             }
 
             return templateId;
@@ -485,7 +486,7 @@ namespace SS.CMS.Core.Repositories
 
             if (templateId == 0)
             {
-                templateId = GetDefaultTemplateId(siteId, TemplateType.ContentTemplate);
+                templateId = await GetDefaultTemplateIdAsync(siteId, TemplateType.ContentTemplate);
             }
 
             return templateId;

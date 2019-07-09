@@ -32,9 +32,9 @@ namespace SS.CMS.Core.Repositories
             public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
         }
 
-        public void Insert(TemplateLogInfo logInfo)
+        public async Task<int> InsertAsync(TemplateLogInfo logInfo)
         {
-            _repository.Insert(logInfo);
+            return await _repository.InsertAsync(logInfo);
         }
 
         public string GetSelectCommend(int siteId, int templateId)
@@ -43,9 +43,9 @@ namespace SS.CMS.Core.Repositories
                 $"SELECT ID, TemplateId, SiteId, AddDate, AddUserName, ContentLength, TemplateContent FROM siteserver_TemplateLog WHERE SiteId = {siteId} AND TemplateId = {templateId}";
         }
 
-        public string GetTemplateContent(int logId)
+        public async Task<string> GetTemplateContentAsync(int logId)
         {
-            return _repository.Get<string>(Q
+            return await _repository.GetAsync<string>(Q
                 .Select(Attr.TemplateContent)
                 .Where(Attr.Id, logId));
         }

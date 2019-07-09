@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -74,8 +75,8 @@ namespace SS.CMS.Api.Controllers.Sites
                 {
                     return BadRequest("文件夹名称不符合系统要求，请更改文件夹名称！");
                 }
-                var list = _siteRepository.GetLowerSiteDirList(request.ParentId);
-                if (list.IndexOf(request.SiteDir.ToLower()) != -1)
+                var list = await _siteRepository.GetLowerSiteDirListAsync(request.ParentId);
+                if (list.Contains(request.SiteDir.ToLower()))
                 {
                     return BadRequest("已存在相同的发布路径，请更改文件夹名称！");
                 }

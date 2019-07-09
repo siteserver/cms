@@ -9,7 +9,7 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        List<ContentInfo> GetSelectCommandByHitsAnalysis(int siteId);
+        Task<IEnumerable<ContentInfo>> GetSelectCommandByHitsAnalysisAsync(int siteId);
 
         Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId);
 
@@ -19,9 +19,9 @@ namespace SS.CMS.Repositories.IContentRepository
 
         string GetSqlStringByContentTag(string tag, int siteId);
 
-        List<ContentInfo> GetStlSqlStringChecked(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot);
+        Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedAsync(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot);
 
-        List<ContentInfo> GetStlSqlStringCheckedBySearch(int startNum, int totalNum, string order, Query query);
+        Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedBySearchAsync(int startNum, int totalNum, string order, Query query);
 
         Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId);
 
@@ -29,6 +29,6 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Query GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
 
-        Task<List<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others);
+        Task<IEnumerable<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others);
     }
 }

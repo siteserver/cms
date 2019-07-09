@@ -42,9 +42,13 @@ namespace SS.CMS.Api.Controllers.Users
                     {
                         if (menu.Permissions != null)
                         {
-                            if (menu.Permissions.Any(permission => _userManager.HasAppPermissions(permission)))
+                            foreach (var permission in menu.Permissions)
                             {
-                                valid = true;
+                                if (await _userManager.HasAppPermissionsAsync(permission))
+                                {
+                                    valid = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -63,7 +67,7 @@ namespace SS.CMS.Api.Controllers.Users
             return menus;
         }
 
-        private IList<Menu> GetAppMenus(string topId)
+        private async Task<IList<Menu>> GetAppMenusAsync(string topId)
         {
             var menus = new List<Menu>();
 
@@ -83,9 +87,13 @@ namespace SS.CMS.Api.Controllers.Users
                     {
                         if (leftMenu.Permissions != null)
                         {
-                            if (leftMenu.Permissions.Any(permission => _userManager.HasAppPermissions(permission)))
+                            foreach (var permission in leftMenu.Permissions)
                             {
-                                valid = true;
+                                if (await _userManager.HasAppPermissionsAsync(permission))
+                                {
+                                    valid = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -134,9 +142,13 @@ namespace SS.CMS.Api.Controllers.Users
                     {
                         if (leftMenu.Permissions != null)
                         {
-                            if (leftMenu.Permissions.Any(permission => _userManager.HasSitePermissions(siteId, permission)))
+                            foreach (var permission in leftMenu.Permissions)
                             {
-                                valid = true;
+                                if (await _userManager.HasSitePermissionsAsync(siteId, permission))
+                                {
+                                    valid = true;
+                                    break;
+                                }
                             }
                         }
                     }

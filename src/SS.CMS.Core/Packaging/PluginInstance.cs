@@ -21,8 +21,7 @@ namespace SS.CMS.Core.Plugin
             ErrorMessage = errorMessage;
         }
 
-        public PluginInstance(IPackageMetadata metadata, ServiceImpl service, PluginBase plugin, long initTime,
-            IPluginRepository pluginRepository)
+        public PluginInstance(IPackageMetadata metadata, ServiceImpl service, PluginBase plugin, long initTime, IPluginRepository pluginRepository)
         {
             Id = plugin.Id;
             Metadata = metadata;
@@ -30,13 +29,11 @@ namespace SS.CMS.Core.Plugin
             Service = service;
             InitTime = initTime;
 
-            bool isDisabled;
-            int taxis;
-            pluginRepository.SetIsDisabledAndTaxis(Id, out isDisabled, out taxis);
-
             IsRunnable = plugin != null;
-            IsDisabled = isDisabled;
-            Taxis = taxis;
+
+            var result = pluginRepository.SetIsDisabledAndTaxisAsync(Id).GetAwaiter().GetResult();
+            IsDisabled = result.IsDisabled;
+            Taxis = result.Taxis;
         }
 
         public string Id { get; }

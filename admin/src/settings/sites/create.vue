@@ -194,7 +194,8 @@
             上级站点
           </label>
           <select v-model="parentId" class="form-control">
-            <option v-for="site in siteList" :key="site.key" :value="site.key">{{ site.value }}</option>
+            <option :value="0">无上级站点</option>
+            <option v-for="site in siteList" :key="site.id" :value="site.id">{{ site.siteName }}</option>
           </select>
         </div>
 

@@ -25,14 +25,14 @@ namespace SS.CMS.Core.Repositories
             public const string TableStyleId = nameof(TableStyleItemInfo.TableStyleId);
         }
 
-        public void Insert(int tableStyleId, List<TableStyleItemInfo> styleItems)
+        public async Task InsertAllAsync(int tableStyleId, List<TableStyleItemInfo> styleItems)
         {
             if (styleItems == null || styleItems.Count <= 0) return;
 
             foreach (var itemInfo in styleItems)
             {
                 itemInfo.TableStyleId = tableStyleId;
-                _repository.Insert(itemInfo);
+                await _repository.InsertAsync(itemInfo);
             }
         }
 
@@ -45,15 +45,15 @@ namespace SS.CMS.Core.Repositories
             foreach (var itemInfo in styleItems)
             {
                 itemInfo.TableStyleId = tableStyleId;
-                _repository.Insert(itemInfo);
+                await _repository.InsertAsync(itemInfo);
             }
         }
 
-        public Dictionary<int, List<TableStyleItemInfo>> GetAllTableStyleItems()
+        public async Task<Dictionary<int, List<TableStyleItemInfo>>> GetAllTableStyleItemsAsync()
         {
             var allDict = new Dictionary<int, List<TableStyleItemInfo>>();
 
-            var itemInfoList = _repository.GetAll();
+            var itemInfoList = await _repository.GetAllAsync();
             foreach (var itemInfo in itemInfoList)
             {
                 allDict.TryGetValue(itemInfo.TableStyleId, out var list);

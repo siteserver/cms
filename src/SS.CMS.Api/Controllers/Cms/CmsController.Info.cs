@@ -74,20 +74,32 @@ namespace SS.CMS.Api.Controllers.Cms
             //     }
             // }
 
+            var apiUrl = PageUtils.Combine(Request.Host.Value, Constants.ApiPrefix);
+            var apiServerName = Dns.GetHostName().ToUpper();
+            var productVersion = _settingsManager.ProductVersion;
+            var contentRootPath = _settingsManager.ContentRootPath;
+            var webRootPath = _settingsManager.WebRootPath;
+            var targetFramework = _settingsManager.TargetFramework;
+            var remoteIpAddress = PageUtils.GetIpAddress(Request.HttpContext.Connection.RemoteIpAddress);
+            var pluginVersion = _settingsManager.PluginVersion;
+            var databaseType = _settingsManager.DatabaseType.Value;
+            var database = _configRepository.Database.DatabaseName;
+            var cacheType = _settingsManager.CacheType.Value;
+
             return new InfoResponse
             {
                 IsInstalled = isInstalled,
-                ApiUrl = PageUtils.Combine(Request.Host.Value, Constants.ApiPrefix),
-                ApiServerName = Dns.GetHostName().ToUpper(),
-                ProductVersion = _settingsManager.ProductVersion,
-                ContentRootPath = _settingsManager.ContentRootPath,
-                WebRootPath = _settingsManager.WebRootPath,
-                TargetFramework = _settingsManager.TargetFramework,
-                RemoteIpAddress = PageUtils.GetIpAddress(Request.HttpContext.Connection.RemoteIpAddress.ToString()),
-                PluginVersion = _settingsManager.PluginVersion,
-                DatabaseType = _settingsManager.DatabaseType.Value,
-                Database = _configRepository.Database.DatabaseName,
-                CacheType = _settingsManager.CacheType.Value
+                ApiUrl = apiUrl,
+                ApiServerName = apiServerName,
+                ProductVersion = productVersion,
+                ContentRootPath = contentRootPath,
+                WebRootPath = webRootPath,
+                TargetFramework = targetFramework,
+                RemoteIpAddress = remoteIpAddress,
+                PluginVersion = pluginVersion,
+                DatabaseType = databaseType,
+                Database = database,
+                CacheType = cacheType
             };
         }
     }

@@ -218,7 +218,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
 
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(contentInfo.ReferenceId);
+                    var targetContentInfo = await targetNodeInfo.ContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的

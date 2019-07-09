@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
-using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
 {
@@ -28,7 +26,7 @@ namespace SS.CMS.Core.Repositories
         private static class Attr
         {
             public const string PluginId = nameof(PluginInfo.PluginId);
-            public const string IsDisabled = "IsDisabled";
+            public const string IsDisabled = nameof(PluginInfo.IsDisabled);
             public const string Taxis = nameof(PluginInfo.Taxis);
         }
 
@@ -37,33 +35,30 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(Q.Where(Attr.PluginId, pluginId));
         }
 
-        public void UpdateIsDisabled(string pluginId, bool isDisabled)
+        public async Task UpdateIsDisabledAsync(string pluginId, bool isDisabled)
         {
-            _repository.Update(Q
+            await _repository.UpdateAsync(Q
                 .Set(Attr.IsDisabled, isDisabled.ToString())
                 .Where(Attr.PluginId, pluginId)
             );
         }
 
-        public void UpdateTaxis(string pluginId, int taxis)
+        public async Task UpdateTaxisAsync(string pluginId, int taxis)
         {
-            _repository.Update(Q
+            await _repository.UpdateAsync(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.PluginId, pluginId)
             );
         }
 
-        public void SetIsDisabledAndTaxis(string pluginId, out bool isDisabled, out int taxis)
+        public async Task<(bool IsDisabled, int Taxis)> SetIsDisabledAndTaxisAsync(string pluginId)
         {
-            isDisabled = false;
-            taxis = 0;
-
-            var exists = _repository.Exists(Q
+            var exists = await _repository.ExistsAsync(Q
                 .Where(Attr.PluginId, pluginId));
 
             if (!exists)
             {
-                _repository.Insert(new PluginInfo
+                await _repository.InsertAsync(new PluginInfo
                 {
                     PluginId = pluginId,
                     IsDisabled = false,
@@ -71,14 +66,16 @@ namespace SS.CMS.Core.Repositories
                 });
             }
 
-            var result = _repository.Get<(string IsDisabled, int Taxis)?>(Q
+            var result = await _repository.GetAsync<(bool IsDisabled, int Taxis)?>(Q
                 .Select(Attr.IsDisabled, Attr.Taxis)
                 .Where(Attr.PluginId, pluginId));
 
-            if (result == null) return;
+            if (result != null)
+            {
+                return result.Value;
+            }
 
-            isDisabled = TranslateUtils.ToBool(result.Value.IsDisabled);
-            taxis = result.Value.Taxis;
+            return (false, 0);
         }
     }
 }

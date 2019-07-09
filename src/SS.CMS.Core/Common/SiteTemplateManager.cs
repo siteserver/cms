@@ -118,7 +118,7 @@ namespace SS.CMS.Core.Common
                 var importObject = new ImportObject();
                 await importObject.LoadAsync(siteId, userId);
 
-                importObject.ImportFiles(siteTemplatePath, true);
+                await importObject.ImportFilesAsync(siteTemplatePath, true);
 
                 await importObject.ImportTemplatesAsync(templateFilePath, true, userId);
 
@@ -158,7 +158,7 @@ namespace SS.CMS.Core.Common
             await exportObject.ExportConfigurationAsync(configurationFilePath);
             //导出关联字段
             var relatedFieldDirectoryPath = _pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, DirectoryUtils.SiteTemplates.RelatedField);
-            exportObject.ExportRelatedField(relatedFieldDirectoryPath);
+            await exportObject.ExportRelatedFieldAsync(relatedFieldDirectoryPath);
         }
     }
 }

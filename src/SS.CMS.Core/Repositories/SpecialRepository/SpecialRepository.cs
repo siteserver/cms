@@ -66,14 +66,14 @@ namespace SS.CMS.Core.Repositories
             return specialInfo;
         }
 
-        public bool IsTitleExists(int siteId, string title)
+        public async Task<bool> IsTitleExistsAsync(int siteId, string title)
         {
-            return _repository.Exists(Q.Where(Attr.SiteId, siteId).Where(Attr.Title, title));
+            return await _repository.ExistsAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.Title, title));
         }
 
-        public bool IsUrlExists(int siteId, string url)
+        public async Task<bool> IsUrlExistsAsync(int siteId, string url)
         {
-            return _repository.Exists(Q.Where(Attr.SiteId, siteId).Where(Attr.Url, url));
+            return await _repository.ExistsAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.Url, url));
         }
 
         public async Task<IEnumerable<SpecialInfo>> GetSpecialInfoListAsync(int siteId)

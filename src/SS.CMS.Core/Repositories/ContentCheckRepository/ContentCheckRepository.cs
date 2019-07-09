@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Data;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -26,18 +27,18 @@ namespace SS.CMS.Core.Repositories
             public const string ChannelId = nameof(ContentCheckInfo.ChannelId);
         }
 
-        public int Insert(ContentCheckInfo checkInfo)
+        public async Task<int> InsertAsync(ContentCheckInfo checkInfo)
         {
-            checkInfo.Id = _repository.Insert(checkInfo);
+            checkInfo.Id = await _repository.InsertAsync(checkInfo);
             return checkInfo.Id;
         }
 
-        public IList<ContentCheckInfo> GetCheckInfoList(string tableName, int contentId)
+        public async Task<IEnumerable<ContentCheckInfo>> GetCheckInfoListAsync(string tableName, int contentId)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.TableName, tableName)
                 .Where(Attr.ChannelId, contentId)
-                .OrderByDesc(Attr.Id)).ToList();
+                .OrderByDesc(Attr.Id));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Repositories
     {
         private const int TaxisIsTopStartValue = 2000000000;
 
-        public int GetMaxTaxis(int channelId, bool isTop)
+        public async Task<int> GetMaxTaxisAsync(int channelId, bool isTop)
         {
             var maxTaxis = 0;
 
@@ -21,7 +21,7 @@ namespace SS.CMS.Core.Repositories
             {
                 maxTaxis = TaxisIsTopStartValue;
 
-                var max = _repository.Max(Attr.Taxis, Q
+                var max = await _repository.MaxAsync(Attr.Taxis, Q
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, ">=", TaxisIsTopStartValue)
                 );
@@ -38,7 +38,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                var max = _repository.Max(Attr.Taxis, Q
+                var max = await _repository.MaxAsync(Attr.Taxis, Q
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, "<", TaxisIsTopStartValue)
                 );
@@ -52,60 +52,34 @@ namespace SS.CMS.Core.Repositories
             return maxTaxis;
         }
 
-        public bool GetChanelIdAndValue<T>(int contentId, string name, out int channelId, out T value)
+        public async Task<(int ChannelId, T Value)?> GetChanelIdAndValueAsync<T>(int contentId, string name)
         {
-            channelId = 0;
-            value = default(T);
-
-            var tuple = _repository.Get<(int ChannelId, T Result)?>(Q
+            return await _repository.GetAsync<(int ChannelId, T Value)?>(Q
                 .Select(Attr.ChannelId, name)
                 .Where(Attr.Id, contentId)
             );
-            if (tuple == null) return false;
-
-            channelId = tuple.Value.ChannelId;
-            value = tuple.Value.Result;
-
-            return true;
         }
 
-        public T GetValue<T>(int contentId, string name)
+        public async Task<T> GetValueAsync<T>(int contentId, string name)
         {
-            return _repository.Get<T>(Q
+            return await _repository.GetAsync<T>(Q
                 .Select(name)
                 .Where(Attr.Id, contentId)
             );
         }
 
-        public Tuple<int, T> GetValueWithChannelId<T>(int contentId, string name)
+        public async Task<int> GetTotalHitsAsync(int siteId)
         {
-            var channelId = 0;
-            var value = default(T);
-
-            var tuple = _repository.Get<(int ChannelId, T Result)?>(Q
-                .Select(Attr.ChannelId, name)
-                .Where(Attr.Id, contentId)
-            );
-            if (tuple == null) return null;
-
-            channelId = tuple.Value.ChannelId;
-            value = tuple.Value.Result;
-
-            return new Tuple<int, T>(channelId, value);
-        }
-
-        public int GetTotalHits(int siteId)
-        {
-            return _repository.Sum(Attr.Hits, Q
+            return await _repository.SumAsync(Attr.Hits, Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.IsChecked, true.ToString())
                 .Where(Attr.Hits, ">", 0)
             );
         }
 
-        public int GetFirstContentId(int siteId, int channelId)
+        public async Task<int> GetFirstContentIdAsync(int siteId, int channelId)
         {
-            return _repository.Get<int>(Q
+            return await _repository.GetAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)
@@ -113,11 +87,11 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public int GetContentId(int channelId, int taxis, bool isNextContent)
+        public async Task<int> GetContentIdAsync(int channelId, int taxis, bool isNextContent)
         {
             if (isNextContent)
             {
-                return _repository.Get<int>(Q
+                return await _repository.GetAsync<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ChannelId, channelId)
                     .Where(Attr.Taxis, "<", taxis)
@@ -125,7 +99,7 @@ namespace SS.CMS.Core.Repositories
                     .OrderByDesc(Attr.Taxis));
             }
 
-            return _repository.Get<int>(Q
+            return await _repository.GetAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.Taxis, ">", taxis)
@@ -133,12 +107,12 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.Taxis));
         }
 
-        public int GetChannelId(int contentId)
+        public async Task<int> GetChannelIdAsync(int contentId)
         {
-            return _repository.Get<int>(Q.Select(Attr.ChannelId).Where(Attr.Id, contentId));
+            return await _repository.GetAsync<int>(Q.Select(Attr.ChannelId).Where(Attr.Id, contentId));
         }
 
-        public int GetContentId(int channelId, TaxisType taxisType)
+        public async Task<int> GetContentIdAsync(int channelId, TaxisType taxisType)
         {
             var query = Q
                 .Select(Attr.Id)
@@ -146,38 +120,38 @@ namespace SS.CMS.Core.Repositories
 
             QueryOrder(query, taxisType);
 
-            return _repository.Get<int>(query);
+            return await _repository.GetAsync<int>(query);
         }
 
-        public int GetTaxisToInsert(int channelId, bool isTop)
+        public async Task<int> GetTaxisToInsertAsync(int channelId, bool isTop)
         {
             int taxis;
 
             if (isTop)
             {
-                taxis = GetMaxTaxis(channelId, true) + 1;
+                taxis = await GetMaxTaxisAsync(channelId, true) + 1;
             }
             else
             {
-                taxis = GetMaxTaxis(channelId, false) + 1;
+                taxis = await GetMaxTaxisAsync(channelId, false) + 1;
             }
 
             return taxis;
         }
 
-        private int GetTaxis(int contentId)
+        private async Task<int> GetTaxisAsync(int contentId)
         {
-            return _repository.Get<int>(Q
+            return await _repository.GetAsync<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.Id, contentId)
             );
         }
 
-        public int GetSequence(int channelId, int contentId)
+        public async Task<int> GetSequenceAsync(int channelId, int contentId)
         {
-            var taxis = GetTaxis(contentId);
+            var taxis = await GetTaxisAsync(contentId);
 
-            return _repository.Count(Q
+            return await _repository.CountAsync(Q
                 .Where(Attr.ChannelId, channelId)
                 .Where(Attr.IsChecked, true.ToString())
                 .Where(Attr.Taxis, "<", taxis)
@@ -185,9 +159,9 @@ namespace SS.CMS.Core.Repositories
             ) + 1;
         }
 
-        public int GetCountCheckedImage(int siteId, int channelId)
+        public async Task<int> GetCountCheckedImageAsync(int siteId, int channelId)
         {
-            return _repository.Count(Q
+            return await _repository.CountAsync(Q
                 .Where(Attr.ChannelId, channelId)
                 .WhereNotNull(Attr.ImageUrl)
                 .WhereNot(Attr.ImageUrl, string.Empty)
@@ -200,10 +174,10 @@ namespace SS.CMS.Core.Repositories
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentAdd(siteId, channelIdList, begin, end, userId, checkedState);
+            return await GetCountOfContentAddAsync(siteId, channelIdList, begin, end, userId, checkedState);
         }
 
-        private int GetCountOfContentAdd(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId, bool? checkedState)
+        private async Task<int> GetCountOfContentAddAsync(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId, bool? checkedState)
         {
             var query = Q.Where(Attr.SiteId, siteId);
             query.WhereIn(Attr.ChannelId, channelIdList);
@@ -218,17 +192,17 @@ namespace SS.CMS.Core.Repositories
                 query.Where(Attr.IsChecked, checkedState.ToString());
             }
 
-            return _repository.Count(query);
+            return await _repository.CountAsync(query);
         }
 
         public async Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId)
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var channelIdList = await _channelRepository.GetChannelIdListAsync(channelInfo, scope, string.Empty, string.Empty, string.Empty);
-            return GetCountOfContentUpdate(siteId, channelIdList, begin, end, userId);
+            return await GetCountOfContentUpdateAsync(siteId, channelIdList, begin, end, userId);
         }
 
-        private int GetCountOfContentUpdate(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId)
+        private async Task<int> GetCountOfContentUpdateAsync(int siteId, List<int> channelIdList, DateTime begin, DateTime end, int userId)
         {
             var query = Q.Where(Attr.SiteId, siteId);
             query.WhereIn(Attr.ChannelId, channelIdList);
@@ -239,13 +213,13 @@ namespace SS.CMS.Core.Repositories
                 query.Where(Attr.UserId, userId);
             }
 
-            return _repository.Count(query);
+            return await _repository.CountAsync(query);
         }
 
-        public ContentInfo GetCacheContentInfo(int contentId)
+        public async Task<ContentInfo> GetCacheContentInfoAsync(int contentId)
         {
             if (contentId <= 0) return null;
-            return _repository.Get(contentId);
+            return await _repository.GetAsync(contentId);
         }
     }
 }

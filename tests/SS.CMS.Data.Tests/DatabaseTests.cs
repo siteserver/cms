@@ -7,12 +7,12 @@ using Xunit.Abstractions;
 
 namespace SS.CMS.Data.Tests
 {
-    public class DatabaseTests : IClassFixture<EnvironmentFixture>
+    public class DatabaseTests : IClassFixture<UnitTestsFixture>
     {
-        private EnvironmentFixture _fixture { get; }
+        private UnitTestsFixture _fixture { get; }
         private readonly ITestOutputHelper _output;
 
-        public DatabaseTests(EnvironmentFixture fixture, ITestOutputHelper output)
+        public DatabaseTests(UnitTestsFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;

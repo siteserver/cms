@@ -28,14 +28,14 @@ namespace SS.CMS.Core.Repositories
             public const string SiteId = nameof(RelatedFieldInfo.SiteId);
         }
 
-        public int Insert(RelatedFieldInfo relatedFieldInfo)
+        public async Task<int> InsertAsync(RelatedFieldInfo relatedFieldInfo)
         {
-            return _repository.Insert(relatedFieldInfo);
+            return await _repository.InsertAsync(relatedFieldInfo);
         }
 
-        public void Update(RelatedFieldInfo relatedFieldInfo)
+        public async Task<bool> UpdateAsync(RelatedFieldInfo relatedFieldInfo)
         {
-            _repository.Update(relatedFieldInfo);
+            return await _repository.UpdateAsync(relatedFieldInfo);
         }
 
         public async Task DeleteAsync(int id)
@@ -43,41 +43,41 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public RelatedFieldInfo GetRelatedFieldInfo(int id)
+        public async Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int id)
         {
-            return id <= 0 ? null : _repository.Get(id);
+            return await _repository.GetAsync(id);
         }
 
-        public RelatedFieldInfo GetRelatedFieldInfo(int siteId, string title)
+        public async Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int siteId, string title)
         {
-            return _repository.Get(Q
+            return await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.Title, title));
         }
 
-        public string GetTitle(int id)
+        public async Task<string> GetTitleAsync(int id)
         {
-            return _repository.Get<string>(Q
+            return await _repository.GetAsync<string>(Q
                 .Select(Attr.Title)
                 .Where(Attr.Id, id));
         }
 
-        public IList<RelatedFieldInfo> GetRelatedFieldInfoList(int siteId)
+        public async Task<IEnumerable<RelatedFieldInfo>> GetRelatedFieldInfoListAsync(int siteId)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.Id)).ToList();
+                .OrderBy(Attr.Id));
         }
 
-        public IList<string> GetTitleList(int siteId)
+        public async Task<IEnumerable<string>> GetTitleListAsync(int siteId)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.Title)
                 .Where(Attr.SiteId, siteId)
-                .OrderBy(Attr.Id)).ToList();
+                .OrderBy(Attr.Id));
         }
 
-        public string GetImportTitle(int siteId, string relatedFieldName)
+        public async Task<string> GetImportTitleAsync(int siteId, string relatedFieldName)
         {
             string importName;
             if (relatedFieldName.IndexOf("_", StringComparison.Ordinal) != -1)
@@ -101,10 +101,10 @@ namespace SS.CMS.Core.Repositories
                 importName = relatedFieldName + "_1";
             }
 
-            var relatedFieldInfo = GetRelatedFieldInfo(siteId, relatedFieldName);
+            var relatedFieldInfo = await GetRelatedFieldInfoAsync(siteId, relatedFieldName);
             if (relatedFieldInfo != null)
             {
-                importName = GetImportTitle(siteId, importName);
+                importName = await GetImportTitleAsync(siteId, importName);
             }
 
             return importName;

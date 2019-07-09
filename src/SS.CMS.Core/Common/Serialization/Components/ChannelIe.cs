@@ -25,8 +25,13 @@ namespace SS.CMS.Core.Serialization.Components
         private const string ChannelTemplateName = "ChannelTemplateName";
         private const string ContentTemplateName = "ContentTemplateName";
 
-        public void ImportNodeInfo(ChannelInfo channelInfo, ScopedElementCollection additionalElements, int parentId, IList<string> indexNameList)
+        public async Task ImportNodeInfoAsync(ChannelInfo channelInfo, ScopedElementCollection additionalElements, int parentId, IEnumerable<string> indexNames)
         {
+            var indexNameList = new List<string>();
+            if (indexNames != null)
+            {
+                indexNameList.AddRange(indexNames);
+            }
             channelInfo.ChannelName = AtomUtility.GetDcElementContent(additionalElements, new List<string> { ChannelAttribute.ChannelName, "NodeName" });
             channelInfo.SiteId = _siteInfo.Id;
             var contentModelPluginId = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ContentModelPluginId);
@@ -59,12 +64,12 @@ namespace SS.CMS.Core.Serialization.Components
             var channelTemplateName = AtomUtility.GetDcElementContent(additionalElements, ChannelTemplateName);
             if (!string.IsNullOrEmpty(channelTemplateName))
             {
-                channelInfo.ChannelTemplateId = _templateRepository.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
+                channelInfo.ChannelTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(_siteInfo.Id, TemplateType.ChannelTemplate, channelTemplateName);
             }
             var contentTemplateName = AtomUtility.GetDcElementContent(additionalElements, ContentTemplateName);
             if (!string.IsNullOrEmpty(contentTemplateName))
             {
-                channelInfo.ContentTemplateId = _templateRepository.GetTemplateIdByTemplateName(_siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
+                channelInfo.ContentTemplateId = await _templateRepository.GetTemplateIdByTemplateNameAsync(_siteInfo.Id, TemplateType.ContentTemplate, contentTemplateName);
             }
 
             channelInfo.Keywords = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.Keywords);

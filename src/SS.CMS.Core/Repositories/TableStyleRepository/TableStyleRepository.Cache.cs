@@ -16,7 +16,7 @@ namespace SS.CMS.Core.Repositories
             {
                 var pairs = new List<KeyValuePair<string, TableStyleInfo>>();
 
-                var allItemsDict = _tableStyleItemRepository.GetAllTableStyleItems();
+                var allItemsDict = await _tableStyleItemRepository.GetAllTableStyleItemsAsync();
 
                 var styleInfoList = await _repository.GetAllAsync(Q.OrderByDesc(Attr.Taxis, Attr.Id));
                 foreach (var styleInfo in styleInfoList)

@@ -13,10 +13,10 @@ namespace SS.CMS.Repositories
 
         Task DeleteAllAsync();
 
-        int GetCount();
+        Task<int> GetCountAsync();
 
-        IList<UserLogInfo> List(int userId, int totalNum, string action);
+        Task<IEnumerable<UserLogInfo>> ListAsync(int userId, int totalNum, string action);
 
-        IList<UserLogInfo> ApiGetLogs(int userId, int offset, int limit);
+        Task<IEnumerable<UserLogInfo>> ApiGetLogsAsync(int userId, int offset, int limit);
     }
 }

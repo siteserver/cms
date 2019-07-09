@@ -342,7 +342,7 @@ namespace SS.CMS.Core.Services
             await _cache.RemoveAsync(_cacheKey);
         }
 
-        public void InstallDatabase(string userName, string password)
+        public async Task<(bool IsSuccess, string ErrorMessage)> InstallDatabaseAsync(string adminName, string adminPassword)
         {
             // SyncDatabase();
 
@@ -354,6 +354,28 @@ namespace SS.CMS.Core.Services
 
             // _userRepository.Insert(userInfo, out _);
             // _userRoleRepository.AddUserToRole(userName, AuthTypes.Roles.SuperAdministrator);
+
+            await SyncDatabaseAsync();
+
+            var configInfo = new ConfigInfo
+            {
+                DatabaseVersion = _settingsManager.ProductVersion,
+                UpdateDate = DateTime.UtcNow,
+                ExtendValues = string.Empty
+            };
+            await _configRepository.DeleteAllAsync();
+            await _configRepository.InsertAsync(configInfo);
+
+            var userInfo = new UserInfo
+            {
+                UserName = adminName,
+                Password = adminPassword,
+                RoleName = AuthTypes.Roles.SuperAdministrator
+            };
+
+            var (isSuccess, userId, errorMessage) = await _userRepository.InsertAsync(userInfo);
+
+            return (isSuccess, errorMessage);
         }
 
         public async Task SyncSystemTablesAsync()

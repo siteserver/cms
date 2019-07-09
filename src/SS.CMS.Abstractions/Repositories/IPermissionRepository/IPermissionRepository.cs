@@ -11,10 +11,10 @@ namespace SS.CMS.Repositories
 
         Task<bool> DeleteAsync(string roleName);
 
-        List<string> GetAppPermissions(IEnumerable<string> roles);
+        Task<List<string>> GetAppPermissionsAsync(IEnumerable<string> roles);
 
-        List<string> GetSitePermissions(IEnumerable<string> roles, int siteId);
+        Task<List<string>> GetSitePermissionsAsync(IEnumerable<string> roles, int siteId);
 
-        List<string> GetChannelPermissions(IEnumerable<string> roles, int siteId, int channelId);
+        Task<List<string>> GetChannelPermissionsAsync(IEnumerable<string> roles, int siteId, int channelId);
     }
 }

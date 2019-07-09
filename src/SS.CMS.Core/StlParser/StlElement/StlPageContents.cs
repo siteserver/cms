@@ -23,7 +23,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
         private string _stlPageContentsElement;
 
-        private List<ContentInfo> _contentInfoList;
+        private IEnumerable<ContentInfo> _contentInfoList;
         private ParseContext _parseContext;
         private ListInfo _listInfo;
 
@@ -64,7 +64,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 _listInfo.PageNum = pageNum;
             }
 
-            _contentInfoList = parseContext.GetPageContentsSqlStringBySearch(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImage, _listInfo.IsVideo, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.Order, _listInfo.IsTop, _listInfo.IsRecommend, _listInfo.IsHot, _listInfo.IsColor);
+            _contentInfoList = await parseContext.GetPageContentsSqlStringBySearchAsync(channelInfo, _listInfo.GroupContent, _listInfo.GroupContentNot, _listInfo.Tags, _listInfo.IsImage, _listInfo.IsVideo, _listInfo.IsFile, _listInfo.StartNum, _listInfo.TotalNum, _listInfo.Order, _listInfo.IsTop, _listInfo.IsRecommend, _listInfo.IsHot, _listInfo.IsColor);
         }
 
         public async Task<(int PageCount, int TotalNum)> GetPageCountAsync()

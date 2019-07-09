@@ -190,7 +190,7 @@ namespace SS.CMS.Core.Repositories
         {
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = GetValue<string>(contentId, Attr.Tags);
+                var tagCollection = await GetValueAsync<string>(contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
                     var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);

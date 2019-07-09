@@ -17,7 +17,7 @@ namespace SS.CMS.Services
 
         string TextEditorContentDecode(SiteInfo siteInfo, string content, bool isLocal);
 
-        Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IList<int> contentIdList);
+        Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IEnumerable<int> contentIdList);
 
         Task DeleteContentAsync(SiteInfo siteInfo, int channelId, int contentId);
 

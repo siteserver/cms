@@ -329,6 +329,12 @@ namespace SS.CMS.Utils
             return AddQueryString(url, attributes);
         }
 
+        public static string GetIpAddress(IPAddress ipAddress)
+        {
+            if (ipAddress == null) return "127.0.0.1";
+            return GetIpAddress(ipAddress.ToString());
+        }
+
         public static string GetIpAddress(string remoteIpAddress)
         {
             var result = string.Empty;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Services;
 using SS.CMS.Enums;
@@ -64,7 +65,7 @@ namespace SS.CMS.Core.Repositories
             return contentInfo1.Get(orderAttributeName) != contentInfo2.Get(orderAttributeName);
         }
 
-        public List<int> GetContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId, int offset, int limit)
+        public async Task<IEnumerable<int>> GetContentIdListAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId, int offset, int limit)
         {
             var list = ListGetContentIdList(channelInfo.Id, onlyUserId);
             if (list.Count >= offset + limit)
@@ -76,7 +77,7 @@ namespace SS.CMS.Core.Repositories
             {
                 var query = GetCacheWhereString(siteInfo, channelInfo, onlyUserId);
                 QueryOrder(query, channelInfo, string.Empty);
-                var pageContentInfoList = GetContentInfoList(query, offset, limit);
+                var pageContentInfoList = await GetContentInfoListAsync(query, offset, limit);
 
                 var pageContentIdList = pageContentInfoList.Select(x => x.Id).ToList();
                 list.AddRange(pageContentIdList);
@@ -86,7 +87,7 @@ namespace SS.CMS.Core.Repositories
             var q = GetCacheWhereString(siteInfo, channelInfo, onlyUserId);
             QueryOrder(q, channelInfo, string.Empty);
 
-            return GetCacheContentIdList(q, offset, limit);
+            return await GetCacheContentIdListAsync(q, offset, limit);
         }
     }
 }

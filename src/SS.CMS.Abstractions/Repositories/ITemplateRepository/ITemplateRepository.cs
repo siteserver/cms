@@ -16,19 +16,19 @@ namespace SS.CMS.Repositories
 
         Task DeleteAsync(int siteId, int templateId);
 
-        string GetImportTemplateName(int siteId, string templateName);
+        Task<string> GetImportTemplateNameAsync(int siteId, string templateName);
 
-        Dictionary<TemplateType, int> GetCountDictionary(int siteId);
+        Task<Dictionary<TemplateType, int>> GetCountDictionaryAsync(int siteId);
 
-        IList<TemplateInfo> GetTemplateInfoListByType(int siteId, TemplateType type);
+        Task<IEnumerable<TemplateInfo>> GetTemplateInfoListByTypeAsync(int siteId, TemplateType type);
 
-        IList<TemplateInfo> GetTemplateInfoListOfFile(int siteId);
+        Task<IEnumerable<TemplateInfo>> GetTemplateInfoListOfFileAsync(int siteId);
 
-        IList<TemplateInfo> GetTemplateInfoListBySiteId(int siteId);
+        Task<IEnumerable<TemplateInfo>> GetTemplateInfoListBySiteIdAsync(int siteId);
 
-        IList<string> GetTemplateNameList(int siteId, TemplateType templateType);
+        Task<IEnumerable<string>> GetTemplateNameListAsync(int siteId, TemplateType templateType);
 
-        IList<string> GetLowerRelatedFileNameList(int siteId, TemplateType templateType);
+        Task<IEnumerable<string>> GetLowerRelatedFileNameListAsync(int siteId, TemplateType templateType);
 
         Task CreateDefaultTemplateInfoAsync(int siteId, int userId);
 
@@ -36,17 +36,17 @@ namespace SS.CMS.Repositories
 
         Task<string> GetTemplateNameAsync(int templateId);
 
-        TemplateInfo GetTemplateInfoByTemplateName(int siteId, TemplateType templateType, string templateName);
+        Task<TemplateInfo> GetTemplateInfoByTemplateNameAsync(int siteId, TemplateType templateType, string templateName);
 
-        TemplateInfo GetDefaultTemplateInfo(int siteId, TemplateType templateType);
+        Task<TemplateInfo> GetDefaultTemplateInfoAsync(int siteId, TemplateType templateType);
 
-        int GetDefaultTemplateId(int siteId, TemplateType templateType);
+        Task<int> GetDefaultTemplateIdAsync(int siteId, TemplateType templateType);
 
-        int GetTemplateIdByTemplateName(int siteId, TemplateType templateType, string templateName);
+        Task<int> GetTemplateIdByTemplateNameAsync(int siteId, TemplateType templateType, string templateName);
 
         string GetTemplateFilePath(SiteInfo siteInfo, TemplateInfo templateInfo);
 
-        TemplateInfo GetIndexPageTemplateInfo(int siteId);
+        Task<TemplateInfo> GetIndexPageTemplateInfoAsync(int siteId);
 
         Task<TemplateInfo> GetChannelTemplateInfoAsync(int siteId, int channelId);
 
@@ -54,9 +54,9 @@ namespace SS.CMS.Repositories
 
         Task<TemplateInfo> GetFileTemplateInfoAsync(int siteId, int fileTemplateId);
 
-        void WriteContentToTemplateFile(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId);
+        Task WriteContentToTemplateFileAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId);
 
-        int GetIndexTemplateId(int siteId);
+        Task<int> GetIndexTemplateIdAsync(int siteId);
 
         Task<int> GetChannelTemplateIdAsync(int siteId, int channelId);
 

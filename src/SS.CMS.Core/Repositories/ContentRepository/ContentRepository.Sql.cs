@@ -15,12 +15,12 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public List<ContentInfo> GetSelectCommandByHitsAnalysis(int siteId)
+        public async Task<IEnumerable<ContentInfo>> GetSelectCommandByHitsAnalysisAsync(int siteId)
         {
             var query = Q.Where(Attr.SiteId, siteId).Where(Attr.Hits, ">", 0).WhereTrue(Attr.IsChecked);
             QueryOrder(query, TaxisType.OrderByTaxisDesc);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
         //         public string GetSqlStringOfAdminExcludeRecycle(int siteId, DateTime begin, DateTime end)
@@ -73,7 +73,7 @@ namespace SS.CMS.Core.Repositories
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = await _siteRepository.GetSiteInfoByDirectoryAsync(siteDir);
+                siteInfo = await _siteRepository.GetSiteInfoBySiteDirAsync(siteDir);
             }
             if (siteInfo == null)
             {
@@ -230,7 +230,7 @@ namespace SS.CMS.Core.Repositories
             return sqlString;
         }
 
-        public List<ContentInfo> GetStlSqlStringChecked(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
+        public async Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedAsync(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             if (siteId == channelId && scopeType == ScopeType.All && string.IsNullOrEmpty(groupChannel) && string.IsNullOrEmpty(groupChannelNot))
             {
@@ -249,15 +249,15 @@ namespace SS.CMS.Core.Repositories
             QuerySelectMinColumns(query);
             query.Offset(startNum - 1).Limit(totalNum);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
-        public List<ContentInfo> GetStlSqlStringCheckedBySearch(int startNum, int totalNum, string order, Query query)
+        public async Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedBySearchAsync(int startNum, int totalNum, string order, Query query)
         {
             query.Where(Attr.ChannelId, ">", 0).WhereTrue(Attr.IsChecked);
             query.Offset(startNum - 1).Limit(totalNum);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
         public async Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId)
@@ -384,7 +384,7 @@ namespace SS.CMS.Core.Repositories
 
             if (isRelatedContents && contentId > 0)
             {
-                var tagCollection = GetValue<string>(contentId, Attr.Tags);
+                var tagCollection = await GetValueAsync<string>(contentId, Attr.Tags);
                 if (!string.IsNullOrEmpty(tagCollection))
                 {
                     var contentIdList = await _tagRepository.GetContentIdListByTagCollectionAsync(TranslateUtils.StringCollectionToStringList(tagCollection), siteId);
@@ -733,7 +733,7 @@ namespace SS.CMS.Core.Repositories
             return query;
         }
 
-        public async Task<List<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
+        public async Task<IEnumerable<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -855,23 +855,23 @@ namespace SS.CMS.Core.Repositories
                 }
             }
 
-            return startNum <= 1 ? GetStlDataSourceByContentNumAndWhereString(totalNum, query) : GetStlDataSourceByStartNum(startNum, totalNum, query);
+            return startNum <= 1 ? await GetStlDataSourceByContentNumAndWhereStringAsync(totalNum, query) : await GetStlDataSourceByStartNumAsync(startNum, totalNum, query);
         }
 
-        private List<ContentInfo> GetStlDataSourceByContentNumAndWhereString(int totalNum, Query query)
+        private async Task<IEnumerable<ContentInfo>> GetStlDataSourceByContentNumAndWhereStringAsync(int totalNum, Query query)
         {
             QuerySelectMinColumns(query);
             query.Limit(totalNum);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
-        private List<ContentInfo> GetStlDataSourceByStartNum(int startNum, int totalNum, Query query)
+        private async Task<IEnumerable<ContentInfo>> GetStlDataSourceByStartNumAsync(int startNum, int totalNum, Query query)
         {
             QuerySelectMinColumns(query);
             query.Offset(startNum - 1).Limit(totalNum);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
         // public DataSet GetDataSetOfAdminExcludeRecycle(int siteId, DateTime begin, DateTime end)

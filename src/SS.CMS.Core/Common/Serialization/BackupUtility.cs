@@ -55,7 +55,7 @@ namespace SS.CMS.Core.Serialization
             FileUtils.DeleteFileIfExists(filePath);
             var metadataPath = pathManager.GetSiteTemplateMetadataPath(siteTemplatePath, string.Empty);
 
-            exportObject.ExportFilesToSite(siteTemplatePath, true, new ArrayList(), true);
+            await exportObject.ExportFilesToSiteAsync(siteTemplatePath, true, new ArrayList(), true);
 
             var siteContentDirectoryPath = PathUtils.Combine(metadataPath, DirectoryUtils.SiteTemplates.SiteContent);
             await exportObject.ExportSiteContentAsync(siteContentDirectoryPath, true, true, new List<int>());
@@ -101,8 +101,8 @@ namespace SS.CMS.Core.Serialization
             }
             if (isDeleteTemplates)
             {
-                var templateInfoList =
-                    templateRepository.GetTemplateInfoListBySiteId(siteId);
+                var templateInfoList = await
+                    templateRepository.GetTemplateInfoListBySiteIdAsync(siteId);
                 foreach (var templateInfo in templateInfoList)
                 {
                     if (templateInfo.IsDefault == false)
@@ -113,11 +113,11 @@ namespace SS.CMS.Core.Serialization
             }
             if (isDeleteFiles)
             {
-                fileManager.DeleteSiteFiles(siteInfo);
+                await fileManager.DeleteSiteFilesAsync(siteInfo);
             }
 
             //导入文件
-            importObject.ImportFiles(siteTemplatePath, isOverride);
+            await importObject.ImportFilesAsync(siteTemplatePath, isOverride);
 
             //导入模板
             var templateFilePath = PathUtils.Combine(siteTemplateMetadataPath, DirectoryUtils.SiteTemplates.FileTemplate);

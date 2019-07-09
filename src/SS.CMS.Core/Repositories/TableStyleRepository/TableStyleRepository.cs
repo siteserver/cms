@@ -54,7 +54,7 @@ namespace SS.CMS.Core.Repositories
         public async Task<int> InsertAsync(TableStyleInfo styleInfo)
         {
             var id = await _repository.InsertAsync(styleInfo);
-            _tableStyleItemRepository.Insert(id, styleInfo.StyleItems);
+            await _tableStyleItemRepository.InsertAllAsync(id, styleInfo.StyleItems);
 
             await _cache.RemoveAsync(_cacheKey);
 
@@ -63,7 +63,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task UpdateAsync(TableStyleInfo info, bool deleteAndInsertStyleItems = true)
         {
-            _repository.Update(info);
+            await _repository.UpdateAsync(info);
             if (deleteAndInsertStyleItems)
             {
                 await _tableStyleItemRepository.DeleteAndInsertStyleItemsAsync(info.Id, info.StyleItems);

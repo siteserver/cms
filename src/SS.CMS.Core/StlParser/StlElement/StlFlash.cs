@@ -150,7 +150,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = nodeInfo.ContentRepository.GetValue<string>(contentId, type);
+                        flashUrl = await nodeInfo.ContentRepository.GetValueAsync<string>(contentId, type);
                     }
                     else
                     {

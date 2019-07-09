@@ -46,14 +46,14 @@ namespace SS.CMS.Core.Services
             return list;
         }
 
-        public bool HasAppPermissions(params string[] permissions)
+        public async Task<bool> HasAppPermissionsAsync(params string[] permissions)
         {
             if (_context.User.IsInRole(AuthTypes.Roles.SuperAdministrator))
             {
                 return true;
             }
 
-            var appPermissions = _permissionRepository.GetAppPermissions(GetRoles());
+            var appPermissions = await _permissionRepository.GetAppPermissionsAsync(GetRoles());
 
             return permissions.Any(permission =>
             {
@@ -69,10 +69,17 @@ namespace SS.CMS.Core.Services
             }
 
             var siteIdList = await _siteRepository.GetSiteIdListAsync();
-            return siteIdList.Any(HasSitePermissions);
+            foreach (var siteId in siteIdList)
+            {
+                if (await HasSitePermissionsAsync(siteId))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
-        public bool HasSitePermissions(int siteId)
+        public async Task<bool> HasSitePermissionsAsync(int siteId)
         {
             if (_context.User.IsInRole(AuthTypes.Roles.SuperAdministrator))
             {
@@ -84,12 +91,12 @@ namespace SS.CMS.Core.Services
                 return true;
             }
 
-            var sitePermissions = _permissionRepository.GetSitePermissions(GetRoles(), siteId);
+            var sitePermissions = await _permissionRepository.GetSitePermissionsAsync(GetRoles(), siteId);
 
             return sitePermissions.Count > 0;
         }
 
-        public bool HasSitePermissions(int siteId, params string[] permissions)
+        public async Task<bool> HasSitePermissionsAsync(int siteId, params string[] permissions)
         {
             if (_context.User.IsInRole(AuthTypes.Roles.SuperAdministrator))
             {
@@ -101,7 +108,7 @@ namespace SS.CMS.Core.Services
                 return true;
             }
 
-            var sitePermissions = _permissionRepository.GetSitePermissions(GetRoles(), siteId);
+            var sitePermissions = await _permissionRepository.GetSitePermissionsAsync(GetRoles(), siteId);
 
             return permissions.Any(permission =>
             {
@@ -109,7 +116,7 @@ namespace SS.CMS.Core.Services
             });
         }
 
-        public bool HasChannelPermissions(int siteId, int channelId, params string[] permissions)
+        public async Task<bool> HasChannelPermissionsAsync(int siteId, int channelId, params string[] permissions)
         {
             if (_context.User.IsInRole(AuthTypes.Roles.SuperAdministrator))
             {
@@ -121,7 +128,7 @@ namespace SS.CMS.Core.Services
                 return true;
             }
 
-            var channelPermissions = _permissionRepository.GetChannelPermissions(GetRoles(), siteId, channelId);
+            var channelPermissions = await _permissionRepository.GetChannelPermissionsAsync(GetRoles(), siteId, channelId);
 
             return permissions.Any(permission =>
             {
@@ -136,7 +143,7 @@ namespace SS.CMS.Core.Services
 
             if (IsSuperAdministrator())
             {
-                siteIdList = allSiteIdList;
+                siteIdList.AddRange(allSiteIdList);
             }
             else if (await HasSitePermissionsAsync())
             {
@@ -172,7 +179,7 @@ namespace SS.CMS.Core.Services
             if (!configInfo.IsViewContentOnlySelf
                 || IsSuperAdministrator()
                 || IsSiteAdministrator(siteId)
-                || HasChannelPermissions(siteId, channelId, AuthTypes.ChannelPermissions.ContentCheck))
+                || await HasChannelPermissionsAsync(siteId, channelId, AuthTypes.ChannelPermissions.ContentCheck))
             {
                 return null;
             }

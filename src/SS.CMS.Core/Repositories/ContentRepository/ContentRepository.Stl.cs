@@ -133,19 +133,19 @@ namespace SS.CMS.Core.Repositories
                 }
             }
 
-            return startNum <= 1 ? GetContainerContentListByContentNumAndWhereString(totalNum, query, order) : GetContainerContentListByStartNum(startNum, totalNum, query, order);
+            return startNum <= 1 ? await GetContainerContentListByContentNumAndWhereStringAsync(totalNum, query, order) : await GetContainerContentListByStartNumAsync(startNum, totalNum, query, order);
         }
 
-        public List<KeyValuePair<int, ContentInfo>> GetContainerContentListByContentNumAndWhereString(int totalNum, Query query, string order)
+        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByContentNumAndWhereStringAsync(int totalNum, Query query, string order)
         {
             var list = new List<KeyValuePair<int, ContentInfo>>();
             var itemIndex = 0;
 
             QuerySelectMinColumns(query);
-            var contentInfoList = _repository.GetAll(query
+            var contentInfoList = await _repository.GetAllAsync(query
                 .Limit(totalNum)
                 .OrderByRaw(order)
-                ).ToList();
+                );
 
             foreach (var contentInfo in contentInfoList)
             {
@@ -155,17 +155,17 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public List<KeyValuePair<int, ContentInfo>> GetContainerContentListByStartNum(int startNum, int totalNum, Query query, string order)
+        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByStartNumAsync(int startNum, int totalNum, Query query, string order)
         {
             var list = new List<KeyValuePair<int, ContentInfo>>();
             var itemIndex = 0;
 
             QuerySelectMinColumns(query);
-            var contentInfoList = _repository.GetAll(query
+            var contentInfoList = await _repository.GetAllAsync(query
                 .Offset(startNum - 1)
                 .Limit(totalNum)
                 .OrderByRaw(order)
-            ).ToList();
+            );
 
             foreach (var contentInfo in contentInfoList)
             {

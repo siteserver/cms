@@ -31,8 +31,8 @@ namespace SS.CMS.Core.Serialization.Components
 
         public async Task<int> ImportChannelsAndContentsAsync(string filePath, bool isImportContents, bool isOverride, int theParentId, int userId)
         {
-            var psChildCount = _channelRepository.GetCount(_siteInfo.Id);
-            var indexNameList = _channelRepository.GetIndexNameList(_siteInfo.Id);
+            var psChildCount = await _channelRepository.GetCountAsync(_siteInfo.Id);
+            var indexNameList = await _channelRepository.GetIndexNameListAsync(_siteInfo.Id);
 
             if (!FileUtils.IsFileExists(filePath)) return 0;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -61,7 +61,7 @@ namespace SS.CMS.Core.Serialization.Components
                 orderString = orderString.Substring(0, orderString.LastIndexOf("_", StringComparison.Ordinal));
             }
 
-            var parentId = _channelRepository.GetId(_siteInfo.Id, orderString);
+            var parentId = await _channelRepository.GetIdAsync(_siteInfo.Id, orderString);
             if (theParentId != 0)
             {
                 parentId = theParentId;
@@ -73,7 +73,7 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 channelId = _siteInfo.Id;
                 var nodeInfo = await _channelRepository.GetChannelInfoAsync(_siteInfo.Id);
-                _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
+                await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                 await _channelRepository.UpdateAsync(nodeInfo);
 
@@ -85,7 +85,7 @@ namespace SS.CMS.Core.Serialization.Components
             else
             {
                 var nodeInfo = new ChannelInfo();
-                _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
+                await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
                 if (string.IsNullOrEmpty(nodeInfo.ChannelName)) return 0;
 
                 var isUpdate = false;
@@ -107,7 +107,7 @@ namespace SS.CMS.Core.Serialization.Components
                     channelId = theSameNameChannelId;
                     nodeInfo = await _channelRepository.GetChannelInfoAsync(theSameNameChannelId);
                     var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, _siteInfo, nodeInfo);
-                    _channelIe.ImportNodeInfo(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
+                    await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
 
                     await _channelRepository.UpdateAsync(nodeInfo);
 
@@ -130,7 +130,7 @@ namespace SS.CMS.Core.Serialization.Components
 
             var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
 
-            var fileName = _channelRepository.GetOrderStringInSite(channelId);
+            var fileName = await _channelRepository.GetOrderStringInSiteAsync(channelId);
 
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + fileName + ".xml";
 
@@ -138,10 +138,10 @@ namespace SS.CMS.Core.Serialization.Components
 
             if (isSaveContents)
             {
-                var contentIdList = channelInfo.ContentRepository.GetContentIdListChecked(channelId, TaxisType.OrderByTaxis);
+                var contentIdList = await channelInfo.ContentRepository.GetContentIdListCheckedAsync(channelId, TaxisType.OrderByTaxis);
                 foreach (var contentId in contentIdList)
                 {
-                    var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+                    var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
                     //ContentUtility.PutImagePaths(siteInfo, contentInfo as BackgroundContentInfo, collection);
                     var entry = _contentIe.ExportContentInfo(contentInfo);
                     feed.Entries.Add(entry);

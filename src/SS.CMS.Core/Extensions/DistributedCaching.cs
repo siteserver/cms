@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SS.CMS.Data;
 using SS.CMS.Utils;
 
 namespace Microsoft.Extensions.Caching.Distributed
@@ -10,9 +11,24 @@ namespace Microsoft.Extensions.Caching.Distributed
     {
         public static string GetKey(this IDistributedCache distributedCache, string nameofClass, params string[] values)
         {
-            var key = $"SS.Caching.{nameofClass}";
+            var key = $"{nameofClass}:";
             if (values == null || values.Length <= 0) return key;
-            return values.Aggregate(key, (current, t) => current + ("." + t));
+            return values.Aggregate(key, (current, t) => current + (":" + t));
+        }
+
+        public static string GetEntityKey(this IDistributedCache distributedCache, IRepository repository, int id)
+        {
+            return $"{repository.TableName}:entity:{id}";
+        }
+
+        public static string GetListKey(this IDistributedCache distributedCache, IRepository repository)
+        {
+            return $"{repository.TableName}:list";
+        }
+
+        public static string GetListKey(this IDistributedCache distributedCache, IRepository repository, int containerId)
+        {
+            return $"{repository.TableName}:list:{containerId}";
         }
 
         public async static Task<T> GetOrCreateAsync<T>(this IDistributedCache distributedCache, string key, Func<DistributedCacheEntryOptions, Task<T>> factory) where T : class

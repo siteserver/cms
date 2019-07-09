@@ -13,9 +13,9 @@ namespace SS.CMS.Repositories
 
         Task<SpecialInfo> DeleteAsync(int siteId, int specialId);
 
-        bool IsTitleExists(int siteId, string title);
+        Task<bool> IsTitleExistsAsync(int siteId, string title);
 
-        bool IsUrlExists(int siteId, string url);
+        Task<bool> IsUrlExistsAsync(int siteId, string url);
 
         Task<IEnumerable<SpecialInfo>> GetSpecialInfoListAsync(int siteId);
 

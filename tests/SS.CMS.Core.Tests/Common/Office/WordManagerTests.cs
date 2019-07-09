@@ -6,13 +6,13 @@ using SS.CMS.Utils;
 using SS.CMS.Utils.Tests;
 using Xunit;
 
-namespace SS.CMS.Core.Tests.Core.Office
+namespace SS.CMS.Core.Tests.Common.Office
 {
-    public class WordManagerTests : IClassFixture<EnvironmentFixture>
+    public class WordManagerTests : IClassFixture<UnitTestsFixture>
     {
-        private EnvironmentFixture _fixture { get; }
+        private UnitTestsFixture _fixture { get; }
 
-        public WordManagerTests(EnvironmentFixture fixture)
+        public WordManagerTests(UnitTestsFixture fixture)
         {
             _fixture = fixture;
         }

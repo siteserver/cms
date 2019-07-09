@@ -123,7 +123,7 @@ namespace SS.CMS.Cli.Services
                 var tableInfo = new TableInfo
                 {
                     Columns = await db.GetTableColumnsAsync(tableName),
-                    TotalCount = repository.Count(),
+                    TotalCount = await repository.CountAsync(),
                     RowFiles = new List<string>()
                 };
 
@@ -154,7 +154,7 @@ namespace SS.CMS.Cli.Services
                                 var offset = (current - 1) * CliUtils.PageSize;
                                 var limit = tableInfo.TotalCount - offset < CliUtils.PageSize ? tableInfo.TotalCount - offset : CliUtils.PageSize;
 
-                                var rows = repository.GetAll<IEnumerable<dynamic>>(Q.Offset(offset).Limit(limit).OrderBy(identityColumnName));
+                                var rows = await repository.GetAllAsync<IEnumerable<dynamic>>(Q.Offset(offset).Limit(limit).OrderBy(identityColumnName));
 
                                 await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                             }
@@ -164,7 +164,7 @@ namespace SS.CMS.Cli.Services
                     {
                         var fileName = $"{current}.json";
                         tableInfo.RowFiles.Add(fileName);
-                        var rows = repository.GetAll<IEnumerable<dynamic>>(Q.OrderBy(identityColumnName));
+                        var rows = await repository.GetAllAsync<IEnumerable<dynamic>>(Q.OrderBy(identityColumnName));
 
                         await FileUtils.WriteTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8, TranslateUtils.JsonSerialize(rows));
                     }

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
@@ -209,25 +207,27 @@ namespace SS.CMS.Api.Controllers.Cms
                 userRepository,
                 userRoleRepository);
 
-            await tableManager.SyncDatabaseAsync();
+            // await tableManager.SyncDatabaseAsync();
 
-            var configInfo = new ConfigInfo
-            {
-                DatabaseVersion = _settingsManager.ProductVersion,
-                UpdateDate = DateTime.UtcNow,
-                ExtendValues = string.Empty
-            };
-            await _configRepository.DeleteAllAsync();
-            await _configRepository.InsertAsync(configInfo);
+            // var configInfo = new ConfigInfo
+            // {
+            //     DatabaseVersion = _settingsManager.ProductVersion,
+            //     UpdateDate = DateTime.UtcNow,
+            //     ExtendValues = string.Empty
+            // };
+            // await _configRepository.DeleteAllAsync();
+            // await _configRepository.InsertAsync(configInfo);
 
-            var userInfo = new UserInfo
-            {
-                UserName = install.AdminName,
-                Password = install.AdminPassword,
-                RoleName = AuthTypes.Roles.SuperAdministrator
-            };
+            // var userInfo = new UserInfo
+            // {
+            //     UserName = install.AdminName,
+            //     Password = install.AdminPassword,
+            //     RoleName = AuthTypes.Roles.SuperAdministrator
+            // };
 
-            var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
+            // var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
+
+            var (isSuccess, errorMessage) = await tableManager.InstallDatabaseAsync(install.AdminName, install.AdminPassword);
 
             // var path = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
 

@@ -349,7 +349,11 @@ namespace SS.CMS.Data
 
         public async Task CreateIndexAsync(string tableName, string indexName, params string[] columns)
         {
-            var sqlString = new StringBuilder($@"CREATE INDEX {DbUtils.GetQuotedIdentifier(DatabaseType, indexName)} ON {DbUtils.GetQuotedIdentifier(DatabaseType, tableName)}(");
+            if (columns == null || columns.Length == 0) return;
+
+            var fullTableName = DbUtils.GetQuotedIdentifier(DatabaseType, tableName);
+            var fullIndexName = DbUtils.GetQuotedIdentifier(DatabaseType, indexName);
+            var sqlString = new StringBuilder($@"CREATE INDEX {fullIndexName} ON {fullTableName}(");
 
             foreach (var column in columns)
             {
@@ -364,7 +368,7 @@ namespace SS.CMS.Data
                 sqlString.Append($"{DbUtils.GetQuotedIdentifier(DatabaseType, columnName)} {columnOrder}, ");
             }
 
-            sqlString.Length--;
+            sqlString.Length -= 2;
             sqlString.Append(")");
 
             using (var connection = GetConnection())

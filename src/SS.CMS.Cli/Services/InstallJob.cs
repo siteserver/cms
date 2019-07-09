@@ -115,7 +115,7 @@ namespace SS.CMS.Cli.Services
 
             // DataProvider.Reset();
 
-            _tableManager.InstallDatabase(_userName, _password);
+            await _tableManager.InstallDatabaseAsync(_userName, _password);
 
             await Console.Out.WriteLineAsync("恭喜，系统安装成功！");
         }

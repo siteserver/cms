@@ -10,9 +10,9 @@ namespace SS.CMS.Repositories.IContentRepository
     {
         Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListCheckedAsync(List<int> channelIdList, int startNum, int totalNum, string order, Query query, NameValueCollection others);
 
-        List<KeyValuePair<int, ContentInfo>> GetContainerContentListByContentNumAndWhereString(int totalNum, Query query, string order);
+        Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByContentNumAndWhereStringAsync(int totalNum, Query query, string order);
 
-        List<KeyValuePair<int, ContentInfo>> GetContainerContentListByStartNum(int startNum, int totalNum, Query query, string order);
+        Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByStartNumAsync(int startNum, int totalNum, Query query, string order);
 
         List<KeyValuePair<int, ContentInfo>> GetContainerContentListBySqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex);
     }

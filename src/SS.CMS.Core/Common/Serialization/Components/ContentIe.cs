@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
 using SS.CMS.Models;
@@ -113,7 +114,7 @@ namespace SS.CMS.Core.Serialization.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = channelInfo.ContentRepository.GetMaxTaxis(channelInfo.Id, true) + 1;
+                        taxis = await channelInfo.ContentRepository.GetMaxTaxisAsync(channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -156,8 +157,8 @@ namespace SS.CMS.Core.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                        if (existsIDs.Count > 0)
+                        var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                        if (existsIDs.Count() > 0)
                         {
                             foreach (int id in existsIDs)
                             {
@@ -225,7 +226,7 @@ namespace SS.CMS.Core.Serialization.Components
                     if (isTop)
                     {
                         topTaxis = taxis - 1;
-                        taxis = channelInfo.ContentRepository.GetMaxTaxis(channelInfo.Id, true) + 1;
+                        taxis = await channelInfo.ContentRepository.GetMaxTaxisAsync(channelInfo.Id, true) + 1;
                     }
                     var tags = AtomUtility.Decrypt(AtomUtility.GetDcElementContent(entry.AdditionalElements, ContentAttribute.Tags));
 
@@ -269,8 +270,8 @@ namespace SS.CMS.Core.Serialization.Components
                     var isInsert = false;
                     if (isOverride)
                     {
-                        var existsIDs = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                        if (existsIDs.Count > 0)
+                        var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                        if (existsIDs.Count() > 0)
                         {
                             foreach (int id in existsIDs)
                             {
@@ -307,23 +308,23 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public async Task<bool> ExportContentsAsync(SiteInfo siteInfo, int channelId, IList<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
+        public async Task<bool> ExportContentsAsync(SiteInfo siteInfo, int channelId, IEnumerable<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var feed = AtomUtility.GetEmptyFeed();
 
-            if (contentIdList == null || contentIdList.Count == 0)
+            if (contentIdList == null || contentIdList.Count() == 0)
             {
-                contentIdList = channelInfo.ContentRepository.GetContentIdList(channelId, isPeriods, dateFrom, dateTo, checkedState);
+                contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelId, isPeriods, dateFrom, dateTo, checkedState);
             }
-            if (contentIdList.Count == 0) return false;
+            if (contentIdList.Count() == 0) return false;
 
             var collection = new NameValueCollection();
 
             foreach (var contentId in contentIdList)
             {
-                var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+                var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
                 try
                 {
                     _urlManager.PutImagePaths(siteInfo, contentInfo, collection);

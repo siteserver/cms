@@ -17,7 +17,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                taxis = GetTaxisToInsert(contentInfo.ChannelId, contentInfo.IsTop);
+                taxis = await GetTaxisToInsertAsync(contentInfo.ChannelId, contentInfo.IsTop);
             }
             return await InsertWithTaxisAsync(siteInfo, channelInfo, contentInfo, taxis);
         }
@@ -41,7 +41,7 @@ namespace SS.CMS.Core.Repositories
             contentInfo.SiteId = siteInfo.Id;
             contentInfo.ChannelId = channelInfo.Id;
 
-            contentInfo.Id = _repository.Insert(contentInfo);
+            contentInfo.Id = await _repository.InsertAsync(contentInfo);
 
             await InsertCacheAsync(siteInfo, channelInfo, contentInfo);
 

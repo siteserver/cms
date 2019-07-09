@@ -7,11 +7,11 @@ namespace SS.CMS.Repositories
 {
     public interface ITemplateLogRepository : IRepository
     {
-        void Insert(TemplateLogInfo logInfo);
+        Task<int> InsertAsync(TemplateLogInfo logInfo);
 
         string GetSelectCommend(int siteId, int templateId);
 
-        string GetTemplateContent(int logId);
+        Task<string> GetTemplateContentAsync(int logId);
 
         // Dictionary<int, string> GetLogIdWithNameDictionary(int templateId);
 

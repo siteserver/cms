@@ -325,15 +325,15 @@ namespace SS.CMS.Core.StlParser
             return null;
         }
 
-        public List<ContentInfo> GetPageContentsSqlStringBySearch(ChannelInfo channelInfo, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor)
+        public async Task<IEnumerable<ContentInfo>> GetPageContentsSqlStringBySearchAsync(ChannelInfo channelInfo, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor)
         {
             var query = channelInfo.ContentRepository.GetStlWhereStringBySearch(groupContent, groupContentNot, isImage, isVideo, isFile, isTop, isRecommend, isHot, isColor);
-            var sqlString = channelInfo.ContentRepository.GetStlSqlStringCheckedBySearch(startNum, totalNum, order, query);
+            var sqlString = await channelInfo.ContentRepository.GetStlSqlStringCheckedBySearchAsync(startNum, totalNum, order, query);
 
             return sqlString;
         }
 
-        public async Task<List<ContentInfo>> GetContentsDataSourceAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<IEnumerable<ContentInfo>> GetContentsDataSourceAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await ChannelRepository.IsExistsAsync(channelId)) return null;
 
@@ -367,7 +367,7 @@ namespace SS.CMS.Core.StlParser
             return await siteInfo.ContentRepository.GetContainerContentListCheckedAsync(channelIdList, startNum, totalNum, order, sqlWhereString, others);
         }
 
-        public async Task<List<ContentInfo>> GetMinContentInfoListAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<IEnumerable<ContentInfo>> GetMinContentInfoListAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             var dataSource = await GetContentsDataSourceAsync(siteInfo, channelId, contentId, groupContent, groupContentNot, tags,
                 isImage, isVideo, isFile, isRelatedContents, startNum,

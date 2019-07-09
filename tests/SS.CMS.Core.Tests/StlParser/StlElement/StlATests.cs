@@ -13,10 +13,10 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
     [Collection("Database collection")]
     public class StlATests
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly IntegrationTestsFixture _fixture;
         private readonly ITestOutputHelper _output;
 
-        public StlATests(DatabaseFixture fixture, ITestOutputHelper output)
+        public StlATests(IntegrationTestsFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;

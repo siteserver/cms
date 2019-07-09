@@ -13,18 +13,19 @@ using Xunit;
 
 namespace SS.CMS.Utils.Tests
 {
-    public class DatabaseFixture : IDisposable
+    public class IntegrationTestsFixture : IDisposable
     {
         public IConfiguration Configuration { get; }
         public IDistributedCache Cache { get; }
         public ISettingsManager SettingsManager { get; }
+        public IDatabase Database { get; }
+        public IUserManager UserManager { get; }
         public IPathManager PathManager { get; }
         public IPluginManager PluginManager { get; }
         public IUrlManager UrlManager { get; }
         public IFileManager FileManager { get; }
         public ICreateManager CreateManager { get; }
         public ITableManager TableManager { get; }
-
         public IAccessTokenRepository AccessTokenRepository { get; }
         public IAreaRepository AreaRepository { get; }
         public IChannelGroupRepository ChannelGroupRepository { get; }
@@ -56,13 +57,13 @@ namespace SS.CMS.Utils.Tests
         public IUserRepository UserRepository { get; }
         public IUserRoleRepository UserRoleRepository { get; }
 
-        public DatabaseFixture()
+        public IntegrationTestsFixture()
         {
             var contentRootPath = Directory.GetCurrentDirectory();
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(contentRootPath)
-                .AddJsonFile("appSettings.json")
+                .AddJsonFile("ss.json")
                 .Build();
 
             var settingsManager = new SettingsManager(config, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
@@ -150,6 +151,7 @@ namespace SS.CMS.Utils.Tests
             Cache = cache;
             Configuration = config;
             SettingsManager = settingsManager;
+            Database = database;
             PathManager = pathManager;
             UrlManager = urlManager;
             FileManager = fileManager;
@@ -194,7 +196,7 @@ namespace SS.CMS.Utils.Tests
                 db.DropTableAsync(tableName).GetAwaiter().GetResult();
             }
 
-            tableManager.InstallDatabase("admin", "admin888");
+            tableManager.InstallDatabaseAsync("admin", "admin888").GetAwaiter().GetResult();
         }
 
         public void Dispose()

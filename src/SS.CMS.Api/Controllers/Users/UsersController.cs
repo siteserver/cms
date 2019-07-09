@@ -64,7 +64,7 @@ namespace SS.CMS.Api.Controllers.Users
             {
                 return await GetSiteMenusAsync(siteId);
             }
-            return GetAppMenus(topMenu);
+            return await GetAppMenusAsync(topMenu);
         }
 
         [HttpGet(RouteLoginCaptcha)]

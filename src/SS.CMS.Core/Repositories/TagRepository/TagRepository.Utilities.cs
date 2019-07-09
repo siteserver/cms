@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,13 +14,13 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class TagRepository
     {
-        private void AddTags(List<string> tags, int siteId, int contentId)
+        private async Task AddTagsAsync(List<string> tags, int siteId, int contentId)
         {
             if (tags == null || tags.Count == 0) return;
 
             foreach (var tagName in tags)
             {
-                var tagInfo = GetTagInfo(siteId, tagName);
+                var tagInfo = await GetTagInfoAsync(siteId, tagName);
                 if (tagInfo != null)
                 {
                     var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
@@ -28,7 +29,7 @@ namespace SS.CMS.Core.Repositories
                         contentIdList.Add(contentId);
                         tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
                         tagInfo.UseNum = contentIdList.Count;
-                        Update(tagInfo);
+                        await UpdateAsync(tagInfo);
                     }
                 }
                 else
@@ -40,18 +41,18 @@ namespace SS.CMS.Core.Repositories
                         Tag = tagName,
                         UseNum = contentId > 0 ? 1 : 0
                     };
-                    Insert(tagInfo);
+                    await InsertAsync(tagInfo);
                 }
             }
         }
 
-        private async Task RemoveTagsAsync(List<string> tags, int siteId, int contentId)
+        private async Task RemoveTagsAsync(IEnumerable<string> tags, int siteId, int contentId)
         {
-            if (tags == null || tags.Count == 0) return;
+            if (tags == null || tags.Count() == 0) return;
 
             foreach (var tagName in tags)
             {
-                var tagInfo = GetTagInfo(siteId, tagName);
+                var tagInfo = await GetTagInfoAsync(siteId, tagName);
                 if (tagInfo == null) continue;
 
                 var contentIdList = TranslateUtils.StringCollectionToIntList(tagInfo.ContentIdCollection);
@@ -65,7 +66,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 else
                 {
-                    Update(tagInfo);
+                    await UpdateAsync(tagInfo);
                 }
             }
         }
@@ -96,21 +97,21 @@ namespace SS.CMS.Core.Repositories
             }
 
             await RemoveTagsAsync(tagsToRemove, siteId, contentId);
-            AddTags(tagsToAdd, siteId, contentId);
+            await AddTagsAsync(tagsToAdd, siteId, contentId);
         }
 
-        public void RemoveTags(int siteId, IList<int> contentIdList)
+        public async Task RemoveTagsAsync(int siteId, IEnumerable<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
-                RemoveTags(siteId, contentId);
+                await RemoveTagsAsync(siteId, contentId);
             }
         }
 
-        public void RemoveTags(int siteId, int contentId)
+        public async Task RemoveTagsAsync(int siteId, int contentId)
         {
-            var tagInfoList = GetTagInfoList(siteId, contentId);
-            if (tagInfoList == null || tagInfoList.Count == 0) return;
+            var tagInfoList = await GetTagInfoListAsync(siteId, contentId);
+            if (tagInfoList == null) return;
 
             foreach (var tagInfo in tagInfoList)
             {
@@ -118,7 +119,7 @@ namespace SS.CMS.Core.Repositories
                 contentIdList.Remove(contentId);
                 tagInfo.ContentIdCollection = TranslateUtils.ObjectCollectionToString(contentIdList);
                 tagInfo.UseNum = contentIdList.Count;
-                Update(tagInfo);
+                await UpdateAsync(tagInfo);
             }
         }
 

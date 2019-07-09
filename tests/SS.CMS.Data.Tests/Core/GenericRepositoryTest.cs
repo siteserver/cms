@@ -11,12 +11,12 @@ using Xunit.Abstractions;
 
 namespace SS.CMS.Data.Tests.Core
 {
-    public class GenericRepositoryTest : IClassFixture<EnvironmentFixture>, IDisposable
+    public class GenericRepositoryTest : IClassFixture<UnitTestsFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly Repository<TestTableInfo> _repository;
 
-        public GenericRepositoryTest(EnvironmentFixture fixture, ITestOutputHelper output)
+        public GenericRepositoryTest(UnitTestsFixture fixture, ITestOutputHelper output)
         {
             _output = output;
 
@@ -83,14 +83,14 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            var id = _repository.Insert(null);
+            var id = await _repository.InsertAsync(null);
             Assert.Equal(0, id);
 
             id = await _repository.InsertAsync(null);
             Assert.Equal(0, id);
 
             var dataInfo = new TestTableInfo();
-            _repository.Insert(dataInfo);
+            await _repository.InsertAsync(dataInfo);
             Assert.Equal(1, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
@@ -116,7 +116,7 @@ namespace SS.CMS.Data.Tests.Core
                 Date = DateTime.Now,
                 Locked = true
             };
-            _repository.Insert(dataInfo);
+            await _repository.InsertAsync(dataInfo);
             Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
@@ -131,7 +131,7 @@ namespace SS.CMS.Data.Tests.Core
             _output.WriteLine(dataInfo.Guid);
             _output.WriteLine(dataInfo.LastModifiedDate.ToString());
 
-            dataInfo = _repository.Get(1);
+            dataInfo = await _repository.GetAsync(1);
             Assert.NotNull(dataInfo);
             Assert.Equal(1, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -147,7 +147,7 @@ namespace SS.CMS.Data.Tests.Core
             _output.WriteLine(dataInfo.Guid);
             _output.WriteLine(dataInfo.LastModifiedDate.ToString());
 
-            dataInfo = _repository.Get(3);
+            dataInfo = await _repository.GetAsync(3);
             Assert.NotNull(dataInfo);
             Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -159,7 +159,7 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "string"));
+            dataInfo = await _repository.GetAsync(new Query().Where(Attr.TypeVarChar100, "string"));
             Assert.NotNull(dataInfo);
             Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -171,7 +171,7 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.Get(dataInfo.Guid);
+            dataInfo = await _repository.GetAsync(dataInfo.Guid);
             Assert.NotNull(dataInfo);
             Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -183,7 +183,7 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.Get(dataInfo.Guid);
+            dataInfo = await _repository.GetAsync(dataInfo.Guid);
             Assert.NotNull(dataInfo);
             Assert.Equal(3, dataInfo.Id);
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -195,17 +195,17 @@ namespace SS.CMS.Data.Tests.Core
             Assert.Equal(0, dataInfo.Currency);
             Assert.True(dataInfo.Date.HasValue);
 
-            dataInfo = _repository.Get(new Query().Where(Attr.TypeVarChar100, "not exists"));
+            dataInfo = await _repository.GetAsync(new Query().Where(Attr.TypeVarChar100, "not exists"));
             Assert.Null(dataInfo);
 
-            var exists = _repository.Exists(new Query()
+            var exists = await _repository.ExistsAsync(new Query()
                 .Where(nameof(TestTableInfo.TypeVarChar100), "string"));
             Assert.True(exists);
 
-            exists = _repository.Exists(new Query().Where(nameof(TestTableInfo.TypeVarChar100), "not exists"));
+            exists = await _repository.ExistsAsync(new Query().Where(nameof(TestTableInfo.TypeVarChar100), "not exists"));
             Assert.False(exists);
 
-            exists = _repository.Exists(new Query());
+            exists = await _repository.ExistsAsync(new Query());
             Assert.True(exists);
 
             await _repository.DeleteAsync();
@@ -216,7 +216,7 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "string",
                 Num = -100,
@@ -224,7 +224,7 @@ namespace SS.CMS.Data.Tests.Core
                 Locked = true
             });
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "test",
                 Num = -100,
@@ -232,10 +232,10 @@ namespace SS.CMS.Data.Tests.Core
                 Locked = true
             });
 
-            var count = _repository.Count();
+            var count = await _repository.CountAsync();
             Assert.Equal(2, count);
 
-            count = _repository.Count(new Query().Where("TypeVarChar100", "test"));
+            count = await _repository.CountAsync(new Query().Where("TypeVarChar100", "test"));
             Assert.Equal(1, count);
 
             await _repository.DeleteAsync();
@@ -246,21 +246,21 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 Guid = "wrong guid",
                 TypeVarChar100 = "string"
             });
 
-            var guid = _repository.Get<string>(new Query()
+            var guid = await _repository.GetAsync<string>(new Query()
                 .Select(nameof(Entity.Guid)).Where("TypeVarChar100", "string"));
             Assert.True(Utilities.IsGuid(guid));
 
-            var date = _repository.Get<DateTime?>(new Query()
+            var date = await _repository.GetAsync<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date)).Where("Guid", guid));
             Assert.False(date.HasValue);
 
-            var lastModifiedDate = _repository.Get<DateTime?>(new Query()
+            var lastModifiedDate = await _repository.GetAsync<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.LastModifiedDate))
                 .Where("Guid", guid));
             Assert.True(lastModifiedDate.HasValue);
@@ -274,49 +274,49 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "string"
             });
 
-            var guidList = _repository.GetAll<string>(new Query()
+            var guidList = await _repository.GetAllAsync<string>(new Query()
                 .Select(nameof(TestTableInfo.Guid))
-                .Where("TypeVarChar100", "string")).ToList();
+                .Where("TypeVarChar100", "string"));
 
             Assert.NotNull(guidList);
             Assert.True(Utilities.IsGuid(guidList.First()));
 
-            var dateList = _repository.GetAll<DateTime?>(new Query()
+            var dateList = await _repository.GetAllAsync<DateTime?>(new Query()
                 .Select(nameof(TestTableInfo.Date))
-                .Where("Guid", guidList.First())).ToList();
+                .Where("Guid", guidList.First()));
             Assert.False(dateList.First().HasValue);
 
-            var lastModifiedDateList = _repository.GetAll<DateTime?>(new Query()
-                .Select(nameof(TestTableInfo.LastModifiedDate))).ToList();
-            lastModifiedDateList.ForEach(x => Assert.True(x.HasValue));
+            var lastModifiedDateList = await _repository.GetAllAsync<DateTime?>(new Query()
+                .Select(nameof(TestTableInfo.LastModifiedDate)));
+            lastModifiedDateList.ToList().ForEach(x => Assert.True(x.HasValue));
 
             await _repository.DeleteAsync();
         }
 
         [SkippableFact]
-        public void TestGetAll()
+        public async Task TestGetAll()
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str1"
             });
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str2"
             });
 
-            var allList = _repository.GetAll().ToList();
-            Assert.Equal(2, allList.Count);
+            var allList = await _repository.GetAllAsync();
+            Assert.Equal(2, allList.ToList().Count);
 
-            var list = _repository.GetAll(new Query()
-                .Where("Guid", allList[0].Guid)).ToList();
+            var list = await _repository.GetAllAsync(new Query()
+                .Where("Guid", allList.First().Guid));
 
             Assert.Single(list);
         }
@@ -326,23 +326,23 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str1"
             });
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str2"
             });
 
-            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str2"));
+            var dataInfo = await _repository.GetAsync(Q.Where("TypeVarChar100", "str2"));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified = dataInfo.LastModifiedDate.Value.Ticks;
 
             dataInfo.Content = "new content";
             dataInfo.LastModifiedDate = DateTime.Now.AddDays(-1);
 
-            var updated = _repository.Update(dataInfo);
+            var updated = await _repository.UpdateAsync(dataInfo);
             Assert.True(updated);
 
             Assert.True(Utilities.IsGuid(dataInfo.Guid));
@@ -360,7 +360,7 @@ namespace SS.CMS.Data.Tests.Core
             _output.WriteLine(lastModified2.ToString());
             Assert.True(lastModified2 > lastModified);
 
-            updated = _repository.Update((TestTableInfo)null);
+            updated = await _repository.UpdateAsync((TestTableInfo)null);
             Assert.False(updated);
 
             await _repository.DeleteAsync();
@@ -371,26 +371,26 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str1"
             });
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str2"
             });
 
-            var lastModified = _repository.Get<DateTime?>(new Query()
+            var lastModified = await _repository.GetAsync<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate)).Where("Id", 1));
             Assert.True(lastModified.HasValue);
 
-            var updated = _repository.Update(new Query()
+            var updated = await _repository.UpdateAsync(new Query()
                 .Set("Content", "new content2")
                 .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
                 .Where(nameof(Attr.Id), 1));
             Assert.True(updated == 1);
 
-            var dataInfo = _repository.Get(1);
+            var dataInfo = await _repository.GetAsync(1);
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified2 = dataInfo.LastModifiedDate.Value.Ticks;
 
@@ -407,7 +407,7 @@ namespace SS.CMS.Data.Tests.Core
 
             Assert.True(lastModified2 > lastModified.Value.Ticks);
 
-            updated = _repository.Update(new Query());
+            updated = await _repository.UpdateAsync(new Query());
             Assert.True(updated == 2);
 
             await _repository.DeleteAsync();
@@ -418,34 +418,34 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str1"
             });
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str2"
             });
 
-            var lastModified = _repository.Get<DateTime?>(new Query()
+            var lastModified = await _repository.GetAsync<DateTime?>(new Query()
                 .Select(nameof(Entity.LastModifiedDate))
                 .Where("TypeVarChar100", "str1"));
             Assert.True(lastModified.HasValue);
 
-            var updatedCount = _repository.Update(new Query()
+            var updatedCount = await _repository.UpdateAsync(new Query()
                 .Set("Content", "new content2")
                 .Set("LastModifiedDate", DateTime.Now.AddDays(-1))
                 .Where("TypeVarChar100", "str1"));
 
             Assert.True(updatedCount == 1);
 
-            updatedCount = _repository.Update(new Query()
+            updatedCount = await _repository.UpdateAsync(new Query()
                 .Set("Content", "new content3")
                 .Where("Content", "new content2"));
 
             Assert.True(updatedCount == 1);
 
-            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
+            var dataInfo = await _repository.GetAsync(Q.Where("TypeVarChar100", "str1"));
             Assert.True(dataInfo.LastModifiedDate.HasValue);
             var lastModified2 = dataInfo.LastModifiedDate.Value.Ticks;
 
@@ -459,24 +459,24 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str1"
             });
 
-            var dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
+            var dataInfo = await _repository.GetAsync(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(0, dataInfo.Num);
 
-            var affected = _repository.Increment(Attr.Num, Q.Where("TypeVarChar100", "str1"));
+            var affected = await _repository.IncrementAsync(Attr.Num, Q.Where("TypeVarChar100", "str1"));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
+            dataInfo = await _repository.GetAsync(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(1, dataInfo.Num);
 
-            affected = _repository.Decrement(Attr.Num, Q.Where(Attr.Id, 1));
+            affected = await _repository.DecrementAsync(Attr.Num, Q.Where(Attr.Id, 1));
             Assert.True(affected == 1);
 
-            dataInfo = _repository.Get(Q.Where("TypeVarChar100", "str1"));
+            dataInfo = await _repository.GetAsync(Q.Where("TypeVarChar100", "str1"));
             Assert.Equal(0, dataInfo.Num);
 
             await _repository.DeleteAsync();
@@ -487,7 +487,7 @@ namespace SS.CMS.Data.Tests.Core
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            _repository.Insert(new TestTableInfo
+            await _repository.InsertAsync(new TestTableInfo
             {
                 TypeVarChar100 = "str"
             });

@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(Q
                 .Where(Attr.CacheKey, cacheKey));
 
-            _repository.Insert(new DbCacheInfo
+            await _repository.InsertAsync(new DbCacheInfo
             {
                 CacheKey = cacheKey,
                 CacheValue = cacheValue
@@ -48,21 +48,21 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync();
         }
 
-        public bool IsExists(string cacheKey)
+        public async Task<bool> IsExistsAsync(string cacheKey)
         {
-            return _repository.Exists(Q.Where(Attr.CacheKey, cacheKey));
+            return await _repository.ExistsAsync(Q.Where(Attr.CacheKey, cacheKey));
         }
 
-        public string GetValue(string cacheKey)
+        public async Task<string> GetValueAsync(string cacheKey)
         {
-            return _repository.Get<string>(Q
+            return await _repository.GetAsync<string>(Q
                 .Select(Attr.CacheValue)
                 .Where(Attr.CacheKey, cacheKey));
         }
 
         public async Task<string> GetValueAndRemoveAsync(string cacheKey)
         {
-            var retVal = _repository.Get<string>(Q
+            var retVal = await _repository.GetAsync<string>(Q
                 .Select(Attr.CacheValue)
                 .Where(Attr.CacheKey, cacheKey));
 
@@ -72,9 +72,9 @@ namespace SS.CMS.Core.Repositories
             return retVal;
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            return _repository.Count();
+            return await _repository.CountAsync();
         }
 
         public async Task DeleteExcess90DaysAsync()

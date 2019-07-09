@@ -28,17 +28,17 @@ namespace SS.CMS.Core.Repositories
             public const string Taxis = nameof(RelatedFieldItemInfo.Taxis);
         }
 
-        public int Insert(RelatedFieldItemInfo info)
+        public async Task<int> InsertAsync(RelatedFieldItemInfo info)
         {
-            info.Taxis = GetMaxTaxis(info.ParentId) + 1;
+            info.Taxis = await GetMaxTaxisAsync(info.ParentId) + 1;
 
-            info.Id = _repository.Insert(info);
+            info.Id = await _repository.InsertAsync(info);
             return info.Id;
         }
 
-        public bool Update(RelatedFieldItemInfo info)
+        public async Task<bool> UpdateAsync(RelatedFieldItemInfo info)
         {
-            return _repository.Update(info);
+            return await _repository.UpdateAsync(info);
         }
 
         public async Task DeleteAsync(int id)
@@ -46,18 +46,18 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public IList<RelatedFieldItemInfo> GetRelatedFieldItemInfoList(int relatedFieldId, int parentId)
+        public async Task<IEnumerable<RelatedFieldItemInfo>> GetRelatedFieldItemInfoListAsync(int relatedFieldId, int parentId)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.RelatedFieldId, relatedFieldId)
                 .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis)).ToList();
+                .OrderBy(Attr.Taxis));
         }
 
-        public void UpdateTaxisToUp(int id, int parentId)
+        public async Task UpdateTaxisToUpAsync(int id, int parentId)
         {
-            var selectedTaxis = GetTaxis(id);
-            var result = _repository.Get<(int Id, int Taxis)?>(Q
+            var selectedTaxis = await GetTaxisAsync(id);
+            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.Taxis, ">", selectedTaxis)
                 .Where(Attr.ParentId, parentId)
@@ -70,15 +70,15 @@ namespace SS.CMS.Core.Repositories
 
             if (higherId != 0)
             {
-                SetTaxis(id, higherTaxis);
-                SetTaxis(higherId, selectedTaxis);
+                await SetTaxisAsync(id, higherTaxis);
+                await SetTaxisAsync(higherId, selectedTaxis);
             }
         }
 
-        public void UpdateTaxisToDown(int id, int parentId)
+        public async Task UpdateTaxisToDownAsync(int id, int parentId)
         {
-            var selectedTaxis = GetTaxis(id);
-            var result = _repository.Get<(int Id, int Taxis)?>(Q
+            var selectedTaxis = await GetTaxisAsync(id);
+            var result = await _repository.GetAsync<(int Id, int Taxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
                 .Where(Attr.Taxis, "<", selectedTaxis)
                 .Where(Attr.ParentId, parentId)
@@ -91,35 +91,35 @@ namespace SS.CMS.Core.Repositories
 
             if (lowerId != 0)
             {
-                SetTaxis(id, lowerTaxis);
-                SetTaxis(lowerId, selectedTaxis);
+                await SetTaxisAsync(id, lowerTaxis);
+                await SetTaxisAsync(lowerId, selectedTaxis);
             }
         }
 
-        private int GetTaxis(int id)
+        private async Task<int> GetTaxisAsync(int id)
         {
-            return _repository.Get<int>(Q
+            return await _repository.GetAsync<int>(Q
                 .Select(Attr.Taxis)
                 .Where(Attr.Id, id));
         }
 
-        private void SetTaxis(int id, int taxis)
+        private async Task SetTaxisAsync(int id, int taxis)
         {
-            _repository.Update(Q
+            await _repository.UpdateAsync(Q
                 .Set(Attr.Taxis, taxis)
                 .Where(Attr.Id, id)
             );
         }
 
-        private int GetMaxTaxis(int parentId)
+        private async Task<int> GetMaxTaxisAsync(int parentId)
         {
-            return _repository.Max(Attr.Taxis, Q
+            return await _repository.MaxAsync(Attr.Taxis, Q
                        .Where(Attr.ParentId, parentId)) ?? 0;
         }
 
-        public RelatedFieldItemInfo GetRelatedFieldItemInfo(int id)
+        public async Task<RelatedFieldItemInfo> GetRelatedFieldItemInfoAsync(int id)
         {
-            return _repository.Get(id);
+            return await _repository.GetAsync(id);
         }
     }
 }

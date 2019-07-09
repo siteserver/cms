@@ -1,6 +1,8 @@
 {
 	"recommendations": [
 		"ms-vscode.csharp",
+		"streetsidesoftware.code-spell-checker",
+		"formulahendry.dotnet-test-explorer",
 		"warren-buckley.iis-express"
 	]
 }

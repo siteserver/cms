@@ -22,17 +22,17 @@ namespace SS.CMS.Core.Serialization.Components
             _directoryPath = directoryPath;
         }
 
-        public void ExportRelatedField(RelatedFieldInfo relatedFieldInfo)
+        public async Task ExportRelatedFieldAsync(RelatedFieldInfo relatedFieldInfo)
         {
             var filePath = _directoryPath + PathUtils.SeparatorChar + relatedFieldInfo.Id + ".xml";
 
             var feed = ExportRelatedFieldInfo(relatedFieldInfo);
 
-            var relatedFieldItemInfoList = _relatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldInfo.Id, 0);
+            var relatedFieldItemInfoList = await _relatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedFieldInfo.Id, 0);
 
             foreach (var relatedFieldItemInfo in relatedFieldItemInfoList)
             {
-                AddAtomEntry(_relatedFieldItemRepository, feed, relatedFieldItemInfo, 1);
+                await AddAtomEntryAsync(_relatedFieldItemRepository, feed, relatedFieldItemInfo, 1);
             }
             feed.Save(filePath);
         }
@@ -51,7 +51,7 @@ namespace SS.CMS.Core.Serialization.Components
             return feed;
         }
 
-        private static void AddAtomEntry(IRelatedFieldItemRepository relatedFieldItemRepository, AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
+        private static async Task AddAtomEntryAsync(IRelatedFieldItemRepository relatedFieldItemRepository, AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
@@ -65,11 +65,11 @@ namespace SS.CMS.Core.Serialization.Components
 
             feed.Entries.Add(entry);
 
-            var relatedFieldItemInfoList = relatedFieldItemRepository.GetRelatedFieldItemInfoList(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
+            var relatedFieldItemInfoList = await relatedFieldItemRepository.GetRelatedFieldItemInfoListAsync(relatedFieldItemInfo.RelatedFieldId, relatedFieldItemInfo.Id);
 
             foreach (var itemInfo in relatedFieldItemInfoList)
             {
-                AddAtomEntry(relatedFieldItemRepository, feed, itemInfo, level + 1);
+                await AddAtomEntryAsync(relatedFieldItemRepository, feed, itemInfo, level + 1);
             }
         }
 
@@ -96,7 +96,7 @@ namespace SS.CMS.Core.Serialization.Components
                     Suffixes = suffixes,
                 };
 
-                var srcRelatedFieldInfo = _relatedFieldRepository.GetRelatedFieldInfo(_siteId, title);
+                var srcRelatedFieldInfo = await _relatedFieldRepository.GetRelatedFieldInfoAsync(_siteId, title);
                 if (srcRelatedFieldInfo != null)
                 {
                     if (overwrite)
@@ -105,11 +105,11 @@ namespace SS.CMS.Core.Serialization.Components
                     }
                     else
                     {
-                        relatedFieldInfo.Title = _relatedFieldRepository.GetImportTitle(_siteId, relatedFieldInfo.Title);
+                        relatedFieldInfo.Title = await _relatedFieldRepository.GetImportTitleAsync(_siteId, relatedFieldInfo.Title);
                     }
                 }
 
-                var relatedFieldId = _relatedFieldRepository.Insert(relatedFieldInfo);
+                var relatedFieldId = await _relatedFieldRepository.InsertAsync(relatedFieldInfo);
 
                 var lastInertedLevel = 1;
                 var lastInsertedParentId = 0;
@@ -133,7 +133,7 @@ namespace SS.CMS.Core.Serialization.Components
                         ParentId = parentId
                     };
 
-                    lastInsertedId = _relatedFieldItemRepository.Insert(itemInfo);
+                    lastInsertedId = await _relatedFieldItemRepository.InsertAsync(itemInfo);
                     lastInsertedParentId = parentId;
                     lastInertedLevel = level;
                 }

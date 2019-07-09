@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
@@ -68,7 +69,7 @@ namespace SS.CMS.Core.Services
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
             var filePath = await ContentRulesParseContentPathAsync(siteInfo, channelId, contentInfo, contentFilePathRule);
             return filePath;
         }
@@ -102,7 +103,7 @@ namespace SS.CMS.Core.Services
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesSequence))
                 {
                     var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                    value = channelInfo.ContentRepository.GetSequence(channelInfo.Id, contentId).ToString();
+                    value = Convert.ToString(await channelInfo.ContentRepository.GetSequenceAsync(channelInfo.Id, contentId));
                 }
                 else if (StringUtils.EqualsIgnoreCase(element, ContentRulesParentRule))
                 {

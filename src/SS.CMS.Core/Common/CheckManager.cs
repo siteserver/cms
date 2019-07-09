@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Services;
 
@@ -496,7 +497,7 @@ namespace SS.CMS.Core.Common
             return false;
         }
 
-        public static KeyValuePair<bool, int> GetUserCheckLevel(IUserManager userManager, SiteInfo siteInfo, int channelId)
+        public static async Task<KeyValuePair<bool, int>> GetUserCheckLevelPairAsync(IUserManager userManager, SiteInfo siteInfo, int channelId)
         {
             if (userManager.IsSuperAdministrator())
             {
@@ -507,18 +508,18 @@ namespace SS.CMS.Core.Common
             var checkedLevel = 0;
             if (siteInfo.IsCheckContentLevel == false)
             {
-                if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheck))
+                if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheck))
                 {
                     isChecked = true;
                 }
             }
             else
             {
-                if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel5))
+                if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel5))
                 {
                     isChecked = true;
                 }
-                else if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel4))
+                else if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel4))
                 {
                     if (siteInfo.CheckContentLevel <= 4)
                     {
@@ -529,7 +530,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 4;
                     }
                 }
-                else if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel3))
+                else if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel3))
                 {
                     if (siteInfo.CheckContentLevel <= 3)
                     {
@@ -540,7 +541,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 3;
                     }
                 }
-                else if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel2))
+                else if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel2))
                 {
                     if (siteInfo.CheckContentLevel <= 2)
                     {
@@ -551,7 +552,7 @@ namespace SS.CMS.Core.Common
                         checkedLevel = 2;
                     }
                 }
-                else if (userManager.HasChannelPermissions(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel1))
+                else if (await userManager.HasChannelPermissionsAsync(siteInfo.Id, channelId, AuthTypes.ChannelPermissions.ContentCheckLevel1))
                 {
                     if (siteInfo.CheckContentLevel <= 1)
                     {
@@ -570,19 +571,18 @@ namespace SS.CMS.Core.Common
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static bool GetUserCheckLevel(IUserManager userManager, SiteInfo siteInfo, int channelId, out int userCheckedLevel)
+        public static async Task<(bool IsChecked, int checkedLevel)> GetUserCheckLevelAsync(IUserManager userManager, SiteInfo siteInfo, int channelId)
         {
             var checkContentLevel = siteInfo.CheckContentLevel;
 
-            var pair = GetUserCheckLevel(userManager, siteInfo, channelId);
+            var pair = await GetUserCheckLevelPairAsync(userManager, siteInfo, channelId);
             var isChecked = pair.Key;
             var checkedLevel = pair.Value;
             if (isChecked)
             {
                 checkedLevel = checkContentLevel;
             }
-            userCheckedLevel = checkedLevel;
-            return isChecked;
+            return (isChecked, checkedLevel);
         }
     }
 }

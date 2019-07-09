@@ -61,7 +61,7 @@ namespace SS.CMS.Core.Serialization.Components
                         }
                     }
                     var filePath = attributeNameDirectoryPath + PathUtils.SeparatorChar + tableStyleInfo.Id + ".xml";
-                    var feed = ExportTableStyleInfo(_channelRepository, tableStyleInfo);
+                    var feed = await ExportTableStyleInfoAsync(_channelRepository, tableStyleInfo);
                     if (tableStyleInfo.StyleItems != null && tableStyleInfo.StyleItems.Count > 0)
                     {
                         foreach (var styleItemInfo in tableStyleInfo.StyleItems)
@@ -75,7 +75,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        private static AtomFeed ExportTableStyleInfo(IChannelRepository channelRepository, TableStyleInfo tableStyleInfo)
+        private static async Task<AtomFeed> ExportTableStyleInfoAsync(IChannelRepository channelRepository, TableStyleInfo tableStyleInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -97,7 +97,7 @@ namespace SS.CMS.Core.Serialization.Components
             var orderString = string.Empty;
             if (tableStyleInfo.RelatedIdentity != 0)
             {
-                orderString = channelRepository.GetOrderStringInSite(tableStyleInfo.RelatedIdentity);
+                orderString = await channelRepository.GetOrderStringInSiteAsync(tableStyleInfo.RelatedIdentity);
             }
 
             AtomUtility.AddDcElement(feed.AdditionalElements, "OrderString", orderString);
@@ -130,7 +130,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
-                var feed = ExportTableStyleInfo(channelRepository, tableStyleInfo);
+                var feed = await ExportTableStyleInfoAsync(channelRepository, tableStyleInfo);
                 var styleItems = tableStyleInfo.StyleItems;
                 if (styleItems != null && styleItems.Count > 0)
                 {
@@ -155,7 +155,7 @@ namespace SS.CMS.Core.Serialization.Components
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
-                var feed = ExportTableStyleInfo(channelRepository, tableStyleInfo);
+                var feed = await ExportTableStyleInfoAsync(channelRepository, tableStyleInfo);
                 var styleItems = tableStyleInfo.StyleItems;
                 if (styleItems != null && styleItems.Count > 0)
                 {
@@ -240,7 +240,7 @@ namespace SS.CMS.Core.Serialization.Components
 
             var importObject = new ImportObject();
             await importObject.LoadAsync(siteId, _userId);
-            var tableNameCollection = importObject.GetTableNameCache();
+            var tableNameCollection = await importObject.GetTableNameCacheAsync();
 
             var styleDirectoryPaths = DirectoryUtils.GetDirectoryPaths(_directoryPath);
 
@@ -276,7 +276,7 @@ namespace SS.CMS.Core.Serialization.Components
 
                         var orderString = AtomUtility.GetDcElementContent(feed.AdditionalElements, "OrderString");
 
-                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? _channelRepository.GetId(siteId, orderString) : siteId;
+                        var relatedIdentity = !string.IsNullOrEmpty(orderString) ? await _channelRepository.GetIdAsync(siteId, orderString) : siteId;
 
                         if (relatedIdentity <= 0 || await _tableStyleRepository.IsExistsAsync(relatedIdentity, tableName, attributeName)) continue;
 

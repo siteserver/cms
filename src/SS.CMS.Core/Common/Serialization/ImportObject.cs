@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Common.Office;
@@ -48,10 +49,10 @@ namespace SS.CMS.Core.Serialization
             return "SiteServer.CMS.Core.ImportObject.TableNameNameValueCollection_" + _siteInfo.Id;
         }
 
-        public NameValueCollection GetTableNameCache()
+        public async Task<NameValueCollection> GetTableNameCacheAsync()
         {
             NameValueCollection nameValueCollection = null;
-            var cacheValue = _dbCacheRepository.GetValue(GetTableNameNameValueCollectionDbCacheKey());
+            var cacheValue = await _dbCacheRepository.GetValueAsync(GetTableNameNameValueCollectionDbCacheKey());
             if (!string.IsNullOrEmpty(cacheValue))
             {
                 nameValueCollection = TranslateUtils.ToNameValueCollection(cacheValue);
@@ -75,7 +76,7 @@ namespace SS.CMS.Core.Serialization
             await _dbCacheRepository.GetValueAndRemoveAsync(cacheKey);
         }
 
-        public void ImportFiles(string siteTemplatePath, bool isOverride)
+        public async Task ImportFilesAsync(string siteTemplatePath, bool isOverride)
         {
             //if (this.FSO.IsRoot)
             //{
@@ -109,7 +110,7 @@ namespace SS.CMS.Core.Serialization
             //}
             //string siteTemplateMetadataPath = PathUtils.Combine(FSO.SitePath, _fileManager.SiteTemplates.SiteTemplateMetadata);
             //DirectoryUtils.DeleteDirectoryIfExists(siteTemplateMetadataPath);
-            _fileManager.ImportSiteFiles(_siteInfo, siteTemplatePath, isOverride);
+            await _fileManager.ImportSiteFilesAsync(_siteInfo, siteTemplatePath, isOverride);
         }
 
         public async Task ImportSiteContentAsync(string siteContentDirectoryPath, string filePath, bool isImportContents)
@@ -267,7 +268,7 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var taxis = nodeInfo.ContentRepository.GetMaxTaxis(nodeInfo.Id, false);
+            var taxis = await nodeInfo.ContentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
 
             await ImportContentsAsync(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -280,7 +281,7 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var taxis = nodeInfo.ContentRepository.GetMaxTaxis(nodeInfo.Id, false);
+            var taxis = await nodeInfo.ContentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
 
             await ImportContentsAsync(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, userId, sourceId);
         }
@@ -330,8 +331,8 @@ namespace SS.CMS.Core.Serialization
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIds = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                    if (existsIds.Count > 0)
+                    var existsIds = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    if (existsIds.Count() > 0)
                     {
                         foreach (var id in existsIds)
                         {
@@ -367,8 +368,8 @@ namespace SS.CMS.Core.Serialization
 
                 if (isOverride)
                 {
-                    var existsIds = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                    if (existsIds.Count > 0)
+                    var existsIds = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    if (existsIds.Count() > 0)
                     {
                         foreach (var id in existsIds)
                         {
@@ -442,8 +443,8 @@ namespace SS.CMS.Core.Serialization
 
                 if (isOverride)
                 {
-                    var existsIDs = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                    if (existsIDs.Count > 0)
+                    var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    if (existsIDs.Count() > 0)
                     {
                         foreach (int id in existsIDs)
                         {
@@ -482,8 +483,8 @@ namespace SS.CMS.Core.Serialization
 
             if (isOverride)
             {
-                var existsIDs = channelInfo.ContentRepository.GetIdListBySameTitle(contentInfo.ChannelId, contentInfo.Title);
-                if (existsIDs.Count > 0)
+                var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                if (existsIDs.Count() > 0)
                 {
                     foreach (var id in existsIDs)
                     {

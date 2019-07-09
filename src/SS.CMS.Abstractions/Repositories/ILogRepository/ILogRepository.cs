@@ -8,7 +8,7 @@ namespace SS.CMS.Repositories
 {
     public partial interface ILogRepository : IRepository
     {
-        int Insert(LogInfo log);
+        Task<int> InsertAsync(LogInfo log);
 
         Task DeleteAsync(List<int> idList);
 
@@ -16,9 +16,9 @@ namespace SS.CMS.Repositories
 
         Task DeleteAllAsync();
 
-        int GetCount();
+        Task<int> GetCountAsync();
 
-        DateTimeOffset GetLastRemoveLogDate();
+        Task<DateTimeOffset> GetLastRemoveLogDateAsync();
 
         // /// <summary>
         // /// 统计管理员actionType的操作次数

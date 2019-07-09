@@ -32,7 +32,7 @@ namespace SS.CMS.Core.Repositories
                     Summary = summary
                 };
 
-                Insert(logInfo);
+                await InsertAsync(logInfo);
             }
             catch (Exception ex)
             {

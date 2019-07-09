@@ -42,7 +42,7 @@ namespace SS.CMS.Core.Repositories
             var taxis = 1;
             foreach ((int id, string isTop) in list)
             {
-                _repository.Update(Q.Set(Attr.Taxis, taxis++).Set(Attr.IsTop, isTop).Where(Attr.Id, id));
+                await _repository.UpdateAsync(Q.Set(Attr.Taxis, taxis++).Set(Attr.IsTop, isTop).Where(Attr.Id, id));
             }
 
             RemoveCache(TableName, channelId);
@@ -50,7 +50,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<bool> SetTaxisToUpAsync(int channelId, int contentId, bool isTop)
         {
-            var taxis = GetTaxis(contentId);
+            var taxis = await GetTaxisAsync(contentId);
 
             var result = await _repository.GetAsync<(int HigherId, int HigherTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
@@ -77,7 +77,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<bool> SetTaxisToDownAsync(int channelId, int contentId, bool isTop)
         {
-            var taxis = GetTaxis(contentId);
+            var taxis = await GetTaxisAsync(contentId);
 
             var result = await _repository.GetAsync<(int LowerId, int LowerTaxis)?>(Q
                 .Select(Attr.Id, Attr.Taxis)
@@ -115,17 +115,17 @@ namespace SS.CMS.Core.Repositories
             //出现IsTop与Taxis不同步情况
             if (contentInfo.IsTop == false && contentInfo.Taxis >= TaxisIsTopStartValue)
             {
-                contentInfo.Taxis = GetMaxTaxis(contentInfo.ChannelId, false) + 1;
+                contentInfo.Taxis = await GetMaxTaxisAsync(contentInfo.ChannelId, false) + 1;
             }
             else if (contentInfo.IsTop && contentInfo.Taxis < TaxisIsTopStartValue)
             {
-                contentInfo.Taxis = GetMaxTaxis(contentInfo.ChannelId, true) + 1;
+                contentInfo.Taxis = await GetMaxTaxisAsync(contentInfo.ChannelId, true) + 1;
             }
 
             contentInfo.SiteId = siteInfo.Id;
             contentInfo.ChannelId = channelInfo.Id;
 
-            _repository.Update(contentInfo);
+            await _repository.UpdateAsync(contentInfo);
 
             await UpdateCacheAsync(siteInfo, channelInfo, contentInfo);
             RemoveCountCache(TableName);
@@ -163,7 +163,7 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var contentId in contentIdList)
             {
-                var settingsXml = _repository.Get<string>(Q
+                var settingsXml = await _repository.GetAsync<string>(Q
                     .Select(Attr.ExtendValues)
                     .Where(Attr.Id, contentId));
 
@@ -195,7 +195,7 @@ namespace SS.CMS.Core.Repositories
                     );
                 }
 
-                _contentCheckRepository.Insert(new ContentCheckInfo
+                await _contentCheckRepository.InsertAsync(new ContentCheckInfo
                 {
                     TableName = TableName,
                     SiteId = siteId,
@@ -217,7 +217,7 @@ namespace SS.CMS.Core.Repositories
             var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             if (!siteInfo.IsAutoPageInTextEditor) return;
 
-            var resultList = _repository.GetAll<(int Id, int ChannelId, string Content)>(Q.Where(Attr.SiteId, siteId));
+            var resultList = await _repository.GetAllAsync<(int Id, int ChannelId, string Content)>(Q.Where(Attr.SiteId, siteId));
 
             foreach (var result in resultList)
             {
@@ -232,14 +232,16 @@ namespace SS.CMS.Core.Repositories
 
         public async Task AddContentGroupListAsync(int contentId, List<string> contentGroupList)
         {
-            if (!GetChanelIdAndValue<string>(contentId, Attr.GroupNameCollection, out var channelId, out var value)) return;
+            var result = await GetChanelIdAndValueAsync<string>(contentId, Attr.GroupNameCollection);
 
-            var list = TranslateUtils.StringCollectionToStringList(value);
+            if (!result.HasValue) return;
+
+            var list = TranslateUtils.StringCollectionToStringList(result.Value.Value);
             foreach (var groupName in contentGroupList)
             {
                 if (!list.Contains(groupName)) list.Add(groupName);
             }
-            await UpdateAsync(channelId, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
+            await UpdateAsync(result.Value.ChannelId, contentId, Attr.GroupNameCollection, TranslateUtils.ObjectCollectionToString(list));
         }
 
         public async Task UpdateAsync(int channelId, int contentId, string name, string value)
@@ -256,17 +258,14 @@ namespace SS.CMS.Core.Repositories
 
         public async Task UpdateTrashContentsAsync(int siteId, int channelId, IList<int> contentIdList)
         {
-            var referenceIdList = GetReferenceIdList(contentIdList);
-            if (referenceIdList.Count > 0)
-            {
-                await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
-            }
+            var referenceIdList = await GetReferenceIdListAsync(contentIdList);
+            await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
 
             var updateNum = 0;
 
             if (contentIdList != null && contentIdList.Count > 0)
             {
-                updateNum = _repository.Update(Q
+                updateNum = await _repository.UpdateAsync(Q
                     .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                     .Where(Attr.SiteId, siteId)
                     .WhereIn(Attr.Id, contentIdList)
@@ -280,14 +279,11 @@ namespace SS.CMS.Core.Repositories
 
         public async Task UpdateTrashContentsByChannelIdAsync(int siteId, int channelId)
         {
-            var contentIdList = GetContentIdList(channelId);
-            var referenceIdList = GetReferenceIdList(contentIdList);
-            if (referenceIdList.Count > 0)
-            {
-                await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
-            }
+            var contentIdList = await GetContentIdListAsync(channelId);
+            var referenceIdList = await GetReferenceIdListAsync(contentIdList);
+            await DeleteReferenceContentsAsync(siteId, channelId, referenceIdList);
 
-            var updateNum = _repository.Update(Q
+            var updateNum = await _repository.UpdateAsync(Q
                 .SetRaw($"{Attr.ChannelId} = -{Attr.ChannelId}")
                 .Where(Attr.SiteId, siteId)
                 .Where(Attr.ChannelId, channelId)

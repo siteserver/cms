@@ -7,34 +7,32 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        int GetMaxTaxis(int channelId, bool isTop);
+        Task<int> GetMaxTaxisAsync(int channelId, bool isTop);
 
-        bool GetChanelIdAndValue<T>(int contentId, string name, out int channelId, out T value);
+        Task<(int ChannelId, T Value)?> GetChanelIdAndValueAsync<T>(int contentId, string name);
 
-        T GetValue<T>(int contentId, string name);
+        Task<T> GetValueAsync<T>(int contentId, string name);
 
-        Tuple<int, T> GetValueWithChannelId<T>(int contentId, string name);
+        Task<int> GetTotalHitsAsync(int siteId);
 
-        int GetTotalHits(int siteId);
+        Task<int> GetFirstContentIdAsync(int siteId, int channelId);
 
-        int GetFirstContentId(int siteId, int channelId);
+        Task<int> GetContentIdAsync(int channelId, int taxis, bool isNextContent);
 
-        int GetContentId(int channelId, int taxis, bool isNextContent);
+        Task<int> GetChannelIdAsync(int contentId);
 
-        int GetChannelId(int contentId);
+        Task<int> GetContentIdAsync(int channelId, TaxisType taxisType);
 
-        int GetContentId(int channelId, TaxisType taxisType);
+        Task<int> GetTaxisToInsertAsync(int channelId, bool isTop);
 
-        int GetTaxisToInsert(int channelId, bool isTop);
+        Task<int> GetSequenceAsync(int channelId, int contentId);
 
-        int GetSequence(int channelId, int contentId);
-
-        int GetCountCheckedImage(int siteId, int channelId);
+        Task<int> GetCountCheckedImageAsync(int siteId, int channelId);
 
         Task<int> GetCountOfContentAddAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId, bool? checkedState);
 
         Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId);
 
-        ContentInfo GetCacheContentInfo(int contentId);
+        Task<ContentInfo> GetCacheContentInfoAsync(int contentId);
     }
 }

@@ -423,7 +423,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
             {
-                var count = channel.ContentRepository.GetCountCheckedImage(parseContext.SiteId, channel.Id);
+                var count = await channel.ContentRepository.GetCountCheckedImageAsync(parseContext.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else

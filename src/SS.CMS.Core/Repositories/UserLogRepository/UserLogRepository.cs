@@ -35,11 +35,11 @@ namespace SS.CMS.Core.Repositories
             public const string Action = nameof(UserLogInfo.Action);
         }
 
-        private UserLogInfo Insert(int userId, UserLogInfo logInfo)
+        private async Task<UserLogInfo> InsertAsync(int userId, UserLogInfo logInfo)
         {
             logInfo.UserId = userId;
 
-            logInfo.Id = _repository.Insert(logInfo);
+            logInfo.Id = await _repository.InsertAsync(logInfo);
 
             return logInfo;
         }
@@ -68,9 +68,9 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync();
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            return _repository.Count();
+            return await _repository.CountAsync();
         }
 
         // public string GetSelectCommend()
@@ -126,7 +126,7 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog " + whereString;
         // }
 
-        public IList<UserLogInfo> List(int userId, int totalNum, string action)
+        public async Task<IEnumerable<UserLogInfo>> ListAsync(int userId, int totalNum, string action)
         {
             var query = Q.Where(Attr.UserId, userId);
             if (!string.IsNullOrEmpty(action))
@@ -137,16 +137,16 @@ namespace SS.CMS.Core.Repositories
             query.Limit(totalNum);
             query.OrderByDesc(Attr.Id);
 
-            return _repository.GetAll(query).ToList();
+            return await _repository.GetAllAsync(query);
         }
 
-        public IList<UserLogInfo> ApiGetLogs(int userId, int offset, int limit)
+        public async Task<IEnumerable<UserLogInfo>> ApiGetLogsAsync(int userId, int offset, int limit)
         {
-            return _repository.GetAll(Q
+            return await _repository.GetAllAsync(Q
                 .Where(Attr.UserId, userId)
                 .Offset(offset)
                 .Limit(limit)
-                .OrderByDesc(Attr.Id)).ToList();
+                .OrderByDesc(Attr.Id));
         }
 
         public async Task AddUserLogAsync(string ipAddress, int userId, string actionType, string summary)
@@ -170,7 +170,7 @@ namespace SS.CMS.Core.Repositories
                 Summary = summary
             };
 
-            Insert(userId, userLogInfo);
+            await InsertAsync(userId, userLogInfo);
         }
     }
 }

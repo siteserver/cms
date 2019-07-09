@@ -277,7 +277,7 @@ namespace SS.CMS.Core.Services
         // 得到发布系统首页地址
         public async Task<string> GetIndexPageUrlAsync(SiteInfo siteInfo, bool isLocal)
         {
-            var indexTemplateId = _templateRepository.GetIndexTemplateId(siteInfo.Id);
+            var indexTemplateId = await _templateRepository.GetIndexTemplateIdAsync(siteInfo.Id);
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(indexTemplateId);
 
             var url = isLocal
@@ -305,7 +305,7 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetContentUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal)
         {
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
             return await GetContentUrlByIdAsync(siteInfo, contentInfo, isLocal);
         }
 
@@ -336,7 +336,7 @@ namespace SS.CMS.Core.Services
                     var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
                     var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
 
-                    var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(referenceId);
+                    var contentInfo = await targetChannelInfo.ContentRepository.GetContentInfoAsync(referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnClickableUrl;
@@ -351,8 +351,8 @@ namespace SS.CMS.Core.Services
                 else
                 {
                     var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                    channelId = channelInfo.ContentRepository.GetChannelId(referenceId);
-                    linkUrl = channelInfo.ContentRepository.GetValue<string>(referenceId, ContentAttribute.LinkUrl);
+                    channelId = await channelInfo.ContentRepository.GetChannelIdAsync(referenceId);
+                    linkUrl = await channelInfo.ContentRepository.GetValueAsync<string>(referenceId, ContentAttribute.LinkUrl);
                     if (await _channelRepository.IsExistsAsync(channelId))
                     {
                         return await GetContentUrlByIdAsync(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
@@ -379,7 +379,7 @@ namespace SS.CMS.Core.Services
             }
 
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfoCurrent = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfoCurrent = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
 
             if (referenceId > 0 && contentInfoCurrent.TranslateContentType != TranslateContentType.ReferenceContent.ToString())
             {
@@ -390,7 +390,7 @@ namespace SS.CMS.Core.Services
                     var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
                     var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
 
-                    var contentInfo = targetChannelInfo.ContentRepository.GetContentInfo(referenceId);
+                    var contentInfo = await targetChannelInfo.ContentRepository.GetContentInfoAsync(referenceId);
                     if (contentInfo == null || contentInfo.ChannelId <= 0)
                     {
                         return PageUtils.UnClickableUrl;
@@ -404,8 +404,8 @@ namespace SS.CMS.Core.Services
                 }
                 else
                 {
-                    channelId = channelInfo.ContentRepository.GetChannelId(referenceId);
-                    linkUrl = channelInfo.ContentRepository.GetValue<string>(referenceId, ContentAttribute.LinkUrl);
+                    channelId = await channelInfo.ContentRepository.GetChannelIdAsync(referenceId);
+                    linkUrl = await channelInfo.ContentRepository.GetValueAsync<string>(referenceId, ContentAttribute.LinkUrl);
                     return await GetContentUrlByIdAsync(siteInfo, channelId, referenceId, 0, 0, linkUrl, false);
                 }
             }
@@ -482,7 +482,7 @@ namespace SS.CMS.Core.Services
                         var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                         if (count == 1)
                         {
-                            var contentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
+                            var contentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
                             url = await GetContentUrlAsync(siteInfo, channelInfo, contentId, isLocal);
                         }
                         else
@@ -499,7 +499,7 @@ namespace SS.CMS.Core.Services
                         }
                         else if (count == 1)
                         {
-                            var contentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
+                            var contentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
                             url = await GetContentUrlAsync(siteInfo, channelInfo, contentId, isLocal);
                         }
                         else
@@ -512,7 +512,7 @@ namespace SS.CMS.Core.Services
                         var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
-                            var contentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
+                            var contentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
                             //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
                             url = await GetContentUrlAsync(siteInfo, channelInfo, contentId, isLocal);
                         }
@@ -526,7 +526,7 @@ namespace SS.CMS.Core.Services
                         var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
                         if (count >= 1)
                         {
-                            var contentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
+                            var contentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, TaxisType.Parse(channelInfo.DefaultTaxisType));
                             //var contentId = StlCacheManager.FirstContentId.GetValue(siteInfo, nodeInfo);
                             url = await GetContentUrlAsync(siteInfo, channelInfo, contentId, isLocal);
                         }
@@ -541,22 +541,22 @@ namespace SS.CMS.Core.Services
                     }
                     else if (linkType == ELinkType.LinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = _channelRepository.GetChannelInfoByLastAddDate(channelInfo.Id);
+                        var lastAddChannelInfo = await _channelRepository.GetChannelInfoByLastAddDateAsync(channelInfo.Id);
                         url = lastAddChannelInfo != null ? await GetChannelUrlAsync(siteInfo, lastAddChannelInfo, isLocal) : await GetChannelUrlNotComputedAsync(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.LinkToFirstChannel)
                     {
-                        var firstChannelInfo = _channelRepository.GetChannelInfoByTaxis(channelInfo.Id);
+                        var firstChannelInfo = await _channelRepository.GetChannelInfoByTaxisAsync(channelInfo.Id);
                         url = firstChannelInfo != null ? await GetChannelUrlAsync(siteInfo, firstChannelInfo, isLocal) : await GetChannelUrlNotComputedAsync(siteInfo, channelInfo.Id, isLocal);
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel)
                     {
-                        var lastAddChannelInfo = _channelRepository.GetChannelInfoByLastAddDate(channelInfo.Id);
+                        var lastAddChannelInfo = await _channelRepository.GetChannelInfoByLastAddDateAsync(channelInfo.Id);
                         url = lastAddChannelInfo != null ? await GetChannelUrlAsync(siteInfo, lastAddChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                     else if (linkType == ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel)
                     {
-                        var firstChannelInfo = _channelRepository.GetChannelInfoByTaxis(channelInfo.Id);
+                        var firstChannelInfo = await _channelRepository.GetChannelInfoByTaxisAsync(channelInfo.Id);
                         url = firstChannelInfo != null ? await GetChannelUrlAsync(siteInfo, firstChannelInfo, isLocal) : PageUtils.UnClickableUrl;
                     }
                 }

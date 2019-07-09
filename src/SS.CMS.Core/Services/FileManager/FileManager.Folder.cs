@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -27,7 +28,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void DeleteSiteFiles(SiteInfo siteInfo)
+        public async Task DeleteSiteFilesAsync(SiteInfo siteInfo)
         {
             if (siteInfo == null) return;
 
@@ -45,7 +46,7 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var siteDirList = _siteRepository.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
@@ -64,7 +65,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void ImportSiteFiles(SiteInfo siteInfo, string siteTemplatePath, bool isOverride)
+        public async Task ImportSiteFilesAsync(SiteInfo siteInfo, string siteTemplatePath, bool isOverride)
         {
             var sitePath = _pathManager.GetSitePath(siteInfo);
 
@@ -81,7 +82,7 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var siteDirList = _siteRepository.GetLowerSiteDirListThatNotIsRoot();
+                var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)

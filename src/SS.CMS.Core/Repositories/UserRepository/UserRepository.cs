@@ -56,19 +56,19 @@ namespace SS.CMS.Core.Repositories
             public const string IsLockedOut = "IsLockedOut";
         }
 
-        public IEnumerable<UserInfo> GetAll(Query query)
+        public async Task<IEnumerable<UserInfo>> GetAllAsync(Query query)
         {
-            return _repository.GetAll(query);
+            return await _repository.GetAllAsync(query);
         }
 
-        public int GetCount(Query query)
+        public async Task<int> GetCountAsync(Query query)
         {
-            return _repository.Count(query);
+            return await _repository.CountAsync(query);
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            return _repository.Count();
+            return await _repository.CountAsync();
         }
 
         public async Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo)
@@ -291,42 +291,42 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public bool IsUserNameExists(string userName)
+        public async Task<bool> IsUserNameExistsAsync(string userName)
         {
-            return _repository.Exists(Q.Where(Attr.UserName, userName));
+            return await _repository.ExistsAsync(Q.Where(Attr.UserName, userName));
         }
 
-        public bool IsEmailExists(string email)
+        public async Task<bool> IsEmailExistsAsync(string email)
         {
             if (string.IsNullOrEmpty(email)) return false;
 
-            var exists = IsUserNameExists(email);
+            var exists = await IsUserNameExistsAsync(email);
             if (exists) return true;
 
-            return _repository.Exists(Q
+            return await _repository.ExistsAsync(Q
                 .Where(Attr.Email, email));
         }
 
-        public bool IsMobileExists(string mobile)
+        public async Task<bool> IsMobileExistsAsync(string mobile)
         {
             if (string.IsNullOrEmpty(mobile)) return false;
 
-            var exists = IsUserNameExists(mobile);
+            var exists = await IsUserNameExistsAsync(mobile);
             if (exists) return true;
 
-            return _repository.Exists(Q
+            return await _repository.ExistsAsync(Q
                 .Where(Attr.Mobile, mobile));
         }
 
-        public int GetCountByAreaId(int areaId)
+        public async Task<int> GetCountByAreaIdAsync(int areaId)
         {
-            return _repository.Count(Q
+            return await _repository.CountAsync(Q
                 .Where(Attr.AreaId, areaId));
         }
 
-        public int GetCountByDepartmentId(int departmentId)
+        public async Task<int> GetCountByDepartmentIdAsync(int departmentId)
         {
-            return _repository.Count(Q
+            return await _repository.CountAsync(Q
                 .Where(Attr.DepartmentId, departmentId));
         }
 
@@ -341,9 +341,9 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync<string>(Q.Select(Attr.UserName));
         }
 
-        public IEnumerable<string> GetUserNameList(int departmentId)
+        public async Task<IEnumerable<string>> GetUserNameListAsync(int departmentId)
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.UserName)
                 .Where(Attr.DepartmentId, departmentId));
         }
@@ -362,7 +362,7 @@ namespace SS.CMS.Core.Repositories
                 {
                     return (false, $"用户名长度必须大于等于 {configInfo.AdminUserNameMinLength}");
                 }
-                if (IsUserNameExists(adminInfoToUpdate.UserName))
+                if (await IsUserNameExistsAsync(adminInfoToUpdate.UserName))
                 {
                     return (false, "用户名已存在，请更换用户名");
                 }
@@ -370,7 +370,7 @@ namespace SS.CMS.Core.Repositories
 
             if (adminInfoToUpdate.Mobile != null && adminInfoToUpdate.Mobile != mobile)
             {
-                if (!string.IsNullOrEmpty(adminInfoToUpdate.Mobile) && IsMobileExists(adminInfoToUpdate.Mobile))
+                if (!string.IsNullOrEmpty(adminInfoToUpdate.Mobile) && await IsMobileExistsAsync(adminInfoToUpdate.Mobile))
                 {
                     return (false, "手机号码已被注册，请更换手机号码");
                 }
@@ -378,7 +378,7 @@ namespace SS.CMS.Core.Repositories
 
             if (adminInfoToUpdate.Email != null && adminInfoToUpdate.Email != email)
             {
-                if (!string.IsNullOrEmpty(adminInfoToUpdate.Email) && IsEmailExists(adminInfoToUpdate.Email))
+                if (!string.IsNullOrEmpty(adminInfoToUpdate.Email) && await IsEmailExistsAsync(adminInfoToUpdate.Email))
                 {
                     return (false, "电子邮件地址已被注册，请更换邮箱");
                 }
@@ -399,7 +399,7 @@ namespace SS.CMS.Core.Repositories
             {
                 return (false, $"用户名长度必须大于等于{configInfo.AdminUserNameMinLength}");
             }
-            if (IsUserNameExists(userName))
+            if (await IsUserNameExistsAsync(userName))
             {
                 return (false, "用户名已存在，请更换用户名");
             }
@@ -419,11 +419,11 @@ namespace SS.CMS.Core.Repositories
                 return (false, $"密码不符合规则，请包含{EUserPasswordRestrictionUtils.GetText(EUserPasswordRestrictionUtils.GetEnumType(configInfo.AdminPasswordRestriction))}");
             }
 
-            if (!string.IsNullOrEmpty(mobile) && IsMobileExists(mobile))
+            if (!string.IsNullOrEmpty(mobile) && await IsMobileExistsAsync(mobile))
             {
                 return (false, "手机号码已被注册，请更换手机号码");
             }
-            if (!string.IsNullOrEmpty(email) && IsEmailExists(email))
+            if (!string.IsNullOrEmpty(email) && await IsEmailExistsAsync(email))
             {
                 return (false, "电子邮件地址已被注册，请更换邮箱");
             }

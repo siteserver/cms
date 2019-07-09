@@ -230,7 +230,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     var channelInfo = await parseContext.GetChannelInfoAsync();
                     //var groupContents = TranslateUtils.StringCollectionToStringList(DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection));
-                    var groupContents = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection));
+                    var groupContents = TranslateUtils.StringCollectionToStringList(await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection));
                     isSuccess = TestTypeValues(testOperate, testValue, groupContents);
                 }
             }
@@ -845,7 +845,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.CountOfImageContents, testTypeStr))
             {
                 //var count = DataProvider.BackgroundContentDao.GetCountCheckedImage(parseContext.SiteId, channel.ChannelId);
-                var count = channel.ContentRepository.GetCountCheckedImage(parseContext.SiteId, channel.Id);
+                var count = await channel.ContentRepository.GetCountCheckedImageAsync(parseContext.SiteId, channel.Id);
                 theValue = count.ToString();
             }
             else if (StringUtils.EqualsIgnoreCase(ChannelAttribute.LinkUrl, testTypeStr))
@@ -869,7 +869,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             if (contentInfo == null)
             {
                 //theValue = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, testTypeStr);
-                theValue = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, testTypeStr);
+                theValue = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, testTypeStr);
             }
             else
             {

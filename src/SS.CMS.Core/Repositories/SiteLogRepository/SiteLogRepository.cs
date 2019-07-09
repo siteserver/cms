@@ -35,9 +35,9 @@ namespace SS.CMS.Core.Repositories
             public const string CreatedDate = nameof(SiteLogInfo.CreatedDate);
         }
 
-        public void Insert(SiteLogInfo logInfo)
+        public async Task<int> InsertAsync(SiteLogInfo logInfo)
         {
-            _repository.Insert(logInfo);
+            return await _repository.InsertAsync(logInfo);
         }
 
         public async Task DeleteIfThresholdAsync()

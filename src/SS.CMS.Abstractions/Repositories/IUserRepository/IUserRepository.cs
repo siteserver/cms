@@ -9,11 +9,11 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserRepository : IRepository
     {
-        IEnumerable<UserInfo> GetAll(Query query);
+        Task<IEnumerable<UserInfo>> GetAllAsync(Query query);
 
-        int GetCount(Query query);
+        Task<int> GetCountAsync(Query query);
 
-        int GetCount();
+        Task<int> GetCountAsync();
 
         Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo);
 
@@ -43,15 +43,15 @@ namespace SS.CMS.Repositories
 
         Task<UserInfo> GetByEmailAsync(string email);
 
-        bool IsUserNameExists(string userName);
+        Task<bool> IsUserNameExistsAsync(string userName);
 
-        bool IsEmailExists(string email);
+        Task<bool> IsEmailExistsAsync(string email);
 
-        bool IsMobileExists(string mobile);
+        Task<bool> IsMobileExistsAsync(string mobile);
 
-        int GetCountByAreaId(int areaId);
+        Task<int> GetCountByAreaIdAsync(int areaId);
 
-        int GetCountByDepartmentId(int departmentId);
+        Task<int> GetCountByDepartmentIdAsync(int departmentId);
 
         /// <summary>
         /// 获取管理员用户名列表。
@@ -61,7 +61,7 @@ namespace SS.CMS.Repositories
         /// </returns>
         Task<IEnumerable<string>> GetUserNameListAsync();
 
-        IEnumerable<string> GetUserNameList(int departmentId);
+        Task<IEnumerable<string>> GetUserNameListAsync(int departmentId);
 
         Task<(bool IsSuccess, string ErrorMessage)> ChangePasswordAsync(UserInfo userInfo, string password);
 

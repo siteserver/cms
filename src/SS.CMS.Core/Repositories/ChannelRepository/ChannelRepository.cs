@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using SqlKata;
 using SS.CMS.Core.Common;
+using SS.CMS.Core.Models.Enumerations;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Data;
 using SS.CMS.Enums;
@@ -36,8 +36,10 @@ namespace SS.CMS.Core.Repositories
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        private async Task InsertChannelInfoAsync(ChannelInfo parentChannelInfo, ChannelInfo channelInfo)
+        public async Task<int> InsertAsync(ChannelInfo channelInfo)
         {
+            var parentChannelInfo = await GetChannelInfoAsync(channelInfo.ParentId);
+
             if (parentChannelInfo != null)
             {
                 channelInfo.SiteId = parentChannelInfo.SiteId;
@@ -51,7 +53,7 @@ namespace SS.CMS.Core.Repositories
                 }
                 channelInfo.ParentsCount = parentChannelInfo.ParentsCount + 1;
 
-                var maxTaxis = GetMaxTaxisByParentPath(channelInfo.ParentsPath);
+                var maxTaxis = await GetMaxTaxisByParentPathAsync(channelInfo.ParentsPath);
                 if (maxTaxis == 0)
                 {
                     maxTaxis = parentChannelInfo.Taxis;
@@ -81,94 +83,26 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.ParentId, channelInfo.ParentId)
             );
 
-            var topId = _repository.Get<int>(Q
+            var topId = await _repository.GetAsync<int>(Q
                 .Select(Attr.Id)
                 .Where(Attr.ParentId, channelInfo.ParentId)
                 .OrderByDesc(Attr.Taxis));
 
             if (topId > 0)
             {
-                _repository.Update(Q
+                await _repository.UpdateAsync(Q
                     .Set(Attr.IsLastNode, true.ToString())
                     .Where(Attr.Id, topId)
                 );
             }
 
-            await RemoveCacheBySiteIdAsync(channelInfo.SiteId);
-            await RemoveCacheByIdAsync(parentChannelInfo.Id);
+            await RemoveListCacheAsync(channelInfo.SiteId);
+            if (parentChannelInfo != null)
+            {
+                await RemoveEntityCacheAsync(parentChannelInfo.Id);
+            }
+
             // Permissions.ClearAllCache();
-        }
-
-        private void UpdateSubtractChildrenCount(string parentsPath, int subtractNum)
-        {
-            if (string.IsNullOrEmpty(parentsPath)) return;
-
-            _repository.Decrement(Attr.ChildrenCount, Q
-                    .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)),
-                subtractNum);
-        }
-
-        private void UpdateIsLastNode(int parentId)
-        {
-            if (parentId <= 0) return;
-
-            _repository.Update(Q
-                .Set(Attr.IsLastNode, false.ToString())
-                .Where(Attr.ParentId, parentId)
-            );
-
-            var topId = _repository.Get<int>(Q
-                .Select(Attr.Id)
-                .Where(Attr.ParentId, parentId)
-                .OrderByDesc(Attr.Taxis));
-
-            if (topId > 0)
-            {
-                _repository.Update(Q
-                    .Set(Attr.IsLastNode, true.ToString())
-                    .Where(Attr.Id, topId)
-                );
-            }
-        }
-
-        private int GetMaxTaxisByParentPath(string parentPath)
-        {
-            return _repository.Max(Attr.Taxis, Q
-                       .Where(Attr.ParentsPath, parentPath)
-                       .OrWhereStarts(Attr.ParentsPath, $"{parentPath},")
-                   ) ?? 0;
-        }
-
-        private int GetParentId(int channelId)
-        {
-            return _repository.Get<int>(Q
-                .Select(Attr.ParentId)
-                .Where(Attr.Id, channelId));
-        }
-
-        private int GetIdByParentIdAndOrder(int parentId, int order)
-        {
-            var idList = _repository.GetAll<int>(Q
-                .Select(Attr.Id)
-                .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis)).ToList();
-
-            for (var i = 0; i < idList.Count; i++)
-            {
-                if (i + 1 == order)
-                {
-                    return idList[i];
-                }
-            }
-
-            return parentId;
-        }
-
-        public async Task<int> InsertAsync(ChannelInfo channelInfo)
-        {
-            var parentChannelInfo = await GetChannelInfoAsync(channelInfo.ParentId);
-
-            await InsertChannelInfoAsync(parentChannelInfo, channelInfo);
 
             return channelInfo.Id;
         }
@@ -180,20 +114,20 @@ namespace SS.CMS.Core.Repositories
             var nodeInfo = await GetChannelInfoAsync(channelInfo.Id);
             if (nodeInfo.ChannelName != channelInfo.ChannelName || nodeInfo.IndexName != channelInfo.IndexName)
             {
-                await RemoveCacheBySiteIdAsync(channelInfo.SiteId);
+                await RemoveListCacheAsync(channelInfo.SiteId);
             }
 
-            await RemoveCacheByIdAsync(channelInfo.Id);
+            await RemoveEntityCacheAsync(channelInfo.Id);
         }
 
         public async Task UpdateExtendAsync(ChannelInfo channelInfo)
         {
-            _repository.Update(Q
+            await _repository.UpdateAsync(Q
                 .Set(Attr.ExtendValues, channelInfo.ExtendValues)
                 .Where(Attr.Id, channelInfo.Id)
             );
 
-            await RemoveCacheByIdAsync(channelInfo.Id);
+            await RemoveEntityCacheAsync(channelInfo.Id);
         }
 
         public async Task DeleteAsync(int siteId, int channelId)
@@ -221,30 +155,30 @@ namespace SS.CMS.Core.Repositories
 
             if (channelInfo.ParentId != 0)
             {
-                _repository.Decrement(Attr.Taxis, Q
+                await _repository.DecrementAsync(Attr.Taxis, Q
                         .Where(Attr.SiteId, channelInfo.SiteId)
                         .Where(Attr.Taxis, ">", channelInfo.Taxis), deletedNum
                 );
             }
 
-            UpdateIsLastNode(channelInfo.ParentId);
-            UpdateSubtractChildrenCount(channelInfo.ParentsPath, deletedNum);
+            await UpdateIsLastNodeAsync(channelInfo.ParentId);
+            await UpdateSubtractChildrenCountAsync(channelInfo.ParentsPath, deletedNum);
 
             if (channelInfo.ParentId == 0)
             {
                 await _siteRepository.DeleteAsync(channelInfo.Id);
             }
 
-            await RemoveCacheBySiteIdAsync(channelInfo.SiteId);
-            await RemoveCacheByIdAsync(channelInfo.Id);
+            await RemoveListCacheAsync(channelInfo.SiteId);
+            await RemoveEntityCacheAsync(channelInfo.Id);
         }
 
         /// <summary>
         /// 得到最后一个添加的子节点
         /// </summary>
-        public ChannelInfo GetChannelInfoByLastAddDate(int channelId)
+        public async Task<ChannelInfo> GetChannelInfoByLastAddDateAsync(int channelId)
         {
-            return _repository.Get(Q
+            return await _repository.GetAsync(Q
                 .Where(Attr.ParentId, channelId)
                 .OrderByDesc(Attr.Id));
         }
@@ -252,19 +186,19 @@ namespace SS.CMS.Core.Repositories
         /// <summary>
         /// 得到第一个子节点
         /// </summary>
-        public ChannelInfo GetChannelInfoByTaxis(int channelId)
+        public async Task<ChannelInfo> GetChannelInfoByTaxisAsync(int channelId)
         {
-            return _repository.Get(Q
+            return await _repository.GetAsync(Q
                 .Where(Attr.ParentId, channelId)
                 .OrderBy(Attr.Taxis));
         }
 
-        public int GetIdByParentIdAndTaxis(int parentId, int taxis, bool isNextChannel)
+        public async Task<int> GetIdByParentIdAndTaxisAsync(int parentId, int taxis, bool isNextChannel)
         {
             int channelId;
             if (isNextChannel)
             {
-                channelId = _repository.Get<int>(Q
+                channelId = await _repository.GetAsync<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ParentId, parentId)
                     .Where(Attr.Taxis, ">", taxis)
@@ -272,7 +206,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                channelId = _repository.Get<int>(Q
+                channelId = await _repository.GetAsync<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.ParentId, parentId)
                     .Where(Attr.Taxis, "<", taxis)
@@ -282,7 +216,7 @@ namespace SS.CMS.Core.Repositories
             return channelId;
         }
 
-        public int GetId(int siteId, string orderString)
+        public async Task<int> GetIdAsync(int siteId, string orderString)
         {
             if (orderString == "1")
                 return siteId;
@@ -293,7 +227,7 @@ namespace SS.CMS.Core.Repositories
             for (var index = 1; index < orderArr.Length; index++)
             {
                 var order = int.Parse(orderArr[index]);
-                channelId = GetIdByParentIdAndOrder(channelId, order);
+                channelId = await GetIdByParentIdAndOrderAsync(channelId, order);
             }
             return channelId;
         }
@@ -303,16 +237,16 @@ namespace SS.CMS.Core.Repositories
         /// <summary>
         /// 在节点树中得到此节点的排序号，以“1_2_5_2”的形式表示
         /// </summary>
-        public string GetOrderStringInSite(int channelId)
+        public async Task<string> GetOrderStringInSiteAsync(int channelId)
         {
             var retval = "";
             if (channelId != 0)
             {
-                var parentId = GetParentId(channelId);
+                var parentId = await GetParentIdAsync(channelId);
                 if (parentId != 0)
                 {
-                    var orderString = GetOrderStringInSite(parentId);
-                    retval = orderString + "_" + GetOrderInSibling(channelId, parentId);
+                    var orderString = await GetOrderStringInSiteAsync(parentId);
+                    retval = orderString + "_" + await GetOrderInSiblingAsync(channelId, parentId);
                 }
                 else
                 {
@@ -322,204 +256,18 @@ namespace SS.CMS.Core.Repositories
             return retval;
         }
 
-        private int GetOrderInSibling(int channelId, int parentId)
+        public async Task<IEnumerable<string>> GetIndexNameListAsync(int siteId)
         {
-            var idList = _repository.GetAll<int>(Q
-                .Select(Attr.Id)
-                .Where(Attr.ParentId, parentId)
-                .OrderBy(Attr.Taxis)).ToList();
-
-            return idList.IndexOf(channelId) + 1;
-        }
-
-        public IList<string> GetIndexNameList(int siteId)
-        {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.IndexName)
                 .Where(Attr.SiteId, siteId)
                 .OrWhere(Attr.Id, siteId)
-                .Distinct()).ToList();
+                .Distinct());
         }
 
-        private void QueryOrder(Query query, TaxisType taxisType)
+        public async Task<int> GetCountAsync(int channelId)
         {
-            if (taxisType == TaxisType.OrderById || taxisType == TaxisType.OrderByChannelId)
-            {
-                query.OrderBy(Attr.Id);
-            }
-            else if (taxisType == TaxisType.OrderByIdDesc || taxisType == TaxisType.OrderByChannelIdDesc)
-            {
-                query.OrderByDesc(Attr.Id);
-            }
-            else if (taxisType == TaxisType.OrderByAddDate || taxisType == TaxisType.OrderByLastModifiedDate)
-            {
-                query.OrderBy(Attr.CreatedDate);
-            }
-            else if (taxisType == TaxisType.OrderByAddDateDesc || taxisType == TaxisType.OrderByLastModifiedDateDesc)
-            {
-                query.OrderByDesc(Attr.CreatedDate);
-            }
-            else if (taxisType == TaxisType.OrderByTaxis)
-            {
-                query.OrderBy(Attr.Taxis);
-            }
-            else if (taxisType == TaxisType.OrderByTaxisDesc)
-            {
-                query.OrderByDesc(Attr.Taxis);
-            }
-            else if (taxisType == TaxisType.OrderByRandom)
-            {
-                query.OrderByRandom(StringUtils.GetGuid());
-            }
-            else
-            {
-                query.OrderBy(Attr.Taxis);
-            }
-        }
-
-        private async Task QueryWhereScopeAsync(Query query, int siteId, int channelId, bool isTotal, ScopeType scopeType)
-        {
-            if (isTotal)
-            {
-                query.Where(Attr.SiteId, siteId);
-                return;
-            }
-
-            var channelInfo = await GetChannelInfoAsync(channelId);
-            if (channelInfo == null) return;
-
-            if (channelInfo.ChildrenCount == 0)
-            {
-                if (scopeType != ScopeType.Children && scopeType != ScopeType.Descendant)
-                {
-                    query.Where(Attr.Id, channelInfo.Id);
-                }
-            }
-            else if (scopeType == ScopeType.Self)
-            {
-                query.Where(Attr.Id, channelInfo.Id);
-            }
-            else if (scopeType == ScopeType.All)
-            {
-                if (channelInfo.Id == siteId)
-                {
-                    query.Where(Attr.SiteId, siteId);
-                }
-                else
-                {
-                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
-                    query.WhereIn(Attr.Id, channelIdList);
-                }
-            }
-            else if (scopeType == ScopeType.Descendant)
-            {
-                if (channelInfo.Id == siteId)
-                {
-                    query.Where(Attr.SiteId, siteId).WhereNot(Attr.Id, siteId);
-                }
-                else
-                {
-                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
-                    query.WhereIn(Attr.Id, channelIdList);
-                }
-            }
-            else if (scopeType == ScopeType.SelfAndChildren || scopeType == ScopeType.Children)
-            {
-                var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
-                query.WhereIn(Attr.Id, channelIdList);
-            }
-        }
-
-        private void QueryWhereImage(Query query, bool? isImage)
-        {
-            if (isImage.HasValue)
-            {
-                if (isImage.Value)
-                {
-                    query.WhereNotNull(Attr.ImageUrl).WhereNot(Attr.ImageUrl, string.Empty);
-                }
-                else
-                {
-                    query.Where(q =>
-                    {
-                        return q.WhereNull(Attr.ImageUrl).OrWhere(Attr.ImageUrl, string.Empty);
-                    });
-                }
-            }
-        }
-
-        private async Task QueryWhereGroupAsync(Query query, int siteId, string group, string groupNot)
-        {
-            if (!string.IsNullOrEmpty(group))
-            {
-                group = group.Trim().Trim(',');
-                var groupArr = group.Split(',');
-                if (groupArr.Length > 0)
-                {
-                    var groupQuery = Q.NewQuery();
-
-                    var channelIdList = new List<int>();
-
-                    foreach (var theGroup in groupArr)
-                    {
-                        var groupName = theGroup.Trim();
-
-                        if (await _channelGroupRepository.IsExistsAsync(siteId, groupName))
-                        {
-                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
-                            foreach (int channelId in groupChannelIdList)
-                            {
-                                if (!channelIdList.Contains(channelId))
-                                {
-                                    channelIdList.Add(channelId);
-                                }
-                            }
-                        }
-                    }
-                    if (channelIdList.Count > 0)
-                    {
-                        query.WhereIn(Attr.Id, channelIdList);
-                    }
-                }
-            }
-
-            if (!string.IsNullOrEmpty(groupNot))
-            {
-                groupNot = groupNot.Trim().Trim(',');
-                var groupNotArr = groupNot.Split(',');
-                if (groupNotArr.Length > 0)
-                {
-                    var groupNotQuery = Q.NewQuery();
-
-                    var channelIdList = new List<int>();
-
-                    foreach (var theGroup in groupNotArr)
-                    {
-                        var groupName = theGroup.Trim();
-
-                        if (await _channelGroupRepository.IsExistsAsync(siteId, groupName))
-                        {
-                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
-                            foreach (int channelId in groupChannelIdList)
-                            {
-                                if (!channelIdList.Contains(channelId))
-                                {
-                                    channelIdList.Add(channelId);
-                                }
-                            }
-                        }
-                    }
-                    if (channelIdList.Count > 0)
-                    {
-                        query.WhereNotIn(Attr.Id, channelIdList);
-                    }
-                }
-            }
-        }
-
-        public int GetCount(int channelId)
-        {
-            return _repository.Count(Q
+            return await _repository.CountAsync(Q
                 .Where(Attr.ParentId, channelId));
         }
 
@@ -536,7 +284,7 @@ namespace SS.CMS.Core.Repositories
                    ) + 1;
         }
 
-        public async Task<IList<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
+        public async Task<IEnumerable<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum)
         {
             var query = Q.NewQuery();
             await QueryWhereScopeAsync(query, siteId, channelId, false, scopeType);
@@ -548,10 +296,10 @@ namespace SS.CMS.Core.Repositories
                 query.Limit(totalNum);
             }
 
-            return _repository.GetAll<int>(query.Select(Attr.Id)).ToList();
+            return await _repository.GetAllAsync<int>(query.Select(Attr.Id));
         }
 
-        public async Task<IList<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
+        public async Task<IEnumerable<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
         {
             var query = Q.Select(Container.Channel.Columns).Offset(startNum - 1).Limit(totalNum);
             await QueryWhereGroupAsync(query, siteId, group, groupNot);
@@ -559,7 +307,7 @@ namespace SS.CMS.Core.Repositories
             QueryOrder(query, taxisType);
             await QueryWhereScopeAsync(query, siteId, channelId, isTotal, scopeType);
 
-            var channelInfoList = _repository.GetAll<ChannelInfo>(query).ToList();
+            var channelInfoList = await _repository.GetAllAsync<ChannelInfo>(query);
             var list = new List<KeyValuePair<int, ChannelInfo>>();
             var i = 0;
             foreach (var channelInfo in channelInfoList)
@@ -570,14 +318,14 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public IList<string> GetContentModelPluginIdList()
+        public async Task<IEnumerable<string>> GetContentModelPluginIdListAsync()
         {
-            return _repository.GetAll<string>(Q
+            return await _repository.GetAllAsync<string>(Q
                 .Select(Attr.ContentModelPluginId)
-                .Distinct()).ToList();
+                .Distinct());
         }
 
-        public IList<int> GetChannelIdList(TemplateInfo templateInfo)
+        public async Task<IEnumerable<int>> GetChannelIdListAsync(TemplateInfo templateInfo)
         {
             var list = new List<int>();
 
@@ -585,36 +333,36 @@ namespace SS.CMS.Core.Repositories
             {
                 if (templateInfo.IsDefault)
                 {
-                    return _repository.GetAll<int>(Q
+                    return await _repository.GetAllAsync<int>(Q
                         .Select(Attr.Id)
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ChannelTemplateId, templateInfo.Id)
                         .OrWhere(Attr.ChannelTemplateId, 0)
-                        .OrWhereNull(Attr.ChannelTemplateId)).ToList();
+                        .OrWhereNull(Attr.ChannelTemplateId));
                 }
 
-                return _repository.GetAll<int>(Q
+                return await _repository.GetAllAsync<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
-                    .Where(Attr.ChannelTemplateId, templateInfo.Id)).ToList();
+                    .Where(Attr.ChannelTemplateId, templateInfo.Id));
             }
 
             if (templateInfo.Type == TemplateType.ContentTemplate)
             {
                 if (templateInfo.IsDefault)
                 {
-                    return _repository.GetAll<int>(Q
+                    return await _repository.GetAllAsync<int>(Q
                         .Select(Attr.Id)
                         .Where(Attr.SiteId, templateInfo.SiteId)
                         .OrWhere(Attr.ContentTemplateId, templateInfo.Id)
                         .OrWhere(Attr.ContentTemplateId, 0)
-                        .OrWhereNull(Attr.ContentTemplateId)).ToList();
+                        .OrWhereNull(Attr.ContentTemplateId));
                 }
 
-                return _repository.GetAll<int>(Q
+                return await _repository.GetAllAsync<int>(Q
                     .Select(Attr.Id)
                     .Where(Attr.SiteId, templateInfo.SiteId)
-                    .Where(Attr.ContentTemplateId, templateInfo.Id)).ToList();
+                    .Where(Attr.ContentTemplateId, templateInfo.Id));
             }
 
             return list;
@@ -646,6 +394,414 @@ namespace SS.CMS.Core.Repositories
                 return siteInfo.SiteName + "：" + nodeNames;
             }
             return siteInfo.SiteName;
+        }
+
+        public async Task<ChannelInfo> GetChannelInfoAsync(int channelId)
+        {
+            return await GetEntityCacheAsync(channelId);
+        }
+
+        public async Task<int> GetSiteIdAsync(int channelId)
+        {
+            var channelInfo = await GetEntityCacheAsync(channelId);
+            if (channelInfo == null) return 0;
+            return channelInfo.SiteId;
+        }
+
+        public async Task<int> GetChannelIdAsync(int siteId, int channelId, string channelIndex, string channelName)
+        {
+            var retval = channelId;
+
+            if (!string.IsNullOrEmpty(channelIndex))
+            {
+                var theChannelId = await GetChannelIdByIndexNameAsync(siteId, channelIndex);
+                if (theChannelId != 0)
+                {
+                    retval = theChannelId;
+                }
+            }
+            if (!string.IsNullOrEmpty(channelName))
+            {
+                var theChannelId = await GetChannelIdByParentIdAndChannelNameAsync(siteId, retval, channelName, true);
+                if (theChannelId == 0)
+                {
+                    theChannelId = await GetChannelIdByParentIdAndChannelNameAsync(siteId, siteId, channelName, true);
+                }
+                if (theChannelId != 0)
+                {
+                    retval = theChannelId;
+                }
+            }
+
+            return retval;
+        }
+
+        public async Task<int> GetChannelIdByIndexNameAsync(int siteId, string indexName)
+        {
+            if (string.IsNullOrEmpty(indexName)) return 0;
+
+            var cacheInfoList = await GetListCacheAsync(siteId);
+            return cacheInfoList.Where(x => x.IndexName == indexName).Select(x => x.Id).FirstOrDefault();
+        }
+
+        public async Task<int> GetChannelIdByParentIdAndChannelNameAsync(int siteId, int parentId, string channelName, bool recursive)
+        {
+            if (parentId <= 0 || string.IsNullOrEmpty(channelName)) return 0;
+
+            var cacheInfoList = await GetListCacheAsync(siteId);
+
+            CacheInfo cacheInfo;
+
+            if (recursive)
+            {
+                if (siteId == parentId)
+                {
+                    cacheInfo = cacheInfoList.FirstOrDefault(x => x.ChannelName == channelName);
+                }
+                else
+                {
+                    cacheInfo = cacheInfoList.FirstOrDefault(x => (x.ParentId == parentId || x.ParentsIdList.Contains(parentId)) && x.ChannelName == channelName);
+                }
+            }
+            else
+            {
+                cacheInfo = cacheInfoList.FirstOrDefault(x => x.ParentId == parentId && x.ChannelName == channelName);
+            }
+
+            return cacheInfo?.Id ?? 0;
+        }
+
+        public async Task<List<int>> GetChannelIdListAsync(int siteId)
+        {
+            var cacheInfoList = await GetListCacheAsync(siteId);
+            return cacheInfoList.Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public async Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup)
+        {
+            var channelInfoList = new List<ChannelInfo>();
+            var cacheInfoList = await GetListCacheAsync(siteId);
+            foreach (var cacheInfo in cacheInfoList)
+            {
+                var channelInfo = await GetChannelInfoAsync(cacheInfo.Id);
+                if (channelInfo == null) continue;
+
+                if (string.IsNullOrEmpty(channelInfo.GroupNameCollection)) continue;
+
+                if (StringUtils.Contains(channelInfo.GroupNameCollection, channelGroup))
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+            return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
+        }
+
+        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType)
+        {
+            return await GetChannelIdListAsync(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
+        }
+
+        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)
+        {
+            if (channelInfo == null) return new List<int>();
+
+            var channelInfoList = new List<ChannelInfo>();
+
+            if (channelInfo.ChildrenCount == 0)
+            {
+                if (scopeType != ScopeType.Children && scopeType != ScopeType.Descendant)
+                {
+                    channelInfoList.Add(channelInfo);
+                }
+            }
+            else if (scopeType == ScopeType.Self)
+            {
+                channelInfoList.Add(channelInfo);
+            }
+            else
+            {
+                var cacheInfoList = await GetListCacheAsync(channelInfo.SiteId);
+
+                if (scopeType == ScopeType.All)
+                {
+                    foreach (var cacheInfo in cacheInfoList)
+                    {
+                        if (cacheInfo.Id == channelInfo.Id || cacheInfo.ParentId == channelInfo.Id || cacheInfo.ParentsIdList.Contains(channelInfo.Id))
+                        {
+                            var nodeInfo = await GetChannelInfoAsync(cacheInfo.Id);
+                            if (nodeInfo != null)
+                            {
+                                channelInfoList.Add(nodeInfo);
+                            }
+                        }
+                    }
+                }
+                else if (scopeType == ScopeType.Children)
+                {
+                    foreach (var cacheInfo in cacheInfoList)
+                    {
+                        if (cacheInfo.ParentId == channelInfo.Id)
+                        {
+                            var nodeInfo = await GetChannelInfoAsync(cacheInfo.Id);
+                            if (nodeInfo != null)
+                            {
+                                channelInfoList.Add(nodeInfo);
+                            }
+                        }
+                    }
+                }
+                else if (scopeType == ScopeType.Descendant)
+                {
+                    foreach (var cacheInfo in cacheInfoList)
+                    {
+                        if (cacheInfo.ParentId == channelInfo.Id || cacheInfo.ParentsIdList.Contains(channelInfo.Id))
+                        {
+                            var nodeInfo = await GetChannelInfoAsync(cacheInfo.Id);
+                            if (nodeInfo != null)
+                            {
+                                channelInfoList.Add(nodeInfo);
+                            }
+                        }
+                    }
+                }
+                else if (scopeType == ScopeType.SelfAndChildren)
+                {
+                    foreach (var cacheInfo in cacheInfoList)
+                    {
+                        if (cacheInfo.Id == channelInfo.Id || cacheInfo.ParentId == channelInfo.Id)
+                        {
+                            var nodeInfo = await GetChannelInfoAsync(cacheInfo.Id);
+                            if (nodeInfo != null)
+                            {
+                                channelInfoList.Add(nodeInfo);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var filteredChannelInfoList = new List<ChannelInfo>();
+            foreach (var nodeInfo in channelInfoList)
+            {
+                if (!string.IsNullOrEmpty(group))
+                {
+                    if (!StringUtils.In(nodeInfo.GroupNameCollection, group))
+                    {
+                        continue;
+                    }
+                }
+                if (!string.IsNullOrEmpty(groupNot))
+                {
+                    if (StringUtils.In(nodeInfo.GroupNameCollection, groupNot))
+                    {
+                        continue;
+                    }
+                }
+                if (!string.IsNullOrEmpty(contentModelPluginId))
+                {
+                    if (!StringUtils.EqualsIgnoreCase(nodeInfo.ContentModelPluginId, contentModelPluginId))
+                    {
+                        continue;
+                    }
+                }
+                filteredChannelInfoList.Add(nodeInfo);
+            }
+
+            return filteredChannelInfoList.OrderBy(c => c.Taxis).Select(channelInfoInList => channelInfoInList.Id).ToList();
+        }
+
+        public async Task<bool> IsExistsAsync(int channelId)
+        {
+            var channelInfo = await GetChannelInfoAsync(channelId);
+            return channelInfo != null;
+        }
+
+        public async Task<int> GetChannelIdByParentsCountAsync(int siteId, int channelId, int parentsCount)
+        {
+            if (parentsCount == 0) return siteId;
+            if (channelId == 0 || channelId == siteId) return siteId;
+
+            var nodeInfo = await GetChannelInfoAsync(channelId);
+            if (nodeInfo != null)
+            {
+                return nodeInfo.ParentsCount == parentsCount ? nodeInfo.Id : await GetChannelIdByParentsCountAsync(siteId, nodeInfo.ParentId, parentsCount);
+            }
+            return siteId;
+        }
+
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
+        {
+            return await GetTableNameAsync(pluginManager, siteInfo, await GetChannelInfoAsync(channelId));
+        }
+
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            return channelInfo != null ? await GetTableNameAsync(pluginManager, siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
+        }
+
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, string pluginId)
+        {
+            var tableName = siteInfo.TableName;
+
+            if (string.IsNullOrEmpty(pluginId)) return tableName;
+
+            var contentTable = await pluginManager.GetContentTableNameAsync(pluginId);
+            if (!string.IsNullOrEmpty(contentTable))
+            {
+                tableName = contentTable;
+            }
+
+            return tableName;
+        }
+
+        public async Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            if (string.IsNullOrEmpty(channelInfo.ContentModelPluginId)) return false;
+
+            var contentTable = await pluginManager.GetContentTableNameAsync(channelInfo.ContentModelPluginId);
+            return !string.IsNullOrEmpty(contentTable);
+        }
+
+        public async Task<string> GetParentsPathAsync(int channelId)
+        {
+            var retval = string.Empty;
+            var channelInfo = await GetChannelInfoAsync(channelId);
+            if (channelInfo != null)
+            {
+                retval = channelInfo.ParentsPath;
+            }
+            return retval;
+        }
+
+        public async Task<int> GetTopLevelAsync(int channelId)
+        {
+            var parentsPath = await GetParentsPathAsync(channelId);
+            return string.IsNullOrEmpty(parentsPath) ? 0 : parentsPath.Split(',').Length;
+        }
+
+        public async Task<string> GetChannelNameAsync(int channelId)
+        {
+            var retval = string.Empty;
+            var nodeInfo = await GetChannelInfoAsync(channelId);
+            if (nodeInfo != null)
+            {
+                retval = nodeInfo.ChannelName;
+            }
+            return retval;
+        }
+
+        public async Task<string> GetChannelNameNavigationAsync(int siteId, int channelId)
+        {
+            var nodeNameList = new List<string>();
+
+            if (channelId == 0) channelId = siteId;
+
+            if (channelId == siteId)
+            {
+                var nodeInfo = await GetChannelInfoAsync(siteId);
+                return nodeInfo.ChannelName;
+            }
+            var parentsPath = await GetParentsPathAsync(channelId);
+            var channelIdList = new List<int>();
+            if (!string.IsNullOrEmpty(parentsPath))
+            {
+                channelIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
+            }
+            channelIdList.Add(channelId);
+            channelIdList.Remove(siteId);
+
+            foreach (var theChannelId in channelIdList)
+            {
+                var nodeInfo = await GetChannelInfoAsync(theChannelId);
+                if (nodeInfo != null)
+                {
+                    nodeNameList.Add(nodeInfo.ChannelName);
+                }
+            }
+
+            return TranslateUtils.ObjectCollectionToString(nodeNameList, " > ");
+        }
+
+        public async Task<string> GetContentAttributesOfDisplayAsync(int siteId, int channelId)
+        {
+            var channelInfo = await GetChannelInfoAsync(channelId);
+            if (channelInfo == null) return string.Empty;
+            if (siteId != channelId && string.IsNullOrEmpty(channelInfo.ContentAttributesOfDisplay))
+            {
+                return await GetContentAttributesOfDisplayAsync(siteId, channelInfo.ParentId);
+            }
+            return channelInfo.ContentAttributesOfDisplay;
+        }
+
+        public async Task<bool> IsAncestorOrSelfAsync(int parentId, int childId)
+        {
+            if (parentId == childId)
+            {
+                return true;
+            }
+            var nodeInfo = await GetChannelInfoAsync(childId);
+            if (nodeInfo == null)
+            {
+                return false;
+            }
+            if (StringUtils.In(nodeInfo.ParentsPath, parentId.ToString()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> IsCreatableAsync(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            if (siteInfo == null || channelInfo == null) return false;
+
+            if (!channelInfo.IsChannelCreatable || !string.IsNullOrEmpty(channelInfo.LinkUrl)) return false;
+
+            var isCreatable = false;
+
+            var linkType = ELinkTypeUtils.GetEnumType(channelInfo.LinkType);
+
+            if (linkType == ELinkType.None)
+            {
+                isCreatable = true;
+            }
+            else if (linkType == ELinkType.NoLinkIfContentNotExists)
+            {
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
+                isCreatable = count != 0;
+            }
+            else if (linkType == ELinkType.LinkToOnlyOneContent)
+            {
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
+                isCreatable = count != 1;
+            }
+            else if (linkType == ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent)
+            {
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
+                if (count != 0 && count != 1)
+                {
+                    isCreatable = true;
+                }
+            }
+            else if (linkType == ELinkType.LinkToFirstContent)
+            {
+                var count = await channelInfo.ContentRepository.GetCountAsync(siteInfo, channelInfo, true);
+                isCreatable = count < 1;
+            }
+            else if (linkType == ELinkType.NoLinkIfChannelNotExists)
+            {
+                isCreatable = channelInfo.ChildrenCount != 0;
+            }
+            else if (linkType == ELinkType.LinkToLastAddChannel)
+            {
+                isCreatable = channelInfo.ChildrenCount <= 0;
+            }
+            else if (linkType == ELinkType.LinkToFirstChannel)
+            {
+                isCreatable = channelInfo.ChildrenCount <= 0;
+            }
+
+            return isCreatable;
         }
     }
 }

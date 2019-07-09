@@ -270,7 +270,7 @@ namespace SS.CMS.Core.Services
             if (pluginInfo != null)
             {
                 pluginInfo.IsDisabled = isDisabled;
-                _pluginRepository.UpdateIsDisabled(pluginId, isDisabled);
+                await _pluginRepository.UpdateIsDisabledAsync(pluginId, isDisabled);
                 await _cache.RemoveAsync(_cacheKey);
             }
         }
@@ -281,7 +281,7 @@ namespace SS.CMS.Core.Services
             if (pluginInfo != null)
             {
                 pluginInfo.Taxis = taxis;
-                _pluginRepository.UpdateTaxis(pluginId, taxis);
+                await _pluginRepository.UpdateTaxisAsync(pluginId, taxis);
                 await _cache.RemoveAsync(_cacheKey);
             }
         }

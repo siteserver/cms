@@ -38,11 +38,11 @@ namespace SS.CMS.Core.Services
 
         public async Task<bool> IsContentTableUsedAsync(string tableName)
         {
-            var count = _siteRepository.GetTableCount(tableName);
+            var count = await _siteRepository.GetTableCountAsync(tableName);
 
             if (count > 0) return true;
 
-            var contentModelPluginIdList = _channelRepository.GetContentModelPluginIdList();
+            var contentModelPluginIdList = await _channelRepository.GetContentModelPluginIdListAsync();
             foreach (var pluginId in contentModelPluginIdList)
             {
                 var service = await GetServiceAsync(pluginId);

@@ -1,7 +1,6 @@
 # Cms-specific files
 
-ss.json
-ss.sqlite
+*.sqlite
 src/SS.CMS.Api/themes/
 
 ## Ignore Visual Studio temporary files, build results, and

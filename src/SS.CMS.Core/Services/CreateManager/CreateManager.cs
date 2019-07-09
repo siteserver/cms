@@ -88,10 +88,10 @@ namespace SS.CMS.Core.Services
             else if (createType == CreateType.Content)
             {
                 var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                var tuple = channelInfo.ContentRepository.GetValueWithChannelId<string>(contentId, ContentAttribute.Title);
-                if (tuple != null)
+                var title = await channelInfo.ContentRepository.GetValueAsync<string>(contentId, ContentAttribute.Title);
+                if (title != null)
                 {
-                    name = tuple.Item2;
+                    name = title;
                     pageCount = 1;
                 }
             }
@@ -150,7 +150,7 @@ namespace SS.CMS.Core.Services
             }
             else if (templateInfo.Type == TemplateType.ChannelTemplate)
             {
-                var channelIdList = _channelRepository.GetChannelIdList(templateInfo);
+                var channelIdList = await _channelRepository.GetChannelIdListAsync(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     await AddCreateChannelTaskAsync(siteId, channelId);
@@ -158,7 +158,7 @@ namespace SS.CMS.Core.Services
             }
             else if (templateInfo.Type == TemplateType.ContentTemplate)
             {
-                var channelIdList = _channelRepository.GetChannelIdList(templateInfo);
+                var channelIdList = await _channelRepository.GetChannelIdListAsync(templateInfo);
                 foreach (var channelId in channelIdList)
                 {
                     await AddCreateAllContentTaskAsync(siteId, channelId);
@@ -273,7 +273,7 @@ namespace SS.CMS.Core.Services
             var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
 
-            var contentIdList = channelInfo.ContentRepository.GetContentIdListChecked(channelInfo.Id, TaxisType.OrderByTaxisDesc);
+            var contentIdList = await channelInfo.ContentRepository.GetContentIdListCheckedAsync(channelInfo.Id, TaxisType.OrderByTaxisDesc);
 
             foreach (var contentId in contentIdList)
             {
@@ -289,7 +289,7 @@ namespace SS.CMS.Core.Services
             if (!await _channelRepository.IsCreatableAsync(siteInfo, channelInfo)) return;
 
             var templateInfo = channelId == siteId
-                ? _templateRepository.GetIndexPageTemplateInfo(siteId)
+                ? await _templateRepository.GetIndexPageTemplateInfoAsync(siteId)
                 : await _templateRepository.GetChannelTemplateInfoAsync(siteId, channelId);
             var filePath = await _pathManager.GetChannelPageFilePathAsync(siteInfo, channelId, 0);
             var parseContext = new ParseContext(new PageInfo(channelId, 0, siteInfo, templateInfo, new Dictionary<string, object>()), _configuration, _cache, _settingsManager, _pluginManager, _pathManager, _urlManager, _fileManager, _tableManager, _siteRepository, _channelRepository, _userRepository, _tableStyleRepository, _templateRepository, _tagRepository, _errorLogRepository)
@@ -429,7 +429,7 @@ namespace SS.CMS.Core.Services
 
         private async Task CreateContentAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
         {
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
 
             if (contentInfo == null)
             {

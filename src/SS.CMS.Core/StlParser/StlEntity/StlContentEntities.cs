@@ -70,7 +70,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         var targetSiteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(targetSiteId);
                         var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
 
-                        var targetContentInfo = targetNodeInfo.ContentRepository.GetContentInfo(contentInfo.ReferenceId);
+                        var targetContentInfo = await targetNodeInfo.ContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
                         if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                         {
                             //标题可以使用自己的
@@ -92,7 +92,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Id);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Id);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.Id);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Title, attributeName))//内容标题
@@ -104,7 +104,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Title);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.Title);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(FullTitle, attributeName))//内容标题全称
@@ -116,7 +116,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Title);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Title);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.Title);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(NavigationUrl, attributeName))//内容链接地址
@@ -140,7 +140,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ImageUrl);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.ImageUrl);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.ImageUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -157,7 +157,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.VideoUrl);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.VideoUrl);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.VideoUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -174,7 +174,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.FileUrl);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -191,7 +191,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.FileUrl);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.FileUrl);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.FileUrl);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))
@@ -222,7 +222,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Content);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Content);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.Content);
                         }
                         parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, parsedContent, parseContext.IsLocal);
                     }
@@ -235,7 +235,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.ContentGroupNameCollection);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.GroupNameCollection);
                         }
                     }
                     else if (StringUtils.EqualsIgnoreCase(Tags, attributeName))//标签
@@ -247,7 +247,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         else
                         {
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, ContentAttribute.Tags);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, ContentAttribute.Tags);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, ContentAttribute.Tags);
                         }
                     }
                     else if (StringUtils.StartsWithIgnoreCase(attributeName, StlParserUtility.ItemIndex) && parseContext.Container?.ContentItem != null)
@@ -267,11 +267,11 @@ namespace SS.CMS.Core.StlParser.StlEntity
                         }
                         else
                         {
-                            contentChannelId = channelInfo.ContentRepository.GetChannelId(parseContext.ContentId);
+                            contentChannelId = await channelInfo.ContentRepository.GetChannelIdAsync(parseContext.ContentId);
 
                             channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentChannelId);
                             //parsedContent = DataProvider.ContentDao.GetValue(tableName, contextInfo.ContentId, attributeName);
-                            parsedContent = channelInfo.ContentRepository.GetValue<string>(parseContext.ContentId, attributeName);
+                            parsedContent = await channelInfo.ContentRepository.GetValueAsync<string>(parseContext.ContentId, attributeName);
                         }
 
                         if (!string.IsNullOrEmpty(parsedContent))

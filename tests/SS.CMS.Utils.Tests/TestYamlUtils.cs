@@ -8,12 +8,12 @@ using Xunit.Abstractions;
 
 namespace SS.CMS.Utils.Tests
 {
-    public class TestYamlUtils : IClassFixture<EnvironmentFixture>
+    public class TestYamlUtils : IClassFixture<UnitTestsFixture>
     {
-        private EnvironmentFixture _fixture { get; }
+        private UnitTestsFixture _fixture { get; }
         private readonly ITestOutputHelper _output;
 
-        public TestYamlUtils(EnvironmentFixture fixture, ITestOutputHelper output)
+        public TestYamlUtils(UnitTestsFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _output = output;

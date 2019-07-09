@@ -102,7 +102,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = parseContext.ChannelRepository.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await parseContext.ChannelRepository.GetIdByParentIdAndTaxisAsync(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
                         var siblingNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(siblingChannelId);
@@ -139,11 +139,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, taxis, isNextContent);
+                        var siblingContentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             //var siblingContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, siblingContentId);
-                            var siblingContentInfo = channelInfo.ContentRepository.GetContentInfo(siblingContentId);
+                            var siblingContentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(siblingContentId);
                             var url = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, siblingContentInfo, parseContext.IsLocal);
                             if (url.Equals(PageUtils.UnClickableUrl))
                             {
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     var taxis = nodeInfo.Taxis;
                     var isNextChannel = !StringUtils.EqualsIgnoreCase(type, TypePreviousChannel);
                     //var siblingChannelId = DataProvider.ChannelDao.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
-                    var siblingChannelId = parseContext.ChannelRepository.GetIdByParentIdAndTaxis(nodeInfo.ParentId, taxis, isNextChannel);
+                    var siblingChannelId = await parseContext.ChannelRepository.GetIdByParentIdAndTaxisAsync(nodeInfo.ParentId, taxis, isNextChannel);
                     if (siblingChannelId != 0)
                     {
                         isSuccess = true;
@@ -217,7 +217,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                         var taxis = contentInfo.Taxis;
                         var isNextContent = !StringUtils.EqualsIgnoreCase(type, TypePreviousContent);
                         //var siblingContentId = DataProvider.ContentDao.GetContentId(tableName, contextInfo.ChannelId, taxis, isNextContent);
-                        var siblingContentId = channelInfo.ContentRepository.GetContentId(channelInfo.Id, taxis, isNextContent);
+                        var siblingContentId = await channelInfo.ContentRepository.GetContentIdAsync(channelInfo.Id, taxis, isNextContent);
                         if (siblingContentId != 0)
                         {
                             isSuccess = true;

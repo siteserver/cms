@@ -34,9 +34,9 @@ namespace SS.CMS.Core.Repositories
             public const string Action = nameof(LogInfo.Action);
         }
 
-        public int Insert(LogInfo log)
+        public async Task<int> InsertAsync(LogInfo log)
         {
-            log.Id = _repository.Insert(log);
+            log.Id = await _repository.InsertAsync(log);
             return log.Id;
         }
 
@@ -66,9 +66,9 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync();
         }
 
-        public int GetCount()
+        public async Task<int> GetCountAsync()
         {
-            return _repository.Count();
+            return await _repository.CountAsync();
         }
 
         // public string GetSelectCommend()
@@ -124,9 +124,9 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_Log " + whereString;
         // }
 
-        public DateTimeOffset GetLastRemoveLogDate()
+        public async Task<DateTimeOffset> GetLastRemoveLogDateAsync()
         {
-            var addDate = _repository.Get<DateTime?>(Q
+            var addDate = await _repository.GetAsync<DateTime?>(Q
                 .Select(Attr.CreatedDate)
                 .Where(Attr.Action, "清空数据库日志")
                 .OrderByDesc(Attr.Id));

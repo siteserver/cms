@@ -19,7 +19,7 @@ namespace SS.CMS.Core.StlParser.Utility
             var contentItemInfo = parseContext.PageInfo.ContentItems.Peek();
 
             var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentItemInfo.Value.ChannelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentItemInfo.Value.Id);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentItemInfo.Value.Id);
 
             var context = parseContext.Clone(EContextType.Content);
             context.Container = container;

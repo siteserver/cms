@@ -29,7 +29,7 @@ namespace SS.CMS.Services
 
         Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
 
-        void InstallDatabase(string userName, string password);
+        Task<(bool IsSuccess, string ErrorMessage)> InstallDatabaseAsync(string adminName, string adminPassword);
 
         Task SyncSystemTablesAsync();
 

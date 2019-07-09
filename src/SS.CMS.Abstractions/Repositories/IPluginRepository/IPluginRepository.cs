@@ -7,10 +7,10 @@ namespace SS.CMS.Repositories
     {
         Task DeleteByIdAsync(string pluginId);
 
-        void UpdateIsDisabled(string pluginId, bool isDisabled);
+        Task UpdateIsDisabledAsync(string pluginId, bool isDisabled);
 
-        void UpdateTaxis(string pluginId, int taxis);
+        Task UpdateTaxisAsync(string pluginId, int taxis);
 
-        void SetIsDisabledAndTaxis(string pluginId, out bool isDisabled, out int taxis);
+        Task<(bool IsDisabled, int Taxis)> SetIsDisabledAndTaxisAsync(string pluginId);
     }
 }

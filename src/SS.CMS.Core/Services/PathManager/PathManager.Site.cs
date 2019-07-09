@@ -159,7 +159,7 @@ namespace SS.CMS.Core.Services
             var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             if (nodeInfo.ParentId == 0)
             {
-                var templateInfo = _templateRepository.GetDefaultTemplateInfo(siteInfo.Id, TemplateType.IndexPageTemplate);
+                var templateInfo = await _templateRepository.GetDefaultTemplateInfoAsync(siteInfo.Id, TemplateType.IndexPageTemplate);
                 return GetIndexPageFilePath(siteInfo, templateInfo.CreatedFileFullName, siteInfo.IsRoot, currentPageIndex);
             }
             var filePath = nodeInfo.FilePath;
@@ -189,7 +189,7 @@ namespace SS.CMS.Core.Services
         public async Task<string> GetContentPageFilePathAsync(SiteInfo siteInfo, int channelId, int contentId, int currentPageIndex)
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfo = channelInfo.ContentRepository.GetContentInfo(contentId);
+            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
             return await GetContentPageFilePathAsync(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 

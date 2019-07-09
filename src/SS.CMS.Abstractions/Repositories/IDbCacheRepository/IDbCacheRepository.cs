@@ -9,13 +9,13 @@ namespace SS.CMS.Repositories
 
         Task ClearAsync();
 
-        bool IsExists(string cacheKey);
+        Task<bool> IsExistsAsync(string cacheKey);
 
-        string GetValue(string cacheKey);
+        Task<string> GetValueAsync(string cacheKey);
 
         Task<string> GetValueAndRemoveAsync(string cacheKey);
 
-        int GetCount();
+        Task<int> GetCountAsync();
 
         Task DeleteExcess90DaysAsync();
     }

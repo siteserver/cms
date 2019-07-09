@@ -40,12 +40,12 @@ namespace SS.CMS.Core.Repositories
             ListAdd(channelInfo, contentInfo);
 
             var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
-            CountAdd(tableName, contentInfo);
+            await CountAddAsync(tableName, contentInfo);
         }
 
         private async Task UpdateCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
         {
-            var contentInfo = GetContentInfo(contentInfoToUpdate.Id);
+            var contentInfo = await GetContentInfoAsync(contentInfoToUpdate.Id);
             if (contentInfo != null)
             {
                 if (ListIsChanged(channelInfo, contentInfo, contentInfoToUpdate))
@@ -56,8 +56,8 @@ namespace SS.CMS.Core.Repositories
                 if (CountIsChanged(contentInfo, contentInfoToUpdate))
                 {
                     var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
-                    CountRemove(tableName, contentInfo);
-                    CountAdd(tableName, contentInfoToUpdate);
+                    await CountRemoveAsync(tableName, contentInfo);
+                    await CountAddAsync(tableName, contentInfoToUpdate);
                 }
             }
         }

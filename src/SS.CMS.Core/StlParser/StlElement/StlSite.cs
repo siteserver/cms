@@ -162,7 +162,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = await parseContext.SiteRepository.GetSiteInfoByDirectoryAsync(siteDir);
+                siteInfo = await parseContext.SiteRepository.GetSiteInfoBySiteDirAsync(siteDir);
             }
 
             if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
