@@ -178,7 +178,7 @@ namespace SiteServer.CMS.Plugin
             }
         }
 
-        private static List<PluginInstance> _pluginInfoListRunnable;
+        //private static List<PluginInstance> _pluginInfoListRunnable;
 
         public static void LoadPlugins(string applicationPhysicalPath)
         {
@@ -197,7 +197,7 @@ namespace SiteServer.CMS.Plugin
                 UtilsApi = UtilsApi.Instance
             });
 
-            _pluginInfoListRunnable = PluginInfoListRunnable;
+            //_pluginInfoListRunnable = PluginInfoListRunnable;
         }
 
         public static void ClearCache()
@@ -208,8 +208,7 @@ namespace SiteServer.CMS.Plugin
         public static IMetadata GetMetadata(string pluginId)
         {
             var dict = PluginManagerCache.GetPluginSortedList();
-            PluginInstance pluginInfo;
-            if (dict.TryGetValue(pluginId, out pluginInfo))
+            if (dict.TryGetValue(pluginId, out PluginInstance pluginInfo))
             {
                 return pluginInfo.Plugin;
             }
@@ -321,8 +320,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            if (dict.TryGetValue(pluginId, out pluginInfo))
+            if (dict.TryGetValue(pluginId, out PluginInstance pluginInfo))
             {
                 return pluginInfo.Plugin;
             }
@@ -335,8 +333,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            var isGet = dict.TryGetValue(pluginId, out PluginInstance pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
@@ -374,8 +371,7 @@ namespace SiteServer.CMS.Plugin
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            var isGet = dict.TryGetValue(pluginId, out PluginInstance pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
@@ -386,18 +382,17 @@ namespace SiteServer.CMS.Plugin
 
         public static T GetEnabledFeature<T>(string pluginId) where T : PluginBase
         {
-            if (string.IsNullOrEmpty(pluginId)) return default(T);
+            if (string.IsNullOrEmpty(pluginId)) return default;
 
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            PluginInstance pluginInfo;
-            var isGet = dict.TryGetValue(pluginId, out pluginInfo);
+            var isGet = dict.TryGetValue(pluginId, out PluginInstance pluginInfo);
             if (isGet && pluginInfo.Plugin != null && !pluginInfo.IsDisabled &&
                 pluginInfo.Plugin is T)
             {
                 return (T)pluginInfo.Plugin;
             }
-            return default(T);
+            return default;
         }
 
         public static List<T> GetEnabledFeatures<T>() where T : PluginBase

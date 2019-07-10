@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -57,6 +58,10 @@ namespace SiteServer.CMS.Core
         /// 系统是否已经安装
         /// </summary>
         public static Boolean IsInstalled { get; private set; } = false;
+        /// <summary>
+        /// 
+        /// </summary>
+        public static SortedList<String,SiteInfo> SiteList { get; private set; } = new SortedList<string, SiteInfo>();
 
         public static void InstallDatabase(string adminName, string adminPassword)
         {
@@ -147,11 +152,28 @@ namespace SiteServer.CMS.Core
         /// <returns>系统是否已经安装</returns>
         public static bool CheckIsInstalled()
         {
-            if (!SystemManager.IsInstalled)
+            if (!IsInstalled)
             {
-                SystemManager.IsInstalled = DataProvider.ConfigDao.IsInitialized();
+                IsInstalled = DataProvider.ConfigDao.IsInitialized();
+            }
+            if (IsInstalled) {
+                UpdateSites();
             }
             return SystemManager.IsInstalled;
+        }
+
+        public static void UpdateSites()
+        {
+            SortedList<String, SiteInfo> sites = new SortedList<string, SiteInfo>();
+            if (IsInstalled) {
+                List<SiteInfo> siteList = DataProvider.SiteDao.GetAllSiteList();
+                foreach (SiteInfo site in siteList) {
+                    if (!sites.ContainsKey(site.SiteDir)) {
+                        sites.Add(site.SiteDir, site);
+                    }
+                }
+            }
+            SiteList = sites;
         }
 
         //public static bool DetermineRedirectToInstaller()

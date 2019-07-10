@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.API", "SiteServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiteServer.Cli", "SiteServer.Cli\SiteServer.Cli.csproj", "{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SiteServer.Plugin", "SiteServer.Plugin\SiteServer.Plugin.csproj", "{5A918987-5006-4DEB-AD40-EC52DD50D9F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E4D925-AACF-4782-8B9A-C10B9F527A0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A918987-5006-4DEB-AD40-EC52DD50D9F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A918987-5006-4DEB-AD40-EC52DD50D9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A918987-5006-4DEB-AD40-EC52DD50D9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A918987-5006-4DEB-AD40-EC52DD50D9F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

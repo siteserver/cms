@@ -212,11 +212,22 @@ namespace SiteServer.CMS.Provider
             return list;
         }
 
+        public List<SiteInfo> GetAllSiteList()
+        {
+            var list = new List<SiteInfo>();
+            var siteInfoList = GetSiteInfoList();
+            foreach (var siteInfo in siteInfoList)
+            {
+                list.Add(siteInfo);
+            }
+            return list;
+        }
+
         private List<SiteInfo> GetSiteInfoList()
         {
             var list = new List<SiteInfo>();
 
-            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY Taxis, Id";
+            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY IsRoot desc,Taxis, Id";
 
             using (var rdr = ExecuteReader(sqlString))
             {

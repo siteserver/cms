@@ -84,9 +84,6 @@
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.3.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.3.6\lib\net452\SiteServer.Plugin.dll</HintPath>
-    </Reference>
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>
@@ -274,6 +271,10 @@
     <ProjectReference Include="..\SiteServer.CMS\SiteServer.CMS.csproj">
       <Project>{944127c3-915d-4f02-a534-64ec668c46ec}</Project>
       <Name>SiteServer.CMS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiteServer.Plugin\SiteServer.Plugin.csproj">
+      <Project>{5a918987-5006-4deb-ad40-ec52dd50d9f3}</Project>
+      <Name>SiteServer.Plugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiteServer.Utils\SiteServer.Utils.csproj">
       <Project>{2176d8ba-5f57-4c56-8e21-a09011517ae2}</Project>

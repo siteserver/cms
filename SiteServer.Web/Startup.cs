@@ -20,6 +20,7 @@ namespace SiteServer.API
             {
                 SystemManager.CheckIsInstalled();
             }
+            
         }
     }
 }
