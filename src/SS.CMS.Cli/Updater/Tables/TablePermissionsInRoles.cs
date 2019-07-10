@@ -36,7 +36,7 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(PermissionInfo.AppPermissions), nameof(GeneralPermissions)},
+                {nameof(Models.Permission.AppPermissions), nameof(GeneralPermissions)},
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

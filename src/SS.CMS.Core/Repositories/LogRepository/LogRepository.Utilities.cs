@@ -24,7 +24,7 @@ namespace SS.CMS.Core.Repositories
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
 
-                var logInfo = new LogInfo
+                var logInfo = new Log
                 {
                     UserId = userId,
                     IpAddress = ipAddress,

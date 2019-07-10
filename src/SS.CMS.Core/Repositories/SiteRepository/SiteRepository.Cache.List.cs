@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using SS.CMS.Data;
@@ -9,7 +10,7 @@ namespace SS.CMS.Core.Repositories
     public partial class SiteRepository
     {
         [Serializable]
-        private class CacheInfo
+        private class Cache
         {
             public int Id { get; set; }
             public string SiteName { get; set; }
@@ -20,25 +21,27 @@ namespace SS.CMS.Core.Repositories
             public int Taxis { get; set; }
         }
 
-        private async Task RemoveListCacheAsync()
+        private async Task RemoveCacheListAsync()
         {
             var cacheKey = _cache.GetListKey(this);
             await _cache.RemoveAsync(cacheKey);
         }
 
-        private async Task<List<CacheInfo>> GetListCacheAsync()
+        private async Task<List<Cache>> GetCacheListAsync()
         {
             var cacheKey = _cache.GetListKey(this);
             return await _cache.GetOrCreateAsync(cacheKey, async options =>
             {
                 var siteInfoList = await _repository.GetAllAsync(Q
-                .Select(Attr.Id, Attr.SiteName, Attr.SiteDir, Attr.TableName, Attr.IsRoot, Attr.ParentId, Attr.Taxis)
-                .OrderBy(Attr.IsRoot, Attr.Taxis, Attr.Id));
+                    .Select(Attr.Id, Attr.SiteName, Attr.SiteDir, Attr.TableName, Attr.IsRoot, Attr.ParentId, Attr.Taxis)
+                    .OrderBy(Attr.Taxis, Attr.Id)
+                );
 
-                var cacheInfoList = new List<CacheInfo>();
+                var cacheList = new List<Cache>();
+                Cache rootCache = null;
                 foreach (var siteInfo in siteInfoList)
                 {
-                    cacheInfoList.Add(new CacheInfo
+                    var cache = new Cache
                     {
                         Id = siteInfo.Id,
                         SiteName = siteInfo.SiteName,
@@ -47,11 +50,30 @@ namespace SS.CMS.Core.Repositories
                         IsRoot = siteInfo.IsRoot,
                         ParentId = siteInfo.ParentId,
                         Taxis = siteInfo.Taxis
-                    });
+                    };
+
+                    if (cache.IsRoot)
+                    {
+                        rootCache = cache;
+                    }
+                    else
+                    {
+                        cacheList.Add(cache);
+                    }
+                }
+                if (rootCache != null)
+                {
+                    cacheList.Insert(0, rootCache);
                 }
 
-                return cacheInfoList;
+                return cacheList;
             });
+        }
+
+        private async Task<List<Cache>> GetCacheListAsync(int parentId)
+        {
+            var cacheList = await GetCacheListAsync();
+            return cacheList.Where(x => x.ParentId == parentId).ToList();
         }
     }
 }

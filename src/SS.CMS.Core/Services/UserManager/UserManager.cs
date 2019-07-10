@@ -91,7 +91,7 @@ namespace SS.CMS.Core.Services
         //    return accessToken;
         //}
 
-        public string GetToken(UserInfo userInfo)
+        public string GetToken(User userInfo)
         {
             if (userInfo == null || userInfo.IsLockedOut) return null;
 
@@ -144,7 +144,7 @@ namespace SS.CMS.Core.Services
             return TranslateUtils.ToInt(_context.User.FindFirstValue(AuthTypes.ClaimTypes.UserId));
         }
 
-        public async Task<UserInfo> GetUserAsync()
+        public async Task<User> GetUserAsync()
         {
             var userName = GetUserName();
             if (userName == null) return null;

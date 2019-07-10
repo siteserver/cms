@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
 
-    <div class="card-box">
-      <div class="m-t-0 header-title">
-        创建新站点
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>{{ $t('route.settingsSitesCreate') }}</span>
       </div>
 
       <template v-if="pageType == 'selectType'">
@@ -189,7 +189,7 @@
           </div>
         </div>
 
-        <div v-if="!isRootExists && !isRoot" class="form-group">
+        <div v-if="siteList && siteList.length > 0" class="form-group">
           <label>
             上级站点
           </label>
@@ -215,7 +215,7 @@
             <small v-show="errors.has('tableHandWrite')" class="text-danger">{{ errors.first('tableHandWrite') }}</small>
           </label>
           <div class="m-2">
-            <div class="radio radio-primary form-check-inline">
+            <div v-if="tableNameList && tableNameList.length > 0" class="radio radio-primary form-check-inline">
               <input id="tableRule_Choose" v-model="tableRule" type="radio" value="Choose" name="tableRule">
               <label for="tableRule_Choose"> 选择内容表 </label>
             </div>
@@ -266,7 +266,7 @@
         </div>
       </template>
 
-    </div>
+    </el-card>
 
   </div>
 </template>
@@ -307,7 +307,7 @@ export default {
       isRoot: false,
       parentId: 0,
       siteDir: '',
-      tableRule: 'Choose',
+      tableRule: 'Create',
       tableChoose: '',
       tableHandWrite: '',
       isImportContents: true,

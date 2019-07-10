@@ -7,19 +7,19 @@ namespace SS.CMS.Repositories
 {
     public interface IRelatedFieldRepository : IRepository
     {
-        Task<int> InsertAsync(RelatedFieldInfo relatedFieldInfo);
+        Task<int> InsertAsync(RelatedField relatedFieldInfo);
 
-        Task<bool> UpdateAsync(RelatedFieldInfo relatedFieldInfo);
+        Task<bool> UpdateAsync(RelatedField relatedFieldInfo);
 
         Task DeleteAsync(int id);
 
-        Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int id);
+        Task<RelatedField> GetRelatedFieldInfoAsync(int id);
 
-        Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int siteId, string title);
+        Task<RelatedField> GetRelatedFieldInfoAsync(int siteId, string title);
 
         Task<string> GetTitleAsync(int id);
 
-        Task<IEnumerable<RelatedFieldInfo>> GetRelatedFieldInfoListAsync(int siteId);
+        Task<IEnumerable<RelatedField>> GetRelatedFieldInfoListAsync(int siteId);
 
         Task<IEnumerable<string>> GetTitleListAsync(int siteId);
 

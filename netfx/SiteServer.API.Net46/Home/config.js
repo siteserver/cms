@@ -1,1 +1,0 @@
-config.apiUrl = "../api/";

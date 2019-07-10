@@ -45,8 +45,8 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ChannelGroupInfo.GroupName), nameof(NodeGroupName)},
-                {nameof(ChannelGroupInfo.SiteId), nameof(PublishmentSystemId)}
+                {nameof(ChannelGroup.GroupName), nameof(NodeGroupName)},
+                {nameof(ChannelGroup.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

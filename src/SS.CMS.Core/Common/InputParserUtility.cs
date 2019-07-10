@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Common
 {
     public static class InputParserUtility
     {
-        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, SiteInfo siteInfo, TableStyleInfo styleInfo)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, Site siteInfo, TableStyle styleInfo)
         {
             if (!string.IsNullOrEmpty(content))
             {
@@ -20,7 +20,7 @@ namespace SS.CMS.Core.Common
             return string.Empty;
         }
 
-        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, string content, string separator, Site siteInfo, TableStyle styleInfo, string formatString, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var parsedContent = content;
 
@@ -100,7 +100,7 @@ namespace SS.CMS.Core.Common
             return parsedContent;
         }
 
-        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, ContentInfo contentInfo, string separator, SiteInfo siteInfo, TableStyleInfo styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
+        public static string GetContentByTableStyle(IFileManager fileManager, IUrlManager urlManager, ISettingsManager settingsManager, Content contentInfo, string separator, Site siteInfo, TableStyle styleInfo, string formatString, int no, NameValueCollection attributes, string innerHtml, bool isStlEntity)
         {
             var value = contentInfo.Get<string>(styleInfo.AttributeName);
             var parsedContent = string.Empty;
@@ -236,7 +236,7 @@ namespace SS.CMS.Core.Common
             return parsedContent;
         }
 
-        public static string GetImageOrFlashHtml(IUrlManager urlManager, SiteInfo siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetImageOrFlashHtml(IUrlManager urlManager, Site siteInfo, string imageUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(imageUrl))
@@ -298,7 +298,7 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetVideoHtml(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
+        public static string GetVideoHtml(IUrlManager urlManager, ISettingsManager settingsManager, Site siteInfo, string videoUrl, NameValueCollection attributes, bool isStlEntity)
         {
             var retVal = string.Empty;
             if (!string.IsNullOrEmpty(videoUrl))
@@ -319,7 +319,7 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetFileHtmlWithCount(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithCount(IUrlManager urlManager, ISettingsManager settingsManager, Site siteInfo, int channelId, int contentId, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 
@@ -355,7 +355,7 @@ namespace SS.CMS.Core.Common
             return retVal;
         }
 
-        public static string GetFileHtmlWithoutCount(IUrlManager urlManager, ISettingsManager settingsManager, SiteInfo siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
+        public static string GetFileHtmlWithoutCount(IUrlManager urlManager, ISettingsManager settingsManager, Site siteInfo, string fileUrl, NameValueCollection attributes, string innerHtml, bool isStlEntity, bool isLower, bool isUpper)
         {
             if (siteInfo == null || string.IsNullOrEmpty(fileUrl)) return string.Empty;
 

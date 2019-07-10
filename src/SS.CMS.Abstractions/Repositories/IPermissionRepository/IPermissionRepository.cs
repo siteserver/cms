@@ -7,7 +7,7 @@ namespace SS.CMS.Repositories
 {
     public interface IPermissionRepository : IRepository
     {
-        Task<int> InsertAsync(PermissionInfo permissionsInfo);
+        Task<int> InsertAsync(Models.Permission permissionsInfo);
 
         Task<bool> DeleteAsync(string roleName);
 

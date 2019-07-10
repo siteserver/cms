@@ -10,11 +10,11 @@ namespace SS.CMS.Core.Repositories
 {
     public class UserRoleRepository : IUserRoleRepository
     {
-        private readonly Repository<UserRoleInfo> _repository;
+        private readonly Repository<UserRole> _repository;
 
         public UserRoleRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<UserRoleInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<UserRole>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -24,11 +24,11 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(UserRoleInfo.Id);
-            public const string Guid = nameof(UserRoleInfo.Guid);
-            public const string LastModifiedDate = nameof(UserRoleInfo.LastModifiedDate);
-            public const string RoleId = nameof(UserRoleInfo.RoleId);
-            public const string UserId = nameof(UserRoleInfo.UserId);
+            public const string Id = nameof(UserRole.Id);
+            public const string Guid = nameof(UserRole.Guid);
+            public const string LastModifiedDate = nameof(UserRole.LastModifiedDate);
+            public const string RoleId = nameof(UserRole.RoleId);
+            public const string UserId = nameof(UserRole.UserId);
         }
 
         public async Task<IEnumerable<int>> GetUserNameListByRoleNameAsync(int roleId)
@@ -63,7 +63,7 @@ namespace SS.CMS.Core.Repositories
         {
             if (!await IsUserInRoleAsync(userId, roleId))
             {
-                return await _repository.InsertAsync(new UserRoleInfo
+                return await _repository.InsertAsync(new UserRole
                 {
                     UserId = userId,
                     RoleId = roleId

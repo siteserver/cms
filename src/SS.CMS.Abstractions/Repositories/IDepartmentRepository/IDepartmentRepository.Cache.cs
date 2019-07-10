@@ -10,7 +10,7 @@ namespace SS.CMS.Repositories
 
         string GetTreeItem(string name, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict);
 
-        Task<DepartmentInfo> GetDepartmentInfoAsync(int departmentId);
+        Task<Department> GetDepartmentInfoAsync(int departmentId);
 
         Task<string> GetDepartmentNameAsync(int departmentId);
 
@@ -18,6 +18,6 @@ namespace SS.CMS.Repositories
 
         Task<List<int>> GetDepartmentIdListAsync();
 
-        Task<List<KeyValuePair<int, DepartmentInfo>>> GetDepartmentInfoKeyValuePairAsync();
+        Task<List<KeyValuePair<int, Department>>> GetDepartmentInfoKeyValuePairAsync();
     }
 }

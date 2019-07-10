@@ -12,7 +12,7 @@ namespace SS.CMS.Core.Serialization.Components
 {
     internal class SiteIe
     {
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _siteInfo;
         private readonly string _siteContentDirectoryPath;
         private readonly ChannelIe _channelIe;
         private readonly ContentIe _contentIe;
@@ -21,7 +21,7 @@ namespace SS.CMS.Core.Serialization.Components
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
 
-        public SiteIe(SiteInfo siteInfo, string siteContentDirectoryPath)
+        public SiteIe(Site siteInfo, string siteContentDirectoryPath)
         {
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _siteInfo = siteInfo;
@@ -84,7 +84,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
             else
             {
-                var nodeInfo = new ChannelInfo();
+                var nodeInfo = new Channel();
                 await _channelIe.ImportNodeInfoAsync(nodeInfo, feed.AdditionalElements, parentId, indexNameList);
                 if (string.IsNullOrEmpty(nodeInfo.ChannelName)) return 0;
 

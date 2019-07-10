@@ -7,7 +7,7 @@ namespace SS.CMS.Core.StlParser.Models
 {
     public partial class DynamicInfo
     {
-        public static DynamicInfo GetDynamicInfo(ISettingsManager settingsManager, NameValueCollection queryString, string value, int page, UserInfo userInfo)
+        public static DynamicInfo GetDynamicInfo(ISettingsManager settingsManager, NameValueCollection queryString, string value, int page, User userInfo)
         {
             var dynamicInfo = TranslateUtils.JsonDeserialize<DynamicInfo>(settingsManager.Decrypt(value));
             if (dynamicInfo.ChannelId == 0)

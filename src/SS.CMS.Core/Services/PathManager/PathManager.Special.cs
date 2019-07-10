@@ -5,7 +5,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class PathManager
     {
-        public string GetSpecialDirectoryPath(SiteInfo siteInfo, string url)
+        public string GetSpecialDirectoryPath(Site siteInfo, string url)
         {
             var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
             return MapPath(siteInfo, virtualPath);

@@ -15,12 +15,12 @@ namespace SS.CMS.Core.Repositories
     public partial class TagRepository : ITagRepository
     {
         private readonly IDistributedCache _cache;
-        private readonly Repository<TagInfo> _repository;
+        private readonly Repository<Tag> _repository;
 
         public TagRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
-            _repository = new Repository<TagInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Tag>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -29,28 +29,28 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string SiteId = nameof(TagInfo.SiteId);
-            public const string ContentIdCollection = nameof(TagInfo.ContentIdCollection);
-            public const string Tag = nameof(TagInfo.Tag);
-            public const string UseNum = nameof(TagInfo.UseNum);
+            public const string SiteId = nameof(CMS.Models.Tag.SiteId);
+            public const string ContentIdCollection = nameof(CMS.Models.Tag.ContentIdCollection);
+            public const string Tag = nameof(CMS.Models.Tag.Value);
+            public const string UseNum = nameof(CMS.Models.Tag.UseNum);
         }
 
-        public async Task<int> InsertAsync(TagInfo tagInfo)
+        public async Task<int> InsertAsync(Tag tagInfo)
         {
             return await _repository.InsertAsync(tagInfo);
         }
 
-        public async Task<bool> UpdateAsync(TagInfo tagInfo)
+        public async Task<bool> UpdateAsync(Tag tagInfo)
         {
             return await _repository.UpdateAsync(tagInfo);
         }
 
-        public async Task<TagInfo> GetTagInfoAsync(int siteId, string tag)
+        public async Task<Tag> GetTagInfoAsync(int siteId, string tag)
         {
             return await _repository.GetAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.Tag, tag));
         }
 
-        public async Task<IEnumerable<TagInfo>> GetTagInfoListAsync(int siteId, int contentId)
+        public async Task<IEnumerable<Tag>> GetTagInfoListAsync(int siteId, int contentId)
         {
             var query = GetQuery(null, siteId, contentId);
             return await _repository.GetAllAsync(query);
@@ -75,7 +75,7 @@ namespace SS.CMS.Core.Repositories
         //     }), whereString, orderString, 0, totalNum);
         // }
 
-        private async Task<IEnumerable<TagInfo>> GetTagInfoListToCacheAsync(int siteId, int contentId, bool isOrderByCount, int totalNum)
+        private async Task<IEnumerable<Tag>> GetTagInfoListToCacheAsync(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
             var query = GetQuery(null, siteId, contentId).Limit(totalNum);
             if (isOrderByCount)

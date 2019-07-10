@@ -14,14 +14,14 @@ namespace SS.CMS.Core.Repositories
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
         private readonly ISettingsManager _settingsManager;
-        private readonly Repository<UserMenuInfo> _repository;
+        private readonly Repository<UserMenu> _repository;
 
         public UserMenuRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(UserMenuRepository));
             _settingsManager = settingsManager;
-            _repository = new Repository<UserMenuInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<UserMenu>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -31,11 +31,11 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(UserMenuInfo.Id);
-            public const string ParentId = nameof(UserMenuInfo.ParentId);
+            public const string Id = nameof(UserMenu.Id);
+            public const string ParentId = nameof(UserMenu.ParentId);
         }
 
-        public async Task<int> InsertAsync(UserMenuInfo menuInfo)
+        public async Task<int> InsertAsync(UserMenu menuInfo)
         {
             menuInfo.Id = await _repository.InsertAsync(menuInfo);
 
@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             return menuInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(UserMenuInfo menuInfo)
+        public async Task<bool> UpdateAsync(UserMenu menuInfo)
         {
             var updated = await _repository.UpdateAsync(menuInfo);
 
@@ -62,9 +62,9 @@ namespace SS.CMS.Core.Repositories
             return true;
         }
 
-        private async Task<List<UserMenuInfo>> GetUserMenuInfoListToCacheAsync()
+        private async Task<List<UserMenu>> GetUserMenuInfoListToCacheAsync()
         {
-            var list = new List<UserMenuInfo>();
+            var list = new List<UserMenu>();
             list.AddRange(await _repository.GetAllAsync());
 
             var systemMenus = SystemMenus.Value;

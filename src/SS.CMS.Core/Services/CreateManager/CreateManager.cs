@@ -427,7 +427,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        private async Task CreateContentAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
+        private async Task CreateContentAsync(Site siteInfo, Channel channelInfo, int contentId)
         {
             var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
 

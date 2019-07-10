@@ -12,13 +12,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
-        private readonly Repository<ChannelGroupInfo> _repository;
+        private readonly Repository<ChannelGroup> _repository;
 
         public ChannelGroupRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(ChannelGroupRepository));
-            _repository = new Repository<ChannelGroupInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<ChannelGroup>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -28,12 +28,12 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string GroupName = nameof(ChannelGroupInfo.GroupName);
-            public const string SiteId = nameof(ChannelGroupInfo.SiteId);
-            public const string Taxis = nameof(ChannelGroupInfo.Taxis);
+            public const string GroupName = nameof(ChannelGroup.GroupName);
+            public const string SiteId = nameof(ChannelGroup.SiteId);
+            public const string Taxis = nameof(ChannelGroup.Taxis);
         }
 
-        public async Task<int> InsertAsync(ChannelGroupInfo groupInfo)
+        public async Task<int> InsertAsync(ChannelGroup groupInfo)
         {
             var maxTaxis = await GetMaxTaxisAsync(groupInfo.SiteId);
             groupInfo.Taxis = maxTaxis + 1;
@@ -43,7 +43,7 @@ namespace SS.CMS.Core.Repositories
             return groupInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(ChannelGroupInfo groupInfo)
+        public async Task<bool> UpdateAsync(ChannelGroup groupInfo)
         {
             var updated = await _repository.UpdateAsync(groupInfo);
 
@@ -150,9 +150,9 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(_cacheKey);
         }
 
-        private async Task<Dictionary<int, List<ChannelGroupInfo>>> GetAllChannelGroupsToCacheAsync()
+        private async Task<Dictionary<int, List<ChannelGroup>>> GetAllChannelGroupsToCacheAsync()
         {
-            var allDict = new Dictionary<int, List<ChannelGroupInfo>>();
+            var allDict = new Dictionary<int, List<ChannelGroup>>();
 
             var groupList = await _repository.GetAllAsync(Q
                 .OrderByDesc(Attr.Taxis)
@@ -164,7 +164,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (list == null)
                 {
-                    list = new List<ChannelGroupInfo>();
+                    list = new List<ChannelGroup>();
                 }
 
                 list.Add(group);

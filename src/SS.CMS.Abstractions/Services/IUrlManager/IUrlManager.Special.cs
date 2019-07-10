@@ -5,10 +5,10 @@ namespace SS.CMS.Services
 {
     public partial interface IUrlManager
     {
-        string GetSpecialUrl(SiteInfo siteInfo, string url);
+        string GetSpecialUrl(Site siteInfo, string url);
 
-        Task<string> GetSpecialUrlAsync(SiteInfo siteInfo, int specialId);
+        Task<string> GetSpecialUrlAsync(Site siteInfo, int specialId);
 
-        Task<string> GetSpecialUrlAsync(SiteInfo siteInfo, int specialId, bool isLocal);
+        Task<string> GetSpecialUrlAsync(Site siteInfo, int specialId, bool isLocal);
     }
 }

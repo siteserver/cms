@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Repositories
         private readonly IChannelRepository _channelRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITableStyleItemRepository _tableStyleItemRepository;
-        private readonly Repository<TableStyleInfo> _repository;
+        private readonly Repository<TableStyle> _repository;
 
         public TableStyleRepository(IDistributedCache cache, ISettingsManager settingsManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository, IErrorLogRepository errorLogRepository)
         {
@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Repositories
             _channelRepository = channelRepository;
             _userRepository = userRepository;
             _tableStyleItemRepository = tableStyleItemRepository;
-            _repository = new Repository<TableStyleInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<TableStyle>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -37,11 +37,11 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(TableStyleInfo.Id);
-            public const string RelatedIdentity = nameof(TableStyleInfo.RelatedIdentity);
-            public const string TableName = nameof(TableStyleInfo.TableName);
-            public const string AttributeName = nameof(TableStyleInfo.AttributeName);
-            public const string Taxis = nameof(TableStyleInfo.Taxis);
+            public const string Id = nameof(TableStyle.Id);
+            public const string RelatedIdentity = nameof(TableStyle.RelatedIdentity);
+            public const string TableName = nameof(TableStyle.TableName);
+            public const string AttributeName = nameof(TableStyle.AttributeName);
+            public const string Taxis = nameof(TableStyle.Taxis);
         }
 
         public async Task<bool> IsExistsAsync(int relatedIdentity, string tableName, string attributeName)
@@ -51,7 +51,7 @@ namespace SS.CMS.Core.Repositories
             return entries.Any(x => x.Key == key);
         }
 
-        public async Task<int> InsertAsync(TableStyleInfo styleInfo)
+        public async Task<int> InsertAsync(TableStyle styleInfo)
         {
             var id = await _repository.InsertAsync(styleInfo);
             await _tableStyleItemRepository.InsertAllAsync(id, styleInfo.StyleItems);
@@ -61,7 +61,7 @@ namespace SS.CMS.Core.Repositories
             return id;
         }
 
-        public async Task UpdateAsync(TableStyleInfo info, bool deleteAndInsertStyleItems = true)
+        public async Task UpdateAsync(TableStyle info, bool deleteAndInsertStyleItems = true)
         {
             await _repository.UpdateAsync(info);
             if (deleteAndInsertStyleItems)

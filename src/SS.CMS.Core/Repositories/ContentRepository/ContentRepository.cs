@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Repositories
         private readonly ITagRepository _tagRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        private readonly Repository<ContentInfo> _repository;
+        private readonly Repository<Content> _repository;
 
         public ContentRepository(IDistributedCache cache, ISettingsManager settingsManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
         {
@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             _tagRepository = tagRepository;
             _errorLogRepository = errorLogRepository;
 
-            _repository = new Repository<ContentInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
+            _repository = new Repository<Content>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString), tableName);
         }
 
         public IDatabase Database => _repository.Database;
@@ -186,7 +186,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private async Task QueryWhereIsRelatedContentsAsync(Query query, bool isRelatedContents, int siteId, ChannelInfo channelInfo, int contentId)
+        private async Task QueryWhereIsRelatedContentsAsync(Query query, bool isRelatedContents, int siteId, Channel channelInfo, int contentId)
         {
             if (isRelatedContents && contentId > 0)
             {
@@ -208,7 +208,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private void QueryOrder(Query query, ChannelInfo channelInfo, string order)
+        private void QueryOrder(Query query, Channel channelInfo, string order)
         {
             QueryOrder(query, TaxisType.Parse(channelInfo.DefaultTaxisType), order);
         }

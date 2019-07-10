@@ -7,11 +7,11 @@ namespace SS.CMS.Repositories
 {
     public partial interface ISpecialRepository
     {
-        Task<SpecialInfo> GetSpecialInfoAsync(int siteId, int specialId);
+        Task<Special> GetSpecialInfoAsync(int siteId, int specialId);
 
         Task<string> GetTitleAsync(int siteId, int specialId);
 
-        Task<List<TemplateInfo>> GetTemplateInfoListAsync(SiteInfo siteInfo, int specialId, IPathManager pathManager);
+        Task<List<Template>> GetTemplateInfoListAsync(Site siteInfo, int specialId, IPathManager pathManager);
 
         Task<List<int>> GetAllSpecialIdListAsync(int siteId);
     }

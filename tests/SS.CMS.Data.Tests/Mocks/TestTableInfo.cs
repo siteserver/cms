@@ -3,31 +3,31 @@ using SS.CMS.Data.Utils;
 
 namespace SS.CMS.Data.Tests.Mocks
 {
-    [Table("TestTable")]
+    [DataTable("TestTable")]
     public class TestTableInfo : Entity
     {
-        [TableColumn(Length = 100)]
+        [DataColumn(Length = 100)]
         public string TypeVarChar100 { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public string TypeVarCharDefault { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public bool TypeBool { get; set; }
 
-        [TableColumn(Text = true)]
+        [DataColumn(Text = true)]
         public string Content { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public int Num { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public decimal Currency { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public DateTime? Date { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         private string IsLockedOut { get; set; }
 
         public bool Locked

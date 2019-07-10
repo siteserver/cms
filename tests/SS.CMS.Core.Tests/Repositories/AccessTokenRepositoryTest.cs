@@ -23,7 +23,7 @@ namespace SS.CMS.Core.Tests.Repositories
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            var accessTokenInfo = new AccessTokenInfo();
+            var accessTokenInfo = new AccessToken();
             await _fixture.AccessTokenRepository.InsertAsync(accessTokenInfo);
             Assert.True(accessTokenInfo.Id > 0);
             var token = accessTokenInfo.Token;
@@ -54,7 +54,7 @@ namespace SS.CMS.Core.Tests.Repositories
 
             Assert.False(exists);
 
-            var accessTokenInfo = new AccessTokenInfo
+            var accessTokenInfo = new AccessToken
             {
                 Title = testTitle
             };
@@ -73,7 +73,7 @@ namespace SS.CMS.Core.Tests.Repositories
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            var accessTokenInfo = new AccessTokenInfo
+            var accessTokenInfo = new AccessToken
             {
                 Title = "title"
             };

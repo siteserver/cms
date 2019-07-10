@@ -13,10 +13,10 @@ namespace SS.CMS.Core.Serialization.Components
 {
     internal class ChannelIe
     {
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _siteInfo;
         private readonly ITemplateRepository _templateRepository;
 
-        public ChannelIe(SiteInfo siteInfo)
+        public ChannelIe(Site siteInfo)
         {
             _siteInfo = siteInfo;
         }
@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Serialization.Components
         private const string ChannelTemplateName = "ChannelTemplateName";
         private const string ContentTemplateName = "ContentTemplateName";
 
-        public async Task ImportNodeInfoAsync(ChannelInfo channelInfo, ScopedElementCollection additionalElements, int parentId, IEnumerable<string> indexNames)
+        public async Task ImportNodeInfoAsync(Channel channelInfo, ScopedElementCollection additionalElements, int parentId, IEnumerable<string> indexNames)
         {
             var indexNameList = new List<string>();
             if (indexNames != null)
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Serialization.Components
             channelInfo.ExtendValues = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues);
         }
 
-        public async Task<AtomFeed> ExportNodeInfoAsync(ChannelInfo channelInfo)
+        public async Task<AtomFeed> ExportNodeInfoAsync(Channel channelInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 

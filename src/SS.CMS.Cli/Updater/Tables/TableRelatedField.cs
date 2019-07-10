@@ -48,9 +48,9 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(RelatedFieldInfo.Id), nameof(RelatedFieldId)},
-                {nameof(RelatedFieldInfo.Title), nameof(RelatedFieldName)},
-                {nameof(RelatedFieldInfo.SiteId), nameof(PublishmentSystemId)}
+                {nameof(RelatedField.Id), nameof(RelatedFieldId)},
+                {nameof(RelatedField.Title), nameof(RelatedFieldName)},
+                {nameof(RelatedField.SiteId), nameof(PublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

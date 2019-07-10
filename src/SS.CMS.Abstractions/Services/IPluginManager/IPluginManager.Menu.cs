@@ -10,10 +10,10 @@ namespace SS.CMS.Services
 
         Task<List<Menu>> GetSiteMenusAsync(IUrlManager urlManager, int siteId);
 
-        Task<List<Menu>> GetContentMenusAsync(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo);
+        Task<List<Menu>> GetContentMenusAsync(IUrlManager urlManager, List<string> pluginIds, Content contentInfo);
 
-        Task<List<Permission>> GetTopPermissionsAsync();
+        Task<List<MenuPermission>> GetTopPermissionsAsync();
 
-        Task<List<Permission>> GetSitePermissionsAsync(int siteId);
+        Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId);
     }
 }

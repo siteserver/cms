@@ -13,9 +13,9 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class SpecialRepository
     {
-        public async Task<SpecialInfo> GetSpecialInfoAsync(int siteId, int specialId)
+        public async Task<Special> GetSpecialInfoAsync(int siteId, int specialId)
         {
-            SpecialInfo specialInfo = null;
+            Special specialInfo = null;
             var specialInfoDictionary = await GetSpecialInfoDictionaryBySiteIdAsync(siteId);
 
             if (specialInfoDictionary != null && specialInfoDictionary.ContainsKey(specialId))
@@ -38,9 +38,9 @@ namespace SS.CMS.Core.Repositories
             return title;
         }
 
-        public async Task<List<TemplateInfo>> GetTemplateInfoListAsync(SiteInfo siteInfo, int specialId, IPathManager pathManager)
+        public async Task<List<Template>> GetTemplateInfoListAsync(Site siteInfo, int specialId, IPathManager pathManager)
         {
-            var list = new List<TemplateInfo>();
+            var list = new List<Template>();
 
             var specialInfo = await GetSpecialInfoAsync(siteInfo.Id, specialId);
             if (specialInfo != null)
@@ -53,7 +53,7 @@ namespace SS.CMS.Core.Repositories
                 {
                     var relatedPath = PathUtils.GetPathDifference(srcDirectoryPath, htmlFilePath);
 
-                    var templateInfo = new TemplateInfo
+                    var templateInfo = new Template
                     {
                         Id = 0,
                         Content = await GetContentByFilePathAsync(htmlFilePath),

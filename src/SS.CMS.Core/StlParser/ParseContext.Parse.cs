@@ -174,7 +174,7 @@ namespace SS.CMS.Core.StlParser
             IsInnerElement = isInnerElement;
         }
 
-        public async Task<string> ParseTemplatePreviewAsync(SiteInfo siteInfo, string template)
+        public async Task<string> ParseTemplatePreviewAsync(Site siteInfo, string template)
         {
             if (string.IsNullOrEmpty(template)) return string.Empty;
 

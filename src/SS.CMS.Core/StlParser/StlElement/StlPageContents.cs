@@ -23,7 +23,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
         private string _stlPageContentsElement;
 
-        private IEnumerable<ContentInfo> _contentInfoList;
+        private IEnumerable<Content> _contentInfoList;
         private ParseContext _parseContext;
         private ListInfo _listInfo;
 
@@ -47,7 +47,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         }
 
         //API StlActionsSearchController调用
-        public async Task LoadAsync(string stlPageContentsElement, ParseContext parseContext, int pageNum, ChannelInfo channelInfo)
+        public async Task LoadAsync(string stlPageContentsElement, ParseContext parseContext, int pageNum, Channel channelInfo)
         {
             _parseContext = parseContext;
 

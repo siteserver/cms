@@ -14,14 +14,14 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(cacheKey);
         }
 
-        private async Task<ChannelInfo> GetEntityCacheAsync(int channelId)
+        private async Task<Channel> GetEntityCacheAsync(int channelId)
         {
             if (channelId == 0) return null;
 
             var cacheKey = _cache.GetEntityKey(this, channelId);
             return await _cache.GetOrCreateAsync(cacheKey, async options =>
             {
-                return await _repository.GetAsync<ChannelInfo>(Q
+                return await _repository.GetAsync<Channel>(Q
                 .Where(Attr.Id, channelId));
             });
         }

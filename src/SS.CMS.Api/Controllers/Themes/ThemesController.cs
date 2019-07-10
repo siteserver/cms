@@ -33,7 +33,7 @@ namespace SS.CMS.Api.Controllers.Themes
 
         [Authorize]
         [HttpGet(Route)]
-        public ActionResult<IList<PackageInfo>> List()
+        public ActionResult<IList<Package>> List()
         {
             var themeManager = new ThemeManager(_pathManager);
 

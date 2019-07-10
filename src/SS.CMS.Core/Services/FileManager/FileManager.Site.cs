@@ -13,7 +13,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class FileManager
     {
-        public async Task TranslateAsync(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType)
+        public async Task TranslateAsync(ICreateManager createManager, Site siteInfo, int channelId, int contentId, string translateCollection, TranslateContentType translateType)
         {
             var translateList = TranslateUtils.StringCollectionToStringList(translateCollection);
             foreach (var translate in translateList)
@@ -30,7 +30,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task TranslateAsync(ICreateManager createManager, SiteInfo siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType)
+        public async Task TranslateAsync(ICreateManager createManager, Site siteInfo, int channelId, int contentId, int targetSiteId, int targetChannelId, TranslateContentType translateType)
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
@@ -145,7 +145,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId)
+        public async Task DeleteAsync(Site siteInfo, Channel channelInfo, int contentId)
         {
             if (siteInfo == null || contentId <= 0) return;
 
@@ -168,7 +168,7 @@ namespace SS.CMS.Core.Services
             channelInfo.ContentRepository.RemoveCache(channelInfo.ContentRepository.TableName, channelInfo.Id);
         }
 
-        public string TextEditorContentEncode(SiteInfo siteInfo, string content)
+        public string TextEditorContentEncode(Site siteInfo, string content)
         {
             if (siteInfo == null) return content;
 
@@ -198,7 +198,7 @@ namespace SS.CMS.Core.Services
             return builder.ToString();
         }
 
-        public string TextEditorContentDecode(SiteInfo siteInfo, string content, bool isLocal)
+        public string TextEditorContentDecode(Site siteInfo, string content, bool isLocal)
         {
             if (siteInfo == null) return content;
 
@@ -225,7 +225,7 @@ namespace SS.CMS.Core.Services
             return builder.ToString();
         }
 
-        public async Task DeleteContentsByPageAsync(SiteInfo siteInfo, List<int> channelIdList)
+        public async Task DeleteContentsByPageAsync(Site siteInfo, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
@@ -241,7 +241,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteContentsAsync(SiteInfo siteInfo, int channelId, IEnumerable<int> contentIdList)
+        public async Task DeleteContentsAsync(Site siteInfo, int channelId, IEnumerable<int> contentIdList)
         {
             foreach (var contentId in contentIdList)
             {
@@ -249,13 +249,13 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteContentAsync(SiteInfo siteInfo, int channelId, int contentId)
+        public async Task DeleteContentAsync(Site siteInfo, int channelId, int contentId)
         {
             var filePath = await _pathManager.GetContentPageFilePathAsync(siteInfo, channelId, contentId, 0);
             FileUtils.DeleteFileIfExists(filePath);
         }
 
-        public async Task DeleteChannelsAsync(SiteInfo siteInfo, List<int> channelIdList)
+        public async Task DeleteChannelsAsync(Site siteInfo, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
@@ -269,7 +269,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteChannelsByPageAsync(SiteInfo siteInfo, List<int> channelIdList)
+        public async Task DeleteChannelsByPageAsync(Site siteInfo, List<int> channelIdList)
         {
             foreach (var channelId in channelIdList)
             {
@@ -303,7 +303,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteFilesAsync(SiteInfo siteInfo, List<int> templateIdList)
+        public async Task DeleteFilesAsync(Site siteInfo, List<int> templateIdList)
         {
             foreach (var templateId in templateIdList)
             {

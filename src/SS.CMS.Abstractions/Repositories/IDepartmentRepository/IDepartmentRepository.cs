@@ -7,9 +7,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface IDepartmentRepository : IRepository
     {
-        Task<int> InsertAsync(DepartmentInfo departmentInfo);
+        Task<int> InsertAsync(Department departmentInfo);
 
-        Task<bool> UpdateAsync(DepartmentInfo departmentInfo);
+        Task<bool> UpdateAsync(Department departmentInfo);
 
         Task UpdateTaxisAsync(int selectedId, bool isSubtract);
 

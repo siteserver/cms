@@ -21,7 +21,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getMenus } from '@/api/user'
-import { parseRoutes } from '@/utils/permission'
+import { getSites } from '@/api/sites'
+import { parseRoutes, getSitesRouters } from '@/utils/permission'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import sitesRouters from '@/router/sites'
@@ -71,7 +72,12 @@ export default {
   },
   methods: {
     async getRoutes(topMenu) {
+      console.log(topMenu)
       if (topMenu === '/sites') {
+        const sites = await getSites()
+        this.routes = getSitesRouters(sites)
+        console.log(this.routes)
+      } else if (topMenu === '/sites/:id') {
         this.routes = sitesRouters
       } else if (topMenu === '/plugins') {
         this.routes = pluginsRouters

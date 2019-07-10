@@ -1,1 +1,0 @@
-﻿<%@ Page language="c#" trace="false" Inherits="SiteServer.BackgroundPages.PageValidateCode" %>

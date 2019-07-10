@@ -15,13 +15,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
-        private readonly Repository<AccessTokenInfo> _repository;
+        private readonly Repository<AccessToken> _repository;
         private readonly ISettingsManager _settingsManager;
         public AccessTokenRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(AreaRepository));
-            _repository = new Repository<AccessTokenInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<AccessToken>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
         }
 
@@ -32,10 +32,10 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Title = nameof(AccessTokenInfo.Title);
+            public const string Title = nameof(AccessToken.Title);
         }
 
-        public async Task<int> InsertAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<int> InsertAsync(AccessToken accessTokenInfo)
         {
             accessTokenInfo.Token = _settingsManager.Encrypt(StringUtils.GetGuid());
 
@@ -47,7 +47,7 @@ namespace SS.CMS.Core.Repositories
             return accessTokenInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<bool> UpdateAsync(AccessToken accessTokenInfo)
         {
             var updated = await _repository.UpdateAsync(accessTokenInfo);
             if (updated)
@@ -67,7 +67,7 @@ namespace SS.CMS.Core.Repositories
             return deleted;
         }
 
-        public async Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo)
+        public async Task<string> RegenerateAsync(AccessToken accessTokenInfo)
         {
             accessTokenInfo.Token = TranslateUtils.EncryptStringBySecretKey(StringUtils.GetGuid(), _settingsManager.SecurityKey);
 
@@ -86,21 +86,21 @@ namespace SS.CMS.Core.Repositories
             return StringUtils.ContainsIgnoreCase(TranslateUtils.StringCollectionToStringList(tokenInfo.Scopes), scope);
         }
 
-        public async Task<AccessTokenInfo> GetAsync(string token)
+        public async Task<AccessToken> GetAsync(string token)
         {
             var dict = await GetAccessTokenDictionaryAsync();
 
             return dict.TryGetValue(token, out var tokenInfo) ? tokenInfo : null;
         }
 
-        public async Task<AccessTokenInfo> GetAsync(int id)
+        public async Task<AccessToken> GetAsync(int id)
         {
             var dict = await GetAccessTokenDictionaryAsync();
 
             return dict.Where(x => x.Value.Id == id).Select(x => x.Value).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<AccessTokenInfo>> GetAllAsync()
+        public async Task<IEnumerable<AccessToken>> GetAllAsync()
         {
             var dict = await GetAccessTokenDictionaryAsync();
 
@@ -114,14 +114,14 @@ namespace SS.CMS.Core.Repositories
             return dict.Any(x => x.Value != null && x.Value.Title == title);
         }
 
-        private async Task<Dictionary<string, AccessTokenInfo>> GetAccessTokenDictionaryAsync()
+        private async Task<Dictionary<string, AccessToken>> GetAccessTokenDictionaryAsync()
         {
             return await
                 _cache.GetOrCreateAsync(_cacheKey, async entry =>
                 {
                     entry.SlidingExpiration = TimeSpan.FromHours(1);
 
-                    var retVal = new Dictionary<string, AccessTokenInfo>();
+                    var retVal = new Dictionary<string, AccessToken>();
                     foreach (var accessTokenInfo in await _repository.GetAllAsync())
                     {
                         var token = TranslateUtils.DecryptStringBySecretKey(accessTokenInfo.Token, _settingsManager.SecurityKey);

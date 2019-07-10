@@ -15,8 +15,8 @@ namespace SS.CMS.Repositories
 
         Task<int> GetCountAsync();
 
-        Task<IEnumerable<UserLogInfo>> ListAsync(int userId, int totalNum, string action);
+        Task<IEnumerable<UserLog>> ListAsync(int userId, int totalNum, string action);
 
-        Task<IEnumerable<UserLogInfo>> ApiGetLogsAsync(int userId, int offset, int limit);
+        Task<IEnumerable<UserLog>> ApiGetLogsAsync(int userId, int offset, int limit);
     }
 }

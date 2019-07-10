@@ -173,7 +173,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return await ParseImplAsync(parseContext, siteInfo, type, formatString, separator, startIndex, length, wordNum, ellipsis, replace, to, isClearTags, isReturnToBr, isLower, isUpper);
         }
 
-        private static async Task<string> ParseImplAsync(ParseContext parseContext, SiteInfo siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, Site siteInfo, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper)
         {
             if (siteInfo == null) return string.Empty;
 

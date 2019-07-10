@@ -154,7 +154,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
-                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
+                var nodeInfo = (Channel)theChannelInfo.Clone();
                 if (theChannelId == parseContext.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             private readonly bool _isDisplay;
             private readonly bool _selected;
             private readonly PageInfo _pageInfo;
-            private readonly ChannelInfo _nodeInfo;
+            private readonly Channel _nodeInfo;
             private readonly bool _hasChildren;
             private readonly string _linkUrl;
             private readonly string _target;
@@ -212,7 +212,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             private readonly int _level;
             private readonly ParseContext _parseContext;
 
-            public StlTreeItemNotAjax(ParseContext parseContext, bool isDisplay, bool selected, ChannelInfo nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topChannelId, int level)
+            public StlTreeItemNotAjax(ParseContext parseContext, bool isDisplay, bool selected, Channel nodeInfo, bool hasChildren, string linkUrl, string target, bool isShowTreeLine, bool isShowContentNum, bool[] isLastNodeArray, string currentFormatString, int topChannelId, int level)
             {
                 _parseContext = parseContext;
                 _isDisplay = isDisplay;
@@ -595,7 +595,7 @@ var stltree_isNodeTree = {isNodeTree};
             foreach (var theChannelId in theChannelIdList)
             {
                 var theChannelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
-                var nodeInfo = (ChannelInfo)theChannelInfo.Clone();
+                var nodeInfo = (Channel)theChannelInfo.Clone();
                 if (theChannelId == parseContext.SiteId && !string.IsNullOrEmpty(title))
                 {
                     nodeInfo.ChannelName = title;
@@ -616,7 +616,7 @@ var stltree_isNodeTree = {isNodeTree};
             return htmlBuilder.ToString();
         }
 
-        public static async Task<string> GetChannelRowHtmlAsync(ParseContext parseContext, SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParantsCount, int currentChannelId, bool isLocal)
+        public static async Task<string> GetChannelRowHtmlAsync(ParseContext parseContext, Site siteInfo, Channel nodeInfo, string target, bool isShowTreeLine, bool isShowContentNum, string currentFormatString, int topChannelId, int topParantsCount, int currentChannelId, bool isLocal)
         {
             var nodeTreeItem = new StlTreeItemAjax();
             await nodeTreeItem.LoadAsync(parseContext, siteInfo, nodeInfo, target, isShowContentNum, currentFormatString,
@@ -641,8 +641,8 @@ var stltree_isNodeTree = {isNodeTree};
             private string _iconMinusUrl;
             private string _iconPlusUrl;
 
-            private SiteInfo _siteInfo;
-            private ChannelInfo _nodeInfo;
+            private Site _siteInfo;
+            private Channel _nodeInfo;
             private bool _hasChildren;
             private string _linkUrl;
             private string _target;
@@ -653,7 +653,7 @@ var stltree_isNodeTree = {isNodeTree};
             private int _currentChannelId;
             private ParseContext _parseContext;
 
-            public async Task LoadAsync(ParseContext parseContext, SiteInfo siteInfo, ChannelInfo nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
+            public async Task LoadAsync(ParseContext parseContext, Site siteInfo, Channel nodeInfo, string target, bool isShowContentNum, string currentFormatString, int topChannelId, int topParentsCount, int currentChannelId, bool isLocal)
             {
                 _parseContext = parseContext;
                 _siteInfo = siteInfo;

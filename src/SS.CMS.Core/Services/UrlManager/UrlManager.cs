@@ -154,7 +154,7 @@ namespace SS.CMS.Core.Services
         //    });
         //}
 
-        public string GetWebUrl(SiteInfo siteInfo, params string[] paths)
+        public string GetWebUrl(Site siteInfo, params string[] paths)
         {
             var webUrl = siteInfo.IsSeparatedWeb
                 ? siteInfo.SeparatedWebUrl
@@ -163,7 +163,7 @@ namespace SS.CMS.Core.Services
             return RemoveDefaultFileName(siteInfo, webUrl);
         }
 
-        public string GetAssetsUrl(SiteInfo siteInfo, params string[] paths)
+        public string GetAssetsUrl(Site siteInfo, params string[] paths)
         {
             var assetsUrl = siteInfo.IsSeparatedAssets
                 ? siteInfo.SeparatedAssetsUrl
@@ -171,7 +171,7 @@ namespace SS.CMS.Core.Services
             return PageUtils.Combine(assetsUrl, PageUtils.Combine(paths));
         }
 
-        public string GetHomeUrl(SiteInfo siteInfo, params string[] paths)
+        public string GetHomeUrl(Site siteInfo, params string[] paths)
         {
             var assetsUrl = siteInfo.IsSeparatedAssets
                 ? siteInfo.SeparatedAssetsUrl
@@ -179,12 +179,12 @@ namespace SS.CMS.Core.Services
             return PageUtils.Combine(assetsUrl, PageUtils.Combine(paths));
         }
 
-        public string GetSiteUrl(SiteInfo siteInfo, bool isLocal)
+        public string GetSiteUrl(Site siteInfo, bool isLocal)
         {
             return GetSiteUrl(siteInfo, string.Empty, isLocal);
         }
 
-        public string GetSiteUrl(SiteInfo siteInfo, string requestPath, bool isLocal)
+        public string GetSiteUrl(Site siteInfo, string requestPath, bool isLocal)
         {
             var url = isLocal
                 ? GetLocalSiteUrl(siteInfo, requestPath)
@@ -193,7 +193,7 @@ namespace SS.CMS.Core.Services
             return RemoveDefaultFileName(siteInfo, url);
         }
 
-        public string GetSiteUrlByPhysicalPath(SiteInfo siteInfo, string physicalPath, bool isLocal)
+        public string GetSiteUrlByPhysicalPath(Site siteInfo, string physicalPath, bool isLocal)
         {
             if (string.IsNullOrEmpty(physicalPath)) return GetWebUrl(siteInfo);
 
@@ -205,7 +205,7 @@ namespace SS.CMS.Core.Services
             return GetSiteUrl(siteInfo, requestPath, isLocal);
         }
 
-        private string GetRemoteSiteUrl(SiteInfo siteInfo, string requestPath)
+        private string GetRemoteSiteUrl(Site siteInfo, string requestPath)
         {
             var url = GetWebUrl(siteInfo);
 
@@ -244,7 +244,7 @@ namespace SS.CMS.Core.Services
             return url;
         }
 
-        private string GetLocalSiteUrl(SiteInfo siteInfo, string requestPath)
+        private string GetLocalSiteUrl(Site siteInfo, string requestPath)
         {
             var url = ParseNavigationUrl($"~/{siteInfo.SiteDir}");
 
@@ -275,7 +275,7 @@ namespace SS.CMS.Core.Services
         }
 
         // 得到发布系统首页地址
-        public async Task<string> GetIndexPageUrlAsync(SiteInfo siteInfo, bool isLocal)
+        public async Task<string> GetIndexPageUrlAsync(Site siteInfo, bool isLocal)
         {
             var indexTemplateId = await _templateRepository.GetIndexTemplateIdAsync(siteInfo.Id);
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(indexTemplateId);
@@ -287,7 +287,7 @@ namespace SS.CMS.Core.Services
             return RemoveDefaultFileName(siteInfo, url);
         }
 
-        public async Task<string> GetFileUrlAsync(SiteInfo siteInfo, int fileTemplateId, bool isLocal)
+        public async Task<string> GetFileUrlAsync(Site siteInfo, int fileTemplateId, bool isLocal)
         {
             var createdFileFullName = await _templateRepository.GetCreatedFileFullNameAsync(fileTemplateId);
 
@@ -298,12 +298,12 @@ namespace SS.CMS.Core.Services
             return RemoveDefaultFileName(siteInfo, url);
         }
 
-        public async Task<string> GetContentUrlAsync(SiteInfo siteInfo, ContentInfo contentInfo, bool isLocal)
+        public async Task<string> GetContentUrlAsync(Site siteInfo, Content contentInfo, bool isLocal)
         {
             return await GetContentUrlByIdAsync(siteInfo, contentInfo, isLocal);
         }
 
-        public async Task<string> GetContentUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal)
+        public async Task<string> GetContentUrlAsync(Site siteInfo, Channel channelInfo, int contentId, bool isLocal)
         {
             var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
             return await GetContentUrlByIdAsync(siteInfo, contentInfo, isLocal);
@@ -313,7 +313,7 @@ namespace SS.CMS.Core.Services
         /// 对GetContentUrlByID的优化
         /// 通过传入参数contentInfoCurrent，避免对ContentInfo查询太多
         /// </summary>
-        private async Task<string> GetContentUrlByIdAsync(SiteInfo siteInfo, ContentInfo contentInfoCurrent, bool isLocal)
+        private async Task<string> GetContentUrlByIdAsync(Site siteInfo, Content contentInfoCurrent, bool isLocal)
         {
             if (contentInfoCurrent == null) return PageUtils.UnClickableUrl;
 
@@ -371,7 +371,7 @@ namespace SS.CMS.Core.Services
             return GetSiteUrl(siteInfo, contentUrl, false);
         }
 
-        private async Task<string> GetContentUrlByIdAsync(SiteInfo siteInfo, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal)
+        private async Task<string> GetContentUrlByIdAsync(Site siteInfo, int channelId, int contentId, int sourceId, int referenceId, string linkUrl, bool isLocal)
         {
             if (isLocal)
             {
@@ -417,7 +417,7 @@ namespace SS.CMS.Core.Services
             return GetSiteUrl(siteInfo, contentUrl, false);
         }
 
-        private async Task<string> GetChannelUrlNotComputedAsync(SiteInfo siteInfo, int channelId, bool isLocal)
+        private async Task<string> GetChannelUrlNotComputedAsync(Site siteInfo, int channelId, bool isLocal)
         {
             if (channelId == siteInfo.Id)
             {
@@ -449,7 +449,7 @@ namespace SS.CMS.Core.Services
         }
 
         //得到栏目经过计算后的连接地址
-        public async Task<string> GetChannelUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isLocal)
+        public async Task<string> GetChannelUrlAsync(Site siteInfo, Channel channelInfo, bool isLocal)
         {
             if (channelInfo == null) return string.Empty;
 
@@ -565,7 +565,7 @@ namespace SS.CMS.Core.Services
             return RemoveDefaultFileName(siteInfo, url);
         }
 
-        private string RemoveDefaultFileName(SiteInfo siteInfo, string url)
+        private string RemoveDefaultFileName(Site siteInfo, string url)
         {
             if (!siteInfo.IsCreateUseDefaultFileName || string.IsNullOrEmpty(url)) return url;
 
@@ -574,7 +574,7 @@ namespace SS.CMS.Core.Services
                 : url;
         }
 
-        public async Task<string> GetInputChannelUrlAsync(SiteInfo siteInfo, ChannelInfo nodeInfo, bool isLocal)
+        public async Task<string> GetInputChannelUrlAsync(Site siteInfo, Channel nodeInfo, bool isLocal)
         {
             var channelUrl = await GetChannelUrlAsync(siteInfo, nodeInfo, isLocal);
             if (string.IsNullOrEmpty(channelUrl)) return channelUrl;
@@ -602,7 +602,7 @@ namespace SS.CMS.Core.Services
         }
 
         //根据发布系统属性判断是否为相对路径并返回解析后路径
-        public string ParseNavigationUrl(SiteInfo siteInfo, string url, bool isLocal)
+        public string ParseNavigationUrl(Site siteInfo, string url, bool isLocal)
         {
             if (string.IsNullOrEmpty(url)) return string.Empty;
 
@@ -617,7 +617,7 @@ namespace SS.CMS.Core.Services
             return ParseNavigationUrl(url);
         }
 
-        public string GetVirtualUrl(SiteInfo siteInfo, string url)
+        public string GetVirtualUrl(Site siteInfo, string url)
         {
             var relatedSiteUrl = ParseNavigationUrl($"~/{siteInfo.SiteDir}");
             var virtualUrl = StringUtils.ReplaceStartsWith(url, relatedSiteUrl, "@/");
@@ -679,7 +679,7 @@ namespace SS.CMS.Core.Services
             return GetHomeUploadUrl(userId.ToString(), relatedUrl);
         }
 
-        public string GetUserAvatarUrl(UserInfo userInfo)
+        public string GetUserAvatarUrl(User userInfo)
         {
             var imageUrl = userInfo?.AvatarUrl;
 

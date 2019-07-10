@@ -57,8 +57,8 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ConfigInfo.ExtendValues), nameof(SystemConfig)},
-                {nameof(ConfigInfo.ExtendValues), nameof(SettingsXml)}
+                {nameof(Config.ExtendValues), nameof(SystemConfig)},
+                {nameof(Config.ExtendValues), nameof(SettingsXml)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

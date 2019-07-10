@@ -9,13 +9,13 @@ namespace SS.CMS.Core.Common
 {
     public class VisualInfo
     {
-        public SiteInfo SiteInfo { get; private set; }
+        public Site SiteInfo { get; private set; }
 
         public int ChannelId { get; private set; }
 
         public int ContentId { get; private set; }
 
-        public TemplateInfo TemplateInfo { get; private set; }
+        public Template TemplateInfo { get; private set; }
 
         public EContextType ContextType { get; private set; }
 

@@ -12,6 +12,6 @@ namespace SS.CMS.Services
 
         Task<string> GetSiteUrlByFilePathAsync(string filePath);
 
-        void PutImagePaths(SiteInfo siteInfo, ContentInfo contentInfo, NameValueCollection collection);
+        void PutImagePaths(Site siteInfo, Content contentInfo, NameValueCollection collection);
     }
 }

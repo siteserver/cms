@@ -14,13 +14,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
-        private readonly Repository<AreaInfo> _repository;
+        private readonly Repository<Area> _repository;
 
         public AreaRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(AreaRepository));
-            _repository = new Repository<AreaInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Area>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -30,15 +30,15 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(AreaInfo.Id);
-            public const string ParentId = nameof(AreaInfo.ParentId);
-            public const string ParentsPath = nameof(AreaInfo.ParentsPath);
-            public const string ChildrenCount = nameof(AreaInfo.ChildrenCount);
-            public const string Taxis = nameof(AreaInfo.Taxis);
-            public const string IsLastNode = nameof(AreaInfo.IsLastNode);
+            public const string Id = nameof(Area.Id);
+            public const string ParentId = nameof(Area.ParentId);
+            public const string ParentsPath = nameof(Area.ParentsPath);
+            public const string ChildrenCount = nameof(Area.ChildrenCount);
+            public const string Taxis = nameof(Area.Taxis);
+            public const string IsLastNode = nameof(Area.IsLastNode);
         }
 
-        private async Task<int> InsertAsync(AreaInfo parentInfo, AreaInfo areaInfo)
+        private async Task<int> InsertAsync(Area parentInfo, Area areaInfo)
         {
             if (parentInfo != null)
             {
@@ -209,7 +209,7 @@ namespace SS.CMS.Core.Repositories
                 .OrWhereStarts(Attr.ParentsPath, parentPath + ",")) ?? 0;
         }
 
-        public async Task<int> InsertAsync(AreaInfo areaInfo)
+        public async Task<int> InsertAsync(Area areaInfo)
         {
             var parentAreaInfo = await _repository.GetAsync(areaInfo.ParentId);
 
@@ -219,7 +219,7 @@ namespace SS.CMS.Core.Repositories
             return areaInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(AreaInfo areaInfo)
+        public async Task<bool> UpdateAsync(Area areaInfo)
         {
             var updated = await _repository.UpdateAsync(areaInfo);
             if (updated)
@@ -272,7 +272,7 @@ namespace SS.CMS.Core.Repositories
             return true;
         }
 
-        private async Task<IEnumerable<AreaInfo>> GetAreaInfoListAsync()
+        private async Task<IEnumerable<Area>> GetAreaInfoListAsync()
         {
             return await _repository.GetAllAsync(Q
                 .OrderBy(Attr.Taxis));
@@ -295,11 +295,11 @@ namespace SS.CMS.Core.Repositories
                 .OrWhereEnds(Attr.ParentsPath, $",{areaId}"));
         }
 
-        private async Task<List<KeyValuePair<int, AreaInfo>>> GetAreaInfoPairListToCacheAsync()
+        private async Task<List<KeyValuePair<int, Area>>> GetAreaInfoPairListToCacheAsync()
         {
             var areaInfoList = await GetAreaInfoListAsync();
 
-            return areaInfoList.Select(areaInfo => new KeyValuePair<int, AreaInfo>(areaInfo.Id, areaInfo)).ToList();
+            return areaInfoList.Select(areaInfo => new KeyValuePair<int, Area>(areaInfo.Id, areaInfo)).ToList();
         }
     }
 }

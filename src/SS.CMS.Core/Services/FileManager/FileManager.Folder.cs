@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task DeleteSiteFilesAsync(SiteInfo siteInfo)
+        public async Task DeleteSiteFilesAsync(Site siteInfo)
         {
             if (siteInfo == null) return;
 
@@ -46,13 +46,13 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
+                var siteDirList = await _siteRepository.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(sitePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!siteDirList.Contains(directoryName.ToLower()))
+                    if (!StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         DirectoryUtils.DeleteDirectoryIfExists(subDirectoryPath);
                     }
@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task ImportSiteFilesAsync(SiteInfo siteInfo, string siteTemplatePath, bool isOverride)
+        public async Task ImportSiteFilesAsync(Site siteInfo, string siteTemplatePath, bool isOverride)
         {
             var sitePath = _pathManager.GetSitePath(siteInfo);
 
@@ -82,13 +82,13 @@ namespace SS.CMS.Core.Services
                     }
                 }
 
-                var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
+                var siteDirList = await _siteRepository.GetSiteDirListAsync(0);
 
                 var directoryPaths = DirectoryUtils.GetDirectoryPaths(siteTemplatePath);
                 foreach (var subDirectoryPath in directoryPaths)
                 {
                     var directoryName = PathUtils.GetDirectoryName(subDirectoryPath, false);
-                    if (!siteDirList.Contains(directoryName.ToLower()))
+                    if (!StringUtils.ContainsIgnoreCase(siteDirList, directoryName))
                     {
                         var destDirectoryPath = PathUtils.Combine(sitePath, directoryName);
                         DirectoryUtils.MoveDirectory(subDirectoryPath, destDirectoryPath, isOverride);
@@ -146,13 +146,11 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task ChangeToHeadquartersAsync(SiteInfo siteInfo, bool isMoveFiles)
+        public async Task ChangeToRootAsync(Site siteInfo, bool isMoveFiles)
         {
-            if (siteInfo.IsRoot == false)
+            if (siteInfo.IsRoot == false && siteInfo.ParentId == 0)
             {
                 var sitePath = _pathManager.GetSitePath(siteInfo);
-
-                await _siteRepository.UpdateParentIdToZeroAsync(siteInfo.Id);
 
                 siteInfo.IsRoot = true;
                 siteInfo.SiteDir = string.Empty;
@@ -166,7 +164,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public async Task ChangeToSubSiteAsync(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList)
+        public async Task ChangeToSubSiteAsync(Site siteInfo, string psDir, ArrayList fileSystemNameArrayList)
         {
             if (siteInfo.IsRoot)
             {

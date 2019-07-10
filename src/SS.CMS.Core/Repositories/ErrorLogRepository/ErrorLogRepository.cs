@@ -10,13 +10,13 @@ namespace SS.CMS.Core.Repositories
 {
     public class ErrorLogRepository : IErrorLogRepository
     {
-        private readonly Repository<ErrorLogInfo> _repository;
+        private readonly Repository<ErrorLog> _repository;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
 
         public ErrorLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
-            _repository = new Repository<ErrorLogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<ErrorLog>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
         }
@@ -28,8 +28,8 @@ namespace SS.CMS.Core.Repositories
 
         private class Attr
         {
-            public const string Id = nameof(ErrorLogInfo.Id);
-            public const string CreatedDate = nameof(ErrorLogInfo.CreatedDate);
+            public const string Id = nameof(ErrorLog.Id);
+            public const string CreatedDate = nameof(ErrorLog.CreatedDate);
         }
 
         public const string CategoryStl = "stl";
@@ -50,7 +50,7 @@ namespace SS.CMS.Core.Repositories
                 return list;
             });
 
-        private async Task<int> InsertAsync(ErrorLogInfo logInfo)
+        private async Task<int> InsertAsync(ErrorLog logInfo)
         {
             logInfo.Id = await _repository.InsertAsync(logInfo);
 
@@ -79,7 +79,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.CreatedDate, "<", DateTime.Now.AddDays(-days)));
         }
 
-        public async Task<ErrorLogInfo> GetErrorLogInfoAsync(int logId)
+        public async Task<ErrorLog> GetErrorLogInfoAsync(int logId)
         {
             return await _repository.GetAsync(logId);
         }
@@ -137,7 +137,7 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync();
         }
 
-        public async Task<int> AddErrorLogAsync(ErrorLogInfo logInfo)
+        public async Task<int> AddErrorLogAsync(ErrorLog logInfo)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> AddErrorLogAsync(Exception ex, string summary = "")
         {
-            var logInfo = new ErrorLogInfo
+            var logInfo = new ErrorLog
             {
                 Category = CategoryAdmin,
                 PluginId = string.Empty,
@@ -173,7 +173,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> AddErrorLogAsync(string pluginId, Exception ex, string summary = "")
         {
-            var logInfo = new ErrorLogInfo
+            var logInfo = new ErrorLog
             {
                 Category = CategoryAdmin,
                 PluginId = pluginId,
@@ -187,7 +187,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> AddStlErrorLogAsync(string summary, string elementName, string stlContent, Exception ex)
         {
-            var logInfo = new ErrorLogInfo
+            var logInfo = new ErrorLog
             {
                 Category = CategoryStl,
                 PluginId = string.Empty,

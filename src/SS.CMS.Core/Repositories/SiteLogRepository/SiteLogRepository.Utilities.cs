@@ -34,7 +34,7 @@ namespace SS.CMS.Core.Repositories
                         channelId = -channelId;
                     }
 
-                    var siteLogInfo = new SiteLogInfo
+                    var siteLogInfo = new SiteLog
                     {
                         SiteId = siteId,
                         ChannelId = channelId,

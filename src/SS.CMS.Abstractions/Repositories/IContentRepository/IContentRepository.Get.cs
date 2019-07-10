@@ -33,6 +33,6 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Task<int> GetCountOfContentUpdateAsync(int siteId, int channelId, ScopeType scope, DateTime begin, DateTime end, int userId);
 
-        Task<ContentInfo> GetCacheContentInfoAsync(int contentId);
+        Task<Content> GetCacheContentInfoAsync(int contentId);
     }
 }

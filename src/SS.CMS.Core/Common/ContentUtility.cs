@@ -145,18 +145,18 @@ namespace SS.CMS.Core.Common
             }
         }
 
-        public static List<TableStyleInfo> GetAllTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
+        public static List<TableStyle> GetAllTableStyleInfoList(List<TableStyle> tableStyleInfoList)
         {
             var taxis = 1;
-            var list = new List<TableStyleInfo>
+            var list = new List<TableStyle>
             {
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Id,
                     DisplayName = "内容Id",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Title,
                     DisplayName = "标题",
@@ -170,7 +170,7 @@ namespace SS.CMS.Core.Common
                 {
                     if (!list.Exists(t => t.AttributeName == tableStyleInfo.AttributeName))
                     {
-                        list.Add(new TableStyleInfo
+                        list.Add(new TableStyle
                         {
                             AttributeName = tableStyleInfo.AttributeName,
                             DisplayName = tableStyleInfo.DisplayName,
@@ -181,105 +181,105 @@ namespace SS.CMS.Core.Common
                 }
             }
 
-            list.AddRange(new List<TableStyleInfo>
+            list.AddRange(new List<TableStyle>
             {
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.LinkUrl,
                     DisplayName = "外部链接",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.AddDate,
                     DisplayName = "添加时间",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.LastModifiedDate,
                     DisplayName = "最后修改时间",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.GroupNameCollection,
                     DisplayName = "内容组",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Tags,
                     DisplayName = "标签",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.UserId,
                     DisplayName = "添加人",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.LastModifiedUserId,
                     DisplayName = "最后修改人",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.SourceId,
                     DisplayName = "来源标识",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Hits,
                     DisplayName = "点击量",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.HitsByDay,
                     DisplayName = "日点击",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.HitsByWeek,
                     DisplayName = "周点击",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.HitsByMonth,
                     DisplayName = "月点击",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.LastHitsDate,
                     DisplayName = "最后点击时间",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Downloads,
                     DisplayName = "下载量",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.CheckUserId,
                     DisplayName = "审核人",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.CheckDate,
                     DisplayName = "审核时间",
                     Taxis = taxis++
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.CheckReasons,
                     DisplayName = "审核原因",
@@ -290,35 +290,35 @@ namespace SS.CMS.Core.Common
             return list.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public static List<TableStyleInfo> GetEditableTableStyleInfoList(List<TableStyleInfo> tableStyleInfoList)
+        public static List<TableStyle> GetEditableTableStyleInfoList(List<TableStyle> tableStyleInfoList)
         {
-            var list = new List<TableStyleInfo>
+            var list = new List<TableStyle>
             {
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Title,
                     Type = InputType.Text,
                     DisplayName = "标题"
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.LinkUrl,
                     Type = InputType.Text,
                     DisplayName = "外部链接"
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.AddDate,
                     Type = InputType.DateTime,
                     DisplayName = "添加时间"
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.GroupNameCollection,
                     Type = InputType.CheckBox,
                     DisplayName = "内容组"
                 },
-                new TableStyleInfo
+                new TableStyle
                 {
                     AttributeName = ContentAttribute.Tags,
                     Type = InputType.CheckBox,
@@ -334,7 +334,7 @@ namespace SS.CMS.Core.Common
             return list;
         }
 
-        public static async Task<bool> AfterContentAddedAsync(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
+        public static async Task<bool> AfterContentAddedAsync(CrossSiteTransManager crossSiteTransManager, IPluginManager pluginManager, ISiteRepository siteRepository, IErrorLogRepository errorLogRepository, Site siteInfo, Channel channelInfo, int contentId, bool isCrossSiteTrans, bool isAutomatic)
         {
             var isTranslated = false;
             if (isCrossSiteTrans && isAutomatic)

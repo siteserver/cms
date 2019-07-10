@@ -80,6 +80,10 @@ export const constantRoutes = [
   },
   {
     path: '/sites',
+    component: Layout
+  },
+  {
+    path: '/sites/:id',
     component: Layout,
     children: sitesChildren
   },

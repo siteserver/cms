@@ -48,10 +48,10 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(PermissionInfo.SiteId), nameof(PublishmentSystemId)},
-                {nameof(PermissionInfo.SitePermissions), nameof(WebsitePermissions)},
-                {nameof(PermissionInfo.ChannelId), nameof(ChannelIdCollection)},
-                {nameof(PermissionInfo.ChannelId), nameof(NodeIdCollection)}
+                {nameof(Models.Permission.SiteId), nameof(PublishmentSystemId)},
+                {nameof(Models.Permission.SitePermissions), nameof(WebsitePermissions)},
+                {nameof(Models.Permission.ChannelId), nameof(ChannelIdCollection)},
+                {nameof(Models.Permission.ChannelId), nameof(NodeIdCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

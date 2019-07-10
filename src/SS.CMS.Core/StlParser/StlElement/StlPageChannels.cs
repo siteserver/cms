@@ -21,7 +21,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         private string _stlPageChannelsElement;
         private ParseContext _parseContext;
         private ListInfo _listInfo;
-        private IList<KeyValuePair<int, ChannelInfo>> _channelList;
+        private IList<KeyValuePair<int, Channel>> _channelList;
 
 
         public async Task LoadAsync(string stlPageChannelsElement, ParseContext parseContext)
@@ -74,7 +74,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (_channelList != null && _channelList.Count > 0)
                 {
-                    IList<KeyValuePair<int, ChannelInfo>> pageChannelList;
+                    IList<KeyValuePair<int, Channel>> pageChannelList;
 
                     if (pageCount > 1)
                     {

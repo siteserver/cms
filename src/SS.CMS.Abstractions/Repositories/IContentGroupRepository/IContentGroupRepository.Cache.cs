@@ -6,14 +6,14 @@ namespace SS.CMS.Repositories
 {
     public partial interface IContentGroupRepository
     {
-        Task<Dictionary<int, List<ContentGroupInfo>>> GetAllContentGroupsAsync();
+        Task<Dictionary<int, List<ContentGroup>>> GetAllContentGroupsAsync();
 
         Task<bool> IsExistsAsync(int siteId, string groupName);
 
-        Task<ContentGroupInfo> GetContentGroupInfoAsync(int siteId, string groupName);
+        Task<ContentGroup> GetContentGroupInfoAsync(int siteId, string groupName);
 
         Task<List<string>> GetGroupNameListAsync(int siteId);
 
-        Task<List<ContentGroupInfo>> GetContentGroupInfoListAsync(int siteId);
+        Task<List<ContentGroup>> GetContentGroupInfoListAsync(int siteId);
     }
 }

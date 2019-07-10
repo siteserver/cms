@@ -60,9 +60,9 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ContentCheckInfo.Id), nameof(CheckId)},
-                {nameof(ContentCheckInfo.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentCheckInfo.ChannelId), nameof(NodeId)}
+                {nameof(ContentCheck.Id), nameof(CheckId)},
+                {nameof(ContentCheck.SiteId), nameof(PublishmentSystemId)},
+                {nameof(ContentCheck.ChannelId), nameof(NodeId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

@@ -70,15 +70,15 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(TableStyleInfo.Id), nameof(TableStyleId)},
-                {nameof(TableStyleInfo.TableName), nameof(TableName)}
+                {nameof(TableStyle.Id), nameof(TableStyleId)},
+                {nameof(TableStyle.TableName), nameof(TableName)}
             };
 
         private static Dictionary<string, string> ConvertValueDict(ISiteRepository siteRepository, IChannelRepository channelRepository) => new Dictionary<string, string>
         {
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_PublishmentSystem"), siteRepository.TableName
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_PublishmentSystem"), siteRepository.TableName
             },
-            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyleInfo.TableName), "siteserver_Node"), channelRepository.TableName
+            {UpdateUtils.GetConvertValueDictKey(nameof(TableStyle.TableName), "siteserver_Node"), channelRepository.TableName
             }
         };
 

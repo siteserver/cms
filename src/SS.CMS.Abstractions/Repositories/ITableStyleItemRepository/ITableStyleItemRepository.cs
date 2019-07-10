@@ -7,10 +7,10 @@ namespace SS.CMS.Repositories
 {
     public interface ITableStyleItemRepository : IRepository
     {
-        Task InsertAllAsync(int tableStyleId, List<TableStyleItemInfo> styleItems);
+        Task InsertAllAsync(int tableStyleId, List<TableStyleItem> styleItems);
 
-        Task DeleteAndInsertStyleItemsAsync(int tableStyleId, List<TableStyleItemInfo> styleItems);
+        Task DeleteAndInsertStyleItemsAsync(int tableStyleId, List<TableStyleItem> styleItems);
 
-        Task<Dictionary<int, List<TableStyleItemInfo>>> GetAllTableStyleItemsAsync();
+        Task<Dictionary<int, List<TableStyleItem>>> GetAllTableStyleItemsAsync();
     }
 }

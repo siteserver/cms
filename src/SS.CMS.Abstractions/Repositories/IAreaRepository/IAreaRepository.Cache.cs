@@ -10,7 +10,7 @@ namespace SS.CMS.Repositories
 
         string GetTreeItem(string name, int parentsCount, bool isLastNode, Dictionary<int, bool> parentsCountDict);
 
-        Task<AreaInfo> GetAreaInfoAsync(int areaId);
+        Task<Area> GetAreaInfoAsync(int areaId);
 
         Task<string> GetThisAreaNameAsync(int areaId);
 

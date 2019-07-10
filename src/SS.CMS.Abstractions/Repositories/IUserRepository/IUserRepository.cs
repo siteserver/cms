@@ -9,39 +9,39 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserRepository : IRepository
     {
-        Task<IEnumerable<UserInfo>> GetAllAsync(Query query);
+        Task<IEnumerable<User>> GetAllAsync(Query query);
 
         Task<int> GetCountAsync(Query query);
 
         Task<int> GetCountAsync();
 
-        Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo);
+        Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(User userInfo);
 
-        Task<(bool IsSuccess, string ErrorMessage)> UpdateAsync(UserInfo userInfo);
+        Task<(bool IsSuccess, string ErrorMessage)> UpdateAsync(User userInfo);
 
-        Task<bool> UpdateLastActivityDateAndCountOfFailedLoginAsync(UserInfo userInfo);
+        Task<bool> UpdateLastActivityDateAndCountOfFailedLoginAsync(User userInfo);
 
-        Task<bool> UpdateLastActivityDateAndCountOfLoginAsync(UserInfo userInfo);
+        Task<bool> UpdateLastActivityDateAndCountOfLoginAsync(User userInfo);
 
-        Task UpdateSiteIdCollectionAsync(UserInfo userInfo, string siteIdCollection);
+        Task UpdateSiteIdCollectionAsync(User userInfo, string siteIdCollection);
 
-        Task<List<int>> UpdateSiteIdAsync(UserInfo userInfo, int siteId);
+        Task<List<int>> UpdateSiteIdAsync(User userInfo, int siteId);
 
-        Task<bool> DeleteAsync(UserInfo userInfo);
+        Task<bool> DeleteAsync(User userInfo);
 
         Task LockAsync(List<int> userIdList);
 
         Task UnLockAsync(List<int> userIdList);
 
-        Task<UserInfo> GetByAccountAsync(string account);
+        Task<User> GetByAccountAsync(string account);
 
-        Task<UserInfo> GetByUserIdAsync(int userId);
+        Task<User> GetByUserIdAsync(int userId);
 
-        Task<UserInfo> GetByUserNameAsync(string userName);
+        Task<User> GetByUserNameAsync(string userName);
 
-        Task<UserInfo> GetByMobileAsync(string mobile);
+        Task<User> GetByMobileAsync(string mobile);
 
-        Task<UserInfo> GetByEmailAsync(string email);
+        Task<User> GetByEmailAsync(string email);
 
         Task<bool> IsUserNameExistsAsync(string userName);
 
@@ -63,7 +63,7 @@ namespace SS.CMS.Repositories
 
         Task<IEnumerable<string>> GetUserNameListAsync(int departmentId);
 
-        Task<(bool IsSuccess, string ErrorMessage)> ChangePasswordAsync(UserInfo userInfo, string password);
+        Task<(bool IsSuccess, string ErrorMessage)> ChangePasswordAsync(User userInfo, string password);
 
         Task<(bool IsSuccess, string UserName, string ErrorMessage)> ValidateAsync(string account, string password, bool isPasswordMd5);
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("SS.CMS.Data.Tests")]
 
@@ -32,7 +33,7 @@ namespace SS.CMS.Data.Utils
         {
             if (TypeTableName.TryGetValue(type.TypeHandle, out string name)) return name;
 
-            var attribute = (TableAttribute)Attribute.GetCustomAttribute(type, typeof(TableAttribute));
+            var attribute = (DataTableAttribute)Attribute.GetCustomAttribute(type, typeof(DataTableAttribute));
             name = attribute == null ? string.Empty : attribute.Name;
 
             TypeTableName[type.TypeHandle] = name;
@@ -101,6 +102,56 @@ namespace SS.CMS.Data.Utils
             return columnName;
         }
 
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>> DataIgnoreNames = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>>();
+
+        public static List<string> GetDataIgnoreNames(Type type)
+        {
+            if (DataIgnoreNames.TryGetValue(type.TypeHandle, out var tc))
+            {
+                return tc.ToList();
+            }
+
+            var ignores = new List<string>();
+
+            var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToArray();
+
+            foreach (var propertyInfo in properties)
+            {
+                var attribute = propertyInfo.GetCustomAttribute<DataIgnoreAttribute>(true);
+                if (attribute == null) continue;
+
+                ignores.Add(propertyInfo.Name);
+            }
+
+            DataIgnoreNames[type.TypeHandle] = ignores;
+            return ignores;
+        }
+
+        private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>> JsonIgnoreNames = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<string>>();
+
+        public static List<string> GetJsonIgnoreNames(Type type)
+        {
+            if (JsonIgnoreNames.TryGetValue(type.TypeHandle, out var tc))
+            {
+                return tc.ToList();
+            }
+
+            var ignores = new List<string>();
+
+            var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToArray();
+
+            foreach (var propertyInfo in properties)
+            {
+                var attribute = propertyInfo.GetCustomAttribute<JsonIgnoreAttribute>(true);
+                if (attribute == null) continue;
+
+                ignores.Add(propertyInfo.Name);
+            }
+
+            JsonIgnoreNames[type.TypeHandle] = ignores;
+            return ignores;
+        }
+
         private static List<TableColumn> GetTableColumnsByReflection(Type type)
         {
             var entityColumns = new List<TableColumn>();
@@ -108,11 +159,9 @@ namespace SS.CMS.Data.Utils
 
             var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).ToArray();
 
-
-
             foreach (var propertyInfo in properties)
             {
-                var attribute = propertyInfo.GetCustomAttribute<TableColumnAttribute>(true);
+                var attribute = propertyInfo.GetCustomAttribute<DataColumnAttribute>(true);
                 if (attribute == null) continue;
 
                 var dataType = DataType.VarChar;

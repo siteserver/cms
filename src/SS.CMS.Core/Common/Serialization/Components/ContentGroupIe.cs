@@ -9,14 +9,14 @@ namespace SS.CMS.Core.Serialization.Components
 {
     public static class ContentGroupIe
     {
-        public static AtomEntry Export(ContentGroupInfo groupInfo)
+        public static AtomEntry Export(ContentGroup groupInfo)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
             AtomUtility.AddDcElement(entry.AdditionalElements, "IsContentGroup", true.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(ContentGroupInfo.GroupName), "ContentGroupName" }, groupInfo.GroupName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroupInfo.Taxis), groupInfo.Taxis.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroupInfo.Description), groupInfo.Description);
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" }, groupInfo.GroupName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Taxis), groupInfo.Taxis.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(ContentGroup.Description), groupInfo.Description);
 
             return entry;
         }
@@ -26,14 +26,14 @@ namespace SS.CMS.Core.Serialization.Components
             var isNodeGroup = TranslateUtils.ToBool(AtomUtility.GetDcElementContent(entry.AdditionalElements, "IsContentGroup"));
             if (!isNodeGroup) return false;
 
-            var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroupInfo.GroupName), "ContentGroupName" });
+            var groupName = AtomUtility.GetDcElementContent(entry.AdditionalElements, new List<string> { nameof(ContentGroup.GroupName), "ContentGroupName" });
             if (string.IsNullOrEmpty(groupName)) return true;
             if (await contentGroupRepository.IsExistsAsync(siteId, groupName)) return true;
 
-            var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Taxis)));
-            var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroupInfo.Description));
+            var taxis = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Taxis)));
+            var description = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(ContentGroup.Description));
 
-            await contentGroupRepository.InsertAsync(new ContentGroupInfo
+            await contentGroupRepository.InsertAsync(new ContentGroup
             {
                 GroupName = groupName,
                 SiteId = siteId,

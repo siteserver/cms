@@ -140,7 +140,7 @@ namespace SS.CMS.Core.Common
             }
         }
 
-        public async Task ExportSiteToSiteTemplateAsync(SiteInfo siteInfo, string siteTemplateDir, int userId)
+        public async Task ExportSiteToSiteTemplateAsync(Site siteInfo, string siteTemplateDir, int userId)
         {
             var exportObject = new ExportObject();
             await exportObject.LoadAsync(siteInfo.Id, userId);

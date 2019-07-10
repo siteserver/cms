@@ -19,7 +19,7 @@ namespace SS.CMS.Core.Repositories
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly ITemplateLogRepository _templateLogRepository;
-        private readonly Repository<TemplateInfo> _repository;
+        private readonly Repository<Template> _repository;
 
         public TemplateRepository(IDistributedCache cache, ISettingsManager settingsManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateLogRepository templateLogRepository)
         {
@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Repositories
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _templateLogRepository = templateLogRepository;
-            _repository = new Repository<TemplateInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Template>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -38,15 +38,15 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(TemplateInfo.Id);
-            public const string SiteId = nameof(TemplateInfo.SiteId);
-            public const string TemplateName = nameof(TemplateInfo.TemplateName);
+            public const string Id = nameof(Template.Id);
+            public const string SiteId = nameof(Template.SiteId);
+            public const string TemplateName = nameof(Template.TemplateName);
             public const string TemplateType = "TemplateType";
-            public const string RelatedFileName = nameof(TemplateInfo.RelatedFileName);
+            public const string RelatedFileName = nameof(Template.RelatedFileName);
             public const string IsDefault = "IsDefault";
         }
 
-        public async Task<int> InsertAsync(TemplateInfo templateInfo, string templateContent, int userId)
+        public async Task<int> InsertAsync(Template templateInfo, string templateContent, int userId)
         {
             if (templateInfo.IsDefault)
             {
@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Repositories
             return id;
         }
 
-        public async Task UpdateAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string templateContent, int userId)
+        public async Task UpdateAsync(Site siteInfo, Template templateInfo, string templateContent, int userId)
         {
             if (templateInfo.IsDefault)
             {
@@ -193,7 +193,7 @@ namespace SS.CMS.Core.Repositories
             return dictionary;
         }
 
-        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListByTypeAsync(int siteId, TemplateType type)
+        public async Task<IEnumerable<Template>> GetTemplateInfoListByTypeAsync(int siteId, TemplateType type)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -201,7 +201,7 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.RelatedFileName));
         }
 
-        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListOfFileAsync(int siteId)
+        public async Task<IEnumerable<Template>> GetTemplateInfoListOfFileAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -209,7 +209,7 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.RelatedFileName));
         }
 
-        public async Task<IEnumerable<TemplateInfo>> GetTemplateInfoListBySiteIdAsync(int siteId)
+        public async Task<IEnumerable<Template>> GetTemplateInfoListBySiteIdAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -236,9 +236,9 @@ namespace SS.CMS.Core.Repositories
         {
             var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
 
-            var templateInfoList = new List<TemplateInfo>();
+            var templateInfoList = new List<Template>();
 
-            var templateInfo = new TemplateInfo
+            var templateInfo = new Template
             {
                 SiteId = siteInfo.Id,
                 TemplateName = "Index",
@@ -250,7 +250,7 @@ namespace SS.CMS.Core.Repositories
             };
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo
+            templateInfo = new Template
             {
                 SiteId = siteInfo.Id,
                 TemplateName = "Channel",
@@ -262,7 +262,7 @@ namespace SS.CMS.Core.Repositories
             };
             templateInfoList.Add(templateInfo);
 
-            templateInfo = new TemplateInfo
+            templateInfo = new Template
             {
                 SiteId = siteInfo.Id,
                 TemplateName = "Content",
@@ -306,7 +306,7 @@ namespace SS.CMS.Core.Repositories
             return templateName;
         }
 
-        public async Task<TemplateInfo> GetTemplateInfoByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
+        public async Task<Template> GetTemplateInfoByTemplateNameAsync(int siteId, TemplateType templateType, string templateName)
         {
             return await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -315,7 +315,7 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public async Task<TemplateInfo> GetDefaultTemplateInfoAsync(int siteId, TemplateType templateType)
+        public async Task<Template> GetDefaultTemplateInfoAsync(int siteId, TemplateType templateType)
         {
             var templateInfo = await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -323,7 +323,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.IsDefault, true)
             );
 
-            return templateInfo ?? new TemplateInfo
+            return templateInfo ?? new Template
             {
                 SiteId = siteId,
                 Type = templateType
@@ -346,7 +346,7 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public string GetTemplateFilePath(SiteInfo siteInfo, TemplateInfo templateInfo)
+        public string GetTemplateFilePath(Site siteInfo, Template templateInfo)
         {
             string filePath;
             if (templateInfo.Type == TemplateType.IndexPageTemplate)
@@ -364,7 +364,7 @@ namespace SS.CMS.Core.Repositories
             return filePath;
         }
 
-        public async Task<TemplateInfo> GetIndexPageTemplateInfoAsync(int siteId)
+        public async Task<Template> GetIndexPageTemplateInfoAsync(int siteId)
         {
             var templateInfo = await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -375,7 +375,7 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.IndexPageTemplate);
         }
 
-        public async Task<TemplateInfo> GetChannelTemplateInfoAsync(int siteId, int channelId)
+        public async Task<Template> GetChannelTemplateInfoAsync(int siteId, int channelId)
         {
             var templateId = 0;
             if (siteId == channelId)
@@ -391,7 +391,7 @@ namespace SS.CMS.Core.Repositories
                 }
             }
 
-            TemplateInfo templateInfo = null;
+            Template templateInfo = null;
             if (templateId != 0)
             {
                 templateInfo = await GetTemplateInfoAsync(templateId);
@@ -400,7 +400,7 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.ChannelTemplate);
         }
 
-        public async Task<TemplateInfo> GetContentTemplateInfoAsync(int siteId, int channelId)
+        public async Task<Template> GetContentTemplateInfoAsync(int siteId, int channelId)
         {
             var templateId = 0;
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
@@ -409,7 +409,7 @@ namespace SS.CMS.Core.Repositories
                 templateId = channelInfo.ContentTemplateId;
             }
 
-            TemplateInfo templateInfo = null;
+            Template templateInfo = null;
             if (templateId != 0)
             {
                 templateInfo = await GetTemplateInfoAsync(templateId);
@@ -418,11 +418,11 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.ContentTemplate);
         }
 
-        public async Task<TemplateInfo> GetFileTemplateInfoAsync(int siteId, int fileTemplateId)
+        public async Task<Template> GetFileTemplateInfoAsync(int siteId, int fileTemplateId)
         {
             var templateId = fileTemplateId;
 
-            TemplateInfo templateInfo = null;
+            Template templateInfo = null;
             if (templateId != 0)
             {
                 templateInfo = await GetTemplateInfoAsync(templateId);
@@ -431,7 +431,7 @@ namespace SS.CMS.Core.Repositories
             return templateInfo ?? await GetDefaultTemplateInfoAsync(siteId, TemplateType.FileTemplate);
         }
 
-        public async Task WriteContentToTemplateFileAsync(SiteInfo siteInfo, TemplateInfo templateInfo, string content, int userId)
+        public async Task WriteContentToTemplateFileAsync(Site siteInfo, Template templateInfo, string content, int userId)
         {
             if (content == null) content = string.Empty;
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
@@ -439,7 +439,7 @@ namespace SS.CMS.Core.Repositories
 
             if (templateInfo.Id > 0)
             {
-                var logInfo = new TemplateLogInfo
+                var logInfo = new TemplateLog
                 {
                     TemplateId = templateInfo.Id,
                     SiteId = templateInfo.SiteId,
@@ -492,7 +492,7 @@ namespace SS.CMS.Core.Repositories
             return templateId;
         }
 
-        public async Task<string> GetTemplateContentAsync(SiteInfo siteInfo, TemplateInfo templateInfo)
+        public async Task<string> GetTemplateContentAsync(Site siteInfo, Template templateInfo)
         {
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
             return await GetContentByFilePathAsync(filePath);

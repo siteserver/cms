@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Common
             return "UE";
         }
 
-        public static string GetInsertVideoScript(string attributeName, string playUrl, string imageUrl, SiteInfo siteInfo)
+        public static string GetInsertVideoScript(string attributeName, string playUrl, string imageUrl, Site siteInfo)
         {
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 
@@ -55,7 +55,7 @@ namespace SS.CMS.Core.Common
                 $@"<img class=""siteserver-stl-player"" src=""{SiteServerAssets.GetUrl("ueditor/video-clip.png")}"" {TranslateUtils.ToAttributesString(dict)} />");
         }
 
-        public static string GetInsertAudioScript(string attributeName, string playUrl, SiteInfo siteInfo)
+        public static string GetInsertAudioScript(string attributeName, string playUrl, Site siteInfo)
         {
             if (string.IsNullOrEmpty(playUrl)) return string.Empty;
 

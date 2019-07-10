@@ -6,7 +6,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class UrlManager
     {
-        public async Task<string> GetPagerUrlInChannelPageAsync(string type, SiteInfo siteInfo, ChannelInfo nodeInfo, int index, int currentPageIndex, int pageCount, bool isLocal)
+        public async Task<string> GetPagerUrlInChannelPageAsync(string type, Site siteInfo, Channel nodeInfo, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -34,7 +34,7 @@ namespace SS.CMS.Core.Services
             return GetSiteUrlByPhysicalPath(siteInfo, physicalPath, isLocal);
         }
 
-        public async Task<string> GetPagerUrlInContentPageAsync(string type, SiteInfo siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isLocal)
+        public async Task<string> GetPagerUrlInContentPageAsync(string type, Site siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isLocal)
         {
             var pageIndex = 0;
             if (type.ToLower().Equals(StlPageItem.TypeFirstPage.ToLower()))//首页
@@ -94,7 +94,7 @@ namespace SS.CMS.Core.Services
             return clickString;
         }
 
-        public async Task<string> GetPagerJsMethodInDynamicPageAsync(string type, SiteInfo siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
+        public async Task<string> GetPagerJsMethodInDynamicPageAsync(string type, Site siteInfo, int channelId, int contentId, int index, int currentPageIndex, int pageCount, bool isPageRefresh, string ajaxDivId, bool isLocal)
         {
             var jsMethod = string.Empty;
             var pageIndex = 0;

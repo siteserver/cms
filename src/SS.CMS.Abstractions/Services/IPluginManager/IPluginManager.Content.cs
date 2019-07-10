@@ -17,9 +17,9 @@ namespace SS.CMS.Services
 
         Task<List<IPackageMetadata>> GetAllContentRelatedPluginsAsync(bool includeContentTable);
 
-        Task<List<IService>> GetContentPluginsAsync(ChannelInfo channelInfo, bool includeContentTable);
+        Task<List<IService>> GetContentPluginsAsync(Channel channelInfo, bool includeContentTable);
 
-        List<string> GetContentPluginIds(ChannelInfo channelInfo);
+        List<string> GetContentPluginIds(Channel channelInfo);
 
         Task<Dictionary<string, Dictionary<string, Func<IContentContext, string>>>> GetContentColumnsAsync(List<string> pluginIds);
     }

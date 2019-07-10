@@ -216,7 +216,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.CountAsync(query);
         }
 
-        public async Task<ContentInfo> GetCacheContentInfoAsync(int contentId)
+        public async Task<Content> GetCacheContentInfoAsync(int contentId)
         {
             if (contentId <= 0) return null;
             return await _repository.GetAsync(contentId);

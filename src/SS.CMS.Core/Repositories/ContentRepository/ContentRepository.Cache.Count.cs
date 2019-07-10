@@ -12,24 +12,24 @@ namespace SS.CMS.Core.Repositories
         private readonly string CountCacheKey =
             StringUtils.GetCacheKey(nameof(ContentRepository)) + ".Count";
 
-        private Dictionary<string, IEnumerable<ContentCountInfo>> CountGetAllContentCounts()
+        private Dictionary<string, IEnumerable<ContentCount>> CountGetAllContentCounts()
         {
-            var retVal = CacheManager.Get<Dictionary<string, IEnumerable<ContentCountInfo>>>(CountCacheKey);
+            var retVal = CacheManager.Get<Dictionary<string, IEnumerable<ContentCount>>>(CountCacheKey);
             if (retVal != null) return retVal;
 
-            retVal = CacheManager.Get<Dictionary<string, IEnumerable<ContentCountInfo>>>(CountCacheKey);
+            retVal = CacheManager.Get<Dictionary<string, IEnumerable<ContentCount>>>(CountCacheKey);
             if (retVal == null)
             {
-                retVal = new Dictionary<string, IEnumerable<ContentCountInfo>>();
+                retVal = new Dictionary<string, IEnumerable<ContentCount>>();
                 CacheManager.Insert(CountCacheKey, retVal);
             }
 
             return retVal;
         }
 
-        private async Task<IEnumerable<ContentCountInfo>> CountGetContentCountInfoListAsync(string tableName)
+        private async Task<IEnumerable<ContentCount>> CountGetContentCountInfoListAsync(string tableName)
         {
-            if (string.IsNullOrEmpty(tableName)) return new List<ContentCountInfo>();
+            if (string.IsNullOrEmpty(tableName)) return new List<ContentCount>();
 
             var dict = CountGetAllContentCounts();
             dict.TryGetValue(tableName, out var countList);
@@ -49,7 +49,7 @@ namespace SS.CMS.Core.Repositories
             dict.Remove(tableName);
         }
 
-        private async Task CountAddAsync(string tableName, ContentInfo contentInfo)
+        private async Task CountAddAsync(string tableName, Content contentInfo)
         {
             if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
 
@@ -63,7 +63,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                countInfo = new ContentCountInfo
+                countInfo = new ContentCount
                 {
                     SiteId = contentInfo.SiteId,
                     ChannelId = contentInfo.ChannelId,
@@ -76,7 +76,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private bool CountIsChanged(ContentInfo contentInfo1, ContentInfo contentInfo2)
+        private bool CountIsChanged(Content contentInfo1, Content contentInfo2)
         {
             if (contentInfo1 == null || contentInfo2 == null) return true;
 
@@ -87,7 +87,7 @@ namespace SS.CMS.Core.Repositories
                    contentInfo1.UserId != contentInfo2.UserId;
         }
 
-        private async Task CountRemoveAsync(string tableName, ContentInfo contentInfo)
+        private async Task CountRemoveAsync(string tableName, Content contentInfo)
         {
             if (string.IsNullOrEmpty(tableName) || contentInfo == null) return;
 
@@ -101,7 +101,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private async Task<int> CountGetSiteCountByIsCheckedAsync(SiteInfo siteInfo, bool isChecked)
+        private async Task<int> CountGetSiteCountByIsCheckedAsync(Site siteInfo, bool isChecked)
         {
             var tableNames = await _siteRepository.GetTableNameListAsync(_pluginManager, siteInfo);
 
@@ -115,7 +115,7 @@ namespace SS.CMS.Core.Repositories
             return count;
         }
 
-        private async Task<int> CountGetChannelCountByOnlyAdminIdAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        private async Task<int> CountGetChannelCountByOnlyAdminIdAsync(Site siteInfo, Channel channelInfo, int? onlyAdminId)
         {
             var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
 
@@ -132,7 +132,7 @@ namespace SS.CMS.Core.Repositories
                     .Sum(x => x.Count);
         }
 
-        private async Task<int> CountGetChannelCountByIsCheckedAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        private async Task<int> CountGetChannelCountByIsCheckedAsync(Site siteInfo, Channel channelInfo, bool isChecked)
         {
             var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
 
@@ -145,17 +145,17 @@ namespace SS.CMS.Core.Repositories
 
         // public
 
-        public async Task<int> GetCountAsync(SiteInfo siteInfo, bool isChecked)
+        public async Task<int> GetCountAsync(Site siteInfo, bool isChecked)
         {
             return await CountGetSiteCountByIsCheckedAsync(siteInfo, isChecked);
         }
 
-        public async Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public async Task<int> GetCountAsync(Site siteInfo, Channel channelInfo, int? onlyAdminId)
         {
             return await CountGetChannelCountByOnlyAdminIdAsync(siteInfo, channelInfo, onlyAdminId);
         }
 
-        public async Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
+        public async Task<int> GetCountAsync(Site siteInfo, Channel channelInfo, bool isChecked)
         {
             return await CountGetChannelCountByIsCheckedAsync(siteInfo, channelInfo, isChecked);
         }

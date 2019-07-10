@@ -14,7 +14,7 @@ namespace SS.CMS.Core.Repositories
         private readonly string _cacheKey;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
-        private readonly Repository<UserGroupInfo> _repository;
+        private readonly Repository<UserGroup> _repository;
 
         public UserGroupRepository(IDistributedCache cache, ISettingsManager settingsManager, IConfigRepository configRepository)
         {
@@ -22,7 +22,7 @@ namespace SS.CMS.Core.Repositories
             _cacheKey = _cache.GetKey(nameof(UserGroupRepository));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
-            _repository = new Repository<UserGroupInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<UserGroup>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -32,10 +32,10 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(UserGroupInfo.Id);
+            public const string Id = nameof(UserGroup.Id);
         }
 
-        public async Task<int> InsertAsync(UserGroupInfo groupInfo)
+        public async Task<int> InsertAsync(UserGroup groupInfo)
         {
             groupInfo.Id = await _repository.InsertAsync(groupInfo);
 
@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             return groupInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(UserGroupInfo groupInfo)
+        public async Task<bool> UpdateAsync(UserGroup groupInfo)
         {
             var updated = await _repository.UpdateAsync(groupInfo);
 
@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Repositories
             return deleted;
         }
 
-        private async Task<IEnumerable<UserGroupInfo>> GetUserGroupInfoListToCacheAsync()
+        private async Task<IEnumerable<UserGroup>> GetUserGroupInfoListToCacheAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(Attr.Id));
         }

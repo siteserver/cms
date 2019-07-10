@@ -19,7 +19,7 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(cacheKey);
         }
 
-        public async Task<ContentInfo> GetContentInfoAsync(int contentId)
+        public async Task<Content> GetContentInfoAsync(int contentId)
         {
             return await GetCacheContentInfoAsync(contentId);
         }

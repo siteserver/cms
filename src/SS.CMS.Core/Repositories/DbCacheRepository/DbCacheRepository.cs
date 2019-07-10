@@ -10,10 +10,10 @@ namespace SS.CMS.Core.Repositories
 {
     public class DbCacheRepository : IDbCacheRepository
     {
-        private readonly Repository<DbCacheInfo> _repository;
+        private readonly Repository<DbCache> _repository;
         public DbCacheRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<DbCacheInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<DbCache>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,9 +22,9 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string CacheKey = nameof(DbCacheInfo.CacheKey);
-            public const string CacheValue = nameof(DbCacheInfo.CacheValue);
-            public const string CreatedDate = nameof(DbCacheInfo.CreatedDate);
+            public const string CacheKey = nameof(DbCache.CacheKey);
+            public const string CacheValue = nameof(DbCache.CacheValue);
+            public const string CreatedDate = nameof(DbCache.CreatedDate);
         }
 
         public async Task RemoveAndInsertAsync(string cacheKey, string cacheValue)
@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(Q
                 .Where(Attr.CacheKey, cacheKey));
 
-            await _repository.InsertAsync(new DbCacheInfo
+            await _repository.InsertAsync(new DbCache
             {
                 CacheKey = cacheKey,
                 CacheValue = cacheValue

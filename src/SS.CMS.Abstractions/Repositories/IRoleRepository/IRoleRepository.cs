@@ -13,7 +13,7 @@ namespace SS.CMS.Repositories
 
         Task<IEnumerable<string>> GetRoleNameListByUserIdAsync(int userId);
 
-        Task<int> InsertAsync(RoleInfo roleInfo);
+        Task<int> InsertAsync(Role roleInfo);
 
         Task UpdateAsync(string roleName, string description);
 

@@ -34,11 +34,11 @@ namespace SS.CMS.Core.Repositories
                 }
                 else
                 {
-                    tagInfo = new TagInfo
+                    tagInfo = new Tag
                     {
                         SiteId = siteId,
                         ContentIdCollection = contentId.ToString(),
-                        Tag = tagName,
+                        Value = tagName,
                         UseNum = contentId > 0 ? 1 : 0
                     };
                     await InsertAsync(tagInfo);
@@ -180,14 +180,14 @@ namespace SS.CMS.Core.Repositories
             return stringCollection;
         }
 
-        public IList<TagInfo> GetTagInfoList(IEnumerable<TagInfo> tagInfoList)
+        public IList<Tag> GetTagInfoList(IEnumerable<Tag> tagInfoList)
         {
             return GetTagInfoList(tagInfoList, 0, 0);
         }
 
-        public IList<TagInfo> GetTagInfoList(IEnumerable<TagInfo> tagInfoList, int totalNum, int tagLevel)
+        public IList<Tag> GetTagInfoList(IEnumerable<Tag> tagInfoList, int totalNum, int tagLevel)
         {
-            var list = new List<TagInfo>();
+            var list = new List<Tag>();
             var sortedlist = new SortedList();
             if (tagInfoList != null)
             {
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.Repositories
                     {
                         tagNames = new List<string>();
                     }
-                    tagNames.Add(tagInfo.Tag);
+                    tagNames.Add(tagInfo.Value);
                     sortedlist[tagInfo.UseNum] = tagNames;
                 }
             }
@@ -254,7 +254,7 @@ namespace SS.CMS.Core.Repositories
                 var tagNames = (List<string>)sortedlist[count];
                 foreach (var tagInfo in list)
                 {
-                    if (tagNames.Contains(tagInfo.Tag))
+                    if (tagNames.Contains(tagInfo.Value))
                     {
                         tagInfo.Level = level;
                     }
@@ -263,7 +263,7 @@ namespace SS.CMS.Core.Repositories
 
             if (tagLevel > 1)
             {
-                var levelList = new List<TagInfo>();
+                var levelList = new List<Tag>();
                 foreach (var tagInfo in list)
                 {
                     if (tagInfo.Level >= tagLevel)

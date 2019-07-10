@@ -10,10 +10,10 @@ namespace SS.CMS.Core.Repositories
 {
     public class RelatedFieldItemRepository : IRelatedFieldItemRepository
     {
-        private readonly Repository<RelatedFieldItemInfo> _repository;
+        private readonly Repository<RelatedFieldItem> _repository;
         public RelatedFieldItemRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<RelatedFieldItemInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<RelatedFieldItem>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,13 +22,13 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(RelatedFieldItemInfo.Id);
-            public const string RelatedFieldId = nameof(RelatedFieldItemInfo.RelatedFieldId);
-            public const string ParentId = nameof(RelatedFieldItemInfo.ParentId);
-            public const string Taxis = nameof(RelatedFieldItemInfo.Taxis);
+            public const string Id = nameof(RelatedFieldItem.Id);
+            public const string RelatedFieldId = nameof(RelatedFieldItem.RelatedFieldId);
+            public const string ParentId = nameof(RelatedFieldItem.ParentId);
+            public const string Taxis = nameof(RelatedFieldItem.Taxis);
         }
 
-        public async Task<int> InsertAsync(RelatedFieldItemInfo info)
+        public async Task<int> InsertAsync(RelatedFieldItem info)
         {
             info.Taxis = await GetMaxTaxisAsync(info.ParentId) + 1;
 
@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             return info.Id;
         }
 
-        public async Task<bool> UpdateAsync(RelatedFieldItemInfo info)
+        public async Task<bool> UpdateAsync(RelatedFieldItem info)
         {
             return await _repository.UpdateAsync(info);
         }
@@ -46,7 +46,7 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<RelatedFieldItemInfo>> GetRelatedFieldItemInfoListAsync(int relatedFieldId, int parentId)
+        public async Task<IEnumerable<RelatedFieldItem>> GetRelatedFieldItemInfoListAsync(int relatedFieldId, int parentId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.RelatedFieldId, relatedFieldId)
@@ -117,7 +117,7 @@ namespace SS.CMS.Core.Repositories
                        .Where(Attr.ParentId, parentId)) ?? 0;
         }
 
-        public async Task<RelatedFieldItemInfo> GetRelatedFieldItemInfoAsync(int id)
+        public async Task<RelatedFieldItem> GetRelatedFieldItemInfoAsync(int id)
         {
             return await _repository.GetAsync(id);
         }

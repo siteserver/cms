@@ -6,6 +6,6 @@ namespace SS.CMS.Repositories
 {
     public partial interface ITableStyleRepository
     {
-        Task<List<KeyValuePair<string, TableStyleInfo>>> GetAllTableStylesAsync();
+        Task<List<KeyValuePair<string, TableStyle>>> GetAllTableStylesAsync();
     }
 }

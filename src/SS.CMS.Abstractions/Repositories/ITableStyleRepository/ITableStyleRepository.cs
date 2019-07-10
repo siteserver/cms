@@ -9,9 +9,9 @@ namespace SS.CMS.Repositories
     {
         Task<bool> IsExistsAsync(int relatedIdentity, string tableName, string attributeName);
 
-        Task<int> InsertAsync(TableStyleInfo styleInfo);
+        Task<int> InsertAsync(TableStyle styleInfo);
 
-        Task UpdateAsync(TableStyleInfo info, bool deleteAndInsertStyleItems = true);
+        Task UpdateAsync(TableStyle info, bool deleteAndInsertStyleItems = true);
 
         Task DeleteAsync(int relatedIdentity, string tableName, string attributeName);
 

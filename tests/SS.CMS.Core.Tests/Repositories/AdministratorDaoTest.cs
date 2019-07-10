@@ -27,12 +27,12 @@ namespace SS.CMS.Core.Tests.Repositories
         {
             Skip.IfNot(TestEnv.IsTestMachine);
 
-            var userInfo = new UserInfo();
+            var userInfo = new User();
             var (isSuccess, id, errorMessage) = await _fixture.UserRepository.InsertAsync(userInfo);
 
             Assert.True(id == 0);
 
-            userInfo = new UserInfo
+            userInfo = new User
             {
                 UserName = TestUserName,
                 Password = "InsertTest"
@@ -43,7 +43,7 @@ namespace SS.CMS.Core.Tests.Repositories
 
             Assert.True(id == 0);
 
-            userInfo = new UserInfo
+            userInfo = new User
             {
                 UserName = TestUserName,
                 Password = "InsertTest@2"

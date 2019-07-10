@@ -13,8 +13,8 @@ namespace SS.CMS.Repositories.IContentRepository
 
         void RemoveCountCache(string tableName);
 
-        Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns);
+        Task<Content> CalculateAsync(int sequence, Content contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns);
 
-        bool IsCreatable(ChannelInfo channelInfo, ContentInfo contentInfo);
+        bool IsCreatable(Channel channelInfo, Content contentInfo);
     }
 }

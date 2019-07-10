@@ -16,7 +16,7 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(GetCacheKey(templateId));
         }
 
-        public async Task<TemplateInfo> GetTemplateInfoAsync(int templateId)
+        public async Task<Template> GetTemplateInfoAsync(int templateId)
         {
             return await _cache.GetOrCreateAsync(GetCacheKey(templateId), async options =>
             {

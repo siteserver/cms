@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<List<InputListItem>> GetContentsColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public async Task<List<InputListItem>> GetContentsColumnsAsync(Site siteInfo, Channel channelInfo, bool includeAll)
         {
             var items = new List<InputListItem>();
 
@@ -21,7 +21,7 @@ namespace SS.CMS.Core.Repositories
 
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await _tableManager.GetContentStyleInfoListAsync(_pluginManager, siteInfo, channelInfo));
 
-            styleInfoList.Insert(0, new TableStyleInfo
+            styleInfoList.Insert(0, new TableStyle
             {
                 AttributeName = ContentAttribute.Sequence,
                 DisplayName = "序号"
@@ -86,7 +86,7 @@ namespace SS.CMS.Core.Repositories
             return items;
         }
 
-        public async Task<List<ContentColumn>> GetContentColumnsAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
+        public async Task<List<ContentColumn>> GetContentColumnsAsync(Site siteInfo, Channel channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();
 
@@ -96,7 +96,7 @@ namespace SS.CMS.Core.Repositories
 
             var styleInfoList = ContentUtility.GetAllTableStyleInfoList(await _tableManager.GetContentStyleInfoListAsync(_pluginManager, siteInfo, channelInfo));
 
-            styleInfoList.Insert(0, new TableStyleInfo
+            styleInfoList.Insert(0, new TableStyle
             {
                 AttributeName = ContentAttribute.Sequence,
                 DisplayName = "序号"

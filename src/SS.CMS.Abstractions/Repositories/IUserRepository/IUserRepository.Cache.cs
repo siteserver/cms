@@ -6,7 +6,7 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserRepository
     {
-        Task RemoveCacheAsync(UserInfo userInfo);
+        Task RemoveCacheAsync(User userInfo);
 
         List<int> GetLatestTop10SiteIdList(List<int> siteIdListLatestAccessed, List<int> siteIdListOrderByLevel, List<int> siteIdListWithPermissions);
 

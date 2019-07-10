@@ -8,7 +8,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class UserRepository
     {
-        public async Task RemoveCacheAsync(UserInfo userInfo)
+        public async Task RemoveCacheAsync(User userInfo)
         {
             if (userInfo == null) return;
 

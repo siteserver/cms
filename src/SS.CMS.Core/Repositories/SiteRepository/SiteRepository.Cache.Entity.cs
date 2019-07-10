@@ -7,20 +7,20 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class SiteRepository
     {
-        private async Task RemoveEntityCacheAsync(int siteId)
+        private async Task RemoveCacheEntityAsync(int siteId)
         {
             var cacheKey = _cache.GetEntityKey(this, siteId);
             await _cache.RemoveAsync(cacheKey);
         }
 
-        private async Task<SiteInfo> GetEntityCacheAsync(int siteId)
+        private async Task<Site> GetCacheEntityAsync(int siteId)
         {
             if (siteId == 0) return null;
 
             var cacheKey = _cache.GetEntityKey(this, siteId);
             return await _cache.GetOrCreateAsync(cacheKey, async options =>
             {
-                return await _repository.GetAsync<SiteInfo>(Q
+                return await _repository.GetAsync<Site>(Q
                 .Where(Attr.Id, siteId));
             });
         }

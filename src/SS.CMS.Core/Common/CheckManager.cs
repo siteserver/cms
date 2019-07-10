@@ -93,7 +93,7 @@ namespace SS.CMS.Core.Common
             public const string Fail1 = "终审退稿";
         }
 
-        public static List<KeyValuePair<int, string>> GetCheckedLevels(SiteInfo siteInfo, bool isChecked, int checkedLevel, bool includeFail)
+        public static List<KeyValuePair<int, string>> GetCheckedLevels(Site siteInfo, bool isChecked, int checkedLevel, bool includeFail)
         {
             var checkedLevels = new List<KeyValuePair<int, string>>();
 
@@ -286,7 +286,7 @@ namespace SS.CMS.Core.Common
 
 
 
-        public static string GetCheckState(SiteInfo siteInfo, ContentInfo contentInfo)
+        public static string GetCheckState(Site siteInfo, Content contentInfo)
         {
             if (contentInfo.IsChecked)
             {
@@ -497,7 +497,7 @@ namespace SS.CMS.Core.Common
             return false;
         }
 
-        public static async Task<KeyValuePair<bool, int>> GetUserCheckLevelPairAsync(IUserManager userManager, SiteInfo siteInfo, int channelId)
+        public static async Task<KeyValuePair<bool, int>> GetUserCheckLevelPairAsync(IUserManager userManager, Site siteInfo, int channelId)
         {
             if (userManager.IsSuperAdministrator())
             {
@@ -571,7 +571,7 @@ namespace SS.CMS.Core.Common
             return new KeyValuePair<bool, int>(isChecked, checkedLevel);
         }
 
-        public static async Task<(bool IsChecked, int checkedLevel)> GetUserCheckLevelAsync(IUserManager userManager, SiteInfo siteInfo, int channelId)
+        public static async Task<(bool IsChecked, int checkedLevel)> GetUserCheckLevelAsync(IUserManager userManager, Site siteInfo, int channelId)
         {
             var checkContentLevel = siteInfo.CheckContentLevel;
 

@@ -38,7 +38,7 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        private void ListAdd(ChannelInfo channelInfo, ContentInfo contentInfo)
+        private void ListAdd(Channel channelInfo, Content contentInfo)
         {
             if (TaxisTypeUtils.Equals(TaxisType.OrderByTaxisDesc, channelInfo.DefaultTaxisType))
             {
@@ -54,7 +54,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private bool ListIsChanged(ChannelInfo channelInfo, ContentInfo contentInfo1, ContentInfo contentInfo2)
+        private bool ListIsChanged(Channel channelInfo, Content contentInfo1, Content contentInfo2)
         {
             if (contentInfo1.IsTop != contentInfo2.IsTop) return true;
 
@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Repositories
             return contentInfo1.Get(orderAttributeName) != contentInfo2.Get(orderAttributeName);
         }
 
-        public async Task<IEnumerable<int>> GetContentIdListAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId, int offset, int limit)
+        public async Task<IEnumerable<int>> GetContentIdListAsync(Site siteInfo, Channel channelInfo, int? onlyUserId, int offset, int limit)
         {
             var list = ListGetContentIdList(channelInfo.Id, onlyUserId);
             if (list.Count >= offset + limit)

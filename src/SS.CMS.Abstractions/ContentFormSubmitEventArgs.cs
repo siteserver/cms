@@ -18,7 +18,7 @@ namespace SS.CMS
         /// <param name="form">表单数据。</param>
         /// <param name="contentInfo">内容对象。</param>
         public ContentFormSubmitEventArgs(int siteId, int channelId, int contentId, IDictionary<string, object> form,
-            ContentInfo contentInfo)
+            Content contentInfo)
         {
             SiteId = siteId;
             ChannelId = channelId;
@@ -51,6 +51,6 @@ namespace SS.CMS
         /// <summary>
         /// 即将保存至数据库的内容对象，可以从表单数据 <see cref="T:SiteServer.Plugin.IAttributes" /> 中获取属性值并设置到内容对象中。
         /// </summary>
-        public ContentInfo ContentInfo { get; }
+        public Content ContentInfo { get; }
     }
 }

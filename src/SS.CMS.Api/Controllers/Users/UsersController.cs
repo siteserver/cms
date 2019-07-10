@@ -131,7 +131,7 @@ namespace SS.CMS.Api.Controllers.Users
         [HttpPost(RouteLogin)]
         public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
-            UserInfo userInfo;
+            User userInfo;
 
             var (isSuccess, userName, errorMessage) = await _userRepository.ValidateAsync(request.UserName, request.Password, true);
 

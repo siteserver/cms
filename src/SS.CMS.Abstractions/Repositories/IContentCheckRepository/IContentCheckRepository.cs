@@ -7,8 +7,8 @@ namespace SS.CMS.Repositories
 {
     public interface IContentCheckRepository : IRepository
     {
-        Task<int> InsertAsync(ContentCheckInfo checkInfo);
+        Task<int> InsertAsync(ContentCheck checkInfo);
 
-        Task<IEnumerable<ContentCheckInfo>> GetCheckInfoListAsync(string tableName, int contentId);
+        Task<IEnumerable<ContentCheck>> GetCheckInfoListAsync(string tableName, int contentId);
     }
 }

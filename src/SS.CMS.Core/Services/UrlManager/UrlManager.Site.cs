@@ -26,14 +26,14 @@ namespace SS.CMS.Core.Services
             return GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
 
-        public void PutImagePaths(SiteInfo siteInfo, ContentInfo contentInfo, NameValueCollection collection)
+        public void PutImagePaths(Site siteInfo, Content contentInfo, NameValueCollection collection)
         {
             if (contentInfo == null) return;
 
             var imageUrl = contentInfo.ImageUrl;
             var videoUrl = contentInfo.VideoUrl;
             var fileUrl = contentInfo.FileUrl;
-            var content = contentInfo.Content;
+            var content = contentInfo.Body;
 
             if (!string.IsNullOrEmpty(imageUrl) && IsVirtualUrl(imageUrl))
             {

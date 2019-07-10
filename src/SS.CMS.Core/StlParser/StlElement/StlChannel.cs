@@ -211,7 +211,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseImplAsync(ParseContext parseContext, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, ChannelInfo channel, int channelId)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string leftText, string rightText, string type, string formatString, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, bool isReturnToBr, bool isLower, bool isUpper, Channel channel, int channelId)
         {
             if (string.IsNullOrEmpty(type))
             {

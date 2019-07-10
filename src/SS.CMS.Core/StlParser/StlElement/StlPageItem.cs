@@ -149,7 +149,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
 
                 //以下三个对象仅isChannelPage=true时需要
-                ChannelInfo channelInfo = null;
+                Channel channelInfo = null;
 
                 string pageUrl;
                 if (parseContext.ContextType == EContextType.Channel)

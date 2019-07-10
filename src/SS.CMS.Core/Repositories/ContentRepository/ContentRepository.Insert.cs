@@ -7,7 +7,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<int> InsertAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task<int> InsertAsync(Site siteInfo, Channel channelInfo, Content contentInfo)
         {
             var taxis = 0;
             if (contentInfo.SourceId == SourceManager.Preview)
@@ -22,7 +22,7 @@ namespace SS.CMS.Core.Repositories
             return await InsertWithTaxisAsync(siteInfo, channelInfo, contentInfo, taxis);
         }
 
-        public async Task<int> InsertPreviewAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task<int> InsertPreviewAsync(Site siteInfo, Channel channelInfo, Content contentInfo)
         {
             channelInfo.IsPreviewContentsExists = true;
             await _channelRepository.UpdateExtendAsync(channelInfo);
@@ -31,11 +31,11 @@ namespace SS.CMS.Core.Repositories
             return await InsertWithTaxisAsync(siteInfo, channelInfo, contentInfo, 0);
         }
 
-        public async Task<int> InsertWithTaxisAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo, int taxis)
+        public async Task<int> InsertWithTaxisAsync(Site siteInfo, Channel channelInfo, Content contentInfo, int taxis)
         {
-            if (siteInfo.IsAutoPageInTextEditor && !string.IsNullOrEmpty(contentInfo.Content))
+            if (siteInfo.IsAutoPageInTextEditor && !string.IsNullOrEmpty(contentInfo.Body))
             {
-                contentInfo.Content = ContentUtility.GetAutoPageContent(contentInfo.Content, siteInfo.AutoPageWordNum);
+                contentInfo.Body = ContentUtility.GetAutoPageContent(contentInfo.Body, siteInfo.AutoPageWordNum);
             }
             contentInfo.Taxis = taxis;
             contentInfo.SiteId = siteInfo.Id;

@@ -7,7 +7,6 @@ namespace SS.CMS.Data
 {
     public partial class Repository
     {
-
         public virtual async Task<bool> UpdateAsync<T>(T dataInfo) where T : Entity
         {
             if (dataInfo == null || dataInfo.Id <= 0) return false;
@@ -25,7 +24,7 @@ namespace SS.CMS.Data
                 if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id))) continue;
 
                 var value = tableColumn.IsExtend
-                    ? Utilities.JsonSerialize(dataInfo.ToDictionary(dataInfo.GetColumnNames()))
+                    ? dataInfo.GetExtendColumnValue()
                     : dataInfo.Get(tableColumn.AttributeName);
 
                 query.Set(tableColumn.AttributeName, value);

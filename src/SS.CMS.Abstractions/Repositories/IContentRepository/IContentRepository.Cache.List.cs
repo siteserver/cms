@@ -6,6 +6,6 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        Task<IEnumerable<int>> GetContentIdListAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId, int offset, int limit);
+        Task<IEnumerable<int>> GetContentIdListAsync(Site siteInfo, Channel channelInfo, int? onlyUserId, int offset, int limit);
     }
 }

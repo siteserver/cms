@@ -5,6 +5,6 @@ namespace SS.CMS.Repositories
 {
     public partial interface ITemplateRepository
     {
-        Task<TemplateInfo> GetTemplateInfoAsync(int templateId);
+        Task<Template> GetTemplateInfoAsync(int templateId);
     }
 }

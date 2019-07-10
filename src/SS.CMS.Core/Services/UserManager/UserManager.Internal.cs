@@ -6,7 +6,7 @@ namespace SS.CMS.Core.Services
 {
     public partial class UserManager
     {
-        private IList<Claim> GetUserClaims(UserInfo userInfo)
+        private IList<Claim> GetUserClaims(User userInfo)
         {
             var claims = new List<Claim>
             {

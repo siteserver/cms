@@ -12,7 +12,7 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Task<bool> SetTaxisToDownAsync(int channelId, int contentId, bool isTop);
 
-        Task UpdateAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
+        Task UpdateAsync(Site siteInfo, Channel channelInfo, Content contentInfo);
 
         Task AddDownloadsAsync(int channelId, int contentId);
 

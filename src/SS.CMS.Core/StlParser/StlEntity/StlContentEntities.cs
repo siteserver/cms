@@ -217,7 +217,7 @@ namespace SS.CMS.Core.StlParser.StlEntity
                     {
                         if (contentInfo != null)
                         {
-                            parsedContent = contentInfo.Content;
+                            parsedContent = contentInfo.Body;
                         }
                         else
                         {

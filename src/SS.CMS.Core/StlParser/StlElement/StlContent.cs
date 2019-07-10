@@ -183,7 +183,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return parsedContent;
         }
 
-        private static async Task<string> ParseImplAsync(ParseContext parseContext, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, ContentInfo contentInfo, int contentId)
+        private static async Task<string> ParseImplAsync(ParseContext parseContext, string leftText, string rightText, string formatString, string no, string separator, int startIndex, int length, int wordNum, string ellipsis, string replace, string to, bool isClearTags, string isReturnToBrStr, bool isLower, bool isUpper, bool isOriginal, string type, Content contentInfo, int contentId)
         {
             if (contentInfo == null) return string.Empty;
 
@@ -269,7 +269,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else if (ContentAttribute.Content.ToLower().Equals(type))
                 {
-                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Content, parseContext.IsLocal);
+                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Body, parseContext.IsLocal);
 
                     if (isClearTags)
                     {
@@ -295,7 +295,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     //if (contextInfo.IsInnerElement)
                     // {
-                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Content, parseContext.IsLocal);
+                    parsedContent = parseContext.FileManager.TextEditorContentDecode(parseContext.SiteInfo, contentInfo.Body, parseContext.IsLocal);
 
                     if (isClearTags)
                     {

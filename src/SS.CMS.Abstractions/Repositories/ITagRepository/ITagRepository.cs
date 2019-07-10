@@ -7,13 +7,13 @@ namespace SS.CMS.Repositories
 {
     public partial interface ITagRepository : IRepository
     {
-        Task<int> InsertAsync(TagInfo tagInfo);
+        Task<int> InsertAsync(Tag tagInfo);
 
-        Task<bool> UpdateAsync(TagInfo tagInfo);
+        Task<bool> UpdateAsync(Tag tagInfo);
 
-        Task<TagInfo> GetTagInfoAsync(int siteId, string tag);
+        Task<Tag> GetTagInfoAsync(int siteId, string tag);
 
-        Task<IEnumerable<TagInfo>> GetTagInfoListAsync(int siteId, int contentId);
+        Task<IEnumerable<Tag>> GetTagInfoListAsync(int siteId, int contentId);
 
         Task<IEnumerable<string>> GetTagListByStartStringAsync(int siteId, string startString, int totalNum);
 

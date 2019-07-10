@@ -54,7 +54,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         //     return parseContext.GetChannelsDataSource(pageInfo.SiteId, channelId, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.IsImageExists, listInfo.IsImage, listInfo.StartNum, listInfo.TotalNum, listInfo.OrderByString, listInfo.Scope, isTotal, listInfo.Where);
         // }
 
-        public static async Task<IList<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(ParseContext parseContext, ListInfo listInfo)
+        public static async Task<IList<KeyValuePair<int, Channel>>> GetContainerChannelListAsync(ParseContext parseContext, ListInfo listInfo)
         {
             var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
@@ -73,7 +73,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return list.ToList();
         }
 
-        public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, ChannelInfo>> channelList)
+        public static async Task<string> ParseElementAsync(ParseContext parseContext, ListInfo listInfo, IList<KeyValuePair<int, Channel>> channelList)
         {
             if (channelList == null || channelList.Count == 0) return string.Empty;
 
@@ -183,7 +183,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return builder.ToString();
         }
 
-        private static async Task<object> ParseEntityAsync(ParseContext parseContext, IList<KeyValuePair<int, ChannelInfo>> channelList)
+        private static async Task<object> ParseEntityAsync(ParseContext parseContext, IList<KeyValuePair<int, Channel>> channelList)
         {
             // var table = dataSource.Tables[0];
             // foreach (DataRow row in table.Rows)

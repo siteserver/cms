@@ -12,13 +12,13 @@ namespace SS.CMS.Core.Repositories
 {
     public class UserLogRepository : IUserLogRepository
     {
-        private readonly Repository<UserLogInfo> _repository;
+        private readonly Repository<UserLog> _repository;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
 
         public UserLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository)
         {
-            _repository = new Repository<UserLogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<UserLog>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
         }
@@ -29,13 +29,13 @@ namespace SS.CMS.Core.Repositories
         public List<TableColumn> TableColumns => _repository.TableColumns;
         private static class Attr
         {
-            public const string Id = nameof(UserLogInfo.Id);
-            public const string UserId = nameof(UserLogInfo.UserId);
-            public const string CreatedDate = nameof(UserLogInfo.CreatedDate);
-            public const string Action = nameof(UserLogInfo.Action);
+            public const string Id = nameof(UserLog.Id);
+            public const string UserId = nameof(UserLog.UserId);
+            public const string CreatedDate = nameof(UserLog.CreatedDate);
+            public const string Action = nameof(UserLog.Action);
         }
 
-        private async Task<UserLogInfo> InsertAsync(int userId, UserLogInfo logInfo)
+        private async Task<UserLog> InsertAsync(int userId, UserLog logInfo)
         {
             logInfo.UserId = userId;
 
@@ -126,7 +126,7 @@ namespace SS.CMS.Core.Repositories
         //     return "SELECT ID, UserName, IPAddress, AddDate, Action, Summary FROM siteserver_UserLog " + whereString;
         // }
 
-        public async Task<IEnumerable<UserLogInfo>> ListAsync(int userId, int totalNum, string action)
+        public async Task<IEnumerable<UserLog>> ListAsync(int userId, int totalNum, string action)
         {
             var query = Q.Where(Attr.UserId, userId);
             if (!string.IsNullOrEmpty(action))
@@ -140,7 +140,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<IEnumerable<UserLogInfo>> ApiGetLogsAsync(int userId, int offset, int limit)
+        public async Task<IEnumerable<UserLog>> ApiGetLogsAsync(int userId, int offset, int limit)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.UserId, userId)
@@ -162,7 +162,7 @@ namespace SS.CMS.Core.Repositories
                 summary = StringUtils.MaxLengthText(summary, 250);
             }
 
-            var userLogInfo = new UserLogInfo
+            var userLogInfo = new UserLog
             {
                 UserId = userId,
                 IpAddress = ipAddress,

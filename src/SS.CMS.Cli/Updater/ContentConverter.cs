@@ -142,7 +142,7 @@ namespace SS.CMS.Cli.Updater
         private static List<TableColumn> GetNewColumns(IList<TableColumn> oldColumns)
         {
             var columns = new List<TableColumn>();
-            var tableColumns = (new Database(null, null)).GetTableColumns<ContentInfo>();
+            var tableColumns = (new Database(null, null)).GetTableColumns<Content>();
 
             columns.AddRange(tableColumns);
 
@@ -152,15 +152,15 @@ namespace SS.CMS.Cli.Updater
                 {
                     if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(NodeId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(ContentInfo.ChannelId);
+                        tableColumnInfo.AttributeName = nameof(Models.Content.ChannelId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(PublishmentSystemId)))
                     {
-                        tableColumnInfo.AttributeName = nameof(ContentInfo.SiteId);
+                        tableColumnInfo.AttributeName = nameof(Models.Content.SiteId);
                     }
                     else if (StringUtils.EqualsIgnoreCase(tableColumnInfo.AttributeName, nameof(ContentGroupNameCollection)))
                     {
-                        tableColumnInfo.AttributeName = nameof(ContentInfo.GroupNameCollection);
+                        tableColumnInfo.AttributeName = nameof(Models.Content.GroupNameCollection);
                     }
 
                     if (!columns.Exists(c => StringUtils.EqualsIgnoreCase(c.AttributeName, tableColumnInfo.AttributeName)))
@@ -176,20 +176,20 @@ namespace SS.CMS.Cli.Updater
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(ContentInfo.ChannelId), nameof(NodeId)},
-                {nameof(ContentInfo.SiteId), nameof(PublishmentSystemId)},
-                {nameof(ContentInfo.GroupNameCollection), nameof(ContentGroupNameCollection)}
+                {nameof(Models.Content.ChannelId), nameof(NodeId)},
+                {nameof(Models.Content.SiteId), nameof(PublishmentSystemId)},
+                {nameof(Models.Content.GroupNameCollection), nameof(ContentGroupNameCollection)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;
 
         private static Dictionary<string, object> Process(Dictionary<string, object> row)
         {
-            if (row.TryGetValue(nameof(ContentInfo.Content), out var contentObj))
+            if (row.TryGetValue(nameof(Models.Content.Body), out var contentObj))
             {
                 var content = contentObj.ToString();
                 content = content.Replace("@upload", "@/upload");
-                row[nameof(ContentInfo.Content)] = content;
+                row[nameof(Models.Content.Body)] = content;
             }
 
             return row;

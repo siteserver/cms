@@ -29,8 +29,8 @@ namespace SS.CMS.Repositories.IContentRepository
 
         Task<IEnumerable<string>> GetValueListByStartStringAsync(int channelId, string name, string startString, int totalNum);
 
-        Task<IEnumerable<ContentInfo>> GetContentInfoListAsync(Query query, int offset, int limit);
+        Task<IEnumerable<Content>> GetContentInfoListAsync(Query query, int offset, int limit);
 
-        Task<IEnumerable<ContentCountInfo>> GetContentCountInfoListAsync();
+        Task<IEnumerable<ContentCount>> GetContentCountInfoListAsync();
     }
 }

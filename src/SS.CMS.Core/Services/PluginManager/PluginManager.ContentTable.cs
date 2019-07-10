@@ -19,7 +19,7 @@ namespace SS.CMS.Core.Services
             var tableColumns = new List<TableColumn>();
 
             var db = new Database(_settingsManager.DatabaseType, _settingsManager.DatabaseConnectionString);
-            var defaultContentTableColumns = db.GetTableColumns<ContentInfo>();
+            var defaultContentTableColumns = db.GetTableColumns<Content>();
 
             tableColumns.AddRange(defaultContentTableColumns);
             tableColumns.AddRange(service.ContentTableColumns);
@@ -57,7 +57,7 @@ namespace SS.CMS.Core.Services
 
         private async Task ContentTableCreateOrUpdateStylesAsync(string tableName, List<InputStyle> inputStyles)
         {
-            var styleInfoList = new List<TableStyleInfo>();
+            var styleInfoList = new List<TableStyle>();
             var columnTaxis = 0;
             foreach (var inputStyle in inputStyles)
             {
@@ -141,7 +141,7 @@ namespace SS.CMS.Core.Services
 
                 if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
                 {
-                    var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
+                    var styleItems = styleInfo.StyleItems ?? new List<TableStyleItem>();
                     var listItems = inputStyle.ListItems ?? new List<InputListItem>();
 
                     if (styleItems.Count > listItems.Count)
@@ -156,7 +156,7 @@ namespace SS.CMS.Core.Services
                         if (styleItems.Count < i + 1)
                         {
                             isEquals = false;
-                            styleItems.Add(new TableStyleItemInfo
+                            styleItems.Add(new TableStyleItem
                             {
                                 TableStyleId = styleInfo.Id,
                                 ItemTitle = listItem.Text,

@@ -11,9 +11,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserMenuRepository : IRepository
     {
-        Task<int> InsertAsync(UserMenuInfo menuInfo);
+        Task<int> InsertAsync(UserMenu menuInfo);
 
-        Task<bool> UpdateAsync(UserMenuInfo menuInfo);
+        Task<bool> UpdateAsync(UserMenu menuInfo);
 
         Task<bool> DeleteAsync(int menuId);
     }

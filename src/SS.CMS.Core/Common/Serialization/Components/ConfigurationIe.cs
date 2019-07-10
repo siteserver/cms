@@ -93,9 +93,9 @@ namespace SS.CMS.Core.Serialization.Components
             feed.Save(_filePath);
         }
 
-        public static SiteInfo GetSiteInfo(string filePath)
+        public static Site GetSiteInfo(string filePath)
         {
-            var siteInfo = new SiteInfo();
+            var siteInfo = new Site();
             if (!FileUtils.IsFileExists(filePath)) return siteInfo;
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));

@@ -6,10 +6,10 @@ namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {
-        Task<string> GetChannelFilePathRuleAsync(SiteInfo siteInfo, int channelId);
+        Task<string> GetChannelFilePathRuleAsync(Site siteInfo, int channelId);
 
-        Task<IDictionary> ChannelRulesGetDictionaryAsync(SiteInfo siteInfo, int channelId);
+        Task<IDictionary> ChannelRulesGetDictionaryAsync(Site siteInfo, int channelId);
 
-        Task<string> ChannelRulesParseAsync(SiteInfo siteInfo, int channelId);
+        Task<string> ChannelRulesParseAsync(Site siteInfo, int channelId);
     }
 }

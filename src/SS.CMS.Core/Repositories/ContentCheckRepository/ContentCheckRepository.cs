@@ -10,10 +10,10 @@ namespace SS.CMS.Core.Repositories
 {
     public class ContentCheckRepository : IContentCheckRepository
     {
-        private readonly Repository<ContentCheckInfo> _repository;
+        private readonly Repository<ContentCheck> _repository;
         public ContentCheckRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<ContentCheckInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<ContentCheck>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,18 +22,18 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(ContentCheckInfo.Id);
-            public const string TableName = nameof(ContentCheckInfo.TableName);
-            public const string ChannelId = nameof(ContentCheckInfo.ChannelId);
+            public const string Id = nameof(ContentCheck.Id);
+            public const string TableName = nameof(ContentCheck.TableName);
+            public const string ChannelId = nameof(ContentCheck.ChannelId);
         }
 
-        public async Task<int> InsertAsync(ContentCheckInfo checkInfo)
+        public async Task<int> InsertAsync(ContentCheck checkInfo)
         {
             checkInfo.Id = await _repository.InsertAsync(checkInfo);
             return checkInfo.Id;
         }
 
-        public async Task<IEnumerable<ContentCheckInfo>> GetCheckInfoListAsync(string tableName, int contentId)
+        public async Task<IEnumerable<ContentCheck>> GetCheckInfoListAsync(string tableName, int contentId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.TableName, tableName)

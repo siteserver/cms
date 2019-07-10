@@ -66,7 +66,7 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(DepartmentInfo.Id), nameof(DepartmentId)}
+                {nameof(Department.Id), nameof(DepartmentId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

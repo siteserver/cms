@@ -8,6 +8,6 @@ namespace SS.CMS.Repositories
     {
         Task<IList<int>> GetContentIdListByTagCollectionAsync(List<string> tagCollection, int siteId);
 
-        Task<IEnumerable<TagInfo>> GetTagInfoListAsync(int siteId, int contentId, bool isOrderByCount, int totalNum);
+        Task<IEnumerable<Tag>> GetTagInfoListAsync(int siteId, int contentId, bool isOrderByCount, int totalNum);
     }
 }

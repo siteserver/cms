@@ -99,7 +99,7 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(UserInfo.AvatarUrl), nameof(AvatarLarge)}
+                {nameof(User.AvatarUrl), nameof(AvatarLarge)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

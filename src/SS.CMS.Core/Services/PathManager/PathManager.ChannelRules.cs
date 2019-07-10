@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Services
         public const string ChannelRulesDefaultDirectoryName = "/channels/";
         public const string ChannelRulesDefaultRegexString = "/channels/(?<channelId>[^_]*)_?(?<pageIndex>[^_]*)";
 
-        public async Task<IDictionary> ChannelRulesGetDictionaryAsync(SiteInfo siteInfo, int channelId)
+        public async Task<IDictionary> ChannelRulesGetDictionaryAsync(Site siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -61,7 +61,7 @@ namespace SS.CMS.Core.Services
             return dictionary;
         }
 
-        public async Task<string> ChannelRulesParseAsync(SiteInfo siteInfo, int channelId)
+        public async Task<string> ChannelRulesParseAsync(Site siteInfo, int channelId)
         {
             var channelFilePathRule = await GetChannelFilePathRuleAsync(siteInfo, channelId);
             var filePath = await ChannelRulesParseChannelPathAsync(siteInfo, channelId, channelFilePathRule);
@@ -69,12 +69,12 @@ namespace SS.CMS.Core.Services
         }
 
         //递归处理
-        private async Task<string> ChannelRulesParseChannelPathAsync(SiteInfo siteInfo, int channelId, string channelFilePathRule)
+        private async Task<string> ChannelRulesParseChannelPathAsync(Site siteInfo, int channelId, string channelFilePathRule)
         {
             var filePath = channelFilePathRule.Trim();
             const string regex = "(?<element>{@[^}]+})";
             var elements = RegexUtils.GetContents("element", regex, filePath);
-            ChannelInfo channelInfo = null;
+            Channel channelInfo = null;
 
             foreach (var element in elements)
             {

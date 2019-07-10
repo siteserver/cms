@@ -138,10 +138,10 @@ namespace SS.CMS.Cli.Updater
                     foreach (var row in oldRows)
                     {
                         var dict = TranslateUtils.JsonGetDictionaryIgnorecase(row);
-                        if (dict.ContainsKey(nameof(SiteInfo.Id)))
+                        if (dict.ContainsKey(nameof(Site.Id)))
                         {
-                            var siteId = Convert.ToInt32(dict[nameof(SiteInfo.Id)]);
-                            dict[nameof(SiteInfo.TableName)] = StringUtils.GetContentTableName(siteId);
+                            var siteId = Convert.ToInt32(dict[nameof(Site.Id)]);
+                            dict[nameof(Site.TableName)] = StringUtils.GetContentTableName(siteId);
                         }
 
                         newRows.Add(dict);

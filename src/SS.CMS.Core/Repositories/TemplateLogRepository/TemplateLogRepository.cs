@@ -11,10 +11,10 @@ namespace SS.CMS.Core.Repositories
 {
     public class TemplateLogRepository : ITemplateLogRepository
     {
-        private readonly Repository<TemplateLogInfo> _repository;
+        private readonly Repository<TemplateLog> _repository;
         public TemplateLogRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<TemplateLogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<TemplateLog>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -24,15 +24,15 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(TemplateLogInfo.Id);
-            public const string TemplateId = nameof(TemplateLogInfo.TemplateId);
-            public const string CreatedDate = nameof(TemplateLogInfo.CreatedDate);
-            public const string UserId = nameof(TemplateLogInfo.UserId);
-            public const string ContentLength = nameof(TemplateLogInfo.ContentLength);
-            public const string TemplateContent = nameof(TemplateLogInfo.TemplateContent);
+            public const string Id = nameof(TemplateLog.Id);
+            public const string TemplateId = nameof(TemplateLog.TemplateId);
+            public const string CreatedDate = nameof(TemplateLog.CreatedDate);
+            public const string UserId = nameof(TemplateLog.UserId);
+            public const string ContentLength = nameof(TemplateLog.ContentLength);
+            public const string TemplateContent = nameof(TemplateLog.TemplateContent);
         }
 
-        public async Task<int> InsertAsync(TemplateLogInfo logInfo)
+        public async Task<int> InsertAsync(TemplateLog logInfo)
         {
             return await _repository.InsertAsync(logInfo);
         }

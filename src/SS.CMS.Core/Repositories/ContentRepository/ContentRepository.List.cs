@@ -310,7 +310,7 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetContentInfoListAsync(Query query, int offset, int limit)
+        public async Task<IEnumerable<Content>> GetContentInfoListAsync(Query query, int offset, int limit)
         {
             return await _repository.GetAllAsync(query
                 .Offset(offset)
@@ -318,14 +318,14 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public async Task<IEnumerable<ContentCountInfo>> GetContentCountInfoListAsync()
+        public async Task<IEnumerable<ContentCount>> GetContentCountInfoListAsync()
         {
             var sqlString =
-                $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}, COUNT(*) AS {nameof(ContentCountInfo.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}";
+                $@"SELECT {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}, COUNT(*) AS {nameof(ContentCount.Count)} FROM {TableName} WHERE {Attr.ChannelId} > 0 AND {Attr.SourceId} != {SourceManager.Preview} GROUP BY {Attr.SiteId}, {Attr.ChannelId}, {Attr.IsChecked}, {Attr.CheckedLevel}, {Attr.UserId}";
 
             using (var connection = _repository.Database.GetConnection())
             {
-                return await connection.QueryAsync<ContentCountInfo>(sqlString);
+                return await connection.QueryAsync<ContentCount>(sqlString);
             }
         }
     }

@@ -10,10 +10,10 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class RoleRepository : IRoleRepository
     {
-        private readonly Repository<RoleInfo> _repository;
+        private readonly Repository<Role> _repository;
         public RoleRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<RoleInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Role>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -23,9 +23,9 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string RoleName = nameof(RoleInfo.RoleName);
-            public const string UserId = nameof(RoleInfo.UserId);
-            public const string Description = nameof(RoleInfo.Description);
+            public const string RoleName = nameof(Role.RoleName);
+            public const string UserId = nameof(Role.UserId);
+            public const string Description = nameof(Role.Description);
         }
 
         public async Task<string> GetRoleDescriptionAsync(string roleName)
@@ -52,7 +52,7 @@ namespace SS.CMS.Core.Repositories
                 .OrderBy(Attr.RoleName));
         }
 
-        public async Task<int> InsertAsync(RoleInfo roleInfo)
+        public async Task<int> InsertAsync(Role roleInfo)
         {
             return await _repository.InsertAsync(roleInfo);
         }

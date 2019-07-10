@@ -12,13 +12,13 @@ namespace SS.CMS.Core.Repositories
     public partial class SpecialRepository : ISpecialRepository
     {
         private readonly IDistributedCache _cache;
-        private readonly Repository<SpecialInfo> _repository;
+        private readonly Repository<Special> _repository;
         private readonly ISettingsManager _settingsManager;
 
         public SpecialRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
-            _repository = new Repository<SpecialInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Special>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
         }
 
@@ -29,13 +29,13 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(SpecialInfo.Id);
-            public const string SiteId = nameof(SpecialInfo.SiteId);
-            public const string Title = nameof(SpecialInfo.Title);
-            public const string Url = nameof(SpecialInfo.Url);
+            public const string Id = nameof(Special.Id);
+            public const string SiteId = nameof(Special.SiteId);
+            public const string Title = nameof(Special.Title);
+            public const string Url = nameof(Special.Url);
         }
 
-        public async Task<int> InsertAsync(SpecialInfo specialInfo)
+        public async Task<int> InsertAsync(Special specialInfo)
         {
             specialInfo.Id = await _repository.InsertAsync(specialInfo);
 
@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             return specialInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(SpecialInfo specialInfo)
+        public async Task<bool> UpdateAsync(Special specialInfo)
         {
             var updated = await _repository.UpdateAsync(specialInfo);
 
@@ -53,7 +53,7 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public async Task<SpecialInfo> DeleteAsync(int siteId, int specialId)
+        public async Task<Special> DeleteAsync(int siteId, int specialId)
         {
             if (specialId <= 0) return null;
 
@@ -76,12 +76,12 @@ namespace SS.CMS.Core.Repositories
             return await _repository.ExistsAsync(Q.Where(Attr.SiteId, siteId).Where(Attr.Url, url));
         }
 
-        public async Task<IEnumerable<SpecialInfo>> GetSpecialInfoListAsync(int siteId)
+        public async Task<IEnumerable<Special>> GetSpecialInfoListAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q.Where(Attr.SiteId, siteId).OrderByDesc(Attr.Id));
         }
 
-        public async Task<IEnumerable<SpecialInfo>> GetSpecialInfoListAsync(int siteId, string keyword)
+        public async Task<IEnumerable<Special>> GetSpecialInfoListAsync(int siteId, string keyword)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -90,7 +90,7 @@ namespace SS.CMS.Core.Repositories
                 .OrderByDesc(Attr.Id));
         }
 
-        public async Task<Dictionary<int, SpecialInfo>> GetSpecialInfoDictionaryBySiteIdAsync(int siteId)
+        public async Task<Dictionary<int, Special>> GetSpecialInfoDictionaryBySiteIdAsync(int siteId)
         {
             return await _cache.GetOrCreateAsync(_cache.GetKey(nameof(SpecialRepository), siteId.ToString()), async options =>
             {

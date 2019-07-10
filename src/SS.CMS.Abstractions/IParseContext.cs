@@ -28,7 +28,7 @@ namespace SS.CMS
         /// <summary>
         /// 内容实体。
         /// </summary>
-        ContentInfo ContentInfo { get; }
+        Content ContentInfo { get; }
 
         /// <summary>
         /// 模板类型。

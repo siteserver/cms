@@ -9,11 +9,11 @@ namespace SS.CMS.Core.Repositories
 {
     public class PluginConfigRepository : IPluginConfigRepository
     {
-        private readonly Repository<PluginConfigInfo> _repository;
+        private readonly Repository<PluginConfig> _repository;
 
         public PluginConfigRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<PluginConfigInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<PluginConfig>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -23,13 +23,13 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string PluginId = nameof(PluginConfigInfo.PluginId);
-            public const string SiteId = nameof(PluginConfigInfo.SiteId);
-            public const string ConfigName = nameof(PluginConfigInfo.ConfigName);
-            public const string ConfigValue = nameof(PluginConfigInfo.ConfigValue);
+            public const string PluginId = nameof(PluginConfig.PluginId);
+            public const string SiteId = nameof(PluginConfig.SiteId);
+            public const string ConfigName = nameof(PluginConfig.ConfigName);
+            public const string ConfigValue = nameof(PluginConfig.ConfigValue);
         }
 
-        public async Task<int> InsertAsync(PluginConfigInfo configInfo)
+        public async Task<int> InsertAsync(PluginConfig configInfo)
         {
             return await _repository.InsertAsync(configInfo);
         }
@@ -42,7 +42,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.ConfigName, configName));
         }
 
-        public async Task UpdateAsync(PluginConfigInfo configInfo)
+        public async Task UpdateAsync(PluginConfig configInfo)
         {
             await _repository.UpdateAsync(Q
                 .Set(Attr.ConfigValue, configInfo.ConfigValue)

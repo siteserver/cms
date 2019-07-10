@@ -40,7 +40,7 @@ namespace SS.CMS.Core.Services
         {
             get
             {
-                return _database.GetTableColumns<ContentInfo>();
+                return _database.GetTableColumns<Content>();
             }
         }
     }

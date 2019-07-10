@@ -101,7 +101,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var contentInfo = await parseContext.GetContentInfoAsync();
                 if (contentInfo != null)
                 {
-                    var tagInfoList2 = new List<TagInfo>();
+                    var tagInfoList2 = new List<Tag>();
                     var tagNameList = TranslateUtils.StringCollectionToStringList(contentInfo.Tags.Trim().Replace(" ", ","));
                     foreach (var tagName in tagNameList)
                     {
@@ -110,7 +110,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             var isAdd = false;
                             foreach (var tagInfo in tagInfoList)
                             {
-                                if (tagInfo.Tag == tagName)
+                                if (tagInfo.Value == tagName)
                                 {
                                     isAdd = true;
                                     tagInfoList2.Add(tagInfo);
@@ -119,11 +119,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                             }
                             if (!isAdd)
                             {
-                                var tagInfo = new TagInfo
+                                var tagInfo = new Tag
                                 {
                                     SiteId = parseContext.SiteId,
                                     ContentIdCollection = contentId.ToString(),
-                                    Tag = tagName,
+                                    Value = tagName,
                                     UseNum = 1
                                 };
                                 tagInfoList2.Add(tagInfo);
@@ -139,7 +139,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 if (isInnerHtml)
                 {
                     var tagHtml = innerHtml;
-                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Name}", tagInfo.Tag);
+                    tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Name}", tagInfo.Value);
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Count}", tagInfo.UseNum.ToString());
                     tagHtml = StringUtils.ReplaceIgnoreCase(tagHtml, "{Tag.Level}", tagInfo.Level.ToString());
                     var innerBuilder = new StringBuilder(tagHtml);
@@ -149,9 +149,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 else
                 {
                     var url = parseContext.UrlManager.ParseNavigationUrl(parseContext.SiteInfo,
-                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Tag)}", parseContext.IsLocal);
+                        $"@/utils/tags.html?tagName={PageUtils.UrlEncode(tagInfo.Value)}", parseContext.IsLocal);
                     tagsBuilder.Append($@"
-<li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Tag}</a></li>
+<li class=""tag_popularity_{tagInfo.Level}""><a target=""_blank"" href=""{url}"">{tagInfo.Value}</a></li>
 ");
                 }
             }

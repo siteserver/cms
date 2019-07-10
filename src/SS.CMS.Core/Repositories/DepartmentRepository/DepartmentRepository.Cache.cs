@@ -43,7 +43,7 @@ namespace SS.CMS.Core.Repositories
             return str;
         }
 
-        public async Task<DepartmentInfo> GetDepartmentInfoAsync(int departmentId)
+        public async Task<Department> GetDepartmentInfoAsync(int departmentId)
         {
             var pairList = await GetDepartmentInfoKeyValuePairAsync();
 
@@ -105,7 +105,7 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public async Task<List<KeyValuePair<int, DepartmentInfo>>> GetDepartmentInfoKeyValuePairAsync()
+        public async Task<List<KeyValuePair<int, Department>>> GetDepartmentInfoKeyValuePairAsync()
         {
             return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {

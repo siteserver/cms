@@ -13,9 +13,9 @@ namespace SS.CMS.Core.Repositories
         //     _cacheManager.Remove(CacheKey);
         // }
 
-        public async Task<Dictionary<int, List<ChannelGroupInfo>>> GetAllChannelGroupsAsync()
+        public async Task<Dictionary<int, List<ChannelGroup>>> GetAllChannelGroupsAsync()
         {
-            return await _cache.GetOrCreateAsync<Dictionary<int, List<ChannelGroupInfo>>>(_cacheKey, async options =>
+            return await _cache.GetOrCreateAsync<Dictionary<int, List<ChannelGroup>>>(_cacheKey, async options =>
             {
                 return await GetAllChannelGroupsToCacheAsync();
             });
@@ -27,7 +27,7 @@ namespace SS.CMS.Core.Repositories
             return list.Any(group => group.GroupName == groupName);
         }
 
-        public async Task<ChannelGroupInfo> GetChannelGroupInfoAsync(int siteId, string groupName)
+        public async Task<ChannelGroup> GetChannelGroupInfoAsync(int siteId, string groupName)
         {
             var list = await GetChannelGroupInfoListAsync(siteId);
             return list.FirstOrDefault(group => group.GroupName == groupName);
@@ -39,16 +39,16 @@ namespace SS.CMS.Core.Repositories
             return list.Select(group => group.GroupName).ToList();
         }
 
-        public async Task<List<ChannelGroupInfo>> GetChannelGroupInfoListAsync(int siteId)
+        public async Task<List<ChannelGroup>> GetChannelGroupInfoListAsync(int siteId)
         {
-            List<ChannelGroupInfo> list = null;
+            List<ChannelGroup> list = null;
             var dict = await GetAllChannelGroupsAsync();
 
             if (dict != null && dict.ContainsKey(siteId))
             {
                 list = dict[siteId];
             }
-            return list ?? new List<ChannelGroupInfo>();
+            return list ?? new List<ChannelGroup>();
         }
     }
 }

@@ -9,37 +9,35 @@ namespace SS.CMS.Repositories
 {
     public interface ISiteRepository : IRepository
     {
-        Task<int> InsertAsync(SiteInfo siteInfo);
+        Task<int> InsertAsync(Site siteInfo);
 
         Task<bool> DeleteAsync(int siteId);
 
-        Task<bool> UpdateAsync(SiteInfo siteInfo);
+        Task<bool> UpdateAsync(Site siteInfo);
 
         Task UpdateTableNameAsync(int siteId, string tableName);
 
-        Task UpdateParentIdToZeroAsync(int parentId);
+        Task<List<string>> GetSiteDirListAsync(int parentId);
 
-        Task<IEnumerable<string>> GetLowerSiteDirListThatNotIsRootAsync();
-
-        Task<IEnumerable<string>> GetLowerSiteDirListAsync(int parentId);
-
-        Task<List<KeyValuePair<int, SiteInfo>>> GetContainerSiteListAsync(string siteName, string siteDir, int startNum, int totalNum, ScopeType scopeType, string orderByString);
+        Task<List<KeyValuePair<int, Site>>> GetContainerSiteListAsync(string siteName, string siteDir, int startNum, int totalNum, ScopeType scopeType, string orderByString);
 
         Task<int> GetTableCountAsync(string tableName);
 
         Task<IEnumerable<int>> GetSiteIdListAsync();
 
-        Task<List<SiteInfo>> GetSiteInfoListAsync();
+        Task<IList<Site>> GetSiteInfoListAsync();
 
-        Task<SiteInfo> GetSiteInfoAsync(int siteId);
+        Task<IList<Site>> GetSiteInfoListAsync(int parentId);
 
-        Task<SiteInfo> GetSiteInfoBySiteNameAsync(string siteName);
+        Task<Site> GetSiteInfoAsync(int siteId);
 
-        Task<SiteInfo> GetSiteInfoByIsRootAsync();
+        Task<Site> GetSiteInfoBySiteNameAsync(string siteName);
+
+        Task<Site> GetSiteInfoByIsRootAsync();
 
         Task<int> GetSiteIdByIsRootAsync();
 
-        Task<SiteInfo> GetSiteInfoBySiteDirAsync(string siteDir);
+        Task<Site> GetSiteInfoBySiteDirAsync(string siteDir);
 
         Task<int> GetSiteIdBySiteDirAsync(string siteDir);
 
@@ -53,12 +51,12 @@ namespace SS.CMS.Repositories
 
         Task<List<string>> GetAllTableNameListAsync(IPluginManager pluginManager);
 
-        Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, SiteInfo siteInfo);
+        Task<List<string>> GetTableNameListAsync(IPluginManager pluginManager, Site siteInfo);
 
         Task<int> GetSiteLevelAsync(int siteId);
 
         Task<int> GetParentSiteIdAsync(int siteId);
 
-        Task<string> GetSiteNameAsync(SiteInfo siteInfo);
+        Task<string> GetSiteNameAsync(Site siteInfo);
     }
 }

@@ -6,11 +6,11 @@ namespace SS.CMS.Repositories
 {
     public interface IPluginConfigRepository : IRepository
     {
-        Task<int> InsertAsync(PluginConfigInfo configInfo);
+        Task<int> InsertAsync(PluginConfig configInfo);
 
         Task DeleteAsync(string pluginId, int siteId, string configName);
 
-        Task UpdateAsync(PluginConfigInfo configInfo);
+        Task UpdateAsync(PluginConfig configInfo);
 
         Task<string> GetValueAsync(string pluginId, int siteId, string configName);
 

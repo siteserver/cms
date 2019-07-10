@@ -73,11 +73,11 @@ namespace SS.CMS.Core.StlParser.Models
             return container;
         }
 
-        public KeyValuePair<int, SiteInfo> SiteItem { get; private set; }
+        public KeyValuePair<int, CMS.Models.Site> SiteItem { get; private set; }
 
-        public KeyValuePair<int, ChannelInfo> ChannelItem { get; private set; }
+        public KeyValuePair<int, CMS.Models.Channel> ChannelItem { get; private set; }
 
-        public KeyValuePair<int, ContentInfo> ContentItem { get; private set; }
+        public KeyValuePair<int, CMS.Models.Content> ContentItem { get; private set; }
 
         public KeyValuePair<int, object> EachItem { get; private set; }
 

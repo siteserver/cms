@@ -38,7 +38,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return await ParseElementAsync(context, listInfo, siteList);
         }
 
-        private static async Task<string> ParseElementAsync(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, SiteInfo>> siteList)
+        private static async Task<string> ParseElementAsync(ParseContext context, ListInfo listInfo, List<KeyValuePair<int, Site>> siteList)
         {
             if (siteList == null || siteList.Count == 0) return string.Empty;
 
@@ -220,9 +220,9 @@ namespace SS.CMS.Core.StlParser.StlElement
             // return parsedContent;
         }
 
-        private static async Task<List<SiteInfo>> ParseEntityAsync(ParseContext context, List<KeyValuePair<int, SiteInfo>> siteList)
+        private static async Task<List<Site>> ParseEntityAsync(ParseContext context, List<KeyValuePair<int, Site>> siteList)
         {
-            var siteInfoList = new List<SiteInfo>();
+            var siteInfoList = new List<Site>();
 
             foreach (var site in siteList)
             {

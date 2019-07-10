@@ -25,7 +25,7 @@ namespace SS.CMS.Data.Utils
                 if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id))) continue;
 
                 var value = tableColumn.IsExtend
-                    ? Utilities.JsonSerialize(dataInfo.ToDictionary(dataInfo.GetColumnNames()))
+                    ? dataInfo.GetExtendColumnValue()
                     : dataInfo.Get(tableColumn.AttributeName);
 
                 dictionary[tableColumn.AttributeName] = value;

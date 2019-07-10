@@ -8,7 +8,7 @@ namespace SS.CMS.Repositories
 {
     public partial interface ILogRepository : IRepository
     {
-        Task<int> InsertAsync(LogInfo log);
+        Task<int> InsertAsync(Log log);
 
         Task DeleteAsync(List<int> idList);
 

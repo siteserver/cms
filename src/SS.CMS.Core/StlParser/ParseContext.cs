@@ -107,8 +107,8 @@ namespace SS.CMS.Core.StlParser
 
         public NameValueCollection Attributes { get; set; }
 
-        private ChannelInfo _channelInfo;
-        public async Task<ChannelInfo> GetChannelInfoAsync()
+        private Channel _channelInfo;
+        public async Task<Channel> GetChannelInfoAsync()
         {
             if (_channelInfo != null) return _channelInfo;
             if (ChannelId <= 0) return null;
@@ -116,13 +116,13 @@ namespace SS.CMS.Core.StlParser
             return _channelInfo;
         }
 
-        public ChannelInfo ChannelInfo
+        public Channel ChannelInfo
         {
             set => _channelInfo = value;
         }
 
-        private ContentInfo _contentInfo;
-        public async Task<ContentInfo> GetContentInfoAsync()
+        private Content _contentInfo;
+        public async Task<Content> GetContentInfoAsync()
         {
             if (_contentInfo != null) return _contentInfo;
             if (ContentId <= 0) return null;
@@ -131,7 +131,7 @@ namespace SS.CMS.Core.StlParser
             return _contentInfo;
         }
 
-        public ContentInfo ContentInfo
+        public Content ContentInfo
         {
             set => _contentInfo = value;
         }

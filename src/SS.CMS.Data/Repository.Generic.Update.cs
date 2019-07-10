@@ -23,9 +23,7 @@ namespace SS.CMS.Data
             {
                 if (Utilities.EqualsIgnoreCase(tableColumn.AttributeName, nameof(Entity.Id))) continue;
 
-                var value = tableColumn.IsExtend
-                    ? Utilities.JsonSerialize(dataInfo.ToDictionary(dataInfo.GetColumnNames()))
-                    : dataInfo.Get(tableColumn.AttributeName);
+                var value = tableColumn.IsExtend ? dataInfo.GetExtendColumnValue() : dataInfo.Get(tableColumn.AttributeName);
 
                 query.Set(tableColumn.AttributeName, value);
             }

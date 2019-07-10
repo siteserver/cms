@@ -86,7 +86,7 @@ namespace SS.CMS.Core.Services
             return menus;
         }
 
-        public async Task<List<Menu>> GetContentMenusAsync(IUrlManager urlManager, List<string> pluginIds, ContentInfo contentInfo)
+        public async Task<List<Menu>> GetContentMenusAsync(IUrlManager urlManager, List<string> pluginIds, Content contentInfo)
         {
             var menus = new List<Menu>();
             if (pluginIds == null || pluginIds.Count == 0) return menus;
@@ -169,15 +169,15 @@ namespace SS.CMS.Core.Services
             return menu;
         }
 
-        public async Task<List<Permission>> GetTopPermissionsAsync()
+        public async Task<List<MenuPermission>> GetTopPermissionsAsync()
         {
-            var permissions = new List<Permission>();
+            var permissions = new List<MenuPermission>();
 
             foreach (var service in await GetServicesAsync())
             {
                 if (service.SystemMenuFuncs != null)
                 {
-                    permissions.Add(new Permission
+                    permissions.Add(new MenuPermission
                     {
                         Id = service.PluginId,
                         Text = $"系统管理 -> {service.Metadata.Title}（插件）"
@@ -188,15 +188,15 @@ namespace SS.CMS.Core.Services
             return permissions;
         }
 
-        public async Task<List<Permission>> GetSitePermissionsAsync(int siteId)
+        public async Task<List<MenuPermission>> GetSitePermissionsAsync(int siteId)
         {
-            var permissions = new List<Permission>();
+            var permissions = new List<MenuPermission>();
 
             foreach (var service in await GetServicesAsync())
             {
                 if (service.SiteMenuFuncs != null)
                 {
-                    permissions.Add(new Permission
+                    permissions.Add(new MenuPermission
                     {
                         Id = service.PluginId,
                         Text = service.Metadata.Title

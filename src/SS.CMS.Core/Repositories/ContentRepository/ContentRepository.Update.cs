@@ -102,13 +102,13 @@ namespace SS.CMS.Core.Repositories
             return true;
         }
 
-        public async Task UpdateAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        public async Task UpdateAsync(Site siteInfo, Channel channelInfo, Content contentInfo)
         {
             if (contentInfo == null) return;
 
-            if (siteInfo.IsAutoPageInTextEditor && !string.IsNullOrEmpty(contentInfo.Content))
+            if (siteInfo.IsAutoPageInTextEditor && !string.IsNullOrEmpty(contentInfo.Body))
             {
-                contentInfo.Content = ContentUtility.GetAutoPageContent(contentInfo.Content,
+                contentInfo.Body = ContentUtility.GetAutoPageContent(contentInfo.Body,
                         siteInfo.AutoPageWordNum);
             }
 
@@ -195,7 +195,7 @@ namespace SS.CMS.Core.Repositories
                     );
                 }
 
-                await _contentCheckRepository.InsertAsync(new ContentCheckInfo
+                await _contentCheckRepository.InsertAsync(new ContentCheck
                 {
                     TableName = TableName,
                     SiteId = siteId,

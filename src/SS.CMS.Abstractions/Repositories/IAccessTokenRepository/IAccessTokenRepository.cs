@@ -7,21 +7,21 @@ namespace SS.CMS.Repositories
 {
     public interface IAccessTokenRepository : IRepository
     {
-        Task<int> InsertAsync(AccessTokenInfo accessTokenInfo);
+        Task<int> InsertAsync(AccessToken accessTokenInfo);
 
-        Task<bool> UpdateAsync(AccessTokenInfo accessTokenInfo);
+        Task<bool> UpdateAsync(AccessToken accessTokenInfo);
 
         Task<bool> DeleteAsync(int id);
 
-        Task<string> RegenerateAsync(AccessTokenInfo accessTokenInfo);
+        Task<string> RegenerateAsync(AccessToken accessTokenInfo);
 
         Task<bool> IsScopeAsync(string token, string scope);
 
-        Task<AccessTokenInfo> GetAsync(string token);
+        Task<AccessToken> GetAsync(string token);
 
-        Task<AccessTokenInfo> GetAsync(int id);
+        Task<AccessToken> GetAsync(int id);
 
-        Task<IEnumerable<AccessTokenInfo>> GetAllAsync();
+        Task<IEnumerable<AccessToken>> GetAllAsync();
 
         Task<bool> IsTitleExistsAsync(string title);
 

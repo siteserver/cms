@@ -14,14 +14,14 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
-        private readonly Repository<DepartmentInfo> _repository;
+        private readonly Repository<Department> _repository;
         private readonly ISettingsManager _settingsManager;
 
         public DepartmentRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(DepartmentRepository));
-            _repository = new Repository<DepartmentInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Department>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
         }
 
@@ -32,15 +32,15 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(DepartmentInfo.Id);
-            public const string ParentId = nameof(DepartmentInfo.ParentId);
-            public const string ParentsPath = nameof(DepartmentInfo.ParentsPath);
-            public const string ChildrenCount = nameof(DepartmentInfo.ChildrenCount);
-            public const string Taxis = nameof(DepartmentInfo.Taxis);
-            public const string IsLastNode = nameof(DepartmentInfo.IsLastNode);
+            public const string Id = nameof(Department.Id);
+            public const string ParentId = nameof(Department.ParentId);
+            public const string ParentsPath = nameof(Department.ParentsPath);
+            public const string ChildrenCount = nameof(Department.ChildrenCount);
+            public const string Taxis = nameof(Department.Taxis);
+            public const string IsLastNode = nameof(Department.IsLastNode);
         }
 
-        private async Task<int> InsertAsync(DepartmentInfo parentInfo, DepartmentInfo departmentInfo)
+        private async Task<int> InsertAsync(Department parentInfo, Department departmentInfo)
         {
             if (parentInfo != null)
             {
@@ -218,7 +218,7 @@ namespace SS.CMS.Core.Repositories
                    ) ?? 0;
         }
 
-        public async Task<int> InsertAsync(DepartmentInfo departmentInfo)
+        public async Task<int> InsertAsync(Department departmentInfo)
         {
             var parentDepartmentInfo = await _repository.GetAsync(departmentInfo.ParentId);
 
@@ -229,7 +229,7 @@ namespace SS.CMS.Core.Repositories
             return departmentInfo.Id;
         }
 
-        public async Task<bool> UpdateAsync(DepartmentInfo departmentInfo)
+        public async Task<bool> UpdateAsync(Department departmentInfo)
         {
             var updated = await _repository.UpdateAsync(departmentInfo);
             if (updated)
@@ -281,7 +281,7 @@ namespace SS.CMS.Core.Repositories
             return true;
         }
 
-        private async Task<IEnumerable<DepartmentInfo>> GetDepartmentInfoListAsync()
+        private async Task<IEnumerable<Department>> GetDepartmentInfoListAsync()
         {
             return await _repository.GetAllAsync(Q
                 .OrderBy(Attr.Taxis));
@@ -305,14 +305,14 @@ namespace SS.CMS.Core.Repositories
                 .OrWhereEnds(Attr.ParentsPath, $",{id}"));
         }
 
-        private async Task<List<KeyValuePair<int, DepartmentInfo>>> GetDepartmentInfoKeyValuePairToCacheAsync()
+        private async Task<List<KeyValuePair<int, Department>>> GetDepartmentInfoKeyValuePairToCacheAsync()
         {
-            var list = new List<KeyValuePair<int, DepartmentInfo>>();
+            var list = new List<KeyValuePair<int, Department>>();
 
             var departmentInfoList = await GetDepartmentInfoListAsync();
             foreach (var departmentInfo in departmentInfoList)
             {
-                var pair = new KeyValuePair<int, DepartmentInfo>(departmentInfo.Id, departmentInfo);
+                var pair = new KeyValuePair<int, Department>(departmentInfo.Id, departmentInfo);
                 list.Add(pair);
             }
 

@@ -716,7 +716,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             string theValue = null;
             if (parseContext.ContextType == EContextType.Site)
             {
-                if (!parseContext.Container.SiteItem.Equals(default(KeyValuePair<int, SiteInfo>)))
+                if (!parseContext.Container.SiteItem.Equals(default(KeyValuePair<int, Site>)))
                 {
                     var siteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(parseContext.Container.SiteItem.Value.Id);
                     if (siteInfo != null)
@@ -772,7 +772,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             return theValue ?? string.Empty;
         }
 
-        private static string GetValueFromSite(ParseContext parseContext, SiteInfo siteInfo, string testTypeStr)
+        private static string GetValueFromSite(ParseContext parseContext, Site siteInfo, string testTypeStr)
         {
             string theValue;
 

@@ -9,11 +9,11 @@ namespace SS.CMS.Core.Repositories
 {
     public class TableStyleItemRepository : ITableStyleItemRepository
     {
-        private readonly Repository<TableStyleItemInfo> _repository;
+        private readonly Repository<TableStyleItem> _repository;
 
         public TableStyleItemRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<TableStyleItemInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<TableStyleItem>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -22,10 +22,10 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string TableStyleId = nameof(TableStyleItemInfo.TableStyleId);
+            public const string TableStyleId = nameof(TableStyleItem.TableStyleId);
         }
 
-        public async Task InsertAllAsync(int tableStyleId, List<TableStyleItemInfo> styleItems)
+        public async Task InsertAllAsync(int tableStyleId, List<TableStyleItem> styleItems)
         {
             if (styleItems == null || styleItems.Count <= 0) return;
 
@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public async Task DeleteAndInsertStyleItemsAsync(int tableStyleId, List<TableStyleItemInfo> styleItems)
+        public async Task DeleteAndInsertStyleItemsAsync(int tableStyleId, List<TableStyleItem> styleItems)
         {
             await _repository.DeleteAsync(Q.Where(Attr.TableStyleId, tableStyleId));
 
@@ -49,9 +49,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public async Task<Dictionary<int, List<TableStyleItemInfo>>> GetAllTableStyleItemsAsync()
+        public async Task<Dictionary<int, List<TableStyleItem>>> GetAllTableStyleItemsAsync()
         {
-            var allDict = new Dictionary<int, List<TableStyleItemInfo>>();
+            var allDict = new Dictionary<int, List<TableStyleItem>>();
 
             var itemInfoList = await _repository.GetAllAsync();
             foreach (var itemInfo in itemInfoList)
@@ -60,7 +60,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (list == null)
                 {
-                    list = new List<TableStyleItemInfo>();
+                    list = new List<TableStyleItem>();
                 }
 
                 list.Add(itemInfo);

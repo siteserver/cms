@@ -6,9 +6,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface IContentGroupRepository : IRepository
     {
-        Task<int> InsertAsync(ContentGroupInfo groupInfo);
+        Task<int> InsertAsync(ContentGroup groupInfo);
 
-        Task<bool> UpdateAsync(ContentGroupInfo groupInfo);
+        Task<bool> UpdateAsync(ContentGroup groupInfo);
 
         Task DeleteAsync(int siteId, string groupName);
 

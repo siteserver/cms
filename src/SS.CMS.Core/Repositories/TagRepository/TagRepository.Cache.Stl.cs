@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public async Task<IEnumerable<TagInfo>> GetTagInfoListAsync(int siteId, int contentId, bool isOrderByCount, int totalNum)
+        public async Task<IEnumerable<Tag>> GetTagInfoListAsync(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
             var cacheKey = _cache.GetKey(nameof(TagRepository), nameof(GetTagInfoList), siteId.ToString(), contentId.ToString(), isOrderByCount.ToString(), totalNum.ToString());
 

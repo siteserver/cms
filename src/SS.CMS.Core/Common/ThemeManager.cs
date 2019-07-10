@@ -18,9 +18,9 @@ namespace SS.CMS.Core.Common
             DirectoryUtils.CreateDirectoryIfNotExists(_rootPath);
         }
 
-        public List<PackageInfo> GetThemeInfoList()
+        public List<Package> GetThemeInfoList()
         {
-            var list = new List<PackageInfo>();
+            var list = new List<Package>();
             var directoryPaths = DirectoryUtils.GetDirectoryPaths(_rootPath);
             foreach (var themePath in directoryPaths)
             {
@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Common
                 if (FileUtils.IsFileExists(packageJsonFilePath))
                 {
                     var content = FileUtils.ReadText(packageJsonFilePath);
-                    var packageInfo = TranslateUtils.JsonDeserialize<PackageInfo>(content);
+                    var packageInfo = TranslateUtils.JsonDeserialize<Package>(content);
                     if (packageInfo != null)
                     {
                         packageInfo.Name = PathUtils.GetDirectoryName(themePath, false);

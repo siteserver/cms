@@ -7,9 +7,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface IAreaRepository : IRepository
     {
-        Task<int> InsertAsync(AreaInfo areaInfo);
+        Task<int> InsertAsync(Area areaInfo);
 
-        Task<bool> UpdateAsync(AreaInfo areaInfo);
+        Task<bool> UpdateAsync(Area areaInfo);
 
         Task UpdateTaxisAsync(int selectedId, bool isSubtract);
 

@@ -24,7 +24,7 @@ namespace SS.CMS.Core.Repositories
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IUserRoleRepository _userRoleRepository;
-        private readonly Repository<UserInfo> _repository;
+        private readonly Repository<User> _repository;
 
         public UserRepository(IDistributedCache cache, ISettingsManager settingsManager, IConfigRepository configRepository, IUserRoleRepository userRoleRepository)
         {
@@ -32,7 +32,7 @@ namespace SS.CMS.Core.Repositories
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _userRoleRepository = userRoleRepository;
-            _repository = new Repository<UserInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<User>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -42,21 +42,21 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(UserInfo.Id);
-            public const string UserName = nameof(UserInfo.UserName);
-            public const string DepartmentId = nameof(UserInfo.DepartmentId);
-            public const string AreaId = nameof(UserInfo.AreaId);
-            public const string Mobile = nameof(UserInfo.Mobile);
-            public const string Email = nameof(UserInfo.Email);
-            public const string Password = nameof(UserInfo.Password);
-            public const string PasswordFormat = nameof(UserInfo.PasswordFormat);
-            public const string PasswordSalt = nameof(UserInfo.PasswordSalt);
-            public const string SiteId = nameof(UserInfo.SiteId);
-            public const string SiteIdCollection = nameof(UserInfo.SiteIdCollection);
+            public const string Id = nameof(User.Id);
+            public const string UserName = nameof(User.UserName);
+            public const string DepartmentId = nameof(User.DepartmentId);
+            public const string AreaId = nameof(User.AreaId);
+            public const string Mobile = nameof(User.Mobile);
+            public const string Email = nameof(User.Email);
+            public const string Password = nameof(User.Password);
+            public const string PasswordFormat = nameof(User.PasswordFormat);
+            public const string PasswordSalt = nameof(User.PasswordSalt);
+            public const string SiteId = nameof(User.SiteId);
+            public const string SiteIdCollection = nameof(User.SiteIdCollection);
             public const string IsLockedOut = "IsLockedOut";
         }
 
-        public async Task<IEnumerable<UserInfo>> GetAllAsync(Query query)
+        public async Task<IEnumerable<User>> GetAllAsync(Query query)
         {
             return await _repository.GetAllAsync(query);
         }
@@ -71,7 +71,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.CountAsync();
         }
 
-        public async Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(UserInfo userInfo)
+        public async Task<(bool IsSuccess, int UserId, string ErrorMessage)> InsertAsync(User userInfo)
         {
             var (isSuccess, errorMessage) = await InsertValidateAsync(userInfo.UserName, userInfo.Password, userInfo.Email, userInfo.Mobile);
 
@@ -94,7 +94,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public async Task<(bool IsSuccess, string ErrorMessage)> UpdateAsync(UserInfo userInfo)
+        public async Task<(bool IsSuccess, string ErrorMessage)> UpdateAsync(User userInfo)
         {
             var oldUserInfo = await GetByUserIdAsync(userInfo.Id);
             await RemoveCacheAsync(oldUserInfo);
@@ -112,7 +112,7 @@ namespace SS.CMS.Core.Repositories
             return (updated, null);
         }
 
-        public async Task<bool> UpdateLastActivityDateAndCountOfFailedLoginAsync(UserInfo userInfo)
+        public async Task<bool> UpdateLastActivityDateAndCountOfFailedLoginAsync(User userInfo)
         {
             if (userInfo == null) return false;
 
@@ -127,7 +127,7 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public async Task<bool> UpdateLastActivityDateAndCountOfLoginAsync(UserInfo userInfo)
+        public async Task<bool> UpdateLastActivityDateAndCountOfLoginAsync(User userInfo)
         {
             if (userInfo == null) return false;
 
@@ -143,7 +143,7 @@ namespace SS.CMS.Core.Repositories
             return updated;
         }
 
-        public async Task UpdateSiteIdCollectionAsync(UserInfo userInfo, string siteIdCollection)
+        public async Task UpdateSiteIdCollectionAsync(User userInfo, string siteIdCollection)
         {
             if (userInfo == null) return;
 
@@ -157,7 +157,7 @@ namespace SS.CMS.Core.Repositories
             await RemoveCacheAsync(userInfo);
         }
 
-        public async Task<List<int>> UpdateSiteIdAsync(UserInfo userInfo, int siteId)
+        public async Task<List<int>> UpdateSiteIdAsync(User userInfo, int siteId)
         {
             if (userInfo == null) return null;
 
@@ -182,7 +182,7 @@ namespace SS.CMS.Core.Repositories
             return siteIdListLatestAccessed;
         }
 
-        private async Task ChangePasswordAsync(UserInfo userInfo, PasswordFormat passwordFormat, string passwordSalt, string password)
+        private async Task ChangePasswordAsync(User userInfo, PasswordFormat passwordFormat, string passwordSalt, string password)
         {
             userInfo.Password = password;
             userInfo.PasswordFormat = passwordFormat.Value;
@@ -193,7 +193,7 @@ namespace SS.CMS.Core.Repositories
             await RemoveCacheAsync(userInfo);
         }
 
-        public async Task<bool> DeleteAsync(UserInfo userInfo)
+        public async Task<bool> DeleteAsync(User userInfo)
         {
             if (userInfo == null) return false;
 
@@ -237,7 +237,7 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        public async Task<UserInfo> GetByAccountAsync(string account)
+        public async Task<User> GetByAccountAsync(string account)
         {
             var UserInfo = await GetByUserNameAsync(account);
             if (UserInfo != null) return UserInfo;
@@ -247,7 +247,7 @@ namespace SS.CMS.Core.Repositories
             return null;
         }
 
-        public async Task<UserInfo> GetByUserIdAsync(int userId)
+        public async Task<User> GetByUserIdAsync(int userId)
         {
             if (userId <= 0) return null;
 
@@ -258,7 +258,7 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public async Task<UserInfo> GetByUserNameAsync(string userName)
+        public async Task<User> GetByUserNameAsync(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName)) return null;
 
@@ -269,7 +269,7 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public async Task<UserInfo> GetByMobileAsync(string mobile)
+        public async Task<User> GetByMobileAsync(string mobile)
         {
             if (string.IsNullOrWhiteSpace(mobile)) return null;
 
@@ -280,7 +280,7 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public async Task<UserInfo> GetByEmailAsync(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
 
@@ -348,7 +348,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.DepartmentId, departmentId));
         }
 
-        private async Task<(bool IsSuccess, string ErrorMessage)> UpdateValidateAsync(UserInfo adminInfoToUpdate, string userName, string email, string mobile)
+        private async Task<(bool IsSuccess, string ErrorMessage)> UpdateValidateAsync(User adminInfoToUpdate, string userName, string email, string mobile)
         {
             var configInfo = await _configRepository.GetConfigInfoAsync();
 
@@ -431,7 +431,7 @@ namespace SS.CMS.Core.Repositories
             return (true, null);
         }
 
-        public async Task<(bool IsSuccess, string ErrorMessage)> ChangePasswordAsync(UserInfo userInfo, string password)
+        public async Task<(bool IsSuccess, string ErrorMessage)> ChangePasswordAsync(User userInfo, string password)
         {
             var configInfo = await _configRepository.GetConfigInfoAsync();
 

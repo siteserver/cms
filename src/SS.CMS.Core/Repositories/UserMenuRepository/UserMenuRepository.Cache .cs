@@ -9,7 +9,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class UserMenuRepository
     {
-        public async Task<List<UserMenuInfo>> GetAllUserMenusAsync()
+        public async Task<List<UserMenu>> GetAllUserMenusAsync()
         {
             return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {
@@ -17,7 +17,7 @@ namespace SS.CMS.Core.Repositories
             });
         }
 
-        public async Task<UserMenuInfo> GetUserMenuInfoAsync(int menuId)
+        public async Task<UserMenu> GetUserMenuInfoAsync(int menuId)
         {
             var list = await GetAllUserMenusAsync();
             return list.FirstOrDefault(menu => menu.Id == menuId);
@@ -28,11 +28,11 @@ namespace SS.CMS.Core.Repositories
         private const string Contents = nameof(Contents);
         private const string Return = nameof(Return);
 
-        private readonly Lazy<List<KeyValuePair<UserMenuInfo, List<UserMenuInfo>>>> SystemMenus =
-            new Lazy<List<KeyValuePair<UserMenuInfo, List<UserMenuInfo>>>>(() =>
-                new List<KeyValuePair<UserMenuInfo, List<UserMenuInfo>>>
+        private readonly Lazy<List<KeyValuePair<UserMenu, List<UserMenu>>>> SystemMenus =
+            new Lazy<List<KeyValuePair<UserMenu, List<UserMenu>>>>(() =>
+                new List<KeyValuePair<UserMenu, List<UserMenu>>>
                 {
-                    new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
+                    new KeyValuePair<UserMenu, List<UserMenu>>(new UserMenu
                     {
                         Id = 0,
                         SystemId = Dashboard,
@@ -45,7 +45,7 @@ namespace SS.CMS.Core.Repositories
                         Href = "index.html",
                         Target = "_top"
                     }, null),
-                    new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
+                    new KeyValuePair<UserMenu, List<UserMenu>>(new UserMenu
                     {
                         Id = 0,
                         SystemId = ContentAdd,
@@ -58,7 +58,7 @@ namespace SS.CMS.Core.Repositories
                         Href = "pages/contentAdd.html",
                         Target = "_self"
                     }, null),
-                    new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
+                    new KeyValuePair<UserMenu, List<UserMenu>>(new UserMenu
                     {
                         Id = 0,
                         SystemId = Contents,
@@ -71,7 +71,7 @@ namespace SS.CMS.Core.Repositories
                         Href = "pages/contents.html",
                         Target = "_self"
                     }, null),
-                    new KeyValuePair<UserMenuInfo, List<UserMenuInfo>>(new UserMenuInfo
+                    new KeyValuePair<UserMenu, List<UserMenu>>(new UserMenu
                     {
                         Id = 0,
                         SystemId = Return,

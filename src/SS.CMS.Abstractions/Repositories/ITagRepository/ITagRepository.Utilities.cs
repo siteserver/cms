@@ -21,8 +21,8 @@ namespace SS.CMS.Repositories
 
         List<string> ParseTagsString(string tagsString);
 
-        IList<TagInfo> GetTagInfoList(IEnumerable<TagInfo> tagInfoList);
+        IList<Tag> GetTagInfoList(IEnumerable<Tag> tagInfoList);
 
-        IList<TagInfo> GetTagInfoList(IEnumerable<TagInfo> tagInfoList, int totalNum, int tagLevel);
+        IList<Tag> GetTagInfoList(IEnumerable<Tag> tagInfoList, int totalNum, int tagLevel);
     }
 }

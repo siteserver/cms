@@ -10,7 +10,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class SiteLogRepository : ISiteLogRepository
     {
-        private readonly Repository<SiteLogInfo> _repository;
+        private readonly Repository<SiteLog> _repository;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IErrorLogRepository _errorLogRepository;
@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Repositories
 
         public SiteLogRepository(ISettingsManager settingsManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository, ILogRepository logRepository)
         {
-            _repository = new Repository<SiteLogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<SiteLog>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _errorLogRepository = errorLogRepository;
@@ -31,11 +31,11 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(SiteLogInfo.Id);
-            public const string CreatedDate = nameof(SiteLogInfo.CreatedDate);
+            public const string Id = nameof(SiteLog.Id);
+            public const string CreatedDate = nameof(SiteLog.CreatedDate);
         }
 
-        public async Task<int> InsertAsync(SiteLogInfo logInfo)
+        public async Task<int> InsertAsync(SiteLog logInfo)
         {
             return await _repository.InsertAsync(logInfo);
         }

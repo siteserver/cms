@@ -15,7 +15,7 @@ namespace SS.CMS.Core.Services
     public partial class FileManager
     {
         //将编辑器中图片上传至本机
-        public string SaveImage(SiteInfo siteInfo, string content)
+        public string SaveImage(Site siteInfo, string content)
         {
             var originalImageSrcs = RegexUtils.GetOriginalImageSrcs(content);
             foreach (var originalImageSrc in originalImageSrcs)
@@ -52,7 +52,7 @@ namespace SS.CMS.Core.Services
             return content;
         }
 
-        public void AddWaterMark(SiteInfo siteInfo, string imagePath)
+        public void AddWaterMark(Site siteInfo, string imagePath)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void MoveFile(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, string relatedUrl)
+        public void MoveFile(Site sourceSiteInfo, Site destSiteInfo, string relatedUrl)
         {
             if (!string.IsNullOrEmpty(relatedUrl))
             {
@@ -98,7 +98,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void MoveFileByContentInfo(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, ContentInfo contentInfo)
+        public void MoveFileByContentInfo(Site sourceSiteInfo, Site destSiteInfo, Content contentInfo)
         {
             if (contentInfo == null || sourceSiteInfo.Id == destSiteInfo.Id) return;
 
@@ -161,7 +161,7 @@ namespace SS.CMS.Core.Services
             }
         }
 
-        public void MoveFileByVirtualUrl(SiteInfo sourceSiteInfo, SiteInfo destSiteInfo, string fileVirtualUrl)
+        public void MoveFileByVirtualUrl(Site sourceSiteInfo, Site destSiteInfo, string fileVirtualUrl)
         {
             if (string.IsNullOrEmpty(fileVirtualUrl) || sourceSiteInfo.Id == destSiteInfo.Id) return;
 

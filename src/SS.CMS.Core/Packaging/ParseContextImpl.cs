@@ -60,7 +60,7 @@ namespace SS.CMS.Core.Plugin
 
         public int ContentId { get; private set; }
 
-        public ContentInfo ContentInfo { get; private set; }
+        public Content ContentInfo { get; private set; }
 
         public TemplateType TemplateType { get; private set; }
 

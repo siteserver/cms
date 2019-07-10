@@ -233,9 +233,9 @@ namespace SS.CMS.Cli.Services
 
                         foreach (var newRow in newRows)
                         {
-                            if (newRow.ContainsKey(nameof(ContentInfo.SiteId)))
+                            if (newRow.ContainsKey(nameof(Content.SiteId)))
                             {
-                                var siteId = Convert.ToInt32(newRow[nameof(ContentInfo.SiteId)]);
+                                var siteId = Convert.ToInt32(newRow[nameof(Content.SiteId)]);
                                 if (siteIdList.Contains(siteId))
                                 {
                                     var rows = siteIdWithRows[siteId];

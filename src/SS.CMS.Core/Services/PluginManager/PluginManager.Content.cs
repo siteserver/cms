@@ -89,7 +89,7 @@ namespace SS.CMS.Core.Services
             return list;
         }
 
-        public async Task<List<IService>> GetContentPluginsAsync(ChannelInfo channelInfo, bool includeContentTable)
+        public async Task<List<IService>> GetContentPluginsAsync(Channel channelInfo, bool includeContentTable)
         {
             var list = new List<IService>();
             var pluginIds = TranslateUtils.StringCollectionToStringList(channelInfo.ContentRelatedPluginIds);
@@ -110,7 +110,7 @@ namespace SS.CMS.Core.Services
             return list;
         }
 
-        public List<string> GetContentPluginIds(ChannelInfo channelInfo)
+        public List<string> GetContentPluginIds(Channel channelInfo)
         {
             if (string.IsNullOrEmpty(channelInfo.ContentRelatedPluginIds) &&
                 string.IsNullOrEmpty(channelInfo.ContentModelPluginId))

@@ -15,37 +15,37 @@ namespace SS.CMS.Services
 
         string GetMenuUrl(string pluginId, string href, int siteId, int channelId, int contentId);
 
-        string GetWebUrl(SiteInfo siteInfo, params string[] value);
+        string GetWebUrl(Site siteInfo, params string[] value);
 
-        string GetAssetsUrl(SiteInfo siteInfo, params string[] value);
+        string GetAssetsUrl(Site siteInfo, params string[] value);
 
-        string GetHomeUrl(SiteInfo siteInfo, params string[] value);
+        string GetHomeUrl(Site siteInfo, params string[] value);
 
-        string GetSiteUrl(SiteInfo siteInfo, bool isLocal);
+        string GetSiteUrl(Site siteInfo, bool isLocal);
 
-        string GetSiteUrl(SiteInfo siteInfo, string requestPath, bool isLocal);
+        string GetSiteUrl(Site siteInfo, string requestPath, bool isLocal);
 
-        string GetSiteUrlByPhysicalPath(SiteInfo siteInfo, string physicalPath, bool isLocal);
+        string GetSiteUrlByPhysicalPath(Site siteInfo, string physicalPath, bool isLocal);
 
-        Task<string> GetIndexPageUrlAsync(SiteInfo siteInfo, bool isLocal);
+        Task<string> GetIndexPageUrlAsync(Site siteInfo, bool isLocal);
 
-        Task<string> GetFileUrlAsync(SiteInfo siteInfo, int fileTemplateId, bool isLocal);
+        Task<string> GetFileUrlAsync(Site siteInfo, int fileTemplateId, bool isLocal);
 
-        Task<string> GetContentUrlAsync(SiteInfo siteInfo, ContentInfo contentInfo, bool isLocal);
+        Task<string> GetContentUrlAsync(Site siteInfo, Content contentInfo, bool isLocal);
 
-        Task<string> GetContentUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, bool isLocal);
+        Task<string> GetContentUrlAsync(Site siteInfo, Channel channelInfo, int contentId, bool isLocal);
 
         //得到栏目经过计算后的连接地址
-        Task<string> GetChannelUrlAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isLocal);
+        Task<string> GetChannelUrlAsync(Site siteInfo, Channel channelInfo, bool isLocal);
 
-        Task<string> GetInputChannelUrlAsync(SiteInfo siteInfo, ChannelInfo nodeInfo, bool isLocal);
+        Task<string> GetInputChannelUrlAsync(Site siteInfo, Channel nodeInfo, bool isLocal);
 
         string AddVirtualToUrl(string url);
 
         //根据发布系统属性判断是否为相对路径并返回解析后路径
-        string ParseNavigationUrl(SiteInfo siteInfo, string url, bool isLocal);
+        string ParseNavigationUrl(Site siteInfo, string url, bool isLocal);
 
-        string GetVirtualUrl(SiteInfo siteInfo, string url);
+        string GetVirtualUrl(Site siteInfo, string url);
 
         bool IsVirtualUrl(string url);
 
@@ -57,6 +57,6 @@ namespace SS.CMS.Services
 
         string GetUserUploadUrl(int userId, string relatedUrl);
 
-        string GetUserAvatarUrl(UserInfo userInfo);
+        string GetUserAvatarUrl(User userInfo);
     }
 }

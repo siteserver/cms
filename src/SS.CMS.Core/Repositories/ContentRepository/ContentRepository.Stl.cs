@@ -15,7 +15,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListCheckedAsync(List<int> channelIdList, int startNum, int totalNum, string order, Query query, NameValueCollection others)
+        public async Task<List<KeyValuePair<int, Content>>> GetContainerContentListCheckedAsync(List<int> channelIdList, int startNum, int totalNum, string order, Query query, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0) return null;
 
@@ -136,9 +136,9 @@ namespace SS.CMS.Core.Repositories
             return startNum <= 1 ? await GetContainerContentListByContentNumAndWhereStringAsync(totalNum, query, order) : await GetContainerContentListByStartNumAsync(startNum, totalNum, query, order);
         }
 
-        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByContentNumAndWhereStringAsync(int totalNum, Query query, string order)
+        public async Task<List<KeyValuePair<int, Content>>> GetContainerContentListByContentNumAndWhereStringAsync(int totalNum, Query query, string order)
         {
-            var list = new List<KeyValuePair<int, ContentInfo>>();
+            var list = new List<KeyValuePair<int, Content>>();
             var itemIndex = 0;
 
             QuerySelectMinColumns(query);
@@ -149,15 +149,15 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var contentInfo in contentInfoList)
             {
-                list.Add(new KeyValuePair<int, ContentInfo>(itemIndex++, contentInfo));
+                list.Add(new KeyValuePair<int, Content>(itemIndex++, contentInfo));
             }
 
             return list;
         }
 
-        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListByStartNumAsync(int startNum, int totalNum, Query query, string order)
+        public async Task<List<KeyValuePair<int, Content>>> GetContainerContentListByStartNumAsync(int startNum, int totalNum, Query query, string order)
         {
-            var list = new List<KeyValuePair<int, ContentInfo>>();
+            var list = new List<KeyValuePair<int, Content>>();
             var itemIndex = 0;
 
             QuerySelectMinColumns(query);
@@ -169,13 +169,13 @@ namespace SS.CMS.Core.Repositories
 
             foreach (var contentInfo in contentInfoList)
             {
-                list.Add(new KeyValuePair<int, ContentInfo>(itemIndex++, contentInfo));
+                list.Add(new KeyValuePair<int, Content>(itemIndex++, contentInfo));
             }
 
             return list;
         }
 
-        public List<KeyValuePair<int, ContentInfo>> GetContainerContentListBySqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
+        public List<KeyValuePair<int, Content>> GetContainerContentListBySqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
         {
             var pageSqlString = string.Empty;
 
@@ -242,18 +242,18 @@ SELECT {Container.Content.SqlColumns} FROM (
 ) {orderString}";
             }
 
-            var list = new List<KeyValuePair<int, ContentInfo>>();
+            var list = new List<KeyValuePair<int, Content>>();
             var itemIndex = 0;
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Content>();
 
             using (var connection = _repository.Database.GetConnection())
             {
-                contentInfoList = connection.Query<ContentInfo>(pageSqlString).ToList();
+                contentInfoList = connection.Query<Content>(pageSqlString).ToList();
             }
 
             foreach (var contentInfo in contentInfoList)
             {
-                list.Add(new KeyValuePair<int, ContentInfo>(itemIndex++, contentInfo));
+                list.Add(new KeyValuePair<int, Content>(itemIndex++, contentInfo));
             }
 
             return list;

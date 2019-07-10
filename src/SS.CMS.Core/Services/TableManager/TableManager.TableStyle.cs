@@ -23,10 +23,10 @@ namespace SS.CMS.Core.Services
             return $"{relatedIdentity}${tableName}$".ToLower();
         }
 
-        public async Task<List<TableStyleInfo>> GetStyleInfoListAsync(string tableName, List<int> relatedIdentities)
+        public async Task<List<TableStyle>> GetStyleInfoListAsync(string tableName, List<int> relatedIdentities)
         {
             var allAttributeNames = new List<string>();
-            var styleInfoList = new List<TableStyleInfo>();
+            var styleInfoList = new List<TableStyle>();
 
             var entries = await _tableStyleRepository.GetAllTableStylesAsync();
             relatedIdentities = ParseRelatedIdentities(relatedIdentities);
@@ -77,32 +77,32 @@ namespace SS.CMS.Core.Services
             return styleInfoList.OrderBy(styleInfo => styleInfo.Taxis == 0 ? int.MaxValue : styleInfo.Taxis).ToList();
         }
 
-        public async Task<List<TableStyleInfo>> GetSiteStyleInfoListAsync(int siteId)
+        public async Task<List<TableStyle>> GetSiteStyleInfoListAsync(int siteId)
         {
             var relatedIdentities = GetRelatedIdentities(siteId);
             return await GetStyleInfoListAsync(_siteRepository.TableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyleInfo>> GetChannelStyleInfoListAsync(ChannelInfo channelInfo)
+        public async Task<List<TableStyle>> GetChannelStyleInfoListAsync(Channel channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
             return await GetStyleInfoListAsync(_channelRepository.TableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyleInfo>> GetContentStyleInfoListAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<List<TableStyle>> GetContentStyleInfoListAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo)
         {
             var relatedIdentities = GetRelatedIdentities(channelInfo);
             var tableName = await _channelRepository.GetTableNameAsync(pluginManager, siteInfo, channelInfo);
             return await GetStyleInfoListAsync(tableName, relatedIdentities);
         }
 
-        public async Task<List<TableStyleInfo>> GetUserStyleInfoListAsync()
+        public async Task<List<TableStyle>> GetUserStyleInfoListAsync()
         {
             var relatedIdentities = EmptyRelatedIdentities;
             return await GetStyleInfoListAsync(_userRepository.TableName, relatedIdentities);
         }
 
-        public IDictionary<string, object> GetDefaultAttributes(List<TableStyleInfo> styleInfoList)
+        public IDictionary<string, object> GetDefaultAttributes(List<TableStyle> styleInfoList)
         {
             var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
@@ -139,7 +139,7 @@ namespace SS.CMS.Core.Services
         }
 
         //relatedIdentities从大到小，最后是0
-        public async Task<TableStyleInfo> GetTableStyleInfoAsync(string tableName, string attributeName, List<int> relatedIdentities)
+        public async Task<TableStyle> GetTableStyleInfoAsync(string tableName, string attributeName, List<int> relatedIdentities)
         {
             if (attributeName == null) attributeName = string.Empty;
 
@@ -169,7 +169,7 @@ namespace SS.CMS.Core.Services
                 return GetDefaultContentTableStyleInfo(tableName, attributeName);
             }
 
-            return new TableStyleInfo
+            return new TableStyle
             {
                 TableName = tableName,
                 AttributeName = attributeName,
@@ -180,7 +180,7 @@ namespace SS.CMS.Core.Services
             };
         }
 
-        public async Task<TableStyleInfo> GetTableStyleInfoAsync(int id)
+        public async Task<TableStyle> GetTableStyleInfoAsync(int id)
         {
             var entries = await _tableStyleRepository.GetAllTableStylesAsync();
 
@@ -214,9 +214,9 @@ namespace SS.CMS.Core.Services
             return relatedIdentities;
         }
 
-        public async Task<Dictionary<string, List<TableStyleInfo>>> GetTableStyleInfoWithItemsDictionaryAsync(string tableName, List<int> allRelatedIdentities)
+        public async Task<Dictionary<string, List<TableStyle>>> GetTableStyleInfoWithItemsDictionaryAsync(string tableName, List<int> allRelatedIdentities)
         {
-            var dict = new Dictionary<string, List<TableStyleInfo>>();
+            var dict = new Dictionary<string, List<TableStyle>>();
 
             var entries = await _tableStyleRepository.GetAllTableStylesAsync();
             foreach (var pair in entries)
@@ -228,7 +228,7 @@ namespace SS.CMS.Core.Services
                     !allRelatedIdentities.Contains(identityFromKey)) continue;
 
                 var styleInfo = pair.Value;
-                var tableStyleInfoWithItemList = dict.ContainsKey(styleInfo.AttributeName) ? dict[styleInfo.AttributeName] : new List<TableStyleInfo>();
+                var tableStyleInfoWithItemList = dict.ContainsKey(styleInfo.AttributeName) ? dict[styleInfo.AttributeName] : new List<TableStyle>();
                 tableStyleInfoWithItemList.Add(styleInfo);
                 dict[styleInfo.AttributeName] = tableStyleInfoWithItemList;
             }
@@ -236,7 +236,7 @@ namespace SS.CMS.Core.Services
             return dict;
         }
 
-        public string GetValidateInfo(TableStyleInfo styleInfo)
+        public string GetValidateInfo(TableStyle styleInfo)
         {
             var builder = new StringBuilder();
             if (styleInfo.IsRequired)
@@ -274,7 +274,7 @@ namespace SS.CMS.Core.Services
             return new List<int> { siteId, 0 };
         }
 
-        public List<int> GetRelatedIdentities(ChannelInfo channelInfo)
+        public List<int> GetRelatedIdentities(Channel channelInfo)
         {
             var list = new List<int>();
             if (channelInfo != null)
@@ -297,9 +297,9 @@ namespace SS.CMS.Core.Services
 
         public List<int> EmptyRelatedIdentities => new List<int> { 0 };
 
-        private TableStyleInfo GetDefaultContentTableStyleInfo(string tableName, string attributeName)
+        private TableStyle GetDefaultContentTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo
+            var styleInfo = new TableStyle
             {
                 TableName = tableName,
                 AttributeName = attributeName,
@@ -309,64 +309,64 @@ namespace SS.CMS.Core.Services
                 IsHorizontal = true
             };
 
-            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Title)))
+            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Title)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.Title);
+                styleInfo.AttributeName = nameof(Content.Title);
                 styleInfo.DisplayName = "标题";
                 styleInfo.VeeValidate = "required";
                 styleInfo.Taxis = 1;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.SubTitle)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.SubTitle)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.SubTitle);
+                styleInfo.AttributeName = nameof(Content.SubTitle);
                 styleInfo.DisplayName = "副标题";
                 styleInfo.Taxis = 2;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.ImageUrl)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.ImageUrl)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.ImageUrl);
+                styleInfo.AttributeName = nameof(Content.ImageUrl);
                 styleInfo.DisplayName = "图片";
                 styleInfo.Type = InputType.Image;
                 styleInfo.Taxis = 3;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.VideoUrl)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.VideoUrl)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.VideoUrl);
+                styleInfo.AttributeName = nameof(Content.VideoUrl);
                 styleInfo.DisplayName = "视频";
                 styleInfo.Type = InputType.Video;
                 styleInfo.Taxis = 4;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.FileUrl)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.FileUrl)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.FileUrl);
+                styleInfo.AttributeName = nameof(Content.FileUrl);
                 styleInfo.DisplayName = "附件";
                 styleInfo.Type = InputType.File;
                 styleInfo.Taxis = 5;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Content)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Body)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.Content);
+                styleInfo.AttributeName = nameof(Content.Body);
                 styleInfo.DisplayName = "内容";
                 styleInfo.VeeValidate = "required";
                 styleInfo.Type = InputType.TextEditor;
                 styleInfo.Taxis = 6;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Summary)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Summary)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.Summary);
+                styleInfo.AttributeName = nameof(Content.Summary);
                 styleInfo.DisplayName = "内容摘要";
                 styleInfo.Type = InputType.TextArea;
                 styleInfo.Taxis = 7;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Author)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Author)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.Author);
+                styleInfo.AttributeName = nameof(Content.Author);
                 styleInfo.DisplayName = "作者";
                 styleInfo.Taxis = 8;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(ContentInfo.Source)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(Content.Source)))
             {
-                styleInfo.AttributeName = nameof(ContentInfo.Source);
+                styleInfo.AttributeName = nameof(Content.Source);
                 styleInfo.DisplayName = "来源";
                 styleInfo.Taxis = 9;
             }
@@ -374,9 +374,9 @@ namespace SS.CMS.Core.Services
             return styleInfo;
         }
 
-        private TableStyleInfo GetDefaultUserTableStyleInfo(string tableName, string attributeName)
+        private TableStyle GetDefaultUserTableStyleInfo(string tableName, string attributeName)
         {
-            var styleInfo = new TableStyleInfo
+            var styleInfo = new TableStyle
             {
                 TableName = tableName,
                 AttributeName = attributeName,
@@ -386,30 +386,30 @@ namespace SS.CMS.Core.Services
                 IsHorizontal = true
             };
 
-            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.DisplayName)))
+            if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.DisplayName)))
             {
-                styleInfo.AttributeName = nameof(UserInfo.DisplayName);
+                styleInfo.AttributeName = nameof(User.DisplayName);
                 styleInfo.DisplayName = "姓名";
                 styleInfo.VeeValidate = "required";
                 styleInfo.Taxis = 1;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Mobile)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Mobile)))
             {
-                styleInfo.AttributeName = nameof(UserInfo.Mobile);
+                styleInfo.AttributeName = nameof(User.Mobile);
                 styleInfo.DisplayName = "手机号";
                 styleInfo.VeeValidate = "mobile";
                 styleInfo.Taxis = 2;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Email)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Email)))
             {
-                styleInfo.AttributeName = nameof(UserInfo.Email);
+                styleInfo.AttributeName = nameof(User.Email);
                 styleInfo.DisplayName = "邮箱";
                 styleInfo.VeeValidate = "email";
                 styleInfo.Taxis = 3;
             }
-            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(UserInfo.Bio)))
+            else if (StringUtils.EqualsIgnoreCase(attributeName, nameof(User.Bio)))
             {
-                styleInfo.AttributeName = nameof(UserInfo.Bio);
+                styleInfo.AttributeName = nameof(User.Bio);
                 styleInfo.Type = InputType.TextArea;
                 styleInfo.DisplayName = "个人简介";
                 styleInfo.Taxis = 9;

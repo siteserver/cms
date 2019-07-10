@@ -7,7 +7,7 @@ namespace SS.CMS.Repositories
 {
     public partial interface ISiteLogRepository : IRepository
     {
-        Task<int> InsertAsync(SiteLogInfo logInfo);
+        Task<int> InsertAsync(SiteLog logInfo);
 
         Task DeleteIfThresholdAsync();
 

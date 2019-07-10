@@ -11,10 +11,10 @@ namespace SS.CMS.Core.Repositories
 {
     public class RelatedFieldRepository : IRelatedFieldRepository
     {
-        private readonly Repository<RelatedFieldInfo> _repository;
+        private readonly Repository<RelatedField> _repository;
         public RelatedFieldRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<RelatedFieldInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<RelatedField>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -23,17 +23,17 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(RelatedFieldInfo.Id);
-            public const string Title = nameof(RelatedFieldInfo.Title);
-            public const string SiteId = nameof(RelatedFieldInfo.SiteId);
+            public const string Id = nameof(RelatedField.Id);
+            public const string Title = nameof(RelatedField.Title);
+            public const string SiteId = nameof(RelatedField.SiteId);
         }
 
-        public async Task<int> InsertAsync(RelatedFieldInfo relatedFieldInfo)
+        public async Task<int> InsertAsync(RelatedField relatedFieldInfo)
         {
             return await _repository.InsertAsync(relatedFieldInfo);
         }
 
-        public async Task<bool> UpdateAsync(RelatedFieldInfo relatedFieldInfo)
+        public async Task<bool> UpdateAsync(RelatedField relatedFieldInfo)
         {
             return await _repository.UpdateAsync(relatedFieldInfo);
         }
@@ -43,12 +43,12 @@ namespace SS.CMS.Core.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public async Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int id)
+        public async Task<RelatedField> GetRelatedFieldInfoAsync(int id)
         {
             return await _repository.GetAsync(id);
         }
 
-        public async Task<RelatedFieldInfo> GetRelatedFieldInfoAsync(int siteId, string title)
+        public async Task<RelatedField> GetRelatedFieldInfoAsync(int siteId, string title)
         {
             return await _repository.GetAsync(Q
                 .Where(Attr.SiteId, siteId)
@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Repositories
                 .Where(Attr.Id, id));
         }
 
-        public async Task<IEnumerable<RelatedFieldInfo>> GetRelatedFieldInfoListAsync(int siteId)
+        public async Task<IEnumerable<RelatedField>> GetRelatedFieldInfoListAsync(int siteId)
         {
             return await _repository.GetAllAsync(Q
                 .Where(Attr.SiteId, siteId)

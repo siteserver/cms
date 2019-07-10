@@ -357,7 +357,7 @@ namespace SS.CMS.Core.Services
 
             await SyncDatabaseAsync();
 
-            var configInfo = new ConfigInfo
+            var configInfo = new Config
             {
                 DatabaseVersion = _settingsManager.ProductVersion,
                 UpdateDate = DateTime.UtcNow,
@@ -366,7 +366,7 @@ namespace SS.CMS.Core.Services
             await _configRepository.DeleteAllAsync();
             await _configRepository.InsertAsync(configInfo);
 
-            var userInfo = new UserInfo
+            var userInfo = new User
             {
                 UserName = adminName,
                 Password = adminPassword,
@@ -393,7 +393,7 @@ namespace SS.CMS.Core.Services
 
             if (configInfo == null)
             {
-                configInfo = new ConfigInfo();
+                configInfo = new Config();
                 await _configRepository.InsertAsync(configInfo);
             }
 

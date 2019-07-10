@@ -6,12 +6,12 @@ namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {
-        Task<string> GetContentFilePathRuleAsync(SiteInfo siteInfo, int channelId);
+        Task<string> GetContentFilePathRuleAsync(Site siteInfo, int channelId);
 
-        Task<IDictionary> ContentRulesGetDictionaryAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId);
+        Task<IDictionary> ContentRulesGetDictionaryAsync(IPluginManager pluginManager, Site siteInfo, int channelId);
 
-        Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, int contentId);
+        Task<string> ContentRulesParseAsync(Site siteInfo, int channelId, int contentId);
 
-        Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo);
+        Task<string> ContentRulesParseAsync(Site siteInfo, int channelId, Content contentInfo);
     }
 }

@@ -9,17 +9,17 @@ namespace SS.CMS.Repositories
 {
     public interface IChannelRepository : IRepository
     {
-        Task<int> InsertAsync(ChannelInfo channelInfo);
+        Task<int> InsertAsync(Channel channelInfo);
 
-        Task UpdateAsync(ChannelInfo channelInfo);
+        Task UpdateAsync(Channel channelInfo);
 
-        Task UpdateExtendAsync(ChannelInfo channelInfo);
+        Task UpdateExtendAsync(Channel channelInfo);
 
         Task DeleteAsync(int siteId, int channelId);
 
-        Task<ChannelInfo> GetChannelInfoByLastAddDateAsync(int channelId);
+        Task<Channel> GetChannelInfoByLastAddDateAsync(int channelId);
 
-        Task<ChannelInfo> GetChannelInfoByTaxisAsync(int channelId);
+        Task<Channel> GetChannelInfoByTaxisAsync(int channelId);
 
         Task<int> GetIdByParentIdAndTaxisAsync(int parentId, int taxis, bool isNextChannel);
 
@@ -35,15 +35,15 @@ namespace SS.CMS.Repositories
 
         Task<IEnumerable<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum);
 
-        Task<IEnumerable<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal);
+        Task<IEnumerable<KeyValuePair<int, Channel>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal);
 
         Task<IEnumerable<string>> GetContentModelPluginIdListAsync();
 
-        Task<IEnumerable<int>> GetChannelIdListAsync(TemplateInfo templateInfo);
+        Task<IEnumerable<int>> GetChannelIdListAsync(Template templateInfo);
 
         Task<string> GetSourceNameAsync(int sourceId);
 
-        Task<ChannelInfo> GetChannelInfoAsync(int channelId);
+        Task<Channel> GetChannelInfoAsync(int channelId);
 
         Task<int> GetSiteIdAsync(int channelId);
 
@@ -57,21 +57,21 @@ namespace SS.CMS.Repositories
 
         Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup);
 
-        Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType);
+        Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType);
 
-        Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId);
+        Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId);
 
         Task<bool> IsExistsAsync(int channelId);
 
         Task<int> GetChannelIdByParentsCountAsync(int siteId, int channelId, int parentsCount);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId);
+        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, int channelId);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
+        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, string pluginId);
+        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, string pluginId);
 
-        Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo);
+        Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo);
 
         Task<string> GetParentsPathAsync(int channelId);
 
@@ -85,6 +85,6 @@ namespace SS.CMS.Repositories
 
         Task<bool> IsAncestorOrSelfAsync(int parentId, int childId);
 
-        Task<bool> IsCreatableAsync(SiteInfo siteInfo, ChannelInfo channelInfo);
+        Task<bool> IsCreatableAsync(Site siteInfo, Channel channelInfo);
     }
 }

@@ -12,13 +12,13 @@ namespace SS.CMS.Core.StlParser
     {
         public int SiteId => PageInfo.SiteId;
 
-        public SiteInfo SiteInfo => PageInfo.SiteInfo;
+        public Site SiteInfo => PageInfo.SiteInfo;
 
         public int PageChannelId => PageInfo.PageChannelId;
 
         public int PageContentId => PageInfo.PageContentId;
 
-        public TemplateInfo TemplateInfo => PageInfo.TemplateInfo;
+        public Template TemplateInfo => PageInfo.TemplateInfo;
 
         public SortedDictionary<string, string> HeadCodes => PageInfo.HeadCodes;
 

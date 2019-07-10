@@ -11,16 +11,16 @@ namespace SS.CMS.Data
     [Serializable]
     public class Entity : IEntity
     {
-        [TableColumn]
+        [DataColumn]
         public int Id { get; set; }
 
-        [TableColumn(Length = 50)]
+        [DataColumn(Length = 50)]
         public string Guid { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public DateTime? CreatedDate { get; set; }
 
-        [TableColumn]
+        [DataColumn]
         public DateTime? LastModifiedDate { get; set; }
 
         private readonly List<string> _propertyNames;
@@ -28,6 +28,10 @@ namespace SS.CMS.Data
         private readonly List<string> _columnNames;
 
         private readonly string _extendColumnName;
+
+        private readonly List<string> _dataIgnoreNames;
+
+        private readonly List<string> _jsonIgnoreNames;
 
         private readonly Dictionary<string, object> _extendDictionary;
 
@@ -37,6 +41,8 @@ namespace SS.CMS.Data
             _propertyNames = ReflectionUtils.GetPropertyNames(type);
             _columnNames = ReflectionUtils.GetColumnNames(type);
             _extendColumnName = ReflectionUtils.GetTableExtendColumnName(type);
+            _dataIgnoreNames = ReflectionUtils.GetDataIgnoreNames(type);
+            _jsonIgnoreNames = ReflectionUtils.GetJsonIgnoreNames(type);
             _extendDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -57,12 +63,29 @@ namespace SS.CMS.Data
 
         public List<string> GetColumnNames()
         {
-            return _columnNames;
+            return new List<string>(_columnNames);
         }
 
         public string GetExtendColumnName()
         {
             return _extendColumnName;
+        }
+
+        public string GetExtendColumnValue()
+        {
+            var excludeKeys = GetColumnNames();
+            excludeKeys.AddRange(GetDataIgnoreNames());
+            return Utilities.JsonSerialize(ToDictionary(excludeKeys));
+        }
+
+        public List<string> GetDataIgnoreNames()
+        {
+            return new List<string>(_dataIgnoreNames);
+        }
+
+        public List<string> GetJsonIgnoreNames()
+        {
+            return new List<string>(_jsonIgnoreNames);
         }
 
         public ICollection<string> GetKeys(bool excludeProperties = false, bool excludeDatabase = false)
@@ -83,7 +106,12 @@ namespace SS.CMS.Data
             return keys;
         }
 
-        public IDictionary<string, object> ToDictionary(List<string> excludeKeys = null)
+        public IDictionary<string, object> ToDictionary()
+        {
+            return ToDictionary(_jsonIgnoreNames);
+        }
+
+        public IDictionary<string, object> ToDictionary(List<string> excludeKeys)
         {
             var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             foreach (var key in _extendDictionary.Keys)
@@ -94,6 +122,7 @@ namespace SS.CMS.Data
             }
             foreach (var key in _propertyNames)
             {
+                if (_extendColumnName == key) continue;
                 if (excludeKeys != null && excludeKeys.Contains(key, StringComparer.OrdinalIgnoreCase)) continue;
 
                 dict[key] = Get(key);

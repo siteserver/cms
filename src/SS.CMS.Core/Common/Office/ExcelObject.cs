@@ -12,8 +12,8 @@ namespace SS.CMS.Core.Common.Office
 {
     public static class ExcelObject
     {
-        public static async Task CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, SiteInfo siteInfo,
-            ChannelInfo channelInfo, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
+        public static async Task CreateExcelFileForContents(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string filePath, Site siteInfo,
+            Channel channelInfo, IEnumerable<int> contentIdList, List<string> displayAttributes, bool isPeriods, string startDate,
             string endDate, bool? checkedState)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
@@ -61,8 +61,8 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task CreateExcelFileForContentsAsync(string filePath, SiteInfo siteInfo,
-            ChannelInfo channelInfo, List<ContentInfo> contentInfoList, List<string> columnNames)
+        public static async Task CreateExcelFileForContentsAsync(string filePath, Site siteInfo,
+            Channel channelInfo, List<Content> contentInfoList, List<string> columnNames)
         {
             DirectoryUtils.CreateDirectoryIfNotExists(DirectoryUtils.GetDirectoryPath(filePath));
             FileUtils.DeleteFileIfExists(filePath);
@@ -131,10 +131,10 @@ namespace SS.CMS.Core.Common.Office
             CsvUtils.Export(filePath, head, rows);
         }
 
-        public static async Task<List<ContentInfo>> GetContentsByCsvFileAsync(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, string filePath, SiteInfo siteInfo,
-            ChannelInfo nodeInfo)
+        public static async Task<List<Content>> GetContentsByCsvFileAsync(IPluginManager pluginManager, ITableManager tableManager, ITableStyleRepository tableStyleRepository, string filePath, Site siteInfo,
+            Channel nodeInfo)
         {
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Content>();
 
             CsvUtils.Import(filePath, out var head, out var rows);
 
@@ -170,7 +170,7 @@ namespace SS.CMS.Core.Common.Office
                     }
                 }
 
-                var contentInfo = new ContentInfo(dict);
+                var contentInfo = new Content(dict);
 
                 if (!string.IsNullOrEmpty(contentInfo.Title))
                 {

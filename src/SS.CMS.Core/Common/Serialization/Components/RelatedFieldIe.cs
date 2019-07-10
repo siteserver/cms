@@ -22,7 +22,7 @@ namespace SS.CMS.Core.Serialization.Components
             _directoryPath = directoryPath;
         }
 
-        public async Task ExportRelatedFieldAsync(RelatedFieldInfo relatedFieldInfo)
+        public async Task ExportRelatedFieldAsync(RelatedField relatedFieldInfo)
         {
             var filePath = _directoryPath + PathUtils.SeparatorChar + relatedFieldInfo.Id + ".xml";
 
@@ -37,30 +37,30 @@ namespace SS.CMS.Core.Serialization.Components
             feed.Save(filePath);
         }
 
-        private static AtomFeed ExportRelatedFieldInfo(RelatedFieldInfo relatedFieldInfo)
+        private static AtomFeed ExportRelatedFieldInfo(RelatedField relatedFieldInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Id), "RelatedFieldID" }, relatedFieldInfo.Id.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" }, relatedFieldInfo.Title);
-            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.SiteId), "PublishmentSystemID" }, relatedFieldInfo.SiteId.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.TotalLevel), relatedFieldInfo.TotalLevel.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes), relatedFieldInfo.Prefixes);
-            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes), relatedFieldInfo.Suffixes);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.Id), "RelatedFieldID" }, relatedFieldInfo.Id.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.Title), "RelatedFieldName" }, relatedFieldInfo.Title);
+            AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { nameof(RelatedField.SiteId), "PublishmentSystemID" }, relatedFieldInfo.SiteId.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedField.TotalLevel), relatedFieldInfo.TotalLevel.ToString());
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedField.Prefixes), relatedFieldInfo.Prefixes);
+            AtomUtility.AddDcElement(feed.AdditionalElements, nameof(RelatedField.Suffixes), relatedFieldInfo.Suffixes);
 
             return feed;
         }
 
-        private static async Task AddAtomEntryAsync(IRelatedFieldItemRepository relatedFieldItemRepository, AtomFeed feed, RelatedFieldItemInfo relatedFieldItemInfo, int level)
+        private static async Task AddAtomEntryAsync(IRelatedFieldItemRepository relatedFieldItemRepository, AtomFeed feed, RelatedFieldItem relatedFieldItemInfo, int level)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.Id), "ID" }, relatedFieldItemInfo.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.RelatedFieldId), "RelatedFieldID" }, relatedFieldItemInfo.RelatedFieldId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemName), relatedFieldItemInfo.ItemName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemValue), relatedFieldItemInfo.ItemValue);
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItemInfo.ParentId), "ParentID" }, relatedFieldItemInfo.ParentId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItemInfo.Taxis), relatedFieldItemInfo.Taxis.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItem.Id), "ID" }, relatedFieldItemInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItem.RelatedFieldId), "RelatedFieldID" }, relatedFieldItemInfo.RelatedFieldId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItem.ItemName), relatedFieldItemInfo.ItemName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItem.ItemValue), relatedFieldItemInfo.ItemValue);
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(RelatedFieldItem.ParentId), "ParentID" }, relatedFieldItemInfo.ParentId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(RelatedFieldItem.Taxis), relatedFieldItemInfo.Taxis.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, "Level", level.ToString());
 
             feed.Entries.Add(entry);
@@ -82,12 +82,12 @@ namespace SS.CMS.Core.Serialization.Components
             {
                 var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-                var title = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(RelatedFieldInfo.Title), "RelatedFieldName" });
-                var totalLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.TotalLevel)));
-                var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Prefixes));
-                var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedFieldInfo.Suffixes));
+                var title = AtomUtility.GetDcElementContent(feed.AdditionalElements, new List<string> { nameof(RelatedField.Title), "RelatedFieldName" });
+                var totalLevel = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedField.TotalLevel)));
+                var prefixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedField.Prefixes));
+                var suffixes = AtomUtility.GetDcElementContent(feed.AdditionalElements, nameof(RelatedField.Suffixes));
 
-                var relatedFieldInfo = new RelatedFieldInfo
+                var relatedFieldInfo = new RelatedField
                 {
                     Title = title,
                     SiteId = _siteId,
@@ -116,8 +116,8 @@ namespace SS.CMS.Core.Serialization.Components
                 var lastInsertedId = 0;
                 foreach (AtomEntry entry in feed.Entries)
                 {
-                    var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemName));
-                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItemInfo.ItemValue));
+                    var itemName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItem.ItemName));
+                    var itemValue = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(RelatedFieldItem.ItemValue));
                     var level = TranslateUtils.ToInt(AtomUtility.GetDcElementContent(entry.AdditionalElements, "Level"));
                     var parentId = 0;
                     if (level > 1)
@@ -125,7 +125,7 @@ namespace SS.CMS.Core.Serialization.Components
                         parentId = level != lastInertedLevel ? lastInsertedId : lastInsertedParentId;
                     }
 
-                    var itemInfo = new RelatedFieldItemInfo
+                    var itemInfo = new RelatedFieldItem
                     {
                         RelatedFieldId = relatedFieldId,
                         ItemName = itemName,

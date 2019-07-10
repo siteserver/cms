@@ -6,8 +6,8 @@ namespace SS.CMS.Models
     [Serializable]
     public class PermissionsSettings
     {
-        public IList<Permission> App { get; set; }
-        public IList<Permission> Site { get; set; }
-        public IList<Permission> Channel { get; set; }
+        public IList<MenuPermission> App { get; set; }
+        public IList<MenuPermission> Site { get; set; }
+        public IList<MenuPermission> Channel { get; set; }
     }
 }

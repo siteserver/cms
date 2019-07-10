@@ -10,11 +10,11 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class TableStyleRepository
     {
-        public async Task<List<KeyValuePair<string, TableStyleInfo>>> GetAllTableStylesAsync()
+        public async Task<List<KeyValuePair<string, TableStyle>>> GetAllTableStylesAsync()
         {
             return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {
-                var pairs = new List<KeyValuePair<string, TableStyleInfo>>();
+                var pairs = new List<KeyValuePair<string, TableStyle>>();
 
                 var allItemsDict = await _tableStyleItemRepository.GetAllTableStyleItemsAsync();
 
@@ -28,7 +28,7 @@ namespace SS.CMS.Core.Repositories
 
                     if (pairs.All(pair => pair.Key != key))
                     {
-                        var pair = new KeyValuePair<string, TableStyleInfo>(key, styleInfo);
+                        var pair = new KeyValuePair<string, TableStyle>(key, styleInfo);
                         pairs.Add(pair);
                     }
                 }

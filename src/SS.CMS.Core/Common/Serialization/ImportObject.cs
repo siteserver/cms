@@ -18,7 +18,7 @@ namespace SS.CMS.Core.Serialization
 {
     public class ImportObject
     {
-        private SiteInfo _siteInfo;
+        private Site _siteInfo;
         private string _sitePath;
         private int _userId;
         private ISettingsManager _settingsManager;
@@ -260,7 +260,7 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public async Task ImportContentsByZipFileAsync(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public async Task ImportContentsByZipFileAsync(Channel nodeInfo, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -273,7 +273,7 @@ namespace SS.CMS.Core.Serialization
             await ImportContentsAsync(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
 
-        public async Task ImportContentsByZipFileAsync(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
+        public async Task ImportContentsByZipFileAsync(Channel nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var siteContentDirectoryPath = _pathManager.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -294,7 +294,7 @@ namespace SS.CMS.Core.Serialization
 
             if (importStart > 1 || importCount > 0)
             {
-                var theList = new List<ContentInfo>();
+                var theList = new List<Content>();
 
                 if (importStart == 0)
                 {
@@ -353,7 +353,7 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public async Task ImportContentsByCsvFileAsync(ChannelInfo channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
+        public async Task ImportContentsByCsvFileAsync(Channel channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
@@ -403,7 +403,7 @@ namespace SS.CMS.Core.Serialization
 
             if (importStart > 1 || importCount > 0)
             {
-                var theList = new List<ContentInfo>();
+                var theList = new List<Content>();
 
                 if (importStart == 0)
                 {
@@ -466,14 +466,14 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public async Task ImportContentsByTxtFileAsync(ChannelInfo channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
+        public async Task ImportContentsByTxtFileAsync(Channel channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
-            var contentInfo = new ContentInfo
+            var contentInfo = new Content
             {
                 SiteId = channelInfo.SiteId,
                 ChannelId = channelInfo.Id,
                 Title = PathUtils.GetFileNameWithoutExtension(txtFilePath),
-                Content = StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath, Encoding.UTF8)),
+                Body = StringUtils.ReplaceNewlineToBr(FileUtils.ReadText(txtFilePath, Encoding.UTF8)),
                 IsChecked = isChecked,
                 CheckedLevel = checkedLevel,
                 AddDate = DateTime.Now,
@@ -503,7 +503,7 @@ namespace SS.CMS.Core.Serialization
             }
         }
 
-        public async Task ImportContentsAsync(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public async Task ImportContentsAsync(Channel nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
@@ -516,7 +516,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _sitePath, isOverride);
         }
 
-        public async Task ImportContentsAsync(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
+        public async Task ImportContentsAsync(Channel nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 

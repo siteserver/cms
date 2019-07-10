@@ -7,9 +7,9 @@ namespace SS.CMS.Repositories
 {
     public partial interface IChannelGroupRepository : IRepository
     {
-        Task<int> InsertAsync(ChannelGroupInfo groupInfo);
+        Task<int> InsertAsync(ChannelGroup groupInfo);
 
-        Task<bool> UpdateAsync(ChannelGroupInfo groupInfo);
+        Task<bool> UpdateAsync(ChannelGroup groupInfo);
 
         Task DeleteAsync(int siteId, string groupName);
 

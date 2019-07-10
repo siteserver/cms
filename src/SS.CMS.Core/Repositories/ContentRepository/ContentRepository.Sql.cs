@@ -15,7 +15,7 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ContentRepository
     {
-        public async Task<IEnumerable<ContentInfo>> GetSelectCommandByHitsAnalysisAsync(int siteId)
+        public async Task<IEnumerable<Content>> GetSelectCommandByHitsAnalysisAsync(int siteId)
         {
             var query = Q.Where(Attr.SiteId, siteId).Where(Attr.Hits, ">", 0).WhereTrue(Attr.IsChecked);
             QueryOrder(query, TaxisType.OrderByTaxisDesc);
@@ -45,7 +45,7 @@ namespace SS.CMS.Core.Repositories
         //             return sqlString;
         //         }
 
-        public async Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId)
+        public async Task<Query> GetStlWhereStringAsync(int siteId, Channel channelInfo, string group, string groupNot, string tags, bool? isTop, bool isRelatedContents, int contentId)
         {
             var query = Q.NewQuery();
 
@@ -66,7 +66,7 @@ namespace SS.CMS.Core.Repositories
         {
             var query = Q.NewQuery();
 
-            SiteInfo siteInfo = null;
+            Site siteInfo = null;
             if (!string.IsNullOrEmpty(siteName))
             {
                 siteInfo = await _siteRepository.GetSiteInfoBySiteNameAsync(siteName);
@@ -230,7 +230,7 @@ namespace SS.CMS.Core.Repositories
             return sqlString;
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedAsync(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
+        public async Task<IEnumerable<Content>> GetStlSqlStringCheckedAsync(List<int> channelIdList, int siteId, int channelId, int startNum, int totalNum, string order, Query query, ScopeType scopeType, string groupChannel, string groupChannelNot)
         {
             if (siteId == channelId && scopeType == ScopeType.All && string.IsNullOrEmpty(groupChannel) && string.IsNullOrEmpty(groupChannelNot))
             {
@@ -240,7 +240,7 @@ namespace SS.CMS.Core.Repositories
             {
                 if (channelIdList == null || channelIdList.Count == 0)
                 {
-                    return new List<ContentInfo>();
+                    return new List<Content>();
                 }
 
                 query.WhereIn(Attr.ChannelId, channelIdList).WhereTrue(Attr.IsChecked);
@@ -252,7 +252,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetStlSqlStringCheckedBySearchAsync(int startNum, int totalNum, string order, Query query)
+        public async Task<IEnumerable<Content>> GetStlSqlStringCheckedBySearchAsync(int startNum, int totalNum, string order, Query query)
         {
             query.Where(Attr.ChannelId, ">", 0).WhereTrue(Attr.IsChecked);
             query.Offset(startNum - 1).Limit(totalNum);
@@ -260,7 +260,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        public async Task<Query> GetStlWhereStringAsync(int siteId, ChannelInfo channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId)
+        public async Task<Query> GetStlWhereStringAsync(int siteId, Channel channelInfo, string group, string groupNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, bool isRelatedContents, int contentId)
         {
             var query = Q.Where(Attr.SiteId, siteId);
 
@@ -722,7 +722,7 @@ namespace SS.CMS.Core.Repositories
         //     return $"WHERE {string.Join(" AND ", whereList)}";
         // }
 
-        public Query GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyUserId)
+        public Query GetCacheWhereString(Site siteInfo, Channel channelInfo, int? onlyUserId)
         {
             var query = Q.Where(Attr.SiteId, siteInfo.Id).Where(Attr.ChannelId, channelInfo.Id).WhereNot(Attr.SourceId, SourceManager.Preview);
             if (onlyUserId.HasValue)
@@ -733,7 +733,7 @@ namespace SS.CMS.Core.Repositories
             return query;
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
+        public async Task<IEnumerable<Content>> GetStlDataSourceCheckedAsync(List<int> channelIdList, int startNum, int totalNum, TaxisType taxisType, Query query, NameValueCollection others)
         {
             if (channelIdList == null || channelIdList.Count == 0)
             {
@@ -858,7 +858,7 @@ namespace SS.CMS.Core.Repositories
             return startNum <= 1 ? await GetStlDataSourceByContentNumAndWhereStringAsync(totalNum, query) : await GetStlDataSourceByStartNumAsync(startNum, totalNum, query);
         }
 
-        private async Task<IEnumerable<ContentInfo>> GetStlDataSourceByContentNumAndWhereStringAsync(int totalNum, Query query)
+        private async Task<IEnumerable<Content>> GetStlDataSourceByContentNumAndWhereStringAsync(int totalNum, Query query)
         {
             QuerySelectMinColumns(query);
             query.Limit(totalNum);
@@ -866,7 +866,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(query);
         }
 
-        private async Task<IEnumerable<ContentInfo>> GetStlDataSourceByStartNumAsync(int startNum, int totalNum, Query query)
+        private async Task<IEnumerable<Content>> GetStlDataSourceByStartNumAsync(int startNum, int totalNum, Query query)
         {
             QuerySelectMinColumns(query);
             query.Offset(startNum - 1).Limit(totalNum);

@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             return str;
         }
 
-        public async Task<AreaInfo> GetAreaInfoAsync(int areaId)
+        public async Task<Area> GetAreaInfoAsync(int areaId)
         {
             var pairList = await GetAreaInfoPairListAsync();
 
@@ -118,12 +118,12 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        private async Task<List<KeyValuePair<int, AreaInfo>>> GetAreaInfoPairListAsync()
+        private async Task<List<KeyValuePair<int, Area>>> GetAreaInfoPairListAsync()
         {
-            return await _cache.GetOrCreateAsync<List<KeyValuePair<int, AreaInfo>>>(_cacheKey, async options =>
+            return await _cache.GetOrCreateAsync<List<KeyValuePair<int, Area>>>(_cacheKey, async options =>
             {
                 var pairListFormDb = await GetAreaInfoPairListToCacheAsync();
-                var list = new List<KeyValuePair<int, AreaInfo>>();
+                var list = new List<KeyValuePair<int, Area>>();
                 foreach (var pair in pairListFormDb)
                 {
                     var areaInfo = pair.Value;

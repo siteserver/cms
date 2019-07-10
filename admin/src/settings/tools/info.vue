@@ -1,21 +1,27 @@
 <template>
   <div class="app-container">
 
-    <el-table
-      :data="tableData"
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="name"
-        :label="$t('name')"
-        width="220"
-      />
-      <el-table-column
-        prop="value"
-        :label="$t('value')"
-      />
-    </el-table>
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>{{ $t('route.settingsToolsInfo') }}</span>
+      </div>
+
+      <el-table
+        :data="tableData"
+        stripe
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="name"
+          :label="$t('name')"
+          width="220"
+        />
+        <el-table-column
+          prop="value"
+          :label="$t('value')"
+        />
+      </el-table>
+    </el-card>
 
   </div>
 </template>

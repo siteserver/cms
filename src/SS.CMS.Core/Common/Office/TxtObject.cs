@@ -10,9 +10,9 @@ namespace SS.CMS.Core.Common.Office
 {
     public static class TxtObject
     {
-        public static List<ContentInfo> GetContentListByTxtFile(string directoryPath, SiteInfo siteInfo, ChannelInfo nodeInfo)
+        public static List<Content> GetContentListByTxtFile(string directoryPath, Site siteInfo, Channel nodeInfo)
         {
-            var contentInfoList = new List<ContentInfo>();
+            var contentInfoList = new List<Content>();
 
             var filePaths = DirectoryUtils.GetFilePaths(directoryPath);
             foreach (var filePath in filePaths)
@@ -34,8 +34,8 @@ namespace SS.CMS.Core.Common.Office
                                 {ContentAttribute.SiteId, siteInfo.Id},
                                 {ContentAttribute.ChannelId, nodeInfo.Id}
                             };
-                            var contentInfo = new ContentInfo(dict);
-                            contentInfo.Content = StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim());
+                            var contentInfo = new Content(dict);
+                            contentInfo.Body = StringUtils.ReplaceNewlineToBr(content.Replace(title, string.Empty).Trim());
 
                             contentInfoList.Add(contentInfo);
                         }

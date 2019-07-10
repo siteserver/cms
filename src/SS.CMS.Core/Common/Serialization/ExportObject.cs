@@ -16,7 +16,7 @@ namespace SS.CMS.Core.Serialization
 {
     public class ExportObject
     {
-        private SiteInfo _siteInfo;
+        private Site _siteInfo;
         private string _sitePath;
         private int _userId;
         private ISettingsManager _settingsManager;
@@ -47,7 +47,7 @@ namespace SS.CMS.Core.Serialization
         {
             DirectoryUtils.CreateDirectoryIfNotExists(siteTemplatePath);
 
-            var siteDirList = await _siteRepository.GetLowerSiteDirListThatNotIsRootAsync();
+            var siteDirList = await _siteRepository.GetSiteDirListAsync(0);
 
             var fileSystems = FileSystemUtils.GetFileSystemInfoExtendCollection(_pathManager.GetSitePath(_siteInfo), true);
             foreach (FileSystemInfoExtend fileSystem in fileSystems)
@@ -63,13 +63,7 @@ namespace SS.CMS.Core.Serialization
 
                         if (_siteInfo.IsRoot)
                         {
-                            foreach (var siteDir in siteDirList)
-                            {
-                                if (StringUtils.EqualsIgnoreCase(siteDir, fileSystem.Name))
-                                {
-                                    isSiteDirectory = true;
-                                }
-                            }
+                            isSiteDirectory = StringUtils.ContainsIgnoreCase(siteDirList, fileSystem.Name);
                         }
                         if (!isSiteDirectory)
                         {
@@ -341,7 +335,7 @@ namespace SS.CMS.Core.Serialization
             return isExport;
         }
 
-        public bool ExportContents(string filePath, List<ContentInfo> contentInfoList)
+        public bool ExportContents(string filePath, List<Content> contentInfoList)
         {
             var siteContentDirectoryPath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), PathUtils.GetFileNameWithoutExtension(filePath));
 

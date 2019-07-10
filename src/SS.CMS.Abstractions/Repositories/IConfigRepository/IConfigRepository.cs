@@ -6,12 +6,12 @@ namespace SS.CMS.Repositories
 {
     public interface IConfigRepository : IRepository
     {
-        Task InsertAsync(ConfigInfo configInfo);
+        Task InsertAsync(Config configInfo);
 
-        Task<bool> UpdateAsync(ConfigInfo configInfo);
+        Task<bool> UpdateAsync(Config configInfo);
 
         Task DeleteAllAsync();
 
-        Task<ConfigInfo> GetConfigInfoAsync();
+        Task<Config> GetConfigInfoAsync();
     }
 }

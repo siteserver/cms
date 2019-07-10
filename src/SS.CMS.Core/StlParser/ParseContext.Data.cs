@@ -14,7 +14,7 @@ namespace SS.CMS.Core.StlParser
 {
     public partial class ParseContext
     {
-        public async Task<string> GetStlCurrentUrlAsync(SiteInfo siteInfo, int channelId, int contentId, ContentInfo contentInfo, TemplateType templateType, int templateId, bool isLocal)
+        public async Task<string> GetStlCurrentUrlAsync(Site siteInfo, int channelId, int contentId, Content contentInfo, TemplateType templateType, int templateId, bool isLocal)
         {
             var currentUrl = string.Empty;
             if (templateType == TemplateType.IndexPageTemplate)
@@ -309,9 +309,9 @@ namespace SS.CMS.Core.StlParser
             return taxisType;
         }
 
-        public async Task<List<ContentInfo>> GetStlPageContentsSqlStringAsync(SiteInfo siteInfo, int channelId, ListInfo listInfo)
+        public async Task<List<Content>> GetStlPageContentsSqlStringAsync(Site siteInfo, int channelId, ListInfo listInfo)
         {
-            if (!await ChannelRepository.IsExistsAsync(channelId)) return new List<ContentInfo>();
+            if (!await ChannelRepository.IsExistsAsync(channelId)) return new List<Content>();
 
             var channelInfo = await ChannelRepository.GetChannelInfoAsync(channelId);
 
@@ -325,7 +325,7 @@ namespace SS.CMS.Core.StlParser
             return null;
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetPageContentsSqlStringBySearchAsync(ChannelInfo channelInfo, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor)
+        public async Task<IEnumerable<Content>> GetPageContentsSqlStringBySearchAsync(Channel channelInfo, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor)
         {
             var query = channelInfo.ContentRepository.GetStlWhereStringBySearch(groupContent, groupContentNot, isImage, isVideo, isFile, isTop, isRecommend, isHot, isColor);
             var sqlString = await channelInfo.ContentRepository.GetStlSqlStringCheckedBySearchAsync(startNum, totalNum, order, query);
@@ -333,7 +333,7 @@ namespace SS.CMS.Core.StlParser
             return sqlString;
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetContentsDataSourceAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<IEnumerable<Content>> GetContentsDataSourceAsync(Site siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await ChannelRepository.IsExistsAsync(channelId)) return null;
 
@@ -350,7 +350,7 @@ namespace SS.CMS.Core.StlParser
             return await channelInfo.ContentRepository.GetStlDataSourceCheckedAsync(channelIdList, startNum, totalNum, taxisType, sqlWhereString, others);
         }
 
-        public async Task<List<KeyValuePair<int, ContentInfo>>> GetContainerContentListAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<List<KeyValuePair<int, Content>>> GetContainerContentListAsync(Site siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, string order, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             if (!await ChannelRepository.IsExistsAsync(channelId)) return null;
 
@@ -367,7 +367,7 @@ namespace SS.CMS.Core.StlParser
             return await siteInfo.ContentRepository.GetContainerContentListCheckedAsync(channelIdList, startNum, totalNum, order, sqlWhereString, others);
         }
 
-        public async Task<IEnumerable<ContentInfo>> GetMinContentInfoListAsync(SiteInfo siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
+        public async Task<IEnumerable<Content>> GetMinContentInfoListAsync(Site siteInfo, int channelId, int contentId, string groupContent, string groupContentNot, string tags, bool? isImage, bool? isVideo, bool? isFile, bool isRelatedContents, int startNum, int totalNum, TaxisType taxisType, bool? isTop, bool? isRecommend, bool? isHot, bool? isColor, ScopeType scopeType, string groupChannel, string groupChannelNot, NameValueCollection others)
         {
             var dataSource = await GetContentsDataSourceAsync(siteInfo, channelId, contentId, groupContent, groupContentNot, tags,
                 isImage, isVideo, isFile, isRelatedContents, startNum,
@@ -471,7 +471,7 @@ namespace SS.CMS.Core.StlParser
         //     return DataProvider.SiteDao.GetStlDataSource(siteName, siteDir, startNum, totalNum, whereString, scopeType, order);
         // }
 
-        public async Task<List<KeyValuePair<int, SiteInfo>>> GetContainerSiteListAsync(string siteName, string siteDir, int startNum, int totalNum, ScopeType scopeType, string order)
+        public async Task<List<KeyValuePair<int, Site>>> GetContainerSiteListAsync(string siteName, string siteDir, int startNum, int totalNum, ScopeType scopeType, string order)
         {
             return await SiteRepository.GetContainerSiteListAsync(siteName, siteDir, startNum, totalNum, scopeType, order);
         }

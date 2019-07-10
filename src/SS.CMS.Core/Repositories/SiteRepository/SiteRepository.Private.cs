@@ -12,39 +12,30 @@ namespace SS.CMS.Core.Repositories
     {
         private static class Attr
         {
-            public const string Id = nameof(SiteInfo.Id);
-            public const string SiteName = nameof(SiteInfo.SiteName);
-            public const string SiteDir = nameof(SiteInfo.SiteDir);
-            public const string TableName = nameof(SiteInfo.TableName);
-            public const string IsRoot = nameof(SiteInfo.IsRoot);
-            public const string ParentId = nameof(SiteInfo.ParentId);
-            public const string Taxis = nameof(SiteInfo.Taxis);
+            public const string Id = nameof(Site.Id);
+            public const string SiteName = nameof(Site.SiteName);
+            public const string SiteDir = nameof(Site.SiteDir);
+            public const string TableName = nameof(Site.TableName);
+            public const string IsRoot = nameof(Site.IsRoot);
+            public const string ParentId = nameof(Site.ParentId);
+            public const string Taxis = nameof(Site.Taxis);
         }
 
-        private async Task UpdateAllIsRootAsync()
+        private async Task<List<KeyValuePair<int, Site>>> GetSiteInfoKeyValuePairListToCacheAsync()
         {
-            await _repository.UpdateAsync(Q
-                .Set(Attr.IsRoot, false.ToString())
-            );
-
-            await _cache.RemoveAsync(_cacheKey);
-        }
-
-        private async Task<List<KeyValuePair<int, SiteInfo>>> GetSiteInfoKeyValuePairListToCacheAsync()
-        {
-            var list = new List<KeyValuePair<int, SiteInfo>>();
+            var list = new List<KeyValuePair<int, Site>>();
 
             var siteInfoList = await GetSiteInfoListToCacheAsync();
             foreach (var siteInfo in siteInfoList)
             {
-                var entry = new KeyValuePair<int, SiteInfo>(siteInfo.Id, siteInfo);
+                var entry = new KeyValuePair<int, Site>(siteInfo.Id, siteInfo);
                 list.Add(entry);
             }
 
             return list;
         }
 
-        private async Task<IEnumerable<SiteInfo>> GetSiteInfoListToCacheAsync()
+        private async Task<IEnumerable<Site>> GetSiteInfoListToCacheAsync()
         {
             return await _repository.GetAllAsync(Q.OrderBy(Attr.Taxis, Attr.Id));
         }
@@ -54,7 +45,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.MaxAsync(Attr.Taxis) ?? 0;
         }
 
-        private void AddSiteIdList(List<int> dataSource, SiteInfo siteInfo, Dictionary<int, List<SiteInfo>> parentWithChildren, int level)
+        private void AddSiteIdList(List<int> dataSource, Site siteInfo, Dictionary<int, List<Site>> parentWithChildren, int level)
         {
             dataSource.Add(siteInfo.Id);
 
@@ -78,7 +69,7 @@ namespace SS.CMS.Core.Repositories
 
             if (includeSiteTables)
             {
-                var cacheInfoList = await GetListCacheAsync();
+                var cacheInfoList = await GetCacheListAsync();
                 foreach (var cacheInfo in cacheInfoList)
                 {
                     if (!string.IsNullOrEmpty(cacheInfo.TableName) && !StringUtils.ContainsIgnoreCase(tableNames, cacheInfo.TableName))

@@ -25,8 +25,8 @@ namespace SS.CMS.Core.Tests.StlParser.StlElement
         [Fact]
         public async Task ParseTest()
         {
-            var siteInfo = new SiteInfo();
-            var templateInfo = new TemplateInfo();
+            var siteInfo = new Site();
+            var templateInfo = new Template();
             var pluginItems = new Dictionary<string, object>();
             var pageInfo = new PageInfo(0, 0, siteInfo, templateInfo, pluginItems);
 

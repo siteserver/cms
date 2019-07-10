@@ -1,21 +1,27 @@
 <template>
   <div class="app-container">
 
-    <el-table
-      :data="tableData"
-      stripe
-      style="width: 100%"
-    >
-      <el-table-column
-        prop="name"
-        :label="$t('name')"
-        width="220"
-      />
-      <el-table-column
-        prop="value"
-        :label="$t('value')"
-      />
-    </el-table>
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span>{{ $t('route.settingsSitesAll') }}</span>
+        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+      </div>
+      <el-table
+        :data="tableData"
+        stripe
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="name"
+          :label="$t('name')"
+          width="220"
+        />
+        <el-table-column
+          prop="value"
+          :label="$t('value')"
+        />
+      </el-table>
+    </el-card>
 
   </div>
 </template>

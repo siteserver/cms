@@ -33,7 +33,7 @@ namespace SS.CMS.Core.Repositories
             CountClear(tableName);
         }
 
-        private async Task InsertCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
+        private async Task InsertCacheAsync(Site siteInfo, Channel channelInfo, Content contentInfo)
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
@@ -43,7 +43,7 @@ namespace SS.CMS.Core.Repositories
             await CountAddAsync(tableName, contentInfo);
         }
 
-        private async Task UpdateCacheAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
+        private async Task UpdateCacheAsync(Site siteInfo, Channel channelInfo, Content contentInfoToUpdate)
         {
             var contentInfo = await GetContentInfoAsync(contentInfoToUpdate.Id);
             if (contentInfo != null)
@@ -62,11 +62,11 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public async Task<ContentInfo> CalculateAsync(int sequence, ContentInfo contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
+        public async Task<Content> CalculateAsync(int sequence, Content contentInfo, List<ContentColumn> columns, Dictionary<string, Dictionary<string, Func<IContentContext, string>>> pluginColumns)
         {
             if (contentInfo == null) return null;
 
-            var retVal = new ContentInfo(contentInfo.ToDictionary());
+            var retVal = new Content(contentInfo.ToDictionary());
 
             foreach (var column in columns)
             {
@@ -143,7 +143,7 @@ namespace SS.CMS.Core.Repositories
             return retVal;
         }
 
-        public bool IsCreatable(ChannelInfo channelInfo, ContentInfo contentInfo)
+        public bool IsCreatable(Channel channelInfo, Content contentInfo)
         {
             if (channelInfo == null || contentInfo == null) return false;
 

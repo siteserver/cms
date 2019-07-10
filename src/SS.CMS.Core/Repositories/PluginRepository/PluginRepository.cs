@@ -9,12 +9,12 @@ namespace SS.CMS.Core.Repositories
 {
     public class PluginRepository : IPluginRepository
     {
-        private readonly Repository<PluginInfo> _repository;
+        private readonly Repository<CMS.Models.Plugin> _repository;
         private readonly ISettingsManager _settingsManager;
 
         public PluginRepository(ISettingsManager settingsManager)
         {
-            _repository = new Repository<PluginInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<CMS.Models.Plugin>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
         }
 
@@ -25,9 +25,9 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string PluginId = nameof(PluginInfo.PluginId);
-            public const string IsDisabled = nameof(PluginInfo.IsDisabled);
-            public const string Taxis = nameof(PluginInfo.Taxis);
+            public const string PluginId = nameof(CMS.Models.Plugin.PluginId);
+            public const string IsDisabled = nameof(CMS.Models.Plugin.IsDisabled);
+            public const string Taxis = nameof(CMS.Models.Plugin.Taxis);
         }
 
         public async Task DeleteByIdAsync(string pluginId)
@@ -58,7 +58,7 @@ namespace SS.CMS.Core.Repositories
 
             if (!exists)
             {
-                await _repository.InsertAsync(new PluginInfo
+                await _repository.InsertAsync(new CMS.Models.Plugin
                 {
                     PluginId = pluginId,
                     IsDisabled = false,

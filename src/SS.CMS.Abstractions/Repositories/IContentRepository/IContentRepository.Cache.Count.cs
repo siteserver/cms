@@ -5,10 +5,10 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        Task<int> GetCountAsync(SiteInfo siteInfo, bool isChecked);
+        Task<int> GetCountAsync(Site siteInfo, bool isChecked);
 
-        Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId);
+        Task<int> GetCountAsync(Site siteInfo, Channel channelInfo, int? onlyAdminId);
 
-        Task<int> GetCountAsync(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked);
+        Task<int> GetCountAsync(Site siteInfo, Channel channelInfo, bool isChecked);
     }
 }

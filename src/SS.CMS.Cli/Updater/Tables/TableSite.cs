@@ -75,12 +75,12 @@ namespace SS.CMS.Cli.Updater.Tables
         private static readonly Dictionary<string, string> ConvertKeyDict =
             new Dictionary<string, string>
             {
-                {nameof(SiteInfo.Id), nameof(PublishmentSystemId)},
-                {nameof(SiteInfo.SiteName), nameof(PublishmentSystemName)},
-                {nameof(SiteInfo.TableName), nameof(AuxiliaryTableForContent)},
-                {nameof(SiteInfo.SiteDir), nameof(PublishmentSystemDir)},
-                {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
-                {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
+                {nameof(Site.Id), nameof(PublishmentSystemId)},
+                {nameof(Site.SiteName), nameof(PublishmentSystemName)},
+                {nameof(Site.TableName), nameof(AuxiliaryTableForContent)},
+                {nameof(Site.SiteDir), nameof(PublishmentSystemDir)},
+                {nameof(Site.IsRoot), nameof(IsHeadquarters)},
+                {nameof(Site.ParentId), nameof(ParentPublishmentSystemId)}
             };
 
         private static readonly Dictionary<string, string> ConvertValueDict = null;

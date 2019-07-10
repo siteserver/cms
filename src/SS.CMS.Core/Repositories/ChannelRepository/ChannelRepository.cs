@@ -21,7 +21,7 @@ namespace SS.CMS.Core.Repositories
         private readonly IUserRepository _userRepository;
         private readonly IChannelGroupRepository _channelGroupRepository;
         private readonly ISiteRepository _siteRepository;
-        private readonly Repository<ChannelInfo> _repository;
+        private readonly Repository<Channel> _repository;
 
         public ChannelRepository(IDistributedCache cache, ISettingsManager settingsManager, IUserRepository userRepository, IChannelGroupRepository channelGroupRepository, ISiteRepository siteRepository)
         {
@@ -29,14 +29,14 @@ namespace SS.CMS.Core.Repositories
             _userRepository = userRepository;
             _channelGroupRepository = channelGroupRepository;
             _siteRepository = siteRepository;
-            _repository = new Repository<ChannelInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Channel>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
         public string TableName => _repository.TableName;
         public List<TableColumn> TableColumns => _repository.TableColumns;
 
-        public async Task<int> InsertAsync(ChannelInfo channelInfo)
+        public async Task<int> InsertAsync(Channel channelInfo)
         {
             var parentChannelInfo = await GetChannelInfoAsync(channelInfo.ParentId);
 
@@ -107,7 +107,7 @@ namespace SS.CMS.Core.Repositories
             return channelInfo.Id;
         }
 
-        public async Task UpdateAsync(ChannelInfo channelInfo)
+        public async Task UpdateAsync(Channel channelInfo)
         {
             await _repository.UpdateAsync(channelInfo);
 
@@ -120,7 +120,7 @@ namespace SS.CMS.Core.Repositories
             await RemoveEntityCacheAsync(channelInfo.Id);
         }
 
-        public async Task UpdateExtendAsync(ChannelInfo channelInfo)
+        public async Task UpdateExtendAsync(Channel channelInfo)
         {
             await _repository.UpdateAsync(Q
                 .Set(Attr.ExtendValues, channelInfo.ExtendValues)
@@ -176,7 +176,7 @@ namespace SS.CMS.Core.Repositories
         /// <summary>
         /// 得到最后一个添加的子节点
         /// </summary>
-        public async Task<ChannelInfo> GetChannelInfoByLastAddDateAsync(int channelId)
+        public async Task<Channel> GetChannelInfoByLastAddDateAsync(int channelId)
         {
             return await _repository.GetAsync(Q
                 .Where(Attr.ParentId, channelId)
@@ -186,7 +186,7 @@ namespace SS.CMS.Core.Repositories
         /// <summary>
         /// 得到第一个子节点
         /// </summary>
-        public async Task<ChannelInfo> GetChannelInfoByTaxisAsync(int channelId)
+        public async Task<Channel> GetChannelInfoByTaxisAsync(int channelId)
         {
             return await _repository.GetAsync(Q
                 .Where(Attr.ParentId, channelId)
@@ -299,7 +299,7 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync<int>(query.Select(Attr.Id));
         }
 
-        public async Task<IEnumerable<KeyValuePair<int, ChannelInfo>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
+        public async Task<IEnumerable<KeyValuePair<int, Channel>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal)
         {
             var query = Q.Select(Container.Channel.Columns).Offset(startNum - 1).Limit(totalNum);
             await QueryWhereGroupAsync(query, siteId, group, groupNot);
@@ -307,12 +307,12 @@ namespace SS.CMS.Core.Repositories
             QueryOrder(query, taxisType);
             await QueryWhereScopeAsync(query, siteId, channelId, isTotal, scopeType);
 
-            var channelInfoList = await _repository.GetAllAsync<ChannelInfo>(query);
-            var list = new List<KeyValuePair<int, ChannelInfo>>();
+            var channelInfoList = await _repository.GetAllAsync<Channel>(query);
+            var list = new List<KeyValuePair<int, Channel>>();
             var i = 0;
             foreach (var channelInfo in channelInfoList)
             {
-                list.Add(new KeyValuePair<int, ChannelInfo>(i++, channelInfo));
+                list.Add(new KeyValuePair<int, Channel>(i++, channelInfo));
             }
 
             return list;
@@ -325,7 +325,7 @@ namespace SS.CMS.Core.Repositories
                 .Distinct());
         }
 
-        public async Task<IEnumerable<int>> GetChannelIdListAsync(TemplateInfo templateInfo)
+        public async Task<IEnumerable<int>> GetChannelIdListAsync(Template templateInfo)
         {
             var list = new List<int>();
 
@@ -396,7 +396,7 @@ namespace SS.CMS.Core.Repositories
             return siteInfo.SiteName;
         }
 
-        public async Task<ChannelInfo> GetChannelInfoAsync(int channelId)
+        public async Task<Channel> GetChannelInfoAsync(int channelId)
         {
             return await GetEntityCacheAsync(channelId);
         }
@@ -479,7 +479,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup)
         {
-            var channelInfoList = new List<ChannelInfo>();
+            var channelInfoList = new List<Channel>();
             var cacheInfoList = await GetListCacheAsync(siteId);
             foreach (var cacheInfo in cacheInfoList)
             {
@@ -496,16 +496,16 @@ namespace SS.CMS.Core.Repositories
             return channelInfoList.OrderBy(c => c.Taxis).Select(channelInfo => channelInfo.Id).ToList();
         }
 
-        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType)
+        public async Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType)
         {
             return await GetChannelIdListAsync(channelInfo, scopeType, string.Empty, string.Empty, string.Empty);
         }
 
-        public async Task<List<int>> GetChannelIdListAsync(ChannelInfo channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)
+        public async Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId)
         {
             if (channelInfo == null) return new List<int>();
 
-            var channelInfoList = new List<ChannelInfo>();
+            var channelInfoList = new List<Channel>();
 
             if (channelInfo.ChildrenCount == 0)
             {
@@ -580,7 +580,7 @@ namespace SS.CMS.Core.Repositories
                 }
             }
 
-            var filteredChannelInfoList = new List<ChannelInfo>();
+            var filteredChannelInfoList = new List<Channel>();
             foreach (var nodeInfo in channelInfoList)
             {
                 if (!string.IsNullOrEmpty(group))
@@ -629,17 +629,17 @@ namespace SS.CMS.Core.Repositories
             return siteId;
         }
 
-        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, int channelId)
         {
             return await GetTableNameAsync(pluginManager, siteInfo, await GetChannelInfoAsync(channelId));
         }
 
-        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo)
         {
             return channelInfo != null ? await GetTableNameAsync(pluginManager, siteInfo, channelInfo.ContentModelPluginId) : string.Empty;
         }
 
-        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, SiteInfo siteInfo, string pluginId)
+        public async Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, string pluginId)
         {
             var tableName = siteInfo.TableName;
 
@@ -654,7 +654,7 @@ namespace SS.CMS.Core.Repositories
             return tableName;
         }
 
-        public async Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo)
         {
             if (string.IsNullOrEmpty(channelInfo.ContentModelPluginId)) return false;
 
@@ -751,7 +751,7 @@ namespace SS.CMS.Core.Repositories
             return false;
         }
 
-        public async Task<bool> IsCreatableAsync(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<bool> IsCreatableAsync(Site siteInfo, Channel channelInfo)
         {
             if (siteInfo == null || channelInfo == null) return false;
 

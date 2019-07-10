@@ -15,20 +15,20 @@ namespace SS.CMS.Core.Serialization.Components
 {
     internal class ContentIe
     {
-        private readonly SiteInfo _siteInfo;
+        private readonly Site _siteInfo;
         private readonly string _siteContentDirectoryPath;
         private readonly IPathManager _pathManager;
         private readonly IUrlManager _urlManager;
         private readonly IChannelRepository _channelRepository;
         private readonly ITagRepository _tagRepository;
 
-        public ContentIe(SiteInfo siteInfo, string siteContentDirectoryPath)
+        public ContentIe(Site siteInfo, string siteContentDirectoryPath)
         {
             _siteContentDirectoryPath = siteContentDirectoryPath;
             _siteInfo = siteInfo;
         }
 
-        public async Task ImportContentsAsync(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, int userId)
+        public async Task ImportContentsAsync(string filePath, bool isOverride, Channel nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, int userId)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -36,7 +36,7 @@ namespace SS.CMS.Core.Serialization.Components
             await ImportContentsAsync(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, userId);
         }
 
-        public async Task ImportContentsAsync(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
+        public async Task ImportContentsAsync(string filePath, bool isOverride, Channel nodeInfo, int taxis, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
@@ -44,13 +44,13 @@ namespace SS.CMS.Core.Serialization.Components
             await ImportContentsAsync(feed.Entries, nodeInfo, taxis, false, isChecked, checkedLevel, isOverride, userId, sourceId);
         }
 
-        public async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, int userId)
+        public async Task ImportContentsAsync(AtomEntryCollection entries, Channel channelInfo, int taxis, bool isOverride, int userId)
         {
             await ImportContentsAsync(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, userId);
         }
 
         // 内部消化掉错误
-        private async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId)
+        private async Task ImportContentsAsync(AtomEntryCollection entries, Channel channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -126,7 +126,7 @@ namespace SS.CMS.Core.Serialization.Components
                         {ContentAttribute.LastModifiedUserId, userId},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
-                    var contentInfo = new ContentInfo(dict);
+                    var contentInfo = new Content(dict);
 
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
@@ -195,7 +195,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        private async Task ImportContentsAsync(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId, int sourceId)
+        private async Task ImportContentsAsync(AtomEntryCollection entries, Channel channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int userId, int sourceId)
         {
             foreach (AtomEntry entry in entries)
             {
@@ -239,7 +239,7 @@ namespace SS.CMS.Core.Serialization.Components
                         {ContentAttribute.SourceId, sourceId},
                         {ContentAttribute.AddDate, TranslateUtils.ToDateTime(addDate)}
                     };
-                    var contentInfo = new ContentInfo(dict);
+                    var contentInfo = new Content(dict);
 
                     contentInfo.GroupNameCollection = groupNameCollection;
                     contentInfo.Tags = tags;
@@ -308,7 +308,7 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public async Task<bool> ExportContentsAsync(SiteInfo siteInfo, int channelId, IEnumerable<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
+        public async Task<bool> ExportContentsAsync(Site siteInfo, int channelId, IEnumerable<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, bool? checkedState)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
@@ -349,7 +349,7 @@ namespace SS.CMS.Core.Serialization.Components
             return true;
         }
 
-        public bool ExportContents(SiteInfo siteInfo, List<ContentInfo> contentInfoList)
+        public bool ExportContents(Site siteInfo, List<Content> contentInfoList)
         {
             var filePath = _siteContentDirectoryPath + PathUtils.SeparatorChar + "contents.xml";
             var feed = AtomUtility.GetEmptyFeed();
@@ -382,7 +382,7 @@ namespace SS.CMS.Core.Serialization.Components
             return true;
         }
 
-        public AtomEntry ExportContentInfo(ContentInfo contentInfo)
+        public AtomEntry ExportContentInfo(Content contentInfo)
         {
             var entry = AtomUtility.GetEmptyEntry();
 

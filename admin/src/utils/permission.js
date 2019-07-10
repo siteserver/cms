@@ -97,3 +97,25 @@ export function parseRoute(menu) {
     }
   }
 }
+
+export function getSitesRouters(sites) {
+  if (!sites) return null
+
+  var routers = []
+  for (const site of sites) {
+    var router = {
+      path: site.id + '',
+      component: () => import('@/views/charts/keyboard'),
+      name: 'Site_' + site.id,
+      meta: {
+        title: site.siteName,
+        icon: 'site'
+      },
+      children: getSitesRouters(site.children)
+    }
+
+    routers.push(router)
+  }
+
+  return routers
+}

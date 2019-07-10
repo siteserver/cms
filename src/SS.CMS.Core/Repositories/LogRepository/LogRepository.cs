@@ -10,14 +10,14 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class LogRepository : ILogRepository
     {
-        private readonly Repository<LogInfo> _repository;
+        private readonly Repository<Log> _repository;
         private readonly ISettingsManager _settingsManager;
         private readonly IConfigRepository _configRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
         public LogRepository(ISettingsManager settingsManager, IConfigRepository configRepository, IErrorLogRepository errorLogRepository)
         {
-            _repository = new Repository<LogInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Log>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _settingsManager = settingsManager;
             _configRepository = configRepository;
             _errorLogRepository = errorLogRepository;
@@ -29,12 +29,12 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(LogInfo.Id);
-            public const string CreatedDate = nameof(LogInfo.CreatedDate);
-            public const string Action = nameof(LogInfo.Action);
+            public const string Id = nameof(Log.Id);
+            public const string CreatedDate = nameof(Log.CreatedDate);
+            public const string Action = nameof(Log.Action);
         }
 
-        public async Task<int> InsertAsync(LogInfo log)
+        public async Task<int> InsertAsync(Log log)
         {
             log.Id = await _repository.InsertAsync(log);
             return log.Id;

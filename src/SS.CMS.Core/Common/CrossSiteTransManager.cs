@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Common
             _channelRepository = channelRepository;
         }
 
-        public async Task<bool> IsCrossSiteTransAsync(SiteInfo siteInfo, ChannelInfo channelInfo)
+        public async Task<bool> IsCrossSiteTransAsync(Site siteInfo, Channel channelInfo)
         {
             var isCrossSiteTrans = false;
 
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Common
             return isCrossSiteTrans;
         }
 
-        public bool IsAutomatic(ChannelInfo channelInfo)
+        public bool IsAutomatic(Channel channelInfo)
         {
             var isAutomatic = false;
 
@@ -95,7 +95,7 @@ namespace SS.CMS.Core.Common
             return isAutomatic;
         }
 
-        public async Task<string> GetDescriptionAsync(int siteId, ChannelInfo channelInfo)
+        public async Task<string> GetDescriptionAsync(int siteId, Channel channelInfo)
         {
             var results = string.Empty;
 
@@ -113,7 +113,7 @@ namespace SS.CMS.Core.Common
                 }
                 else if (transType == ECrossSiteTransType.SelfSite || transType == ECrossSiteTransType.SpecifiedSite || transType == ECrossSiteTransType.ParentSite)
                 {
-                    SiteInfo siteInfo = null;
+                    Site siteInfo = null;
 
                     if (transType == ECrossSiteTransType.SelfSite)
                     {
@@ -155,7 +155,7 @@ namespace SS.CMS.Core.Common
             return results;
         }
 
-        public async Task TransContentInfoAsync(SiteInfo siteInfo, ChannelInfo channelInfo, int contentId, SiteInfo targetSiteInfo, int targetChannelId)
+        public async Task TransContentInfoAsync(Site siteInfo, Channel channelInfo, int contentId, Site targetSiteInfo, int targetChannelId)
         {
             var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
 
@@ -234,7 +234,7 @@ namespace SS.CMS.Core.Common
             }
         }
 
-        private void CopyReferenceFiles(SiteInfo targetSiteInfo, string sourceUrl, SiteInfo sourceSiteInfo)
+        private void CopyReferenceFiles(Site targetSiteInfo, string sourceUrl, Site sourceSiteInfo)
         {
             var targetUrl = StringUtils.ReplaceFirst(sourceSiteInfo.SiteDir, sourceUrl, targetSiteInfo.SiteDir);
             if (!FileUtils.IsFileExists(targetUrl))

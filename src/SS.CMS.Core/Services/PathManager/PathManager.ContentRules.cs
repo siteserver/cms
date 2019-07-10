@@ -31,7 +31,7 @@ namespace SS.CMS.Core.Services
         public const string ContentRulesDefaultDirectoryName = "/contents/";
         public const string ContentRulesDefaultRegexString = "/contents/(?<channelId>[^/]*)/(?<contentId>[^/]*)_?(?<pageIndex>[^_]*)";
 
-        public async Task<IDictionary> ContentRulesGetDictionaryAsync(IPluginManager pluginManager, SiteInfo siteInfo, int channelId)
+        public async Task<IDictionary> ContentRulesGetDictionaryAsync(IPluginManager pluginManager, Site siteInfo, int channelId)
         {
             var dictionary = new ListDictionary
                 {
@@ -65,7 +65,7 @@ namespace SS.CMS.Core.Services
             return dictionary;
         }
 
-        public async Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, int contentId)
+        public async Task<string> ContentRulesParseAsync(Site siteInfo, int channelId, int contentId)
         {
             var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
             var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
@@ -74,14 +74,14 @@ namespace SS.CMS.Core.Services
             return filePath;
         }
 
-        public async Task<string> ContentRulesParseAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo)
+        public async Task<string> ContentRulesParseAsync(Site siteInfo, int channelId, Content contentInfo)
         {
             var contentFilePathRule = await GetContentFilePathRuleAsync(siteInfo, channelId);
             var filePath = await ContentRulesParseContentPathAsync(siteInfo, channelId, contentInfo, contentFilePathRule);
             return filePath;
         }
 
-        private async Task<string> ContentRulesParseContentPathAsync(SiteInfo siteInfo, int channelId, ContentInfo contentInfo, string contentFilePathRule)
+        private async Task<string> ContentRulesParseContentPathAsync(Site siteInfo, int channelId, Content contentInfo, string contentFilePathRule)
         {
             var filePath = contentFilePathRule.Trim();
             var regex = "(?<element>{@[^}]+})";

@@ -4,7 +4,7 @@ namespace SS.CMS.Services
 {
     public partial interface IPathManager
     {
-        string GetSpecialDirectoryPath(SiteInfo siteInfo, string url);
+        string GetSpecialDirectoryPath(Site siteInfo, string url);
 
         string GetSpecialZipFilePath(string directoryPath);
 

@@ -5,10 +5,10 @@ namespace SS.CMS.Repositories.IContentRepository
 {
     public partial interface IContentRepository
     {
-        Task<int> InsertAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
+        Task<int> InsertAsync(Site siteInfo, Channel channelInfo, Content contentInfo);
 
-        Task<int> InsertPreviewAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo);
+        Task<int> InsertPreviewAsync(Site siteInfo, Channel channelInfo, Content contentInfo);
 
-        Task<int> InsertWithTaxisAsync(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo, int taxis);
+        Task<int> InsertWithTaxisAsync(Site siteInfo, Channel channelInfo, Content contentInfo, int taxis);
     }
 }

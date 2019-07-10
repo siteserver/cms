@@ -11,17 +11,17 @@ namespace SS.CMS.Core.StlParser.Models
         public SortedDictionary<string, string> HeadCodes { get; }
         public SortedDictionary<string, string> BodyCodes { get; }
         public SortedDictionary<string, string> FootCodes { get; }
-        public SiteInfo SiteInfo { get; private set; }
+        public Site SiteInfo { get; private set; }
         public Dictionary<string, string> Parameters { get; set; }
-        public TemplateInfo TemplateInfo { get; }
-        public UserInfo UserInfo { get; set; }
+        public Template TemplateInfo { get; }
+        public User UserInfo { get; set; }
         public int SiteId { get; private set; }
         public int PageChannelId { get; private set; }
         public int PageContentId { get; private set; }
         public bool IsLocal { get; set; }
-        public Stack<KeyValuePair<int, SiteInfo>> SiteItems { get; }
-        public Stack<KeyValuePair<int, ChannelInfo>> ChannelItems { get; }
-        public Stack<KeyValuePair<int, ContentInfo>> ContentItems { get; }
+        public Stack<KeyValuePair<int, Site>> SiteItems { get; }
+        public Stack<KeyValuePair<int, Channel>> ChannelItems { get; }
+        public Stack<KeyValuePair<int, Content>> ContentItems { get; }
         public Stack<KeyValuePair<int, object>> EachItems { get; }
         public Stack<KeyValuePair<int, Dictionary<string, object>>> SqlItems { get; }
         public Dictionary<string, object> PluginItems { get; }
@@ -38,7 +38,7 @@ namespace SS.CMS.Core.StlParser.Models
             return new PageInfo(PageChannelId, PageContentId, SiteInfo, TemplateInfo, PluginItems);
         }
 
-        public PageInfo(int pageChannelId, int pageContentId, SiteInfo siteInfo, TemplateInfo templateInfo, Dictionary<string, object> pluginItems)
+        public PageInfo(int pageChannelId, int pageContentId, Site siteInfo, Template templateInfo, Dictionary<string, object> pluginItems)
         {
             TemplateInfo = templateInfo;
             SiteId = siteInfo.Id;
@@ -52,15 +52,15 @@ namespace SS.CMS.Core.StlParser.Models
             UserInfo = null;
             _uniqueId = 1;
 
-            SiteItems = new Stack<KeyValuePair<int, SiteInfo>>(5);
-            ChannelItems = new Stack<KeyValuePair<int, ChannelInfo>>(5);
-            ContentItems = new Stack<KeyValuePair<int, ContentInfo>>(5);
+            SiteItems = new Stack<KeyValuePair<int, Site>>(5);
+            ChannelItems = new Stack<KeyValuePair<int, Channel>>(5);
+            ContentItems = new Stack<KeyValuePair<int, Content>>(5);
             EachItems = new Stack<KeyValuePair<int, object>>(5);
             SqlItems = new Stack<KeyValuePair<int, Dictionary<string, object>>>(5);
             PluginItems = pluginItems;
         }
 
-        public void ChangeSite(SiteInfo siteInfo, int pageChannelId, int pageContentId, ParseContext parseContext)
+        public void ChangeSite(Site siteInfo, int pageChannelId, int pageContentId, ParseContext parseContext)
         {
             SiteId = siteInfo.Id;
             SiteInfo = siteInfo;

@@ -54,20 +54,20 @@ namespace SS.CMS.Core.Serialization.Components
             feed.Save(_filePath);
         }
 
-        private async Task<AtomEntry> ExportTemplateInfoAsync(TemplateInfo templateInfo)
+        private async Task<AtomEntry> ExportTemplateInfoAsync(Template templateInfo)
         {
             var entry = AtomUtility.GetEmptyEntry();
 
             var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
 
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.Id), "TemplateID" }, templateInfo.Id.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(TemplateInfo.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.TemplateName), templateInfo.TemplateName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.Type), templateInfo.Type.Value);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName), templateInfo.RelatedFileName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName), templateInfo.CreatedFileFullName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName), templateInfo.CreatedFileExtName);
-            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(TemplateInfo.IsDefault), templateInfo.IsDefault.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.Id), "TemplateID" }, templateInfo.Id.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.TemplateName), templateInfo.TemplateName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.Type), templateInfo.Type.Value);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.RelatedFileName), templateInfo.RelatedFileName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileFullName), templateInfo.CreatedFileFullName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.CreatedFileExtName), templateInfo.CreatedFileExtName);
+            AtomUtility.AddDcElement(entry.AdditionalElements, nameof(Template.IsDefault), templateInfo.IsDefault.ToString());
 
             var templateContent = await _templateRepository.GetTemplateContentAsync(siteInfo, templateInfo);
             AtomUtility.AddDcElement(entry.AdditionalElements, "Content", AtomUtility.Encrypt(templateContent));
@@ -83,18 +83,18 @@ namespace SS.CMS.Core.Serialization.Components
             var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
             foreach (AtomEntry entry in feed.Entries)
             {
-                var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.TemplateName));
+                var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));
                 if (string.IsNullOrEmpty(templateName)) continue;
 
-                var templateInfo = new TemplateInfo
+                var templateInfo = new Template
                 {
                     SiteId = _siteId,
                     TemplateName = templateName,
                     Type =
-                        TemplateType.Parse(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.Type))),
-                    RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.RelatedFileName)),
-                    CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileFullName)),
-                    CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(TemplateInfo.CreatedFileExtName)),
+                        TemplateType.Parse(AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.Type))),
+                    RelatedFileName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.RelatedFileName)),
+                    CreatedFileFullName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileFullName)),
+                    CreatedFileExtName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.CreatedFileExtName)),
                     IsDefault = false
                 };
 

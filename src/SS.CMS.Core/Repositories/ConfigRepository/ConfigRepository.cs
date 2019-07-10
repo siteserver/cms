@@ -12,13 +12,13 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
-        private readonly Repository<ConfigInfo> _repository;
+        private readonly Repository<Config> _repository;
 
         public ConfigRepository(IDistributedCache cache, ISettingsManager settingsManager)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(ConfigRepository));
-            _repository = new Repository<ConfigInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<Config>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
         }
 
         public IDatabase Database => _repository.Database;
@@ -27,13 +27,13 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string Id = nameof(ConfigInfo.Id);
-            public const string DatabaseVersion = nameof(ConfigInfo.DatabaseVersion);
-            public const string UpdateDate = nameof(ConfigInfo.UpdateDate);
-            public const string ExtendValues = nameof(ConfigInfo.ExtendValues);
+            public const string Id = nameof(Config.Id);
+            public const string DatabaseVersion = nameof(Config.DatabaseVersion);
+            public const string UpdateDate = nameof(Config.UpdateDate);
+            public const string ExtendValues = nameof(Config.ExtendValues);
         }
 
-        public async Task InsertAsync(ConfigInfo configInfo)
+        public async Task InsertAsync(Config configInfo)
         {
             if (!await _repository.ExistsAsync())
             {
@@ -45,7 +45,7 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        public async Task<bool> UpdateAsync(ConfigInfo configInfo)
+        public async Task<bool> UpdateAsync(Config configInfo)
         {
             var updated = await _repository.UpdateAsync(configInfo);
             if (updated)
@@ -62,17 +62,17 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(_cacheKey);
         }
 
-        public async Task<ConfigInfo> GetConfigInfoAsync()
+        public async Task<Config> GetConfigInfoAsync()
         {
-            return await _cache.GetOrCreateAsync<ConfigInfo>(_cacheKey, async options =>
+            return await _cache.GetOrCreateAsync<Config>(_cacheKey, async options =>
             {
                 return await GetConfigInfoWithoutExceptionAsync();
             });
         }
 
-        private async Task<ConfigInfo> GetConfigInfoWithoutExceptionAsync()
+        private async Task<Config> GetConfigInfoWithoutExceptionAsync()
         {
-            ConfigInfo info = null;
+            Config info = null;
 
             try
             {

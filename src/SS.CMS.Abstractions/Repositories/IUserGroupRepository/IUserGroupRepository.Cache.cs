@@ -8,10 +8,10 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserGroupRepository
     {
-        Task<IList<UserGroupInfo>> GetAllUserGroupsAsync();
+        Task<IList<UserGroup>> GetAllUserGroupsAsync();
 
         Task<bool> IsExistsAsync(string groupName);
 
-        Task<UserGroupInfo> GetUserGroupInfoAsync(int groupId);
+        Task<UserGroup> GetUserGroupInfoAsync(int groupId);
     }
 }

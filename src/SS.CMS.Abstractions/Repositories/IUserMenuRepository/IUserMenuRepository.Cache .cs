@@ -7,8 +7,8 @@ namespace SS.CMS.Repositories
 {
     public partial interface IUserMenuRepository
     {
-        Task<List<UserMenuInfo>> GetAllUserMenusAsync();
+        Task<List<UserMenu>> GetAllUserMenusAsync();
 
-        Task<UserMenuInfo> GetUserMenuInfoAsync(int menuId);
+        Task<UserMenu> GetUserMenuInfoAsync(int menuId);
     }
 }

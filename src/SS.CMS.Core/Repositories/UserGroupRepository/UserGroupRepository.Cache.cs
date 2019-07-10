@@ -8,12 +8,12 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class UserGroupRepository
     {
-        public async Task<IList<UserGroupInfo>> GetAllUserGroupsAsync()
+        public async Task<IList<UserGroup>> GetAllUserGroupsAsync()
         {
             return await _cache.GetOrCreateAsync(_cacheKey, async options =>
             {
-                var list = new List<UserGroupInfo>();
-                list.Add(new UserGroupInfo
+                var list = new List<UserGroup>();
+                list.Add(new UserGroup
                 {
                     Id = 0,
                     GroupName = "默认用户组",
@@ -34,7 +34,7 @@ namespace SS.CMS.Core.Repositories
             return list.Any(group => group.GroupName == groupName);
         }
 
-        public async Task<UserGroupInfo> GetUserGroupInfoAsync(int groupId)
+        public async Task<UserGroup> GetUserGroupInfoAsync(int groupId)
         {
             var list = await GetAllUserGroupsAsync();
             return list.FirstOrDefault(group => group.Id == groupId) ?? list[0];

@@ -5,7 +5,7 @@ namespace SS.CMS.Services
 {
     public partial interface IUserManager
     {
-        string GetToken(UserInfo userInfo);
+        string GetToken(User userInfo);
 
         string GetIpAddress();
 
@@ -13,6 +13,6 @@ namespace SS.CMS.Services
 
         int GetUserId();
 
-        Task<UserInfo> GetUserAsync();
+        Task<User> GetUserAsync();
     }
 }

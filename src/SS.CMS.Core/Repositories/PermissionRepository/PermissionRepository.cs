@@ -10,12 +10,12 @@ namespace SS.CMS.Core.Repositories
 {
     public class PermissionRepository : IPermissionRepository
     {
-        private readonly Repository<PermissionInfo> _repository;
+        private readonly Repository<CMS.Models.Permission> _repository;
         private readonly IRoleRepository _roleRepository;
 
         public PermissionRepository(ISettingsManager settingsManager, IRoleRepository roleRepository)
         {
-            _repository = new Repository<PermissionInfo>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
+            _repository = new Repository<CMS.Models.Permission>(new Database(settingsManager.DatabaseType, settingsManager.DatabaseConnectionString));
             _roleRepository = roleRepository;
         }
 
@@ -25,15 +25,15 @@ namespace SS.CMS.Core.Repositories
 
         private static class Attr
         {
-            public const string RoleName = nameof(PermissionInfo.RoleName);
-            public const string AppPermissions = nameof(PermissionInfo.AppPermissions);
-            public const string SiteId = nameof(PermissionInfo.SiteId);
-            public const string SitePermissions = nameof(PermissionInfo.SitePermissions);
-            public const string ChannelId = nameof(PermissionInfo.ChannelId);
-            public const string ChannelPermissions = nameof(PermissionInfo.ChannelPermissions);
+            public const string RoleName = nameof(CMS.Models.Permission.RoleName);
+            public const string AppPermissions = nameof(CMS.Models.Permission.AppPermissions);
+            public const string SiteId = nameof(CMS.Models.Permission.SiteId);
+            public const string SitePermissions = nameof(CMS.Models.Permission.SitePermissions);
+            public const string ChannelId = nameof(CMS.Models.Permission.ChannelId);
+            public const string ChannelPermissions = nameof(CMS.Models.Permission.ChannelPermissions);
         }
 
-        public async Task<int> InsertAsync(PermissionInfo permissionsInfo)
+        public async Task<int> InsertAsync(CMS.Models.Permission permissionsInfo)
         {
             if (await IsExistsAsync(permissionsInfo.RoleName, permissionsInfo.SiteId, permissionsInfo.ChannelId))
             {
@@ -75,7 +75,7 @@ namespace SS.CMS.Core.Repositories
             );
         }
 
-        private async Task<IEnumerable<PermissionInfo>> GetRolePermissionsInfoListAsync(string roleName)
+        private async Task<IEnumerable<CMS.Models.Permission>> GetRolePermissionsInfoListAsync(string roleName)
         {
             return await _repository.GetAllAsync(Q.Where(Attr.RoleName, roleName));
         }

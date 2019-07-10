@@ -195,128 +195,128 @@ namespace SS.CMS.Utils.Tests
 
             var permissions = new PermissionsSettings
             {
-                App = new List<Permission>{
-                    new Permission{
+                App = new List<MenuPermission>{
+                    new MenuPermission{
                         Id = "plugins_add",
                         Text = "插件管理 -> 添加插件"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "plugins_management",
                         Text = "插件管理 -> 管理插件"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_siteAdd",
                         Text = "系统管理 -> 创建新站点"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_site",
                         Text = "系统管理 -> 站点管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_admin",
                         Text = "系统管理 -> 管理员管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_user",
                         Text = "系统管理 -> 用户管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_chart",
                         Text = "系统管理 -> 统计图表"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_log",
                         Text = "系统管理 -> 运行日志"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "settings_utility",
                         Text = "系统管理 -> 实用工具"
                     },
                 },
-                Site = new List<Permission>{
-                    new Permission{
+                Site = new List<MenuPermission>{
+                    new MenuPermission{
                         Id = "cms_content",
                         Text = "信息管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_template",
                         Text = "显示管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_configuration",
                         Text = "设置管理"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_create",
                         Text = "生成管理"
                     },
                 },
-                Channel = new List<Permission>{
-                    new Permission{
+                Channel = new List<MenuPermission>{
+                    new MenuPermission{
                         Id = "cms_contentView",
                         Text = "浏览内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentAdd",
                         Text = "添加内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentEdit",
                         Text = "修改内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentDelete",
                         Text = "删除内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentTranslate",
                         Text = "转移内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentOrder",
                         Text = "整理内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_channelAdd",
                         Text = "添加栏目"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_channelEdit",
                         Text = "修改栏目"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_channelDelete",
                         Text = "删除栏目"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_channelTranslate",
                         Text = "转移栏目"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_createPage",
                         Text = "生成页面"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheck",
                         Text = "审核内容"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheckLevel1",
                         Text = "一级内容审核权"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheckLevel2",
                         Text = "二级内容审核权"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheckLevel3",
                         Text = "三级内容审核权"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheckLevel4",
                         Text = "四级内容审核权"
                     },
-                    new Permission{
+                    new MenuPermission{
                         Id = "cms_contentCheckLevel5",
                         Text = "五级内容审核权"
                     },

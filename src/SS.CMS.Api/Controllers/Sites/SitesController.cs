@@ -45,16 +45,11 @@ namespace SS.CMS.Api.Controllers.Sites
 
         [Authorize]
         [HttpGet(Route)]
-        public async Task<ActionResult<IList<SiteInfo>>> List()
+        public async Task<ActionResult<IList<Site>>> List()
         {
-            var siteIdList = await _siteRepository.GetSiteIdListOrderByLevelAsync();
-            var list = new List<SiteInfo>();
-            foreach (var siteId in siteIdList)
-            {
-                list.Add(await _siteRepository.GetSiteInfoAsync(siteId));
-            }
+            var list = await _siteRepository.GetSiteInfoListAsync(0);
 
-            return list;
+            return list.ToList();
         }
 
         [Authorize]
@@ -75,8 +70,8 @@ namespace SS.CMS.Api.Controllers.Sites
                 {
                     return BadRequest("文件夹名称不符合系统要求，请更改文件夹名称！");
                 }
-                var list = await _siteRepository.GetLowerSiteDirListAsync(request.ParentId);
-                if (list.Contains(request.SiteDir.ToLower()))
+                var list = await _siteRepository.GetSiteDirListAsync(request.ParentId);
+                if (StringUtils.ContainsIgnoreCase(list, request.SiteDir))
                 {
                     return BadRequest("已存在相同的发布路径，请更改文件夹名称！");
                 }
@@ -101,7 +96,7 @@ namespace SS.CMS.Api.Controllers.Sites
                 }
             }
 
-            var siteInfo = new SiteInfo
+            var siteInfo = new Site
             {
                 SiteName = request.SiteName,
                 SiteDir = request.SiteDir,
@@ -113,7 +108,7 @@ namespace SS.CMS.Api.Controllers.Sites
 
             var siteId = await _siteRepository.InsertAsync(siteInfo);
 
-            var channelInfo = new ChannelInfo
+            var channelInfo = new Channel
             {
                 SiteId = siteId,
                 ChannelName = "首页",
