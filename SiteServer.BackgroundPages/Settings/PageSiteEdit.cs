@@ -15,6 +15,7 @@ namespace SiteServer.BackgroundPages.Settings
 	public class PageSiteEdit : BasePageCms
     {
 		public TextBox TbSiteName;
+        public TextBox TbDomainName;
         public PlaceHolder PhSiteDir;
         public TextBox TbSiteDir;
         public PlaceHolder PhParentId;
@@ -114,6 +115,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             TbTaxis.Text = SiteInfo.Taxis.ToString();
+            TbDomainName.Text = SiteInfo.DomainName;
 
             RblIsCheckContentUseLevel.Items.Add(new ListItem("默认审核机制",false.ToString()));
             RblIsCheckContentUseLevel.Items.Add(new ListItem("多级审核机制", true.ToString()));
@@ -201,7 +203,8 @@ namespace SiteServer.BackgroundPages.Settings
 		    if (!Page.IsPostBack || !Page.IsValid) return;
 
 		    SiteInfo.SiteName = TbSiteName.Text;
-		    SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
+            SiteInfo.DomainName = TbDomainName.Text;
+            SiteInfo.Taxis = TranslateUtils.ToInt(TbTaxis.Text);
 		    SiteInfo.Additional.IsCheckContentLevel = TranslateUtils.ToBool(RblIsCheckContentUseLevel.SelectedValue);
 		    if (SiteInfo.Additional.IsCheckContentLevel)
 		    {
@@ -268,9 +271,8 @@ namespace SiteServer.BackgroundPages.Settings
                     DirectoryUtility.ChangeParentSite(SiteInfo.ParentId, TranslateUtils.ToInt(DdlParentId.SelectedValue), SiteId, TbSiteDir.Text);
                     SiteInfo.ParentId = newParentId;
                 }
-
 		        SiteInfo.SiteDir = TbSiteDir.Text;
-		    }
+            }
 
             DataProvider.SiteDao.Update(SiteInfo);
             if (isTableChanged)
@@ -279,7 +281,7 @@ namespace SiteServer.BackgroundPages.Settings
             }
 
             AuthRequest.AddAdminLog("修改站点属性", $"站点:{SiteInfo.SiteName}");
-
+            SystemManager.UpdateSites();
             SuccessMessage("站点修改成功！");
             AddWaitAndRedirectScript(PageSite.GetRedirectUrl());
         }

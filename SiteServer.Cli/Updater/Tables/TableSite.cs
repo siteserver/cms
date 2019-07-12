@@ -42,6 +42,9 @@ namespace SiteServer.Cli.Updater.Tables
         [JsonProperty("publishmentSystemDir")]
         public string PublishmentSystemDir { get; set; }
 
+        [JsonProperty("publishmentDomainName")]
+        public string PublishmentDomainName { get; set; }
+
         [JsonProperty("publishmentSystemUrl")]
         public string PublishmentSystemUrl { get; set; }
 
@@ -85,6 +88,7 @@ namespace SiteServer.Cli.Updater.Tables
                 {nameof(SiteInfo.SiteName), nameof(PublishmentSystemName)},
                 {nameof(SiteInfo.TableName), nameof(AuxiliaryTableForContent)},
                 {nameof(SiteInfo.SiteDir), nameof(PublishmentSystemDir)},
+                {nameof(SiteInfo.DomainName), nameof(PublishmentDomainName)},
                 {nameof(SiteInfo.IsRoot), nameof(IsHeadquarters)},
                 {nameof(SiteInfo.ParentId), nameof(ParentPublishmentSystemId)}
             };

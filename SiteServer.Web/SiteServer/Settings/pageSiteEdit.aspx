@@ -50,16 +50,20 @@
         </label>
         <asp:TextBox cssClass="form-control" id="TbSiteName" runat="server" />
       </div>
+      <div class="form-group">
+        <label class="col-form-label">站点域名
+          <asp:RequiredFieldValidator ControlToValidate="TbDomainName" errorMessage=" *" foreColor="red" Display="Dynamic"
+            runat="server" />
+          <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDomainName" ValidationExpression="([\\.a-zA-Z0-9_-]+[;]{0,1})*"
+            errorMessage=" *" foreColor="red" Display="Dynamic" />
+        </label>
+        <asp:TextBox cssClass="form-control" id="TbDomainName" runat="server" />
+      </div>
       <asp:PlaceHolder id="PhSiteDir" runat="server">
         <div class="form-group">
-          <label class="col-form-label">文件夹名称
-            <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic"
-              runat="server" />
-            <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
-              foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
-          </label>
-          <asp:TextBox cssClass="form-control" id="TbSiteDir" runat="server" />
-          <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名。</small>
+          <label class="col-form-label">文件夹名称</label>
+          <asp:TextBox cssClass="form-control" id="TbSiteDir" runat="server" ReadOnly="true" />
+          <small class="form-text text-muted">不能更改</small>
         </div>
       </asp:PlaceHolder>
       <asp:PlaceHolder id="PhParentId" runat="server">

@@ -35,6 +35,7 @@ namespace SiteServer.BackgroundPages.Settings
         public PlaceHolder PhIsNotRoot;
         public DropDownList DdlParentId;
         public TextBox TbSiteDir;
+        public TextBox TbDomainName;
         public DropDownList DdlCharset;
         public PlaceHolder PhIsImportContents;
         public CheckBox CbIsImportContents;
@@ -417,32 +418,60 @@ namespace SiteServer.BackgroundPages.Settings
                 var isRoot = TranslateUtils.ToBool(RblIsRoot.SelectedValue); // 是否主站
                 var parentSiteId = 0;
                 var siteDir = string.Empty;
-
-                if (isRoot == false)
+                var domainName = string.Empty;
+                if (DirectoryUtils.IsSystemDirectory(TbSiteDir.Text))
                 {
-                    if (DirectoryUtils.IsSystemDirectory(TbSiteDir.Text))
+                    errorMessage = "文件夹名称不能为系统文件夹名称！";
+                    return 0;
+                }
+
+                parentSiteId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
+                siteDir = TbSiteDir.Text;
+
+                var list = DataProvider.SiteDao.GetLowerSiteDirList(parentSiteId);
+                if (list.IndexOf(siteDir.ToLower()) != -1)
+                {
+                    errorMessage = "已存在相同的发布路径！";
+                    return 0;
+                }
+
+                if (!DirectoryUtils.IsDirectoryNameCompliant(siteDir))
+                {
+                    errorMessage = "文件夹名称不符合系统要求！";
+                    return 0;
+                }
+                if (isRoot == false)//如果不是主站
+                {
+                    if (String.IsNullOrWhiteSpace(TbDomainName.Text))
                     {
-                        errorMessage = "文件夹名称不能为系统文件夹名称！";
+                        errorMessage = "网站域名不能为空！";
                         return 0;
                     }
-
-                    parentSiteId = TranslateUtils.ToInt(DdlParentId.SelectedValue);
-                    siteDir = TbSiteDir.Text;
-
-                    var list = DataProvider.SiteDao.GetLowerSiteDirList(parentSiteId);
-                    if (list.IndexOf(siteDir.ToLower()) != -1)
+                    else
                     {
-                        errorMessage = "已存在相同的发布路径！";
-                        return 0;
+                        String[] domainNames = TbDomainName.Text.Split(';');
+                        foreach (String domain in domainNames)
+                        {
+                            if (SystemManager.SiteList.ContainsKey(domain))
+                            {
+                                errorMessage = "域名“" + domain + "”已被其他网站占用，请选择其他域名！";
+                                return 0;
+                            }
+                            else if (domainName.Length > 0)
+                            {
+                                domainName += ";" + domain;
+                            }
+                            else {
+                                domainName += ";" + domain;
+                            }
+                        }
                     }
-
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(siteDir))
+                    if (domainName.Split(';').Length > 3)
                     {
-                        errorMessage = "文件夹名称不符合系统要求！";
+                        errorMessage = "一个网站最多只能绑定3个域名，而您绑定了" + domainName.Split(';').Length + "个，请删除多余的域名！";
                         return 0;
                     }
                 }
-
                 var nodeInfo = new ChannelInfo();
 
                 nodeInfo.ChannelName = nodeInfo.IndexName = "首页";
@@ -471,6 +500,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var siteInfo = new SiteInfo
                 {
                     SiteName = AttackUtils.FilterXss(TbSiteName.Text),
+                    DomainName = domainName,
                     SiteDir = siteDir,
                     TableName = tableName,
                     ParentId = parentSiteId,

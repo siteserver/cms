@@ -154,7 +154,7 @@ namespace SiteServer.BackgroundPages.Settings
                 DirectoryUtility.ChangeToHeadquarters(SiteInfo, TranslateUtils.ToBool(DdlIsMoveFiles.SelectedValue));
             }
 
-            AuthRequest.AddAdminLog(_isHeadquarters ? "转移到子目录" : "转移到根目录",
+            AuthRequest.AddAdminLog(_isHeadquarters ? "转为子站点" : "转为主站点",
                 $"站点:{SiteInfo.SiteName}");
             LayerUtils.Close(Page);
         }

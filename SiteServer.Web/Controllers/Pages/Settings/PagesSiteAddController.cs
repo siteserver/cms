@@ -131,6 +131,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var isRoot = request.GetPostBool("isRoot");
                 var parentId = request.GetPostInt("parentId");
                 var siteDir = request.GetPostString("siteDir");
+                var domainName = request.GetPostString("domainName");
                 var tableRule = ETableRuleUtils.GetEnumType(request.GetPostString("tableRule"));
                 var tableChoose = request.GetPostString("tableChoose");
                 var tableHandWrite = request.GetPostString("tableHandWrite");
@@ -182,6 +183,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     SiteName = AttackUtils.FilterXss(siteName),
                     SiteDir = siteDir,
+                    DomainName = domainName,
                     TableName = tableName,
                     ParentId = parentId,
                     IsRoot = isRoot

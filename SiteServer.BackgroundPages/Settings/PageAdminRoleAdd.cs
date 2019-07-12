@@ -130,8 +130,7 @@ namespace SiteServer.BackgroundPages.Settings
 
             PhSitePermissions.Visible = false;
 
-            var psPermissionsInRolesInfoList = Session[SystemPermissionsInfoListKey] as List<SitePermissionsInfo>;
-            if (psPermissionsInRolesInfoList != null)
+            if (Session[SystemPermissionsInfoListKey] is List<SitePermissionsInfo> psPermissionsInRolesInfoList)
             {
                 var allSiteIdList = new List<int>();
                 foreach (var permissionSiteId in AuthRequest.AdminPermissionsImpl.GetSiteIdList())

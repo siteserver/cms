@@ -79,7 +79,7 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var rotate = TranslateUtils.ToIntWithNagetive(Request.Form["rotate"]);
-                rotate = rotate % 4;
+                rotate %= 4;
                 var flip = Request.Form["flip"];
                 var fileUrl = Request.Form["fileUrl"];
                 if (string.IsNullOrEmpty(fileUrl)) return;

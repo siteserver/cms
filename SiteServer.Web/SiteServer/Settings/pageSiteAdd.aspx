@@ -153,7 +153,25 @@
           </label>
           <asp:TextBox id="TbSiteName" class="form-control" runat="server" />
         </div>
-
+        <div class="form-group">
+            <label class="col-form-label">
+                站点域名
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDomainName" ValidationExpression="([\\.a-zA-Z0-9_-]+[;]{0,1})*"
+                foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线、小数点及分号" Display="Dynamic" />
+            </label>
+            <asp:TextBox id="TbDomainName" class="form-control" runat="server" />
+            <small class="form-text text-muted">访问该网站使用的域名，多个域名之间使用半角分号“;”分割</small>
+        </div>
+        <div class="form-group">
+            <label class="col-form-label">
+                文件夹名称
+                <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server" />
+                <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
+                foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
+            </label>
+            <asp:TextBox id="TbSiteDir" class="form-control" runat="server" />
+            <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名，一旦设定不能更改</small>
+        </div>
         <div class="form-group">
           <label class="col-form-label">
             站点级别
@@ -172,19 +190,7 @@
             </label>
             <asp:DropDownList ID="DdlParentId" cssClass="form-control" runat="server"></asp:DropDownList>
           </div>
-          <div class="form-group">
-            <label class="col-form-label">
-              文件夹名称
-              <asp:RequiredFieldValidator ControlToValidate="TbSiteDir" errorMessage=" *" foreColor="red" Display="Dynamic"
-                runat="server" />
-              <asp:RegularExpressionValidator runat="server" ControlToValidate="TbSiteDir" ValidationExpression="[\\.a-zA-Z0-9_-]+"
-                foreColor="red" ErrorMessage=" 只允许包含字母、数字、下划线、中划线及小数点" Display="Dynamic" />
-            </label>
-            <asp:TextBox id="TbSiteDir" class="form-control" runat="server" />
-            <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</small>
-          </div>
         </asp:PlaceHolder>
-
         <asp:PlaceHolder id="PhIsImportContents" runat="server">
           <div class="form-group">
             <label class="col-form-label">

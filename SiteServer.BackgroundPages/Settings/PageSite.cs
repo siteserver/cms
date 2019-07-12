@@ -43,6 +43,7 @@ namespace SiteServer.BackgroundPages.Settings
             if (siteInfo == null) return;
 
             var ltlSiteName = (Literal)e.Item.FindControl("ltlSiteName");
+            var ltlDomainName = (Literal)e.Item.FindControl("ltlDomainName");
             var ltlSiteDir = (Literal)e.Item.FindControl("ltlSiteDir");
             var ltlTableName = (Literal)e.Item.FindControl("ltlTableName");
             var ltlTaxis = (Literal)e.Item.FindControl("ltlTaxis");
@@ -51,22 +52,20 @@ namespace SiteServer.BackgroundPages.Settings
             ltlSiteName.Text = GetSiteNameHtml(siteInfo);
             ltlSiteDir.Text = siteInfo.SiteDir;
             ltlTableName.Text = siteInfo.TableName;
+            ltlDomainName.Text = siteInfo.DomainName;
             ltlTaxis.Text = siteInfo.Taxis == 0 ? string.Empty : siteInfo.Taxis.ToString();
 
             var builder = new StringBuilder();
-
-            builder.Append($@"<a href=""{PageSiteSave.GetRedirectUrl(siteId)}"" class=""m-r-5"">保存</a>");
             builder.Append($@"<a href=""{PageSiteEdit.GetRedirectUrl(siteId)}"" class=""m-r-5"">修改</a>");
             if (siteInfo.ParentId == 0 && (_hqSiteId == 0 || siteId == _hqSiteId))
             {
-                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(siteInfo.IsRoot ? "转移到子目录" : "转移到根目录")}</a>");
+                builder.Append($@"<a href=""javascript:;"" onClick=""{ModalChangeSiteType.GetOpenWindowString(siteId)}"" class=""m-r-5"">{(siteInfo.IsRoot ? "转为子站点" : "转为主站点")}</a>");
             }
-
+            builder.Append($@"<a href=""{PageSiteSave.GetRedirectUrl(siteId)}"" class=""m-r-5"">保存为模板</a>");
             if (siteInfo.IsRoot == false)
             {
                 builder.Append($@"<a href=""{PageSiteDelete.GetRedirectUrl(siteId)}"" class=""m-r-5"">删除</a>");
             }
-
             ltlActions.Text = builder.ToString();
         }
 

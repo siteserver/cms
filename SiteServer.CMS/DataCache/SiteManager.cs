@@ -421,7 +421,7 @@ namespace SiteServer.CMS.DataCache
 
         private static string GetSiteDir(List<KeyValuePair<int, SiteInfo>> listFromDb, SiteInfo siteInfo)
         {
-            if (siteInfo == null || siteInfo.IsRoot) return string.Empty;
+            //if (siteInfo == null || siteInfo.IsRoot) return string.Empty;
             if (siteInfo.ParentId != 0)
             {
                 SiteInfo parent = null;

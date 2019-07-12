@@ -33,6 +33,12 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
+                AttributeName = nameof(SiteInfo.DomainName),
+                DataType = DataType.VarChar,
+                DataLength = 150
+            },
+            new TableColumn
+            {
                 AttributeName = nameof(SiteInfo.SiteDir),
                 DataType = DataType.VarChar,
                 DataLength = 50
@@ -68,6 +74,7 @@ namespace SiteServer.CMS.Provider
 
         private const string ParmId = "@Id";
         private const string ParmSiteName = "@SiteName";
+        private const string ParmDomainName = "@DomainName";
         private const string ParmSiteDir = "@SiteDir";
         private const string ParmTableName = "@TableName";
         private const string ParmIsRoot = "@IsRoot";
@@ -77,7 +84,7 @@ namespace SiteServer.CMS.Provider
 
         public void InsertWithTrans(SiteInfo info, IDbTransaction trans)
         {
-            var sqlString = $"INSERT INTO {TableName} (Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML) VALUES (@Id, @SiteName, @SiteDir, @TableName, @IsRoot, @ParentId, @Taxis, @SettingsXML)";
+            var sqlString = $"INSERT INTO {TableName} (Id, SiteName,DomainName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML) VALUES (@Id, @SiteName,@DomainName, @SiteDir, @TableName, @IsRoot, @ParentId, @Taxis, @SettingsXML)";
 
             //获取排序值
             var taxis = GetMaxTaxis() + 1;
@@ -85,6 +92,7 @@ namespace SiteServer.CMS.Provider
 			{
 				GetParameter(ParmId, DataType.Integer, info.Id),
 				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
+                GetParameter(ParmDomainName, DataType.VarChar, 150, info.DomainName),
                 GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
                 GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
 				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
@@ -118,11 +126,12 @@ namespace SiteServer.CMS.Provider
 
         public void Update(SiteInfo info)
         {
-            var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
+            var sqlString = $"UPDATE {TableName} SET SiteName = @SiteName, DomainName = @DomainName, SiteDir = @SiteDir, TableName = @TableName, IsRoot = @IsRoot, ParentId = @ParentId, Taxis = @Taxis, SettingsXML = @SettingsXML WHERE  Id = @Id";
 
             var updateParms = new IDataParameter[]
 			{
 				GetParameter(ParmSiteName, DataType.VarChar, 50, info.SiteName),
+                GetParameter(ParmDomainName, DataType.VarChar, 150, info.DomainName),
                 GetParameter(ParmSiteDir, DataType.VarChar, 50, info.SiteDir),
                 GetParameter(ParmTableName, DataType.VarChar, 50, info.TableName),
 				GetParameter(ParmIsRoot, DataType.VarChar, 18, info.IsRoot.ToString()),
@@ -227,14 +236,14 @@ namespace SiteServer.CMS.Provider
         {
             var list = new List<SiteInfo>();
 
-            var sqlString = $"SELECT Id, SiteName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY IsRoot desc,Taxis, Id";
+            var sqlString = $"SELECT Id, SiteName, DomainName, SiteDir, TableName, IsRoot, ParentId, Taxis, SettingsXML FROM {TableName} ORDER BY IsRoot desc,Taxis, Id";
 
             using (var rdr = ExecuteReader(sqlString))
             {
                 while (rdr.Read())
                 {
                     var i = 0;
-                    var siteInfo = new SiteInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
+                    var siteInfo = new SiteInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetBool(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i));
                     list.Add(siteInfo);
                 }
                 rdr.Close();

@@ -16,10 +16,11 @@ namespace SiteServer.CMS.Model
 		{
 		}
 
-        public SiteInfo(int id, string siteName, string siteDir, string tableName, bool isRoot, int parentId, int taxis, string settingsXml) 
+        public SiteInfo(int id, string siteName, string domainName, string siteDir, string tableName, bool isRoot, int parentId, int taxis, string settingsXml) 
 		{
             Id = id;
             SiteName = siteName;
+            DomainName = domainName;
             SiteDir = siteDir;
             TableName = tableName;
             IsRoot = isRoot;
@@ -36,6 +37,9 @@ namespace SiteServer.CMS.Model
 
         [XmlIgnore]
 		public string SiteName { get; set; }
+
+        [XmlIgnore]
+        public string DomainName { get; set; }
 
         [XmlIgnore]
 		public string TableName { get; set; }
@@ -68,5 +72,5 @@ namespace SiteServer.CMS.Model
 
 	    [JsonIgnore]
         public SiteInfoExtend Additional => _additional ?? (_additional = new SiteInfoExtend(SiteDir, _settingsXml));
-	}
+    }
 }

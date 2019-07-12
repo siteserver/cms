@@ -168,8 +168,19 @@ namespace SiteServer.CMS.Core
             if (IsInstalled) {
                 List<SiteInfo> siteList = DataProvider.SiteDao.GetAllSiteList();
                 foreach (SiteInfo site in siteList) {
-                    if (!sites.ContainsKey(site.SiteDir)) {
-                        sites.Add(site.SiteDir, site);
+                    if (site.IsRoot)
+                    {
+                        sites.Add("", site);
+                    }
+                    else
+                    {
+                        String[] domainNames = site.DomainName.Split(';');
+                        foreach (String domainName in domainNames) {
+                            if (!sites.ContainsKey(domainName))
+                            {
+                                sites.Add(site.DomainName, site);
+                            }
+                        }
                     }
                 }
             }

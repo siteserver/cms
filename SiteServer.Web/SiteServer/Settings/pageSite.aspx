@@ -50,6 +50,7 @@
               <thead>
                 <tr class="thead">
                   <th>站点名称</th>
+                  <th>站点域名</th>
                   <th>文件夹</th>
                   <th>内容表</th>
                   <th>排序</th>
@@ -62,6 +63,9 @@
                     <tr>
                       <td>
                         <asp:Literal ID="ltlSiteName" runat="server"></asp:Literal>
+                      </td>
+                      <td>
+                        <asp:Literal ID="ltlDomainName" runat="server"></asp:Literal>
                       </td>
                       <td>
                         <asp:Literal ID="ltlSiteDir" runat="server"></asp:Literal>

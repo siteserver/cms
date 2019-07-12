@@ -3,9 +3,9 @@
     <TargetFrameworks>net452</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>SiteServer.Plugin</PackageId>
-    <Version>1.0.0</Version>
-    <PackageVersion>1.0.0</PackageVersion>
-    <Authors>SiteServer CMS</Authors>
+    <Version>2.6.8</Version>
+    <PackageVersion>2.6.8</PackageVersion>
+      <Authors>SiteServer CMS</Authors>
     <Company>SiteServer CMS</Company>
     <Product>SiteServer CMS</Product>
     <Description>Reference this library if you want to develop a SiteServer CMS plugin.</Description>

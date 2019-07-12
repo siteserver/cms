@@ -6,6 +6,7 @@ namespace SiteServer.CMS.Model.Attributes
     {
         public const string Id = nameof(SiteInfo.Id);
         public const string SiteName = nameof(SiteInfo.SiteName);
+        public const string DomainName = nameof(SiteInfo.DomainName);
         public const string SiteDir = nameof(SiteInfo.SiteDir);
         public const string TableName = nameof(SiteInfo.TableName);
         public const string IsRoot = nameof(SiteInfo.IsRoot);

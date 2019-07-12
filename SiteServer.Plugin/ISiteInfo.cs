@@ -17,6 +17,11 @@
         string SiteName { get; set; }
 
         /// <summary>
+        /// 站点域名。
+        /// </summary>
+        string DomainName { get; set; }
+
+        /// <summary>
         /// 站点文件夹。
         /// </summary>
         string SiteDir { get; set; }

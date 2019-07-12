@@ -153,14 +153,14 @@ namespace SiteServer.CMS.Core
                 DataProvider.SiteDao.UpdateParentIdToZero(siteInfo.Id);
 
                 siteInfo.IsRoot = true;
-                siteInfo.SiteDir = string.Empty;
+                //siteInfo.SiteDir = string.Empty;
 
                 DataProvider.SiteDao.Update(siteInfo);
-                if (isMoveFiles)
-                {
-                    DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
-                    DirectoryUtils.DeleteDirectoryIfExists(sitePath);
-                }
+                //if (isMoveFiles)
+                //{
+                //    DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
+                //    DirectoryUtils.DeleteDirectoryIfExists(sitePath);
+                //}
             }
         }
 
