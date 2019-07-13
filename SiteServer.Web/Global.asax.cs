@@ -1,4 +1,5 @@
 ﻿using SiteServer.CMS.Core;
+using SiteServer.CMS.Model;
 using SiteServer.Utils;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,40 @@ namespace SiteServer.API
                     && !url2.StartsWith(PageUtils.GetAdminUrl("Pic")))
                 {
                     PageUtils.Redirect(PageUtils.GetAdminUrl("Installer"));
+                    return;
+                }
+            }
+            if (SystemManager.IsInstalled && SystemManager.SiteList.Count > 0)
+            {
+                String host = HttpContext.Current.Request.Url.DnsSafeHost;
+                SiteInfo currentSite;
+                if (SystemManager.SiteList != null && SystemManager.SiteList.ContainsKey(host))
+                {
+                    currentSite = SystemManager.SiteList[host];
+                }
+                else
+                {
+                    currentSite = SystemManager.SiteList[""];
+                }
+                String LocalPath = HttpContext.Current.Request.Url.LocalPath.Substring(1);
+                if (LocalPath.IndexOf("/") > 0)
+                {
+                    LocalPath = LocalPath.Substring(0, LocalPath.IndexOf("/"));
+                    if (!DirectoryUtils.IsSystemDirectory(LocalPath) && !DirectoryUtils.IsWebSiteDirectory(LocalPath) && LocalPath != currentSite.SiteDir && SystemManager.SiteDirs.Contains("|" + LocalPath + "|"))
+                    {
+                        PageUtils.Redirect("/" + currentSite.SiteDir + HttpContext.Current.Request.Url.LocalPath.Substring(LocalPath.Length + 1));
+                        return;
+                    }
+                }
+                else if (LocalPath != currentSite.SiteDir && SystemManager.SiteDirs.Contains("|" + LocalPath + "|"))
+                {
+                    PageUtils.Redirect("/" + currentSite.SiteDir + "/");
+                    return;
+                }
+                else if (LocalPath != "404.thml")
+                {
+                    PageUtils.Redirect("/" + currentSite.SiteDir +"/"+ LocalPath);
+                    return;
                 }
             }
         }

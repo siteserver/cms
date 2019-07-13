@@ -154,6 +154,23 @@
           <asp:TextBox id="TbSiteName" class="form-control" runat="server" />
         </div>
         <div class="form-group">
+          <label class="col-form-label">
+            站点级别
+          </label>
+          <asp:RadioButtonList ID="RblIsRoot" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsRoot_SelectedIndexChanged"
+            RepeatDirection="Horizontal" runat="server">
+            <asp:ListItem Text="主站" Value="True"></asp:ListItem>
+            <asp:ListItem Text="子站" Value="False" Selected="true"></asp:ListItem>
+          </asp:RadioButtonList>
+        </div>
+        <asp:PlaceHolder ID="PhIsNotRoot" runat="server">
+          <div class="form-group">
+            <label class="col-form-label">
+              上级站点
+            </label>
+            <asp:DropDownList ID="DdlParentId" cssClass="form-control" runat="server"></asp:DropDownList>
+          </div>
+          <div class="form-group">
             <label class="col-form-label">
                 站点域名
                 <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDomainName" ValidationExpression="([\\.a-zA-Z0-9_-]+[;]{0,1})*"
@@ -161,7 +178,8 @@
             </label>
             <asp:TextBox id="TbDomainName" class="form-control" runat="server" />
             <small class="form-text text-muted">访问该网站使用的域名，多个域名之间使用半角分号“;”分割</small>
-        </div>
+          </div>
+        </asp:PlaceHolder>
         <div class="form-group">
             <label class="col-form-label">
                 文件夹名称
@@ -172,25 +190,6 @@
             <asp:TextBox id="TbSiteDir" class="form-control" runat="server" />
             <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名，一旦设定不能更改</small>
         </div>
-        <div class="form-group">
-          <label class="col-form-label">
-            站点级别
-          </label>
-          <asp:RadioButtonList ID="RblIsRoot" cssClass="radio radio-primary" AutoPostBack="true" OnSelectedIndexChanged="RblIsRoot_SelectedIndexChanged"
-            RepeatDirection="Horizontal" runat="server">
-            <asp:ListItem Text="主站" Value="True"></asp:ListItem>
-            <asp:ListItem Text="子站" Value="False" Selected="true"></asp:ListItem>
-          </asp:RadioButtonList>
-        </div>
-
-        <asp:PlaceHolder ID="PhIsNotRoot" runat="server">
-          <div class="form-group">
-            <label class="col-form-label">
-              上级站点
-            </label>
-            <asp:DropDownList ID="DdlParentId" cssClass="form-control" runat="server"></asp:DropDownList>
-          </div>
-        </asp:PlaceHolder>
         <asp:PlaceHolder id="PhIsImportContents" runat="server">
           <div class="form-group">
             <label class="col-form-label">

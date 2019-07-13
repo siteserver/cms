@@ -322,11 +322,9 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
-
             if (siteInfo != null)
             {
-                resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
+                resolvedPath = PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
             return PathUtils.MapPath(resolvedPath);
         }
@@ -344,11 +342,9 @@ namespace SiteServer.CMS.Core
             {
                 virtualPath = "@" + virtualPath;
             }
-            if (!virtualPath.StartsWith("@")) return PathUtils.MapPath(resolvedPath);
-
             if (siteInfo != null)
             {
-                resolvedPath = siteInfo.IsRoot ? string.Concat("~", virtualPath.Substring(1)) : PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
+                resolvedPath = PageUtils.Combine(siteInfo.SiteDir, virtualPath.Substring(1));
             }
             return PathUtils.MapPath(resolvedPath);
         }

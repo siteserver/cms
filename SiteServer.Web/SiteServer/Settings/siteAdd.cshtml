@@ -196,14 +196,21 @@
         <option v-for="site in siteList" :value="site.key">{{ site.value }}</option>
       </select>
     </div>
-
+    <div v-if="!isRoot" class="form-group">
+      <label>
+        站点域名
+        <small v-show="errors.has('domainName')" class="text-danger">{{ errors.first('domainName') }}</small>
+      </label>
+      <input v-model="domainName" name="domainName" data-vv-as="站点域名" v-validate="'required'" :class="{'is-invalid': errors.has('domainName') }" type="text" class="form-control">
+      <small class="form-text text-muted">访问该网站使用的域名，多个域名之间使用半角分号“;”分割</small>
+    </div>
     <div v-if="!isRoot" class="form-group">
       <label>
         文件夹名称
         <small v-show="errors.has('siteDir')" class="text-danger">{{ errors.first('siteDir') }}</small>
       </label>
       <input v-model="siteDir" name="siteDir" data-vv-as="文件夹名称" v-validate="'required'" :class="{'is-invalid': errors.has('siteDir') }" type="text" class="form-control">
-      <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名</small>
+      <small class="form-text text-muted">实际在服务器中保存此网站的文件夹名称，此路径必须以英文或拼音命名，一旦设定不能更改</small>
     </div>
 
     <div class="form-group">

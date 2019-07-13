@@ -419,7 +419,7 @@ namespace SiteServer.BackgroundPages.Settings
                 var parentSiteId = 0;
                 var siteDir = string.Empty;
                 var domainName = string.Empty;
-                if (DirectoryUtils.IsSystemDirectory(TbSiteDir.Text))
+                if (DirectoryUtils.IsSystemDirectory(TbSiteDir.Text) || DirectoryUtils.IsWebSiteDirectory(TbSiteDir.Text))
                 {
                     errorMessage = "文件夹名称不能为系统文件夹名称！";
                     return 0;

@@ -52,8 +52,6 @@
       </div>
       <div class="form-group">
         <label class="col-form-label">站点域名
-          <asp:RequiredFieldValidator ControlToValidate="TbDomainName" errorMessage=" *" foreColor="red" Display="Dynamic"
-            runat="server" />
           <asp:RegularExpressionValidator runat="server" ControlToValidate="TbDomainName" ValidationExpression="([\\.a-zA-Z0-9_-]+[;]{0,1})*"
             errorMessage=" *" foreColor="red" Display="Dynamic" />
         </label>

@@ -222,7 +222,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                 var redirectUrl = PageProgressBar.GetCreateSiteUrl(siteId,
                     isImportContents, isImportTableStyles, siteTemplateDir, onlineTemplateName, StringUtils.Guid());
-
+                SystemManager.UpdateSites();
                 return Ok(new
                 {
                     Value = redirectUrl

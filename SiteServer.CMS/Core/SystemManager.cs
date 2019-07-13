@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Text;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -59,9 +60,13 @@ namespace SiteServer.CMS.Core
         /// </summary>
         public static Boolean IsInstalled { get; private set; } = false;
         /// <summary>
-        /// 
+        /// 域名和站点信息对应Map
         /// </summary>
         public static SortedList<String,SiteInfo> SiteList { get; private set; } = new SortedList<string, SiteInfo>();
+        /// <summary>
+        /// 所有站点文件夹名称连接字符串，以|开始和结尾，多个文件夹之间使用|分割
+        /// </summary>
+        public static String SiteDirs { get; private set; } = String.Empty;
 
         public static void InstallDatabase(string adminName, string adminPassword)
         {
@@ -165,9 +170,11 @@ namespace SiteServer.CMS.Core
         public static void UpdateSites()
         {
             SortedList<String, SiteInfo> sites = new SortedList<string, SiteInfo>();
+            StringBuilder siteDirs = new StringBuilder("|");
             if (IsInstalled) {
                 List<SiteInfo> siteList = DataProvider.SiteDao.GetAllSiteList();
                 foreach (SiteInfo site in siteList) {
+                    siteDirs.Append(site.SiteDir).Append("|");
                     if (site.IsRoot)
                     {
                         sites.Add("", site);
@@ -178,12 +185,13 @@ namespace SiteServer.CMS.Core
                         foreach (String domainName in domainNames) {
                             if (!sites.ContainsKey(domainName))
                             {
-                                sites.Add(site.DomainName, site);
+                                sites.Add(domainName, site);
                             }
                         }
                     }
                 }
             }
+            SiteDirs = siteDirs.ToString();
             SiteList = sites;
         }
 
