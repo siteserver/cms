@@ -5,7 +5,7 @@
 
     <head>
       <meta charset="utf-8">
-      <!--#include file="../inc/header.aspx"-->
+      <!--#include file="../inc/head.html"-->
     </head>
 
     <body>

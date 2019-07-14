@@ -103,6 +103,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(trans, sqlString, insertParms);
             SiteManager.ClearCache();
+            SystemManager.UpdateSites();
         }
 
         public void Delete(int siteId)
@@ -122,6 +123,7 @@ namespace SiteServer.CMS.Provider
             SiteManager.ClearCache();
             ChannelManager.RemoveCacheBySiteId(siteId);
             PermissionsImpl.ClearAllCache();
+            SystemManager.UpdateSites();
         }
 
         public void Update(SiteInfo info)
@@ -148,6 +150,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, updateParms);
             SiteManager.ClearCache();
+            SystemManager.UpdateSites();
         }
 
         public void UpdateTableName(int siteId, string tableName)
@@ -162,6 +165,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, updateParms);
             SiteManager.ClearCache();
+            SystemManager.UpdateSites();
         }
 
         public void UpdateParentIdToZero(int parentId)
@@ -170,6 +174,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString);
             SiteManager.ClearCache();
+            SystemManager.UpdateSites();
         }
 
         public List<string> GetLowerSiteDirListThatNotIsRoot()
@@ -205,6 +210,7 @@ namespace SiteServer.CMS.Provider
 
             ExecuteNonQuery(sqlString, updateParms);
             SiteManager.ClearCache();
+            SystemManager.UpdateSites();
         }
 
         public List<KeyValuePair<int, SiteInfo>> GetSiteInfoKeyValuePairList()

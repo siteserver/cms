@@ -35,15 +35,18 @@ namespace SiteServer.API
             }
             if (SystemManager.IsInstalled && SystemManager.SiteList.Count > 0)
             {
-                String host = HttpContext.Current.Request.Url.DnsSafeHost;
+                String host = PageUtils.GetHost();
                 SiteInfo currentSite;
                 if (SystemManager.SiteList != null && SystemManager.SiteList.ContainsKey(host))
                 {
                     currentSite = SystemManager.SiteList[host];
                 }
-                else
+                else if (SystemManager.SiteList != null && SystemManager.SiteList.ContainsKey(""))
                 {
                     currentSite = SystemManager.SiteList[""];
+                }
+                else {
+                    currentSite = SystemManager.SiteList.Values[0];
                 }
                 String LocalPath = HttpContext.Current.Request.Url.LocalPath.Substring(1);
                 if (LocalPath.IndexOf("/") > 0)
@@ -60,7 +63,7 @@ namespace SiteServer.API
                     PageUtils.Redirect("/" + currentSite.SiteDir + "/");
                     return;
                 }
-                else if (LocalPath != "404.thml")
+                else if (LocalPath != currentSite.SiteDir && LocalPath != "404.thml")
                 {
                     PageUtils.Redirect("/" + currentSite.SiteDir +"/"+ LocalPath);
                     return;

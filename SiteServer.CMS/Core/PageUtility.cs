@@ -60,7 +60,11 @@ namespace SiteServer.CMS.Core
                     url = url.Substring(0, url.Length - 1);
                 }
             }
-
+            if (!siteInfo.IsRoot && !String.IsNullOrWhiteSpace(siteInfo.DomainName))
+            {
+                String[] domainNames = siteInfo.DomainName.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                url = "//" + domainNames[0] + url;
+            }
             if (string.IsNullOrEmpty(requestPath)) return url;
 
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
@@ -99,7 +103,10 @@ namespace SiteServer.CMS.Core
                     url = url.Substring(0, url.Length - 1);
                 }
             }
-
+            if (!siteInfo.IsRoot && !String.IsNullOrWhiteSpace(siteInfo.DomainName)) {
+                String[] domainNames = siteInfo.DomainName.Split(new string[]{";"},StringSplitOptions.RemoveEmptyEntries);
+                url = "//" + domainNames[0] + url;
+            }
             if (string.IsNullOrEmpty(requestPath)) return url;
 
             requestPath = requestPath.Replace(PathUtils.SeparatorChar, PageUtils.SeparatorChar);
@@ -121,7 +128,7 @@ namespace SiteServer.CMS.Core
             var createdFileFullName = TemplateManager.GetCreatedFileFullName(siteInfo.Id, indexTemplateId);
 
             var url = isLocal
-                ? ApiRoutePreview.GetSiteUrl(siteInfo.Id)
+                ? ApiRoutePreview.GetSiteUrl(siteInfo)
                 : ParseNavigationUrl(siteInfo, createdFileFullName, false);
 
             return RemoveDefaultFileName(siteInfo, url);

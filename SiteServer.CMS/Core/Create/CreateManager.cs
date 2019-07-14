@@ -126,8 +126,7 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || channelId <= 0) return;
 
-            int pageCount;
-            var taskName = GetTaskName(ECreateType.Channel, siteId, channelId, 0, 0, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.Channel, siteId, channelId, 0, 0, 0, out int pageCount);
             if (pageCount == 0) return;
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Channel, siteId, channelId, 0, 0, 0, pageCount);
@@ -138,8 +137,7 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || channelId <= 0 || contentId <= 0) return;
 
-            int pageCount;
-            var taskName = GetTaskName(ECreateType.Content, siteId, channelId, contentId, 0, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.Content, siteId, channelId, contentId, 0, 0, out int pageCount);
             if (pageCount == 0) return;
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Content, siteId, channelId, contentId, 0, 0, pageCount);
@@ -150,8 +148,7 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || channelId <= 0) return;
 
-            int pageCount;
-            var taskName = GetTaskName(ECreateType.AllContent, siteId, channelId, 0, 0, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.AllContent, siteId, channelId, 0, 0, 0, out int pageCount);
             if (pageCount == 0) return;
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.AllContent, siteId, channelId, 0, 0, 0, pageCount);
@@ -162,8 +159,7 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || fileTemplateId <= 0) return;
 
-            int pageCount;
-            var taskName = GetTaskName(ECreateType.File, siteId, 0, 0, fileTemplateId, 0, out pageCount);
+            var taskName = GetTaskName(ECreateType.File, siteId, 0, 0, fileTemplateId, 0, out int pageCount);
             if (pageCount == 0) return;
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.File, siteId, 0, 0, fileTemplateId, 0, pageCount);
@@ -174,8 +170,7 @@ namespace SiteServer.CMS.Core.Create
         {
             if (siteId <= 0 || specialId <= 0) return;
 
-            int pageCount;
-            var taskName = GetTaskName(ECreateType.Special, siteId, 0, 0, 0, specialId, out pageCount);
+            var taskName = GetTaskName(ECreateType.Special, siteId, 0, 0, 0, specialId, out int pageCount);
             if (pageCount == 0) return;
 
             var taskInfo = new CreateTaskInfo(0, taskName, ECreateType.Special, siteId, 0, 0, 0, specialId, pageCount);

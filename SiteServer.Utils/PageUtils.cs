@@ -88,11 +88,11 @@ namespace SiteServer.Utils
             {
                 if (url.IndexOf('?') == -1)
                 {
-                    url = url + "?";
+                    url += "?";
                 }
                 else if (!url.EndsWith("?"))
                 {
-                    url = url + "&";
+                    url += "&";
                 }
             }
             return url;

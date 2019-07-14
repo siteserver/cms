@@ -1,4 +1,4 @@
-@using SiteServer.CMS.Pages
+﻿@using SiteServer.CMS.Pages
 <!DOCTYPE html>
 <html style="overflow: hidden;">
 
@@ -22,7 +22,7 @@
       <header id="topnav">
         <div class="topbar-main">
           <div class="logo">
-            <a href="https://www.siteserver.cn" target="_blank" class="logo">
+            <a href="/" target="_blank" class="logo">
               <img src="assets/icons/logo.png" />
             </a>
           </div>
@@ -158,7 +158,7 @@
         </div>
       </div>
       <div class="content-page" id="content" :style="{marginLeft: (isDesktop ? 200 : 0) + 'px'}">
-        <iframe id="frmMain" frameborder="0" id="right" name="right" :src="defaultPageUrl" :style="{width: (winWidth - (isDesktop ? 200 : 0)) + 'px', height: (winHeight - 62) + 'px'}"></iframe>
+        <iframe id="frmMain" frameborder="0" name="right" :src="defaultPageUrl" :style="{width: (winWidth - (isDesktop ? 200 : 0)) + 'px', height: (winHeight - 62) + 'px'}"></iframe>
       </div>
     </template>
     <template v-else-if="pageAlert">

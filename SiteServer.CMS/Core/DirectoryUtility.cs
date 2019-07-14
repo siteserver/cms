@@ -144,56 +144,22 @@ namespace SiteServer.CMS.Core
             }
         }
 
-        public static void ChangeToHeadquarters(SiteInfo siteInfo, bool isMoveFiles)
+        public static void ChangeToHeadquarters(SiteInfo siteInfo)
         {
             if (siteInfo.IsRoot == false)
             {
-                var sitePath = PathUtility.GetSitePath(siteInfo);
-
                 DataProvider.SiteDao.UpdateParentIdToZero(siteInfo.Id);
-
                 siteInfo.IsRoot = true;
-                //siteInfo.SiteDir = string.Empty;
-
                 DataProvider.SiteDao.Update(siteInfo);
-                //if (isMoveFiles)
-                //{
-                //    DirectoryUtils.MoveDirectory(sitePath, WebConfigUtils.PhysicalApplicationPath, false);
-                //    DirectoryUtils.DeleteDirectoryIfExists(sitePath);
-                //}
             }
         }
 
-        public static void ChangeToSubSite(SiteInfo siteInfo, string psDir, ArrayList fileSystemNameArrayList)
+        public static void ChangeToSubSite(SiteInfo siteInfo)
         {
             if (siteInfo.IsRoot)
             {
                 siteInfo.IsRoot = false;
-                siteInfo.SiteDir = psDir.Trim();
-
                 DataProvider.SiteDao.Update(siteInfo);
-
-                var psPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, psDir);
-                DirectoryUtils.CreateDirectoryIfNotExists(psPath);
-                if (fileSystemNameArrayList != null && fileSystemNameArrayList.Count > 0)
-                {
-                    foreach (string fileSystemName in fileSystemNameArrayList)
-                    {
-                        var srcPath = PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, fileSystemName);
-                        if (DirectoryUtils.IsDirectoryExists(srcPath))
-                        {
-                            var destDirectoryPath = PathUtils.Combine(psPath, fileSystemName);
-                            DirectoryUtils.CreateDirectoryIfNotExists(destDirectoryPath);
-                            DirectoryUtils.MoveDirectory(srcPath, destDirectoryPath, false);
-                            DirectoryUtils.DeleteDirectoryIfExists(srcPath);
-                        }
-                        else if (FileUtils.IsFileExists(srcPath))
-                        {
-                            FileUtils.CopyFile(srcPath, PathUtils.Combine(psPath, fileSystemName));
-                            FileUtils.DeleteFileIfExists(srcPath);
-                        }
-                    }
-                }
             }
         }
     }

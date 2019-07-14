@@ -16,9 +16,6 @@
           <a class="nav-link" href="pageSite.aspx">系统站点管理</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteUrlWeb.aspx">Web地址</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
         </li>
         <li class="nav-item active">

@@ -1,4 +1,6 @@
-﻿using SiteServer.Utils;
+﻿using SiteServer.CMS.Model;
+using SiteServer.Utils;
+using System;
 
 namespace SiteServer.CMS.Api.Preview
 {
@@ -10,6 +12,17 @@ namespace SiteServer.CMS.Api.Preview
         public const string RouteFile = "preview/{siteId}/file/{fileTemplateId}";
         public const string RouteSpecial = "preview/{siteId}/special/{specialId}";
 
+        public static string GetSiteUrl(SiteInfo siteInfo)
+        {
+            var apiUrl = ApiManager.GetInnerApiUrl(Route);
+            apiUrl = apiUrl.Replace("{siteId}", siteInfo.Id.ToString());
+            if (!siteInfo.IsRoot && !String.IsNullOrWhiteSpace(siteInfo.DomainName))
+            {
+                String[] domainNames = siteInfo.DomainName.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                apiUrl = "//" + domainNames[0] + apiUrl;
+            }
+            return apiUrl;
+        }
         public static string GetSiteUrl(int siteId)
         {
             var apiUrl = ApiManager.GetInnerApiUrl(Route);

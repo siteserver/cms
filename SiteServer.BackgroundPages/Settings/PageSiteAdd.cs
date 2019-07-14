@@ -232,8 +232,7 @@ namespace SiteServer.BackgroundPages.Settings
                 }
                 else if (IsOnlineTemplate)
                 {
-                    List<Dictionary<string, string>> list;
-                    if (OnlineTemplateManager.TryGetOnlineTemplates(out list))
+                    if (OnlineTemplateManager.TryGetOnlineTemplates(out List<Dictionary<string, string>> list))
                     {
                         RptOnlineTemplates.DataSource = list;
                         RptOnlineTemplates.ItemDataBound += RptOnlineTemplates_ItemDataBound;
@@ -295,8 +294,7 @@ namespace SiteServer.BackgroundPages.Settings
         {
             HideAll();
 
-            string errorMessage;
-            var theSiteId = Validate_SiteInfo(out errorMessage);
+            var theSiteId = Validate_SiteInfo(out string errorMessage);
             if (theSiteId > 0)
             {
                 var siteTemplateDir = IsSiteTemplate ? HihSiteTemplateDir.Value : string.Empty;

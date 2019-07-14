@@ -22,9 +22,6 @@
           <a class="nav-link" href="pageSiteUrlAssets.aspx">文件地址</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="pageSiteUrlApi.aspx">API地址</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="siteTables.cshtml">内容表管理</a>
         </li>
         <li class="nav-item">
