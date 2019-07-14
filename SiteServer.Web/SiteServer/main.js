@@ -147,12 +147,12 @@ var methods = {
       var res = response.data;
 
       if (res.value) {
-        $this.newVersion = {
+        /*$this.newVersion = {
           updatesUrl: 'http://www.siteserver.cn/updates/v' + major + '_' + minor + '/index.html',
           version: releaseInfo.version,
           published: releaseInfo.published,
           releaseNotes: releaseInfo.releaseNotes
-        };
+        };*/
       }
     });
   },
