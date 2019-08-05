@@ -484,6 +484,11 @@ namespace SiteServer.Utils
             return Gb2312.GetByteCount(new[] { chr }) == 2;
         }
 
+        public static bool IsChinese(char c)
+        {
+            return 0x4e00 <= c && c <= 0x9fbb;
+        }
+
         /// <summary>
         /// 得到innerText在content中的数目
         /// </summary>

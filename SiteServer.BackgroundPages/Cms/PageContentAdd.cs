@@ -91,7 +91,8 @@ namespace SiteServer.BackgroundPages.Cms
 
             if (contentId > 0)
             {
-                contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                //contentInfo = ContentManager.GetContentInfo(SiteInfo, _channelInfo, contentId);
+                contentInfo = DataProvider.ContentDao.GetCacheContentInfo(_tableName, _channelInfo.Id, contentId);
             }
 
             var titleFormat = IsPostBack ? Request.Form[ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title)] : contentInfo?.GetString(ContentAttribute.GetFormatStringAttributeName(ContentAttribute.Title));

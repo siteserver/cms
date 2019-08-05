@@ -74,6 +74,7 @@ namespace SiteServer.BackgroundPages.Cms
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
                 var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath);
+
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 
                 if (!PathUtility.IsImageExtenstionAllowed(SiteInfo, fileExtName))

@@ -94,7 +94,16 @@ namespace SiteServer.CMS.Plugin
                     CopyDllsToBin(metadata.Id, dllDirectoryPath);
 
                     //var assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(WebConfigUtils.PhysicalApplicationPath, "Bin", PathUtils.GetFileName(metadata.ExecuteFilePath))));
-                    var assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
+
+                    Assembly assembly;
+                    try
+                    {
+                        assembly = Assembly.Load(metadata.Id);  // load the dll from bin directory
+                    }
+                    catch
+                    {
+                        assembly = Assembly.Load(File.ReadAllBytes(PathUtils.Combine(dllDirectoryPath, $"{metadata.Id}.dll")));
+                    }
 
                     var type = assembly.GetExportedTypes().FirstOrDefault(exportedType => typeof(PluginBase).IsAssignableFrom(exportedType));
 

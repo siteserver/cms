@@ -119,6 +119,12 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("AdminLockLoginHours", value);
         }
 
+        public bool IsAdminEnforcePasswordChanges
+        {
+            get => GetBool("IsAdminEnforcePasswordChanges");
+            set => Set("IsAdminEnforcePasswordChanges", value);
+        }
+
         /****************用户设置********************/
 
         public bool IsUserRegistrationAllowed

@@ -55,27 +55,17 @@ namespace SiteServer.CMS.DataCache.Content
             StlContentCache.ClearCache();
         }
 
-        public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfoToUpdate)
+        public static void UpdateCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             var dict = ContentCache.GetContentDict(channelInfo.Id);
 
-            var contentInfo = GetContentInfo(siteInfo, channelInfo, contentInfoToUpdate.Id);
-            if (contentInfo != null)
-            {
-                if (ListCache.IsChanged(channelInfo, contentInfo, contentInfoToUpdate))
-                {
-                    ListCache.Remove(channelInfo.Id);
-                }
+            ListCache.Remove(channelInfo.Id);
 
-                if (CountCache.IsChanged(contentInfo, contentInfoToUpdate))
-                {
-                    var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-                    CountCache.Remove(tableName, contentInfo);
-                    CountCache.Add(tableName, contentInfoToUpdate);
-                }
-            }
-            
-            dict[contentInfoToUpdate.Id] = contentInfoToUpdate;
+            var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
+            CountCache.Remove(tableName, contentInfo);
+            CountCache.Add(tableName, contentInfo);
+
+            dict[contentInfo.Id] = contentInfo;
 
             StlContentCache.ClearCache();
         }
@@ -98,7 +88,7 @@ namespace SiteServer.CMS.DataCache.Content
 
             foreach (var styleInfo in styleInfoList)
             {
-                if (styleInfo.InputType == InputType.TextEditor) continue;
+                if (!includeAll && styleInfo.InputType == InputType.TextEditor) continue;
 
                 var column = new ContentColumn
                 {

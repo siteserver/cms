@@ -424,7 +424,10 @@ namespace SiteServer.CMS.ImportExport
             {
                 contentInfo.IsChecked = isChecked;
                 contentInfo.CheckedLevel = checkedLevel;
-                contentInfo.AddDate = DateTime.Now;
+                if (!contentInfo.AddDate.HasValue)
+                {
+                    contentInfo.AddDate = DateTime.Now;
+                }
                 contentInfo.LastEditDate = DateTime.Now;
                 contentInfo.AdminId = adminId;
                 contentInfo.UserId = userId;

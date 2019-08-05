@@ -104,6 +104,18 @@ namespace SiteServer.Utils
             return Path.GetFileName(filePath);
         }
 
+        private static char[] GetInvalidChars()
+        {
+            return Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Concat(new[] {' ', ';'}).ToArray();
+        }
+
+        public static string GetSafeFilename(string filename)
+        {
+            if (string.IsNullOrEmpty(filename)) return StringUtils.GetShortGuid().ToLower();
+
+            return string.Join("_", filename.Split(GetInvalidChars()));
+        }
+
         public static string GetFileNameWithoutExtension(string filePath)
         {
             return Path.GetFileNameWithoutExtension(filePath);

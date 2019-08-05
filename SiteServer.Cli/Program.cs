@@ -99,7 +99,7 @@ namespace SiteServer.Cli
 
             if (!Jobs.ContainsKey(CommandName))
             {
-                RunHelpAsync(IsHelp, CommandName).GetAwaiter().GetResult();
+                RunHelpAsync(IsHelp, CommandName, pluginJobs).GetAwaiter().GetResult();
             }
             else if (!string.IsNullOrEmpty(Repeat))
             {
@@ -111,7 +111,7 @@ namespace SiteServer.Cli
             }
         }
 
-        private static async Task RunHelpAsync(bool isHelp, string commandName)
+        private static async Task RunHelpAsync(bool isHelp, string commandName, Dictionary<string, Func<IJobContext, Task>> pluginJobs)
         {
             if (isHelp || string.IsNullOrEmpty(commandName))
             {
@@ -129,6 +129,13 @@ namespace SiteServer.Cli
                 RestoreJob.PrintUsage();
                 UpdateJob.PrintUsage();
                 VersionJob.PrintUsage();
+
+                if (pluginJobs != null && pluginJobs.Count > 0)
+                {
+                    Console.WriteLine($"插件命令: {TranslateUtils.ObjectCollectionToString(pluginJobs.Keys)}");
+                    Console.WriteLine();
+                }
+
                 await CliUtils.PrintRowLine();
                 await CliUtils.PrintRow("https://www.siteserver.cn/docs/cli");
                 await CliUtils.PrintRowLine();

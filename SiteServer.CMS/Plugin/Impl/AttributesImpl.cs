@@ -154,7 +154,10 @@ namespace SiteServer.CMS.Plugin.Impl
                     var dict = TranslateUtils.JsonDeserialize<Dictionary<string, object>>(json);
                     foreach (var key in dict.Keys)
                     {
-                        _dataDict[key] = dict[key];
+                        if (!_dataDict.ContainsKey(key))
+                        {
+                            _dataDict[key] = dict[key];
+                        }
                     }
                 }
                 else
@@ -186,7 +189,10 @@ namespace SiteServer.CMS.Plugin.Impl
 
                     foreach (string key in attributes.Keys)
                     {
-                        Set(key, attributes[key]);
+                        if (!_dataDict.ContainsKey(key))
+                        {
+                            Set(key, attributes[key]);
+                        }
                     }
                 }
             }

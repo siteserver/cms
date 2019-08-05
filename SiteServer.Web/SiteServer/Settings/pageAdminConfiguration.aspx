@@ -90,6 +90,17 @@
       </asp:PlaceHolder>
 
       <div class="form-group">
+        <label class="col-form-label">是否强制定期更改密码</label>
+        <asp:RadioButtonList ID="RblIsEnforcePasswordChanges" OnSelectedIndexChanged="RblIsEnforcePasswordChanges_SelectedIndexChanged"
+          class="radio radio-primary" runat="server" RepeatDirection="Horizontal" AutoPostBack="true">
+        </asp:RadioButtonList>
+      </div>
+
+      <asp:PlaceHolder id="PhIsEnforcePasswordChanges" runat="server">
+
+      </asp:PlaceHolder>
+
+      <div class="form-group">
         <label class="col-form-label">管理员是否可以查看其他人添加的内容</label>
         <asp:RadioButtonList ID="RblIsViewContentOnlySelf" runat="server" class="radio radio-primary" RepeatDirection="Horizontal"></asp:RadioButtonList>
         <small class="form-text text-muted">注意：超级管理员、站点管理员、具有审核权限的管理员，此设置无效。</small>

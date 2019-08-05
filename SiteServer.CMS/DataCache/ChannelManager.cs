@@ -719,6 +719,25 @@ namespace SiteServer.CMS.DataCache
             return items;
         }
 
+        public static List<InputStyle> GetInputStyles(SiteInfo siteInfo, ChannelInfo channelInfo)
+        {
+            var items = new List<InputStyle>();
+
+            var styleInfoList = ContentUtility.GetAllTableStyleInfoList(TableStyleManager.GetContentStyleInfoList(siteInfo, channelInfo));
+
+            foreach (var styleInfo in styleInfoList)
+            {
+                var listitem = new InputStyle
+                {
+                    DisplayName = styleInfo.DisplayName,
+                    AttributeName = styleInfo.AttributeName
+                };
+                items.Add(listitem);
+            }
+
+            return items;
+        }
+
         public static bool IsAncestorOrSelf(int siteId, int parentId, int childId)
         {
             if (parentId == childId)

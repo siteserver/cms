@@ -20,51 +20,51 @@ namespace SiteServer.BackgroundPages
 
         public void Page_Load(object sender, EventArgs e)
         {
-            var json = @"{
-    ""columns"": [
-        {
-            ""attributeName"": ""IsAbolition"",
-            ""dataType"": ""VarChar"",
-            ""dataLength"": 10,
-            ""isPrimaryKey"": false,
-            ""isIdentity"": false,
-            ""inputStyle"": {
-                ""inputType"": ""Radio"",
-                ""displayName"": ""是否废止"",
-                ""helpText"": null,
-                ""listItems"": [
-                    {
-                        ""text"": ""是"",
-                        ""value"": ""True"",
-                        ""selected"": false
-                    },
-                    {
-                        ""text"": ""否"",
-                        ""value"": ""False"",
-                        ""selected"": true
-                    }
-                ],
-                ""defaultValue"": null,
-                ""isRequired"": true,
-                ""validateType"": null,
-                ""minNum"": 0,
-                ""maxNum"": 0,
-                ""regExp"": null,
-                ""width"": null,
-                ""height"": null
-            }
-        }
-    ],
-    ""totalCount"": 796,
-    ""rowFiles"": [
-        ""1.json"",
-        ""2.json""
-    ]
-}";
+//            var json = @"{
+//    ""columns"": [
+//        {
+//            ""attributeName"": ""IsAbolition"",
+//            ""dataType"": ""VarChar"",
+//            ""dataLength"": 10,
+//            ""isPrimaryKey"": false,
+//            ""isIdentity"": false,
+//            ""inputStyle"": {
+//                ""inputType"": ""Radio"",
+//                ""displayName"": ""是否废止"",
+//                ""helpText"": null,
+//                ""listItems"": [
+//                    {
+//                        ""text"": ""是"",
+//                        ""value"": ""True"",
+//                        ""selected"": false
+//                    },
+//                    {
+//                        ""text"": ""否"",
+//                        ""value"": ""False"",
+//                        ""selected"": true
+//                    }
+//                ],
+//                ""defaultValue"": null,
+//                ""isRequired"": true,
+//                ""validateType"": null,
+//                ""minNum"": 0,
+//                ""maxNum"": 0,
+//                ""regExp"": null,
+//                ""width"": null,
+//                ""height"": null
+//            }
+//        }
+//    ],
+//    ""totalCount"": 796,
+//    ""rowFiles"": [
+//        ""1.json"",
+//        ""2.json""
+//    ]
+//}";
 
-            var tableInfo = TranslateUtils.JsonDeserialize<MyTableInfo>(json);
+            //            var tableInfo = TranslateUtils.JsonDeserialize<MyTableInfo>(json);
 
-            LtlContent.Text = "";
+            //            LtlContent.Text = "";
         }
 
         // MODEL Reference

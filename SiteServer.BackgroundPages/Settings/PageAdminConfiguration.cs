@@ -20,6 +20,9 @@ namespace SiteServer.BackgroundPages.Settings
         public PlaceHolder PhLoginLockingHours;
         public TextBox TbLoginLockingHours;
 
+        public RadioButtonList RblIsEnforcePasswordChanges;
+        public PlaceHolder PhIsEnforcePasswordChanges;
+
         public RadioButtonList RblIsViewContentOnlySelf;
 
         public void Page_Load(object sender, EventArgs e)
@@ -34,7 +37,7 @@ namespace SiteServer.BackgroundPages.Settings
             EUserPasswordRestrictionUtils.AddListItems(DdlLoginPasswordRestriction);
             ControlUtils.SelectSingleItemIgnoreCase(DdlLoginPasswordRestriction, ConfigManager.SystemConfigInfo.AdminPasswordRestriction);
 
-            EBooleanUtils.AddListItems(RblIsLoginFailToLock, "是", "否");
+            EBooleanUtils.AddListItems(RblIsLoginFailToLock, "开启", "不开启");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsLoginFailToLock, ConfigManager.SystemConfigInfo.IsAdminLockLogin.ToString());
 
             PhFailToLock.Visible = ConfigManager.SystemConfigInfo.IsAdminLockLogin;
@@ -52,6 +55,9 @@ namespace SiteServer.BackgroundPages.Settings
                 TbLoginLockingHours.Text = ConfigManager.SystemConfigInfo.AdminLockLoginHours.ToString();
             }
 
+            EBooleanUtils.AddListItems(RblIsEnforcePasswordChanges, "强制", "不强制");
+            ControlUtils.SelectSingleItemIgnoreCase(RblIsEnforcePasswordChanges, ConfigManager.SystemConfigInfo.IsAdminEnforcePasswordChanges.ToString());
+
             EBooleanUtils.AddListItems(RblIsViewContentOnlySelf, "不可以", "可以");
             ControlUtils.SelectSingleItemIgnoreCase(RblIsViewContentOnlySelf, ConfigManager.SystemConfigInfo.IsViewContentOnlySelf.ToString());
         }
@@ -59,6 +65,11 @@ namespace SiteServer.BackgroundPages.Settings
         public void RblIsLoginFailToLock_SelectedIndexChanged(object sender, EventArgs e)
         {
             PhFailToLock.Visible = TranslateUtils.ToBool(RblIsLoginFailToLock.SelectedValue);
+        }
+
+        public void RblIsEnforcePasswordChanges_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PhIsEnforcePasswordChanges.Visible = TranslateUtils.ToBool(RblIsEnforcePasswordChanges.SelectedValue);
         }
 
         public void DdlLoginLockingType_SelectedIndexChanged(object sender, EventArgs e)

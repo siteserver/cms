@@ -1288,6 +1288,9 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
 
             ContentManager.UpdateCache(siteInfo, channelInfo, contentInfo);
             ContentManager.RemoveCountCache(tableName);
+
+            //TODO: must delete
+            //LogUtils.AddSiteLog(contentInfo.SiteId, contentInfo.ChannelId, contentInfo.Id, contentInfo.LastEditUserName, "更新内容", contentInfo.Content);
         }
 
         public int GetCountOfContentAdd(string tableName, int siteId, int channelId, EScopeType scope, DateTime begin, DateTime end, string userName, ETriState checkedState)

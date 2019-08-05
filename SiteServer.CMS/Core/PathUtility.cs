@@ -195,10 +195,10 @@ namespace SiteServer.CMS.Core
                 isUploadChangeFileName = siteInfo.Additional.IsVideoUploadChangeFileName;
             }
 
-            return GetUploadFileName(siteInfo, filePath, isUploadChangeFileName);
+            return GetUploadFileName(filePath, isUploadChangeFileName);
         }
 
-        public static string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
+        public static string GetUploadFileName(string filePath, bool isUploadChangeFileName)
         {
             if (isUploadChangeFileName)
             {
@@ -206,9 +206,7 @@ namespace SiteServer.CMS.Core
             }
 
             var fileName = PathUtils.GetFileNameWithoutExtension(filePath);
-
-            fileName = StringUtils.ReplaceIgnoreCase(fileName, "as", string.Empty);
-            fileName = StringUtils.ReplaceIgnoreCase(fileName, ";", string.Empty);
+            fileName = PathUtils.GetSafeFilename(fileName);
             return $"{fileName}{PathUtils.GetExtension(filePath)}";
         }
 

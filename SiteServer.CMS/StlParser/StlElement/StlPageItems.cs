@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.Parsers;
@@ -48,6 +49,15 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
 
                 parsedContent = StlPageElementParser.ParseStlPageItems(stlElement, pageInfo, channelId, contentId, currentPageIndex, pageCount, totalNum, isXmlContent, contextType);
+
+                ContextInfo contextInfo = new ContextInfo(pageInfo)
+                {
+                    ContextType = contextType
+                };
+                var innerBuilder = new StringBuilder(parsedContent);
+                StlParserManager.ParseInnerContent(innerBuilder, pageInfo, contextInfo);
+                parsedContent = innerBuilder.ToString();
+
             }
             catch (Exception ex)
             {
