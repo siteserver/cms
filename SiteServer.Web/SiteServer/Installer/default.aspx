@@ -275,16 +275,28 @@
                 </small>
               </div>
 
-              <asp:PlaceHolder id="PhSqlOracleDatabase" visible="false" runat="server">
+              <asp:PlaceHolder id="PhOracleDatabase" visible="false" runat="server">
                 <div class="form-group">
                   <label class="col-form-label">
-                    数据库名称
-                    <asp:RequiredFieldValidator ControlToValidate="TbSqlOracleDatabase" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
+                    连接为
+                  </label>
+                  <asp:DropDownList ID="DdlOraclePrivilege" cssClass="form-control" runat="server"></asp:DropDownList>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label">
+                    数据库实例
+                  </label>
+                  <asp:DropDownList ID="DdlIsOracleSid" class="form-control" runat="server"></asp:DropDownList>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label">
+                    实例名称
+                    <asp:RequiredFieldValidator ControlToValidate="TbOracleDatabase" errorMessage=" *" foreColor="red" Display="Dynamic" runat="server"
                     />
                   </label>
-                  <asp:TextBox ID="TbSqlOracleDatabase" class="form-control" runat="server" />
+                  <asp:TextBox ID="TbOracleDatabase" class="form-control" runat="server" />
                   <small class="form-text text-muted">
-                    指定需要安装的Oracle数据库名称
+                    指定需要安装的Oracle数据库实例名称
                   </small>
                 </div>
               </asp:PlaceHolder>
@@ -292,7 +304,6 @@
             </asp:PlaceHolder>
 
             <asp:PlaceHolder ID="PhSql2" runat="server" Visible="false">
-
               <div class="form-group">
                 <label class="col-form-label">
                   选择数据库
@@ -302,7 +313,6 @@
                   选择安装的数据库
                 </small>
               </div>
-
             </asp:PlaceHolder>
 
             <hr />

@@ -73,6 +73,7 @@
       $('#myForm').ajaxSubmit(options);
     }
   </script>
+  <link rel="stylesheet" href="../assets/ueditor/third-party/xiumi/xiumi-ue-v5.css">
 </head>
 
 <body>
@@ -220,3 +221,4 @@
 
 </html>
 <!--#include file="../inc/foot.html"-->
+<script type="text/javascript" charset="utf-8" src="../assets/ueditor/third-party/xiumi/xiumi-ue-dialog-v5.js"></script>

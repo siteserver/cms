@@ -2,6 +2,7 @@
 using System.Text;
 using System.Xml;
 using Datory;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Utils
 {
@@ -329,7 +330,7 @@ namespace SiteServer.Utils
             return connectionString;
         }
 
-        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database)
+        public static string GetConnectionString(DatabaseType databaseType, string server, bool isDefaultPort, int port, string userName, string password, string database, bool isOracleSid, string oraclePrivilege)
         {
             var connectionString = string.Empty;
 
@@ -375,11 +376,22 @@ namespace SiteServer.Utils
             }
             else if (databaseType == DatabaseType.Oracle)
             {
+                var databaseName = isOracleSid ? $"SID={database}" : $"SERVICE_NAME={database}";
                 port = !isDefaultPort && port > 0 ? port : 1521;
+                var privilege = EOraclePrivilegeUtils.GetEnumType(oraclePrivilege);
+                var privilegeString = string.Empty;
+                if (privilege == EOraclePrivilege.SYSDBA)
+                {
+                    privilegeString = "DBA Privilege=SYSDBA;";
+                }
+                else if (privilege == EOraclePrivilege.SYSDBA)
+                {
+                    privilegeString = "DBA Privilege=SYSOPER;";
+                }
                 database = string.IsNullOrEmpty(database)
                     ? string.Empty
-                    : $"(CONNECT_DATA=(SERVICE_NAME={database}))";
-                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};pooling=false;";
+                    : $"(CONNECT_DATA=({databaseName}))";
+                connectionString = $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={server})(PORT={port})){database});User ID={userName};Password={password};{privilegeString}";
             }
 
             return connectionString;

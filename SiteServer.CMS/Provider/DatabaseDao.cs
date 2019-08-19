@@ -1021,7 +1021,19 @@ SELECT * FROM (
             else if (databaseType == DatabaseType.Oracle)
             {
                 var connection = new OracleConnection(connectionStringWithoutDatabaseName);
+                //var command = new OracleCommand("select name from v$database", connection);
+
                 connection.Open();
+
+                //var rdr = command.ExecuteReader();
+
+                //while (rdr.Read())
+                //{
+                //    var dbName = rdr.GetString(0);
+                //    if (dbName == null) continue;
+                //    list.Add(dbName);
+                //}
+
                 connection.Close();
             }
 
