@@ -320,22 +320,22 @@ namespace SiteServer.CMS.Core
 
         public void AddSiteLog(int siteId, int channelId, string action, string summary)
         {
-            LogUtils.AddSiteLog(siteId, channelId, 0, AdminName, action, summary);
+            LogUtils.AddSiteLog(siteId, channelId, 0, AdminInfo, action, summary);
         }
 
         public void AddSiteLog(int siteId, int channelId, int contentId, string action, string summary)
         {
-            LogUtils.AddSiteLog(siteId, channelId, contentId, AdminName, action, summary);
+            LogUtils.AddSiteLog(siteId, channelId, contentId, AdminInfo, action, summary);
         }
 
         public void AddAdminLog(string action, string summary)
         {
-            LogUtils.AddAdminLog(AdminName, action, summary);
+            LogUtils.AddAdminLog(AdminInfo, action, summary);
         }
 
         public void AddAdminLog(string action)
         {
-            LogUtils.AddAdminLog(AdminName, action);
+            LogUtils.AddAdminLog(AdminInfo, action);
         }
 
         #endregion
@@ -445,7 +445,7 @@ namespace SiteServer.CMS.Core
             var expiresAt = TimeSpan.FromDays(Constants.AccessTokenExpireDays);
             var accessToken = AdminApi.Instance.GetAccessToken(adminInfo.Id, adminInfo.UserName, expiresAt);
 
-            LogUtils.AddAdminLog(adminInfo.UserName, "管理员登录");
+            LogUtils.AddAdminLog(adminInfo, "管理员登录");
 
             if (isAutoLogin)
             {

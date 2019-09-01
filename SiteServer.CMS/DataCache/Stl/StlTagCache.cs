@@ -16,40 +16,40 @@ namespace SiteServer.CMS.DataCache.Stl
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlTagCache),
                        nameof(GetContentIdListByTagCollection), TranslateUtils.ObjectCollectionToString(tagCollection),
                        siteId.ToString());
-            var retval = StlCacheManager.Get<List<int>>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<List<int>>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<List<int>>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<List<int>>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, siteId);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.TagDao.GetContentIdListByTagCollection(tagCollection, siteId);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static List<TagInfo> GetTagInfoList(int siteId, int contentId, bool isOrderByCount, int totalNum)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlTagCache),
                        nameof(GetTagInfoList), siteId.ToString(), contentId.ToString(), isOrderByCount.ToString(), totalNum.ToString());
-            var retval = StlCacheManager.Get<List<TagInfo>>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<List<TagInfo>>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<List<TagInfo>>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<List<TagInfo>>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.TagDao.GetTagInfoList(siteId, contentId, isOrderByCount, totalNum);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.TagDao.GetTagInfoList(siteId, contentId, isOrderByCount, totalNum);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

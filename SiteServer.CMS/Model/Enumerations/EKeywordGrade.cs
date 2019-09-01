@@ -48,22 +48,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static EKeywordGrade GetEnumType(string typeStr)
         {
-            var retval = EKeywordGrade.Normal;
+            var retVal = EKeywordGrade.Normal;
 
             if (Equals(EKeywordGrade.Normal, typeStr))
             {
-                retval = EKeywordGrade.Normal;
+                retVal = EKeywordGrade.Normal;
             }
             else if (Equals(EKeywordGrade.Sensitive, typeStr))
             {
-                retval = EKeywordGrade.Sensitive;
+                retVal = EKeywordGrade.Sensitive;
             }
             else if (Equals(EKeywordGrade.Dangerous, typeStr))
             {
-                retval = EKeywordGrade.Dangerous;
+                retVal = EKeywordGrade.Dangerous;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EKeywordGrade type, string typeStr)

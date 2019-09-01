@@ -28,14 +28,14 @@ namespace SiteServer.BackgroundPages.Core
 
         public static EAreaLoadingType GetEnumType(string typeStr)
         {
-            var retval = EAreaLoadingType.Management;
+            var retVal = EAreaLoadingType.Management;
 
             if (Equals(EAreaLoadingType.Management, typeStr))
             {
-                retval = EAreaLoadingType.Management;
+                retVal = EAreaLoadingType.Management;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EAreaLoadingType type, string typeStr)

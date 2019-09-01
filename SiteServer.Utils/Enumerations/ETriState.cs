@@ -44,22 +44,22 @@ namespace SiteServer.Utils.Enumerations
 
 		public static ETriState GetEnumType(string typeStr)
 		{
-            var retval = ETriState.All;
+            var retVal = ETriState.All;
 
             if (Equals(ETriState.All, typeStr))
 			{
-                retval = ETriState.All;
+                retVal = ETriState.All;
 			}
             else if (Equals(ETriState.True, typeStr))
 			{
-                retval = ETriState.True;
+                retVal = ETriState.True;
             }
             else if (Equals(ETriState.False, typeStr))
             {
-                retval = ETriState.False;
+                retVal = ETriState.False;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ETriState type, string typeStr)

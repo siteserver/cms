@@ -58,26 +58,26 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EBackupType GetEnumType(string typeStr)
 		{
-            var retval = EBackupType.Undefined;
+            var retVal = EBackupType.Undefined;
 
             if (Equals(EBackupType.Templates, typeStr))
 			{
-                retval = EBackupType.Templates;
+                retVal = EBackupType.Templates;
             }
             else if (Equals(EBackupType.ChannelsAndContents, typeStr))
             {
-                retval = EBackupType.ChannelsAndContents;
+                retVal = EBackupType.ChannelsAndContents;
             }
             else if (Equals(EBackupType.Files, typeStr))
             {
-                retval = EBackupType.Files;
+                retVal = EBackupType.Files;
             }
             else if (Equals(EBackupType.Site, typeStr))
 			{
-                retval = EBackupType.Site;
+                retVal = EBackupType.Site;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EBackupType type, string typeStr)

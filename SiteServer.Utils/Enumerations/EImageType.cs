@@ -45,30 +45,30 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EImageType GetEnumType(string typeStr)
 		{
-			var retval = EImageType.Unknown;
+			var retVal = EImageType.Unknown;
 
 			if (Equals(EImageType.Jpg, typeStr))
 			{
-				retval = EImageType.Jpg;
+				retVal = EImageType.Jpg;
 			}
 			else if (Equals(EImageType.Jpeg, typeStr))
 			{
-				retval = EImageType.Jpeg;
+				retVal = EImageType.Jpeg;
 			}
 			else if (Equals(EImageType.Gif, typeStr))
 			{
-				retval = EImageType.Gif;
+				retVal = EImageType.Gif;
 			}
 			else if (Equals(EImageType.Png, typeStr))
 			{
-				retval = EImageType.Png;
+				retVal = EImageType.Png;
 			}
 			else if (Equals(EImageType.Bmp, typeStr))
 			{
-				retval = EImageType.Bmp;
+				retVal = EImageType.Bmp;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EImageType type, string typeStr)

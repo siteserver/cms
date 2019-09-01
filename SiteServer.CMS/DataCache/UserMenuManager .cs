@@ -22,21 +22,21 @@ namespace SiteServer.CMS.DataCache
 
             public static List<UserMenuInfo> GetAllUserMenus()
 	        {
-	            var retval = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
-	            if (retval != null) return retval;
+	            var retVal = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
+	            if (retVal != null) return retVal;
 
 	            lock (LockObject)
 	            {
-	                retval = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
-	                if (retval == null)
+	                retVal = DataCacheManager.Get<List<UserMenuInfo>>(CacheKey);
+	                if (retVal == null)
 	                {
-	                    retval = DataProvider.UserMenuDao.GetUserMenuInfoList();
+	                    retVal = DataProvider.UserMenuDao.GetUserMenuInfoList();
 
-	                    DataCacheManager.Insert(CacheKey, retval);
+	                    DataCacheManager.Insert(CacheKey, retVal);
 	                }
 	            }
 
-	            return retval;
+	            return retVal;
 	        }
 	    }
 

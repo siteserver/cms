@@ -1066,14 +1066,14 @@ namespace SiteServer.CMS.Plugin.Apis
             CleanParameterSyntax(cmd);
 
             // Finally, execute the command
-            var retval = ExecuteNonQuery(cmd);
+            var retVal = ExecuteNonQuery(cmd);
 
             // Detach the IDataParameters from the command object, so they can be used again
             // don't do this...screws up output parameters -- cjbreisch
             // cmd.Parameters.Clear();
             if (mustCloseConnection)
                 connection.Close();
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -1121,12 +1121,12 @@ namespace SiteServer.CMS.Plugin.Apis
             CleanParameterSyntax(cmd);
 
             // Finally, execute the command
-            var retval = ExecuteNonQuery(cmd);
+            var retVal = ExecuteNonQuery(cmd);
 
             // Detach the IDataParameters from the command object, so they can be used again
             // don't do this...screws up output parameters -- cjbreisch
             // cmd.Parameters.Clear();
-            return retval;
+            return retVal;
         }
 
         #endregion ExecuteNonQuery
@@ -1385,7 +1385,7 @@ namespace SiteServer.CMS.Plugin.Apis
             }
 
             // Execute the command & return the results
-            var retval = command.ExecuteScalar();
+            var retVal = command.ExecuteScalar();
 
             // Detach the IDataParameters from the command object, so they can be used again
             // don't do this...screws up output params -- cjbreisch
@@ -1396,7 +1396,7 @@ namespace SiteServer.CMS.Plugin.Apis
                 command.Connection.Close();
             }
 
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -1493,7 +1493,7 @@ namespace SiteServer.CMS.Plugin.Apis
             CleanParameterSyntax(cmd);
 
             // Execute the command & return the results
-            var retval = ExecuteScalar(cmd);
+            var retVal = ExecuteScalar(cmd);
 
             // Detach the IDataParameters from the command object, so they can be used again
             // don't do this...screws up output parameters -- cjbreisch
@@ -1502,7 +1502,7 @@ namespace SiteServer.CMS.Plugin.Apis
             if (mustCloseConnection)
                 connection.Close();
 
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -1552,12 +1552,12 @@ namespace SiteServer.CMS.Plugin.Apis
             CleanParameterSyntax(cmd);
 
             // Execute the command & return the results
-            var retval = ExecuteScalar(cmd);
+            var retVal = ExecuteScalar(cmd);
 
             // Detach the IDataParameters from the command object, so they can be used again
             // don't do this...screws up output parameters -- cjbreisch
             // cmd.Parameters.Clear();
-            return retval;
+            return retVal;
         }
 
         #endregion ExecuteScalar	

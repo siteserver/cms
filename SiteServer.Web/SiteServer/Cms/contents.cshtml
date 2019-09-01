@@ -14,7 +14,7 @@
     <i class="fa fa-columns"></i>
     显示列
   </button>
-  <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true}, $event)" class="btn btn-outline-primary btn-sm">
+  <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true, withOptionalContents: true}, $event)" class="btn btn-outline-primary btn-sm">
     <i class="fa fa-download"></i>
     导出
   </button>

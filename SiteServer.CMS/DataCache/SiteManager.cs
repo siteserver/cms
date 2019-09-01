@@ -40,30 +40,30 @@ namespace SiteServer.CMS.DataCache
 
             public static List<KeyValuePair<int, SiteInfo>> GetSiteInfoKeyValuePairList()
             {
-                var retval = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
-                    if (retval == null)
+                    retVal = DataCacheManager.Get<List<KeyValuePair<int, SiteInfo>>>(CacheKey);
+                    if (retVal == null)
                     {
                         var list = DataProvider.SiteDao.GetSiteInfoKeyValuePairList();
-                        retval = new List<KeyValuePair<int, SiteInfo>>();
+                        retVal = new List<KeyValuePair<int, SiteInfo>>();
                         foreach (var pair in list)
                         {
                             var siteInfo = pair.Value;
                             if (siteInfo == null) continue;
 
                             siteInfo.SiteDir = GetSiteDir(list, siteInfo);
-                            retval.Add(pair);
+                            retVal.Add(pair);
                         }
 
-                        DataCacheManager.Insert(CacheKey, retval);
+                        DataCacheManager.Insert(CacheKey, retVal);
                     }
                 }
 
-                return retval;
+                return retVal;
             }
         }
 
@@ -158,7 +158,7 @@ namespace SiteServer.CMS.DataCache
 
         public static List<int> GetSiteIdListOrderByLevel()
         {
-            var retval = new List<int>();
+            var retVal = new List<int>();
 
             var siteIdList = GetSiteIdList();
             var siteInfoList = new List<SiteInfo>();
@@ -192,16 +192,16 @@ namespace SiteServer.CMS.DataCache
 
             if (hqSiteId > 0)
             {
-                retval.Add(hqSiteId);
+                retVal.Add(hqSiteId);
             }
 
             var list = siteInfoList.OrderBy(siteInfo => siteInfo.Taxis == 0 ? int.MaxValue : siteInfo.Taxis).ToList();
 
             foreach (var siteInfo in list)
             {
-                AddSiteIdList(retval, siteInfo, parentWithChildren, 0);
+                AddSiteIdList(retVal, siteInfo, parentWithChildren, 0);
             }
-            return retval;
+            return retVal;
         }
 
         private static void AddSiteIdList(List<int> dataSource, SiteInfo siteInfo, Hashtable parentWithChildren, int level)

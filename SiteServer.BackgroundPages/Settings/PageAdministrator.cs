@@ -265,12 +265,12 @@ namespace SiteServer.BackgroundPages.Settings
 
         private static string GetDateTime(DateTime datetime)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (datetime > DateUtils.SqlMinValue)
             {
-                retval = DateUtils.GetDateString(datetime);
+                retVal = DateUtils.GetDateString(datetime);
             }
-            return retval;
+            return retVal;
         }
 
         private string GetUserNameHtml(int userId, string userName, int countOfFailedLogin, bool isLockedOut, DateTime lastActivityDate)

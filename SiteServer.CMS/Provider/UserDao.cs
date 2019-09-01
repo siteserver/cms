@@ -515,11 +515,11 @@ namespace SiteServer.CMS.Provider
 
         private string EncodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (passwordFormat == EPasswordFormat.Clear)
             {
-                retval = password;
+                retVal = password;
             }
             else if (passwordFormat == EPasswordFormat.Hashed)
             {
@@ -532,7 +532,7 @@ namespace SiteServer.CMS.Provider
                 var algorithm = HashAlgorithm.Create("SHA1");
                 if (algorithm != null) inArray = algorithm.ComputeHash(dst);
 
-                if (inArray != null) retval = Convert.ToBase64String(inArray);
+                if (inArray != null) retVal = Convert.ToBase64String(inArray);
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
@@ -543,17 +543,17 @@ namespace SiteServer.CMS.Provider
                 };
                 encryptor.DesEncrypt();
 
-                retval = encryptor.OutString;
+                retVal = encryptor.OutString;
             }
-            return retval;
+            return retVal;
         }
 
         private string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (passwordFormat == EPasswordFormat.Clear)
             {
-                retval = password;
+                retVal = password;
             }
             else if (passwordFormat == EPasswordFormat.Hashed)
             {
@@ -568,9 +568,9 @@ namespace SiteServer.CMS.Provider
                 };
                 encryptor.DesDecrypt();
 
-                retval = encryptor.OutString;
+                retVal = encryptor.OutString;
             }
-            return retval;
+            return retVal;
         }
 
         private static string GenerateSalt()

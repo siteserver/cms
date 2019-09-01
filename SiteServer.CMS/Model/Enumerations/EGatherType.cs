@@ -49,22 +49,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EGatherType GetEnumType(string typeStr)
 		{
-            var retval = EGatherType.Undefined;
+            var retVal = EGatherType.Undefined;
 
             if (Equals(EGatherType.Web, typeStr))
 			{
-                retval = EGatherType.Web;
+                retVal = EGatherType.Web;
             }
             else if (Equals(EGatherType.Database, typeStr))
             {
-                retval = EGatherType.Database;
+                retVal = EGatherType.Database;
             }
             else if (Equals(EGatherType.File, typeStr))
 			{
-                retval = EGatherType.File;
+                retVal = EGatherType.File;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EGatherType type, string typeStr)

@@ -89,24 +89,24 @@ namespace SiteServer.CMS.Core
 
         public static string TranslateToStlElement(string html)
         {
-            var retval = html;
-            if (!string.IsNullOrEmpty(retval))
+            var retVal = html;
+            if (!string.IsNullOrEmpty(retVal))
             {
-                retval = retval.Replace(@"<img class=""siteserver-stl-player"" ", "<stl:player ");
-                retval = retval.Replace(@"<img class=""siteserver-stl-audio"" ", "<stl:audio ");
+                retVal = retVal.Replace(@"<img class=""siteserver-stl-player"" ", "<stl:player ");
+                retVal = retVal.Replace(@"<img class=""siteserver-stl-audio"" ", "<stl:audio ");
             }
-            return retval;
+            return retVal;
         }
 
         public static string TranslateToHtml(string html)
         {
-            var retval = html;
-            if (!string.IsNullOrEmpty(retval))
+            var retVal = html;
+            if (!string.IsNullOrEmpty(retVal))
             {
-                retval = retval.Replace("<stl:player ", @"<img class=""siteserver-stl-player"" ");
-                retval = retval.Replace("<stl:audio ", @"<img class=""siteserver-stl-audio"" ");
+                retVal = retVal.Replace("<stl:player ", @"<img class=""siteserver-stl-player"" ");
+                retVal = retVal.Replace("<stl:audio ", @"<img class=""siteserver-stl-audio"" ");
             }
-            return retval;
+            return retVal;
         }
     }
 }

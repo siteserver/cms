@@ -230,6 +230,7 @@
     <Compile Include="Controllers\Pages\Settings\PagesAdminViewController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesAdminProfileController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesSiteAddController.cs" />
+    <Compile Include="Controllers\Pages\Settings\PagesAdminConfigController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserMenuController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserGroupController.cs" />
     <Compile Include="Controllers\Pages\Settings\PagesUserStyleController.cs" />

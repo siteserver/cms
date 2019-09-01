@@ -57,26 +57,26 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EPositionType GetEnumType(string typeStr)
 		{
-			var retval = EPositionType.LeftTop;
+			var retVal = EPositionType.LeftTop;
 
             if (Equals(EPositionType.LeftTop, typeStr))
 			{
-                retval = EPositionType.LeftTop;
+                retVal = EPositionType.LeftTop;
 			}
 			else if (Equals(EPositionType.LeftBottom, typeStr))
 			{
-                retval = EPositionType.LeftBottom;
+                retVal = EPositionType.LeftBottom;
 			}
 			else if (Equals(EPositionType.RightTop, typeStr))
 			{
-                retval = EPositionType.RightTop;
+                retVal = EPositionType.RightTop;
             }
             else if (Equals(EPositionType.RightBottom, typeStr))
             {
-                retval = EPositionType.RightBottom;
+                retVal = EPositionType.RightBottom;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EPositionType type, string typeStr)

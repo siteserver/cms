@@ -35,12 +35,12 @@ namespace SiteServer.CMS.Plugin.Apis
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
-            var retval = new List<IContentInfo>();
+            var retVal = new List<IContentInfo>();
             foreach (var contentInfo in list)
             {
-                retval.Add(contentInfo);
+                retVal.Add(contentInfo);
             }
-            return retval;
+            return retVal;
         }
 
         public int GetCount(int siteId, int channelId, string whereString)

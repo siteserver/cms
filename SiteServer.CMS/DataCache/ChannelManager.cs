@@ -100,30 +100,30 @@ namespace SiteServer.CMS.DataCache
 
         public static int GetChannelId(int siteId, int channelId, string channelIndex, string channelName)
         {
-            var retval = channelId;
+            var retVal = channelId;
 
             if (!string.IsNullOrEmpty(channelIndex))
             {
                 var theChannelId = GetChannelIdByIndexName(siteId, channelIndex);
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
             if (!string.IsNullOrEmpty(channelName))
             {
-                var theChannelId = GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                var theChannelId = GetChannelIdByParentIdAndChannelName(siteId, retVal, channelName, true);
                 if (theChannelId == 0)
                 {
                     theChannelId = GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
                 }
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetChannelIdByIndexName(int siteId, string indexName)
@@ -404,35 +404,35 @@ namespace SiteServer.CMS.DataCache
 
         public static DateTime GetAddDate(int siteId, int channelId)
         {
-            var retval = DateTime.MinValue;
+            var retVal = DateTime.MinValue;
             var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null && nodeInfo.AddDate.HasValue)
             {
-                retval = nodeInfo.AddDate.Value;
+                retVal = nodeInfo.AddDate.Value;
             }
-            return retval;
+            return retVal;
         }
 
         public static int GetParentId(int siteId, int channelId)
         {
-            var retval = 0;
+            var retVal = 0;
             var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
-                retval = nodeInfo.ParentId;
+                retVal = nodeInfo.ParentId;
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetParentsPath(int siteId, int channelId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
-                retval = nodeInfo.ParentsPath;
+                retVal = nodeInfo.ParentsPath;
             }
-            return retval;
+            return retVal;
         }
 
         public static int GetTopLevel(int siteId, int channelId)
@@ -443,13 +443,13 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetChannelName(int siteId, int channelId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             var nodeInfo = GetChannelInfo(siteId, channelId);
             if (nodeInfo != null)
             {
-                retval = nodeInfo.ChannelName;
+                retVal = nodeInfo.ChannelName;
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetChannelNameNavigation(int siteId, int channelId)
@@ -603,7 +603,7 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetSelectText(SiteInfo siteInfo, ChannelInfo channelInfo, PermissionsImpl adminPermissions, bool[] isLastNodeArray, bool isShowContentNum)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (channelInfo.Id == channelInfo.SiteId)
             {
                 channelInfo.IsLastNode = true;
@@ -618,19 +618,19 @@ namespace SiteServer.CMS.DataCache
             }
             for (var i = 0; i < channelInfo.ParentsCount; i++)
             {
-                retval = string.Concat(retval, isLastNodeArray[i] ? "　" : "│");
+                retVal = string.Concat(retVal, isLastNodeArray[i] ? "　" : "│");
             }
-            retval = string.Concat(retval, channelInfo.IsLastNode ? "└" : "├");
-            retval = string.Concat(retval, channelInfo.ChannelName);
+            retVal = string.Concat(retVal, channelInfo.IsLastNode ? "└" : "├");
+            retVal = string.Concat(retVal, channelInfo.ChannelName);
 
             if (isShowContentNum)
             {
                 var onlyAdminId = adminPermissions.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
                 var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
-                retval = string.Concat(retval, " (", count, ")");
+                retVal = string.Concat(retVal, " (", count, ")");
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetContentAttributesOfDisplay(int siteId, int channelId)

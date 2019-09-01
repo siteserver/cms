@@ -9,36 +9,41 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.Cli.Jobs
 {
-    public static class InstallJob
+    public class InstallJob
     {
         public const string CommandName = "install";
         
-        private static string _configFile;
-        private static string _userName;
-        private static string _password;
-        private static bool _isHelp;
+        private string _configFile;
+        private string _userName;
+        private string _password;
+        private bool _isHelp;
 
-        private static readonly OptionSet Options = new OptionSet {
-            { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                v => _configFile = v },
-            { "u|userName=", "超级管理员用户名",
-                v => _userName = v },
-            { "p|password=", "超级管理员密码",
-                v => _password = v },
-            { "h|help",  "命令说明",
-                v => _isHelp = v != null }
-        };
+        private readonly OptionSet _options;
 
-        public static void PrintUsage()
+        public InstallJob()
+        {
+            _options = new OptionSet {
+                { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                    v => _configFile = v },
+                { "u|userName=", "超级管理员用户名",
+                    v => _userName = v },
+                { "p|password=", "超级管理员密码",
+                    v => _password = v },
+                { "h|help",  "命令说明",
+                    v => _isHelp = v != null }
+            };
+        }
+
+        public void PrintUsage()
         {
             Console.WriteLine("系统安装: siteserver install");
-            Options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public static async Task Execute(IJobContext context)
+        public async Task Execute(IJobContext context)
         {
-            if (!CliUtils.ParseArgs(Options, context.Args)) return;
+            if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
             if (_isHelp)
             {

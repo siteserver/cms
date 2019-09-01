@@ -58,26 +58,26 @@ namespace SiteServer.Utils.Enumerations
 
         public static EStatictisXType GetEnumType(string typeStr)
         {
-            var retval = EStatictisXType.Day;
+            var retVal = EStatictisXType.Day;
 
             if (Equals(EStatictisXType.Hour, typeStr))
             {
-                retval = EStatictisXType.Hour;
+                retVal = EStatictisXType.Hour;
             }
             else if (Equals(EStatictisXType.Day, typeStr))
             {
-                retval = EStatictisXType.Day;
+                retVal = EStatictisXType.Day;
             }
             else if (Equals(EStatictisXType.Month, typeStr))
             {
-                retval = EStatictisXType.Month;
+                retVal = EStatictisXType.Month;
             }
             else if (Equals(EStatictisXType.Year, typeStr))
             {
-                retval = EStatictisXType.Year;
+                retVal = EStatictisXType.Year;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EStatictisXType type, string typeStr)

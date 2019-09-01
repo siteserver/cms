@@ -160,7 +160,10 @@ var methods = {
   create: function () {
     var $this = this;
     clearTimeout($this.timeoutId);
-    $api.post($urlCreate).then(function (response) {
+    var sessionId = localStorage.getItem('sessionId');
+    $api.post($urlCreate, {
+      sessionId: sessionId
+    }).then(function (response) {
       var res = response.data;
 
       $this.pendingCount = res.value;

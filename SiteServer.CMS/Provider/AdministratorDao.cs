@@ -68,6 +68,11 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
+                AttributeName = nameof(AdministratorInfoDatabase.LastChangePasswordDate),
+                DataType = DataType.DateTime
+            },
+            new TableColumn
+            {
                 AttributeName = nameof(AdministratorInfoDatabase.CountOfLogin),
                 DataType = DataType.Integer
             },
@@ -135,16 +140,16 @@ namespace SiteServer.CMS.Provider
         };
 
         private const string SqlSelectUserByUserName =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE UserName = @UserName";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByUserId =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Id = @Id";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Id = @Id";
 
         private const string SqlSelectUserByEmail =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Email = @Email";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUserByMobile =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Mobile = @Mobile";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectUsername = "SELECT UserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
@@ -155,10 +160,10 @@ namespace SiteServer.CMS.Provider
             "SELECT UserName FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlInsertUser =
-            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Mobile, @Email, @AvatarUrl)";
+            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @LastChangePasswordDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Mobile, @Email, @AvatarUrl)";
 
         private const string SqlUpdateUser =
-            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Mobile = @Mobile, Email = @Email, AvatarUrl = @AvatarUrl WHERE UserName = @UserName";
+            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, LastChangePasswordDate = @LastChangePasswordDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Mobile = @Mobile, Email = @Email, AvatarUrl = @AvatarUrl WHERE UserName = @UserName";
 
         private const string ParmId = "@Id";
         private const string ParmUsername = "@UserName";
@@ -167,6 +172,7 @@ namespace SiteServer.CMS.Provider
         private const string ParmPasswordSalt = "@PasswordSalt";
         private const string ParmCreationDate = "@CreationDate";
         private const string ParmLastActivityDate = "@LastActivityDate";
+        private const string ParmLastChangePasswordDate = "@LastChangePasswordDate";
         private const string ParmCountOfLogin = "@CountOfLogin";
         private const string ParmCountOfFailedLogin = "@CountOfFailedLogin";
         private const string ParmCreatorUsername = "@CreatorUserName";
@@ -189,6 +195,7 @@ namespace SiteServer.CMS.Provider
             IDataParameter[] parameters =
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, info.LastActivityDate),
+                GetParameter(ParmLastChangePasswordDate, DataType.DateTime, info.LastChangePasswordDate),
                 GetParameter(ParmCountOfLogin, DataType.Integer, info.CountOfLogin),
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, info.CountOfFailedLogin),
                 GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
@@ -224,6 +231,25 @@ namespace SiteServer.CMS.Provider
             {
                 GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
                 GetParameter(ParmCountOfFailedLogin, DataType.Integer, adminInfo.CountOfFailedLogin),
+                GetParameter(ParmId, DataType.Integer, adminInfo.Id)
+            };
+
+            ExecuteNonQuery(sqlString, parameters);
+
+            AdminManager.UpdateCache(adminInfo);
+        }
+
+        public void UpdateLastActivityDate(AdministratorInfo adminInfo)
+        {
+            if (adminInfo == null) return;
+
+            adminInfo.LastActivityDate = DateTime.Now;
+
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
+
+            IDataParameter[] parameters =
+            {
+                GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
@@ -312,15 +338,17 @@ namespace SiteServer.CMS.Provider
             adminInfo.Password = password;
             adminInfo.PasswordFormat = EPasswordFormatUtils.GetValue(passwordFormat);
             adminInfo.PasswordSalt = passwordSalt;
+            adminInfo.LastChangePasswordDate = DateTime.Now;
 
             var sqlString =
-                $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt WHERE Id = @Id";
+                $"UPDATE {TableName} SET Password = @Password, PasswordFormat = @PasswordFormat, PasswordSalt = @PasswordSalt, LastChangePasswordDate = @LastChangePasswordDate WHERE Id = @Id";
 
             IDataParameter[] parameters =
             {
                 GetParameter(ParmPassword, DataType.VarChar, 255, adminInfo.Password),
                 GetParameter(ParmPasswordFormat, DataType.VarChar, 50, adminInfo.PasswordFormat),
                 GetParameter(ParmPasswordSalt, DataType.VarChar, 128, adminInfo.PasswordSalt),
+                GetParameter(ParmLastChangePasswordDate, DataType.DateTime, adminInfo.LastChangePasswordDate),
                 GetParameter(ParmId, DataType.Integer, adminInfo.Id)
             };
 
@@ -395,7 +423,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -423,7 +451,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -451,7 +479,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -479,7 +507,7 @@ namespace SiteServer.CMS.Provider
                 {
                     var i = 0;
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
-                        GetString(rdr, i++), GetString(rdr, i++), GetDateTime(rdr, i++), GetDateTime(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
+                        GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
                         GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
@@ -743,12 +771,12 @@ namespace SiteServer.CMS.Provider
 
         private string EncodePassword(string password, EPasswordFormat passwordFormat, out string passwordSalt)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             passwordSalt = string.Empty;
 
             if (passwordFormat == EPasswordFormat.Clear)
             {
-                retval = password;
+                retVal = password;
             }
             else if (passwordFormat == EPasswordFormat.Hashed)
             {
@@ -760,10 +788,10 @@ namespace SiteServer.CMS.Provider
                 Buffer.BlockCopy(buffer2, 0, dst, 0, buffer2.Length);
                 Buffer.BlockCopy(src, 0, dst, buffer2.Length, src.Length);
                 var algorithm = HashAlgorithm.Create("SHA1");
-                if (algorithm == null) return retval;
+                if (algorithm == null) return retVal;
                 var inArray = algorithm.ComputeHash(dst);
 
-                retval = Convert.ToBase64String(inArray);
+                retVal = Convert.ToBase64String(inArray);
             }
             else if (passwordFormat == EPasswordFormat.Encrypted)
             {
@@ -776,9 +804,9 @@ namespace SiteServer.CMS.Provider
                 };
                 encryptor.DesEncrypt();
 
-                retval = encryptor.OutString;
+                retVal = encryptor.OutString;
             }
-            return retval;
+            return retVal;
         }
 
         private string GenerateSalt()
@@ -890,8 +918,9 @@ namespace SiteServer.CMS.Provider
 
             try
             {
-                adminInfo.LastActivityDate = DateUtils.SqlMinValue;
                 adminInfo.CreationDate = DateTime.Now;
+                adminInfo.LastActivityDate = DateTime.Now;
+                adminInfo.LastChangePasswordDate = DateTime.Now;
                 adminInfo.PasswordFormat = EPasswordFormatUtils.GetValue(EPasswordFormat.Encrypted);
                 adminInfo.Password = EncodePassword(adminInfo.Password, EPasswordFormatUtils.GetEnumType(adminInfo.PasswordFormat), out var passwordSalt);
                 adminInfo.PasswordSalt = passwordSalt;
@@ -908,6 +937,7 @@ namespace SiteServer.CMS.Provider
                     GetParameter(ParmPasswordSalt, DataType.VarChar, 128, adminInfo.PasswordSalt),
                     GetParameter(ParmCreationDate, DataType.DateTime, adminInfo.CreationDate),
                     GetParameter(ParmLastActivityDate, DataType.DateTime, adminInfo.LastActivityDate),
+                    GetParameter(ParmLastChangePasswordDate, DataType.DateTime, adminInfo.LastChangePasswordDate),
                     GetParameter(ParmCountOfLogin, DataType.Integer, adminInfo.CountOfLogin),
                     GetParameter(ParmCountOfFailedLogin, DataType.Integer, adminInfo.CountOfFailedLogin),
                     GetParameter(ParmCreatorUsername, DataType.VarChar, 255, adminInfo.CreatorUserName),
@@ -1031,10 +1061,10 @@ namespace SiteServer.CMS.Provider
 
         private string DecodePassword(string password, EPasswordFormat passwordFormat, string passwordSalt)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (passwordFormat == EPasswordFormat.Clear)
             {
-                retval = password;
+                retVal = password;
             }
             else if (passwordFormat == EPasswordFormat.Hashed)
             {
@@ -1049,9 +1079,9 @@ namespace SiteServer.CMS.Provider
                 };
                 encryptor.DesDecrypt();
 
-                retval = encryptor.OutString;
+                retVal = encryptor.OutString;
             }
-            return retval;
+            return retVal;
         }
 
         public bool CheckPassword(string password, bool isPasswordMd5, string dbpassword, EPasswordFormat passwordFormat,
@@ -1175,6 +1205,7 @@ namespace SiteServer.CMS.Provider
                 dbAdminInfo.PasswordSalt = passwordSalt;
                 dbAdminInfo.CreationDate = DateTime.Now;
                 dbAdminInfo.LastActivityDate = DateTime.Now;
+                dbAdminInfo.LastChangePasswordDate = DateTime.Now;
 
                 using (var connection = GetConnection())
                 {

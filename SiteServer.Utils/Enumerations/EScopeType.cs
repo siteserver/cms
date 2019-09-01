@@ -66,30 +66,30 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EScopeType GetEnumType(string typeStr)
 		{
-			var retval = EScopeType.Self;
+			var retVal = EScopeType.Self;
 
 			if (Equals(EScopeType.Children, typeStr))
 			{
-				retval = EScopeType.Children;
+				retVal = EScopeType.Children;
 			}
 			else if (Equals(EScopeType.Descendant, typeStr))
 			{
-				retval = EScopeType.Descendant;
+				retVal = EScopeType.Descendant;
 			}
 			else if (Equals(EScopeType.Self, typeStr))
 			{
-				retval = EScopeType.Self;
+				retVal = EScopeType.Self;
 			}
 			else if (Equals(EScopeType.SelfAndChildren, typeStr))
 			{
-				retval = EScopeType.SelfAndChildren;
+				retVal = EScopeType.SelfAndChildren;
 			}
 			else if (Equals(EScopeType.All, typeStr))
 			{
-                retval = EScopeType.All;
+                retVal = EScopeType.All;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EScopeType type, string typeStr)

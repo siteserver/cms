@@ -48,22 +48,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static ESigninPriority GetEnumType(string typeStr)
         {
-            var retval = ESigninPriority.Lower;
+            var retVal = ESigninPriority.Lower;
 
             if (Equals(ESigninPriority.Lower, typeStr))
             {
-                retval = ESigninPriority.Lower;
+                retVal = ESigninPriority.Lower;
             }
             else if (Equals(ESigninPriority.Normal, typeStr))
             {
-                retval = ESigninPriority.Normal;
+                retVal = ESigninPriority.Normal;
             }
             else if (Equals(ESigninPriority.High, typeStr))
             {
-                retval = ESigninPriority.High;
+                retVal = ESigninPriority.High;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ESigninPriority type, string typeStr)

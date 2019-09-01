@@ -53,18 +53,18 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EUserBindingType GetEnumType(string typeStr)
 		{
-			var retval = EUserBindingType.Weibo;
+			var retVal = EUserBindingType.Weibo;
 
             if (Equals(EUserBindingType.Weibo, typeStr))
 			{
-                retval = EUserBindingType.Weibo;
+                retVal = EUserBindingType.Weibo;
 			}
 			else if (Equals(EUserBindingType.QQ, typeStr))
 			{
-                retval = EUserBindingType.QQ;
+                retVal = EUserBindingType.QQ;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 	}

@@ -2,7 +2,6 @@
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
@@ -18,6 +17,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 var userId = request.GetQueryInt("userId");
+                if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();
@@ -45,6 +45,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 var userId = request.GetQueryInt("userId");
+                if (userId == 0) userId = request.AdminId;
                 if (!request.IsAdminLoggin) return Unauthorized();
                 var adminInfo = AdminManager.GetAdminInfoByUserId(userId);
                 if (adminInfo == null) return NotFound();

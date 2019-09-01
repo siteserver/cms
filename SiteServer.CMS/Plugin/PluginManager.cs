@@ -173,20 +173,20 @@ namespace SiteServer.CMS.Plugin
 
             public static SortedList<string, PluginInstance> GetPluginSortedList()
             {
-                var retval = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
-                    if (retval == null)
+                    retVal = CacheUtils.Get<SortedList<string, PluginInstance>>(CacheKey);
+                    if (retVal == null)
                     {
-                        retval = Load();
-                        CacheUtils.InsertHours(CacheKey, retval, 24);
+                        retVal = Load();
+                        CacheUtils.InsertHours(CacheKey, retVal, 24);
                     }
                 }
 
-                return retval;
+                return retVal;
             }
         }
 
@@ -299,22 +299,22 @@ namespace SiteServer.CMS.Plugin
         {
             var dict = PluginManagerCache.GetPluginSortedList();
 
-            var retval = new Dictionary<string, string>();
+            var retVal = new Dictionary<string, string>();
 
             foreach (var pluginId in dict.Keys)
             {
                 var pluginInfo = dict[pluginId];
                 if (pluginInfo.Metadata != null)
                 {
-                    retval[pluginId] = pluginInfo.Metadata.Version;
+                    retVal[pluginId] = pluginInfo.Metadata.Version;
                 }
                 else
                 {
-                    retval[pluginId] = string.Empty;
+                    retVal[pluginId] = string.Empty;
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static List<string> PackagesIdAndVersionList

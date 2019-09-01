@@ -577,9 +577,6 @@
     <Compile Include="Settings\PageAdminArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Settings\PageAdminConfiguration.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Settings\PageAdminDepartment.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

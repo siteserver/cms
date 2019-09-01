@@ -76,13 +76,13 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetParentsPath(int departmentId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             var departmentInfo = GetDepartmentInfo(departmentId);
             if (departmentInfo != null)
             {
-                retval = departmentInfo.ParentsPath;
+                retVal = departmentInfo.ParentsPath;
             }
-            return retval;
+            return retVal;
         }
 
         public static List<int> GetDepartmentIdList()

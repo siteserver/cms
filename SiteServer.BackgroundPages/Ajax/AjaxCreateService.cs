@@ -53,12 +53,12 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
-            var retval = new NameValueCollection();
+            var retVal = new NameValueCollection();
             var request = new AuthenticatedRequest();
 
             if (type == TypeGetCountArray)
             {
-                retval = GetCountArray(userKeyPrefix);
+                retVal = GetCountArray(userKeyPrefix);
             }
             
             if (type == TypeCreateSite)
@@ -71,35 +71,35 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 if (!string.IsNullOrEmpty(siteTemplateDir))
                 {
-                    retval = CreateSiteBySiteTemplateDir(siteId, isImportContents, isImportTableStyles, siteTemplateDir, userKeyPrefix, request.AdminName);
+                    retVal = CreateSiteBySiteTemplateDir(siteId, isImportContents, isImportTableStyles, siteTemplateDir, userKeyPrefix, request.AdminName);
                 }
                 else if (!string.IsNullOrEmpty(onlineTemplateName))
                 {
-                    retval = CreateSiteByOnlineTemplateName(siteId, isImportContents, isImportTableStyles, onlineTemplateName, userKeyPrefix, request.AdminName);
+                    retVal = CreateSiteByOnlineTemplateName(siteId, isImportContents, isImportTableStyles, onlineTemplateName, userKeyPrefix, request.AdminName);
                 }
                 else
                 {
-                    retval = CreateSite(siteId, userKeyPrefix, request.AdminName);
+                    retVal = CreateSite(siteId, userKeyPrefix, request.AdminName);
                 }
             }
 
-            var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
+            var jsonString = TranslateUtils.NameValueCollectionToJsonString(retVal);
             Page.Response.Write(jsonString);
             Page.Response.End();
         }
 
         public NameValueCollection GetCountArray(string userKeyPrefix)//进度及显示
         {
-            var retval = new NameValueCollection();
+            var retVal = new NameValueCollection();
             if (CacheUtils.Get(userKeyPrefix + CacheTotalCount) != null && CacheUtils.Get(userKeyPrefix + CacheCurrentCount) != null && CacheUtils.Get(userKeyPrefix + CacheMessage) != null)
             {
                 var totalCount = TranslateUtils.ToInt((string)CacheUtils.Get(userKeyPrefix + CacheTotalCount));
                 var currentCount = TranslateUtils.ToInt((string)CacheUtils.Get(userKeyPrefix + CacheCurrentCount));
                 var message = (string)CacheUtils.Get(userKeyPrefix + CacheMessage);
 
-                retval = AjaxManager.GetCountArrayNameValueCollection(totalCount, currentCount, message);
+                retVal = AjaxManager.GetCountArrayNameValueCollection(totalCount, currentCount, message);
             }
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection CreateSiteBySiteTemplateDir(int siteId, bool isImportContents, bool isImportTableStyles, string siteTemplateDir, string userKeyPrefix, string administratorName)
@@ -113,7 +113,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -128,13 +128,13 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CacheUtils.Insert(cacheCurrentCountKey, "3");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
                 LogUtils.AddErrorLog(ex);
             }
 
@@ -143,7 +143,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
             CacheUtils.ClearAll();
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection CreateSiteByOnlineTemplateName(int siteId, bool isImportContents, bool isImportTableStyles, string onlineTemplateName, string userKeyPrefix, string administratorName)
@@ -157,7 +157,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -187,12 +187,12 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
 
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
-                retval = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection($"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
                 LogUtils.AddErrorLog(ex);
             }
 
@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
             CacheUtils.ClearAll();
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection CreateSite(int siteId, string userKeyPrefix, string administratorName)
@@ -215,7 +215,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”、“错误信息”及“执行JS脚本”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -225,13 +225,13 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CacheUtils.Insert(cacheCurrentCountKey, "2");//存储当前的页面总数
                 CacheUtils.Insert(cacheMessageKey, "创建成功！");//存储消息
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(
                         $"站点 <strong>{siteInfo.SiteName}<strong> 创建成功!", string.Empty,
                         $"top.location.href='{PageUtils.GetMainUrl(siteId)}';");
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
                 LogUtils.AddErrorLog(ex);
             }
 
@@ -240,7 +240,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
             CacheUtils.ClearAll();
 
-            return retval;
+            return retVal;
         }
     }
 }

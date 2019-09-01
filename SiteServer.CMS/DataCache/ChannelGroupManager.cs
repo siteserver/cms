@@ -21,21 +21,21 @@ namespace SiteServer.CMS.DataCache
 
 	        public static Dictionary<int, List<ChannelGroupInfo>> GetAllChannelGroups()
 	        {
-	            var retval = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
-	            if (retval != null) return retval;
+	            var retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
+	            if (retVal != null) return retVal;
 
 	            lock (LockObject)
 	            {
-	                retval = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
-	                if (retval == null)
+	                retVal = DataCacheManager.Get<Dictionary<int, List<ChannelGroupInfo>>>(CacheKey);
+	                if (retVal == null)
 	                {
-	                    retval = DataProvider.ChannelGroupDao.GetAllChannelGroups();
+	                    retVal = DataProvider.ChannelGroupDao.GetAllChannelGroups();
 
-	                    DataCacheManager.Insert(CacheKey, retval);
+	                    DataCacheManager.Insert(CacheKey, retVal);
 	                }
 	            }
 
-	            return retval;
+	            return retVal;
 	        }
 	    }
 

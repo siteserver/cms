@@ -12,34 +12,39 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public static class UpdateJob
+    public class UpdateJob
     {
         public const string CommandName = "update";
         private const string Folder = "update";
         
-        private static string _directory;
-        private static bool _contentSplit;
-        private static bool _isHelp;
+        private string _directory;
+        private bool _contentSplit;
+        private bool _isHelp;
 
-        private static readonly OptionSet Options = new OptionSet {
-            { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
-                v => _directory = v },
-            { "content-split",  "拆分内容表",
-                v => _contentSplit = v != null },
-            { "h|help",  "命令说明",
-                v => _isHelp = v != null }
-        };
+        private readonly OptionSet _options;
 
-        public static void PrintUsage()
+        public UpdateJob()
+        {
+            _options = new OptionSet {
+                { "d|directory=", "指定需要升级至最新版本的备份数据文件夹",
+                    v => _directory = v },
+                { "content-split",  "拆分内容表",
+                    v => _contentSplit = v != null },
+                { "h|help",  "命令说明",
+                    v => _isHelp = v != null }
+            };
+        }
+
+        public void PrintUsage()
         {
             Console.WriteLine("系统升级: siteserver update");
-            Options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public static async Task Execute(IJobContext context)
+        public async Task Execute(IJobContext context)
         {
-            if (!CliUtils.ParseArgs(Options, context.Args)) return;
+            if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
             if (_isHelp)
             {

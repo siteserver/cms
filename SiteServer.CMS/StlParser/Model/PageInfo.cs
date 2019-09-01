@@ -218,94 +218,94 @@ namespace SiteServer.CMS.StlParser.Model
 
         private string GetJsCode(string pageJsName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (pageJsName == Const.Jquery)
             {
                 if (SiteInfo.Additional.IsCreateWithJQuery)
                 {
-                    retval =
+                    retVal =
                         $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Jquery)}"" type=""text/javascript""></script>";
                 }
             }
             else if (pageJsName == Const.Vue)
             {
-                retval =
+                retVal =
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Vue)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.JsCookie)
             {
-                retval =
+                retVal =
                     $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.JsCookie)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.StlClient)
             {
-                retval =
+                retVal =
                     $@"<script src=""{ SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.Lodash)}"" type=""text/javascript""></script><script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Components.StlClient)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BAjaxUpload)
             {
-                retval =
+                retVal =
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.AjaxUpload.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BQueryString)
             {
-                retval =
+                retVal =
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.QueryString.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BjQueryForm)
             {
-                retval =
+                retVal =
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JQueryForm.Js)}"" type=""text/javascript""></script>";
             }
             else if (pageJsName == Const.BShowLoading)
             {
-                retval =
+                retVal =
                     $@"<link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Css)}"" rel=""stylesheet"" media=""screen"" /><script type=""text/javascript"" charset=""{SiteFilesAssets
                         .JQuery.ShowLoading.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ShowLoading.Js)}""></script>";
             }
             else if (pageJsName == Const.BjTemplates)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.JTemplates.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.JTemplates.Js)}""></script>";
             }
             else if (pageJsName == Const.BValidate)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" charset=""{SiteFilesAssets.JQuery.ValidateJs.Charset}"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.ValidateJs.Js)}""></script>";
             }
             else if (pageJsName == Const.BBootstrap)
             {
                 var cssUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Css);
                 var jsUrl = SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JQuery.Bootstrap.Js);
-                retval = $@"
+                retVal = $@"
 <link rel=""stylesheet"" type=""text/css"" href=""{cssUrl}"">
 <script language=""javascript"" src=""{jsUrl}""></script>
 ";
             }
             else if (pageJsName == Const.JsAcSwfObject)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.SwfObject.Js)}""></script>";
             }
             else if (pageJsName == Const.JsAcJwPlayer6)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.JwPlayer6.Js)}""></script><script type=""text/javascript"">jwplayer.key=""ABCDEFGHIJKLMOPQ"";</script>";
             }
             else if (pageJsName == Const.JsAcFlowPlayer)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.FlowPlayer.Js)}""></script>";
             }
             else if (pageJsName == Const.JsAcMediaElement)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Js)}""></script><link rel=""stylesheet"" href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.MediaElement.Css)}"" />";
             }
             else if (pageJsName == Const.JsAcAudioJs)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.AudioJs.Js)}""></script>
 <script type='text/javascript'>
 audiojs.events.ready(function() {{
@@ -316,14 +316,14 @@ audiojs.events.ready(function() {{
             }
             else if (pageJsName == Const.JsAcVideoJs)
             {
-                retval = $@"
+                retVal = $@"
 <link href=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Css)}"" rel=""stylesheet"">
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.VideoJs.Js)}""></script>
 ";
             }
             else if (pageJsName == Const.JsPageOpenWindow)
             {
-                retval = @"
+                retVal = @"
 <div id=""stl_wnd_board"" style=""position:absolute;top:100px;left:0px;width:100%;z-index:65531;height:100%;display:none"" align=""center"">
     <div id=""stl_wnd_div"" style=""display:none; width:400px; height:330px; padding:0; margin:0px;"" align=""center"">
     <iframe id=""stl_wnd_frame"" frameborder=""0"" scrolling=""auto"" width=""100%"" height=""100%"" src=""""></iframe>
@@ -340,26 +340,26 @@ wnd_frame.src=url;}}
             }
             else if (pageJsName == Const.JsUserScript)
             {
-                retval = $@"
+                retVal = $@"
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsPageScript)}""></script>
 <script type=""text/javascript"">stlInit('{SiteFilesAssets.GetUrl(ApiUrl, string.Empty)}', '{SiteInfo.Id}', {SiteInfo.Additional.WebUrl.TrimEnd('/')}');</script>
 <script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Stl.JsUserScript)}""></script>";
             }
             else if (pageJsName == Const.JsInnerCalendar)
             {
-                retval = $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
+                retVal = $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.DatePicker.Js)}""></script>";
             }
             else if (pageJsName == Const.JsStaticAdFloating)
             {
-                retval =
+                retVal =
                     $@"<script type=""text/javascript"" src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.Static.JsStaticAdFloating)}""></script>";
             }
             else if (pageJsName == Const.JsAhTranslate)
             {
-                retval =
+                retVal =
                     $@"<script src=""{SiteFilesAssets.GetUrl(ApiUrl, SiteFilesAssets.TwCn.Js)}"" charset=""{SiteFilesAssets.TwCn.Charset}"" type=""text/javascript""></script>";
             }
-            return retval;
+            return retVal;
         }
 
         public string HeadCodesHtml

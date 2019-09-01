@@ -48,22 +48,22 @@ namespace SiteServer.Utils.Enumerations
 
         public static EPasswordFormat GetEnumType(string typeStr)
         {
-            var retval = EPasswordFormat.Encrypted;
+            var retVal = EPasswordFormat.Encrypted;
 
             if (Equals(EPasswordFormat.Clear, typeStr))
             {
-                retval = EPasswordFormat.Clear;
+                retVal = EPasswordFormat.Clear;
             }
             else if (Equals(EPasswordFormat.Hashed, typeStr))
             {
-                retval = EPasswordFormat.Hashed;
+                retVal = EPasswordFormat.Hashed;
             }
             else if (Equals(EPasswordFormat.Encrypted, typeStr))
             {
-                retval = EPasswordFormat.Encrypted;
+                retVal = EPasswordFormat.Encrypted;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EPasswordFormat type, string typeStr)

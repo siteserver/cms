@@ -154,66 +154,66 @@ namespace SiteServer.CMS.StlParser.Model
 
 		public static EStlContentOrder GetEnumType(string typeStr)
 		{
-            var retval = EStlContentOrder.Default;
+            var retVal = EStlContentOrder.Default;
 
             if (Equals(EStlContentOrder.Default, typeStr))
 			{
-                retval = EStlContentOrder.Default;
+                retVal = EStlContentOrder.Default;
 			}
             else if (Equals(EStlContentOrder.Back, typeStr))
 			{
-                retval = EStlContentOrder.Back;
+                retVal = EStlContentOrder.Back;
 			}
             else if (Equals(EStlContentOrder.AddDate, typeStr))
 			{
-                retval = EStlContentOrder.AddDate;
+                retVal = EStlContentOrder.AddDate;
 			}
             else if (Equals(EStlContentOrder.AddDateBack, typeStr))
 			{
-                retval = EStlContentOrder.AddDateBack;
+                retVal = EStlContentOrder.AddDateBack;
 			}
             else if (Equals(EStlContentOrder.LastEditDate, typeStr))
 			{
-                retval = EStlContentOrder.LastEditDate;
+                retVal = EStlContentOrder.LastEditDate;
 			}
             else if (Equals(EStlContentOrder.LastEditDateBack, typeStr))
 			{
-                retval = EStlContentOrder.LastEditDateBack;
+                retVal = EStlContentOrder.LastEditDateBack;
 			}
             else if (Equals(EStlContentOrder.Hits, typeStr))
 			{
-                retval = EStlContentOrder.Hits;
+                retVal = EStlContentOrder.Hits;
 			}
             else if (Equals(EStlContentOrder.HitsByDay, typeStr))
 			{
-                retval = EStlContentOrder.HitsByDay;
+                retVal = EStlContentOrder.HitsByDay;
 			}
             else if (Equals(EStlContentOrder.HitsByWeek, typeStr))
 			{
-                retval = EStlContentOrder.HitsByWeek;
+                retVal = EStlContentOrder.HitsByWeek;
 			}
             else if (Equals(EStlContentOrder.HitsByMonth, typeStr))
 			{
-                retval = EStlContentOrder.HitsByMonth;
+                retVal = EStlContentOrder.HitsByMonth;
             }
             else if (Equals(EStlContentOrder.Stars, typeStr))
             {
-                retval = EStlContentOrder.Stars;
+                retVal = EStlContentOrder.Stars;
             }
             else if (Equals(EStlContentOrder.Digg, typeStr))
             {
-                retval = EStlContentOrder.Digg;
+                retVal = EStlContentOrder.Digg;
             }
             else if (Equals(EStlContentOrder.Comments, typeStr))
             {
-                retval = EStlContentOrder.Comments;
+                retVal = EStlContentOrder.Comments;
             }
             else if (Equals(EStlContentOrder.Random, typeStr))
             {
-                retval = EStlContentOrder.Random;
+                retVal = EStlContentOrder.Random;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EStlContentOrder type, string typeStr)

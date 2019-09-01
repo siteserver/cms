@@ -42,18 +42,18 @@ namespace SiteServer.Utils.Enumerations
 
         public static EMonth GetEnumType(string typeStr)
         {
-            var retval = EMonth.LastMonth;
+            var retVal = EMonth.LastMonth;
 
             if (Equals(EMonth.LastMonth, typeStr))
             {
-                retval = EMonth.LastMonth;
+                retVal = EMonth.LastMonth;
             }
             else if (Equals(EMonth.MonthAgo, typeStr))
             {
-                retval = EMonth.MonthAgo;
+                retVal = EMonth.MonthAgo;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EMonth type, string typeStr)

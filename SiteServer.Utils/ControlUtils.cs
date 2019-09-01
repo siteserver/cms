@@ -135,9 +135,9 @@ namespace SiteServer.Utils
 					}
 				}
 			}
-			var retval = new string[arraylist.Count];
-			arraylist.CopyTo(retval);
-			return retval;
+			var retVal = new string[arraylist.Count];
+			arraylist.CopyTo(retVal);
+			return retVal;
 		}
 
         public static string GetSelectedListControlValueCollection(ListControl listControl)
@@ -230,9 +230,9 @@ namespace SiteServer.Utils
 					arraylist.Add(item.Value);
 				}
 			}
-			var retval = new string[arraylist.Count];
-			arraylist.CopyTo(retval);
-			return retval;
+			var retVal = new string[arraylist.Count];
+			arraylist.CopyTo(retVal);
+			return retVal;
 		}
 
         public static void SelectSingleItem(ListControl listControl, string value)

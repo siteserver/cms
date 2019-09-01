@@ -42,18 +42,18 @@ namespace SiteServer.Utils.Enumerations
 
         public static ESubscribePushType GetEnumType(string typeStr)
         {
-            var retval = ESubscribePushType.ManualPush;
+            var retVal = ESubscribePushType.ManualPush;
 
             if (Equals(ESubscribePushType.ManualPush, typeStr))
             {
-                retval = ESubscribePushType.ManualPush;
+                retVal = ESubscribePushType.ManualPush;
             }
             else if (Equals(ESubscribePushType.TimedPush, typeStr))
             {
-                retval = ESubscribePushType.TimedPush;
+                retVal = ESubscribePushType.TimedPush;
             } 
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ESubscribePushType type, string typeStr)

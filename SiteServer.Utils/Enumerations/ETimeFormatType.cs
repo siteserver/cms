@@ -39,18 +39,18 @@ namespace SiteServer.Utils.Enumerations
 
         public static ETimeFormatType GetEnumType(string typeStr)
         {
-            var retval = ETimeFormatType.ShortTime;
+            var retVal = ETimeFormatType.ShortTime;
 
             if (Equals(ETimeFormatType.ShortTime, typeStr))
             {
-                retval = ETimeFormatType.ShortTime;
+                retVal = ETimeFormatType.ShortTime;
             }
             else if (Equals(ETimeFormatType.LongTime, typeStr))
             {
-                retval = ETimeFormatType.LongTime;
+                retVal = ETimeFormatType.LongTime;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ETimeFormatType type, string typeStr)

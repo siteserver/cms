@@ -21,21 +21,21 @@ namespace SiteServer.CMS.DataCache
 
 	        public static Dictionary<string, AccessTokenInfo> GetAccessTokenDictionary()
 	        {
-	            var retval = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
-	            if (retval != null) return retval;
+	            var retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+	            if (retVal != null) return retVal;
 
 	            lock (LockObject)
 	            {
-	                retval = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
-	                if (retval == null)
+	                retVal = DataCacheManager.Get<Dictionary<string, AccessTokenInfo>>(CacheKey);
+	                if (retVal == null)
 	                {
-	                    retval = DataProvider.AccessTokenDao.GetAccessTokenInfoDictionary();
+	                    retVal = DataProvider.AccessTokenDao.GetAccessTokenInfoDictionary();
 
-	                    DataCacheManager.Insert(CacheKey, retval);
+	                    DataCacheManager.Insert(CacheKey, retVal);
 	                }
 	            }
 
-	            return retval;
+	            return retVal;
 	        }
 	    }
 

@@ -1,53 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Datory;
+﻿using Datory;
 using NDesk.Options;
 using Newtonsoft.Json.Linq;
 using SiteServer.Cli.Core;
 using SiteServer.CMS.Core;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SiteServer.Cli.Jobs
 {
-    public static class RestoreJob
+    public class RestoreJob
     {
         public const string CommandName = "restore";
 
-        private static string _directory;
-        private static string _configFile;
-        private static List<string> _includes;
-        private static List<string> _excludes;
-        private static bool _dataOnly;
-        private static bool _isHelp;
+        private string _directory;
+        private string _configFile;
+        private List<string> _includes;
+        private List<string> _excludes;
+        private bool _dataOnly;
+        private bool _isHelp;
 
-        private static readonly OptionSet Options = new OptionSet {
-            { "d|directory=", "从指定的文件夹中恢复数据",
-                v => _directory = v },
-            { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                v => _configFile = v },
-            { "includes=", "指定需要还原的表，多个表用英文逗号隔开，默认还原所有表",
-                v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
-            { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
-                v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
-            { "data-only",  "仅恢复数据",
-                v => _dataOnly = v != null },
-            { "h|help",  "命令说明",
-                v => _isHelp = v != null }
-        };
+        private readonly OptionSet _options;
 
-        public static void PrintUsage()
+        public RestoreJob()
+        {
+            _options = new OptionSet {
+                { "d|directory=", "从指定的文件夹中恢复数据",
+                    v => _directory = v },
+                { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                    v => _configFile = v },
+                { "includes=", "指定需要还原的表，多个表用英文逗号隔开，默认还原所有表",
+                    v => _includes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                { "excludes=", "指定需要排除的表，多个表用英文逗号隔开",
+                    v => _excludes = v == null ? null : TranslateUtils.StringCollectionToStringList(v) },
+                { "data-only",  "仅恢复数据",
+                    v => _dataOnly = v != null },
+                { "h|help",  "命令说明",
+                    v => _isHelp = v != null }
+            };
+        }
+
+        public void PrintUsage()
         {
             Console.WriteLine("数据库恢复: siteserver restore");
-            Options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public static async Task Execute(IJobContext context)
+        public async Task Execute(IJobContext context)
         {
-            if (!CliUtils.ParseArgs(Options, context.Args)) return;
+            if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
             if (_isHelp)
             {
@@ -113,52 +118,61 @@ namespace SiteServer.Cli.Jobs
                 SystemManager.CreateSiteServerTables();
             }
 
-            var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
-
             await CliUtils.PrintRowLineAsync();
             await CliUtils.PrintRowAsync("恢复表名称", "总条数");
             await CliUtils.PrintRowLineAsync();
 
             var errorLogFilePath = CliUtils.CreateErrorLogFile(CommandName);
 
+            await Restore(_includes, _excludes, _dataOnly, tablesFilePath, treeInfo, errorLogFilePath);
+
+            await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
+        }
+
+        public static async Task Restore(List<string> includes, List<string> excludes, bool dataOnly, string tablesFilePath, TreeInfo treeInfo, string errorLogFilePath)
+        {
+            var tableNames =
+                TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
+
             foreach (var tableName in tableNames)
             {
                 try
                 {
-                    if (_includes != null)
+                    if (includes != null)
                     {
-                        if (!StringUtils.ContainsIgnoreCase(_includes, tableName)) continue;
+                        if (!StringUtils.ContainsIgnoreCase(includes, tableName)) continue;
                     }
-                    if (_excludes != null)
+
+                    if (excludes != null)
                     {
-                        if (StringUtils.ContainsIgnoreCase(_excludes, tableName)) continue;
+                        if (StringUtils.ContainsIgnoreCase(excludes, tableName)) continue;
                     }
 
                     var metadataFilePath = treeInfo.GetTableMetadataFilePath(tableName);
 
                     if (!FileUtils.IsFileExists(metadataFilePath)) continue;
 
-                    var tableInfo = TranslateUtils.JsonDeserialize<TableInfo>(await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
+                    var tableInfo =
+                        TranslateUtils.JsonDeserialize<TableInfo>(
+                            await FileUtils.ReadTextAsync(metadataFilePath, Encoding.UTF8));
 
                     await CliUtils.PrintRowAsync(tableName, tableInfo.TotalCount.ToString("#,0"));
 
-                    if (!DataProvider.DatabaseDao.IsTableExists(tableName))
+                    if (DataProvider.DatabaseDao.IsTableExists(tableName))
                     {
-                        if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
-                        {
-                            await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
-                            {
-                                DateTime = DateTime.Now,
-                                Detail = $"创建表 {tableName}: {sqlString}",
-                                Exception = ex
-                            });
-
-                            continue;
-                        }
+                        DataProvider.DatabaseDao.DropTable(tableName);
                     }
-                    else
+
+                    if (!DataProvider.DatabaseDao.CreateTable(tableName, tableInfo.Columns, out var ex, out var sqlString))
                     {
-                        DataProvider.DatabaseDao.AlterSystemTable(tableName, tableInfo.Columns);
+                        await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
+                        {
+                            DateTime = DateTime.Now,
+                            Detail = $"创建表 {tableName}: {sqlString}",
+                            Exception = ex
+                        });
+
+                        continue;
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -172,20 +186,19 @@ namespace SiteServer.Cli.Jobs
                                 var fileName = tableInfo.RowFiles[i];
 
                                 var objects = TranslateUtils.JsonDeserialize<List<JObject>>(
-                                    await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName),
-                                        Encoding.UTF8));
+                                    await FileUtils.ReadTextAsync(treeInfo.GetTableContentFilePath(tableName, fileName), Encoding.UTF8));
 
                                 try
                                 {
                                     DataProvider.DatabaseDao.InsertMultiple(tableName, objects, tableInfo.Columns);
                                 }
-                                catch (Exception ex)
+                                catch (Exception exception)
                                 {
                                     await CliUtils.AppendErrorLogAsync(errorLogFilePath, new TextLogInfo
                                     {
                                         DateTime = DateTime.Now,
                                         Detail = $"插入表 {tableName}, 文件名 {fileName}",
-                                        Exception = ex
+                                        Exception = exception
                                     });
                                 }
                             }
@@ -214,14 +227,12 @@ namespace SiteServer.Cli.Jobs
                 }
             }
 
-            if (!_dataOnly)
+            if (!dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
                 SystemManager.SyncContentTables();
                 SystemManager.UpdateConfigVersion();
             }
-
-            await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");
         }
     }
 }

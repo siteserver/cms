@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\JobContextImpl.cs" />
+    <Compile Include="Jobs\SyncJob.cs" />
     <Compile Include="Jobs\BackupJob.cs" />
     <Compile Include="Jobs\InstallJob.cs" />
     <Compile Include="Jobs\TestJob.cs" />

@@ -8,7 +8,6 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -71,6 +70,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
+                var contentIds = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
                 var exportType = request.GetPostString("exportType");
                 var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
                 var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
@@ -99,71 +99,106 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
-                var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
-                if (pages == 0) pages = 1;
-
-                if (count > 0)
+                if (contentIds.Count == 0)
                 {
-                    for (var page = 1; page <= pages; page++)
+                    var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                    var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
+                    if (pages == 0) pages = 1;
+
+                    if (count > 0)
                     {
-                        var offset = siteInfo.Additional.PageSize * (page - 1);
-                        var limit = siteInfo.Additional.PageSize;
-
-                        var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
-
-                        var sequence = offset + 1;
-
-                        foreach (var contentId in pageContentIds)
+                        for (var page = 1; page <= pages; page++)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
-                            if (contentInfo == null) continue;
+                            var offset = siteInfo.Additional.PageSize * (page - 1);
+                            var limit = siteInfo.Additional.PageSize;
 
-                            if (!isAllCheckedLevel)
+                            var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
+
+                            var sequence = offset + 1;
+
+                            foreach (var contentId in pageContentIds)
                             {
-                                var checkedLevel = contentInfo.CheckedLevel;
-                                if (contentInfo.IsChecked)
-                                {
-                                    checkedLevel = siteInfo.Additional.CheckContentLevel;
-                                }
-                                if (!checkedLevelKeys.Contains(checkedLevel))
-                                {
-                                    continue;
-                                }
-                            }
+                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                                if (contentInfo == null) continue;
 
-                            if (!isAllDate)
-                            {
-                                if (contentInfo.AddDate < startDate || contentInfo.AddDate > endDate)
+                                if (!isAllCheckedLevel)
                                 {
-                                    continue;
+                                    var checkedLevel = contentInfo.CheckedLevel;
+                                    if (contentInfo.IsChecked)
+                                    {
+                                        checkedLevel = siteInfo.Additional.CheckContentLevel;
+                                    }
+                                    if (!checkedLevelKeys.Contains(checkedLevel))
+                                    {
+                                        continue;
+                                    }
                                 }
-                            }
 
-                            contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                                if (!isAllDate)
+                                {
+                                    if (contentInfo.AddDate < startDate || contentInfo.AddDate > endDate)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                            }
                         }
                     }
-
-                    if (contentInfoList.Count > 0)
+                }
+                else
+                {
+                    var sequence = 1;
+                    foreach (var contentId in contentIds)
                     {
-                        if (exportType == "zip")
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        if (contentInfo == null) continue;
+
+                        if (!isAllCheckedLevel)
                         {
-                            var fileName = $"{channelInfo.ChannelName}.zip";
-                            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            var exportObject = new ExportObject(siteId, request.AdminName);
-                            contentInfoList.Reverse();
-                            if (exportObject.ExportContents(filePath, contentInfoList))
+                            var checkedLevel = contentInfo.CheckedLevel;
+                            if (contentInfo.IsChecked)
                             {
-                                downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
+                                checkedLevel = siteInfo.Additional.CheckContentLevel;
+                            }
+                            if (!checkedLevelKeys.Contains(checkedLevel))
+                            {
+                                continue;
                             }
                         }
-                        else if (exportType == "excel")
+
+                        if (!isAllDate)
                         {
-                            var fileName = $"{channelInfo.ChannelName}.csv";
-                            var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                            ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
+                            if (contentInfo.AddDate < startDate || contentInfo.AddDate > endDate)
+                            {
+                                continue;
+                            }
+                        }
+
+                        contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                    }
+                }
+
+                if (contentInfoList.Count > 0)
+                {
+                    if (exportType == "zip")
+                    {
+                        var fileName = $"{channelInfo.ChannelName}.zip";
+                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        var exportObject = new ExportObject(siteId, request.AdminName);
+                        contentInfoList.Reverse();
+                        if (exportObject.ExportContents(filePath, contentInfoList))
+                        {
                             downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                         }
+                    }
+                    else if (exportType == "excel")
+                    {
+                        var fileName = $"{channelInfo.ChannelName}.csv";
+                        var filePath = PathUtils.GetTemporaryFilesPath(fileName);
+                        ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
+                        downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                     }
                 }
 

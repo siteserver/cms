@@ -48,18 +48,18 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EGender GetEnumType(string typeStr)
 		{
-			var retval = EGender.NotSet;
+			var retVal = EGender.NotSet;
 
 			if (Equals(EGender.Male, typeStr))
 			{
-				retval = EGender.Male;
+				retVal = EGender.Male;
 			}
 			else if (Equals(EGender.Female, typeStr))
 			{
-				retval = EGender.Female;
+				retVal = EGender.Female;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EGender type, string typeStr)

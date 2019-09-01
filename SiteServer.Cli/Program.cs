@@ -74,14 +74,23 @@ namespace SiteServer.Cli
             Console.WriteLine("欢迎使用 SiteServer Cli 命令行工具");
             Console.WriteLine();
 
+            var backupJob = new BackupJob();
+            var installJob = new InstallJob();
+            var restoreJob = new RestoreJob();
+            var syncJob = new SyncJob();
+            var updateJob = new UpdateJob();
+            var versionJob = new VersionJob();
+            var testJob = new TestJob();
+
             Jobs = new Dictionary<string, Func<IJobContext, Task>>(StringComparer.CurrentCultureIgnoreCase)
             {
-                {BackupJob.CommandName, BackupJob.Execute},
-                {InstallJob.CommandName, InstallJob.Execute},
-                {RestoreJob.CommandName, RestoreJob.Execute},
-                {UpdateJob.CommandName, UpdateJob.Execute},
-                {VersionJob.CommandName, VersionJob.Execute},
-                {TestJob.CommandName, TestJob.Execute}
+                {BackupJob.CommandName, backupJob.Execute},
+                {InstallJob.CommandName, installJob.Execute},
+                {RestoreJob.CommandName, restoreJob.Execute},
+                {SyncJob.CommandName, syncJob.Execute},
+                {UpdateJob.CommandName, updateJob.Execute},
+                {VersionJob.CommandName, versionJob.Execute},
+                {TestJob.CommandName, testJob.Execute}
             };
 
             PluginManager.LoadPlugins(CliUtils.PhysicalApplicationPath);
@@ -124,11 +133,20 @@ namespace SiteServer.Cli
                 await CliUtils.PrintRowLine();
                 await CliUtils.PrintRow("Usage");
                 await CliUtils.PrintRowLine();
-                BackupJob.PrintUsage();
-                InstallJob.PrintUsage();
-                RestoreJob.PrintUsage();
-                UpdateJob.PrintUsage();
-                VersionJob.PrintUsage();
+
+                var backupJob = new BackupJob();
+                var installJob = new InstallJob();
+                var restoreJob = new RestoreJob();
+                var syncJob = new SyncJob();
+                var updateJob = new UpdateJob();
+                var versionJob = new VersionJob();
+
+                backupJob.PrintUsage();
+                installJob.PrintUsage();
+                restoreJob.PrintUsage();
+                syncJob.PrintUsage();
+                updateJob.PrintUsage();
+                versionJob.PrintUsage();
 
                 if (pluginJobs != null && pluginJobs.Count > 0)
                 {

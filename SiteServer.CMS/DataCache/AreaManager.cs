@@ -65,13 +65,13 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetParentsPath(int areaId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             var areaInfo = GetAreaInfo(areaId);
             if (areaInfo != null)
             {
-                retval = areaInfo.ParentsPath;
+                retVal = areaInfo.ParentsPath;
             }
-            return retval;
+            return retVal;
         }
 
         public static List<int> GetAreaIdList()

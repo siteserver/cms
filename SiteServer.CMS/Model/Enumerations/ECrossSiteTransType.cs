@@ -75,34 +75,34 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ECrossSiteTransType GetEnumType(string typeStr)
 		{
-            var retval = ECrossSiteTransType.AllSite;
+            var retVal = ECrossSiteTransType.AllSite;
 
             if (Equals(ECrossSiteTransType.None, typeStr))
             {
-                retval = ECrossSiteTransType.None;
+                retVal = ECrossSiteTransType.None;
             }
             else if (Equals(ECrossSiteTransType.SelfSite, typeStr))
             {
-                retval = ECrossSiteTransType.SelfSite;
+                retVal = ECrossSiteTransType.SelfSite;
             }
             else if (Equals(ECrossSiteTransType.SpecifiedSite, typeStr))
             {
-                retval = ECrossSiteTransType.SpecifiedSite;
+                retVal = ECrossSiteTransType.SpecifiedSite;
             }
             else if (Equals(ECrossSiteTransType.ParentSite, typeStr))
             {
-                retval = ECrossSiteTransType.ParentSite;
+                retVal = ECrossSiteTransType.ParentSite;
             }
             else if (Equals(ECrossSiteTransType.AllParentSite, typeStr))
 			{
-                retval = ECrossSiteTransType.AllParentSite;
+                retVal = ECrossSiteTransType.AllParentSite;
             }
             else if (Equals(ECrossSiteTransType.AllSite, typeStr))
             {
-                retval = ECrossSiteTransType.AllSite;
+                retVal = ECrossSiteTransType.AllSite;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ECrossSiteTransType type, string typeStr)

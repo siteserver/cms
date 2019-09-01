@@ -74,14 +74,14 @@ namespace SiteServer.BackgroundPages.Ajax
         {
             var type = Request.QueryString["type"];
             var userKeyPrefix = Request["userKeyPrefix"];
-            var retval = new NameValueCollection();
+            var retVal = new NameValueCollection();
             var request = new AuthenticatedRequest();
 
             if (type == TypeBackup)
             {
                 var siteId = TranslateUtils.ToInt(Request.Form["siteID"]);
                 var backupType = Request.Form["backupType"];
-                retval = Backup(siteId, backupType, userKeyPrefix);
+                retVal = Backup(siteId, backupType, userKeyPrefix);
             }
             else if (type == TypeRecovery)
             {
@@ -93,10 +93,10 @@ namespace SiteServer.BackgroundPages.Ajax
                 var path = Request.Form["path"];
                 var isOverride = TranslateUtils.ToBool(Request.Form["isOverride"]);
                 var isUseTable = TranslateUtils.ToBool(Request.Form["isUseTable"]);
-                retval = Recovery(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request);
+                retVal = Recovery(siteId, isDeleteChannels, isDeleteTemplates, isDeleteFiles, isZip, path, isOverride, isUseTable, userKeyPrefix, request);
             }
 
-            var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
+            var jsonString = TranslateUtils.NameValueCollectionToJsonString(retVal);
             Page.Response.Write(jsonString);
             Page.Response.End();
         }
@@ -104,7 +104,7 @@ namespace SiteServer.BackgroundPages.Ajax
         public NameValueCollection Backup(int siteId, string backupType, string userKeyPrefix)
         {
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
             var request = new AuthenticatedRequest(Request);
 
             try
@@ -136,21 +136,21 @@ namespace SiteServer.BackgroundPages.Ajax
                 string resultString =
                     $"任务完成，备份地址：<br /><strong> {filePath} </strong>&nbsp;<a href='{ApiRouteActionsDownload.GetUrl(ApiManager.InnerApiUrl, filePath)}'><img src='{SiteServerAssets.GetIconUrl("download.gif")}' />下载</a>。";
 
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(resultString, string.Empty, string.Empty);
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
                 LogUtils.AddErrorLog(ex);
             }
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection Recovery(int siteId, bool isDeleteChannels, bool isDeleteTemplates, bool isDeleteFiles, bool isZip, string path, bool isOverride, bool isUseTable, string userKeyPrefix, AuthenticatedRequest request)
         {
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -158,18 +158,18 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 request.AddSiteLog(siteId, "恢复备份数据", request.AdminName);
 
-                retval = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection("数据恢复成功!", string.Empty, string.Empty);
 
-                //retval = new string[] { "数据恢复成功!", string.Empty, string.Empty };
+                //retVal = new string[] { "数据恢复成功!", string.Empty, string.Empty };
             }
             catch (Exception ex)
             {
-                //retval = new string[] { string.Empty, ex.Message, string.Empty };
-                retval = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
+                //retVal = new string[] { string.Empty, ex.Message, string.Empty };
+                retVal = AjaxManager.GetWaitingTaskNameValueCollection(string.Empty, ex.Message, string.Empty);
                 LogUtils.AddErrorLog(ex);
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

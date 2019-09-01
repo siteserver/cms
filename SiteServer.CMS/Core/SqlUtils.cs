@@ -208,27 +208,27 @@ namespace SiteServer.Utils
 
         public static string GetInStr(string columnName, string inStr)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             inStr = AttackUtils.FilterSql(inStr);
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"INSTR({columnName}, '{inStr}') > 0";
+                retVal = $"INSTR({columnName}, '{inStr}') > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"CHARINDEX('{inStr}', {columnName}) > 0";
+                retVal = $"CHARINDEX('{inStr}', {columnName}) > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"POSITION('{inStr}' IN {columnName}) > 0";
+                retVal = $"POSITION('{inStr}' IN {columnName}) > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"INSTR({columnName}, '{inStr}') > 0";
+                retVal = $"INSTR({columnName}, '{inStr}') > 0";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static KeyValuePair<string, IDataParameter> GetInStrWithParameter(string columnName, string inStr)
@@ -260,106 +260,106 @@ namespace SiteServer.Utils
 
         public static string GetInStrReverse(string inStr, string columnName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             inStr = AttackUtils.FilterSql(inStr);
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"INSTR('{inStr}', {columnName}) > 0";
+                retVal = $"INSTR('{inStr}', {columnName}) > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"CHARINDEX({columnName}, '{inStr}') > 0";
+                retVal = $"CHARINDEX({columnName}, '{inStr}') > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"POSITION({columnName} IN '{inStr}') > 0";
+                retVal = $"POSITION({columnName} IN '{inStr}') > 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"INSTR('{inStr}', {columnName}) > 0";
+                retVal = $"INSTR('{inStr}', {columnName}) > 0";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetNotInStr(string columnName, string inStr)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"INSTR({columnName}, '{inStr}') = 0";
+                retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"CHARINDEX('{inStr}', {columnName}) = 0";
+                retVal = $"CHARINDEX('{inStr}', {columnName}) = 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"POSITION('{inStr}' IN {columnName}) = 0";
+                retVal = $"POSITION('{inStr}' IN {columnName}) = 0";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"INSTR({columnName}, '{inStr}') = 0";
+                retVal = $"INSTR({columnName}, '{inStr}') = 0";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
-            string retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
-            if (topN <= 0) return retval;
+            string retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString}";
+            if (topN <= 0) return retVal;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+                retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
+                retVal = $"SELECT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+                retVal = $"SELECT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
+                retVal = $@"SELECT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToTopSqlString(string sqlString, string orderString, int topN)
         {
-            string retval = $"SELECT * FROM ({sqlString}) {orderString}";
-            if (topN <= 0) return retval;
+            string retVal = $"SELECT * FROM ({sqlString}) {orderString}";
+            if (topN <= 0) return retVal;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
+                retVal = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
+                retVal = $"SELECT TOP {topN} * FROM ({sqlString}) {orderString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
+                retVal = $"SELECT * FROM ({sqlString}) {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $@"SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {topN} ROWS ONLY";
+                retVal = $@"SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetPageSqlString(string sqlString, string orderString, int itemsPerPage, int currentPageIndex, int pageCount, int recordsInLastPage)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             var recsToRetrieve = itemsPerPage;
             if (currentPageIndex == pageCount - 1)
@@ -374,7 +374,7 @@ namespace SiteServer.Utils
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
@@ -383,7 +383,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT TOP {recsToRetrieve} * FROM (
         SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
@@ -392,7 +392,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
@@ -401,7 +401,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) {orderString} FETCH FIRST {itemsPerPage * (currentPageIndex + 1)} ROWS ONLY
@@ -409,32 +409,32 @@ SELECT * FROM (
 ) {orderString}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetDistinctTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
         {
-            var retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString}";
-            if (topN <= 0) return retval;
+            var retVal = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString}";
+            if (topN <= 0) return retVal;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+                retVal = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
+                retVal = $"SELECT DISTINCT TOP {topN} {columns} FROM {tableName} {whereString} {orderString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
+                retVal = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} LIMIT {topN}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
+                retVal = $"SELECT DISTINCT {columns} FROM {tableName} {whereString} {orderString} FETCH FIRST {topN} ROWS ONLY";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToInTopSqlString(string tableName, string columns, string whereString, string orderString, int topN)
@@ -514,126 +514,126 @@ SELECT * FROM (
 
         //public static string GetColumnSqlString(DataType dataType, string attributeName, int length)
         //{
-        //    var retval = string.Empty;
+        //    var retVal = string.Empty;
 
         //    if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
         //    {
-        //        retval = ToMySqlColumnString(dataType, attributeName, length);
+        //        retVal = ToMySqlColumnString(dataType, attributeName, length);
         //    }
         //    else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
         //    {
-        //        retval = ToSqlServerColumnString(dataType, attributeName, length);
+        //        retVal = ToSqlServerColumnString(dataType, attributeName, length);
         //    }
         //    else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
         //    {
-        //        retval = ToPostgreColumnString(dataType, attributeName, length);
+        //        retVal = ToPostgreColumnString(dataType, attributeName, length);
         //    }
         //    else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
         //    {
-        //        retval = ToOracleColumnString(dataType, attributeName, length);
+        //        retVal = ToOracleColumnString(dataType, attributeName, length);
         //    }
 
-        //    return retval;
+        //    return retVal;
         //}
 
         public static string GetAddColumnsSqlString(string tableName, string columnsSqlString)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})";
+                retVal = $"ALTER TABLE `{tableName}` ADD ({columnsSqlString})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
+                retVal = $"ALTER TABLE [{tableName}] ADD {columnsSqlString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
+                retVal = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
+                retVal = $"ALTER TABLE {tableName} ADD {columnsSqlString}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetModifyColumnsSqlString(string tableName, string columnName, string columnTypeString)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"ALTER TABLE `{tableName}` MODIFY {columnName} {columnTypeString}";
+                retVal = $"ALTER TABLE `{tableName}` MODIFY {columnName} {columnTypeString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"ALTER TABLE [{tableName}] ALTER COLUMN {columnName} {columnTypeString}";
+                retVal = $"ALTER TABLE [{tableName}] ALTER COLUMN {columnName} {columnTypeString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} TYPE {columnTypeString}";
+                retVal = $"ALTER TABLE {tableName} ALTER COLUMN {columnName} TYPE {columnTypeString}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"ALTER TABLE {tableName} MODIFY {columnName} {columnTypeString}";
+                retVal = $"ALTER TABLE {tableName} MODIFY {columnName} {columnTypeString}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetDropColumnsSqlString(string tableName, string columnName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
+                retVal = $"ALTER TABLE `{tableName}` DROP COLUMN `{columnName}`";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
+                retVal = $"ALTER TABLE [{tableName}] DROP COLUMN [{columnName}]";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+                retVal = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
+                retVal = $"ALTER TABLE {tableName} DROP COLUMN {columnName}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetAutoIncrementDataType(bool alterTable = false)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             //if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             //{
-            //    retval = "INT AUTO_INCREMENT PRIMARY KEY";
+            //    retVal = "INT AUTO_INCREMENT PRIMARY KEY";
             //}
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = alterTable ? "INT AUTO_INCREMENT UNIQUE KEY" : "INT AUTO_INCREMENT";
+                retVal = alterTable ? "INT AUTO_INCREMENT UNIQUE KEY" : "INT AUTO_INCREMENT";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = "int IDENTITY (1, 1)";
+                retVal = "int IDENTITY (1, 1)";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = "SERIAL";
+                retVal = "SERIAL";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = "NUMBER GENERATED BY DEFAULT ON NULL AS IDENTITY";
+                retVal = "NUMBER GENERATED BY DEFAULT ON NULL AS IDENTITY";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static DataType ToDataType(string dataTypeStr)
@@ -1026,26 +1026,26 @@ SELECT * FROM (
 
         private static string GetDateDiffLessThan(string fieldName, string fieldValue, string unit)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
+                retVal = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) < {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
+                retVal = $"DATEDIFF({unit}, {fieldName}, getdate()) < {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
+                retVal = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} < {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
+                retVal = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) < {fieldValue}";
             }
             
-            return retval;
+            return retVal;
         }
 
         public static string GetDateDiffGreatThanDays(string fieldName, string days)
@@ -1055,242 +1055,242 @@ SELECT * FROM (
 
         private static string GetDateDiffGreatThan(string fieldName, string fieldValue, string unit)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
+                retVal = $"TIMESTAMPDIFF({unit}, {fieldName}, now()) > {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DATEDIFF({unit}, {fieldName}, getdate()) > {fieldValue}";
+                retVal = $"DATEDIFF({unit}, {fieldName}, getdate()) > {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} > {fieldValue}";
+                retVal = $"EXTRACT(EPOCH FROM current_timestamp - {fieldName})/{GetSecondsByUnit(unit)} > {fieldValue}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) > {fieldValue}";
+                retVal = $"EXTRACT({unit} FROM CURRENT_TIMESTAMP - {fieldName}) > {fieldValue}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetDatePartYear(string fieldName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"DATE_FORMAT({fieldName}, '%Y')";
+                retVal = $"DATE_FORMAT({fieldName}, '%Y')";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DATEPART([YEAR], {fieldName})";
+                retVal = $"DATEPART([YEAR], {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"date_part('year', {fieldName})";
+                retVal = $"date_part('year', {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"EXTRACT(year from {fieldName})";
+                retVal = $"EXTRACT(year from {fieldName})";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetDatePartMonth(string fieldName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"DATE_FORMAT({fieldName}, '%c')";
+                retVal = $"DATE_FORMAT({fieldName}, '%c')";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DATEPART([MONTH], {fieldName})";
+                retVal = $"DATEPART([MONTH], {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"date_part('month', {fieldName})";
+                retVal = $"date_part('month', {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"EXTRACT(month from {fieldName})";
+                retVal = $"EXTRACT(month from {fieldName})";
             }            
 
-            return retval;
+            return retVal;
         }
 
         public static string GetDatePartDay(string fieldName)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"DATE_FORMAT({fieldName}, '%e')";
+                retVal = $"DATE_FORMAT({fieldName}, '%e')";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"DATEPART([DAY], {fieldName})";
+                retVal = $"DATEPART([DAY], {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"date_part('day', {fieldName})";
+                retVal = $"date_part('day', {fieldName})";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"EXTRACT(day from {fieldName})";
+                retVal = $"EXTRACT(day from {fieldName})";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetComparableNow()
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = "now()";
+                retVal = "now()";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = "getdate()";
+                retVal = "getdate()";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = "current_timestamp";
+                retVal = "current_timestamp";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = "sysdate";
+                retVal = "sysdate";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetComparableDate(DateTime dateTime)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"'{dateTime:yyyy-MM-dd}'";
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"'{dateTime:yyyy-MM-dd}'";
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"'{dateTime:yyyy-MM-dd}'";
+                retVal = $"'{dateTime:yyyy-MM-dd}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
+                retVal = $"to_date('{dateTime:yyyy-MM-dd}', 'yyyy-mm-dd')";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetComparableDateTime(DateTime dateTime)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
+                retVal = $"'{dateTime:yyyy-MM-dd HH:mm:ss}'";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
+                retVal = $"to_date('{dateTime:yyyy-MM-dd HH:mm:ss}', 'yyyy-mm-dd hh24:mi:ss')";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToPlusSqlString(string fieldName, int plusNum = 1)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
+                retVal = $"{fieldName} = IFNULL({fieldName}, 0) + {plusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
+                retVal = $"{fieldName} = ISNULL({fieldName}, 0) + {plusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
+                retVal = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
+                retVal = $"{fieldName} = COALESCE({fieldName}, 0) + {plusNum}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToMinusSqlString(string fieldName, int minusNum = 1)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
+                retVal = $"{fieldName} = IFNULL({fieldName}, 0) - {minusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
+                retVal = $"{fieldName} = ISNULL({fieldName}, 0) - {minusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
+                retVal = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
+                retVal = $"{fieldName} = COALESCE({fieldName}, 0) - {minusNum}";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetOrderByRandom()
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = "ORDER BY RAND()";
+                retVal = "ORDER BY RAND()";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = "ORDER BY NEWID() DESC";
+                retVal = "ORDER BY NEWID() DESC";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = "ORDER BY random()";
+                retVal = "ORDER BY random()";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = "ORDER BY dbms_random.value()";
+                retVal = "ORDER BY dbms_random.value()";
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string ToSqlString(string inputString)
@@ -1431,7 +1431,7 @@ SELECT * FROM (
 
         private static string GetValueFromConnectionString(string connectionString, string attribute)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(connectionString) && !string.IsNullOrEmpty(attribute))
             {
                 var pairs = connectionString.Split(';');
@@ -1441,13 +1441,13 @@ SELECT * FROM (
                     {
                         if (StringUtils.EqualsIgnoreCase(attribute, pair.Trim().Split('=')[0]))
                         {
-                            retval = pair.Trim().Split('=')[1];
+                            retVal = pair.Trim().Split('=')[1];
                             break;
                         }
                     }
                 }
             }
-            return retval;
+            return retVal;
         }
 
         

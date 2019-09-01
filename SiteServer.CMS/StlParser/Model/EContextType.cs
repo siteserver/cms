@@ -47,34 +47,34 @@ namespace SiteServer.CMS.StlParser.Model
 
 		public static EContextType GetEnumType(string typeStr)
 		{
-            var retval = EContextType.Undefined;
+            var retVal = EContextType.Undefined;
 
             if (Equals(EContextType.Content, typeStr))
 			{
-                retval = EContextType.Content;
+                retVal = EContextType.Content;
 			}
             else if (Equals(EContextType.Channel, typeStr))
 			{
-                retval = EContextType.Channel;
+                retVal = EContextType.Channel;
             }
             else if (Equals(EContextType.Each, typeStr))
             {
-                retval = EContextType.Each;
+                retVal = EContextType.Each;
             }
             else if (Equals(EContextType.SqlContent, typeStr))
             {
-                retval = EContextType.SqlContent;
+                retVal = EContextType.SqlContent;
             }
             else if (Equals(EContextType.Site, typeStr))
             {
-                retval = EContextType.Site;
+                retVal = EContextType.Site;
             }
             else if (Equals(EContextType.Undefined, typeStr))
             {
-                retval = EContextType.Undefined;
+                retVal = EContextType.Undefined;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EContextType type, string typeStr)

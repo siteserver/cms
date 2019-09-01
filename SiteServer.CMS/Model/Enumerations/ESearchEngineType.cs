@@ -77,34 +77,34 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ESearchEngineType GetEnumType(string typeStr)
 		{
-			var retval = ESearchEngineType.Baidu;
+			var retVal = ESearchEngineType.Baidu;
 
 			if (Equals(ESearchEngineType.Baidu, typeStr))
 			{
-				retval = ESearchEngineType.Baidu;
+				retVal = ESearchEngineType.Baidu;
 			}
 			else if (Equals(ESearchEngineType.Google, typeStr))
 			{
-				retval = ESearchEngineType.Google;
+				retVal = ESearchEngineType.Google;
 			}
 			else if (Equals(ESearchEngineType.Google_CN, typeStr))
 			{
-				retval = ESearchEngineType.Google_CN;
+				retVal = ESearchEngineType.Google_CN;
 			}
 			else if (Equals(ESearchEngineType.Live, typeStr))
 			{
-				retval = ESearchEngineType.Live;
+				retVal = ESearchEngineType.Live;
 			}
 			else if (Equals(ESearchEngineType.Sogou, typeStr))
 			{
-				retval = ESearchEngineType.Sogou;
+				retVal = ESearchEngineType.Sogou;
 			}
 			else if (Equals(ESearchEngineType.Yahoo, typeStr))
 			{
-				retval = ESearchEngineType.Yahoo;
+				retVal = ESearchEngineType.Yahoo;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ESearchEngineType type, string typeStr)

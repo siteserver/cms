@@ -5,6 +5,7 @@ using System.Web.Http;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
+using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
@@ -75,15 +76,15 @@ namespace SiteServer.API.Controllers.V1
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var retval = DataProvider.UserDao.Update(userInfo, body, out var errorMessage);
-                if (retval == null)
+                var retVal = DataProvider.UserDao.Update(userInfo, body, out var errorMessage);
+                if (retVal == null)
                 {
                     return BadRequest(errorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)
@@ -322,11 +323,11 @@ namespace SiteServer.API.Controllers.V1
                 var userInfo = UserManager.GetUserInfoByUserId(id);
                 if (userInfo == null) return NotFound();
 
-                var retval = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
+                var retVal = DataProvider.UserLogDao.ApiInsert(userInfo.UserName, logInfo);
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)

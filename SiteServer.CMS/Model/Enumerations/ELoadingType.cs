@@ -50,38 +50,38 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static ELoadingType GetEnumType(string typeStr)
         {
-            var retval = ELoadingType.Channel;
+            var retVal = ELoadingType.Channel;
 
             if (Equals(ELoadingType.ContentTree, typeStr))
             {
-                retval = ELoadingType.ContentTree;
+                retVal = ELoadingType.ContentTree;
             }
             else if (Equals(ELoadingType.Channel, typeStr))
             {
-                retval = ELoadingType.Channel;
+                retVal = ELoadingType.Channel;
             }
             else if (Equals(ELoadingType.ChannelClickSelect, typeStr))
             {
-                retval = ELoadingType.ChannelClickSelect;
+                retVal = ELoadingType.ChannelClickSelect;
             }
             else if (Equals(ELoadingType.SiteAnalysis, typeStr))
             {
-                retval = ELoadingType.SiteAnalysis;
+                retVal = ELoadingType.SiteAnalysis;
             }
             else if (Equals(ELoadingType.TemplateFilePathRule, typeStr))
             {
-                retval = ELoadingType.TemplateFilePathRule;
+                retVal = ELoadingType.TemplateFilePathRule;
             }
             else if (Equals(ELoadingType.ConfigurationCreateDetails, typeStr))
             {
-                retval = ELoadingType.ConfigurationCreateDetails;
+                retVal = ELoadingType.ConfigurationCreateDetails;
             }
             else if (Equals(ELoadingType.ConfigurationCrossSiteTrans, typeStr))
             {
-                retval = ELoadingType.ConfigurationCrossSiteTrans;
+                retVal = ELoadingType.ConfigurationCrossSiteTrans;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ELoadingType type, string typeStr)

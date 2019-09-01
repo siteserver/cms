@@ -30,22 +30,22 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EOraclePrivilege GetEnumType(string typeStr)
 		{
-			var retval = EOraclePrivilege.Normal;
+			var retVal = EOraclePrivilege.Normal;
 
 			if (Equals(EOraclePrivilege.Normal, typeStr))
 			{
-				retval = EOraclePrivilege.Normal;
+				retVal = EOraclePrivilege.Normal;
 			}
 			else if (Equals(EOraclePrivilege.SYSDBA, typeStr))
 			{
-				retval = EOraclePrivilege.SYSDBA;
+				retVal = EOraclePrivilege.SYSDBA;
 			}
 			else if (Equals(EOraclePrivilege.SYSOPER, typeStr))
 			{
-				retval = EOraclePrivilege.SYSOPER;
+				retVal = EOraclePrivilege.SYSOPER;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EOraclePrivilege type, string typeStr)

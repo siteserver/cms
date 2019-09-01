@@ -21,21 +21,21 @@ namespace SiteServer.CMS.DataCache
 
 	        public static List<UserGroupInfo> GetAllUserGroups()
 	        {
-	            var retval = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
-	            if (retval != null) return retval;
+	            var retVal = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
+	            if (retVal != null) return retVal;
 
 	            lock (LockObject)
 	            {
-	                retval = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
-	                if (retval == null)
+	                retVal = DataCacheManager.Get<List<UserGroupInfo>>(CacheKey);
+	                if (retVal == null)
 	                {
-	                    retval = DataProvider.UserGroupDao.GetUserGroupInfoList() ?? new List<UserGroupInfo>();
+	                    retVal = DataProvider.UserGroupDao.GetUserGroupInfoList() ?? new List<UserGroupInfo>();
 
-	                    DataCacheManager.Insert(CacheKey, retval);
+	                    DataCacheManager.Insert(CacheKey, retVal);
 	                }
 	            }
 
-	            return retval;
+	            return retVal;
 	        }
 	    }
 

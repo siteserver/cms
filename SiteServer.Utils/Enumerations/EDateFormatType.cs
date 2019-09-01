@@ -57,26 +57,26 @@ namespace SiteServer.Utils.Enumerations
 
         public static EDateFormatType GetEnumType(string typeStr)
         {
-            var retval = EDateFormatType.Month;
+            var retVal = EDateFormatType.Month;
 
             if (Equals(EDateFormatType.Month, typeStr))
             {
-                retval = EDateFormatType.Month;
+                retVal = EDateFormatType.Month;
             }
             else if (Equals(EDateFormatType.Day, typeStr))
             {
-                retval = EDateFormatType.Day;
+                retVal = EDateFormatType.Day;
             }
             else if (Equals(EDateFormatType.Year, typeStr))
             {
-                retval = EDateFormatType.Year;
+                retVal = EDateFormatType.Year;
             }
             else if (Equals(EDateFormatType.Chinese, typeStr))
             {
-                retval = EDateFormatType.Chinese;
+                retVal = EDateFormatType.Chinese;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EDateFormatType type, string typeStr)

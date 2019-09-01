@@ -51,30 +51,30 @@ namespace SiteServer.BackgroundPages.Core
 
         public static EDepartmentLoadingType GetEnumType(string typeStr)
         {
-            var retval = EDepartmentLoadingType.AdministratorTree;
+            var retVal = EDepartmentLoadingType.AdministratorTree;
 
             if (Equals(EDepartmentLoadingType.AdministratorTree, typeStr))
             {
-                retval = EDepartmentLoadingType.AdministratorTree;
+                retVal = EDepartmentLoadingType.AdministratorTree;
             }
             else if (Equals(EDepartmentLoadingType.ContentList, typeStr))
             {
-                retval = EDepartmentLoadingType.ContentList;
+                retVal = EDepartmentLoadingType.ContentList;
             }
             else if (Equals(EDepartmentLoadingType.DepartmentSelect, typeStr))
             {
-                retval = EDepartmentLoadingType.DepartmentSelect;
+                retVal = EDepartmentLoadingType.DepartmentSelect;
             }
             else if (Equals(EDepartmentLoadingType.ContentTree, typeStr))
             {
-                retval = EDepartmentLoadingType.ContentTree;
+                retVal = EDepartmentLoadingType.ContentTree;
             }
             else if (Equals(EDepartmentLoadingType.List, typeStr))
             {
-                retval = EDepartmentLoadingType.List;
+                retVal = EDepartmentLoadingType.List;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EDepartmentLoadingType type, string typeStr)

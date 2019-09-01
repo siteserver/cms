@@ -48,22 +48,22 @@ namespace SiteServer.Utils.Enumerations
 
         public static EUserPasswordRestriction GetEnumType(string typeStr)
         {
-            var retval = EUserPasswordRestriction.None;
+            var retVal = EUserPasswordRestriction.None;
 
             if (Equals(EUserPasswordRestriction.None, typeStr))
             {
-                retval = EUserPasswordRestriction.None;
+                retVal = EUserPasswordRestriction.None;
             }
             else if (Equals(EUserPasswordRestriction.LetterAndDigit, typeStr))
             {
-                retval = EUserPasswordRestriction.LetterAndDigit;
+                retVal = EUserPasswordRestriction.LetterAndDigit;
             }
             else if (Equals(EUserPasswordRestriction.LetterAndDigitAndSymbol, typeStr))
             {
-                retval = EUserPasswordRestriction.LetterAndDigitAndSymbol;
+                retVal = EUserPasswordRestriction.LetterAndDigitAndSymbol;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EUserPasswordRestriction type, string typeStr)

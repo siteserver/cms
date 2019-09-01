@@ -288,7 +288,7 @@ namespace SiteServer.CMS.Provider
                 connectionString = ConnectionString;
             }
 
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             using (var conn = GetConnection(connectionString))
             {
@@ -297,12 +297,12 @@ namespace SiteServer.CMS.Provider
                 {
                     if (rdr.Read())
                     {
-                        retval = GetString(rdr, 0);
+                        retVal = GetString(rdr, 0);
                     }
                     rdr.Close();
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public string GetString(string sqlString)
@@ -489,7 +489,7 @@ namespace SiteServer.CMS.Provider
 
         public string GetStlPageSqlString(string sqlString, string orderString, int totalCount, int itemsPerPage, int currentPageIndex)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             var temp = sqlString.ToLower();
             var pos = temp.LastIndexOf("order by", StringComparison.Ordinal);
@@ -519,7 +519,7 @@ namespace SiteServer.CMS.Provider
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
@@ -528,7 +528,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT TOP {recsToRetrieve} * FROM (
         SELECT TOP {itemsPerPage * (currentPageIndex + 1)} * FROM ({sqlString}) AS t0 {orderString}
@@ -537,7 +537,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) AS t0 {orderString} LIMIT {itemsPerPage * (currentPageIndex + 1)}
@@ -546,7 +546,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({sqlString}) WHERE ROWNUM <= {itemsPerPage * (currentPageIndex + 1)} {orderString}
@@ -573,7 +573,7 @@ SELECT * FROM (
             //) AS t2 {orderString}";
             //            }
 
-            return retval;
+            return retVal;
         }
 
         //public void Install(StringBuilder errorBuilder)
@@ -921,6 +921,20 @@ SELECT * FROM (
             }
         }
 
+        public bool DropTable(string tableName)
+        {
+            try
+            {
+                ExecuteNonQuery($"DROP TABLE {tableName}");
+                TableColumnManager.ClearCache();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public void AlterOracleAutoIncresementIdToMaxValue(string tableName)
         {
             try
@@ -1042,14 +1056,14 @@ SELECT * FROM (
 
         public bool IsConnectionStringWork(DatabaseType databaseType, string connectionString)
         {
-            var retval = false;
+            var retVal = false;
             try
             {
                 var connection = GetConnection(databaseType, connectionString);
                 connection.Open();
                 if (connection.State == ConnectionState.Open)
                 {
-                    retval = true;
+                    retVal = true;
                     connection.Close();
                 }
             }
@@ -1058,7 +1072,7 @@ SELECT * FROM (
                 // ignored
             }
 
-            return retval;
+            return retVal;
         }
 
         public string GetSqlServerDefaultConstraintName(string tableName, string columnName)
@@ -1473,11 +1487,11 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 
 //            var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-//            var retval = string.Empty;
+//            var retVal = string.Empty;
 
 //            if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
 //            {
-//                retval = $@"
+//                retVal = $@"
 //SELECT {columns} FROM (
 //    SELECT {columns} FROM (
 //        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
@@ -1487,7 +1501,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 //            }
 //            else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
 //            {
-//                retval = $@"
+//                retVal = $@"
 //SELECT {columns}
 //FROM (SELECT TOP {totalNum} {columns}
 //        FROM (SELECT TOP {topNum} {columns}
@@ -1498,7 +1512,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 //            }
 //            else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
 //            {
-//                retval = $@"
+//                retVal = $@"
 //SELECT {columns} FROM (
 //    SELECT {columns} FROM (
 //        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
@@ -1508,7 +1522,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 //            }
 //            else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
 //            {
-//                retval = $@"
+//                retVal = $@"
 //SELECT {columns} FROM (
 //    SELECT {columns} FROM (
 //        SELECT {columns} FROM {tableName} {whereString} {orderByString} LIMIT {topNum}
@@ -1517,7 +1531,7 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 //";
 //            }
 
-//            return retval;
+//            return retVal;
 //        }
 
         public string GetSelectSqlStringByQueryString(string connectionString, string queryString, int totalNum, string orderByString)
@@ -1590,11 +1604,11 @@ and au.constraint_type = 'P' and cu.OWNER = '{owner}' and cu.table_name = '{tabl
 
             var orderByStringOpposite = GetOrderByStringOpposite(orderByString);
 
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (WebConfigUtils.DatabaseType == DatabaseType.MySql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({queryString}) tmp {orderByString} LIMIT {topNum}
@@ -1603,7 +1617,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer)
             {
-                retval = $@"
+                retVal = $@"
 SELECT *
 FROM (SELECT TOP {totalNum} *
         FROM (SELECT TOP {topNum} *
@@ -1614,7 +1628,7 @@ FROM (SELECT TOP {totalNum} *
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = $@"
+                retVal = $@"
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM ({queryString}) tmp {orderByString} LIMIT {topNum}
@@ -1623,7 +1637,7 @@ SELECT * FROM (
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = $@"
+                retVal = $@"
 SELECT *
 FROM (SELECT TOP {totalNum} *
         FROM (SELECT TOP {topNum} *
@@ -1633,7 +1647,7 @@ FROM (SELECT TOP {totalNum} *
 ";
             }
 
-            return retval;
+            return retVal;
         }
 
         private static string ParseOrderByString(string orderByString)
@@ -1654,12 +1668,12 @@ FROM (SELECT TOP {totalNum} *
 
         private string GetOrderByStringOpposite(string orderByString)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (!string.IsNullOrEmpty(orderByString))
             {
-                retval = orderByString.Replace(" DESC", " DESC_OPPOSITE").Replace(" ASC", " DESC").Replace(" DESC_OPPOSITE", " ASC");
+                retVal = orderByString.Replace(" DESC", " DESC_OPPOSITE").Replace(" ASC", " DESC").Replace(" DESC_OPPOSITE", " ASC");
             }
-            return retval;
+            return retVal;
         }
 
         public List<string> GetDropColumnsSqlString(string tableName, string attributeName)
@@ -2013,7 +2027,7 @@ SET IDENTITY_INSERT {tableName} OFF
 
         public string GetPageSqlString(string tableName, string columnNames, string whereSqlString, string orderSqlString, int offset, int limit)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (string.IsNullOrEmpty(orderSqlString))
             {
@@ -2031,11 +2045,11 @@ SET IDENTITY_INSERT {tableName} OFF
                 {
                     limit = int.MaxValue;
                 }
-                retval = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
+                retVal = $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.SqlServer && IsSqlServer2012)
             {
-                retval = limit == 0
+                retVal = limit == 0
                     ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
                     : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
@@ -2043,7 +2057,7 @@ SET IDENTITY_INSERT {tableName} OFF
             {
                 if (offset == 0)
                 {
-                    retval = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
+                    retVal = $"SELECT TOP {limit} {columnNames} FROM {tableName} {whereSqlString} {orderSqlString}";
                 }
                 else
                 {
@@ -2051,25 +2065,25 @@ SET IDENTITY_INSERT {tableName} OFF
                         ? $@"WHERE [row_num] > {offset}"
                         : $@"WHERE [row_num] BETWEEN {offset + 1} AND {offset + limit}";
 
-                    retval = $@"SELECT * FROM (
+                    retVal = $@"SELECT * FROM (
     SELECT {columnNames}, ROW_NUMBER() OVER ({orderSqlString}) AS [row_num] FROM [{tableName}] {whereSqlString}
 ) as T {rowWhere}";
                 }
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.PostgreSql)
             {
-                retval = limit == 0
+                retVal = limit == 0
                     ? $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset}"
                     : $@"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} LIMIT {limit} OFFSET {offset}";
             }
             else if (WebConfigUtils.DatabaseType == DatabaseType.Oracle)
             {
-                retval = limit == 0
+                retVal = limit == 0
                     ? $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS"
                     : $"SELECT {columnNames} FROM {tableName} {whereSqlString} {orderSqlString} OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

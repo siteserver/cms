@@ -125,54 +125,54 @@ namespace SiteServer.CMS.Model.Enumerations
 		{
 		    if (string.IsNullOrEmpty(typeStr)) return ELinkType.None;
 
-			var retval = ELinkType.None;
+			var retVal = ELinkType.None;
 
 			if (Equals(ELinkType.NoLinkIfContentNotExists, typeStr))
 			{
-				retval = ELinkType.NoLinkIfContentNotExists;
+				retVal = ELinkType.NoLinkIfContentNotExists;
 			}
 			else if (Equals(ELinkType.LinkToOnlyOneContent, typeStr))
 			{
-				retval = ELinkType.LinkToOnlyOneContent;
+				retVal = ELinkType.LinkToOnlyOneContent;
 			}
 			else if (Equals(ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent, typeStr))
 			{
-				retval = ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent;
+				retVal = ELinkType.NoLinkIfContentNotExistsAndLinkToOnlyOneContent;
 			}
 			else if (Equals(ELinkType.LinkToFirstContent, typeStr))
 			{
-				retval = ELinkType.LinkToFirstContent;
+				retVal = ELinkType.LinkToFirstContent;
 			}
 			else if (Equals(ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent, typeStr))
 			{
-				retval = ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent;
+				retVal = ELinkType.NoLinkIfContentNotExistsAndLinkToFirstContent;
 			}
 			else if (Equals(ELinkType.NoLinkIfChannelNotExists, typeStr))
 			{
-				retval = ELinkType.NoLinkIfChannelNotExists;
+				retVal = ELinkType.NoLinkIfChannelNotExists;
 			}
 			else if (Equals(ELinkType.LinkToLastAddChannel, typeStr))
 			{
-				retval = ELinkType.LinkToLastAddChannel;
+				retVal = ELinkType.LinkToLastAddChannel;
 			}
 			else if (Equals(ELinkType.LinkToFirstChannel, typeStr))
 			{
-				retval = ELinkType.LinkToFirstChannel;
+				retVal = ELinkType.LinkToFirstChannel;
 			}
 			else if (Equals(ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel, typeStr))
 			{
-				retval = ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel;
+				retVal = ELinkType.NoLinkIfChannelNotExistsAndLinkToLastAddChannel;
 			}
 			else if (Equals(ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel, typeStr))
 			{
-				retval = ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel;
+				retVal = ELinkType.NoLinkIfChannelNotExistsAndLinkToFirstChannel;
 			}
 			else if (Equals(ELinkType.NoLink, typeStr))
 			{
-				retval = ELinkType.NoLink;
+				retVal = ELinkType.NoLink;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ELinkType type, string typeStr)

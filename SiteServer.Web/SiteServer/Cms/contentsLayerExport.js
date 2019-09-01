@@ -3,6 +3,7 @@
 var data = {
   siteId: parseInt(pageUtils.getQueryString('siteId')),
   channelId: parseInt(pageUtils.getQueryString('channelId')),
+  contentIds: pageUtils.getQueryString('contentIds'),
   pageLoad: false,
   pageAlert: null,
   columns: null,
@@ -85,6 +86,7 @@ var methods = {
     $api.post({
         siteId: $this.siteId,
         channelId: $this.channelId,
+        contentIds: $this.contentIds,
         exportType: $this.exportType,
         isAllCheckedLevel: $this.isAllCheckedLevel,
         checkedLevelKeys: $this.checkedLevelKeys,

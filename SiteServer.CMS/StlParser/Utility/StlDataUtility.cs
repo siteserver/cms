@@ -18,30 +18,30 @@ namespace SiteServer.CMS.StlParser.Utility
     {
         public static int GetChannelIdByChannelIdOrChannelIndexOrChannelName(int siteId, int channelId, string channelIndex, string channelName)
         {
-            var retval = channelId;
+            var retVal = channelId;
 
             if (!string.IsNullOrEmpty(channelIndex))
             {
                 var theChannelId = ChannelManager.GetChannelIdByIndexName(siteId, channelIndex);
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
             if (!string.IsNullOrEmpty(channelName))
             {
-                var theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, retval, channelName, true);
+                var theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, retVal, channelName, true);
                 if (theChannelId == 0)
                 {
                     theChannelId = ChannelManager.GetChannelIdByParentIdAndChannelName(siteId, siteId, channelName, true);
                 }
                 if (theChannelId != 0)
                 {
-                    retval = theChannelId;
+                    retVal = theChannelId;
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetChannelIdByLevel(int siteId, int channelId, int upLevel, int topLevel)
@@ -99,28 +99,28 @@ namespace SiteServer.CMS.StlParser.Utility
 
         //public static int GetChannelIdByChannelIDOrChannelIndexOrChannelName(int siteID, int channelID, string channelIndex, string channelName)
         //{
-        //    int retval = channelID;
+        //    int retVal = channelID;
         //    if (!string.IsNullOrEmpty(channelIndex))
         //    {
         //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByNodeIndexName(siteID, channelIndex);
         //        if (theChannelId != 0)
         //        {
-        //            retval = theChannelId;
+        //            retVal = theChannelId;
         //        }
         //    }
         //    if (!string.IsNullOrEmpty(channelName))
         //    {
-        //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(retval, channelName, true);
+        //        int theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(retVal, channelName, true);
         //        if (theChannelId == 0)
         //        {
         //            theChannelId = DataProvider.NodeDAO.GetChannelIdByParentIDAndNodeName(siteID, channelName, true);
         //        }
         //        if (theChannelId != 0)
         //        {
-        //            retval = theChannelId;
+        //            retVal = theChannelId;
         //        }
         //    }
-        //    return retval;
+        //    return retVal;
         //}
 
         public static ETaxisType GetETaxisTypeByOrder(string order, bool isChannel, ETaxisType defaultType)

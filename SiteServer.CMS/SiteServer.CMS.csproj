@@ -46,6 +46,12 @@
     <Reference Include="Datory, Version=0.1.20.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Datory.0.1.20\lib\net452\Datory.dll</HintPath>
     </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -171,6 +177,7 @@
     <Compile Include="Core\ContentColumn.cs" />
     <Compile Include="Core\ContentCountInfo.cs" />
     <Compile Include="Core\InputTypeUtils.cs" />
+    <Compile Include="Core\Office\ExcelUtils.cs" />
     <Compile Include="Core\SqlUtils.cs" />
     <Compile Include="DataCache\Content\ContentManager.ContentCache.cs" />
     <Compile Include="DataCache\Content\ContentManager.CountCache.cs" />

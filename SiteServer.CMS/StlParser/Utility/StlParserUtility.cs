@@ -243,7 +243,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
         public static string GetInnerHtml(string stlElement)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             try
             {
@@ -254,7 +254,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlNode = docNode.FirstChild;
 
-                    retval = stlNode.InnerHtml;
+                    retVal = stlNode.InnerHtml;
                 }
             }
             catch
@@ -262,12 +262,12 @@ namespace SiteServer.CMS.StlParser.Utility
                 // ignored
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetInnerHtml(string stlElement, NameValueCollection attributes)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             try
             {
@@ -278,7 +278,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 {
                     var stlNode = docNode.FirstChild;
 
-                    retval = stlNode.InnerHtml;
+                    retVal = stlNode.InnerHtml;
 
                     if (attributes != null && stlNode.Attributes != null)
                     {
@@ -294,12 +294,12 @@ namespace SiteServer.CMS.StlParser.Utility
                 // ignored
             }
 
-            return retval;
+            return retVal;
         }
 
         public static StlElementInfo ParseStlElement(string stlElement)
         {
-            StlElementInfo retval = null;
+            StlElementInfo retVal = null;
 
             try
             {
@@ -325,7 +325,7 @@ namespace SiteServer.CMS.StlParser.Utility
 
                     if (!string.IsNullOrEmpty(name))
                     {
-                        retval = new StlElementInfo(name.ToLower(), attributesIgnoreCase, outerHtml, innerHtml);
+                        retVal = new StlElementInfo(name.ToLower(), attributesIgnoreCase, outerHtml, innerHtml);
                     }
                 }
             }
@@ -334,7 +334,7 @@ namespace SiteServer.CMS.StlParser.Utility
                 // ignored
             }
 
-            return retval;
+            return retVal;
         }
 
         public const string ItemIndex = "ItemIndex";

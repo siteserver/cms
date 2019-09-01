@@ -27,15 +27,15 @@ namespace SiteServer.CMS.Core
 
         public static string GetSitePath(SiteInfo siteInfo, params string[] paths)
         {
-            var retval = GetSitePath(siteInfo);
-            if (paths == null || paths.Length <= 0) return retval;
+            var retVal = GetSitePath(siteInfo);
+            if (paths == null || paths.Length <= 0) return retVal;
 
             foreach (var t in paths)
             {
                 var path = t?.Replace(PageUtils.SeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
-                retval = PathUtils.Combine(retval, path);
+                retVal = PathUtils.Combine(retVal, path);
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetIndexPageFilePath(SiteInfo siteInfo, string createFileFullName, bool isHeadquarters, int currentPageIndex)

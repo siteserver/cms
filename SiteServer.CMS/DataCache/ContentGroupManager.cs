@@ -21,21 +21,21 @@ namespace SiteServer.CMS.DataCache
 
 	        public static Dictionary<int, List<ContentGroupInfo>> GetAllContentGroups()
 	        {
-	            var retval = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
-	            if (retval != null) return retval;
+	            var retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
+	            if (retVal != null) return retVal;
 
 	            lock (LockObject)
 	            {
-	                retval = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
-	                if (retval == null)
+	                retVal = DataCacheManager.Get<Dictionary<int, List<ContentGroupInfo>>>(CacheKey);
+	                if (retVal == null)
 	                {
-	                    retval = DataProvider.ContentGroupDao.GetAllContentGroups();
+	                    retVal = DataProvider.ContentGroupDao.GetAllContentGroups();
 
-	                    DataCacheManager.Insert(CacheKey, retval);
+	                    DataCacheManager.Insert(CacheKey, retVal);
 	                }
 	            }
 
-	            return retval;
+	            return retVal;
 	        }
 	    }
 

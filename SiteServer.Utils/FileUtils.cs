@@ -175,7 +175,7 @@ namespace SiteServer.Utils
 
         public static bool DeleteFileIfExists(string filePath)
 		{
-            var retval = true;
+            var retVal = true;
             try
             {
                 if (IsFileExists(filePath))
@@ -192,11 +192,11 @@ namespace SiteServer.Utils
                 //}
                 //catch
                 //{
-                //    retval = false;
+                //    retVal = false;
                 //}
-                retval = false;
+                retVal = false;
             }
-            return retval;
+            return retVal;
 		}
 
 		public static void DeleteFilesIfExists(string directoryPath, List<string> fileNameArrayList)
@@ -223,7 +223,7 @@ namespace SiteServer.Utils
 
 		public static bool CopyFile(string sourceFilePath, string destFilePath, bool isOverride)
 		{
-            var retval = true;
+            var retVal = true;
 		    try
 		    {
 		        DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
@@ -232,24 +232,24 @@ namespace SiteServer.Utils
 		    }
 		    catch
 		    {
-		        retval = false;
+		        retVal = false;
 		    }
-		    return retval;
+		    return retVal;
 		}
 
         //public static bool MoveFile(string sourceFilePath, string destFilePath)
         //{
         //    DirectoryUtils.CreateDirectoryIfNotExists(destFilePath);
-        //    bool retval = true;
+        //    bool retVal = true;
         //    try
         //    {
         //        File.Move(sourceFilePath, destFilePath);
         //    }
         //    catch
         //    {
-        //        retval = false;
+        //        retVal = false;
         //    }
-        //    return retval;
+        //    return retVal;
         //}
 
         public static void MoveFile(string sourceFilePath, string destFilePath, bool isOverride)

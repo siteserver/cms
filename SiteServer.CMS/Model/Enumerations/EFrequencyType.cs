@@ -84,38 +84,38 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EFrequencyType GetEnumType(string typeStr)
 		{
-            var retval = EFrequencyType.Month;
+            var retVal = EFrequencyType.Month;
 
             if (Equals(EFrequencyType.Month, typeStr))
 			{
-                retval = EFrequencyType.Month;
+                retVal = EFrequencyType.Month;
             }
             else if (Equals(EFrequencyType.Week, typeStr))
             {
-                retval = EFrequencyType.Week;
+                retVal = EFrequencyType.Week;
             }
             else if (Equals(EFrequencyType.Day, typeStr))
 			{
-                retval = EFrequencyType.Day;
+                retVal = EFrequencyType.Day;
 			}
             else if (Equals(EFrequencyType.Hour, typeStr))
 			{
-                retval = EFrequencyType.Hour;
+                retVal = EFrequencyType.Hour;
             }
             else if (Equals(EFrequencyType.Period, typeStr))
             {
-                retval = EFrequencyType.Period;
+                retVal = EFrequencyType.Period;
             }
             else if (Equals(EFrequencyType.JustInTime, typeStr))
             {
-                retval = EFrequencyType.JustInTime;
+                retVal = EFrequencyType.JustInTime;
             }
             else if (Equals(EFrequencyType.OnlyOnce, typeStr))
             {
-                retval = EFrequencyType.OnlyOnce;
+                retVal = EFrequencyType.OnlyOnce;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EFrequencyType type, string typeStr)

@@ -49,22 +49,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ELayout GetEnumType(string typeStr)
 		{
-            var retval = ELayout.None;
+            var retVal = ELayout.None;
 
             if (Equals(ELayout.Table, typeStr))
 			{
-                retval = ELayout.Table;
+                retVal = ELayout.Table;
 			}
 			else if (Equals(ELayout.Flow, typeStr))
 			{
-				retval = ELayout.Flow;
+				retVal = ELayout.Flow;
 			}
 			else if (Equals(ELayout.None, typeStr))
 			{
-				retval = ELayout.None;
+				retVal = ELayout.None;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ELayout type, string typeStr)

@@ -7,26 +7,26 @@ namespace SiteServer.Utils
     {
         public static DatabaseType GetEnumType(string typeStr)
         {
-            var retval = DatabaseType.SqlServer;
+            var retVal = DatabaseType.SqlServer;
 
             if (Equals(DatabaseType.MySql, typeStr))
             {
-                retval = DatabaseType.MySql;
+                retVal = DatabaseType.MySql;
             }
             else if (Equals(DatabaseType.SqlServer, typeStr))
             {
-                retval = DatabaseType.SqlServer;
+                retVal = DatabaseType.SqlServer;
             }
             else if (Equals(DatabaseType.PostgreSql, typeStr))
             {
-                retval = DatabaseType.PostgreSql;
+                retVal = DatabaseType.PostgreSql;
             }
             else if (Equals(DatabaseType.Oracle, typeStr))
             {
-                retval = DatabaseType.Oracle;
+                retVal = DatabaseType.Oracle;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(DatabaseType type, string typeStr)
