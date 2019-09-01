@@ -21,21 +21,21 @@ namespace SiteServer.CMS.DataCache
 
             public static List<KeyValuePair<string, TableStyleInfo>> GetAllTableStyles()
             {
-                var retval = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
-                    if (retval == null)
+                    retVal = DataCacheManager.Get<List<KeyValuePair<string, TableStyleInfo>>>(CacheKey);
+                    if (retVal == null)
                     {
-                        retval = DataProvider.TableStyleDao.GetAllTableStyles();
+                        retVal = DataProvider.TableStyleDao.GetAllTableStyles();
 
-                        DataCacheManager.Insert(CacheKey, retval);
+                        DataCacheManager.Insert(CacheKey, retVal);
                     }
                 }
 
-                return retval;
+                return retVal;
             }
 
             public static void Clear()

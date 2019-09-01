@@ -52,12 +52,12 @@ namespace SiteServer.BackgroundPages.Cms
 
 		private static int GetMbSize(int kbSize)
 		{
-			var retval = 0;
+			var retVal = 0;
 			if (kbSize >= 1024 && ((kbSize % 1024) == 0))
 			{
-				retval = kbSize / 1024;
+				retVal = kbSize / 1024;
 			}
-			return retval;
+			return retVal;
 		}
 
 		public override void Submit_OnClick(object sender, EventArgs e)

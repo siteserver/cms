@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Datory;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.Plugin;
@@ -24,7 +23,8 @@ namespace SiteServer.CMS.Plugin.Apis
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
 
-            return ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+            //return ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+            return DataProvider.ContentDao.GetCacheContentInfo(ChannelManager.GetTableName(siteInfo, channelInfo), channelInfo.Id, contentId);
         }
 
         public List<IContentInfo> GetContentInfoList(int siteId, int channelId, string whereString, string orderString, int limit, int offset)
@@ -35,12 +35,12 @@ namespace SiteServer.CMS.Plugin.Apis
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
 
             var list = DataProvider.ContentDao.GetContentInfoList(tableName, whereString, orderString, offset, limit);
-            var retval = new List<IContentInfo>();
+            var retVal = new List<IContentInfo>();
             foreach (var contentInfo in list)
             {
-                retval.Add(contentInfo);
+                retVal.Add(contentInfo);
             }
-            return retval;
+            return retVal;
         }
 
         public int GetCount(int siteId, int channelId, string whereString)
@@ -120,6 +120,14 @@ namespace SiteServer.CMS.Plugin.Apis
             });
 
             return tableColumnList;
+        }
+
+        public List<InputStyle> GetInputStyles(int siteId, int channelId)
+        {
+            var siteInfo = SiteManager.GetSiteInfo(siteId);
+            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+
+            return ChannelManager.GetInputStyles(siteInfo, channelInfo);
         }
 
         public string GetContentValue(int siteId, int channelId, int contentId, string attributeName)

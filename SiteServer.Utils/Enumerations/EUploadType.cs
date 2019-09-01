@@ -65,29 +65,29 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EUploadType GetEnumType(string typeStr)
 		{
-			var retval = EUploadType.Image;
+			var retVal = EUploadType.Image;
 
             if (Equals(EUploadType.Image, typeStr))
 			{
-                retval = EUploadType.Image;
+                retVal = EUploadType.Image;
 			}
 			else if (Equals(EUploadType.Video, typeStr))
 			{
-                retval = EUploadType.Video;
+                retVal = EUploadType.Video;
             }
             else if (Equals(EUploadType.File, typeStr))
             {
-                retval = EUploadType.File;
+                retVal = EUploadType.File;
             }
             else if (Equals(EUploadType.Special, typeStr))
             {
-                retval = EUploadType.Special;
+                retVal = EUploadType.Special;
             }
             else if (Equals(EUploadType.AdvImage, typeStr))
             {
-                retval = EUploadType.AdvImage;
+                retVal = EUploadType.AdvImage;
             }
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EUploadType type, string typeStr)

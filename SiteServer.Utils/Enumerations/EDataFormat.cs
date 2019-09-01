@@ -48,18 +48,18 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EDataFormat GetEnumType(string typeStr)
 		{
-            var retval = EDataFormat.String;
+            var retVal = EDataFormat.String;
 
             if (Equals(EDataFormat.Json, typeStr))
 			{
-                retval = EDataFormat.Json;
+                retVal = EDataFormat.Json;
 			}
             else if (Equals(EDataFormat.Xml, typeStr))
 			{
-                retval = EDataFormat.Xml;
+                retVal = EDataFormat.Xml;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EDataFormat type, string typeStr)

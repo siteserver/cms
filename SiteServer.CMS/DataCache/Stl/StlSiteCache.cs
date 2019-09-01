@@ -11,42 +11,42 @@ namespace SiteServer.CMS.DataCache.Stl
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlSiteCache),
                        nameof(GetSiteIdByIsRoot));
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.SiteDao.GetIdByIsRoot();
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.SiteDao.GetIdByIsRoot();
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static int GetSiteIdBySiteDir(string siteDir)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlSiteCache),
                        nameof(GetSiteIdBySiteDir), siteDir);
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval =
+                    retVal =
                         DataProvider.SiteDao.GetIdBySiteDir(
                             siteDir);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         

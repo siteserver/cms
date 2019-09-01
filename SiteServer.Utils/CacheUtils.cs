@@ -117,24 +117,31 @@ namespace SiteServer.Utils
             return Cache?.Get(key);
         }
 
+        public static string GetString(string key)
+        {
+            var retVal = Get(key);
+
+            return retVal as string;
+        }
+
         public static int GetInt(string key, int notFound)
         {
-            var retval = Get(key);
-            if (retval == null)
+            var retVal = Get(key);
+            if (retVal == null)
             {
                 return notFound;
             }
-            return (int) retval;
+            return (int)retVal;
         }
 
         public static DateTime GetDateTime(string key, DateTime notFound)
         {
-            var retval = Get(key);
-            if (retval == null)
+            var retVal = Get(key);
+            if (retVal == null)
             {
                 return notFound;
             }
-            return (DateTime)retval;
+            return (DateTime)retVal;
         }
 
         public static T Get<T>(string key) where T : class

@@ -20,6 +20,13 @@ var methods = {
       var res = response.data;
 
       $this.adminInfo = res.value;
+
+      if (!$this.pageType && $this.userId === 0) {
+        $this.pageAlert = {
+          type: 'warning',
+          html: '您的密码已过期，请更改登录密码'
+        };
+      }
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
@@ -45,8 +52,10 @@ var methods = {
       }).then(function () {
         if ($this.pageType == $pageTypeAdmin) {
           $this.btnReturnClick();
-        } else {
+        } else if ($this.pageType == $pageTypeUser) {
           top.location.reload(true);
+        } else {
+          top.location.href = '../';
         }
       });
     }).catch(function (error) {

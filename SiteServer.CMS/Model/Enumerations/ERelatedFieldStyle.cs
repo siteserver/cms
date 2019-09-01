@@ -40,18 +40,18 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ERelatedFieldStyle GetEnumType(string typeStr)
 		{
-            var retval = ERelatedFieldStyle.Horizontal;
+            var retVal = ERelatedFieldStyle.Horizontal;
 
             if (Equals(ERelatedFieldStyle.Horizontal, typeStr))
 			{
-                retval = ERelatedFieldStyle.Horizontal;
+                retVal = ERelatedFieldStyle.Horizontal;
 			}
 			else if (Equals(ERelatedFieldStyle.Virtical, typeStr))
 			{
-                retval = ERelatedFieldStyle.Virtical;
+                retVal = ERelatedFieldStyle.Virtical;
 			}
 			
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ERelatedFieldStyle type, string typeStr)

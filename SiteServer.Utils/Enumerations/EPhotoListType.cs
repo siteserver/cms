@@ -39,18 +39,18 @@ namespace SiteServer.Utils.Enumerations
 
         public static EPhotoListType GetEnumType(string typeStr)
         {
-            var retval = EPhotoListType.Large;
+            var retVal = EPhotoListType.Large;
 
             if (Equals(EPhotoListType.Large, typeStr))
             {
-                retval = EPhotoListType.Large;
+                retVal = EPhotoListType.Large;
             }
             else if (Equals(EPhotoListType.Thumbnail, typeStr))
             {
-                retval = EPhotoListType.Thumbnail;
+                retVal = EPhotoListType.Thumbnail;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EPhotoListType type, string typeStr)

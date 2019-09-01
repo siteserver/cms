@@ -39,18 +39,18 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EBoolean GetEnumType(string typeStr)
 		{
-			var retval = EBoolean.False;
+			var retVal = EBoolean.False;
 
 			if (Equals(EBoolean.True, typeStr))
 			{
-				retval = EBoolean.True;
+                retVal = EBoolean.True;
 			}
 			else if (Equals(EBoolean.False, typeStr))
 			{
-				retval = EBoolean.False;
+                retVal = EBoolean.False;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EBoolean type, string typeStr)

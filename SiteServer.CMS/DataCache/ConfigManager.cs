@@ -75,60 +75,60 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetTopMenuName(string menuId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (menuId == TopMenu.IdSite)
             {
-                retval = "站点管理";
+                retVal = "站点管理";
             }
             else if (menuId == TopMenu.IdPlugins)
             {
-                retval = "插件管理";
+                retVal = "插件管理";
             }
             else if (menuId == TopMenu.IdSettings)
             {
-                retval = "系统管理";
+                retVal = "系统管理";
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetLeftMenuName(string menuId)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (menuId == LeftMenu.IdContent)
             {
-                retval = "信息管理";
+                retVal = "信息管理";
             }
             else if (menuId == LeftMenu.IdTemplate)
             {
-                retval = "显示管理";
+                retVal = "显示管理";
             }
             else if (menuId == LeftMenu.IdConfigration)
             {
-                retval = "设置管理";
+                retVal = "设置管理";
             }
             else if (menuId == LeftMenu.IdCreate)
             {
-                retval = "生成管理";
+                retVal = "生成管理";
             }
-            return retval;
+            return retVal;
         }
 
         public static ConfigInfo Instance
         {
             get
             {
-                var retval = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                if (retval != null) return retval;
+                var retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
+                if (retVal != null) return retVal;
 
                 lock (LockObject)
                 {
-                    retval = DataCacheManager.Get<ConfigInfo>(CacheKey);
-                    if (retval == null)
+                    retVal = DataCacheManager.Get<ConfigInfo>(CacheKey);
+                    if (retVal == null)
                     {
                         try
                         {
-                            retval = DataProvider.ConfigDao.GetConfigInfo();
-                            DataCacheManager.Insert(CacheKey, retval);
+                            retVal = DataProvider.ConfigDao.GetConfigInfo();
+                            DataCacheManager.Insert(CacheKey, retVal);
                         }
                         catch
                         {
@@ -137,7 +137,7 @@ namespace SiteServer.CMS.DataCache
                     }
                 }
 
-                return retval;
+                return retVal;
             }
         }
 

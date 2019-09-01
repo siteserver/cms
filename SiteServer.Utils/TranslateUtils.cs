@@ -43,16 +43,16 @@ namespace SiteServer.Utils
         /// </summary>
         public static object ToEnum(Type enumType, string value, object defaultType)
         {
-            object retval;
+            object retVal;
             try
             {
-                retval = Enum.Parse(enumType, value, true);
+                retVal = Enum.Parse(enumType, value, true);
             }
             catch
             {
-                retval = defaultType;
+                retVal = defaultType;
             }
-            return retval;
+            return retVal;
         }
 
         public static List<int> ToIntList(int intValue)
@@ -383,9 +383,9 @@ namespace SiteServer.Utils
 
         public static bool DictGetValue(Dictionary<int, bool> dict, int key)
         {
-            if (dict.TryGetValue(key, out var retval))
+            if (dict.TryGetValue(key, out var retVal))
             {
-                return retval;
+                return retVal;
             }
 
             return false;
@@ -654,10 +654,10 @@ namespace SiteServer.Utils
             };
             encryptor.DesEncrypt();
 
-            var retval = encryptor.OutString;
-            retval = retval.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
+            var retVal = encryptor.OutString;
+            retVal = retVal.Replace("+", "0add0").Replace("=", "0equals0").Replace("&", "0and0").Replace("?", "0question0").Replace("'", "0quote0").Replace("/", "0slash0");
 
-            return retval + EncryptStingIndicator;
+            return retVal + EncryptStingIndicator;
         }
 
         public static string DecryptStringBySecretKey(string inputString)

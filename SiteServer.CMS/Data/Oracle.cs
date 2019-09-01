@@ -280,12 +280,12 @@ namespace SiteServer.CMS.Data
         public string GetString(IDataReader rdr, int i)
         {
             if (i < 0 || i >= rdr.FieldCount) return string.Empty;
-            var retval = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
-            if (retval == SqlUtils.OracleEmptyValue)
+            var retVal = rdr.IsDBNull(i) ? string.Empty : rdr.GetString(i);
+            if (retVal == SqlUtils.OracleEmptyValue)
             {
-                retval = string.Empty;
+                retVal = string.Empty;
             }
-            return retval;
+            return retVal;
         }
 
         public bool GetBoolean(IDataReader rdr, int i)

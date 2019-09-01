@@ -282,7 +282,13 @@ namespace SiteServer.CMS.Data
 
         protected DateTime GetDateTime(IDataReader rdr, int i)
         {
-            return rdr.IsDBNull(i) ? DateTime.Now : rdr.GetDateTime(i);
+            return rdr.IsDBNull(i) ? DateUtils.SqlMinValue : rdr.GetDateTime(i);
+        }
+
+        protected DateTime? GetDateTimeNullable(IDataReader rdr, int i)
+        {
+            if (rdr.IsDBNull(i)) return null;
+            return rdr.GetDateTime(i);
         }
     }
 }

@@ -12,101 +12,101 @@ namespace SiteServer.CMS.DataCache.Stl
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetPageTotalCount),
                     sqlString);
-            var retval = StlCacheManager.GetInt(cacheKey);
-            if (retval != -1) return retval;
+            var retVal = StlCacheManager.GetInt(cacheKey);
+            if (retVal != -1) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.GetInt(cacheKey);
-                if (retval == -1)
+                retVal = StlCacheManager.GetInt(cacheKey);
+                if (retVal == -1)
                 {
-                    retval = DataProvider.DatabaseDao.GetPageTotalCount(sqlString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.DatabaseDao.GetPageTotalCount(sqlString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetStlPageSqlString(string sqlString, string orderByString, int totalNum, int pageNum, int currentPageIndex)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetStlPageSqlString),
                        sqlString, orderByString, totalNum.ToString(), pageNum.ToString(), currentPageIndex.ToString());
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
+                    retVal = DataProvider.DatabaseDao.GetStlPageSqlString(sqlString, orderByString, totalNum, pageNum,
                     currentPageIndex);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static string GetString(string connectionString, string queryString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetString),
                        connectionString, queryString);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetString(connectionString, queryString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.DatabaseDao.GetString(connectionString, queryString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static DataSet GetDataSet(string connectionString, string queryString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetDataSet),
                 connectionString, queryString);
-            var retval = StlCacheManager.Get<DataSet>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<DataSet>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<DataSet>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<DataSet>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetDataSet(connectionString, queryString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.DatabaseDao.GetDataSet(connectionString, queryString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public static DataTable GetDataTable(string connectionString, string queryString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlDatabaseCache), nameof(GetDataTable),
                 connectionString, queryString);
-            var retval = StlCacheManager.Get<DataTable>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<DataTable>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<DataTable>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<DataTable>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetDataTable(connectionString, queryString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    retVal = DataProvider.DatabaseDao.GetDataTable(connectionString, queryString);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

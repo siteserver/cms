@@ -67,7 +67,12 @@ var methods = {
       password: md5($this.password),
       isAutoLogin: $this.isAutoLogin
     }).then(function (response) {
-      $this.redirect();
+      localStorage.setItem('sessionId', response.data.sessionId);
+      if (response.data.isEnforcePasswordChange) {
+        $this.redirectPassword();
+      } else {
+        $this.redirectMain();
+      }
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
     }).then(function () {
@@ -76,7 +81,11 @@ var methods = {
     });
   },
 
-  redirect: function () {
+  redirectPassword: function () {
+    location.href = 'settings/adminPassword.cshtml';
+  },
+
+  redirectMain: function () {
     location.href = 'pageInitialization.aspx';
   },
 

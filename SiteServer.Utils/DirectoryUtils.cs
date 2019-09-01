@@ -207,14 +207,14 @@ namespace SiteServer.Utils
         public static string[] GetDirectoryNames(string directoryPath)
         {
             var directorys = Directory.GetDirectories(directoryPath);
-            var retval = new string[directorys.Length];
+            var retVal = new string[directorys.Length];
             var i = 0;
             foreach (var directory in directorys)
             {
                 var directoryInfo = new DirectoryInfo(directory);
-                retval[i++] = directoryInfo.Name;
+                retVal[i++] = directoryInfo.Name;
             }
-            return retval;
+            return retVal;
         }
 
         public static ArrayList GetLowerDirectoryNames(string directoryPath)
@@ -232,14 +232,14 @@ namespace SiteServer.Utils
         public static string[] GetFileNames(string directoryPath)
         {
             var filePaths = Directory.GetFiles(directoryPath);
-            var retval = new string[filePaths.Length];
+            var retVal = new string[filePaths.Length];
             var i = 0;
             foreach (var filePath in filePaths)
             {
                 var fileInfo = new FileInfo(filePath);
-                retval[i++] = fileInfo.Name;
+                retVal[i++] = fileInfo.Name;
             }
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace SiteServer.Utils
         /// <returns>删除过程中是否出错</returns>
         public static bool DeleteDirectoryIfExists(string directoryPath)
         {
-            var retval = true;
+            var retVal = true;
             try
             {
                 if (IsDirectoryExists(directoryPath))
@@ -259,9 +259,9 @@ namespace SiteServer.Utils
             }
             catch
             {
-                retval = false;
+                retVal = false;
             }
-            return retval;
+            return retVal;
         }
 
         public static void DeleteFilesSync(string rootDirectoryPath, string syncDirectoryPath)

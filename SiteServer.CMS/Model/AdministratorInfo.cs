@@ -20,6 +20,7 @@ namespace SiteServer.CMS.Model
             PasswordSalt = string.Empty;
             CreationDate = DateUtils.SqlMinValue;
             LastActivityDate = DateUtils.SqlMinValue;
+            LastChangePasswordDate = DateUtils.SqlMinValue;
             CountOfLogin = 0;
             CountOfFailedLogin = 0;
             CreatorUserName = string.Empty;
@@ -35,7 +36,7 @@ namespace SiteServer.CMS.Model
         }
 
         public AdministratorInfo(int id, string userName, string password, string passwordFormat,
-            string passwordSalt, DateTime creationDate, DateTime lastActivityDate, int countOfLogin,
+            string passwordSalt, DateTime? creationDate, DateTime? lastActivityDate, DateTime? lastChangePasswordDate, int countOfLogin,
             int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId,
             int departmentId, int areaId, string displayName, string mobile, string email, string avatarUrl)
         {
@@ -46,6 +47,7 @@ namespace SiteServer.CMS.Model
             PasswordSalt = passwordSalt;
             CreationDate = creationDate;
             LastActivityDate = lastActivityDate;
+            LastChangePasswordDate = lastChangePasswordDate;
             CountOfLogin = countOfLogin;
             CountOfFailedLogin = countOfFailedLogin;
             CreatorUserName = creatorUserName;
@@ -73,6 +75,8 @@ namespace SiteServer.CMS.Model
         public DateTime? CreationDate { get; set; }
 
         public DateTime? LastActivityDate { get; set; }
+
+        public DateTime? LastChangePasswordDate { get; set; }
 
         public int CountOfLogin { get; set; }
 
@@ -102,7 +106,7 @@ namespace SiteServer.CMS.Model
 
                 return _displayName;
             }
-            set { _displayName = value; }
+            set => _displayName = value;
         }
 
         public string Mobile { get; set; }
@@ -124,6 +128,7 @@ namespace SiteServer.CMS.Model
             PasswordSalt = string.Empty;
             CreationDate = DateUtils.SqlMinValue;
             LastActivityDate = DateUtils.SqlMinValue;
+            LastChangePasswordDate = DateUtils.SqlMinValue;
             CountOfLogin = 0;
             CountOfFailedLogin = 0;
             CreatorUserName = string.Empty;
@@ -147,6 +152,7 @@ namespace SiteServer.CMS.Model
             PasswordSalt = adminInfo.PasswordSalt;
             CreationDate = adminInfo.CreationDate;
             LastActivityDate = adminInfo.LastActivityDate;
+            LastChangePasswordDate = adminInfo.LastChangePasswordDate;
             CountOfLogin = adminInfo.CountOfLogin;
             CountOfFailedLogin = adminInfo.CountOfFailedLogin;
             CreatorUserName = adminInfo.CreatorUserName;
@@ -172,6 +178,7 @@ namespace SiteServer.CMS.Model
                 PasswordSalt = PasswordSalt,
                 CreationDate = CreationDate,
                 LastActivityDate = LastActivityDate,
+                LastChangePasswordDate = LastChangePasswordDate,
                 CountOfLogin = CountOfLogin,
                 CountOfFailedLogin = CountOfFailedLogin,
                 CreatorUserName = CreatorUserName,
@@ -202,6 +209,8 @@ namespace SiteServer.CMS.Model
         public DateTime? CreationDate { get; set; }
 
         public DateTime? LastActivityDate { get; set; }
+
+        public DateTime? LastChangePasswordDate { get; set; }
 
         public int CountOfLogin { get; set; }
 

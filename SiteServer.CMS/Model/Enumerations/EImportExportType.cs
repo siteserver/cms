@@ -62,26 +62,26 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EImportExportType GetEnumType(string typeStr)
 		{
-			var retval = EImportExportType.Template;
+			var retVal = EImportExportType.Template;
 
 			if (Equals(EImportExportType.Template, typeStr))
 			{
-				retval = EImportExportType.Template;
+				retVal = EImportExportType.Template;
 			}
 			else if (Equals(EImportExportType.DisplayMode, typeStr))
 			{
-				retval = EImportExportType.DisplayMode;
+				retVal = EImportExportType.DisplayMode;
 			}
 			else if (Equals(EImportExportType.MenuDisplay, typeStr))
 			{
-				retval = EImportExportType.MenuDisplay;
+				retVal = EImportExportType.MenuDisplay;
 			}
 			else if (Equals(EImportExportType.Vote, typeStr))
 			{
-				retval = EImportExportType.Vote;
+				retVal = EImportExportType.Vote;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EImportExportType type, string typeStr)

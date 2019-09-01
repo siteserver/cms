@@ -147,7 +147,7 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public string GetTitles(int siteId, int channelId, string title)
         {
-            var retval = new StringBuilder();
+            var retVal = new StringBuilder();
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
             var tableName = ChannelManager.GetTableName(siteInfo, channelId);
@@ -157,31 +157,31 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 foreach (var value in titleList)
                 {
-                    retval.Append(value);
-                    retval.Append("|");
+                    retVal.Append(value);
+                    retVal.Append("|");
                 }
-                retval.Length -= 1;
+                retVal.Length -= 1;
             }
 
-            return retval.ToString();
+            return retVal.ToString();
         }
 
         public string GetTags(int siteId, string tag)
         {
-            var retval = new StringBuilder();
+            var retVal = new StringBuilder();
 
             var tagList = DataProvider.TagDao.GetTagListByStartString(siteId, tag, 10);
             if (tagList.Count > 0)
             {
                 foreach (var value in tagList)
                 {
-                    retval.Append(value);
-                    retval.Append("|");
+                    retVal.Append(value);
+                    retVal.Append("|");
                 }
-                retval.Length -= 1;
+                retVal.Length -= 1;
             }
 
-            return retval.ToString();
+            return retVal.ToString();
         }
     }
 }

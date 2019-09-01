@@ -48,22 +48,22 @@ namespace SiteServer.Utils.Enumerations
 
         public static ESecurityType GetEnumType(string typeStr)
         {
-            var retval = ESecurityType.SelfOnly;
+            var retVal = ESecurityType.SelfOnly;
 
             if (Equals(ESecurityType.Public, typeStr))
             {
-                retval = ESecurityType.Public;
+                retVal = ESecurityType.Public;
             }
             else if (Equals(ESecurityType.Friends, typeStr))
             {
-                retval = ESecurityType.Friends;
+                retVal = ESecurityType.Friends;
             }
             else if (Equals(ESecurityType.SelfOnly, typeStr))
             {
-                retval = ESecurityType.SelfOnly;
+                retVal = ESecurityType.SelfOnly;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ESecurityType type, string typeStr)

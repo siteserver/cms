@@ -985,21 +985,21 @@ namespace SiteServer.CMS.Provider
         /// </summary>
         public string GetOrderStringInSite(int channelId)
         {
-            var retval = "";
+            var retVal = "";
             if (channelId != 0)
             {
                 var parentId = GetParentId(channelId);
                 if (parentId != 0)
                 {
                     var orderString = GetOrderStringInSite(parentId);
-                    retval = orderString + "_" + GetOrderInSibling(channelId, parentId);
+                    retVal = orderString + "_" + GetOrderInSibling(channelId, parentId);
                 }
                 else
                 {
-                    retval = "1";
+                    retVal = "1";
                 }
             }
-            return retval;
+            return retVal;
         }
 
         private int GetOrderInSibling(int channelId, int parentId)

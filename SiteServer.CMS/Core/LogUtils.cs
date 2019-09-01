@@ -91,13 +91,13 @@ stl: {stlContent}
 -->";
         }
 
-        public static void AddSiteLog(int siteId, int channelId, int contentId, string adminName, string action, string summary)
+        public static void AddSiteLog(int siteId, int channelId, int contentId, AdministratorInfo adminInfo, string action, string summary)
         {
             if (!ConfigManager.SystemConfigInfo.IsLogSite) return;
 
             if (siteId <= 0)
             {
-                AddAdminLog(adminName, action, summary);
+                AddAdminLog(adminInfo, action, summary);
             }
             else
             {
@@ -117,9 +117,11 @@ stl: {stlContent}
                     {
                         channelId = -channelId;
                     }
-                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                    var siteLogInfo = new SiteLogInfo(0, siteId, channelId, contentId, adminInfo.UserName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
 
                     DataProvider.SiteLogDao.Insert(siteLogInfo);
+
+                    DataProvider.AdministratorDao.UpdateLastActivityDate(adminInfo);
                 }
                 catch (Exception ex)
                 {
@@ -128,7 +130,7 @@ stl: {stlContent}
             }
         }
 
-        public static void AddAdminLog(string adminName, string action, string summary = "")
+        public static void AddAdminLog(AdministratorInfo adminInfo, string action, string summary = "")
         {
             if (!ConfigManager.SystemConfigInfo.IsLogAdmin) return;
 
@@ -144,9 +146,11 @@ stl: {stlContent}
                 {
                     summary = StringUtils.MaxLengthText(summary, 250);
                 }
-                var logInfo = new LogInfo(0, adminName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
+                var logInfo = new LogInfo(0, adminInfo.UserName, PageUtils.GetIpAddress(), DateTime.Now, action, summary);
 
                 DataProvider.LogDao.Insert(logInfo);
+
+                DataProvider.AdministratorDao.UpdateLastActivityDate(adminInfo);
             }
             catch (Exception ex)
             {

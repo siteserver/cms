@@ -13,21 +13,21 @@ namespace SiteServer.CMS.DataCache.Stl
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlSqlContentsCache),
                        nameof(GetSelectSqlStringByQueryString), connectionString, queryString, startNum.ToString(),
                        totalNum.ToString(), orderByString);
-            var retval = StlCacheManager.Get<string>(cacheKey);
-            if (retval != null) return retval;
+            var retVal = StlCacheManager.Get<string>(cacheKey);
+            if (retVal != null) return retVal;
 
             lock (LockObject)
             {
-                retval = StlCacheManager.Get<string>(cacheKey);
-                if (retval == null)
+                retVal = StlCacheManager.Get<string>(cacheKey);
+                if (retVal == null)
                 {
-                    retval = DataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
+                    retVal = DataProvider.DatabaseDao.GetSelectSqlStringByQueryString(connectionString,
                     queryString, startNum, totalNum, orderByString);
-                    StlCacheManager.Set(cacheKey, retval);
+                    StlCacheManager.Set(cacheKey, retVal);
                 }
             }
 
-            return retval;
+            return retVal;
         }
     }
 }

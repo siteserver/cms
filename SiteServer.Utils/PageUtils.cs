@@ -53,28 +53,28 @@ namespace SiteServer.Utils
             {
                 return url;
             }
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             if (!string.IsNullOrEmpty(url))
             {
                 url = url.Trim();
                 if (IsProtocolUrl(url))
                 {
-                    retval = url;
+                    retVal = url;
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(host))
                     {
-                        retval = url.StartsWith("/") ? GetScheme() + "://" + GetHost() + url : GetScheme() + "://" + url;
+                        retVal = url.StartsWith("/") ? GetScheme() + "://" + GetHost() + url : GetScheme() + "://" + url;
                     }
                     else
                     {
-                        retval = url.StartsWith("/") ? host.TrimEnd('/') + url : host + url;
+                        retVal = url.StartsWith("/") ? host.TrimEnd('/') + url : host + url;
                     }
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static string AddQuestionOrAndToUrl(string pageUrl)
@@ -295,13 +295,13 @@ namespace SiteServer.Utils
         {
             if (urls == null || urls.Length <= 0) return string.Empty;
 
-            var retval = urls[0]?.Replace(PathUtils.SeparatorChar, SeparatorChar) ?? string.Empty;
+            var retVal = urls[0]?.Replace(PathUtils.SeparatorChar, SeparatorChar) ?? string.Empty;
             for (var i = 1; i < urls.Length; i++)
             {
                 var url = (urls[i] != null) ? urls[i].Replace(PathUtils.SeparatorChar, SeparatorChar) : string.Empty;
-                retval = Combine(retval, url);
+                retVal = Combine(retVal, url);
             }
-            return retval;
+            return retVal;
         }
 
         private static string Combine(string url1, string url2)
@@ -517,24 +517,24 @@ namespace SiteServer.Utils
 
         public static string GetUrlWithReturnUrl(string pageUrl, string returnUrl)
         {
-            var retval = pageUrl;
+            var retVal = pageUrl;
             returnUrl = $"ReturnUrl={returnUrl}";
             if (pageUrl.IndexOf("?", StringComparison.Ordinal) != -1)
             {
                 if (pageUrl.EndsWith("&"))
                 {
-                    retval += returnUrl;
+                    retVal += returnUrl;
                 }
                 else
                 {
-                    retval += "&" + returnUrl;
+                    retVal += "&" + returnUrl;
                 }
             }
             else
             {
-                retval += "?" + returnUrl;
+                retVal += "?" + returnUrl;
             }
-            return ParseNavigationUrl(retval);
+            return ParseNavigationUrl(retVal);
         }
 
         public static string GetReturnUrl()

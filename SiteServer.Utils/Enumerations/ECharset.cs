@@ -149,7 +149,7 @@ namespace SiteServer.Utils.Enumerations
 
 		public static ECharset GetEnumType(string typeStr)
 		{
-			var retval = ECharset.gb2312;
+			var retVal = ECharset.gb2312;
 
             if (Equals(ECharset.utf_8, typeStr))
             {
@@ -208,7 +208,7 @@ namespace SiteServer.Utils.Enumerations
 		        return ECharset.iso_8859_2;
 		    }
 
-		    return retval;
+		    return retVal;
 		}
 
 		public static bool Equals(ECharset type, string typeStr)

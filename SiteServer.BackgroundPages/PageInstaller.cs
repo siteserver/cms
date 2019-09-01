@@ -38,8 +38,10 @@ namespace SiteServer.BackgroundPages
         public TextBox TbSqlUserName;
         public TextBox TbSqlPassword;
         public HtmlInputHidden HihSqlHiddenPassword;
-	    public PlaceHolder PhSqlOracleDatabase;
-	    public TextBox TbSqlOracleDatabase;
+	    public PlaceHolder PhOracleDatabase;
+        public DropDownList DdlOraclePrivilege;
+        public DropDownList DdlIsOracleSid;
+        public TextBox TbOracleDatabase;
         public PlaceHolder PhSql2;
         public DropDownList DdlSqlDatabaseName;
 
@@ -78,6 +80,12 @@ namespace SiteServer.BackgroundPages
             SetSetp(1);
 
             DatabaseTypeUtils.AddListItems(DdlSqlDatabaseType);
+            DdlOraclePrivilege.Items.Add(new ListItem(EOraclePrivilegeUtils.GetValue(EOraclePrivilege.Normal), EOraclePrivilegeUtils.GetValue(EOraclePrivilege.Normal)));
+            DdlOraclePrivilege.Items.Add(new ListItem(EOraclePrivilegeUtils.GetValue(EOraclePrivilege.SYSDBA), EOraclePrivilegeUtils.GetValue(EOraclePrivilege.SYSDBA)));
+            DdlOraclePrivilege.Items.Add(new ListItem(EOraclePrivilegeUtils.GetValue(EOraclePrivilege.SYSOPER), EOraclePrivilegeUtils.GetValue(EOraclePrivilege.SYSOPER)));
+
+            EBooleanUtils.AddListItems(DdlIsOracleSid, "SID", "Service name");
+            ControlUtils.SelectSingleItemIgnoreCase(DdlIsOracleSid, true.ToString());
 
             EBooleanUtils.AddListItems(DdlIsDefaultPort, "默认数据库端口", "自定义数据库端口");
             ControlUtils.SelectSingleItemIgnoreCase(DdlIsDefaultPort, true.ToString());
@@ -93,7 +101,7 @@ namespace SiteServer.BackgroundPages
         public void DdlSqlDatabaseType_SelectedIndexChanged(object sender, EventArgs e)
         {
             var databaseType = DatabaseTypeUtils.GetEnumType(DdlSqlDatabaseType.SelectedValue);
-            PhSqlOracleDatabase.Visible = databaseType == DatabaseType.Oracle;
+            PhOracleDatabase.Visible = databaseType == DatabaseType.Oracle;
         }
 
         public void DdlIsDefaultPort_SelectedIndexChanged(object sender, EventArgs e)
@@ -191,7 +199,7 @@ namespace SiteServer.BackgroundPages
                     isConnectValid = false;
                     errorMessage = "数据库用户必须填写。";
                 }
-                else if (databaseType == DatabaseType.Oracle && string.IsNullOrEmpty(TbSqlOracleDatabase.Text))
+                else if (databaseType == DatabaseType.Oracle && string.IsNullOrEmpty(TbOracleDatabase.Text))
                 {
                     isConnectValid = false;
                     errorMessage = "数据库名称必须填写。";
@@ -314,9 +322,9 @@ namespace SiteServer.BackgroundPages
             var databaseName = string.Empty;
             if (isDatabaseName)
             {
-                databaseName = databaseType == DatabaseType.Oracle ? TbSqlOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
+                databaseName = databaseType == DatabaseType.Oracle ? TbOracleDatabase.Text : DdlSqlDatabaseName.SelectedValue;
             }
-            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName);
+            return WebConfigUtils.GetConnectionString(databaseType, TbSqlServer.Text, TranslateUtils.ToBool(DdlIsDefaultPort.SelectedValue), TranslateUtils.ToInt(TbSqlPort.Text), TbSqlUserName.Text, HihSqlHiddenPassword.Value, databaseName, TranslateUtils.ToBool(DdlIsOracleSid.SelectedValue), DdlOraclePrivilege.SelectedValue);
         }
 
         private bool CheckLoginValid(out string errorMessage)

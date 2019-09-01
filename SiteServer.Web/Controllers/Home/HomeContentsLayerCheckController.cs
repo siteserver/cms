@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Home
                     var dict = contentInfo.ToDictionary();
                     dict["checkState"] =
                         CheckManager.GetCheckState(siteInfo, contentInfo);
-                    retval.Add(dict);
+                    retVal.Add(dict);
                 }
 
                 var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
@@ -61,7 +61,7 @@ namespace SiteServer.API.Controllers.Home
 
                 return Ok(new
                 {
-                    Value = retval,
+                    Value = retVal,
                     CheckedLevels = checkedLevels,
                     CheckedLevel = checkedLevel,
                     AllChannels = allChannels

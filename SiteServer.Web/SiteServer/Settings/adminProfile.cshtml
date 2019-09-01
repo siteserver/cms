@@ -8,7 +8,7 @@
     <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="pageAdminConfiguration.aspx">管理员设置</a>
+    <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="pageAdminDepartment.aspx">所属部门管理</a>
@@ -44,9 +44,8 @@
     账号
     <small v-show="errors.has('userName')" class="text-danger">{{ errors.first('userName') }}</small>
   </label>
-  <input v-model="adminInfo.userName" :disabled="adminInfo.id > 0" name="userName" data-vv-as="账号" v-validate="'required|alpha_dash'"
-      :class="{'is-invalid': errors.has('userName') }" type="text" class="form-control" />
-  <small class="form-text text-muted">帐号用于登录系统，由字母、数字组成</small>
+  <input v-model="adminInfo.userName" :disabled="adminInfo.id > 0" name="userName" data-vv-as="账号" v-validate="'required'" :class="{'is-invalid': errors.has('userName') }" type="text" class="form-control" />
+  <small class="form-text text-muted">帐号用于登录系统</small>
 </div>
 
 <div class="form-group">

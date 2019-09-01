@@ -194,7 +194,9 @@ jQuery(document).ready(function(){{
             if (arr2 && arr2.length == 2) {{
                 var key = (arr2[0] || '').toLowerCase();
                 if (key) {{
-                    parameters[key] = decodeURIComponent(arr2[1]);
+                    var value = decodeURIComponent(arr2[1]) || '';
+                    value = value.replace(/\+/g, ' ');
+                    parameters[key] = value;
                 }}
             }}
         }}

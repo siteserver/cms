@@ -68,7 +68,11 @@ var methods = {
       this.channelId;
     if (options.withContents) {
       if (this.selectedContentIds.length === 0) return;
-      url += "&contentIds=" + this.selectedContentIds.join(",")
+      url += "&contentIds=" + this.selectedContentIds.join(",");
+    } else if (options.withOptionalContents) {
+      if (this.selectedContentIds.length > 0) {
+        url += "&contentIds=" + this.selectedContentIds.join(",");
+      }
     } else if (options.contentId) {
       url += "&contentId=" + options.contentId
     }
@@ -224,15 +228,15 @@ var $vue = new Vue({
   methods: methods,
   computed: {
     selectedContentIds: function () {
-      var retval = [];
+      var retVal = [];
       if (this.pageContents) {
         for (var i = 0; i < this.pageContents.length; i++) {
           if (this.pageContents[i].isSelected) {
-            retval.push(this.pageContents[i].id);
+            retVal.push(this.pageContents[i].id);
           }
         }
       }
-      return retval;
+      return retVal;
     }
   },
   created: function () {

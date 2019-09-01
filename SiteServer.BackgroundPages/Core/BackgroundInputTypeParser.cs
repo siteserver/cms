@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Core
 
         public static string Parse(SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, AttributesImpl attributes, NameValueCollection pageScripts, out string extraHtml)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             var extraBuilder = new StringBuilder();
             if (!string.IsNullOrEmpty(styleInfo.HelpText))
             {
@@ -37,68 +37,68 @@ namespace SiteServer.BackgroundPages.Core
 
             if (inputType == InputType.Text)
             {
-                retval = ParseText(attributes, siteInfo, channelId, styleInfo, extraBuilder);
+                retVal = ParseText(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.TextArea)
             {
-                retval = ParseTextArea(attributes, styleInfo, extraBuilder);
+                retVal = ParseTextArea(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.TextEditor)
             {
-                retval = ParseTextEditor(attributes, styleInfo.AttributeName, siteInfo, pageScripts, extraBuilder);
+                retVal = ParseTextEditor(attributes, styleInfo.AttributeName, siteInfo, pageScripts, extraBuilder);
             }
             else if (inputType == InputType.SelectOne)
             {
-                retval = ParseSelectOne(attributes, styleInfo, extraBuilder);
+                retVal = ParseSelectOne(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.SelectMultiple)
             {
-                retval = ParseSelectMultiple(attributes, styleInfo, extraBuilder);
+                retVal = ParseSelectMultiple(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.SelectCascading)
             {
-                retval = ParseSelectCascading(attributes, siteInfo, styleInfo, extraBuilder);
+                retVal = ParseSelectCascading(attributes, siteInfo, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.CheckBox)
             {
-                retval = ParseCheckBox(attributes, styleInfo, extraBuilder);
+                retVal = ParseCheckBox(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Radio)
             {
-                retval = ParseRadio(attributes, styleInfo, extraBuilder);
+                retVal = ParseRadio(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Date)
             {
-                retval = ParseDate(attributes, pageScripts, styleInfo, extraBuilder);
+                retVal = ParseDate(attributes, pageScripts, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.DateTime)
             {
-                retval = ParseDateTime(attributes, pageScripts, styleInfo, extraBuilder);
+                retVal = ParseDateTime(attributes, pageScripts, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Image)
             {
-                retval = ParseImage(attributes, siteInfo, channelId, styleInfo, extraBuilder);
+                retVal = ParseImage(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Video)
             {
-                retval = ParseVideo(attributes, siteInfo, channelId, styleInfo, extraBuilder);
+                retVal = ParseVideo(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.File)
             {
-                retval = ParseFile(attributes, siteInfo, channelId, styleInfo, extraBuilder);
+                retVal = ParseFile(attributes, siteInfo, channelId, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Customize)
             {
-                retval = ParseCustomize(attributes, styleInfo, extraBuilder);
+                retVal = ParseCustomize(attributes, styleInfo, extraBuilder);
             }
             else if (inputType == InputType.Hidden)
             {
-                retval = string.Empty;
+                retVal = string.Empty;
                 extraBuilder.Clear();
             }
 
             extraHtml = extraBuilder.ToString();
-            return retval;
+            return retVal;
         }
 
         public static string ParseText(AttributesImpl attributes, SiteInfo siteInfo, int channelId, TableStyleInfo styleInfo, StringBuilder extraBuilder)

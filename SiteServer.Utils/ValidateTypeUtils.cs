@@ -61,58 +61,58 @@ namespace SiteServer.Utils
 
 		public static ValidateType GetEnumType(string typeStr)
 		{
-			var retval = ValidateType.None;
+			var retVal = ValidateType.None;
 
 			if (Equals(ValidateType.None, typeStr))
 			{
-                retval = ValidateType.None;
+                retVal = ValidateType.None;
             }
             else if (Equals(ValidateType.Chinese, typeStr))
             {
-                retval = ValidateType.Chinese;
+                retVal = ValidateType.Chinese;
             }
             else if (Equals(ValidateType.Currency, typeStr))
             {
-                retval = ValidateType.Currency;
+                retVal = ValidateType.Currency;
             }
 			else if (Equals(ValidateType.RegExp, typeStr))
 			{
-                retval = ValidateType.RegExp;
+                retVal = ValidateType.RegExp;
             }
             else if (Equals(ValidateType.Email, typeStr))
             {
-                retval = ValidateType.Email;
+                retVal = ValidateType.Email;
             }
             else if (Equals(ValidateType.English, typeStr))
             {
-                retval = ValidateType.English;
+                retVal = ValidateType.English;
             }
             else if (Equals(ValidateType.IdCard, typeStr))
             {
-                retval = ValidateType.IdCard;
+                retVal = ValidateType.IdCard;
             }
             else if (Equals(ValidateType.Integer, typeStr))
             {
-                retval = ValidateType.Integer;
+                retVal = ValidateType.Integer;
             }
             else if (Equals(ValidateType.Mobile, typeStr))
             {
-                retval = ValidateType.Mobile;
+                retVal = ValidateType.Mobile;
             }
             else if (Equals(ValidateType.Phone, typeStr))
             {
-                retval = ValidateType.Phone;
+                retVal = ValidateType.Phone;
             }
             else if (Equals(ValidateType.Url, typeStr))
             {
-                retval = ValidateType.Url;
+                retVal = ValidateType.Url;
             }
             else if (Equals(ValidateType.Zip, typeStr))
             {
-                retval = ValidateType.Zip;
+                retVal = ValidateType.Zip;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ValidateType type, string typeStr)

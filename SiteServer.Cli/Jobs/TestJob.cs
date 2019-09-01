@@ -7,28 +7,33 @@ using SiteServer.Plugin;
 
 namespace SiteServer.Cli.Jobs
 {
-    public static class TestJob
+    public class TestJob
     {
         public const string CommandName = "test add";
 
-        private static bool _isHelp;
-        private static string _webConfigFileName;
+        private bool _isHelp;
+        private string _webConfigFileName;
 
-        private static readonly OptionSet Options = new OptionSet()
-        {
-            {
-                "c|config=", "the {web.config} file name.",
-                v => _webConfigFileName = v
-            },
-            {
-                "h|help", "命令说明",
-                v => _isHelp = v != null
-            }
-        };
+        private readonly OptionSet _options;
 
-        public static async Task Execute(IJobContext context)
+        public TestJob()
         {
-            if (!CliUtils.ParseArgs(Options, context.Args)) return;
+            _options = new OptionSet
+            {
+                {
+                    "c|config=", "the {web.config} file name.",
+                    v => _webConfigFileName = v
+                },
+                {
+                    "h|help", "命令说明",
+                    v => _isHelp = v != null
+                }
+            };
+        }
+
+        public async Task Execute(IJobContext context)
+        {
+            if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
             if (_isHelp)
             {

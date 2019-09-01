@@ -113,16 +113,16 @@ namespace SiteServer.Utils
 
         public static string GetTimeString(DateTime datetime, ETimeFormatType timeFormat)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
             if (timeFormat == ETimeFormatType.LongTime)
             {
-                retval = datetime.ToLongTimeString();
+                retVal = datetime.ToLongTimeString();
             }
             else if (timeFormat == ETimeFormatType.ShortTime)
             {
-                retval = datetime.ToShortTimeString();
+                retVal = datetime.ToShortTimeString();
             }
-            return retval;
+            return retVal;
         }
 
 		public static int GetSeconds(string intWithUnitString)

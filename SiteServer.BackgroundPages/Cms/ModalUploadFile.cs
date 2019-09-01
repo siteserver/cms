@@ -66,7 +66,7 @@ namespace SiteServer.BackgroundPages.Cms
                     localDirectoryPath = PathUtility.MapPath(SiteInfo, _realtedPath);
                     DirectoryUtils.CreateDirectoryIfNotExists(localDirectoryPath);
                 }
-                var localFileName = PathUtility.GetUploadFileName(SiteInfo, filePath, TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue));
+                var localFileName = PathUtility.GetUploadFileName(filePath, TranslateUtils.ToBool(DdlIsFileUploadChangeFileName.SelectedValue));
 
                 var localFilePath = PathUtils.Combine(localDirectoryPath, localFileName);
 

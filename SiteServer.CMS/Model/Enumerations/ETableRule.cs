@@ -49,22 +49,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ETableRule GetEnumType(string typeStr)
 		{
-            var retval = ETableRule.Create;
+            var retVal = ETableRule.Create;
 
             if (Equals(ETableRule.Choose, typeStr))
 			{
-                retval = ETableRule.Choose;
+                retVal = ETableRule.Choose;
 			}
 			else if (Equals(ETableRule.HandWrite, typeStr))
 			{
-				retval = ETableRule.HandWrite;
+				retVal = ETableRule.HandWrite;
 			}
 			else if (Equals(ETableRule.Create, typeStr))
 			{
-				retval = ETableRule.Create;
+				retVal = ETableRule.Create;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ETableRule type, string typeStr)

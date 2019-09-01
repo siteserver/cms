@@ -57,26 +57,26 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ETranslateContentType GetEnumType(string typeStr)
 		{
-			var retval = ETranslateContentType.Copy;
+			var retVal = ETranslateContentType.Copy;
 
             if (Equals(ETranslateContentType.Copy, typeStr))
 			{
-                retval = ETranslateContentType.Copy;
+                retVal = ETranslateContentType.Copy;
 			}
             else if (Equals(ETranslateContentType.Cut, typeStr))
 			{
-                retval = ETranslateContentType.Cut;
+                retVal = ETranslateContentType.Cut;
 			}
             else if (Equals(ETranslateContentType.Reference, typeStr))
 			{
-                retval = ETranslateContentType.Reference;
+                retVal = ETranslateContentType.Reference;
 			}
             else if (Equals(ETranslateContentType.ReferenceContent, typeStr))
             {
-                retval = ETranslateContentType.ReferenceContent;
+                retVal = ETranslateContentType.ReferenceContent;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ETranslateContentType type, string typeStr)

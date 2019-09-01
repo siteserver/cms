@@ -101,7 +101,7 @@ namespace SiteServer.CMS.Provider
 
         public bool IsExists(string cacheKey)
         {
-            var retval = false;
+            var retVal = false;
 
             var parms = new IDataParameter[]
 			{
@@ -112,16 +112,16 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    retval = true;
+                    retVal = true;
                 }
                 rdr.Close();
             }
-            return retval;
+            return retVal;
         }
 
         public string GetValue(string cacheKey)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             var parms = new IDataParameter[]
 			{
@@ -132,16 +132,16 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    retval = GetString(rdr, 0);
+                    retVal = GetString(rdr, 0);
                 }
                 rdr.Close();
             }
-            return retval;
+            return retVal;
         }
 
         public string GetValueAndRemove(string cacheKey)
         {
-            var retval = string.Empty;
+            var retVal = string.Empty;
 
             using (var conn = GetConnection())
             {
@@ -159,7 +159,7 @@ namespace SiteServer.CMS.Provider
                         {
                             if (rdr.Read())
                             {
-                                retval = GetString(rdr, 0);
+                                retVal = GetString(rdr, 0);
                             }
                             rdr.Close();
                         }
@@ -181,7 +181,7 @@ namespace SiteServer.CMS.Provider
                 }
             }
 
-            return retval;
+            return retVal;
         }
 
         public int GetCount()

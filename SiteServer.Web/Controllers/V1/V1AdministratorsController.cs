@@ -4,7 +4,6 @@ using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
@@ -27,15 +26,15 @@ namespace SiteServer.API.Controllers.V1
                 var isApiAuthorized = request.IsApiAuthenticated && AccessTokenManager.IsScope(request.ApiToken, AccessTokenManager.ScopeAdministrators);
                 if (!isApiAuthorized) return Unauthorized();
 
-                var retval = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
-                if (retval == null)
+                var retVal = DataProvider.AdministratorDao.ApiInsert(adminInfo, out var errorMessage);
+                if (retVal == null)
                 {
                     return BadRequest(errorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)
@@ -58,15 +57,15 @@ namespace SiteServer.API.Controllers.V1
 
                 if (!DataProvider.AdministratorDao.ApiIsExists(id)) return NotFound();
 
-                var retval = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out var errorMessage);
-                if (retval == null)
+                var retVal = DataProvider.AdministratorDao.ApiUpdate(id, adminInfo, out var errorMessage);
+                if (retVal == null)
                 {
                     return BadRequest(errorMessage);
                 }
 
                 return Ok(new
                 {
-                    Value = retval
+                    Value = retVal
                 });
             }
             catch (Exception ex)
@@ -178,11 +177,34 @@ namespace SiteServer.API.Controllers.V1
                 var accessToken = request.AdminLogin(adminInfo.UserName, isAutoLogin);
                 var expiresAt = DateTime.Now.AddDays(Constants.AccessTokenExpireDays);
 
+                var sessionId = StringUtils.Guid();
+                var cacheKey = Constants.GetSessionIdCacheKey(adminInfo.Id);
+                CacheUtils.Insert(cacheKey, sessionId);
+
+                var isEnforcePasswordChange = false;
+                if (ConfigManager.SystemConfigInfo.IsAdminEnforcePasswordChange)
+                {
+                    if (adminInfo.LastChangePasswordDate == null)
+                    {
+                        isEnforcePasswordChange = true;
+                    }
+                    else
+                    {
+                        var ts = new TimeSpan(DateTime.Now.Ticks - adminInfo.LastChangePasswordDate.Value.Ticks);
+                        if (ts.TotalDays > ConfigManager.SystemConfigInfo.AdminEnforcePasswordChangeDays)
+                        {
+                            isEnforcePasswordChange = true;
+                        }
+                    }
+                }
+
                 return Ok(new
                 {
                     Value = adminInfo,
                     AccessToken = accessToken,
-                    ExpiresAt = expiresAt
+                    ExpiresAt = expiresAt,
+                    SessionId = sessionId,
+                    IsEnforcePasswordChange = isEnforcePasswordChange
                 });
             }
             catch (Exception ex)

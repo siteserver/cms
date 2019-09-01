@@ -66,30 +66,30 @@ namespace SiteServer.Utils.Enumerations
 
         public static ELevelPeriodType GetEnumType(string typeStr)
         {
-            var retval = ELevelPeriodType.None;
+            var retVal = ELevelPeriodType.None;
 
             if (Equals(ELevelPeriodType.None, typeStr))
             {
-                retval = ELevelPeriodType.None;
+                retVal = ELevelPeriodType.None;
             }
             else if (Equals(ELevelPeriodType.Once, typeStr))
             {
-                retval = ELevelPeriodType.Once;
+                retVal = ELevelPeriodType.Once;
             }
             else if (Equals(ELevelPeriodType.Everyday, typeStr))
             {
-                retval = ELevelPeriodType.Everyday;
+                retVal = ELevelPeriodType.Everyday;
             }
             else if (Equals(ELevelPeriodType.Hour, typeStr))
             {
-                retval = ELevelPeriodType.Hour;
+                retVal = ELevelPeriodType.Hour;
             }
             else if (Equals(ELevelPeriodType.Minute, typeStr))
             {
-                retval = ELevelPeriodType.Minute;
+                retVal = ELevelPeriodType.Minute;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(ELevelPeriodType type, string typeStr)

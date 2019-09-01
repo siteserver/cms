@@ -3,7 +3,7 @@
     only:
       - netfx-master
 
-  version: 6.11.{build}
+  version: 6.12.{build}
   image: Visual Studio 2017
 
   assembly_info:
@@ -66,7 +66,7 @@
     - provider: NuGet
       server: # remove to push to NuGet.org
       api_key:
-        secure: B9umZPwBVx2TMfYt7G1Eppy7XX0FkqWioXxwR+lKv5XVRc6ezjOXP8D9iuisOWBF
+        secure: AtMC4UpS2DWAJIibboq8qPdfBJFvoiPsO7KYNZ5Dpfe7Cr/X+5wV0cLx3Nl9QZCl
       skip_symbols: false
       symbol_server: # remove to push symbols to SymbolSource.org
       artifact: /.*\.nupkg/
@@ -81,7 +81,7 @@
     only:
       - netfx-staging
 
-  version: 6.11.{build}-beta
+  version: 6.12.{build}-beta
   image: Visual Studio 2017
 
   assembly_info:
@@ -152,7 +152,7 @@
     - provider: NuGet
       server: # remove to push to NuGet.org
       api_key:
-        secure: B9umZPwBVx2TMfYt7G1Eppy7XX0FkqWioXxwR+lKv5XVRc6ezjOXP8D9iuisOWBF
+        secure: AtMC4UpS2DWAJIibboq8qPdfBJFvoiPsO7KYNZ5Dpfe7Cr/X+5wV0cLx3Nl9QZCl
       skip_symbols: false
       symbol_server: # remove to push symbols to SymbolSource.org
       artifact: /.*\.nupkg/

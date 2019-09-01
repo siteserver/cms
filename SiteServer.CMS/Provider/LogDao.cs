@@ -178,7 +178,7 @@ namespace SiteServer.CMS.Provider
 
         public DateTime GetLastRemoveLogDate(string userName)
         {
-            var retval = DateTime.MinValue;
+            var retVal = DateTime.MinValue;
             var sqlString = SqlUtils.ToTopSqlString("siteserver_Log", "AddDate", "WHERE Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
 
             var parms = new IDataParameter[]
@@ -190,11 +190,11 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    retval = GetDateTime(rdr, 0);
+                    retVal = GetDateTime(rdr, 0);
                 }
                 rdr.Close();
             }
-            return retval;
+            return retVal;
         }
 
         /// <summary>

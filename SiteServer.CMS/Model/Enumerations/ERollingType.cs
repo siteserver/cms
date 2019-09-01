@@ -51,22 +51,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ERollingType GetEnumType(string typeStr)
 		{
-			var retval = ERollingType.Static;
+			var retVal = ERollingType.Static;
 
 			if (Equals(ERollingType.Static, typeStr))
 			{
-				retval = ERollingType.Static;
+				retVal = ERollingType.Static;
 			}
 			else if (Equals(ERollingType.FollowingScreen, typeStr))
 			{
-				retval = ERollingType.FollowingScreen;
+				retVal = ERollingType.FollowingScreen;
 			}
 			else if (Equals(ERollingType.FloatingInWindow, typeStr))
 			{
-				retval = ERollingType.FloatingInWindow;
+				retVal = ERollingType.FloatingInWindow;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ERollingType type, string typeStr)

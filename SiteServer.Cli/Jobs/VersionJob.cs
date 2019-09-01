@@ -9,30 +9,35 @@ using SiteServer.Utils;
 
 namespace SiteServer.Cli.Jobs
 {
-    public static class VersionJob
+    public class VersionJob
     {
         public const string CommandName = "version";
 
-        private static string _configFile;
-        private static bool _isHelp;
+        private string _configFile;
+        private bool _isHelp;
 
-        private static readonly OptionSet Options = new OptionSet {
-            { "c|config-file=", "指定配置文件Web.config路径或文件名",
-                v => _configFile = v },
-            { "h|help",  "命令说明",
-                v => _isHelp = v != null }
-        };
+        private readonly OptionSet _options;
 
-        public static void PrintUsage()
+        public VersionJob()
+        {
+            _options = new OptionSet {
+                { "c|config-file=", "指定配置文件Web.config路径或文件名",
+                    v => _configFile = v },
+                { "h|help",  "命令说明",
+                    v => _isHelp = v != null }
+            };
+        }
+
+        public void PrintUsage()
         {
             Console.WriteLine("显示当前版本: siteserver version");
-            Options.WriteOptionDescriptions(Console.Out);
+            _options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
 
-        public static async Task Execute(IJobContext context)
+        public async Task Execute(IJobContext context)
         {
-            if (!CliUtils.ParseArgs(Options, context.Args)) return;
+            if (!CliUtils.ParseArgs(_options, context.Args)) return;
 
             if (_isHelp)
             {

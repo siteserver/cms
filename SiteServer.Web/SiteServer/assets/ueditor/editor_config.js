@@ -174,7 +174,7 @@
             p: ["class", "style"],
             pre: ["class", "style"],
             s: [],
-            section: [],
+            section:['class', 'style'],
             small: [],
             span: ["class", "style"],
             sub: ["class", "style"],

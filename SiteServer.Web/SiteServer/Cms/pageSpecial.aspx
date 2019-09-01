@@ -35,7 +35,7 @@
                       <th>专题名称</th>
                       <th>访问地址</th>
                       <th>添加时间</th>
-                      <th>操作</th>
+                      <th class="text-center">操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -51,7 +51,7 @@
                           <td>
                             <asp:Literal ID="ltlAddDate" runat="server"></asp:Literal>
                           </td>
-                          <td>
+                          <td class="text-center">
                             <asp:Literal ID="ltlActions" runat="server"></asp:Literal>
                           </td>
                         </tr>

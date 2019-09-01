@@ -49,22 +49,22 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EVoteItemType GetEnumType(string typeStr)
 		{
-			var retval = EVoteItemType.Text;
+			var retVal = EVoteItemType.Text;
 
 			if (Equals(EVoteItemType.Text, typeStr))
 			{
-				retval = EVoteItemType.Text;
+				retVal = EVoteItemType.Text;
 			}
 			else if (Equals(EVoteItemType.Image, typeStr))
 			{
-				retval = EVoteItemType.Image;
+				retVal = EVoteItemType.Image;
 			}
 			else if (Equals(EVoteItemType.TextAndImage, typeStr))
 			{
-				retval = EVoteItemType.TextAndImage;
+				retVal = EVoteItemType.TextAndImage;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EVoteItemType type, string typeStr)

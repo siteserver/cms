@@ -1,0 +1,235 @@
+@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="pageAdministrator.aspx">管理员管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="adminConfig.cshtml">管理员设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageAdminDepartment.aspx">所属部门管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+</li>
+}
+
+<template v-if="pageType === 'list'">
+  <p class="text-muted font-14">
+    请点击链接更改用户设置
+  </p>
+
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr>
+        <td width="35%">管理员用户名最小长度</td>
+        <td width="65%">
+          <a href="javascript:;" v-on:click="pageType = 'adminUserNameMinLength'" class="editable">
+            <span v-show="config.adminUserNameMinLength === 0">不限制用户名长度</span>
+            <span v-show="config.adminUserNameMinLength > 0">{{ config.adminUserNameMinLength }}</span>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>管理员密码最小长度</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'adminPasswordMinLength'" class="editable">
+            <span v-show="config.adminPasswordMinLength === 0">不限制密码长度</span>
+            <span v-show="config.adminPasswordMinLength > 0">{{ config.adminPasswordMinLength }}</span>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>管理员密码规则限制</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'adminPasswordRestriction'" class="editable">
+            {{ getPasswordRestrictionText(config.adminPasswordRestriction) }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>登录失败锁定</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isAdminLockLogin'" class="editable">
+            {{ (config.isAdminLockLogin ? '开启登录失败锁定' : '不锁定') }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>是否允许查看其他人添加的内容</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isViewContentOnlySelf'" class="editable">
+            <span v-show="config.isViewContentOnlySelf">禁止</span>
+            <span v-show="!config.isViewContentOnlySelf">允许</span>
+          </a>
+          <div>
+            <small class="form-text text-muted">注意：超级管理员、站点管理员、具有审核权限的管理员，此设置无效。</small>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>是否强制定期更改密码</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isAdminEnforcePasswordChange'" class="editable">
+            <span v-show="config.isAdminEnforcePasswordChange">强制（{{config.adminEnforcePasswordChangeDays}} 天）</span>
+            <span v-show="!config.isAdminEnforcePasswordChange">不强制</span>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>无操作是否自动退出</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'isAdminEnforceLogout'" class="editable">
+            <span v-show="config.isAdminEnforceLogout">自动退出（{{config.adminEnforceLogoutMinutes}} 分钟）</span>
+            <span v-show="!config.isAdminEnforceLogout">不退出</span>
+          </a>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+</template>
+<template v-else>
+
+  <template v-if="pageType === 'adminUserNameMinLength'">
+    <div class="form-group">
+      <label>
+        管理员用户名最小长度
+        <small v-show="errors.has('adminUserNameMinLength')" class="text-danger">{{ errors.first('adminUserNameMinLength') }}</small>
+      </label>
+      <input v-model="adminUserNameMinLength" name="adminUserNameMinLength" data-vv-as=" 管理员用户名最小长度" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminUserNameMinLength') }" type="text" class="form-control" />
+      <small class="form-text text-muted">0代表不限制管理员用户名长度</small>
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'adminPasswordMinLength'">
+    <div class="form-group">
+      <label>
+        管理员密码最小长度
+        <small v-show="errors.has('adminPasswordMinLength')" class="text-danger">{{ errors.first('adminPasswordMinLength') }}</small>
+      </label>
+      <input v-model="adminPasswordMinLength" name="adminPasswordMinLength" data-vv-as=" 管理员密码最小长度" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminPasswordMinLength') }" type="text" class="form-control" />
+      <small class="form-text text-muted">0代表不限制管理员密码长度</small>
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'adminPasswordRestriction'">
+    <div class="form-group">
+      <label>密码规则限制</label>
+      <select v-model="adminPasswordRestriction" class="form-control">
+        <option value="LetterAndDigit">{{ getPasswordRestrictionText('LetterAndDigit') }}</option>
+        <option value="LetterAndDigitAndSymbol">{{ getPasswordRestrictionText('LetterAndDigitAndSymbol') }}</option>
+        <option value="None">{{ getPasswordRestrictionText('None') }}</option>
+      </select>
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'isAdminLockLogin'">
+    <div class="form-group">
+      <label>登录失败锁定</label>
+      <div class="m-2">
+        <div class="radio radio-primary form-check-inline">
+          <input type="radio" id="radio1" v-model="isAdminLockLogin" value="true">
+          <label for="radio1">开启登录失败锁定</label>
+        </div>
+        <div class="radio radio-primary form-check-inline">
+          <input type="radio" id="radio2" v-model="isAdminLockLogin" value="false">
+          <label for="radio2">不锁定</label>
+        </div>
+      </div>
+    </div>
+    <div v-show="isAdminLockLogin" class="form-group">
+      <label>
+        登录失败次数锁定（次）
+        <small v-show="errors.has('adminLockLoginCount')" class="text-danger">{{
+          errors.first('adminLockLoginCount') }}</small>
+      </label>
+      <input v-model="adminLockLoginCount" name="adminLockLoginCount" data-vv-as="登录失败次数锁定" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminLockLoginCount') }" type="text" class="form-control">
+      <small class="form-text text-muted">一旦登录失败达到指定次数之后用户就会被锁定</small>
+    </div>
+    <div v-show="isAdminLockLogin" class="form-group">
+      <label>用户登录锁定类型</label>
+      <select v-model="adminLockLoginType" class="form-control">
+        <option value="Hours">按小时锁定</option>
+        <option value="Forever">永久锁定</option>
+      </select>
+    </div>
+    <div v-show="isAdminLockLogin && adminLockLoginType === 'Hours'" class="form-group">
+      <label>
+        登录锁定时间（小时）
+        <small v-show="errors.has('adminLockLoginHours')" class="text-danger">{{
+          errors.first('adminLockLoginHours') }}</small>
+      </label>
+      <input v-model="adminLockLoginHours" name="adminLockLoginHours" data-vv-as="登录锁定时间" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminLockLoginHours') }" type="text" class="form-control">
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'isViewContentOnlySelf'">
+    <div class="form-group">
+      <label>是否允许查看其他人添加的内容</label>
+      <select v-model="isViewContentOnlySelf" class="form-control">
+        <option v-bind:value="true">禁止</option>
+        <option v-bind:value="false">允许</option>
+      </select>
+      <small class="form-text text-muted">注意：超级管理员、站点管理员、具有审核权限的管理员，此设置无效。</small>
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'isAdminEnforcePasswordChange'">
+    <div class="form-group">
+      <label>是否强制定期更改密码</label>
+      <select v-model="isAdminEnforcePasswordChange" class="form-control">
+        <option v-bind:value="true">强制</option>
+        <option v-bind:value="false">不强制</option>
+      </select>
+    </div>
+    <div class="form-group" v-if="isAdminEnforcePasswordChange">
+      <label>
+        定期强制周期（天）
+        <small v-show="errors.has('adminEnforcePasswordChangeDays')" class="text-danger">{{
+          errors.first('adminEnforcePasswordChangeDays') }}</small>
+      </label>
+      <input v-model="adminEnforcePasswordChangeDays" name="adminEnforcePasswordChangeDays" data-vv-as="定期强制周期" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminEnforcePasswordChangeDays') }" type="text" class="form-control">
+    </div>
+  </template>
+
+  <template v-else-if="pageType === 'isAdminEnforceLogout'">
+    <div class="form-group">
+      <label>无操作是否自动退出</label>
+      <select v-model="isAdminEnforceLogout" class="form-control">
+        <option v-bind:value="true">自动退出</option>
+        <option v-bind:value="false">不退出</option>
+      </select>
+    </div>
+    <div class="form-group" v-if="isAdminEnforceLogout">
+      <label>
+        自动退出周期（分钟）
+        <small v-show="errors.has('adminEnforceLogoutMinutes')" class="text-danger">{{
+          errors.first('adminEnforceLogoutMinutes') }}</small>
+      </label>
+      <input v-model="adminEnforceLogoutMinutes" name="adminEnforceLogoutMinutes" data-vv-as="自动退出周期" v-validate="'required|numeric'"
+        :class="{'is-invalid': errors.has('adminEnforceLogoutMinutes') }" type="text" class="form-control">
+    </div>
+  </template>
+  
+  <hr />
+
+  <div class="text-center">
+    <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">保 存</button>
+    <button class="btn m-r-5" v-on:click="pageType = 'list'">返 回</button>
+  </div>
+
+</template>
+
+@section Scripts{
+<script src="adminConfig.js" type="text/javascript"></script> }

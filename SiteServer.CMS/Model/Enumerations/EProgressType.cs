@@ -25,18 +25,18 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static EProgressType GetEnumType(string typeStr)
         {
-            var retval = EProgressType.CreateChannels;
+            var retVal = EProgressType.CreateChannels;
 
             if (Equals(EProgressType.CreateChannels, typeStr))
             {
-                retval = EProgressType.CreateChannels;
+                retVal = EProgressType.CreateChannels;
             }
             else if (Equals(EProgressType.CreateContents, typeStr))
             {
-                retval = EProgressType.CreateContents;
+                retVal = EProgressType.CreateContents;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EProgressType type, string typeStr)

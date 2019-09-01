@@ -51,22 +51,22 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static ETranslateType GetEnumType(string typeStr)
 		{
-			var retval = ETranslateType.Content;
+			var retVal = ETranslateType.Content;
 
 			if (Equals(ETranslateType.Content, typeStr))
 			{
-				retval = ETranslateType.Content;
+				retVal = ETranslateType.Content;
 			}
 			else if (Equals(ETranslateType.Channel, typeStr))
 			{
-				retval = ETranslateType.Channel;
+				retVal = ETranslateType.Channel;
 			}
 			else if (Equals(ETranslateType.All, typeStr))
 			{
-				retval = ETranslateType.All;
+				retVal = ETranslateType.All;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(ETranslateType type, string typeStr)

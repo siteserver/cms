@@ -27,15 +27,15 @@ namespace SiteServer.CMS.Core
 
         public static string GetSitePath(SiteInfo siteInfo, params string[] paths)
         {
-            var retval = GetSitePath(siteInfo);
-            if (paths == null || paths.Length <= 0) return retval;
+            var retVal = GetSitePath(siteInfo);
+            if (paths == null || paths.Length <= 0) return retVal;
 
             foreach (var t in paths)
             {
                 var path = t?.Replace(PageUtils.SeparatorChar, PathUtils.SeparatorChar).Trim(PathUtils.SeparatorChar) ?? string.Empty;
-                retval = PathUtils.Combine(retval, path);
+                retVal = PathUtils.Combine(retVal, path);
             }
-            return retval;
+            return retVal;
         }
 
         public static string GetIndexPageFilePath(SiteInfo siteInfo, string createFileFullName, bool isHeadquarters, int currentPageIndex)
@@ -195,10 +195,10 @@ namespace SiteServer.CMS.Core
                 isUploadChangeFileName = siteInfo.Additional.IsVideoUploadChangeFileName;
             }
 
-            return GetUploadFileName(siteInfo, filePath, isUploadChangeFileName);
+            return GetUploadFileName(filePath, isUploadChangeFileName);
         }
 
-        public static string GetUploadFileName(SiteInfo siteInfo, string filePath, bool isUploadChangeFileName)
+        public static string GetUploadFileName(string filePath, bool isUploadChangeFileName)
         {
             if (isUploadChangeFileName)
             {
@@ -206,9 +206,7 @@ namespace SiteServer.CMS.Core
             }
 
             var fileName = PathUtils.GetFileNameWithoutExtension(filePath);
-
-            fileName = StringUtils.ReplaceIgnoreCase(fileName, "as", string.Empty);
-            fileName = StringUtils.ReplaceIgnoreCase(fileName, ";", string.Empty);
+            fileName = PathUtils.GetSafeFilename(fileName);
             return $"{fileName}{PathUtils.GetExtension(filePath)}";
         }
 

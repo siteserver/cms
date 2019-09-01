@@ -49,18 +49,18 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EDiggType GetEnumType(string typeStr)
 		{
-            var retval = EDiggType.All;
+            var retVal = EDiggType.All;
 
             if (Equals(EDiggType.Good, typeStr))
 			{
-                retval = EDiggType.Good;
+                retVal = EDiggType.Good;
 			}
             else if (Equals(EDiggType.Bad, typeStr))
 			{
-                retval = EDiggType.Bad;
+                retVal = EDiggType.Bad;
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EDiggType type, string typeStr)

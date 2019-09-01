@@ -162,7 +162,7 @@ namespace SiteServer.CMS.Data
 
 			CleanParameterSyntax(command);
 			// Create the DataAdapter & DataSet
-			var retval = ((SqlCommand)command).ExecuteXmlReader();
+			var retVal = ((SqlCommand)command).ExecuteXmlReader();
 			
 			// Detach the SqlParameters from the command object, so they can be used again
 			// don't do this...screws up output parameters -- cjbreisch
@@ -173,7 +173,7 @@ namespace SiteServer.CMS.Data
 				command.Connection.Close();
 			}
 
-			return retval;
+			return retVal;
 		}
 
 		/// <summary>

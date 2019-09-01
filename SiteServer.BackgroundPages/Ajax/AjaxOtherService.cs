@@ -126,7 +126,7 @@ namespace SiteServer.BackgroundPages.Ajax
         public void Page_Load(object sender, EventArgs e)
         {
             var type = Request["type"];
-            var retval = new NameValueCollection();
+            var retVal = new NameValueCollection();
             string retString = null;
             var request = new AuthenticatedRequest();
             if (!request.IsAdminLoggin) return;
@@ -134,26 +134,26 @@ namespace SiteServer.BackgroundPages.Ajax
             if (type == TypeGetCountArray)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
-                retval = GetCountArray(userKeyPrefix);
+                retVal = GetCountArray(userKeyPrefix);
             }
             else if (type == TypeSiteTemplateDownload)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
                 var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
                 var directoryName = Request["directoryName"];
-                retval = SiteTemplateDownload(downloadUrl, directoryName, userKeyPrefix);
+                retVal = SiteTemplateDownload(downloadUrl, directoryName, userKeyPrefix);
             }
             else if (type == TypeSiteTemplateZip)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
                 var directoryName = Request["directoryName"];
-                retval = SiteTemplateZip(directoryName, userKeyPrefix);
+                retVal = SiteTemplateZip(directoryName, userKeyPrefix);
             }
             else if (type == TypeSiteTemplateUnZip)
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
                 var fileName = Request["fileName"];
-                retval = SiteTemplateUnZip(fileName, userKeyPrefix);
+                retVal = SiteTemplateUnZip(fileName, userKeyPrefix);
             }
             else if (type == TypeGetLoadingChannels)
             {
@@ -168,7 +168,7 @@ namespace SiteServer.BackgroundPages.Ajax
             {
                 var userKeyPrefix = Request["userKeyPrefix"];
                 var downloadUrl = TranslateUtils.DecryptStringBySecretKey(Request["downloadUrl"]);
-                retval = PluginDownload(downloadUrl, userKeyPrefix);
+                retVal = PluginDownload(downloadUrl, userKeyPrefix);
             }
             //else if (type == "GetLoadingGovPublicCategories")
             //{
@@ -191,7 +191,7 @@ namespace SiteServer.BackgroundPages.Ajax
             //    int templateID = TranslateUtils.ToInt(base.Request["templateID"]);
             //    string includeUrl = base.Request["includeUrl"];
             //    string operation = base.Request["operation"];
-            //    retval = TemplateDesignOperation.Operate(siteID, templateID, includeUrl, operation, base.Request.Form);
+            //    retVal = TemplateDesignOperation.Operate(siteID, templateID, includeUrl, operation, base.Request.Form);
             //}
 
             if (retString != null)
@@ -201,7 +201,7 @@ namespace SiteServer.BackgroundPages.Ajax
             }
             else
             {
-                var jsonString = TranslateUtils.NameValueCollectionToJsonString(retval);
+                var jsonString = TranslateUtils.NameValueCollectionToJsonString(retVal);
                 Page.Response.Write(jsonString);
                 Page.Response.End();
             }
@@ -209,15 +209,15 @@ namespace SiteServer.BackgroundPages.Ajax
 
         public NameValueCollection GetCountArray(string userKeyPrefix)//进度及显示
         {
-            var retval = new NameValueCollection();
+            var retVal = new NameValueCollection();
             if (CacheUtils.Get(userKeyPrefix + CacheTotalCount) != null && CacheUtils.Get(userKeyPrefix + CacheCurrentCount) != null && CacheUtils.Get(userKeyPrefix + CacheMessage) != null)
             {
                 var totalCount = TranslateUtils.ToInt((string)CacheUtils.Get(userKeyPrefix + CacheTotalCount));
                 var currentCount = TranslateUtils.ToInt((string)CacheUtils.Get(userKeyPrefix + CacheCurrentCount));
                 var message = (string)CacheUtils.Get(userKeyPrefix + CacheMessage);
-                retval = AjaxManager.GetCountArrayNameValueCollection(totalCount, currentCount, message);
+                retVal = AjaxManager.GetCountArrayNameValueCollection(totalCount, currentCount, message);
             }
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection SiteTemplateDownload(string downloadUrl, string directoryName, string userKeyPrefix)
@@ -231,7 +231,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -254,11 +254,11 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
 
-                retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板下载成功，请到站点模板管理中查看。", string.Empty);
+                retVal = AjaxManager.GetProgressTaskNameValueCollection("站点模板下载成功，请到站点模板管理中查看。", string.Empty);
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                retVal = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
                     $@"<br />下载失败！<br />{ex.Message}");
             }
 
@@ -266,7 +266,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection PluginDownload(string downloadUrl, string userKeyPrefix)
@@ -280,7 +280,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -300,11 +300,11 @@ namespace SiteServer.BackgroundPages.Ajax
                 CacheUtils.Insert(cacheCurrentCountKey, "5");
                 CacheUtils.Insert(cacheMessageKey, string.Empty);
 
-                retval = AjaxManager.GetProgressTaskNameValueCollection("插件安装成功，请刷新页面查看。", string.Empty);
+                retVal = AjaxManager.GetProgressTaskNameValueCollection("插件安装成功，请刷新页面查看。", string.Empty);
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                retVal = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
                     $@"<br />下载失败！<br />{ex.Message}");
             }
 
@@ -312,7 +312,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection SiteTemplateZip(string directoryName, string userKeyPrefix)
@@ -326,7 +326,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -341,12 +341,12 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
-                retval = AjaxManager.GetProgressTaskNameValueCollection(
+                retVal = AjaxManager.GetProgressTaskNameValueCollection(
                     $"站点模板压缩成功，<a href='{PageUtils.GetSiteTemplatesUrl(fileName)}' target=_blank>点击下载</a>。", string.Empty);
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                retVal = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
                     $@"<br />站点模板压缩失败！<br />{ex.Message}");
             }
 
@@ -354,7 +354,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
 
-            return retval;
+            return retVal;
         }
 
         public NameValueCollection SiteTemplateUnZip(string fileName, string userKeyPrefix)
@@ -368,7 +368,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Insert(cacheMessageKey, string.Empty);//存储消息
 
             //返回“运行结果”和“错误信息”的字符串数组
-            NameValueCollection retval;
+            NameValueCollection retVal;
 
             try
             {
@@ -379,11 +379,11 @@ namespace SiteServer.BackgroundPages.Ajax
 
                 CacheUtils.Insert(cacheCurrentCountKey, "1");//存储当前的页面总数
 
-                retval = AjaxManager.GetProgressTaskNameValueCollection("站点模板解压成功", string.Empty);
+                retVal = AjaxManager.GetProgressTaskNameValueCollection("站点模板解压成功", string.Empty);
             }
             catch (Exception ex)
             {
-                retval = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
+                retVal = AjaxManager.GetProgressTaskNameValueCollection(string.Empty,
                     $@"<br />站点模板解压失败！<br />{ex.Message}");
             }
 
@@ -391,7 +391,7 @@ namespace SiteServer.BackgroundPages.Ajax
             CacheUtils.Remove(cacheCurrentCountKey);//取消存储当前的页面总数
             CacheUtils.Remove(cacheMessageKey);//取消存储消息
 
-            return retval;
+            return retVal;
         }
 
         public string GetLoadingChannels(int siteId, string contentModelPluginId, int parentId, string loadingType, string additional, AuthenticatedRequest request)

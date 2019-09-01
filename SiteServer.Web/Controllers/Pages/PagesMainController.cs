@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using SiteServer.BackgroundPages.Cms;
-using SiteServer.BackgroundPages.Settings;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -13,7 +12,6 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.Utils;
 
@@ -278,9 +276,25 @@ namespace SiteServer.API.Controllers.Pages
             try
             {
                 var request = new AuthenticatedRequest();
-                if (!request.IsAdminLoggin)
+                if (!request.IsAdminLoggin || request.AdminInfo == null)
                 {
                     return Unauthorized();
+                }
+
+                var sessionId = request.GetPostString("sessionId");
+                var cacheKey = Constants.GetSessionIdCacheKey(request.AdminId);
+                if (string.IsNullOrEmpty(sessionId) || CacheUtils.GetString(cacheKey) != sessionId)
+                {
+                    return Unauthorized();
+                }
+
+                if (request.AdminInfo.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
+                {
+                    var ts = new TimeSpan(DateTime.Now.Ticks - request.AdminInfo.LastActivityDate.Value.Ticks);
+                    if (ts.TotalMinutes > ConfigManager.SystemConfigInfo.AdminEnforceLogoutMinutes)
+                    {
+                        return Unauthorized();
+                    }
                 }
 
                 var count = CreateTaskManager.PendingTaskCount;

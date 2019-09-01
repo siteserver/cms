@@ -60,26 +60,26 @@ namespace SiteServer.CMS.Model.Enumerations
 
         public static EStatisticsInputType GetEnumType(string typeStr)
         {
-            var retval = EStatisticsInputType.Text;
+            var retVal = EStatisticsInputType.Text;
 
             if (Equals(EStatisticsInputType.Text, typeStr))
             {
-                retval = EStatisticsInputType.Text;
+                retVal = EStatisticsInputType.Text;
             }
             else if (Equals(EStatisticsInputType.CheckBox, typeStr))
             {
-                retval = EStatisticsInputType.CheckBox;
+                retVal = EStatisticsInputType.CheckBox;
             }
             else if (Equals(EStatisticsInputType.Radio, typeStr))
             {
-                retval = EStatisticsInputType.Radio;
+                retVal = EStatisticsInputType.Radio;
             }
             else if (Equals(EStatisticsInputType.SelectOne, typeStr))
             {
-                retval = EStatisticsInputType.SelectOne;
+                retVal = EStatisticsInputType.SelectOne;
             }
 
-            return retval;
+            return retVal;
         }
 
         public static bool Equals(EStatisticsInputType type, string typeStr)

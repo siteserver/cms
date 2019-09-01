@@ -468,210 +468,210 @@ namespace SiteServer.Utils.Enumerations
 
 		public static EFileSystemType GetEnumType(string typeStr)
 		{
-			var retval = EFileSystemType.Unknown;
+			var retVal = EFileSystemType.Unknown;
 
 			if (Equals(EFileSystemType.Htm, typeStr))
 			{
-				retval = EFileSystemType.Htm;
+				retVal = EFileSystemType.Htm;
 			}
 			else if (Equals(EFileSystemType.Html, typeStr))
 			{
-				retval = EFileSystemType.Html;
+				retVal = EFileSystemType.Html;
             }
             else if (Equals(EFileSystemType.SHtml, typeStr))
             {
-                retval = EFileSystemType.SHtml;
+                retVal = EFileSystemType.SHtml;
             }
             else if (Equals(EFileSystemType.Asp, typeStr))
             {
-                retval = EFileSystemType.Asp;
+                retVal = EFileSystemType.Asp;
             }
             else if (Equals(EFileSystemType.Aspx, typeStr))
             {
-                retval = EFileSystemType.Aspx;
+                retVal = EFileSystemType.Aspx;
             }
             else if (Equals(EFileSystemType.Php, typeStr))
             {
-                retval = EFileSystemType.Php;
+                retVal = EFileSystemType.Php;
             }
             else if (Equals(EFileSystemType.Jsp, typeStr))
             {
-                retval = EFileSystemType.Jsp;
+                retVal = EFileSystemType.Jsp;
             }
 			else if (Equals(EFileSystemType.Txt, typeStr))
 			{
-				retval = EFileSystemType.Txt;
+				retVal = EFileSystemType.Txt;
 			}
 			else if (Equals(EFileSystemType.Xml, typeStr))
 			{
-				retval = EFileSystemType.Xml;
+				retVal = EFileSystemType.Xml;
             }
             else if (Equals(EFileSystemType.Json, typeStr))
             {
-                retval = EFileSystemType.Json;
+                retVal = EFileSystemType.Json;
             }
 			else if (Equals(EFileSystemType.Js, typeStr))
 			{
-				retval = EFileSystemType.Js;
+				retVal = EFileSystemType.Js;
             }
 			else if (Equals(EFileSystemType.Ascx, typeStr))
 			{
-				retval = EFileSystemType.Ascx;
+				retVal = EFileSystemType.Ascx;
 			}
 			else if (Equals(EFileSystemType.Css, typeStr))
 			{
-				retval = EFileSystemType.Css;
+				retVal = EFileSystemType.Css;
 			}
 			else if (Equals(EFileSystemType.Csv, typeStr))
 			{
-			    retval = EFileSystemType.Csv;
+			    retVal = EFileSystemType.Csv;
 			}
             else if (Equals(EFileSystemType.Jpg, typeStr))
 			{
-				retval = EFileSystemType.Jpg;
+				retVal = EFileSystemType.Jpg;
 			}
 			else if (Equals(EFileSystemType.Jpeg, typeStr))
 			{
-				retval = EFileSystemType.Jpeg;
+				retVal = EFileSystemType.Jpeg;
 			}
 			else if (Equals(EFileSystemType.Gif, typeStr))
 			{
-				retval = EFileSystemType.Gif;
+				retVal = EFileSystemType.Gif;
 			}
 			else if (Equals(EFileSystemType.Png, typeStr))
 			{
-				retval = EFileSystemType.Png;
+				retVal = EFileSystemType.Png;
 			}
 			else if (Equals(EFileSystemType.Bmp, typeStr))
 			{
-				retval = EFileSystemType.Bmp;
+				retVal = EFileSystemType.Bmp;
 			}
 			else if (Equals(EFileSystemType.Swf, typeStr))
 			{
-				retval = EFileSystemType.Swf;
+				retVal = EFileSystemType.Swf;
             }
             else if (Equals(EFileSystemType.Flv, typeStr))
             {
-                retval = EFileSystemType.Flv;
+                retVal = EFileSystemType.Flv;
             }
 			else if (Equals(EFileSystemType.Doc, typeStr))
 			{
-				retval = EFileSystemType.Doc;
+				retVal = EFileSystemType.Doc;
 			}
             else if (Equals(EFileSystemType.Docx, typeStr))
             {
-                retval = EFileSystemType.Docx;
+                retVal = EFileSystemType.Docx;
             }
             else if (Equals(EFileSystemType.Xls, typeStr))
 			{
-				retval = EFileSystemType.Xls;
+				retVal = EFileSystemType.Xls;
 			}
             else if (Equals(EFileSystemType.Xlsx, typeStr))
             {
-                retval = EFileSystemType.Xlsx;
+                retVal = EFileSystemType.Xlsx;
             }
             else if (Equals(EFileSystemType.Ppt, typeStr))
 			{
-				retval = EFileSystemType.Ppt;
+				retVal = EFileSystemType.Ppt;
             }
             else if (Equals(EFileSystemType.Pptx, typeStr))
             {
-                retval = EFileSystemType.Pptx;
+                retVal = EFileSystemType.Pptx;
             }
             else if (Equals(EFileSystemType.Pdf, typeStr))
             {
-                retval = EFileSystemType.Pdf;
+                retVal = EFileSystemType.Pdf;
             }
 			else if (Equals(EFileSystemType.Mdb, typeStr))
 			{
-				retval = EFileSystemType.Mdb;
+				retVal = EFileSystemType.Mdb;
 			}
 			else if (Equals(EFileSystemType.Rm, typeStr))
 			{
-				retval = EFileSystemType.Rm;
+				retVal = EFileSystemType.Rm;
             }
             else if (Equals(EFileSystemType.Rmb, typeStr))
             {
-                retval = EFileSystemType.Rmb;
+                retVal = EFileSystemType.Rmb;
             }
             else if (Equals(EFileSystemType.Rmvb, typeStr))
             {
-                retval = EFileSystemType.Rmvb;
+                retVal = EFileSystemType.Rmvb;
             }
 			else if (Equals(EFileSystemType.Mp3, typeStr))
 			{
-				retval = EFileSystemType.Mp3;
+				retVal = EFileSystemType.Mp3;
 			}
 			else if (Equals(EFileSystemType.Wav, typeStr))
 			{
-				retval = EFileSystemType.Wav;
+				retVal = EFileSystemType.Wav;
 			}
 			else if (Equals(EFileSystemType.Mid, typeStr))
 			{
-				retval = EFileSystemType.Mid;
+				retVal = EFileSystemType.Mid;
 			}
 			else if (Equals(EFileSystemType.Midi, typeStr))
 			{
-				retval = EFileSystemType.Midi;
+				retVal = EFileSystemType.Midi;
 			}
 			else if (Equals(EFileSystemType.Avi, typeStr))
 			{
-				retval = EFileSystemType.Avi;
+				retVal = EFileSystemType.Avi;
 			}
 			else if (Equals(EFileSystemType.Mpg, typeStr))
 			{
-				retval = EFileSystemType.Mpg;
+				retVal = EFileSystemType.Mpg;
 			}
 			else if (Equals(EFileSystemType.MPeg, typeStr))
 			{
-				retval = EFileSystemType.MPeg;
+				retVal = EFileSystemType.MPeg;
 			}
 			else if (Equals(EFileSystemType.Asf, typeStr))
 			{
-				retval = EFileSystemType.Asf;
+				retVal = EFileSystemType.Asf;
 			}
 			else if (Equals(EFileSystemType.Asx, typeStr))
 			{
-				retval = EFileSystemType.Asx;
+				retVal = EFileSystemType.Asx;
 			}
 			else if (Equals(EFileSystemType.Wma, typeStr))
 			{
-				retval = EFileSystemType.Wma;
+				retVal = EFileSystemType.Wma;
             }
             else if (Equals(EFileSystemType.Wmv, typeStr))
             {
-                retval = EFileSystemType.Wmv;
+                retVal = EFileSystemType.Wmv;
             }
             else if (Equals(EFileSystemType.Smi, typeStr))
             {
-                retval = EFileSystemType.Smi;
+                retVal = EFileSystemType.Smi;
             }
 			else if (Equals(EFileSystemType.Rar, typeStr))
 			{
-				retval = EFileSystemType.Rar;
+				retVal = EFileSystemType.Rar;
 			}
 			else if (Equals(EFileSystemType.Zip, typeStr))
 			{
-				retval = EFileSystemType.Zip;
+				retVal = EFileSystemType.Zip;
 			}
 			else if (Equals(EFileSystemType.Dll, typeStr))
 			{
-				retval = EFileSystemType.Dll;
+				retVal = EFileSystemType.Dll;
             }
             else if (Equals(EFileSystemType.Image, typeStr))
             {
-                retval = EFileSystemType.Image;
+                retVal = EFileSystemType.Image;
             }
             else if (Equals(EFileSystemType.Video, typeStr))
             {
-                retval = EFileSystemType.Video;
+                retVal = EFileSystemType.Video;
             }
 			else if (Equals(EFileSystemType.Directory, typeStr))
 			{
-				retval = EFileSystemType.Directory;
+				retVal = EFileSystemType.Directory;
 			}
 
-			return retval;
+			return retVal;
 		}
 
         public static ListItem GetListItem(EFileSystemType type, bool selected)
@@ -915,7 +915,7 @@ namespace SiteServer.Utils.Enumerations
 
         public static bool IsHtml(string fileExtName)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
                 fileExtName = fileExtName.ToLower().Trim();
@@ -925,10 +925,10 @@ namespace SiteServer.Utils.Enumerations
                 }
                 if (fileExtName == ".asp" || fileExtName == ".aspx" || fileExtName == ".htm" || fileExtName == ".html" || fileExtName == ".jsp" || fileExtName == ".php" || fileExtName == ".shtml")
                 {
-                    retval = true;
+                    retVal = true;
                 }
             }
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -941,7 +941,7 @@ namespace SiteServer.Utils.Enumerations
         {
             if (string.IsNullOrEmpty(fileExtName)) return false;
 
-            var retval = false;
+            var retVal = false;
             fileExtName = fileExtName.ToLower().Trim();
             if (!fileExtName.StartsWith("."))
             {
@@ -949,9 +949,9 @@ namespace SiteServer.Utils.Enumerations
             }
             if (fileExtName == ".css")
             {
-                retval = true;
+                retVal = true;
             }
-            return retval;
+            return retVal;
         }
 
         /// <summary>
@@ -964,7 +964,7 @@ namespace SiteServer.Utils.Enumerations
         {
             if (string.IsNullOrEmpty(fileExtName)) return false;
 
-            var retval = false;
+            var retVal = false;
             fileExtName = fileExtName.ToLower().Trim();
             if (!fileExtName.StartsWith("."))
             {
@@ -972,14 +972,14 @@ namespace SiteServer.Utils.Enumerations
             }
             if (fileExtName == ".js")
             {
-                retval = true;
+                retVal = true;
             }
-            return retval;
+            return retVal;
         }
 
         public static bool IsImage(string fileExtName)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
                 fileExtName = fileExtName.ToLower().Trim();
@@ -989,10 +989,10 @@ namespace SiteServer.Utils.Enumerations
                 }
                 if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpg" || fileExtName == ".jpeg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp")
                 {
-                    retval = true;
+                    retVal = true;
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static bool IsZip(string typeStr)
@@ -1002,7 +1002,7 @@ namespace SiteServer.Utils.Enumerations
 
         public static bool IsFlash(string fileExtName)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
                 fileExtName = fileExtName.ToLower().Trim();
@@ -1012,15 +1012,15 @@ namespace SiteServer.Utils.Enumerations
                 }
                 if (fileExtName == ".swf")
                 {
-                    retval = true;
+                    retVal = true;
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static bool IsPlayer(string fileExtName)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
                 fileExtName = fileExtName.ToLower().Trim();
@@ -1030,15 +1030,15 @@ namespace SiteServer.Utils.Enumerations
                 }
                 if (fileExtName == ".flv" || fileExtName == ".avi" || fileExtName == ".mpg" || fileExtName == ".mpeg" || fileExtName == ".smi" || fileExtName == ".mp3" || fileExtName == ".mid" || fileExtName == ".midi" || fileExtName == ".rm" || fileExtName == ".rmb" || fileExtName == ".rmvb" || fileExtName == ".wmv" || fileExtName == ".wma" || fileExtName == ".asf" || fileExtName == ".mov" || fileExtName == ".mp4")
                 {
-                    retval = true;
+                    retVal = true;
                 }
             }
-            return retval;
+            return retVal;
         }
 
         public static bool IsImageOrFlashOrPlayer(string fileExtName)
         {
-            var retval = false;
+            var retVal = false;
             if (!string.IsNullOrEmpty(fileExtName))
             {
                 fileExtName = fileExtName.ToLower().Trim();
@@ -1048,11 +1048,11 @@ namespace SiteServer.Utils.Enumerations
                 }
                 if (fileExtName == ".bmp" || fileExtName == ".gif" || fileExtName == ".jpeg" || fileExtName == ".jpg" || fileExtName == ".png" || fileExtName == ".pneg" || fileExtName == ".webp" || fileExtName == ".swf")
                 {
-                    retval = true;
+                    retVal = true;
                 }
-                if (retval == false) retval = IsPlayer(fileExtName);
+                if (retVal == false) retVal = IsPlayer(fileExtName);
             }
-            return retval;
+            return retVal;
         }
 
         public static bool IsDownload(EFileSystemType type)

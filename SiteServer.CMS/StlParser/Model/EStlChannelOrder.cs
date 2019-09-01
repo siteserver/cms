@@ -82,34 +82,34 @@ namespace SiteServer.CMS.StlParser.Model
 
 		public static EStlChannelOrder GetEnumType(string typeStr)
 		{
-            var retval = EStlChannelOrder.Default;
+            var retVal = EStlChannelOrder.Default;
 
             if (Equals(EStlChannelOrder.Default, typeStr))
 			{
-                retval = EStlChannelOrder.Default;
+                retVal = EStlChannelOrder.Default;
 			}
             else if (Equals(EStlChannelOrder.Back, typeStr))
 			{
-                retval = EStlChannelOrder.Back;
+                retVal = EStlChannelOrder.Back;
 			}
             else if (Equals(EStlChannelOrder.AddDate, typeStr))
 			{
-                retval = EStlChannelOrder.AddDate;
+                retVal = EStlChannelOrder.AddDate;
 			}
             else if (Equals(EStlChannelOrder.AddDateBack, typeStr))
 			{
-                retval = EStlChannelOrder.AddDateBack;
+                retVal = EStlChannelOrder.AddDateBack;
 			}
             else if (Equals(EStlChannelOrder.Hits, typeStr))
 			{
-                retval = EStlChannelOrder.Hits;
+                retVal = EStlChannelOrder.Hits;
 			}
             else if (Equals(EStlChannelOrder.Random, typeStr))
             {
-                retval = EStlChannelOrder.Random;
+                retVal = EStlChannelOrder.Random;
             }
 
-			return retval;
+			return retVal;
 		}
 
 		public static bool Equals(EStlChannelOrder type, string typeStr)

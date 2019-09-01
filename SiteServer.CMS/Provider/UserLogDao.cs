@@ -200,7 +200,7 @@ namespace SiteServer.CMS.Provider
 
         public DateTime GetLastUserLoginDate(string userName)
         {
-            var retval = DateTime.MinValue;
+            var retVal = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM siteserver_UserLog WHERE UserName = @UserName ORDER BY ID DESC";
             var sqlString = SqlUtils.ToTopSqlString("siteserver_UserLog", "AddDate", "WHERE UserName = @UserName",
                 "ORDER BY ID DESC", 1);
@@ -214,16 +214,16 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    retval = GetDateTime(rdr, 0);
+                    retVal = GetDateTime(rdr, 0);
                 }
                 rdr.Close();
             }
-            return retval;
+            return retVal;
         }
 
         public DateTime GetLastRemoveUserLogDate(string userName)
         {
-            var retval = DateTime.MinValue;
+            var retVal = DateTime.MinValue;
             //const string sqlString = "SELECT TOP 1 AddDate FROM siteserver_UserLog WHERE UserName = @UserName AND Action = '清空数据库日志' ORDER BY ID DESC";
             var sqlString = SqlUtils.ToTopSqlString("siteserver_UserLog", "AddDate",
                 "WHERE UserName = @UserName AND Action = '清空数据库日志'", "ORDER BY ID DESC", 1);
@@ -237,11 +237,11 @@ namespace SiteServer.CMS.Provider
             {
                 if (rdr.Read())
                 {
-                    retval = GetDateTime(rdr, 0);
+                    retVal = GetDateTime(rdr, 0);
                 }
                 rdr.Close();
             }
-            return retval;
+            return retVal;
         }
 
         public List<ILogInfo> List(string userName, int totalNum, string action)

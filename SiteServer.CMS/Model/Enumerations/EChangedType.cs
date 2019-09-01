@@ -56,25 +56,25 @@ namespace SiteServer.CMS.Model.Enumerations
 
 		public static EChangedType GetEnumType(string typeStr)
 		{
-            var retval = EChangedType.Edit;
+            var retVal = EChangedType.Edit;
 
             if (Equals(EChangedType.Add, typeStr))
 			{
-                retval = EChangedType.Add;
+                retVal = EChangedType.Add;
 			}
             else if (Equals(EChangedType.Edit, typeStr))
 			{
-                retval = EChangedType.Edit;
+                retVal = EChangedType.Edit;
             }
             else if (Equals(EChangedType.Delete, typeStr))
             {
-                retval = EChangedType.Delete;
+                retVal = EChangedType.Delete;
             }
             else if (Equals(EChangedType.None, typeStr))
             {
-                retval = EChangedType.None;
+                retVal = EChangedType.None;
             }
-            return retval;
+            return retVal;
 		}
 
 		public static bool Equals(EChangedType type, string typeStr)

@@ -41,7 +41,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var retval = new List<Dictionary<string, object>>();
+                var retVal = new List<Dictionary<string, object>>();
                 foreach (var contentId in contentIdList)
                 {
                     var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
@@ -50,7 +50,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var dict = contentInfo.ToDictionary();
                     dict["checkState"] =
                         CheckManager.GetCheckState(siteInfo, contentInfo);
-                    retval.Add(dict);
+                    retVal.Add(dict);
                 }
 
                 var sites = new List<object>();
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = retval,
+                    Value = retVal,
                     Sites = sites,
                     Channels = channels,
                     Site = siteInfo
