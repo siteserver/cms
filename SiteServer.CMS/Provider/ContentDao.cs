@@ -2501,7 +2501,9 @@ group by tmp.userName";
             }
             else if (searchChannelIdList.Count == 1)
             {
-                whereList.Add($"{nameof(ContentAttribute.ChannelId)} = {channelInfo.Id}");
+                whereList.Add(isTrashOnly
+                    ? $"{nameof(ContentAttribute.ChannelId)} = -{channelInfo.Id}"
+                    : $"{nameof(ContentAttribute.ChannelId)} = {channelInfo.Id}");
             }
             else
             {

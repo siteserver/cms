@@ -68,8 +68,8 @@ namespace SiteServer.CMS.Core
                 assetsUrl = siteInfo.Additional.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl + "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
 

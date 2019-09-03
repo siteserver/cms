@@ -24,29 +24,29 @@ namespace SiteServer.CMS.ImportExport.Components
             _siteInfo = siteInfo;
         }
 
-        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
+        public void ImportContents(string filePath, bool isOverride, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel, string adminName)
         {
             if (!FileUtils.IsFileExists(filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            ImportContents(feed.Entries, nodeInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
+            ImportContents(feed.Entries, channelInfo, taxis, importStart, importCount, false, isChecked, checkedLevel, isOverride, adminName);
         }
 
-        public void ImportContents(string filePath, bool isOverride, ChannelInfo nodeInfo, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public List<int> ImportContents(string filePath, bool isOverride, ChannelInfo channelInfo, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
-            if (!FileUtils.IsFileExists(filePath)) return;
+            if (!FileUtils.IsFileExists(filePath)) return null;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(filePath));
 
-            ImportContents(feed.Entries, nodeInfo, taxis, false, isChecked, checkedLevel, isOverride, adminId, userId, sourceId);
+            return ImportContents(feed.Entries, channelInfo, taxis, false, isChecked, checkedLevel, isOverride, adminId, userId, sourceId);
         }
 
-        public void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, string adminName)
+        public List<int> ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isOverride, string adminName)
         {
-            ImportContents(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
+            return ImportContents(entries, channelInfo, taxis, 0, 0, true, true, 0, isOverride, adminName);
         }
 
         // 内部消化掉错误
-        private void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
+        private List<int> ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, int importStart, int importCount, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, string adminName)
         {
             if (importStart > 1 || importCount > 0)
             {
@@ -82,6 +82,7 @@ namespace SiteServer.CMS.ImportExport.Components
             }
 
             var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
+            var contentIdList = new List<int>();
 
             foreach (AtomEntry entry in entries)
             {
@@ -179,6 +180,7 @@ namespace SiteServer.CMS.ImportExport.Components
                     if (isInsert)
                     {
                         var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
+                        contentIdList.Add(contentId);
 
                         TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
@@ -193,11 +195,14 @@ namespace SiteServer.CMS.ImportExport.Components
                     // ignored
                 }
             }
+
+            return contentIdList;
         }
 
-        private void ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, int userId, int sourceId)
+        private List<int> ImportContents(AtomEntryCollection entries, ChannelInfo channelInfo, int taxis, bool isCheckedBySettings, bool isChecked, int checkedLevel, bool isOverride, int adminId, int userId, int sourceId)
         {
             var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
+            var contentIdList = new List<int>();
 
             foreach (AtomEntry entry in entries)
             {
@@ -298,6 +303,8 @@ namespace SiteServer.CMS.ImportExport.Components
                     {
                         var contentId = DataProvider.ContentDao.InsertWithTaxis(tableName, _siteInfo, channelInfo, contentInfo, taxis);
 
+                        contentIdList.Add(contentId);
+
                         TagUtils.UpdateTags(string.Empty, tags, _siteInfo.Id, contentId);
                     }
 
@@ -311,6 +318,8 @@ namespace SiteServer.CMS.ImportExport.Components
                     // ignored
                 }
             }
+
+            return contentIdList;
         }
 
         public bool ExportContents(SiteInfo siteInfo, int channelId, List<int> contentIdList, bool isPeriods, string dateFrom, string dateTo, ETriState checkedState)

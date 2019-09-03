@@ -2,16 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using Atom.Core;
 using SiteServer.Utils;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport.Components;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Model.Attributes;
 
 namespace SiteServer.CMS.ImportExport
 {
@@ -245,7 +246,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContentsByZipFile(ChannelInfo channelInfo, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var siteContentDirectoryPath = PathUtils.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -253,14 +254,14 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, false);
+            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channelInfo.Id, false);
 
-            ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
+            ImportContents(channelInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
 
-        public void ImportContentsByZipFile(ChannelInfo nodeInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public List<int> ImportContentsByZipFile(ChannelInfo channelInfo, string zipFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var siteContentDirectoryPath = PathUtils.GetTemporaryFilesPath("contents");
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
@@ -268,11 +269,11 @@ namespace SiteServer.CMS.ImportExport
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var tableName = ChannelManager.GetTableName(_siteInfo, nodeInfo);
+            var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
 
-            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, nodeInfo.Id, false);
+            var taxis = DataProvider.ContentDao.GetMaxTaxis(tableName, channelInfo.Id, false);
 
-            ImportContents(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
+            return ImportContents(channelInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
         }
 
         public void ImportContentsByAccessFile(int channelId, string excelFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
@@ -413,7 +414,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public void ImportContentsByCsvFile(ChannelInfo channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public List<int> ImportContentsByCsvFile(ChannelInfo channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var contentInfoList = ExcelObject.GetContentsByCsvFile(csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
@@ -454,6 +455,8 @@ namespace SiteServer.CMS.ImportExport
                     contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
                 }
             }
+
+            return contentInfoList.Select(x => x.Id).ToList();
         }
 
         public void ImportContentsByTxtZipFile(int channelId, string zipFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
@@ -535,7 +538,7 @@ namespace SiteServer.CMS.ImportExport
             }
         }
 
-        public void ImportContentsByTxtFile(ChannelInfo channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public List<int> ImportContentsByTxtFile(ChannelInfo channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var tableName = ChannelManager.GetTableName(_siteInfo, channelInfo);
 
@@ -574,32 +577,39 @@ namespace SiteServer.CMS.ImportExport
             {
                 contentInfo.Id = DataProvider.ContentDao.Insert(tableName, _siteInfo, channelInfo, contentInfo);
             }
+
+            return new List<int>
+            {
+                contentInfo.Id
+            };
         }
 
-        public void ImportContents(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
+        public void ImportContents(ChannelInfo channelInfo, string siteContentDirectoryPath, bool isOverride, int taxis, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
             var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
 
-            contentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, importStart, importCount, isChecked, checkedLevel, _adminName);
+            contentIe.ImportContents(filePath, isOverride, channelInfo, taxis, importStart, importCount, isChecked, checkedLevel, _adminName);
 
             FileUtils.DeleteFileIfExists(filePath);
 
             DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _sitePath, isOverride);
         }
 
-        public void ImportContents(ChannelInfo nodeInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
+        public List<int> ImportContents(ChannelInfo channelInfo, string siteContentDirectoryPath, bool isOverride, int taxis, bool isChecked, int checkedLevel, int adminId, int userId, int sourceId)
         {
             var filePath = PathUtils.Combine(siteContentDirectoryPath, "contents.xml");
 
             var contentIe = new ContentIe(_siteInfo, siteContentDirectoryPath);
 
-            contentIe.ImportContents(filePath, isOverride, nodeInfo, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
+            var contentIdList = contentIe.ImportContents(filePath, isOverride, channelInfo, taxis, isChecked, checkedLevel, adminId, userId, sourceId);
 
             FileUtils.DeleteFileIfExists(filePath);
 
             DirectoryUtils.MoveDirectory(siteContentDirectoryPath, _sitePath, isOverride);
+
+            return contentIdList;
         }
 
         //public void ImportInputContentsByCsvFile(InputInfo inputInfo, string excelFilePath, int importStart, int importCount, bool isChecked)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Plugin.Impl;
@@ -150,6 +151,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var isChecked = checkedLevel >= siteInfo.Additional.CheckContentLevel;
 
+                var contentIdList = new List<int>();
+
                 if (importType == "zip")
                 {
                     foreach (var fileName in fileNames)
@@ -160,10 +163,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        contentIdList.AddRange(importObject.ImportContentsByZipFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
-                
                 else if (importType == "csv")
                 {
                     foreach (var fileName in fileNames)
@@ -174,7 +176,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByCsvFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        contentIdList.AddRange(importObject.ImportContentsByCsvFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
                 else if (importType == "txt")
@@ -186,9 +188,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             continue;
 
                         var importObject = new ImportObject(siteId, request.AdminName);
-                        importObject.ImportContentsByTxtFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default);
+                        contentIdList.AddRange(importObject.ImportContentsByTxtFile(channelInfo, localFilePath, isOverride, isChecked, checkedLevel, request.AdminId, 0, SourceManager.Default));
                     }
                 }
+
+                foreach (var contentId in contentIdList)
+                {
+                    CreateManager.CreateContent(siteId, channelInfo.Id, contentId);
+                }
+                CreateManager.CreateChannel(siteId, channelInfo.Id);
 
                 request.AddSiteLog(siteId, channelId, 0, "导入内容", string.Empty);
 

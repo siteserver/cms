@@ -99,6 +99,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
+                var calculatedContentInfoList = new List<ContentInfo>();
+
                 if (contentIds.Count == 0)
                 {
                     var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
@@ -142,7 +144,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                                     }
                                 }
 
-                                contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                                contentInfoList.Add(contentInfo);
+                                calculatedContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                             }
                         }
                     }
@@ -176,7 +179,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             }
                         }
 
-                        contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                        contentInfoList.Add(contentInfo);
+                        calculatedContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 
@@ -197,7 +201,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         var fileName = $"{channelInfo.ChannelName}.csv";
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
+                        ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, calculatedContentInfoList, columnNames);
                         downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                     }
                 }
