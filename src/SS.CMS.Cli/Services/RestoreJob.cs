@@ -11,6 +11,8 @@ using SS.CMS.Repositories;
 using SS.CMS.Services;
 using SS.CMS.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using SS.CMS.Core.Common;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace SS.CMS.Cli.Services
 {
@@ -27,7 +29,7 @@ namespace SS.CMS.Cli.Services
         public static void PrintUsage()
         {
             Console.WriteLine("数据库恢复: siteserver restore");
-            var job = new RestoreJob(null, null);
+            var job = new RestoreJob(null, null, null, null);
             job._options.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
         }
@@ -41,12 +43,17 @@ namespace SS.CMS.Cli.Services
         private bool _dataOnly;
         private bool _isHelp;
         private readonly OptionSet _options;
+        private IDistributedCache _cache;
+        private ISettingsManager _settingsManager;
         private IConfigRepository _configRepository;
-        private ITableManager _tableManager;
-        public RestoreJob(IConfigRepository configRepository, ITableManager tableManager)
+        private IDatabaseRepository _databaseRepository;
+
+        public RestoreJob(IDistributedCache cache, ISettingsManager settingsManager, IConfigRepository configRepository, IDatabaseRepository databaseRepository)
         {
+            _cache = cache;
+            _settingsManager = settingsManager;
             _configRepository = configRepository;
-            _tableManager = tableManager;
+            _databaseRepository = databaseRepository;
 
             _options = new OptionSet {
                 { "d|directory=", "从指定的文件夹中恢复数据",
@@ -120,7 +127,10 @@ namespace SS.CMS.Cli.Services
                 }
 
                 // 恢复前先创建表，确保系统在恢复的数据库中能够使用
-                await _tableManager.SyncSystemTablesAsync();
+
+                var (databaseRepository, repositories) = DatabaseUtils.GetAllRepositories(_cache, _settingsManager);
+
+                await databaseRepository.SyncSystemTablesAsync(repositories);
             }
 
             var tableNames = TranslateUtils.JsonDeserialize<List<string>>(await FileUtils.ReadTextAsync(tablesFilePath, Encoding.UTF8));
@@ -174,7 +184,7 @@ namespace SS.CMS.Cli.Services
                     }
                     else
                     {
-                        await _tableManager.AlterSystemTableAsync(tableName, tableInfo.Columns);
+                        await _databaseRepository.AlterSystemTableAsync(tableName, tableInfo.Columns);
                     }
 
                     if (tableInfo.RowFiles.Count > 0)
@@ -246,8 +256,8 @@ namespace SS.CMS.Cli.Services
             if (!_dataOnly)
             {
                 // 恢复后同步表，确保内容辅助表字段与系统一致
-                _tableManager.SyncContentTables();
-                await _tableManager.UpdateConfigVersionAsync();
+                _databaseRepository.SyncContentTables();
+                await _databaseRepository.UpdateConfigVersionAsync();
             }
 
             await Console.Out.WriteLineAsync($"恭喜，成功从文件夹：{treeInfo.DirectoryPath} 恢复数据！");

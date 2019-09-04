@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Models;
@@ -43,7 +43,7 @@ namespace SS.CMS.Core.StlParser.StlElement
         {
             var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, listInfo.UpLevel, listInfo.TopLevel);
 
-            channelId = await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
+            channelId = await parseContext.ChannelRepository.GetIdAsync(parseContext.SiteId, channelId, listInfo.ChannelIndex, listInfo.ChannelName);
 
             return await parseContext.GetContainerContentListAsync(parseContext.SiteInfo, channelId, parseContext.ContentId, listInfo.GroupContent, listInfo.GroupContentNot, listInfo.Tags, listInfo.IsImage, listInfo.IsVideo, listInfo.IsFile, listInfo.IsRelatedContents, listInfo.StartNum, listInfo.TotalNum, listInfo.Order, listInfo.IsTop, listInfo.IsRecommend, listInfo.IsHot, listInfo.IsColor, listInfo.Scope, listInfo.GroupChannel, listInfo.GroupChannelNot, listInfo.Others);
         }
@@ -254,8 +254,9 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var content in contentList)
             {
-                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(content.Value.ChannelId);
-                var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(content.Value.Id);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(content.Value.ChannelId);
+                var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+                var contentInfo = await contentRepository.GetContentInfoAsync(content.Value.Id);
 
                 if (contentInfo != null)
                 {

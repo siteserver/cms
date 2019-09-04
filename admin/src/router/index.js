@@ -83,9 +83,11 @@ export const constantRoutes = [
     component: Layout
   },
   {
-    path: '/sites/:id',
+    path: '/sites/:siteId(\\d+)',
     component: Layout,
-    children: sitesChildren
+    children: sitesChildren,
+    meta: { noCache: true },
+    hidden: true
   },
   {
     path: '/plugins',

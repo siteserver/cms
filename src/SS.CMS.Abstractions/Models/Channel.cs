@@ -1,19 +1,20 @@
 ﻿using System;
-using Newtonsoft.Json;
 using SS.CMS.Data;
-using SS.CMS.Repositories.IContentRepository;
 
 namespace SS.CMS.Models
 {
     [Serializable]
     [DataTable("siteserver_Channel")]
-    public class Channel : Entity, ICloneable
+    public partial class Channel : Entity, ICloneable
     {
         [DataColumn]
         public string ChannelName { get; set; }
 
         [DataColumn]
         public int SiteId { get; set; }
+
+        [DataColumn]
+        public string TableName { get; set; }
 
         [DataColumn]
         public string ContentModelPluginId { get; set; }
@@ -26,15 +27,6 @@ namespace SS.CMS.Models
 
         [DataColumn]
         public string ParentsPath { get; set; }
-
-        [DataColumn]
-        public int ParentsCount { get; set; }
-
-        [DataColumn]
-        public int ChildrenCount { get; set; }
-
-        [DataColumn]
-        public bool IsLastNode { get; set; }
 
         [DataColumn]
         public string IndexName { get; set; }
@@ -80,15 +72,6 @@ namespace SS.CMS.Models
 
         [DataColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
-
-        public object Clone()
-        {
-            return (Channel)MemberwiseClone();
-        }
-
-        [JsonIgnore]
-        [DataIgnore]
-        public IContentRepository ContentRepository { get; set; }
 
         //是否可以添加栏目
         public bool IsChannelAddable { get; set; } = true;

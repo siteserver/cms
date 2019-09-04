@@ -214,11 +214,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                     var targetChannelId = contentInfo.SourceId;
                     //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
                     var targetSiteId = await parseContext.ChannelRepository.GetSiteIdAsync(targetChannelId);
-                    var targetSiteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(targetSiteId);
-                    var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
+                    var targetSiteInfo = await parseContext.SiteRepository.GetSiteAsync(targetSiteId);
+                    var targetNodeInfo = await parseContext.ChannelRepository.GetChannelAsync(targetChannelId);
+                    var targetContentRepository = parseContext.ChannelRepository.GetContentRepository(targetSiteInfo, targetNodeInfo);
 
                     //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                    var targetContentInfo = await targetNodeInfo.ContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
+                    var targetContentInfo = await targetContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
                     if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                     {
                         //标题可以使用自己的
@@ -245,11 +246,11 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (ContentAttribute.Title.ToLower().Equals(type))
                 {
-                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.ChannelId);
-                    var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(nodeInfo);
-                    var tableName = await parseContext.ChannelRepository.GetTableNameAsync(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(contentInfo.ChannelId);
+                    var relatedIdentities = parseContext.TableStyleRepository.GetRelatedIdentities(nodeInfo);
+                    var tableName = parseContext.ChannelRepository.GetTableName(parseContext.SiteInfo, nodeInfo);
 
-                    var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
+                    var styleInfo = await parseContext.TableStyleRepository.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
                     parsedContent = InputParserUtility.GetContentByTableStyle(parseContext.FileManager, parseContext.UrlManager, parseContext.SettingsManager, contentInfo.Title, separator, parseContext.SiteInfo, styleInfo, formatString, parseContext.Attributes, parseContext.InnerHtml, false);
                     parsedContent = InputTypeUtils.ParseString(styleInfo.Type, parsedContent, replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
 
@@ -549,15 +550,15 @@ namespace SS.CMS.Core.StlParser.StlElement
                 }
                 else
                 {
-                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.ChannelId);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(contentInfo.ChannelId);
 
                     if (contentInfo.ContainsKey(type))
                     {
                         if (!StringUtils.ContainsIgnoreCase(ContentAttribute.AllAttributes.Value, type))
                         {
-                            var relatedIdentities = parseContext.TableManager.GetRelatedIdentities(nodeInfo);
-                            var tableName = await parseContext.ChannelRepository.GetTableNameAsync(parseContext.PluginManager, parseContext.SiteInfo, nodeInfo);
-                            var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
+                            var relatedIdentities = parseContext.TableStyleRepository.GetRelatedIdentities(nodeInfo);
+                            var tableName = parseContext.ChannelRepository.GetTableName(parseContext.SiteInfo, nodeInfo);
+                            var styleInfo = await parseContext.TableStyleRepository.GetTableStyleInfoAsync(tableName, type, relatedIdentities);
 
                             //styleInfo.IsVisible = false 表示此字段不需要显示 styleInfo.TableStyleId = 0 不能排除，因为有可能是直接辅助表字段没有添加显示样式
                             var num = TranslateUtils.ToInt(no);

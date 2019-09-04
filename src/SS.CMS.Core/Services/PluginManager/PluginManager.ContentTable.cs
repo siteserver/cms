@@ -26,11 +26,11 @@ namespace SS.CMS.Core.Services
 
             if (!await db.IsTableExistsAsync(tableName))
             {
-                await _tableManager.CreateContentTableAsync(tableName, tableColumns);
+                await _databaseRepository.CreateContentTableAsync(tableName, tableColumns);
             }
             else
             {
-                await _tableManager.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
+                await _databaseRepository.AlterSystemTableAsync(tableName, tableColumns, ContentAttribute.DropAttributes.Value);
             }
 
             await ContentTableCreateOrUpdateStylesAsync(tableName, service.ContentInputStyles);
@@ -62,7 +62,7 @@ namespace SS.CMS.Core.Services
             foreach (var inputStyle in inputStyles)
             {
                 columnTaxis++;
-                var styleInfo = await _tableManager.GetTableStyleInfoAsync(tableName, inputStyle.AttributeName, new List<int> { 0 });
+                var styleInfo = await _tableStyleRepository.GetTableStyleInfoAsync(tableName, inputStyle.AttributeName, new List<int> { 0 });
 
                 var isEquals = true;
 

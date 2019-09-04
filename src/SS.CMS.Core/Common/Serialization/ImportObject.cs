@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Common.Office;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.Serialization.Components;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -26,7 +26,6 @@ namespace SS.CMS.Core.Serialization
         private ICreateManager _createManager;
         private IPathManager _pathManager;
         private IFileManager _fileManager;
-        private ITableManager _tableManager;
         private IDbCacheRepository _dbCacheRepository;
         private ISiteRepository _siteRepository;
         private IChannelRepository _channelRepository;
@@ -38,7 +37,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task LoadAsync(int siteId, int userId)
         {
-            _siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            _siteInfo = await _siteRepository.GetSiteAsync(siteId);
             _sitePath = PathUtils.Combine(_settingsManager.WebRootPath, _siteInfo.SiteDir);
             _userId = userId;
         }
@@ -268,7 +267,9 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var taxis = await nodeInfo.ContentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, nodeInfo);
+
+            var taxis = await contentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
 
             await ImportContentsAsync(nodeInfo, siteContentDirectoryPath, isOverride, taxis, importStart, importCount, isChecked, checkedLevel);
         }
@@ -281,15 +282,19 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, siteContentDirectoryPath);
 
-            var taxis = await nodeInfo.ContentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, nodeInfo);
+
+            var taxis = await contentRepository.GetMaxTaxisAsync(nodeInfo.Id, false);
 
             await ImportContentsAsync(nodeInfo, siteContentDirectoryPath, isOverride, taxis, isChecked, checkedLevel, userId, sourceId);
         }
 
         public async Task ImportContentsByCsvFileAsync(int channelId, string csvFilePath, bool isOverride, int importStart, int importCount, bool isChecked, int checkedLevel)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, channelInfo);
+
+            var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
             if (importStart > 1 || importCount > 0)
@@ -331,23 +336,23 @@ namespace SS.CMS.Core.Serialization
                 contentInfo.CheckedLevel = checkedLevel;
                 if (isOverride)
                 {
-                    var existsIds = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = await contentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count() > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            await channelInfo.ContentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
+                            await contentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                 }
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
             }
@@ -355,7 +360,8 @@ namespace SS.CMS.Core.Serialization
 
         public async Task ImportContentsByCsvFileAsync(Channel channelInfo, string csvFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
-            var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, channelInfo);
+            var contentInfoList = await ExcelObject.GetContentsByCsvFileAsync(_pluginManager, _tableStyleRepository, csvFilePath, _siteInfo, channelInfo);
             contentInfoList.Reverse();
 
             foreach (var contentInfo in contentInfoList)
@@ -368,23 +374,23 @@ namespace SS.CMS.Core.Serialization
 
                 if (isOverride)
                 {
-                    var existsIds = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    var existsIds = await contentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
                     if (existsIds.Count() > 0)
                     {
                         foreach (var id in existsIds)
                         {
                             contentInfo.Id = id;
-                            await channelInfo.ContentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
+                            await contentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                 }
             }
         }
@@ -397,7 +403,8 @@ namespace SS.CMS.Core.Serialization
 
             ZipUtils.ExtractZip(zipFilePath, directoryPath);
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, channelInfo);
 
             var contentInfoList = TxtObject.GetContentListByTxtFile(directoryPath, _siteInfo, channelInfo);
 
@@ -443,23 +450,23 @@ namespace SS.CMS.Core.Serialization
 
                 if (isOverride)
                 {
-                    var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                    var existsIDs = await contentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
                     if (existsIDs.Count() > 0)
                     {
                         foreach (int id in existsIDs)
                         {
                             contentInfo.Id = id;
-                            await channelInfo.ContentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
+                            await contentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
                         }
                     }
                     else
                     {
-                        contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                        contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                 }
 
                 //this.FSO.AddContentToWaitingCreate(contentInfo.ChannelId, contentID);
@@ -468,6 +475,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task ImportContentsByTxtFileAsync(Channel channelInfo, string txtFilePath, bool isOverride, bool isChecked, int checkedLevel, int userId, int sourceId)
         {
+            var contentRepository = _channelRepository.GetContentRepository(_siteInfo, channelInfo);
             var contentInfo = new Content
             {
                 SiteId = channelInfo.SiteId,
@@ -483,23 +491,23 @@ namespace SS.CMS.Core.Serialization
 
             if (isOverride)
             {
-                var existsIDs = await channelInfo.ContentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
+                var existsIDs = await contentRepository.GetIdListBySameTitleAsync(contentInfo.ChannelId, contentInfo.Title);
                 if (existsIDs.Count() > 0)
                 {
                     foreach (var id in existsIDs)
                     {
                         contentInfo.Id = id;
-                        await channelInfo.ContentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
+                        await contentRepository.UpdateAsync(_siteInfo, channelInfo, contentInfo);
                     }
                 }
                 else
                 {
-                    contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                    contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
                 }
             }
             else
             {
-                contentInfo.Id = await channelInfo.ContentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
+                contentInfo.Id = await contentRepository.InsertAsync(_siteInfo, channelInfo, contentInfo);
             }
         }
 

@@ -15,7 +15,7 @@ namespace SS.CMS.Core.Repositories
     {
         public async Task RemoveCacheBySiteIdAsync(string tableName, int siteId)
         {
-            foreach (var channelId in await _channelRepository.GetChannelIdListAsync(siteId))
+            foreach (var channelId in await _channelRepository.GetIdListAsync(siteId))
             {
                 ListRemove(channelId);
             }
@@ -39,7 +39,7 @@ namespace SS.CMS.Core.Repositories
 
             ListAdd(channelInfo, contentInfo);
 
-            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
             await CountAddAsync(tableName, contentInfo);
         }
 
@@ -55,7 +55,7 @@ namespace SS.CMS.Core.Repositories
 
                 if (CountIsChanged(contentInfo, contentInfoToUpdate))
                 {
-                    var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
+                    var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
                     await CountRemoveAsync(tableName, contentInfo);
                     await CountAddAsync(tableName, contentInfoToUpdate);
                 }

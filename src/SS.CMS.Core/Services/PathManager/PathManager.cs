@@ -11,15 +11,15 @@ namespace SS.CMS.Core.Services
     public partial class PathManager : IPathManager
     {
         private readonly ISettingsManager _settingsManager;
-        private readonly ITableManager _tableManager;
+        private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly ITemplateRepository _templateRepository;
 
-        public PathManager(ISettingsManager settingsManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
+        public PathManager(ISettingsManager settingsManager, ITableStyleRepository tableStyleRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITemplateRepository templateRepository)
         {
             _settingsManager = settingsManager;
-            _tableManager = tableManager;
+            _tableStyleRepository = tableStyleRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _templateRepository = templateRepository;

@@ -110,20 +110,20 @@ namespace SS.CMS.Core.Services
             string oldPsPath;
             if (oldParentSiteId != 0)
             {
-                var oldSiteInfo = await _siteRepository.GetSiteInfoAsync(oldParentSiteId);
+                var oldSiteInfo = await _siteRepository.GetSiteAsync(oldParentSiteId);
 
                 oldPsPath = PathUtils.Combine(_pathManager.GetSitePath(oldSiteInfo), siteDir);
             }
             else
             {
-                var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+                var siteInfo = await _siteRepository.GetSiteAsync(siteId);
                 oldPsPath = _pathManager.GetSitePath(siteInfo);
             }
 
             string newPsPath;
             if (newParentSiteId != 0)
             {
-                var newSiteInfo = await _siteRepository.GetSiteInfoAsync(newParentSiteId);
+                var newSiteInfo = await _siteRepository.GetSiteAsync(newParentSiteId);
 
                 newPsPath = PathUtils.Combine(_pathManager.GetSitePath(newSiteInfo), siteDir);
             }

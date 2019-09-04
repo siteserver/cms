@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using SS.CMS.Data;
-using SS.CMS.Repositories.IContentRepository;
 
 namespace SS.CMS.Models
 {
     [Serializable]
     [DataTable("siteserver_Site")]
-    public class Site : Entity
+    public partial class Site : Entity
     {
         /// <summary>
         /// 站点名称。
@@ -49,14 +46,6 @@ namespace SS.CMS.Models
 
         [DataColumn(Text = true, Extend = true)]
         public string ExtendValues { get; set; }
-
-
-        [JsonIgnore]
-        [DataIgnore]
-        public IContentRepository ContentRepository { get; set; }
-
-        [DataIgnore]
-        public IList<Site> Children { get; set; }
 
         /****************站点设置********************/
 

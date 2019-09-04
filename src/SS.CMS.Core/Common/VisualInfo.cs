@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Common
         {
             var visualInfo = new VisualInfo
             {
-                SiteInfo = await siteRepository.GetSiteInfoAsync(siteId),
+                SiteInfo = await siteRepository.GetSiteAsync(siteId),
                 ChannelId = channelId,
                 ContentId = contentId,
                 TemplateInfo = null,

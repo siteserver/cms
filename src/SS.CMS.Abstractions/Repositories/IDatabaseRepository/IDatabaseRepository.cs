@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Data;
 
-namespace SS.CMS.Services
+namespace SS.CMS.Repositories
 {
-    public partial interface ITableManager
+    public partial interface IDatabaseRepository
     {
+        IDatabase Database { get; }
+
         Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName);
 
         Task<IEnumerable<TableColumn>> GetTableColumnInfoListAsync(string tableName, List<string> excludeAttributeNameList);
@@ -23,18 +24,6 @@ namespace SS.CMS.Services
 
         Task<List<string>> GetTableColumnNameListAsync(string tableName, DataType excludeDataType);
 
-        Task<(bool IsSuccess, Exception Ex)> CreateTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, bool isContentTable);
-
-        Task AlterTableAsync(string tableName, IList<TableColumn> tableColumns, string pluginId, IList<string> dropColumnNames = null);
-
-        Task AlterSystemTableAsync(string tableName, IList<TableColumn> tableColumns, IList<string> dropColumnNames = null);
-
-        Task<(bool IsSuccess, string ErrorMessage)> InstallDatabaseAsync(string adminName, string adminPassword);
-
-        Task SyncSystemTablesAsync();
-
-        Task UpdateConfigVersionAsync();
-
-        Task SyncDatabaseAsync();
+        List<TableColumn> ContentTableDefaultColumns { get; }
     }
 }

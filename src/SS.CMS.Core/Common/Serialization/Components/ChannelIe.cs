@@ -25,7 +25,7 @@ namespace SS.CMS.Core.Serialization.Components
         private const string ChannelTemplateName = "ChannelTemplateName";
         private const string ContentTemplateName = "ContentTemplateName";
 
-        public async Task ImportNodeInfoAsync(Channel channelInfo, ScopedElementCollection additionalElements, int parentId, IEnumerable<string> indexNames)
+        public async Task ImportChannelAsync(Channel channelInfo, ScopedElementCollection additionalElements, int parentId, IEnumerable<string> indexNames)
         {
             var indexNameList = new List<string>();
             if (indexNames != null)
@@ -78,7 +78,7 @@ namespace SS.CMS.Core.Serialization.Components
             channelInfo.ExtendValues = AtomUtility.GetDcElementContent(additionalElements, ChannelAttribute.ExtendValues);
         }
 
-        public async Task<AtomFeed> ExportNodeInfoAsync(Channel channelInfo)
+        public async Task<AtomFeed> ExportChannelAsync(Channel channelInfo)
         {
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -89,9 +89,6 @@ namespace SS.CMS.Core.Serialization.Components
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ContentRelatedPluginIds, channelInfo.ContentRelatedPluginIds);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentId, channelInfo.ParentId.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsPath, channelInfo.ParentsPath);
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ParentsCount, channelInfo.ParentsCount.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.ChildrenCount, channelInfo.ChildrenCount.ToString());
-            AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.IsLastNode, channelInfo.IsLastNode.ToString());
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.IndexName, "NodeIndexName" }, channelInfo.IndexName);
             AtomUtility.AddDcElement(feed.AdditionalElements, new List<string> { ChannelAttribute.GroupNameCollection, "NodeGroupNameCollection" }, channelInfo.GroupNameCollection);
             AtomUtility.AddDcElement(feed.AdditionalElements, ChannelAttribute.Taxis, channelInfo.Taxis.ToString());

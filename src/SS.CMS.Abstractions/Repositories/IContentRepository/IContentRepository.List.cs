@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
-namespace SS.CMS.Repositories.IContentRepository
+namespace SS.CMS.Repositories
 {
     public partial interface IContentRepository
     {

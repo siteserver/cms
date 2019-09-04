@@ -40,10 +40,8 @@ namespace SS.CMS.Cli
 
                 var services = new ServiceCollection();
 
-                services.AddMemoryCache();
-                services.AddDistributedMemoryCache();
-
                 var settingsManager = services.AddSettingsManager(configuration, contentRootPath, PathUtils.Combine(contentRootPath, "wwwroot"));
+                services.AddDistributedCache(settingsManager.CacheType, settingsManager.CacheConnectionString);
 
                 services.AddRepositories();
                 services.AddPathManager();
@@ -51,7 +49,6 @@ namespace SS.CMS.Cli
                 services.AddUrlManager();
                 services.AddFileManager();
                 services.AddCreateManager();
-                services.AddTableManager();
 
                 services.AddTransient<Application>();
                 services.AddTransient<BackupJob>();

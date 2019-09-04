@@ -191,7 +191,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     parsedContent = parseContext.SiteInfo.Get<string>(type);
                     if (!string.IsNullOrEmpty(parsedContent))
                     {
-                        var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.SiteRepository.TableName, type, parseContext.TableManager.GetRelatedIdentities(parseContext.SiteId));
+                        var styleInfo = await parseContext.TableStyleRepository.GetTableStyleInfoAsync(parseContext.SiteRepository.TableName, type, parseContext.TableStyleRepository.GetRelatedIdentities(parseContext.SiteId));
 
                         // 如果 styleInfo.TableStyleId <= 0，表示此字段已经被删除了，不需要再显示值了 ekun008
                         if (styleInfo.Id > 0)

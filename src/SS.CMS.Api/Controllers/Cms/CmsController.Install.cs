@@ -168,44 +168,46 @@ namespace SS.CMS.Api.Controllers.Cms
             var userMenuRepository = new UserMenuRepository(_cache, _settingsManager);
             var userRepository = new UserRepository(_cache, _settingsManager, configRepository, userRoleRepository);
             var permissionRepository = new PermissionRepository(_settingsManager, roleRepository);
-            var channelRepository = new ChannelRepository(_cache, _settingsManager, userRepository, channelGroupRepository, siteRepository);
-            var templateRepository = new TemplateRepository(_cache, _settingsManager, siteRepository, channelRepository, templateLogRepository);
-            var tableStyleRepository = new TableStyleRepository(_cache, _settingsManager, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
 
-            var tableManager = new TableManager(
-                _cache,
-                database,
-                _settingsManager,
-                accessTokenRepository,
-                areaRepository,
-                channelGroupRepository,
-                channelRepository,
-                configRepository,
-                contentCheckRepository,
-                contentGroupRepository,
-                dbCacheRepository,
-                departmentRepository,
-                errorLogRepository,
-                logRepository,
-                permissionRepository,
-                pluginConfigRepository,
-                pluginRepository,
-                relatedFieldItemRepository,
-                relatedFieldRepository,
-                roleRepository,
-                siteLogRepository,
-                siteRepository,
-                specialRepository,
-                tableStyleItemRepository,
-                tableStyleRepository,
-                tagRepository,
-                templateLogRepository,
-                templateRepository,
-                userGroupRepository,
-                userLogRepository,
-                userMenuRepository,
-                userRepository,
-                userRoleRepository);
+            var databaseRepository = new DatabaseRepository(_cache, _settingsManager, configRepository, errorLogRepository, userRepository);
+
+            var channelRepository = new ChannelRepository(_cache, _settingsManager, databaseRepository, contentCheckRepository, userRepository, siteRepository, channelGroupRepository, tagRepository, errorLogRepository);
+
+            var tableStyleRepository = new TableStyleRepository(_cache, _settingsManager, databaseRepository, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
+
+            var templateRepository = new TemplateRepository(_cache, _settingsManager, siteRepository, channelRepository, templateLogRepository);
+
+            var repositories = new List<IRepository>();
+            repositories.Add(accessTokenRepository);
+            repositories.Add(areaRepository);
+            repositories.Add(channelGroupRepository);
+            repositories.Add(channelRepository);
+            repositories.Add(configRepository);
+            repositories.Add(contentCheckRepository);
+            repositories.Add(contentGroupRepository);
+            repositories.Add(dbCacheRepository);
+            repositories.Add(departmentRepository);
+            repositories.Add(errorLogRepository);
+            repositories.Add(logRepository);
+            repositories.Add(permissionRepository);
+            repositories.Add(pluginConfigRepository);
+            repositories.Add(pluginRepository);
+            repositories.Add(relatedFieldItemRepository);
+            repositories.Add(relatedFieldRepository);
+            repositories.Add(roleRepository);
+            repositories.Add(siteLogRepository);
+            repositories.Add(siteRepository);
+            repositories.Add(specialRepository);
+            repositories.Add(tableStyleItemRepository);
+            repositories.Add(tableStyleRepository);
+            repositories.Add(tagRepository);
+            repositories.Add(templateLogRepository);
+            repositories.Add(templateRepository);
+            repositories.Add(userGroupRepository);
+            repositories.Add(userLogRepository);
+            repositories.Add(userMenuRepository);
+            repositories.Add(userRepository);
+            repositories.Add(userRoleRepository);
 
             // await tableManager.SyncDatabaseAsync();
 
@@ -227,7 +229,7 @@ namespace SS.CMS.Api.Controllers.Cms
 
             // var (isSuccess, userId, errorMessage) = await userRepository.InsertAsync(userInfo);
 
-            var (isSuccess, errorMessage) = await tableManager.InstallDatabaseAsync(install.AdminName, install.AdminPassword);
+            var (isSuccess, errorMessage) = await databaseRepository.InstallDatabaseAsync(install.AdminName, install.AdminPassword, repositories);
 
             // var path = PathUtils.Combine(_settingsManager.ContentRootPath, Constants.ConfigFileName);
 

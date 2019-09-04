@@ -23,25 +23,25 @@ namespace SS.CMS.Repositories
 
         Task<int> GetTableCountAsync(string tableName);
 
-        Task<IEnumerable<int>> GetSiteIdListAsync();
+        Task<IEnumerable<int>> GetIdListAsync();
 
-        Task<IList<Site>> GetSiteInfoListAsync();
+        Task<IList<Site>> GetSiteListAsync();
 
-        Task<IList<Site>> GetSiteInfoListAsync(int parentId);
+        Task<IList<Site>> GetSiteListAsync(int parentId);
 
-        Task<Site> GetSiteInfoAsync(int siteId);
+        Task<Site> GetSiteAsync(int siteId);
 
-        Task<Site> GetSiteInfoBySiteNameAsync(string siteName);
+        Task<Site> GetSiteBySiteNameAsync(string siteName);
 
-        Task<Site> GetSiteInfoByIsRootAsync();
+        Task<Site> GetSiteByIsRootAsync();
 
-        Task<int> GetSiteIdByIsRootAsync();
+        Task<int> GetIdByIsRootAsync();
 
-        Task<Site> GetSiteInfoBySiteDirAsync(string siteDir);
+        Task<Site> GetSiteBySiteDirAsync(string siteDir);
 
-        Task<int> GetSiteIdBySiteDirAsync(string siteDir);
+        Task<int> GetIdBySiteDirAsync(string siteDir);
 
-        Task<List<int>> GetSiteIdListOrderByLevelAsync();
+        Task<List<int>> GetIdListOrderByLevelAsync();
 
         Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, List<int> siteIdCollection, int siteId);
 

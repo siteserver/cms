@@ -17,7 +17,6 @@ namespace SS.CMS.Core.Serialization.Components
         private readonly ICreateManager _createManager;
         private readonly IPathManager _pathManager;
         private readonly IFileManager _fileManager;
-        private readonly ITableManager _tableManager;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IChannelGroupRepository _channelGroupRepository;
@@ -34,9 +33,9 @@ namespace SS.CMS.Core.Serialization.Components
 
         public async Task ExportTableStylesAsync(int siteId, string tableName)
         {
-            var allRelatedIdentities = await _channelRepository.GetChannelIdListAsync(siteId);
+            var allRelatedIdentities = await _channelRepository.GetIdListAsync(siteId);
             allRelatedIdentities.Insert(0, 0);
-            var tableStyleInfoWithItemsDict = await _tableManager.GetTableStyleInfoWithItemsDictionaryAsync(tableName, allRelatedIdentities);
+            var tableStyleInfoWithItemsDict = await _tableStyleRepository.GetTableStyleInfoWithItemsDictionaryAsync(tableName, allRelatedIdentities);
             if (tableStyleInfoWithItemsDict == null || tableStyleInfoWithItemsDict.Count <= 0) return;
 
             var styleDirectoryPath = PathUtils.Combine(_directoryPath, tableName);
@@ -118,15 +117,15 @@ namespace SS.CMS.Core.Serialization.Components
             return entry;
         }
 
-        public static async Task SingleExportTableStylesAsync(ITableManager tableManager, IChannelRepository channelRepository, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string tableName, int siteId, int relatedIdentity, string styleDirectoryPath)
         {
-            var channelInfo = await channelRepository.GetChannelInfoAsync(relatedIdentity);
-            var relatedIdentities = tableManager.GetRelatedIdentities(channelInfo);
+            var channelInfo = await channelRepository.GetChannelAsync(relatedIdentity);
+            var relatedIdentities = tableStyleRepository.GetRelatedIdentities(channelInfo);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await tableManager.GetStyleInfoListAsync(tableName, relatedIdentities);
+            var styleInfoList = await tableStyleRepository.GetStyleInfoListAsync(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");
@@ -144,14 +143,14 @@ namespace SS.CMS.Core.Serialization.Components
             }
         }
 
-        public static async Task SingleExportTableStylesAsync(ITableManager tableManager, IChannelRepository channelRepository, string tableName, string styleDirectoryPath)
+        public static async Task SingleExportTableStylesAsync(ITableStyleRepository tableStyleRepository, IChannelRepository channelRepository, string tableName, string styleDirectoryPath)
         {
             var relatedIdentities = new List<int> { 0 };
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(styleDirectoryPath);
 
-            var styleInfoList = await tableManager.GetStyleInfoListAsync(tableName, relatedIdentities);
+            var styleInfoList = await tableStyleRepository.GetStyleInfoListAsync(tableName, relatedIdentities);
             foreach (var tableStyleInfo in styleInfoList)
             {
                 var filePath = PathUtils.Combine(styleDirectoryPath, tableStyleInfo.AttributeName + ".xml");

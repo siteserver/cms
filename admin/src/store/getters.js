@@ -1,6 +1,5 @@
 const getters = {
   sidebar: state => state.app.sidebar,
-  topMenu: state => state.app.topMenu,
   language: state => state.app.language,
   size: state => state.app.size,
   device: state => state.app.device,

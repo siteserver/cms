@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Services
     {
         public async Task<string> GetSitePathAsync(int siteId, string virtualPath)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             return MapPath(siteInfo, virtualPath);
         }
 
@@ -112,7 +112,7 @@ namespace SS.CMS.Core.Services
         private async Task<string> GetChannelFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var nodeInfo = await _channelRepository.GetChannelAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ChannelFilePathRule;
@@ -142,7 +142,7 @@ namespace SS.CMS.Core.Services
         private async Task<string> GetContentFilePathRuleAsync(int siteId, int channelId)
         {
             if (channelId == 0) return string.Empty;
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var nodeInfo = await _channelRepository.GetChannelAsync(channelId);
             if (nodeInfo == null) return string.Empty;
 
             var filePathRule = nodeInfo.ContentFilePathRule;
@@ -156,7 +156,7 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetChannelPageFilePathAsync(Site siteInfo, int channelId, int currentPageIndex)
         {
-            var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var nodeInfo = await _channelRepository.GetChannelAsync(channelId);
             if (nodeInfo.ParentId == 0)
             {
                 var templateInfo = await _templateRepository.GetDefaultTemplateInfoAsync(siteInfo.Id, TemplateType.IndexPageTemplate);
@@ -188,8 +188,9 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetContentPageFilePathAsync(Site siteInfo, int channelId, int contentId, int currentPageIndex)
         {
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+            var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+            var contentInfo = await contentRepository.GetContentInfoAsync(contentId);
             return await GetContentPageFilePathAsync(siteInfo, channelId, contentInfo, currentPageIndex);
         }
 
@@ -288,7 +289,7 @@ namespace SS.CMS.Core.Services
 
         public async Task<string> GetSitePathAsync(int siteId, params string[] paths)
         {
-            return GetSitePath(await _siteRepository.GetSiteInfoAsync(siteId), paths);
+            return GetSitePath(await _siteRepository.GetSiteAsync(siteId), paths);
         }
 
         public string GetSitePath(Site siteInfo, params string[] paths)
@@ -437,13 +438,13 @@ namespace SS.CMS.Core.Services
         {
             if (siteId <= 0) return null;
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             return siteInfo == null ? null : GetSitePath(siteInfo);
         }
 
         public async Task<string> GetUploadFilePathAsync(int siteId, string fileName)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             var localDirectoryPath = GetUploadDirectoryPath(siteInfo, PathUtils.GetExtension(fileName));
             var localFileName = GetUploadFileName(siteInfo, fileName);
             return PathUtils.Combine(localDirectoryPath, localFileName);
@@ -456,7 +457,7 @@ namespace SS.CMS.Core.Services
             var directoryDir = StringUtils.ReplaceStartsWith(directoryPath, applicationPath, string.Empty).Trim(' ', '/', '\\');
             if (directoryDir == string.Empty) return null;
 
-            var siteInfoList = await _siteRepository.GetSiteInfoListAsync();
+            var siteInfoList = await _siteRepository.GetSiteListAsync();
 
             Site headquarter = null;
             foreach (var siteInfo in siteInfoList)
@@ -488,7 +489,7 @@ namespace SS.CMS.Core.Services
                 return string.Empty;
             }
 
-            var siteInfoList = await _siteRepository.GetSiteInfoListAsync();
+            var siteInfoList = await _siteRepository.GetSiteListAsync();
             foreach (var siteInfo in siteInfoList)
             {
                 if (siteInfo?.IsRoot != false) continue;

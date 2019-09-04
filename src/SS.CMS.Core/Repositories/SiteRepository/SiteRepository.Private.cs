@@ -40,9 +40,9 @@ namespace SS.CMS.Core.Repositories
             return await _repository.GetAllAsync(Q.OrderBy(Attr.Taxis, Attr.Id));
         }
 
-        private async Task<int> GetMaxTaxisAsync()
+        private async Task<int> GetMaxTaxisAsync(int parentId)
         {
-            return await _repository.MaxAsync(Attr.Taxis) ?? 0;
+            return await _repository.MaxAsync(Attr.Taxis, Q.Where(Attr.ParentId, parentId)) ?? 0;
         }
 
         private void AddSiteIdList(List<int> dataSource, Site siteInfo, Dictionary<int, List<Site>> parentWithChildren, int level)

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace SS.CMS.Repositories.IContentRepository
+namespace SS.CMS.Repositories
 {
     public partial interface IContentRepository
     {

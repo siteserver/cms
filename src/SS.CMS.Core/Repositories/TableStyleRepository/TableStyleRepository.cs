@@ -14,16 +14,18 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly string _cacheKey;
+        private readonly IDatabaseRepository _databaseRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITableStyleItemRepository _tableStyleItemRepository;
         private readonly Repository<TableStyle> _repository;
 
-        public TableStyleRepository(IDistributedCache cache, ISettingsManager settingsManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository, IErrorLogRepository errorLogRepository)
+        public TableStyleRepository(IDistributedCache cache, ISettingsManager settingsManager, IDatabaseRepository databaseRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleItemRepository tableStyleItemRepository, IErrorLogRepository errorLogRepository)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(TableStyleRepository));
+            _databaseRepository = databaseRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _userRepository = userRepository;
@@ -46,7 +48,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<bool> IsExistsAsync(int relatedIdentity, string tableName, string attributeName)
         {
-            var key = TableManager.GetKey(relatedIdentity, tableName, attributeName);
+            var key = GetKey(relatedIdentity, tableName, attributeName);
             var entries = await GetAllTableStylesAsync();
             return entries.Any(x => x.Key == key);
         }

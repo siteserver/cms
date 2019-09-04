@@ -1,7 +1,7 @@
 using System;
 using SS.CMS.Enums;
 
-namespace SS.CMS.Core.Models.Enumerations
+namespace SS.CMS.Core.Common.Enums
 {
     public class TranslateContentTypeUtils
     {

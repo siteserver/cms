@@ -687,9 +687,6 @@
 <script>
 import { getInfo, installTryDatabase, installTryCache, installSaveSettings, install } from '@/api/cms'
 import LangSelect from '@/components/LangSelect'
-import '@/assets/css/bootstrap.min.css'
-import '@/assets/css/icons.min.css'
-import '@/assets/css/siteserver.min.css'
 
 export default {
   name: 'Install',

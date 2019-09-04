@@ -7,6 +7,13 @@ export function getSites() {
   })
 }
 
+export function getSite(siteId) {
+  return request({
+    url: `/sites/${siteId}`,
+    method: 'get'
+  })
+}
+
 export function getTableNames() {
   return request({
     url: '/sites/tableNames',
@@ -19,5 +26,12 @@ export function create(data) {
     url: '/sites',
     method: 'post',
     data
+  })
+}
+
+export function deleteSite(siteId) {
+  return request({
+    url: `/sites/${siteId}`,
+    method: 'delete'
   })
 }

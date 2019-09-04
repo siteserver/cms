@@ -34,12 +34,15 @@ namespace SS.CMS.Core.Services
         {
             if (siteInfo == null || channelId <= 0 || contentId <= 0 || targetSiteId <= 0 || targetChannelId <= 0) return;
 
-            var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
-            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
-            var targetTableName = await _channelRepository.GetTableNameAsync(_pluginManager, targetSiteInfo, targetChannelInfo);
+            var targetSiteInfo = await _siteRepository.GetSiteAsync(targetSiteId);
+            var targetChannelInfo = await _channelRepository.GetChannelAsync(targetChannelId);
+            var targetTableName = _channelRepository.GetTableName(targetSiteInfo, targetChannelInfo);
+            var targetContentRepository = _channelRepository.GetContentRepository(siteInfo, targetChannelInfo);
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+            var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+
+            var contentInfo = await contentRepository.GetContentInfoAsync(contentId);
 
             if (contentInfo == null) return;
 
@@ -52,7 +55,7 @@ namespace SS.CMS.Core.Services
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, TranslateContentType.Copy.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Copy.ToString());
-                var theContentId = await targetChannelInfo.ContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = await targetContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in await _pluginManager.GetServicesAsync())
                 {
@@ -79,7 +82,7 @@ namespace SS.CMS.Core.Services
                 contentInfo.Set(ContentAttribute.TranslateContentType, TranslateContentType.Cut.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Cut.ToString());
 
-                var newContentId = await targetChannelInfo.ContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
+                var newContentId = await targetContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in await _pluginManager.GetServicesAsync())
                 {
@@ -110,7 +113,7 @@ namespace SS.CMS.Core.Services
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
                 //contentInfo.Attributes.Add(ContentAttribute.TranslateContentType, TranslateContentType.Reference.ToString());
-                int theContentId = await targetChannelInfo.ContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
+                int theContentId = await targetContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
 
                 await createManager.AddCreateContentTaskAsync(targetSiteInfo.Id, contentInfo.ChannelId, theContentId);
                 await createManager.TriggerContentChangedEventAsync(targetSiteInfo.Id, contentInfo.ChannelId);
@@ -126,7 +129,7 @@ namespace SS.CMS.Core.Services
                 contentInfo.ChannelId = targetChannelId;
                 contentInfo.ReferenceId = contentId;
                 contentInfo.Set(ContentAttribute.TranslateContentType, TranslateContentType.ReferenceContent.ToString());
-                var theContentId = await targetChannelInfo.ContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
+                var theContentId = await targetContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
 
                 foreach (var service in await _pluginManager.GetServicesAsync())
                 {
@@ -149,7 +152,8 @@ namespace SS.CMS.Core.Services
         {
             if (siteInfo == null || contentId <= 0) return;
 
-            await channelInfo.ContentRepository.DeleteAsync(siteInfo.Id, contentId);
+            var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+            await contentRepository.DeleteAsync(siteInfo.Id, contentId);
 
             await _tagRepository.RemoveTagsAsync(siteInfo.Id, contentId);
 
@@ -165,7 +169,7 @@ namespace SS.CMS.Core.Services
                 }
             }
 
-            channelInfo.ContentRepository.RemoveCache(channelInfo.ContentRepository.TableName, channelInfo.Id);
+            contentRepository.RemoveCache(contentRepository.TableName, channelInfo.Id);
         }
 
         public string TextEditorContentEncode(Site siteInfo, string content)
@@ -229,8 +233,9 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                var contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelId);
+                var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+                var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+                var contentIdList = await contentRepository.GetContentIdListAsync(channelId);
                 foreach (var contentId in contentIdList)
                 {
                     var filePath = await _pathManager.GetContentPageFilePathAsync(siteInfo, channelId, contentId, 0);
@@ -259,12 +264,14 @@ namespace SS.CMS.Core.Services
         {
             foreach (var channelId in channelIdList)
             {
-                var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+                var channelInfo = await _channelRepository.GetChannelAsync(channelId);
+                var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+
                 var filePath = await _pathManager.GetChannelPageFilePathAsync(siteInfo, channelId, 0);
 
                 FileUtils.DeleteFileIfExists(filePath);
 
-                var contentIdList = await channelInfo.ContentRepository.GetContentIdListAsync(channelId);
+                var contentIdList = await contentRepository.GetContentIdListAsync(channelId);
                 await DeleteContentsAsync(siteInfo, channelId, contentIdList);
             }
         }

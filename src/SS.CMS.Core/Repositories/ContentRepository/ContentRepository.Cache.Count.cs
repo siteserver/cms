@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Core.Services;
 using SS.CMS.Models;
+using SS.CMS.Services;
 using SS.CMS.Utils;
 
 namespace SS.CMS.Core.Repositories
@@ -101,9 +102,9 @@ namespace SS.CMS.Core.Repositories
             }
         }
 
-        private async Task<int> CountGetSiteCountByIsCheckedAsync(Site siteInfo, bool isChecked)
+        private async Task<int> CountGetSiteCountByIsCheckedAsync(Site siteInfo, bool isChecked, IPluginManager pluginManager)
         {
-            var tableNames = await _siteRepository.GetTableNameListAsync(_pluginManager, siteInfo);
+            var tableNames = await _siteRepository.GetTableNameListAsync(pluginManager, siteInfo);
 
             var count = 0;
             foreach (var tableName in tableNames)
@@ -117,7 +118,7 @@ namespace SS.CMS.Core.Repositories
 
         private async Task<int> CountGetChannelCountByOnlyAdminIdAsync(Site siteInfo, Channel channelInfo, int? onlyAdminId)
         {
-            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
 
             var list = await CountGetContentCountInfoListAsync(tableName);
             return onlyAdminId.HasValue
@@ -134,7 +135,7 @@ namespace SS.CMS.Core.Repositories
 
         private async Task<int> CountGetChannelCountByIsCheckedAsync(Site siteInfo, Channel channelInfo, bool isChecked)
         {
-            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
 
             var list = await CountGetContentCountInfoListAsync(tableName);
             return list.Where(x =>
@@ -145,9 +146,9 @@ namespace SS.CMS.Core.Repositories
 
         // public
 
-        public async Task<int> GetCountAsync(Site siteInfo, bool isChecked)
+        public async Task<int> GetCountAsync(Site siteInfo, bool isChecked, IPluginManager pluginManager)
         {
-            return await CountGetSiteCountByIsCheckedAsync(siteInfo, isChecked);
+            return await CountGetSiteCountByIsCheckedAsync(siteInfo, isChecked, pluginManager);
         }
 
         public async Task<int> GetCountAsync(Site siteInfo, Channel channelInfo, int? onlyAdminId)

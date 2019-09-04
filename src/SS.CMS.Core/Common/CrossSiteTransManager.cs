@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -56,7 +56,7 @@ namespace SS.CMS.Core.Common
                         {
                             if (channelInfo.TransSiteId > 0)
                             {
-                                var theSiteInfo = await _siteRepository.GetSiteInfoAsync(channelInfo.TransSiteId);
+                                var theSiteInfo = await _siteRepository.GetSiteAsync(channelInfo.TransSiteId);
                                 if (theSiteInfo != null)
                                 {
                                     isCrossSiteTrans = true;
@@ -117,18 +117,18 @@ namespace SS.CMS.Core.Common
 
                     if (transType == ECrossSiteTransType.SelfSite)
                     {
-                        siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+                        siteInfo = await _siteRepository.GetSiteAsync(siteId);
                     }
                     else if (transType == ECrossSiteTransType.SpecifiedSite)
                     {
-                        siteInfo = await _siteRepository.GetSiteInfoAsync(channelInfo.TransSiteId);
+                        siteInfo = await _siteRepository.GetSiteAsync(channelInfo.TransSiteId);
                     }
                     else
                     {
                         var parentSiteId = await _siteRepository.GetParentSiteIdAsync(siteId);
                         if (parentSiteId != 0)
                         {
-                            siteInfo = await _siteRepository.GetSiteInfoAsync(parentSiteId);
+                            siteInfo = await _siteRepository.GetSiteAsync(parentSiteId);
                         }
                     }
 
@@ -138,10 +138,10 @@ namespace SS.CMS.Core.Common
                         var channelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);
                         foreach (int channelId in channelIdArrayList)
                         {
-                            var theNodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                            if (theNodeInfo != null)
+                            var node = await _channelRepository.GetChannelAsync(channelId);
+                            if (node != null)
                             {
-                                nodeNameBuilder.Append(theNodeInfo.ChannelName).Append(",");
+                                nodeNameBuilder.Append(node.ChannelName).Append(",");
                             }
                         }
                         if (nodeNameBuilder.Length > 0)
@@ -157,9 +157,10 @@ namespace SS.CMS.Core.Common
 
         public async Task TransContentInfoAsync(Site siteInfo, Channel channelInfo, int contentId, Site targetSiteInfo, int targetChannelId)
         {
-            var targetChannelInfo = await _channelRepository.GetChannelInfoAsync(targetChannelId);
+            var targetChannel = await _channelRepository.GetChannelAsync(targetChannelId);
 
-            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
+            var contentRepository = _channelRepository.GetContentRepository(siteInfo, channelInfo);
+            var contentInfo = await contentRepository.GetContentInfoAsync(contentId);
             _fileManager.MoveFileByContentInfo(siteInfo, targetSiteInfo, contentInfo);
             contentInfo.SiteId = targetSiteInfo.Id;
             contentInfo.SourceId = channelInfo.Id;
@@ -191,9 +192,10 @@ namespace SS.CMS.Core.Common
                 contentInfo.Set(ContentAttribute.TranslateContentType, TranslateContentType.ReferenceContent.ToString());
             }
 
-            if (targetChannelInfo != null)
+            if (targetChannel != null)
             {
-                await targetChannelInfo.ContentRepository.InsertAsync(targetSiteInfo, targetChannelInfo, contentInfo);
+                var targetContentRepository = _channelRepository.GetContentRepository(targetSiteInfo, targetChannel);
+                await targetContentRepository.InsertAsync(targetSiteInfo, targetChannel, contentInfo);
 
                 #region 复制资源
                 //资源：图片，文件，视频

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Common;
 using SS.CMS.Core.Models.Attributes;
@@ -189,8 +190,8 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
-            channelId = await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId, channelId, channelIndex, channelName);
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
+            channelId = await parseContext.ChannelRepository.GetIdAsync(parseContext.SiteId, channelId, channelIndex, channelName);
+            var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
 
             if (parseContext.IsStlEntity && string.IsNullOrEmpty(type))
             {
@@ -258,18 +259,6 @@ namespace SS.CMS.Core.StlParser.StlElement
             else if (type.Equals(ChannelAttribute.ParentsPath.ToLower()))
             {
                 parsedContent = channel.ParentsPath;
-            }
-            else if (type.Equals(ChannelAttribute.ParentsCount.ToLower()))
-            {
-                parsedContent = channel.ParentsCount.ToString();
-            }
-            else if (type.Equals(ChannelAttribute.ChildrenCount.ToLower()))
-            {
-                parsedContent = channel.ChildrenCount.ToString();
-            }
-            else if (type.Equals(ChannelAttribute.IsLastNode.ToLower()))
-            {
-                parsedContent = channel.IsLastNode.ToString();
             }
             else if (type.Equals(ChannelAttribute.ChannelIndex.ToLower()) || type.Equals(ChannelAttribute.IndexName.ToLower()))
             {
@@ -414,23 +403,26 @@ namespace SS.CMS.Core.StlParser.StlElement
             }
             else if (type.Equals(ChannelAttribute.CountOfChannels.ToLower()))
             {
-                parsedContent = channel.ChildrenCount.ToString();
+                var childrenIds = await parseContext.ChannelRepository.GetChildrenIdsAsync(channel.SiteId, channel.Id);
+                parsedContent = childrenIds.Count().ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfContents.ToLower()))
             {
-                var count = await channel.ContentRepository.GetCountAsync(parseContext.SiteInfo, channel, true);
+                var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channel);
+                var count = await contentRepository.GetCountAsync(parseContext.SiteInfo, channel, true);
                 parsedContent = count.ToString();
             }
             else if (type.Equals(ChannelAttribute.CountOfImageContents.ToLower()))
             {
-                var count = await channel.ContentRepository.GetCountCheckedImageAsync(parseContext.SiteId, channel.Id);
+                var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channel);
+                var count = await contentRepository.GetCountCheckedImageAsync(parseContext.SiteId, channel.Id);
                 parsedContent = count.ToString();
             }
             else
             {
                 var attributeName = type;
 
-                var styleInfo = await parseContext.TableManager.GetTableStyleInfoAsync(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableManager.GetRelatedIdentities(channel));
+                var styleInfo = await parseContext.TableStyleRepository.GetTableStyleInfoAsync(parseContext.ChannelRepository.TableName, attributeName, parseContext.TableStyleRepository.GetRelatedIdentities(channel));
                 if (styleInfo.Id > 0)
                 {
                     parsedContent = channel.Get(attributeName, styleInfo.DefaultValue);

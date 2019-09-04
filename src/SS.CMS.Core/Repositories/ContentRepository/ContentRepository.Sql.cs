@@ -69,19 +69,19 @@ namespace SS.CMS.Core.Repositories
             Site siteInfo = null;
             if (!string.IsNullOrEmpty(siteName))
             {
-                siteInfo = await _siteRepository.GetSiteInfoBySiteNameAsync(siteName);
+                siteInfo = await _siteRepository.GetSiteBySiteNameAsync(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = await _siteRepository.GetSiteInfoBySiteDirAsync(siteDir);
+                siteInfo = await _siteRepository.GetSiteBySiteDirAsync(siteDir);
             }
             if (siteInfo == null)
             {
-                siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+                siteInfo = await _siteRepository.GetSiteAsync(siteId);
             }
 
-            var channelId = await _channelRepository.GetChannelIdAsync(siteId, siteId, channelIndex, channelName);
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var channelId = await _channelRepository.GetIdAsync(siteId, siteId, channelIndex, channelName);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
 
             if (!string.IsNullOrEmpty(siteIds))
             {
@@ -99,7 +99,7 @@ namespace SS.CMS.Core.Repositories
                 {
                     var theSiteId = await _channelRepository.GetSiteIdAsync(theChannelId);
                     channelIdList.AddRange(
-                        await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(theChannelId),
+                        await _channelRepository.GetIdListAsync(await _channelRepository.GetChannelAsync(theChannelId),
                             ScopeType.All, string.Empty, string.Empty, string.Empty));
                 }
 
@@ -108,7 +108,7 @@ namespace SS.CMS.Core.Repositories
             else if (channelId != siteId)
             {
                 var theSiteId = await _channelRepository.GetSiteIdAsync(channelId);
-                var channelIdList = await _channelRepository.GetChannelIdListAsync(await _channelRepository.GetChannelInfoAsync(channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await _channelRepository.GetIdListAsync(await _channelRepository.GetChannelAsync(channelId), ScopeType.All, string.Empty, string.Empty, string.Empty);
 
                 query.WhereIn(Attr.ChannelId, channelIdList);
             }
@@ -154,7 +154,7 @@ namespace SS.CMS.Core.Repositories
                 query.WhereBetween(dateAttribute, sinceDate, DateTime.Now);
             }
 
-            var tableName = await _channelRepository.GetTableNameAsync(_pluginManager, siteInfo, channelInfo);
+            var tableName = _channelRepository.GetTableName(siteInfo, channelInfo);
             //var styleInfoList = RelatedIdentities.GetTableStyleInfoList(siteInfo, channelInfo.Id);
 
             foreach (string key in form.Keys)
@@ -165,7 +165,7 @@ namespace SS.CMS.Core.Repositories
                 var value = StringUtils.Trim(form[key]);
                 if (string.IsNullOrEmpty(value)) continue;
 
-                var columnInfo = await _tableManager.GetTableColumnInfoAsync(tableName, key);
+                var columnInfo = await _databaseRepository.GetTableColumnInfoAsync(tableName, key);
 
                 if (columnInfo != null && (columnInfo.DataType == DataType.VarChar || columnInfo.DataType == DataType.Text))
                 {
@@ -745,7 +745,7 @@ namespace SS.CMS.Core.Repositories
 
             if (others != null && others.Count > 0)
             {
-                var columnNameList = await _tableManager.GetTableColumnNameListAsync(TableName);
+                var columnNameList = await _databaseRepository.GetTableColumnNameListAsync(TableName);
 
                 foreach (var attributeName in others.AllKeys)
                 {

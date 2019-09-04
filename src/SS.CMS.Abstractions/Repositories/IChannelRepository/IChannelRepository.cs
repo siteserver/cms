@@ -9,82 +9,102 @@ namespace SS.CMS.Repositories
 {
     public interface IChannelRepository : IRepository
     {
-        Task<int> InsertAsync(Channel channelInfo);
+        Task<int> InsertAsync(Channel channel);
 
-        Task UpdateAsync(Channel channelInfo);
+        Task UpdateAsync(Channel channel);
 
-        Task UpdateExtendAsync(Channel channelInfo);
+        Task UpdateExtendAsync(Channel channel);
 
-        Task DeleteAsync(int siteId, int channelId);
+        Task<Channel> DeleteAsync(int siteId, int id);
 
-        Task<Channel> GetChannelInfoByLastAddDateAsync(int channelId);
+        Task<Channel> GetChannelByLastAddDateAsync(int id);
 
-        Task<Channel> GetChannelInfoByTaxisAsync(int channelId);
+        Task<Channel> GetChannelByTaxisAsync(int id);
 
         Task<int> GetIdByParentIdAndTaxisAsync(int parentId, int taxis, bool isNextChannel);
 
         Task<int> GetIdAsync(int siteId, string orderString);
 
-        Task<string> GetOrderStringInSiteAsync(int channelId);
+        Task<string> GetOrderStringInSiteAsync(int id);
 
         Task<IEnumerable<string>> GetIndexNameListAsync(int siteId);
 
-        Task<int> GetCountAsync(int channelId);
+        Task<int> GetCountAsync(int id);
 
-        Task<int> GetSequenceAsync(int siteId, int channelId);
+        Task<int> GetSequenceAsync(int siteId, int id);
 
-        Task<IEnumerable<int>> GetIdListByTotalNumAsync(int siteId, int channelId, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum);
+        Task<IEnumerable<int>> GetIdListByTotalNumAsync(int siteId, int id, TaxisType taxisType, ScopeType scopeType, string groupChannel, string groupChannelNot, bool? isImage, int totalNum);
 
-        Task<IEnumerable<KeyValuePair<int, Channel>>> GetContainerChannelListAsync(int siteId, int channelId, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal);
+        Task<IEnumerable<KeyValuePair<int, Channel>>> GetContainerChannelListAsync(int siteId, int id, string group, string groupNot, bool? isImage, int startNum, int totalNum, TaxisType taxisType, ScopeType scopeType, bool isTotal);
 
         Task<IEnumerable<string>> GetContentModelPluginIdListAsync();
 
-        Task<IEnumerable<int>> GetChannelIdListAsync(Template templateInfo);
+        Task<IEnumerable<int>> GetIdListAsync(Template template);
+
+        Task<IEnumerable<int>> GetDescendantIdsAsync(int siteId, int parentId);
+
+        Task<IEnumerable<int>> GetChildrenIdsAsync(int siteId, int parentId);
 
         Task<string> GetSourceNameAsync(int sourceId);
 
-        Task<Channel> GetChannelInfoAsync(int channelId);
+        Task<Channel> GetChannelAsync(int id);
 
-        Task<int> GetSiteIdAsync(int channelId);
+        Task<int> GetSiteIdAsync(int id);
 
-        Task<int> GetChannelIdAsync(int siteId, int channelId, string channelIndex, string channelName);
+        Task<int> GetIdAsync(int siteId, int id, string channelIndex, string channelName);
 
-        Task<int> GetChannelIdByIndexNameAsync(int siteId, string indexName);
+        Task<int> GetIdByIndexNameAsync(int siteId, string indexName);
 
-        Task<int> GetChannelIdByParentIdAndChannelNameAsync(int siteId, int parentId, string channelName, bool recursive);
+        Task<int> GetIdByParentIdAndChannelNameAsync(int siteId, int parentId, string channelName, bool recursive);
 
-        Task<List<int>> GetChannelIdListAsync(int siteId);
+        Task<List<int>> GetIdListAsync(int siteId);
 
-        Task<List<int>> GetChannelIdListAsync(int siteId, string channelGroup);
+        Task<List<int>> GetIdListAsync(int siteId, string channelGroup);
 
-        Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType);
+        Task<List<int>> GetIdListAsync(Channel channel, ScopeType scopeType);
 
-        Task<List<int>> GetChannelIdListAsync(Channel channelInfo, ScopeType scopeType, string group, string groupNot, string contentModelPluginId);
+        Task<List<int>> GetIdListAsync(Channel channel, ScopeType scopeType, string group, string groupNot, string contentModelPluginId);
 
-        Task<bool> IsExistsAsync(int channelId);
+        Task<bool> IsExistsAsync(int id);
 
-        Task<int> GetChannelIdByParentsCountAsync(int siteId, int channelId, int parentsCount);
+        string GetTableName(Site site, Channel channel);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, int channelId);
+        Task<string> GetTableNameAsync(Site site, int channelId);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo);
+        Task<IContentRepository> GetContentRepositoryAsync(Site site, int channelId);
 
-        Task<string> GetTableNameAsync(IPluginManager pluginManager, Site siteInfo, string pluginId);
+        IContentRepository GetContentRepository(Site site, Channel channel);
 
-        Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, Site siteInfo, Channel channelInfo);
+        Task<IContentRepository> GetContentRepositoryAsync(int siteId);
 
-        Task<string> GetParentsPathAsync(int channelId);
+        IContentRepository GetContentRepository(Site site);
 
-        Task<int> GetTopLevelAsync(int channelId);
+        // Task<string> GetTableNameAsync(IPluginManager pluginManager, Site site, int id);
 
-        Task<string> GetChannelNameAsync(int channelId);
+        // Task<string> GetTableNameAsync(IPluginManager pluginManager, Site site, Channel channel);
 
-        Task<string> GetChannelNameNavigationAsync(int siteId, int channelId);
+        // Task<string> GetTableNameAsync(IPluginManager pluginManager, Site site, string pluginId);
 
-        Task<string> GetContentAttributesOfDisplayAsync(int siteId, int channelId);
+        Task<bool> IsContentModelPluginAsync(IPluginManager pluginManager, Site site, Channel channel);
+
+        Task<string> GetParentsPathAsync(int id);
+
+        Task<int> GetTopLevelAsync(int id);
+
+        Task<string> GetChannelNameAsync(int id);
+
+        Task<string> GetChannelNameNavigationAsync(int siteId, int id);
+
+        Task<string> GetContentAttributesOfDisplayAsync(int siteId, int id);
 
         Task<bool> IsAncestorOrSelfAsync(int parentId, int childId);
 
-        Task<bool> IsCreatableAsync(Site siteInfo, Channel channelInfo);
+        Task<bool> IsCreatableAsync(Site site, Channel channel);
+
+        Task<IList<Channel>> GetChannelListAsync(int siteId, int parentId);
+
+        List<int> GetParentIds(Channel channel);
+
+        int GetParentsCount(Channel channel);
     }
 }

@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Utils;

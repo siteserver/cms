@@ -23,20 +23,20 @@ namespace SS.CMS.Core.Services
         private readonly string _cacheKey;
         private readonly ISettingsManager _settingsManager;
         private readonly IPathManager _pathManager;
-        private readonly ITableManager _tableManager;
+        private readonly IDatabaseRepository _databaseRepository;
         private readonly IPluginRepository _pluginRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
         private readonly ITableStyleRepository _tableStyleRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
-        public PluginManager(IDistributedCache cache, ISettingsManager settingsManager, IPathManager pathManager, ITableManager tableManager, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
+        public PluginManager(IDistributedCache cache, ISettingsManager settingsManager, IPathManager pathManager, IDatabaseRepository databaseRepository, IPluginRepository pluginRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, IErrorLogRepository errorLogRepository)
         {
             _cache = cache;
             _cacheKey = _cache.GetKey(nameof(PluginManager));
             _settingsManager = settingsManager;
             _pathManager = pathManager;
-            _tableManager = tableManager;
+            _databaseRepository = databaseRepository;
             _pluginRepository = pluginRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;

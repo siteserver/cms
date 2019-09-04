@@ -18,7 +18,6 @@ namespace SS.CMS.Core.StlParser
         public IPathManager PathManager { get; }
         public IUrlManager UrlManager { get; }
         public IFileManager FileManager { get; }
-        public ITableManager TableManager { get; }
         public ISiteRepository SiteRepository { get; }
         public IChannelRepository ChannelRepository { get; }
         public IUserRepository UserRepository { get; }
@@ -27,7 +26,7 @@ namespace SS.CMS.Core.StlParser
         public ITagRepository TagRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
 
-        public ParseContext(PageInfo pageInfo, IConfiguration configuration, IDistributedCache cache, ISettingsManager settingsManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ITableManager tableManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
+        public ParseContext(PageInfo pageInfo, IConfiguration configuration, IDistributedCache cache, ISettingsManager settingsManager, IPluginManager pluginManager, IPathManager pathManager, IUrlManager urlManager, IFileManager fileManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IUserRepository userRepository, ITableStyleRepository tableStyleRepository, ITemplateRepository templateRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository)
         {
             PageInfo = pageInfo;
             ChannelId = pageInfo.PageChannelId;
@@ -40,7 +39,6 @@ namespace SS.CMS.Core.StlParser
             PathManager = pathManager;
             UrlManager = urlManager;
             FileManager = fileManager;
-            TableManager = tableManager;
             SiteRepository = siteRepository;
             ChannelRepository = channelRepository;
             UserRepository = userRepository;
@@ -108,11 +106,11 @@ namespace SS.CMS.Core.StlParser
         public NameValueCollection Attributes { get; set; }
 
         private Channel _channelInfo;
-        public async Task<Channel> GetChannelInfoAsync()
+        public async Task<Channel> GetChannelAsync()
         {
             if (_channelInfo != null) return _channelInfo;
             if (ChannelId <= 0) return null;
-            _channelInfo = await ChannelRepository.GetChannelInfoAsync(ChannelId);
+            _channelInfo = await ChannelRepository.GetChannelAsync(ChannelId);
             return _channelInfo;
         }
 
@@ -126,8 +124,10 @@ namespace SS.CMS.Core.StlParser
         {
             if (_contentInfo != null) return _contentInfo;
             if (ContentId <= 0) return null;
-            var channelInfo = await GetChannelInfoAsync();
-            _contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(ContentId);
+            var channelInfo = await GetChannelAsync();
+            var contentRepository = ChannelRepository.GetContentRepository(SiteInfo, channelInfo);
+
+            _contentInfo = await contentRepository.GetContentInfoAsync(ContentId);
             return _contentInfo;
         }
 

@@ -1,4 +1,4 @@
-namespace SS.CMS.Core.Models.Enumerations
+namespace SS.CMS.Core.Common.Enums
 {
 
     public enum ELinkType

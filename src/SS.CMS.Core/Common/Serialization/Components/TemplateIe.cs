@@ -58,7 +58,7 @@ namespace SS.CMS.Core.Serialization.Components
         {
             var entry = AtomUtility.GetEmptyEntry();
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(_siteId);
 
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.Id), "TemplateID" }, templateInfo.Id.ToString());
             AtomUtility.AddDcElement(entry.AdditionalElements, new List<string> { nameof(Template.SiteId), "PublishmentSystemID" }, templateInfo.SiteId.ToString());
@@ -80,7 +80,7 @@ namespace SS.CMS.Core.Serialization.Components
             if (!FileUtils.IsFileExists(_filePath)) return;
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(_siteId);
             foreach (AtomEntry entry in feed.Entries)
             {
                 var templateName = AtomUtility.GetDcElementContent(entry.AdditionalElements, nameof(Template.TemplateName));

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Models;
@@ -226,7 +226,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             foreach (var site in siteList)
             {
-                var siteInfo = await context.SiteRepository.GetSiteInfoAsync(site.Value.Id);
+                var siteInfo = await context.SiteRepository.GetSiteAsync(site.Value.Id);
                 if (siteInfo != null)
                 {
                     siteInfoList.Add(siteInfo);

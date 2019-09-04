@@ -3,6 +3,8 @@
 		"ms-vscode.csharp",
 		"streetsidesoftware.code-spell-checker",
 		"formulahendry.dotnet-test-explorer",
-		"warren-buckley.iis-express"
+		"warren-buckley.iis-express",
+		"k--kato.docomment",
+		"tabnine.tabnine-vscode"
 	]
 }

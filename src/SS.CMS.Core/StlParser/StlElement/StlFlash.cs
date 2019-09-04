@@ -147,10 +147,11 @@ namespace SS.CMS.Core.StlParser.StlElement
                 {
                     if (contentInfo == null)
                     {
-                        var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
+                        var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(parseContext.ChannelId);
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, nodeInfo);
 
                         //picUrl = DataProvider.ContentDao.GetValue(tableName, contentId, type);
-                        flashUrl = await nodeInfo.ContentRepository.GetValueAsync<string>(contentId, type);
+                        flashUrl = await contentRepository.GetValueAsync<string>(contentId, type);
                     }
                     else
                     {
@@ -162,7 +163,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
 
                     channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
-                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
+                    var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
 
                     flashUrl = channel.ImageUrl;
                 }

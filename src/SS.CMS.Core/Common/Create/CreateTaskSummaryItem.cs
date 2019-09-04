@@ -1,4 +1,4 @@
-﻿using SS.CMS.Core.Models.Enumerations;
+﻿using SS.CMS.Core.Common.Enums;
 
 namespace SS.CMS.Core.Common.Create
 {

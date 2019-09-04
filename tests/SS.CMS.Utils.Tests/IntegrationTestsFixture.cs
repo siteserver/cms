@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SS.CMS.Core.Common;
 using SS.CMS.Core.Repositories;
 using SS.CMS.Core.Services;
 using SS.CMS.Data;
@@ -25,7 +26,6 @@ namespace SS.CMS.Utils.Tests
         public IUrlManager UrlManager { get; }
         public IFileManager FileManager { get; }
         public ICreateManager CreateManager { get; }
-        public ITableManager TableManager { get; }
         public IAccessTokenRepository AccessTokenRepository { get; }
         public IAreaRepository AreaRepository { get; }
         public IChannelGroupRepository ChannelGroupRepository { get; }
@@ -33,6 +33,7 @@ namespace SS.CMS.Utils.Tests
         public IConfigRepository ConfigRepository { get; }
         public IContentCheckRepository ContentCheckRepository { get; }
         public IContentGroupRepository ContentGroupRepository { get; }
+        public IDatabaseRepository DatabaseRepository { get; }
         public IDbCacheRepository DbCacheRepository { get; }
         public IDepartmentRepository DepartmentRepository { get; }
         public IErrorLogRepository ErrorLogRepository { get; }
@@ -103,50 +104,18 @@ namespace SS.CMS.Utils.Tests
             var userMenuRepository = new UserMenuRepository(cache, settingsManager);
             var userRepository = new UserRepository(cache, settingsManager, configRepository, userRoleRepository);
             var permissionRepository = new PermissionRepository(settingsManager, roleRepository);
-            var channelRepository = new ChannelRepository(cache, settingsManager, userRepository, channelGroupRepository, siteRepository);
+
+            var databaseRepository = new DatabaseRepository(cache, settingsManager, configRepository, errorLogRepository, userRepository);
+
+            var channelRepository = new ChannelRepository(cache, settingsManager, databaseRepository, contentCheckRepository, userRepository, siteRepository, channelGroupRepository, tagRepository, errorLogRepository);
             var templateRepository = new TemplateRepository(cache, settingsManager, siteRepository, channelRepository, templateLogRepository);
-            var tableStyleRepository = new TableStyleRepository(cache, settingsManager, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
+            var tableStyleRepository = new TableStyleRepository(cache, settingsManager, databaseRepository, siteRepository, channelRepository, userRepository, tableStyleItemRepository, errorLogRepository);
 
-            var tableManager = new TableManager(
-                cache,
-                database,
-                settingsManager,
-                accessTokenRepository,
-                areaRepository,
-                channelGroupRepository,
-                channelRepository,
-                configRepository,
-                contentCheckRepository,
-                contentGroupRepository,
-                dbCacheRepository,
-                departmentRepository,
-                errorLogRepository,
-                logRepository,
-                permissionRepository,
-                pluginConfigRepository,
-                pluginRepository,
-                relatedFieldItemRepository,
-                relatedFieldRepository,
-                roleRepository,
-                siteLogRepository,
-                siteRepository,
-                specialRepository,
-                tableStyleItemRepository,
-                tableStyleRepository,
-                tagRepository,
-                templateLogRepository,
-                templateRepository,
-                userGroupRepository,
-                userLogRepository,
-                userMenuRepository,
-                userRepository,
-                userRoleRepository);
-
-            var pathManager = new PathManager(settingsManager, tableManager, siteRepository, channelRepository, templateRepository);
-            var pluginManager = new PluginManager(cache, settingsManager, pathManager, tableManager, pluginRepository, siteRepository, channelRepository, tableStyleRepository, errorLogRepository);
+            var pathManager = new PathManager(settingsManager, tableStyleRepository, siteRepository, channelRepository, templateRepository);
+            var pluginManager = new PluginManager(cache, settingsManager, pathManager, databaseRepository, pluginRepository, siteRepository, channelRepository, tableStyleRepository, errorLogRepository);
             var urlManager = new UrlManager(settingsManager, pathManager, pluginManager, configRepository, siteRepository, channelRepository, specialRepository, templateRepository, errorLogRepository);
             var fileManager = new FileManager(settingsManager, urlManager, pathManager, pluginManager, siteRepository, channelRepository, templateRepository, tagRepository, errorLogRepository);
-            var createManager = new CreateManager(config, cache, settingsManager, pluginManager, urlManager, pathManager, fileManager, tableManager, siteRepository, channelRepository, specialRepository, userRepository, tableStyleRepository, templateRepository, tagRepository, errorLogRepository);
+            var createManager = new CreateManager(config, cache, settingsManager, pluginManager, urlManager, pathManager, fileManager, siteRepository, channelRepository, specialRepository, userRepository, tableStyleRepository, templateRepository, tagRepository, errorLogRepository);
 
             Cache = cache;
             Configuration = config;
@@ -157,7 +126,6 @@ namespace SS.CMS.Utils.Tests
             FileManager = fileManager;
             CreateManager = createManager;
             PluginManager = pluginManager;
-            TableManager = tableManager;
             AccessTokenRepository = accessTokenRepository;
             UserRoleRepository = userRoleRepository;
             AreaRepository = areaRepository;
@@ -166,6 +134,7 @@ namespace SS.CMS.Utils.Tests
             ConfigRepository = configRepository;
             ContentCheckRepository = contentCheckRepository;
             ContentGroupRepository = contentGroupRepository;
+            DatabaseRepository = databaseRepository;
             DbCacheRepository = dbCacheRepository;
             DepartmentRepository = departmentRepository;
             ErrorLogRepository = errorLogRepository;
@@ -196,7 +165,9 @@ namespace SS.CMS.Utils.Tests
                 db.DropTableAsync(tableName).GetAwaiter().GetResult();
             }
 
-            tableManager.InstallDatabaseAsync("admin", "admin888").GetAwaiter().GetResult();
+            var (_, repositories) = DatabaseUtils.GetAllRepositories(cache, settingsManager);
+
+            databaseRepository.InstallDatabaseAsync("admin", "admin888", repositories).GetAwaiter().GetResult();
         }
 
         public void Dispose()

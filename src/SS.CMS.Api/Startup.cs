@@ -45,7 +45,6 @@ namespace SS.CMS.Api
             services.AddUrlManager();
             services.AddFileManager();
             services.AddCreateManager();
-            services.AddTableManager();
 
             services.AddScoped<IUserManager, UserManager>();
 

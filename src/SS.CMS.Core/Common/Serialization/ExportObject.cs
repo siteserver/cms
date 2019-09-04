@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SS.CMS.Core.Common;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.Serialization.Components;
 using SS.CMS.Enums;
 using SS.CMS.Models;
@@ -23,7 +23,6 @@ namespace SS.CMS.Core.Serialization
         private IPluginManager _pluginManager;
         private ICreateManager _createManager;
         private IPathManager _pathManager;
-        private ITableManager _tableManager;
         private ISiteRepository _siteRepository;
         private IChannelRepository _channelRepository;
         private IRelatedFieldRepository _relatedFieldRepository;
@@ -35,7 +34,7 @@ namespace SS.CMS.Core.Serialization
 
         public async Task LoadAsync(int siteId, int userId)
         {
-            _siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            _siteInfo = await _siteRepository.GetSiteAsync(siteId);
             _sitePath = PathUtils.Combine(_settingsManager.WebRootPath, _siteInfo.SiteDir);
             _userId = userId;
         }
@@ -106,7 +105,7 @@ namespace SS.CMS.Core.Serialization
         {
             var filePath = _pathManager.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = _pathManager.GetTemporaryFilesPath("TableStyle");
-            await TableStyleIe.SingleExportTableStylesAsync(_tableManager, _channelRepository, tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
+            await TableStyleIe.SingleExportTableStylesAsync(_tableStyleRepository, _channelRepository, tableName, _siteInfo.Id, relatedIdentity, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -114,11 +113,11 @@ namespace SS.CMS.Core.Serialization
             return PathUtils.GetFileName(filePath);
         }
 
-        public static async Task<string> ExportRootSingleTableStyleAsync(ITableManager tableManager, IPathManager pathManager, IChannelRepository channelRepository, string tableName)
+        public static async Task<string> ExportRootSingleTableStyleAsync(ITableStyleRepository tableStyleRepository, IPathManager pathManager, IChannelRepository channelRepository, string tableName)
         {
             var filePath = pathManager.GetTemporaryFilesPath("tableStyle.zip");
             var styleDirectoryPath = pathManager.GetTemporaryFilesPath("TableStyle");
-            await TableStyleIe.SingleExportTableStylesAsync(tableManager, channelRepository, tableName, styleDirectoryPath);
+            await TableStyleIe.SingleExportTableStylesAsync(tableStyleRepository, channelRepository, tableName, styleDirectoryPath);
             ZipUtils.CreateZip(filePath, styleDirectoryPath);
 
             DirectoryUtils.DeleteDirectoryIfExists(styleDirectoryPath);
@@ -188,7 +187,7 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.CreateDirectoryIfNotExists(tableDirectoryPath);
             var styleIe = new TableStyleIe(tableDirectoryPath, _userId);
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteInfo.Id);
+            var siteInfo = await _siteRepository.GetSiteAsync(_siteInfo.Id);
             var tableNameList = await _siteRepository.GetTableNameListAsync(_pluginManager, siteInfo);
 
             foreach (var tableName in tableNameList)
@@ -209,12 +208,12 @@ namespace SS.CMS.Core.Serialization
             DirectoryUtils.DeleteDirectoryIfExists(siteContentDirectoryPath);
             DirectoryUtils.CreateDirectoryIfNotExists(siteContentDirectoryPath);
 
-            var allChannelIdList = await _channelRepository.GetChannelIdListAsync(_siteInfo.Id);
+            var allChannelIdList = await _channelRepository.GetIdListAsync(_siteInfo.Id);
 
             var includeChannelIdArrayList = new ArrayList();
             foreach (int channelId in channelIdArrayList)
             {
-                var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+                var nodeInfo = await _channelRepository.GetChannelAsync(channelId);
                 var parentIdArrayList = TranslateUtils.StringCollectionToIntList(nodeInfo.ParentsPath);
                 foreach (int parentId in parentIdArrayList)
                 {
@@ -274,8 +273,8 @@ namespace SS.CMS.Core.Serialization
                 if (!allChannelIdList.Contains(channelId))
                 {
                     allChannelIdList.Add(channelId);
-                    var nodeInfo = await _channelRepository.GetChannelInfoAsync(channelId);
-                    var childChannelIdList = await _channelRepository.GetChannelIdListAsync(nodeInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
+                    var nodeInfo = await _channelRepository.GetChannelAsync(channelId);
+                    var childChannelIdList = await _channelRepository.GetIdListAsync(nodeInfo, ScopeType.Descendant, string.Empty, string.Empty, string.Empty);
                     allChannelIdList.AddRange(childChannelIdList);
                 }
             }

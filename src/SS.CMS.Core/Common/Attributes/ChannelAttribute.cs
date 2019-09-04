@@ -29,15 +29,6 @@ namespace SS.CMS.Core.Models.Attributes
         [StlAttribute(Title = "上级栏目路径")]
         public const string ParentsPath = nameof(Channel.ParentsPath);
 
-        [StlAttribute(Title = "上级栏目数量")]
-        public const string ParentsCount = nameof(Channel.ParentsCount);
-
-        [StlAttribute(Title = "下级栏目数量")]
-        public const string ChildrenCount = nameof(Channel.ChildrenCount);
-
-        [StlAttribute(Title = "是否最后一级栏目")]
-        public const string IsLastNode = nameof(Channel.IsLastNode);
-
         [StlAttribute(Title = "栏目索引")]
         public const string IndexName = nameof(Channel.IndexName);
 

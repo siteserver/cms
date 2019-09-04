@@ -182,8 +182,8 @@ namespace SS.CMS.Core.Services
         {
             if (sourceSiteId == targetSiteId) return;
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(sourceSiteId);
-            var targetSiteInfo = await _siteRepository.GetSiteInfoAsync(targetSiteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(sourceSiteId);
+            var targetSiteInfo = await _siteRepository.GetSiteAsync(targetSiteId);
             if (siteInfo == null || targetSiteInfo == null) return;
 
             foreach (var relatedUrl in relatedUrls)
@@ -197,7 +197,7 @@ namespace SS.CMS.Core.Services
 
         public async Task AddWaterMarkAsync(int siteId, string filePath)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             AddWaterMark(siteInfo, filePath);
         }
     }

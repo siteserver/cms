@@ -1,9 +1,9 @@
-﻿namespace SS.CMS.Core.Models.Enumerations
+﻿namespace SS.CMS.Core.Common.Enums
 {
-	public enum AccessControlEntry 
-	{
-		NotSet  = 0x00,
-		Allow   = 0x01,
-		Deny    = 0x02
-	}
+    public enum AccessControlEntry
+    {
+        NotSet = 0x00,
+        Allow = 0x01,
+        Deny = 0x02
+    }
 }

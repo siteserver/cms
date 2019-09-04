@@ -9,20 +9,20 @@ namespace SS.CMS.Core.Services
     {
         public async Task<string> GetSiteUrlAsync(int siteId)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             return GetSiteUrl(siteInfo, false);
         }
 
         public async Task<string> GetSiteUrlAsync(int siteId, string virtualPath)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             return ParseNavigationUrl(siteInfo, virtualPath, false);
         }
 
         public async Task<string> GetSiteUrlByFilePathAsync(string filePath)
         {
             var siteId = await _pathManager.GetSiteIdByFilePathAsync(filePath);
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             return GetSiteUrlByPhysicalPath(siteInfo, filePath, false);
         }
 

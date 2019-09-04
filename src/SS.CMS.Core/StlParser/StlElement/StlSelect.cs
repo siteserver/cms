@@ -218,7 +218,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
             channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-            var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
+            var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
 
             var uniqueId = "Select_" + parseContext.UniqueId;
             attributes["id"] = uniqueId;
@@ -263,7 +263,7 @@ selObj.selectedIndex=0;
                     {
                         foreach (var channelIdInSelect in channelIdList)
                         {
-                            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channelIdInSelect);
+                            var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(channelIdInSelect);
 
                             if (nodeInfo != null)
                             {
@@ -287,8 +287,10 @@ selObj.selectedIndex=0;
                     {
                         foreach (var minContentInfo in minContentInfoList)
                         {
-                            var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
+                            var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(minContentInfo.ChannelId);
+                            var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                            var contentInfo = await contentRepository.GetContentInfoAsync(minContentInfo.Id);
                             var title = StringUtils.MaxLengthText(contentInfo.Title, titleWordNum);
                             var url = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, contentInfo, false);
                             if (!string.IsNullOrEmpty(queryString))

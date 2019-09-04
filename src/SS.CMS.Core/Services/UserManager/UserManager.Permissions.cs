@@ -68,7 +68,7 @@ namespace SS.CMS.Core.Services
                 return true;
             }
 
-            var siteIdList = await _siteRepository.GetSiteIdListAsync();
+            var siteIdList = await _siteRepository.GetIdListAsync();
             foreach (var siteId in siteIdList)
             {
                 if (await HasSitePermissionsAsync(siteId))
@@ -139,7 +139,7 @@ namespace SS.CMS.Core.Services
         public async Task<IList<int>> GetSiteIdsAsync()
         {
             var siteIdList = new List<int>();
-            var allSiteIdList = await _siteRepository.GetSiteIdListAsync();
+            var allSiteIdList = await _siteRepository.GetIdListAsync();
 
             if (IsSuperAdministrator())
             {

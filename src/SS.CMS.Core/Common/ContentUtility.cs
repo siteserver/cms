@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SS.CMS.Core.Models.Attributes;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
@@ -357,7 +357,7 @@ namespace SS.CMS.Core.Common
 
                 if (targetSiteId > 0)
                 {
-                    var targetSiteInfo = await siteRepository.GetSiteInfoAsync(targetSiteId);
+                    var targetSiteInfo = await siteRepository.GetSiteAsync(targetSiteId);
                     if (targetSiteInfo != null)
                     {
                         var targetChannelIdArrayList = TranslateUtils.StringCollectionToIntList(channelInfo.TransChannelIds);

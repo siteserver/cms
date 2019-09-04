@@ -59,7 +59,7 @@ namespace SS.CMS.Core.Repositories
 
             var id = await _repository.InsertAsync(templateInfo);
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(templateInfo.SiteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(templateInfo.SiteId);
             await WriteContentToTemplateFileAsync(siteInfo, templateInfo, templateContent, userId);
 
             return id;
@@ -121,7 +121,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task DeleteAsync(int siteId, int templateId)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
             var templateInfo = await GetTemplateInfoAsync(templateId);
             var filePath = GetTemplateFilePath(siteInfo, templateInfo);
 
@@ -234,7 +234,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task CreateDefaultTemplateInfoAsync(int siteId, int userId)
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(siteId);
 
             var templateInfoList = new List<Template>();
 
@@ -384,7 +384,7 @@ namespace SS.CMS.Core.Repositories
             }
             else
             {
-                var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+                var channelInfo = await _channelRepository.GetChannelAsync(channelId);
                 if (channelInfo != null)
                 {
                     templateId = channelInfo.ChannelTemplateId;
@@ -403,7 +403,7 @@ namespace SS.CMS.Core.Repositories
         public async Task<Template> GetContentTemplateInfoAsync(int siteId, int channelId)
         {
             var templateId = 0;
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ContentTemplateId;
@@ -460,7 +460,7 @@ namespace SS.CMS.Core.Repositories
         {
             var templateId = 0;
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ChannelTemplateId;
@@ -478,7 +478,7 @@ namespace SS.CMS.Core.Repositories
         {
             var templateId = 0;
 
-            var channelInfo = await _channelRepository.GetChannelInfoAsync(channelId);
+            var channelInfo = await _channelRepository.GetChannelAsync(channelId);
             if (channelInfo != null)
             {
                 templateId = channelInfo.ContentTemplateId;

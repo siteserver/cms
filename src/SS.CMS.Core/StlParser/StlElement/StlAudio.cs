@@ -72,18 +72,20 @@ namespace SS.CMS.Core.StlParser.StlElement
             {
                 if (contentId != 0)//获取内容视频
                 {
-                    var channelInfo = await parseContext.GetChannelInfoAsync();
+                    var channelInfo = await parseContext.GetChannelAsync();
+                    var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
                     var contentInfo = await parseContext.GetContentInfoAsync();
                     if (contentInfo == null)
                     {
                         //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, type);
-                        playUrl = await channelInfo.ContentRepository.GetValueAsync<string>(contentId, type);
+                        playUrl = await contentRepository.GetValueAsync<string>(contentId, type);
                         if (string.IsNullOrEmpty(playUrl))
                         {
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.VideoUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.VideoUrl);
-                                playUrl = await channelInfo.ContentRepository.GetValueAsync<string>(contentId, ContentAttribute.VideoUrl);
+                                playUrl = await contentRepository.GetValueAsync<string>(contentId, ContentAttribute.VideoUrl);
                             }
                         }
                         if (string.IsNullOrEmpty(playUrl))
@@ -91,7 +93,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                             if (!StringUtils.EqualsIgnoreCase(type, ContentAttribute.FileUrl))
                             {
                                 //playUrl = DataProvider.ContentDao.GetValue(pageInfo.SiteInfo.AuxiliaryTableForContent, contentId, ContentAttribute.FileUrl);
-                                playUrl = await channelInfo.ContentRepository.GetValueAsync<string>(contentId, ContentAttribute.FileUrl);
+                                playUrl = await contentRepository.GetValueAsync<string>(contentId, ContentAttribute.FileUrl);
                             }
                         }
                     }

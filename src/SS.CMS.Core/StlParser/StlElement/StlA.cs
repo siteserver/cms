@@ -166,7 +166,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                     }
                     else
                     {
-                        var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
+                        var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(parseContext.ChannelId);
                         url = await parseContext.UrlManager.GetContentUrlAsync(parseContext.SiteInfo, nodeInfo, parseContext.ContentId, parseContext.IsLocal);
                     }
 
@@ -194,9 +194,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                     parseContext.ChannelId = await
                         parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
                     parseContext.ChannelId =
-                        await parseContext.ChannelRepository.GetChannelIdAsync(parseContext.SiteId,
+                        await parseContext.ChannelRepository.GetIdAsync(parseContext.SiteId,
                             parseContext.ChannelId, channelIndex, channelName);
-                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
+                    var channel = await parseContext.ChannelRepository.GetChannelAsync(parseContext.ChannelId);
 
                     url = await parseContext.UrlManager.GetChannelUrlAsync(parseContext.SiteInfo, channel, parseContext.IsLocal);
                     if (string.IsNullOrWhiteSpace(parseContext.InnerHtml))

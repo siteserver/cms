@@ -209,8 +209,10 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                        var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
+                        var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(minContentInfo.ChannelId);
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                        var contentInfo = await contentRepository.GetContentInfoAsync(minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -297,8 +299,10 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                        var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
+                        var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(minContentInfo.ChannelId);
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                        var contentInfo = await contentRepository.GetContentInfoAsync(minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -359,8 +363,10 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                        var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
+                        var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(minContentInfo.ChannelId);
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                        var contentInfo = await contentRepository.GetContentInfoAsync(minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))
@@ -479,8 +485,10 @@ so_{uniqueId}.write(""flashcontent_{uniqueId}"");
 
                     foreach (var minContentInfo in minContentInfoList)
                     {
-                        var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(minContentInfo.ChannelId);
-                        var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(minContentInfo.Id);
+                        var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(minContentInfo.ChannelId);
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                        var contentInfo = await contentRepository.GetContentInfoAsync(minContentInfo.Id);
                         var imageUrl = contentInfo.ImageUrl;
 
                         if (!string.IsNullOrEmpty(imageUrl))

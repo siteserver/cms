@@ -72,12 +72,13 @@ namespace SS.CMS.Core.StlParser.StlElement
                 separator = parseContext.InnerHtml;
             }
 
-            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(parseContext.ChannelId);
+            var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(parseContext.ChannelId);
 
             var builder = new StringBuilder();
 
             var parentsPath = nodeInfo.ParentsPath;
-            var parentsCount = nodeInfo.ParentsCount;
+            var parentIds = parseContext.ChannelRepository.GetParentIds(nodeInfo);
+            var parentsCount = parentIds.Count;
             if (parentsPath.Length != 0)
             {
                 var nodePath = parentsPath;
@@ -89,7 +90,7 @@ namespace SS.CMS.Core.StlParser.StlElement
                 foreach (var channelIdStr in channelIdArrayList)
                 {
                     var currentId = int.Parse(channelIdStr);
-                    var currentNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(currentId);
+                    var currentNodeInfo = await parseContext.ChannelRepository.GetChannelAsync(currentId);
                     if (currentId == parseContext.SiteId)
                     {
                         var attributes = new NameValueCollection();

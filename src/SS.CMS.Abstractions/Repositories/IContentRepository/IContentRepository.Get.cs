@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 
-namespace SS.CMS.Repositories.IContentRepository
+namespace SS.CMS.Repositories
 {
     public partial interface IContentRepository
     {

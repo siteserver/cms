@@ -6,7 +6,6 @@ using SS.CMS.Data;
 using SS.CMS.Enums;
 using SS.CMS.Models;
 using SS.CMS.Repositories;
-using SS.CMS.Repositories.IContentRepository;
 using SS.CMS.Services;
 using SS.CMS.Utils;
 using Attr = SS.CMS.Core.Models.Attributes.ContentAttribute;
@@ -17,30 +16,26 @@ namespace SS.CMS.Core.Repositories
     {
         private readonly IDistributedCache _cache;
         private readonly ISettingsManager _settingsManager;
-        private readonly ITableManager _tableManager;
-        private readonly IPluginManager _pluginManager;
+        private readonly IDatabaseRepository _databaseRepository;
         private readonly IContentCheckRepository _contentCheckRepository;
         private readonly IUserRepository _userRepository;
         private readonly ISiteRepository _siteRepository;
         private readonly IChannelRepository _channelRepository;
-        private readonly ITableStyleRepository _tableStyleRepository;
         private readonly ITagRepository _tagRepository;
         private readonly IErrorLogRepository _errorLogRepository;
 
         private readonly Repository<Content> _repository;
 
-        public ContentRepository(IDistributedCache cache, ISettingsManager settingsManager, ITableManager tableManager, IPluginManager pluginManager, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITableStyleRepository tableStyleRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
+        public ContentRepository(IDistributedCache cache, ISettingsManager settingsManager, IDatabaseRepository databaseRepository, IContentCheckRepository contentCheckRepository, IUserRepository userRepository, ISiteRepository siteRepository, IChannelRepository channelRepository, ITagRepository tagRepository, IErrorLogRepository errorLogRepository, string tableName)
         {
-            _settingsManager = settingsManager;
             _cache = cache;
-            _tableManager = tableManager;
-            _pluginManager = pluginManager;
+            _settingsManager = settingsManager;
+            _databaseRepository = databaseRepository;
             _contentCheckRepository = contentCheckRepository;
             _userRepository = userRepository;
             _siteRepository = siteRepository;
             _channelRepository = channelRepository;
             _userRepository = userRepository;
-            _tableStyleRepository = tableStyleRepository;
             _tagRepository = tagRepository;
             _errorLogRepository = errorLogRepository;
 

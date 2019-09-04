@@ -11,7 +11,7 @@ namespace SS.CMS.Core.Repositories
     public partial class ChannelRepository
     {
         [Serializable]
-        private class CacheInfo
+        private class Cache
         {
             public int Id { get; set; }
             public int ParentId { get; set; }
@@ -26,30 +26,30 @@ namespace SS.CMS.Core.Repositories
             await _cache.RemoveAsync(cacheKey);
         }
 
-        private async Task<List<CacheInfo>> GetListCacheAsync(int siteId)
+        private async Task<List<Cache>> GetListCacheAsync(int siteId)
         {
             var cacheKey = _cache.GetListKey(this, siteId);
             return await _cache.GetOrCreateAsync(cacheKey, async options =>
             {
-                var channelInfoList = await _repository.GetAllAsync(Q
+                var channelList = await _repository.GetAllAsync(Q
                 .Select(Attr.Id, Attr.ParentId, Attr.ParentsPath, Attr.ChannelName, Attr.IndexName)
                 .Where(Attr.SiteId, siteId)
                 .OrderBy(Attr.Taxis));
 
-                var cacheInfoList = new List<CacheInfo>();
-                foreach (var channelInfo in channelInfoList)
+                var list = new List<Cache>();
+                foreach (var channel in channelList)
                 {
-                    cacheInfoList.Add(new CacheInfo
+                    list.Add(new Cache
                     {
-                        Id = channelInfo.Id,
-                        ChannelName = channelInfo.ChannelName,
-                        IndexName = channelInfo.IndexName,
-                        ParentId = channelInfo.ParentId,
-                        ParentsIdList = TranslateUtils.StringCollectionToIntList(channelInfo.ParentsPath)
+                        Id = channel.Id,
+                        ChannelName = channel.ChannelName,
+                        IndexName = channel.IndexName,
+                        ParentId = channel.ParentId,
+                        ParentsIdList = TranslateUtils.StringCollectionToIntList(channel.ParentsPath)
                     });
                 }
 
-                return cacheInfoList;
+                return list;
             });
         }
     }

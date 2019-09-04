@@ -20,14 +20,18 @@ namespace SS.CMS.Api.Controllers.Admin
 
         private readonly ISettingsManager _settingsManager;
         private readonly IUserManager _userManager;
+        private readonly IPluginManager _pluginManager;
         private readonly ISiteRepository _siteRepository;
+        private readonly IChannelRepository _channelRepository;
         private readonly IConfigRepository _configRepository;
 
-        public IndexController(ISettingsManager settingsManager, IUserManager userManager, ISiteRepository siteRepository, IConfigRepository configRepository)
+        public IndexController(ISettingsManager settingsManager, IUserManager userManager, IPluginManager pluginManager, ISiteRepository siteRepository, IChannelRepository channelRepository, IConfigRepository configRepository)
         {
             _settingsManager = settingsManager;
             _userManager = userManager;
+            _pluginManager = pluginManager;
             _siteRepository = siteRepository;
+            _channelRepository = channelRepository;
             _configRepository = configRepository;
         }
 
@@ -50,11 +54,12 @@ namespace SS.CMS.Api.Controllers.Admin
         {
             var unCheckedList = new List<object>();
 
-            foreach (var siteInfo in await _siteRepository.GetSiteInfoListAsync())
+            foreach (var siteInfo in await _siteRepository.GetSiteListAsync())
             {
                 if (!_userManager.IsSiteAdministrator(siteInfo.Id)) continue;
 
-                var count = await siteInfo.ContentRepository.GetCountAsync(siteInfo, false);
+                var contentRepository = _channelRepository.GetContentRepository(siteInfo);
+                var count = await contentRepository.GetCountAsync(siteInfo, false, _pluginManager);
                 if (count > 0)
                 {
                     unCheckedList.Add(new

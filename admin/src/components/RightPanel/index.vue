@@ -1,11 +1,13 @@
 <template>
-  <div ref="rightPanel" :class="{show:show}" class="rightPanel-container">
+  <div ref="rightPanel" :class="{show: show}" class="rightPanel-container">
     <div class="rightPanel-background" />
-    <div class="rightPanel">
-      <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
-        <i :class="show?'el-icon-close':'el-icon-setting'" />
+    <div class="rightPanel" :style="{'max-width': maxWidth}">
+      <div class="handle-button" @click="close">
+        <i class="el-icon-close" />
       </div>
       <div class="rightPanel-items">
+        <el-page-header :content="title" @back="close" />
+        <el-divider />
         <slot />
       </div>
     </div>
@@ -14,17 +16,18 @@
 
 <script>
 import { addClass, removeClass } from '@/utils'
+import { setTimeout } from 'timers'
 
 export default {
   name: 'RightPanel',
   props: {
-    clickNotClose: {
-      default: false,
-      type: Boolean
+    title: {
+      default: '',
+      type: String
     },
-    buttonTop: {
-      default: 250,
-      type: Number
+    width: {
+      default: '50%',
+      type: String
     }
   },
   data() {
@@ -33,13 +36,15 @@ export default {
     }
   },
   computed: {
-    theme() {
-      return this.$store.state.settings.theme
+    maxWidth: {
+      get() {
+        return this.$store.state.app.device === 'desktop' ? this.$props.width : '80%'
+      }
     }
   },
   watch: {
     show(value) {
-      if (value && !this.clickNotClose) {
+      if (value) {
         this.addEventClick()
       }
       if (value) {
@@ -51,6 +56,9 @@ export default {
   },
   mounted() {
     this.insertToBody()
+    setTimeout(() => {
+      this.show = true
+    }, 10)
   },
   beforeDestroy() {
     const elx = this.$refs.rightPanel
@@ -64,6 +72,7 @@ export default {
       const parent = evt.target.closest('.rightPanel')
       if (!parent) {
         this.show = false
+        this.$emit('close')
         window.removeEventListener('click', this.closeSidebar)
       }
     },
@@ -71,6 +80,10 @@ export default {
       const elx = this.$refs.rightPanel
       const body = document.querySelector('body')
       body.insertBefore(elx, body.firstChild)
+    },
+    close() {
+      this.show = false
+      this.$emit('close')
     }
   }
 }
@@ -80,7 +93,7 @@ export default {
 .showRightPanel {
   overflow: hidden;
   position: relative;
-  width: calc(100% - 15px);
+  width: 100%;
 }
 </style>
 
@@ -96,8 +109,7 @@ export default {
 }
 
 .rightPanel {
-  width: 100%;
-  max-width: 260px;
+  width: 80%;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -106,14 +118,14 @@ export default {
   transition: all .25s cubic-bezier(.7, .3, .1, 1);
   transform: translate(100%);
   background: #fff;
-  z-index: 40000;
+  z-index: 2000;
 }
 
 .show {
   transition: all .3s cubic-bezier(.7, .3, .1, 1);
 
   .rightPanel-background {
-    z-index: 20000;
+    z-index: 1999;
     opacity: 1;
     width: 100%;
     height: 100%;
@@ -137,9 +149,17 @@ export default {
   cursor: pointer;
   color: #fff;
   line-height: 48px;
+  top: 250px;
+  background-color: #42b983;
   i {
     font-size: 24px;
     line-height: 48px;
   }
+}
+
+.rightPanel-items {
+  padding: 15px;
+  max-height: 100%;
+  overflow: auto;
 }
 </style>

@@ -1,6 +1,6 @@
 using System;
 
-namespace SS.CMS.Core.Models.Enumerations
+namespace SS.CMS.Core.Common.Enums
 {
     /// <summary>
     /// 批量转移类型

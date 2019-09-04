@@ -13,11 +13,11 @@ namespace SS.CMS.Core.Tests.Services
 
             var tableName = "testContentTable";
 
-            await _fixture.TableManager.CreateContentTableAsync(tableName, _fixture.TableManager.ContentTableDefaultColumns);
+            await _fixture.DatabaseRepository.CreateContentTableAsync(tableName, _fixture.DatabaseRepository.ContentTableDefaultColumns);
 
             Assert.True(await _fixture.Database.IsTableExistsAsync(tableName));
 
-            await _fixture.TableManager.AlterSystemTableAsync(tableName, _fixture.TableManager.ContentTableDefaultColumns);
+            await _fixture.DatabaseRepository.AlterSystemTableAsync(tableName, _fixture.DatabaseRepository.ContentTableDefaultColumns);
         }
     }
 }

@@ -68,7 +68,7 @@ const routers = [
     children: [
       {
         path: 'all',
-        component: () => import('@/views/charts/line'),
+        component: () => import('@/settings/users/all'),
         name: 'settingsUsersAll'
       },
       {

@@ -1,5 +1,5 @@
 using System;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Enums;
 
 namespace SS.CMS.Core.Common.Create

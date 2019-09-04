@@ -31,7 +31,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task<int> InsertAsync(Site siteInfo)
         {
-            siteInfo.Taxis = await GetMaxTaxisAsync() + 1;
+            siteInfo.Taxis = await GetMaxTaxisAsync(siteInfo.ParentId) + 1;
             await _repository.InsertAsync(siteInfo);
 
             await RemoveCacheListAsync();
@@ -44,7 +44,7 @@ namespace SS.CMS.Core.Repositories
             var children = await GetCacheListAsync(siteId);
             if (children.Count > 0) return false;
 
-            var siteInfo = await GetSiteInfoAsync(siteId);
+            var siteInfo = await GetSiteAsync(siteId);
             // var list = ChannelManager.GetChannelIdList(siteId);
             // DataProvider.TableStyleRepository.Delete(list, siteInfo.TableName);
 
@@ -110,11 +110,11 @@ namespace SS.CMS.Core.Repositories
             Site siteInfo = null;
             if (!string.IsNullOrEmpty(siteName))
             {
-                siteInfo = await GetSiteInfoBySiteNameAsync(siteName);
+                siteInfo = await GetSiteBySiteNameAsync(siteName);
             }
             else if (!string.IsNullOrEmpty(siteDir))
             {
-                siteInfo = await GetSiteInfoBySiteDirAsync(siteDir);
+                siteInfo = await GetSiteBySiteDirAsync(siteDir);
             }
 
             if (siteInfo != null)
@@ -155,16 +155,16 @@ namespace SS.CMS.Core.Repositories
             return cacheList.Where(x => x.TableName == tableName).Count();
         }
 
-        public async Task<IEnumerable<int>> GetSiteIdListAsync()
+        public async Task<IEnumerable<int>> GetIdListAsync()
         {
             var cacheList = await GetCacheListAsync();
             return cacheList.Select(x => x.Id).ToList();
         }
 
-        public async Task<IList<Site>> GetSiteInfoListAsync()
+        public async Task<IList<Site>> GetSiteListAsync()
         {
             var list = new List<Site>();
-            var siteIdList = await GetSiteIdListAsync();
+            var siteIdList = await GetIdListAsync();
             foreach (var siteId in siteIdList)
             {
                 var siteInfo = await GetCacheEntityAsync(siteId);
@@ -176,7 +176,7 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public async Task<IList<Site>> GetSiteInfoListAsync(int parentId)
+        public async Task<IList<Site>> GetSiteListAsync(int parentId)
         {
             var list = new List<Site>();
 
@@ -186,7 +186,7 @@ namespace SS.CMS.Core.Repositories
                 var siteInfo = await GetCacheEntityAsync(cache.Id);
                 if (siteInfo != null)
                 {
-                    siteInfo.Children = await GetSiteInfoListAsync(siteInfo.Id);
+                    siteInfo.Children = await GetSiteListAsync(siteInfo.Id);
                     list.Add(siteInfo);
                 }
             }
@@ -194,14 +194,14 @@ namespace SS.CMS.Core.Repositories
             return list;
         }
 
-        public async Task<Site> GetSiteInfoAsync(int siteId)
+        public async Task<Site> GetSiteAsync(int siteId)
         {
             if (siteId <= 0) return null;
 
             return await GetCacheEntityAsync(siteId);
         }
 
-        public async Task<Site> GetSiteInfoBySiteNameAsync(string siteName)
+        public async Task<Site> GetSiteBySiteNameAsync(string siteName)
         {
             var cacheList = await GetCacheListAsync();
             var siteId = cacheList.Where(x => x.SiteName == siteName).Select(x => x.Id).FirstOrDefault();
@@ -210,7 +210,7 @@ namespace SS.CMS.Core.Repositories
             return await GetCacheEntityAsync(siteId);
         }
 
-        public async Task<Site> GetSiteInfoByIsRootAsync()
+        public async Task<Site> GetSiteByIsRootAsync()
         {
             var cacheList = await GetCacheListAsync();
             var siteId = cacheList.Where(x => x.IsRoot).Select(x => x.Id).FirstOrDefault();
@@ -219,13 +219,13 @@ namespace SS.CMS.Core.Repositories
             return await GetCacheEntityAsync(siteId);
         }
 
-        public async Task<int> GetSiteIdByIsRootAsync()
+        public async Task<int> GetIdByIsRootAsync()
         {
             var cacheList = await GetCacheListAsync();
             return cacheList.Where(x => x.IsRoot).Select(x => x.Id).FirstOrDefault();
         }
 
-        public async Task<Site> GetSiteInfoBySiteDirAsync(string siteDir)
+        public async Task<Site> GetSiteBySiteDirAsync(string siteDir)
         {
             var cacheList = await GetCacheListAsync();
             var siteId = cacheList.Where(x => StringUtils.EqualsIgnoreCase(x.SiteDir, siteDir)).Select(x => x.Id).FirstOrDefault();
@@ -234,23 +234,23 @@ namespace SS.CMS.Core.Repositories
             return await GetCacheEntityAsync(siteId);
         }
 
-        public async Task<int> GetSiteIdBySiteDirAsync(string siteDir)
+        public async Task<int> GetIdBySiteDirAsync(string siteDir)
         {
             var cacheList = await GetCacheListAsync();
             return cacheList.Where(x => StringUtils.EqualsIgnoreCase(x.SiteDir, siteDir)).Select(x => x.Id).FirstOrDefault();
         }
 
-        public async Task<List<int>> GetSiteIdListOrderByLevelAsync()
+        public async Task<List<int>> GetIdListOrderByLevelAsync()
         {
             var retval = new List<int>();
 
-            var siteIdList = await GetSiteIdListAsync();
+            var siteIdList = await GetIdListAsync();
             var siteInfoList = new List<Site>();
             var parentWithChildren = new Dictionary<int, List<Site>>();
             var rootSiteId = 0;
             foreach (var siteId in siteIdList)
             {
-                var siteInfo = await GetSiteInfoAsync(siteId);
+                var siteInfo = await GetSiteAsync(siteId);
                 if (siteInfo.IsRoot)
                 {
                     rootSiteId = siteInfo.Id;
@@ -289,7 +289,7 @@ namespace SS.CMS.Core.Repositories
 
         public async Task GetAllParentSiteIdListAsync(List<int> parentSiteIds, List<int> siteIdCollection, int siteId)
         {
-            var siteInfo = await GetSiteInfoAsync(siteId);
+            var siteInfo = await GetSiteAsync(siteId);
             var parentSiteId = -1;
             foreach (var psId in siteIdCollection)
             {
@@ -306,7 +306,7 @@ namespace SS.CMS.Core.Repositories
         public async Task<bool> IsExistsAsync(int siteId)
         {
             if (siteId == 0) return false;
-            return await GetSiteInfoAsync(siteId) != null;
+            return await GetSiteAsync(siteId) != null;
         }
 
         public async Task<List<string>> GetSiteTableNamesAsync(IPluginManager pluginManager)
@@ -359,7 +359,7 @@ namespace SS.CMS.Core.Repositories
         public async Task<int> GetSiteLevelAsync(int siteId)
         {
             var level = 0;
-            var siteInfo = await GetSiteInfoAsync(siteId);
+            var siteInfo = await GetSiteAsync(siteId);
             if (siteInfo.ParentId != 0)
             {
                 level++;
@@ -371,13 +371,13 @@ namespace SS.CMS.Core.Repositories
         public async Task<int> GetParentSiteIdAsync(int siteId)
         {
             var parentSiteId = 0;
-            var siteInfo = await GetSiteInfoAsync(siteId);
+            var siteInfo = await GetSiteAsync(siteId);
             if (siteInfo != null && siteInfo.IsRoot == false)
             {
                 parentSiteId = siteInfo.ParentId;
                 if (parentSiteId == 0)
                 {
-                    parentSiteId = await GetSiteIdByIsRootAsync();
+                    parentSiteId = await GetIdByIsRootAsync();
                 }
             }
             return parentSiteId;
@@ -449,7 +449,7 @@ namespace SS.CMS.Core.Repositories
                 padding += "└ ";
             }
 
-            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/>&nbsp;{siteInfo.SiteName}";
+            return $"{padding}<img align='absbottom' border='0' src='{psLogo}'/> {siteInfo.SiteName}";
         }
     }
 }

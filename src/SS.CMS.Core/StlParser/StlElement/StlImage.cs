@@ -165,11 +165,12 @@ namespace SS.CMS.Core.StlParser.StlElement
                             var targetChannelId = contentInfo.SourceId;
                             //var targetSiteId = DataProvider.ChannelDao.GetSiteId(targetChannelId);
                             var targetSiteId = await parseContext.ChannelRepository.GetSiteIdAsync(targetChannelId);
-                            var targetSiteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(targetSiteId);
-                            var targetNodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(targetChannelId);
+                            var targetSiteInfo = await parseContext.SiteRepository.GetSiteAsync(targetSiteId);
+                            var targetNodeInfo = await parseContext.ChannelRepository.GetChannelAsync(targetChannelId);
+                            var targetContentRepository = parseContext.ChannelRepository.GetContentRepository(targetSiteInfo, targetNodeInfo);
 
                             //var targetContentInfo = DataProvider.ContentDao.GetContentInfo(tableStyle, tableName, contentInfo.ReferenceId);
-                            var targetContentInfo = await targetNodeInfo.ContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
+                            var targetContentInfo = await targetContentRepository.GetContentInfoAsync(contentInfo.ReferenceId);
                             if (targetContentInfo != null && targetContentInfo.ChannelId > 0)
                             {
                                 contentInfo = targetContentInfo;
@@ -179,8 +180,10 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     if (contentInfo == null)
                     {
-                        var channelInfo = await parseContext.GetChannelInfoAsync();
-                        contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentId);
+                        var channelInfo = await parseContext.GetChannelAsync();
+                        var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                        contentInfo = await contentRepository.GetContentInfoAsync(contentId);
                     }
 
                     if (contentInfo != null)
@@ -215,7 +218,7 @@ namespace SS.CMS.Core.StlParser.StlElement
 
                     channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                    var channel = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
+                    var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
 
                     picUrl = channel.ImageUrl;
                 }

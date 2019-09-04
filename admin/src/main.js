@@ -5,8 +5,11 @@ import Cookies from 'js-cookie'
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 
 import Element from 'element-ui'
-import './styles/element-variables.scss'
 
+// import '@/assets/css/bootstrap.min.css'
+// import '@/assets/css/siteserver.min.css'
+
+// import './styles/element-variables.scss'
 import '@/styles/index.scss' // global css
 
 import App from './App'
@@ -46,8 +49,11 @@ Object.keys(filters).forEach(key => {
 Vue.config.productionTip = false
 
 import VeeValidate from 'vee-validate'
-
-Vue.use(VeeValidate)
+const config = {
+  errorBagName: 'errorBags', // change if property conflicts.
+  fieldsBagName: 'fieldBags'
+}
+Vue.use(VeeValidate, config)
 
 new Vue({
   el: '#app',

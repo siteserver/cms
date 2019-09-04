@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Enums;
@@ -106,12 +107,14 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
                 channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
-                var channelIdList = await parseContext.ChannelRepository.GetChannelIdListAsync(nodeInfo, scope, string.Empty, string.Empty, string.Empty);
+                var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
+                var channelIdList = await parseContext.ChannelRepository.GetIdListAsync(channel, scope, string.Empty, string.Empty, string.Empty);
                 foreach (var theChannelId in channelIdList)
                 {
-                    var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(theChannelId);
-                    count += await channelInfo.ContentRepository.GetCountOfContentAddAsync(parseContext.SiteId, channelInfo.Id, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), 0, true);
+                    var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(theChannelId);
+                    var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+
+                    count += await contentRepository.GetCountOfContentAddAsync(parseContext.SiteId, channelInfo.Id, ScopeType.Self, sinceDate, DateTime.Now.AddDays(1), 0, true);
                 }
             }
             else if (StringUtils.EqualsIgnoreCase(type, TypeChannels))
@@ -119,8 +122,9 @@ namespace SS.CMS.Core.StlParser.StlElement
                 var channelId = await parseContext.GetChannelIdByLevelAsync(parseContext.SiteId, parseContext.ChannelId, upLevel, topLevel);
                 channelId = await parseContext.GetChannelIdByChannelIdOrChannelIndexOrChannelNameAsync(parseContext.SiteId, channelId, channelIndex, channelName);
 
-                var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
-                count = nodeInfo.ChildrenCount;
+                var channel = await parseContext.ChannelRepository.GetChannelAsync(channelId);
+                var childrenIds = await parseContext.ChannelRepository.GetChildrenIdsAsync(channel.SiteId, channel.Id);
+                count = childrenIds.Count();
             }
 
             return count.ToString();

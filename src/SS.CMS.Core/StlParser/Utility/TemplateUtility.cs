@@ -18,8 +18,9 @@ namespace SS.CMS.Core.StlParser.Utility
 
             var contentItemInfo = parseContext.PageInfo.ContentItems.Peek();
 
-            var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentItemInfo.Value.ChannelId);
-            var contentInfo = await channelInfo.ContentRepository.GetContentInfoAsync(contentItemInfo.Value.Id);
+            var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(contentItemInfo.Value.ChannelId);
+            var contentRepository = parseContext.ChannelRepository.GetContentRepository(parseContext.SiteInfo, channelInfo);
+            var contentInfo = await contentRepository.GetContentInfoAsync(contentItemInfo.Value.Id);
 
             var context = parseContext.Clone(EContextType.Content);
             context.Container = container;
@@ -33,7 +34,7 @@ namespace SS.CMS.Core.StlParser.Utility
             var prePageContentId = context.PageContentId;
             if (contentInfo.SiteId != context.SiteId)
             {
-                var siteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(contentInfo.SiteId);
+                var siteInfo = await parseContext.SiteRepository.GetSiteAsync(contentInfo.SiteId);
                 context.PageInfo.ChangeSite(siteInfo, siteInfo.Id, 0, context);
             }
 
@@ -145,7 +146,7 @@ namespace SS.CMS.Core.StlParser.Utility
             {
                 if (selectedValues.Count > 0)
                 {
-                    var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(contentInfo.ChannelId);
+                    var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(contentInfo.ChannelId);
                     if (nodeInfo != null)
                     {
                         if (selectedValues.Get(nodeInfo.ChannelName) != null)
@@ -173,7 +174,7 @@ namespace SS.CMS.Core.StlParser.Utility
             context.ContainerClientId = containerClientId;
             context.ChannelId = channelId;
 
-            var nodeInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channelId);
+            var nodeInfo = await parseContext.ChannelRepository.GetChannelAsync(channelId);
             if (selectedItems != null && selectedItems.Count > 0)
             {
                 foreach (var itemType in selectedItems.AllKeys)
@@ -267,7 +268,7 @@ namespace SS.CMS.Core.StlParser.Utility
         public static async Task<string> GetSitesTemplateStringAsync(string templateString, string containerClientId, ParseContext parseContext)
         {
             var container = Container.GetContainer(parseContext.PageInfo);
-            var siteInfo = await parseContext.SiteRepository.GetSiteInfoAsync(container.SiteItem.Value.Id);
+            var siteInfo = await parseContext.SiteRepository.GetSiteAsync(container.SiteItem.Value.Id);
 
             var context = parseContext.Clone(EContextType.Site);
             context.ContainerClientId = containerClientId;

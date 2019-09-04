@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Enums;
 using SS.CMS.Repositories;
 using SS.CMS.Services;
@@ -29,7 +29,7 @@ namespace SS.CMS.Core.Serialization
             var exportObject = new ExportObject();
             await exportObject.LoadAsync(siteId, userId);
 
-            var channelIdList = await channelRepository.GetChannelIdListAsync(await channelRepository.GetChannelInfoAsync(siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+            var channelIdList = await channelRepository.GetIdListAsync(await channelRepository.GetChannelAsync(siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
 
             await exportObject.ExportChannelsAsync(channelIdList, filePath);
         }
@@ -47,7 +47,7 @@ namespace SS.CMS.Core.Serialization
         {
             var exportObject = new ExportObject();
             await exportObject.LoadAsync(siteId, userId);
-            var siteInfo = await siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await siteRepository.GetSiteAsync(siteId);
 
             var siteTemplateDir = PathUtils.GetFileNameWithoutExtension(filePath);
             var siteTemplatePath = PathUtils.Combine(DirectoryUtils.GetDirectoryPath(filePath), siteTemplateDir);
@@ -77,7 +77,7 @@ namespace SS.CMS.Core.Serialization
             var importObject = new ImportObject();
             await importObject.LoadAsync(siteId, userId);
 
-            var siteInfo = await siteRepository.GetSiteInfoAsync(siteId);
+            var siteInfo = await siteRepository.GetSiteAsync(siteId);
 
             var siteTemplatePath = path;
             if (isZip)
@@ -93,7 +93,7 @@ namespace SS.CMS.Core.Serialization
 
             if (isDeleteChannels)
             {
-                var channelIdList = await channelRepository.GetChannelIdListAsync(await channelRepository.GetChannelInfoAsync(siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
+                var channelIdList = await channelRepository.GetIdListAsync(await channelRepository.GetChannelAsync(siteId), ScopeType.Children, string.Empty, string.Empty, string.Empty);
                 foreach (var channelId in channelIdList)
                 {
                     await channelRepository.DeleteAsync(siteId, channelId);

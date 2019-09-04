@@ -11,38 +11,6 @@ namespace SS.CMS.Core.Repositories
 {
     public partial class ChannelRepository
     {
-        private async Task UpdateSubtractChildrenCountAsync(string parentsPath, int subtractNum)
-        {
-            if (string.IsNullOrEmpty(parentsPath)) return;
-
-            await _repository.DecrementAsync(Attr.ChildrenCount, Q
-                    .WhereIn(Attr.Id, TranslateUtils.StringCollectionToIntList(parentsPath)),
-                subtractNum);
-        }
-
-        private async Task UpdateIsLastNodeAsync(int parentId)
-        {
-            if (parentId <= 0) return;
-
-            await _repository.UpdateAsync(Q
-                  .Set(Attr.IsLastNode, false.ToString())
-                  .Where(Attr.ParentId, parentId)
-              );
-
-            var topId = await _repository.GetAsync<int>(Q
-                .Select(Attr.Id)
-                .Where(Attr.ParentId, parentId)
-                .OrderByDesc(Attr.Taxis));
-
-            if (topId > 0)
-            {
-                await _repository.UpdateAsync(Q
-                         .Set(Attr.IsLastNode, true.ToString())
-                         .Where(Attr.Id, topId)
-                     );
-            }
-        }
-
         private async Task<int> GetMaxTaxisByParentPathAsync(string parentPath)
         {
             return await _repository.MaxAsync(Attr.Taxis, Q
@@ -135,47 +103,40 @@ namespace SS.CMS.Core.Repositories
                 return;
             }
 
-            var channelInfo = await GetChannelInfoAsync(channelId);
-            if (channelInfo == null) return;
+            var channel = await GetChannelAsync(channelId);
+            if (channel == null) return;
 
-            if (channelInfo.ChildrenCount == 0)
+            if (scopeType == ScopeType.Self)
             {
-                if (scopeType != ScopeType.Children && scopeType != ScopeType.Descendant)
-                {
-                    query.Where(Attr.Id, channelInfo.Id);
-                }
-            }
-            else if (scopeType == ScopeType.Self)
-            {
-                query.Where(Attr.Id, channelInfo.Id);
+                query.Where(Attr.Id, channel.Id);
             }
             else if (scopeType == ScopeType.All)
             {
-                if (channelInfo.Id == siteId)
+                if (channel.Id == siteId)
                 {
                     query.Where(Attr.SiteId, siteId);
                 }
                 else
                 {
-                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
+                    var channelIdList = await GetIdListAsync(channel, scopeType);
                     query.WhereIn(Attr.Id, channelIdList);
                 }
             }
             else if (scopeType == ScopeType.Descendant)
             {
-                if (channelInfo.Id == siteId)
+                if (channel.Id == siteId)
                 {
                     query.Where(Attr.SiteId, siteId).WhereNot(Attr.Id, siteId);
                 }
                 else
                 {
-                    var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
+                    var channelIdList = await GetIdListAsync(channel, scopeType);
                     query.WhereIn(Attr.Id, channelIdList);
                 }
             }
             else if (scopeType == ScopeType.SelfAndChildren || scopeType == ScopeType.Children)
             {
-                var channelIdList = await GetChannelIdListAsync(channelInfo, scopeType);
+                var channelIdList = await GetIdListAsync(channel, scopeType);
                 query.WhereIn(Attr.Id, channelIdList);
             }
         }
@@ -216,7 +177,7 @@ namespace SS.CMS.Core.Repositories
 
                         if (await _channelGroupRepository.IsExistsAsync(siteId, groupName))
                         {
-                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
+                            var groupChannelIdList = await GetIdListAsync(siteId, groupName);
                             foreach (int channelId in groupChannelIdList)
                             {
                                 if (!channelIdList.Contains(channelId))
@@ -249,7 +210,7 @@ namespace SS.CMS.Core.Repositories
 
                         if (await _channelGroupRepository.IsExistsAsync(siteId, groupName))
                         {
-                            var groupChannelIdList = await GetChannelIdListAsync(siteId, groupName);
+                            var groupChannelIdList = await GetIdListAsync(siteId, groupName);
                             foreach (int channelId in groupChannelIdList)
                             {
                                 if (!channelIdList.Contains(channelId))

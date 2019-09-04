@@ -90,6 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAdd(ServiceDescriptor.Transient<IConfigRepository, ConfigRepository>());
             services.TryAdd(ServiceDescriptor.Transient<IContentCheckRepository, ContentCheckRepository>());
             services.TryAdd(ServiceDescriptor.Transient<IContentGroupRepository, ContentGroupRepository>());
+            services.TryAdd(ServiceDescriptor.Transient<IDatabaseRepository, DatabaseRepository>());
             services.TryAdd(ServiceDescriptor.Transient<IDbCacheRepository, DbCacheRepository>());
             services.TryAdd(ServiceDescriptor.Transient<IDepartmentRepository, DepartmentRepository>());
             services.TryAdd(ServiceDescriptor.Transient<IErrorLogRepository, ErrorLogRepository>());
@@ -134,13 +135,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddPluginManager(this IServiceCollection services)
         {
             services.TryAdd(ServiceDescriptor.Singleton<IPluginManager, PluginManager>());
-
-            return services;
-        }
-
-        public static IServiceCollection AddTableManager(this IServiceCollection services)
-        {
-            services.TryAdd(ServiceDescriptor.Singleton<ITableManager, TableManager>());
 
             return services;
         }

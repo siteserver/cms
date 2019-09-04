@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using SqlKata;
 using SS.CMS.Models;
 
-namespace SS.CMS.Repositories.IContentRepository
+namespace SS.CMS.Repositories
 {
     public partial interface IContentRepository
     {

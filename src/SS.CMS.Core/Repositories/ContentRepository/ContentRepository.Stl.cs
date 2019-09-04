@@ -23,7 +23,7 @@ namespace SS.CMS.Core.Repositories
 
             if (others != null && others.Count > 0)
             {
-                var columnNameList = await _tableManager.GetTableColumnNameListAsync(TableName);
+                var columnNameList = await _databaseRepository.GetTableColumnNameListAsync(TableName);
 
                 foreach (var attributeName in others.AllKeys)
                 {

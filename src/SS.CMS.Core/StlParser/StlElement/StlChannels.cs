@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SS.CMS.Core.Models.Enumerations;
+using SS.CMS.Core.Common.Enums;
 using SS.CMS.Core.StlParser.Models;
 using SS.CMS.Core.StlParser.Utility;
 using SS.CMS.Enums;
@@ -200,7 +200,7 @@ namespace SS.CMS.Core.StlParser.StlElement
             var channelInfoList = new List<IDictionary<string, object>>();
             foreach (var channel in channelList)
             {
-                var channelInfo = await parseContext.ChannelRepository.GetChannelInfoAsync(channel.Value.Id);
+                var channelInfo = await parseContext.ChannelRepository.GetChannelAsync(channel.Value.Id);
                 if (channelInfo != null)
                 {
                     channelInfoList.Add(channelInfo.ToDictionary());

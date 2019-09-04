@@ -7,7 +7,6 @@ const state = {
     withoutAnimation: false
   },
   device: 'desktop',
-  topMenu: '',
   language: getLanguage(),
   size: Cookies.get('size') || 'medium'
 }
@@ -30,9 +29,6 @@ const mutations = {
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
   },
-  SET_TOP_MENU: (state, topMenu) => {
-    state.topMenu = topMenu
-  },
   SET_LANGUAGE: (state, language) => {
     state.language = language
     Cookies.set('language', language)
@@ -52,9 +48,6 @@ const actions = {
   },
   toggleDevice({ commit }, device) {
     commit('TOGGLE_DEVICE', device)
-  },
-  setTopMenu({ commit }, topMenu) {
-    commit('SET_TOP_MENU', topMenu)
   },
   setLanguage({ commit }, language) {
     commit('SET_LANGUAGE', language)

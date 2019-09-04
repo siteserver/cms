@@ -32,7 +32,7 @@ namespace SS.CMS.Core.Serialization.Components
 
         public async Task ExportAsync()
         {
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(_siteId);
 
             var feed = AtomUtility.GetEmptyFeed();
 
@@ -117,7 +117,7 @@ namespace SS.CMS.Core.Serialization.Components
 
             var feed = AtomFeed.Load(FileUtils.GetFileStreamReadOnly(_filePath));
 
-            var siteInfo = await _siteRepository.GetSiteInfoAsync(_siteId);
+            var siteInfo = await _siteRepository.GetSiteAsync(_siteId);
 
             siteInfo.ExtendValues = AtomUtility.GetDcElementContent(feed.AdditionalElements, SiteAttribute.ExtendValues, siteInfo.ExtendValues);
 
