@@ -269,6 +269,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
                     }
                 }
+                else if (BackgroundContentAttribute.SubTitle.ToLower().Equals(type))
+                {
+                    parsedContent = InputTypeUtils.ParseString(InputType.Text, contentInfo.GetString(BackgroundContentAttribute.SubTitle), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    if (pageInfo.SiteInfo.Additional.IsContentSubTitleBreakLine)
+                    {
+                        parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
+                    }
+                }
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
                     parsedContent = InputTypeUtils.ParseString(InputType.TextArea,  contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);

@@ -9,14 +9,13 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/contents")]
-    public class V1ContentsController : ApiController
+    public class ContentsController : ApiController
     {
         private const string RouteSite = "{siteId:int}";
         private const string RouteChannel = "{siteId:int}/{channelId:int}";
@@ -164,8 +163,6 @@ namespace SiteServer.API.Controllers.V1
 
                 var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, id);
                 if (contentInfo == null) return NotFound();
-                var isChecked = contentInfo.IsChecked;
-                var checkedLevel = contentInfo.CheckedLevel;
 
                 contentInfo.Load(attributes);
                 contentInfo.Load(new
@@ -179,11 +176,8 @@ namespace SiteServer.API.Controllers.V1
                 });
 
                 var postCheckedLevel = request.GetPostInt(ContentAttribute.CheckedLevel.ToCamelCase());
-                if (postCheckedLevel != CheckManager.LevelInt.NotChange)
-                {
-                    isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
-                    checkedLevel = postCheckedLevel;
-                }
+                var isChecked = postCheckedLevel >= siteInfo.Additional.CheckContentLevel;
+                var checkedLevel = postCheckedLevel;
 
                 contentInfo.Load(new
                 {

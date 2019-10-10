@@ -3,14 +3,13 @@ using System.Web;
 using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
-namespace SiteServer.API.Controllers.Pages.Settings
+namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
-    [RoutePrefix("pages/settings/userHome")]
-    public class PagesUserHomeController : ApiController
+    [RoutePrefix("pages/cms/configSite")]
+    public class PagesConfigSiteController : ApiController
     {
         private const string Route = "";
         private const string RouteUpload = "upload";
@@ -21,18 +20,21 @@ namespace SiteServer.API.Controllers.Pages.Settings
             try
             {
                 var request = new AuthenticatedRequest();
+                var siteId = request.SiteId;
+
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
 
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
+
                 return Ok(new
                 {
-                    Value = ConfigManager.Instance.SystemConfigInfo,
-                    WebConfigUtils.HomeDirectory,
-                    request.AdminToken,
-                    Styles = TableStyleManager.GetUserStyleInfoList()
+                    Value = siteInfo,
+                    Config = siteInfo.Additional,
+                    request.AdminToken
                 });
             }
             catch (Exception ex)
@@ -47,36 +49,45 @@ namespace SiteServer.API.Controllers.Pages.Settings
             try
             {
                 var request = new AuthenticatedRequest();
+                var siteId = request.SiteId;
+
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSitePermissions(siteId, ConfigManager.WebSitePermissions.Configration))
                 {
                     return Unauthorized();
                 }
 
-                ConfigManager.SystemConfigInfo.IsHomeClosed = request.GetPostBool("isHomeClosed");
-                ConfigManager.SystemConfigInfo.HomeTitle = request.GetPostString("homeTitle");
-                ConfigManager.SystemConfigInfo.IsHomeLogo = request.GetPostBool("isHomeLogo");
-                ConfigManager.SystemConfigInfo.HomeLogoUrl = request.GetPostString("homeLogoUrl");
-                ConfigManager.SystemConfigInfo.HomeDefaultAvatarUrl = request.GetPostString("homeDefaultAvatarUrl");
-                ConfigManager.SystemConfigInfo.UserRegistrationAttributes = request.GetPostString("userRegistrationAttributes");
-                ConfigManager.SystemConfigInfo.IsUserRegistrationGroup = request.GetPostBool("isUserRegistrationGroup");
-                ConfigManager.SystemConfigInfo.IsHomeAgreement = request.GetPostBool("isHomeAgreement");
-                ConfigManager.SystemConfigInfo.HomeAgreementHtml = request.GetPostString("homeAgreementHtml");
+                var siteInfo = SiteManager.GetSiteInfo(siteId);
 
-                DataProvider.ConfigDao.Update(ConfigManager.Instance);
+                var siteName = request.GetPostString("siteName");
+                var charset = ECharsetUtils.GetEnumType(request.GetPostString("charset"));
+                var pageSize = request.GetPostInt("pageSize", siteInfo.Additional.PageSize);
+                var isCreateDoubleClick = request.GetPostBool("isCreateDoubleClick");
 
-//                var config = $@"var $apiConfig = {{
-//    isSeparatedApi: {ApiManager.IsSeparatedApi.ToString().ToLower()},
-//    apiUrl: '{ApiManager.ApiUrl}',
-//    innerApiUrl: '{ApiManager.InnerApiUrl}'
-//}};
-//";
+                siteInfo.SiteName = siteName;
+                siteInfo.Additional.Charset = ECharsetUtils.GetValue(charset);
+                siteInfo.Additional.PageSize = pageSize;
+                siteInfo.Additional.IsCreateDoubleClick = isCreateDoubleClick;
 
-                request.AddAdminLog("修改用户中心设置");
+                //修改所有模板编码
+                var templateInfoList = DataProvider.TemplateDao.GetTemplateInfoListBySiteId(siteId);
+                foreach (var templateInfo in templateInfoList)
+                {
+                    if (templateInfo.Charset == charset) continue;
+
+                    var templateContent = TemplateManager.GetTemplateContent(siteInfo, templateInfo);
+                    templateInfo.Charset = charset;
+                    DataProvider.TemplateDao.Update(siteInfo, templateInfo, templateContent, request.AdminName);
+                }
+
+                DataProvider.SiteDao.Update(siteInfo);
+
+                request.AddSiteLog(siteId, "修改站点设置");
 
                 return Ok(new
                 {
-                    Value = ConfigManager.SystemConfigInfo
+                    Value = siteInfo,
+                    Config = siteInfo.Additional,
                 });
             }
             catch (Exception ex)
@@ -92,12 +103,12 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
 
-                var homeLogoUrl = string.Empty;
+                var adminLogoUrl = string.Empty;
 
                 foreach (string name in HttpContext.Current.Request.Files)
                 {
@@ -109,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     }
 
                     var fileName = postFile.FileName;
-                    var filePath = UserManager.GetHomeUploadPath(fileName);
+                    var filePath = PathUtils.GetAdminDirectoryPath(fileName);
 
                     if (!EFileSystemTypeUtils.IsImage(PathUtils.GetExtension(fileName)))
                     {
@@ -118,12 +129,12 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
                     postFile.SaveAs(filePath);
 
-                    homeLogoUrl = PageUtils.AddProtocolToUrl(UserManager.GetHomeUploadUrl(fileName));
+                    adminLogoUrl = fileName;
                 }
 
                 return Ok(new
                 {
-                    Value = homeLogoUrl
+                    Value = adminLogoUrl
                 });
             }
             catch (Exception ex)

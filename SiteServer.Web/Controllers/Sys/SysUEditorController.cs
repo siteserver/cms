@@ -20,7 +20,7 @@ namespace SiteServer.API.Controllers.Sys
             Main(siteId);
         }
 
-        public void Main(int siteId)
+        private void Main(int siteId)
         {
             var queryString = HttpContext.Current.Request.QueryString;
 

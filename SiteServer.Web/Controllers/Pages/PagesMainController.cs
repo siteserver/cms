@@ -124,6 +124,8 @@ namespace SiteServer.API.Controllers.Pages
                     SystemManager.PluginVersion,
                     SystemManager.TargetFramework,
                     SystemManager.EnvironmentVersion,
+                    ConfigManager.SystemConfigInfo.AdminLogoUrl,
+                    ConfigManager.SystemConfigInfo.AdminTitle,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,

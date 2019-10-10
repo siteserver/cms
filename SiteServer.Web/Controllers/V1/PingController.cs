@@ -6,7 +6,7 @@ using System.Web.Http;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/ping")]
-    public class V1PingController : ApiController
+    public class PingController : ApiController
     {
         private const string Route = "";
 

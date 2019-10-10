@@ -1787,7 +1787,17 @@ FROM (SELECT TOP {totalNum} *
 
         public int GetCount(string tableName)
         {
-            return GetIntResult($"select count(*) from {tableName}");
+            int count;
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                count = conn.ExecuteScalar<int>($"SELECT COUNT(*) FROM {SqlUtils.GetQuotedIdentifier(tableName)}");
+            }
+            return count;
+
+            //return GetIntResult();
         }
 
         public IEnumerable<dynamic> GetObjects(string tableName)

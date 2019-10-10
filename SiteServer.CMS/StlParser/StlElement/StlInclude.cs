@@ -29,7 +29,8 @@ namespace SiteServer.CMS.StlParser.StlElement
 
                 if (StringUtils.EqualsIgnoreCase(name, File))
                 {
-                    file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
+                    file = StringUtils.ReplaceIgnoreCase(value, "{Stl.SiteUrl}", "@");
+                    file = StlEntityParser.ReplaceStlEntitiesForAttributeValue(file, pageInfo, contextInfo);
                     file = PageUtility.AddVirtualToUrl(file);
                 }
                 else

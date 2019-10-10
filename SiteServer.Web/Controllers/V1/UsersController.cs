@@ -14,7 +14,7 @@ using SiteServer.Utils.Enumerations;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/users")]
-    public class V1UsersController : ApiController
+    public class UsersController : ApiController
     {
         private const string Route = "";
         private const string RouteActionsLogin = "actions/login";

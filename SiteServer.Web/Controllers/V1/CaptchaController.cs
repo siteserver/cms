@@ -11,7 +11,7 @@ using SiteServer.Utils;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/captcha")]
-    public class V1CaptchaController : ApiController
+    public class CaptchaController : ApiController
     {
         private const string ApiRoute = "{name}";
         private const string ApiRouteActionsCheck = "{name}/actions/check";

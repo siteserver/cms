@@ -98,6 +98,25 @@ namespace SiteServer.CMS.DataCache
             return channelInfo;
         }
 
+        public static IList<ChannelInfo> GetChildren(int siteId, int parentId)
+        {
+            var list = new List<ChannelInfo>();
+
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+
+            foreach (var channelInfo in dic.Values)
+            {
+                if (channelInfo == null) continue;
+                if (channelInfo.ParentId == parentId)
+                {
+                    channelInfo.Children = GetChildren(siteId, channelInfo.Id);
+                    list.Add(channelInfo);
+                }
+            }
+
+            return list;
+        }
+
         public static int GetChannelId(int siteId, int channelId, string channelIndex, string channelName)
         {
             var retVal = channelId;

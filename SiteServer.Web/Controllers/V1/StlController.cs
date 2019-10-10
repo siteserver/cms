@@ -8,7 +8,7 @@ using SiteServer.CMS.StlParser.Parsers;
 namespace SiteServer.API.Controllers.V1
 {
     [RoutePrefix("v1/stl")]
-    public class V1StlController : ApiController
+    public class StlController : ApiController
     {
         private const string Route = "{elementName}";
 

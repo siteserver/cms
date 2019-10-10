@@ -36,7 +36,8 @@ namespace SiteServer.API.Controllers.Pages
                     {
                         Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
                         LastActivityDate = DateUtils.GetDateString(lastActivityDate, EDateFormatType.Chinese),
-                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
+                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese),
+                        ConfigManager.SystemConfigInfo.AdminWelcomeHtml
                     }
                 });
             }

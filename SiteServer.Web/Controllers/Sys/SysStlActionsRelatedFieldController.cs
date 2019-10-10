@@ -25,7 +25,7 @@ namespace SiteServer.API.Controllers.Sys
             HttpContext.Current.Response.End();
         }
 
-        public string GetRelatedField(int relatedFieldId, int parentId)
+        private string GetRelatedField(int relatedFieldId, int parentId)
         {
             var jsonString = new StringBuilder();
 

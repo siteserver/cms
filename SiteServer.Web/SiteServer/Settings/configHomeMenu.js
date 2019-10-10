@@ -1,5 +1,5 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/userMenu');
-var $apiReset = new apiUtils.Api(apiUrl + '/pages/settings/userMenu/actions/reset');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu');
+var $apiReset = new apiUtils.Api(apiUrl + '/pages/settings/configHomeMenu/actions/reset');
 
 var data = {
   pageLoad: false,

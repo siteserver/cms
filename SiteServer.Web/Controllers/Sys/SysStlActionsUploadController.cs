@@ -42,7 +42,7 @@ namespace SiteServer.API.Controllers.Sys
             return Ok(jsonAttributes);
         }
 
-        public bool UploadResumeImage(SiteInfo siteInfo, out string message, out string url, out string value)
+        private bool UploadResumeImage(SiteInfo siteInfo, out string message, out string url, out string value)
         {
             message = url = value = string.Empty;
 
@@ -81,7 +81,7 @@ namespace SiteServer.API.Controllers.Sys
             return false;
         }
 
-        public bool UploadGovPublicApply(SiteInfo siteInfo, out string message, out string url, out string value)
+        private bool UploadGovPublicApply(SiteInfo siteInfo, out string message, out string url, out string value)
         {
             message = url = value = string.Empty;
 

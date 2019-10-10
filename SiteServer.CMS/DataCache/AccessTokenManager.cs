@@ -39,6 +39,7 @@ namespace SiteServer.CMS.DataCache
 	        }
 	    }
 
+        public const string ScopeChannels = "Channels";
         public const string ScopeContents = "Contents";
         public const string ScopeAdministrators = "Administrators";
 	    public const string ScopeUsers = "Users";
@@ -46,6 +47,7 @@ namespace SiteServer.CMS.DataCache
 
 	    public static List<string> ScopeList => new List<string>
 	    {
+            ScopeChannels,
 	        ScopeContents,
             ScopeAdministrators,
             ScopeUsers,

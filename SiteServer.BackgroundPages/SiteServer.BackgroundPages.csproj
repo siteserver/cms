@@ -341,9 +341,6 @@
     <Compile Include="Cms\PageChannelTranslate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Cms\PageConfigurationContent.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Cms\PageConfigurationCreate.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -357,9 +354,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageConfigurationCrossSiteTransChannels.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Cms\PageConfigurationSite.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cms\PageConfigurationSiteAttributes.cs">

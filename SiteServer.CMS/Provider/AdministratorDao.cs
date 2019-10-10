@@ -245,7 +245,7 @@ namespace SiteServer.CMS.Provider
 
             adminInfo.LastActivityDate = DateTime.Now;
 
-            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate WHERE Id = @Id";
 
             IDataParameter[] parameters =
             {

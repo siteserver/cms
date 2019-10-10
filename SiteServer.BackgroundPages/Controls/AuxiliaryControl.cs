@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Drawing;
 using System.Text;
 using System.Web.UI;
 using SiteServer.BackgroundPages.Core;
@@ -48,7 +47,7 @@ namespace SiteServer.BackgroundPages.Controls
                     var commands = WebUtils.GetTextEditorCommands(SiteInfo, styleInfo.AttributeName);
                     builder.Append($@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-1 col-form-label text-right text-truncate text-nowrap"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-10"">
         {commands}
         <div class=""m-t-10"">
@@ -64,7 +63,7 @@ namespace SiteServer.BackgroundPages.Controls
                 {
                     var html = $@"
 <div class=""form-group form-row"">
-    <label class=""col-sm-1 col-form-label text-right"">{styleInfo.DisplayName}</label>
+    <label class=""col-sm-1 col-form-label text-right text-truncate text-nowrap"">{styleInfo.DisplayName}</label>
     <div class=""col-sm-6"">
         {value}
     </div>

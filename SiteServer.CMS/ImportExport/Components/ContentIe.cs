@@ -384,6 +384,7 @@ namespace SiteServer.CMS.ImportExport.Components
                 var entry = ExportContentInfo(contentInfo);
                 feed.Entries.Add(entry);
             }
+
             feed.Save(filePath);
 
             foreach (string imageUrl in collection.Keys)

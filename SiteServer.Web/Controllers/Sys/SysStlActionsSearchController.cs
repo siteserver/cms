@@ -21,17 +21,6 @@ namespace SiteServer.API.Controllers.Sys
 {
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(AuthenticatedRequest request)
-        {
-            var formCollection = new NameValueCollection();
-            foreach (var item in request.PostData)
-            {
-                formCollection[item.Key] = item.Value.ToString();
-            }
-
-            return formCollection;
-        }
-
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
         public IHttpActionResult Main()
         {
@@ -153,6 +142,17 @@ namespace SiteServer.API.Controllers.Sys
                 var message = LogUtils.AddStlErrorLog(pageInfo, StlSearch.ElementName, template, ex);
                 return BadRequest(message);
             }
+        }
+
+        private NameValueCollection GetPostCollection(AuthenticatedRequest request)
+        {
+            var formCollection = new NameValueCollection();
+            foreach (var item in request.PostData)
+            {
+                formCollection[item.Key] = item.Value.ToString();
+            }
+
+            return formCollection;
         }
     }
 }

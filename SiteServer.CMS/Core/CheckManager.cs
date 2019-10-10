@@ -12,13 +12,13 @@ namespace SiteServer.CMS.Core
 	    public static class LevelInt
 	    {
 	        public const int CaoGao = -99;//草稿
-	        public const int DaiShen = 0;//待审
+	        public const int DaiShen = 0;//待审核
 
-	        public const int Pass1 = 1;//初审通过
+            public const int Pass1 = 1;//初审通过
 	        public const int Pass2 = 2;//二审通过
 	        public const int Pass3 = 3;//三审通过
 	        public const int Pass4 = 4;//四审通过
-	        public const int Pass5 = 5;//终审通过
+	        public const int Pass5 = 5;//已审核
 
 	        public const int Fail1 = -1;//初审退稿
 	        public const int Fail2 = -2;//二审退稿
@@ -26,7 +26,7 @@ namespace SiteServer.CMS.Core
 	        public const int Fail4 = -4;//四审退稿
 	        public const int Fail5 = -5;//终审退稿
 
-	        public const int NotChange = -100;//保持不变
+	        //public const int NotChange = -100;//保持不变
 	        public const int All = -200;//全部
 	    }
 
@@ -34,8 +34,8 @@ namespace SiteServer.CMS.Core
 	    {
 	        public const string All = "全部";//全部
             public const string CaoGao = "草稿";//草稿
-	        public const string DaiShen = "待审核";//待审
-	        public const string YiShenHe = "已审核";//已审核
+	        public const string DaiShen = "待审核";//待审核
+            public const string YiShenHe = "已审核";//已审核
 
 	        public const string NotChange = "保持不变";//保持不变
 	    }
@@ -46,7 +46,7 @@ namespace SiteServer.CMS.Core
 	        public const string Pass2 = "二审通过，等待三审";
 	        public const string Pass3 = "三审通过，等待四审";
 	        public const string Pass4 = "四审通过，等待终审";
-	        public const string Pass5 = "终审通过";
+	        public const string Pass5 = "已审核";
 
 	        public const string Fail1 = "初审退稿";
 	        public const string Fail2 = "二审退稿";
@@ -60,7 +60,7 @@ namespace SiteServer.CMS.Core
 	        public const string Pass1 = "初审通过，等待二审";
 	        public const string Pass2 = "二审通过，等待三审";
 	        public const string Pass3 = "三审通过，等待终审";
-	        public const string Pass4 = "终审通过";
+	        public const string Pass4 = "已审核";
 
 	        public const string Fail1 = "初审退稿";
 	        public const string Fail2 = "二审退稿";
@@ -72,7 +72,7 @@ namespace SiteServer.CMS.Core
 	    {
 	        public const string Pass1 = "初审通过，等待二审";
 	        public const string Pass2 = "二审通过，等待终审";
-	        public const string Pass3 = "终审通过";
+	        public const string Pass3 = "已审核";
 
 	        public const string Fail1 = "初审退稿";
 	        public const string Fail2 = "二审退稿";
@@ -82,7 +82,7 @@ namespace SiteServer.CMS.Core
 	    private static class Level2
 	    {
 	        public const string Pass1 = "初审通过，等待终审";
-	        public const string Pass2 = "终审通过";
+	        public const string Pass2 = "已审核";
 
 	        public const string Fail1 = "初审退稿";
 	        public const string Fail2 = "终审退稿";
@@ -90,7 +90,7 @@ namespace SiteServer.CMS.Core
 
 	    private static class Level1
 	    {
-	        public const string Pass1 = "终审通过";
+	        public const string Pass1 = "已审核";
 
 	        public const string Fail1 = "终审退稿";
 	    }
@@ -296,16 +296,16 @@ namespace SiteServer.CMS.Core
 
 	        ListItem listItem;
 
-	        var isCheckable = false;
-	        if (contentInfo != null)
-	        {
-	            isCheckable = IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
-	            if (isCheckable)
-	            {
-	                listItem = new ListItem(Level.NotChange, LevelInt.NotChange.ToString());
-	                listControl.Items.Add(listItem);
-	            }
-	        }
+	        //var isCheckable = false;
+	        //if (contentInfo != null)
+	        //{
+	        //    isCheckable = IsCheckable(contentInfo.IsChecked, contentInfo.CheckedLevel, isChecked, checkedLevel);
+	        //    if (isCheckable)
+	        //    {
+	        //        listItem = new ListItem(Level.NotChange, LevelInt.NotChange.ToString());
+	        //        listControl.Items.Add(listItem);
+	        //    }
+	        //}
 
 	        listItem = new ListItem(Level.CaoGao, LevelInt.CaoGao.ToString());
 	        listControl.Items.Add(listItem);
@@ -403,15 +403,15 @@ namespace SiteServer.CMS.Core
 	            listControl.Items.Add(listItem);
 	        }
 
-	        if (contentInfo == null)
-	        {
+	        //if (contentInfo == null)
+	        //{
 	            ControlUtils.SelectSingleItem(listControl, checkedLevel.ToString());
-	        }
-	        else
-	        {
-	            ControlUtils.SelectSingleItem(listControl,
-	                isCheckable ? LevelInt.NotChange.ToString() : checkedLevel.ToString());
-	        }
+	        //}
+	        //else
+	        //{
+	        //    ControlUtils.SelectSingleItem(listControl,
+	        //        isCheckable ? LevelInt.NotChange.ToString() : checkedLevel.ToString());
+	        //}
 	    }
 
 	    public static void LoadContentLevelToList(ListControl listControl, SiteInfo siteInfo, bool isCheckOnly, bool isChecked, int checkedLevel)

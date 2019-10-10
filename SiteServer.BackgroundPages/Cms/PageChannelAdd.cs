@@ -193,115 +193,125 @@ namespace SiteServer.BackgroundPages.Cms
             try
             {
                 var channelId = AuthRequest.GetQueryInt("ChannelId");
-                var nodeInfo = new ChannelInfo
+
+                var contentModelPluginId = DdlContentModelPluginId.SelectedValue;
+                var contentRelatedPluginIds =
+                    ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds);
+                var channelName = TbNodeName.Text;
+                var indexName = TbNodeIndexName.Text;
+                var filePath = TbFilePath.Text;
+                var channelFilePathRule = TbChannelFilePathRule.Text;
+                var contentFilePathRule = TbContentFilePathRule.Text;
+                var groupNameCollection = TranslateUtils.ObjectCollectionToString(ControlUtils.GetSelectedListControlValueStringList(CblNodeGroupNameCollection));
+                var imageUrl = TbImageUrl.Text;
+                var content = ContentUtility.TextEditorContentEncode(SiteInfo, Request.Form[ChannelAttribute.Content]);
+                var keywords = TbKeywords.Text;
+                var description = TbDescription.Text;
+                var isChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
+                var isContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
+                var linkUrl = TbLinkUrl.Text;
+                var linkType = DdlLinkType.SelectedValue;
+                var defaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
+                var channelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
+                var contentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
+
+                var channelInfo = new ChannelInfo
                 {
                     SiteId = SiteId,
                     ParentId = channelId,
-                    ContentModelPluginId = DdlContentModelPluginId.SelectedValue,
-                    ContentRelatedPluginIds =
-                        ControlUtils.GetSelectedListControlValueCollection(CblContentRelatedPluginIds)
+                    ContentModelPluginId = contentModelPluginId,
+                    ContentRelatedPluginIds = contentRelatedPluginIds
                 };
 
-                if (TbNodeIndexName.Text.Length != 0)
+                if (!string.IsNullOrEmpty(indexName))
                 {
-                    var nodeIndexNameArrayList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
-                    if (nodeIndexNameArrayList.IndexOf(TbNodeIndexName.Text) != -1)
+                    var indexNameList = DataProvider.ChannelDao.GetIndexNameList(SiteId);
+                    if (indexNameList.IndexOf(indexName) != -1)
                     {
                         FailMessage("栏目添加失败，栏目索引已存在！");
                         return;
                     }
                 }
 
-                if (TbFilePath.Text.Length != 0)
+                if (!string.IsNullOrEmpty(filePath))
                 {
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(TbFilePath.Text))
+                    if (!DirectoryUtils.IsDirectoryNameCompliant(filePath))
                     {
                         FailMessage("栏目页面路径不符合系统要求！");
                         return;
                     }
 
-                    if (PathUtils.IsDirectoryPath(TbFilePath.Text))
+                    if (PathUtils.IsDirectoryPath(filePath))
                     {
-                        TbFilePath.Text = PageUtils.Combine(TbFilePath.Text, "index.html");
+                        filePath = PageUtils.Combine(filePath, "index.html");
                     }
 
-                    var filePathArrayList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId);
-                    if (filePathArrayList.IndexOf(TbFilePath.Text) != -1)
+                    var filePathList = DataProvider.ChannelDao.GetAllFilePathBySiteId(SiteId);
+                    if (filePathList.IndexOf(filePath) != -1)
                     {
                         FailMessage("栏目添加失败，栏目页面路径已存在！");
                         return;
                     }
                 }
 
-                if (!string.IsNullOrEmpty(TbChannelFilePathRule.Text))
+                if (!string.IsNullOrEmpty(channelFilePathRule))
                 {
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(TbChannelFilePathRule.Text))
+                    if (!DirectoryUtils.IsDirectoryNameCompliant(channelFilePathRule))
                     {
                         FailMessage("栏目页面命名规则不符合系统要求！");
                         return;
                     }
-                    if (PathUtils.IsDirectoryPath(TbChannelFilePathRule.Text))
+                    if (PathUtils.IsDirectoryPath(channelFilePathRule))
                     {
                         FailMessage("栏目页面命名规则必须包含生成文件的后缀！");
                         return;
                     }
                 }
 
-                if (!string.IsNullOrEmpty(TbContentFilePathRule.Text))
+                if (!string.IsNullOrEmpty(contentFilePathRule))
                 {
-                    if (!DirectoryUtils.IsDirectoryNameCompliant(TbContentFilePathRule.Text))
+                    if (!DirectoryUtils.IsDirectoryNameCompliant(contentFilePathRule))
                     {
                         FailMessage("内容页面命名规则不符合系统要求！");
                         return;
                     }
-                    if (PathUtils.IsDirectoryPath(TbContentFilePathRule.Text))
+                    if (PathUtils.IsDirectoryPath(contentFilePathRule))
                     {
                         FailMessage("内容页面命名规则必须包含生成文件的后缀！");
                         return;
                     }
                 }
 
-                var parentNodeInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
-                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(parentNodeInfo);
+                var parentChannelInfo = ChannelManager.GetChannelInfo(SiteId, _channelId);
+                var styleInfoList = TableStyleManager.GetChannelStyleInfoList(parentChannelInfo);
                 var extendedAttributes = BackgroundInputTypeParser.SaveAttributes(SiteInfo, styleInfoList, Request.Form, null);
-                nodeInfo.Additional.Load(extendedAttributes);
+                channelInfo.Additional.Load(extendedAttributes);
                 //foreach (string key in attributes)
                 //{
-                //    nodeInfo.Additional.SetExtendedAttribute(key, attributes[key]);
+                //    channelInfo.Additional.SetExtendedAttribute(key, attributes[key]);
                 //}
 
-                nodeInfo.ChannelName = TbNodeName.Text;
-                nodeInfo.IndexName = TbNodeIndexName.Text;
-                nodeInfo.FilePath = TbFilePath.Text;
-                nodeInfo.ChannelFilePathRule = TbChannelFilePathRule.Text;
-                nodeInfo.ContentFilePathRule = TbContentFilePathRule.Text;
+                channelInfo.ChannelName = channelName;
+                channelInfo.IndexName = indexName;
+                channelInfo.FilePath = filePath;
+                channelInfo.ChannelFilePathRule = channelFilePathRule;
+                channelInfo.ContentFilePathRule = contentFilePathRule;
 
-                var list = new ArrayList();
-                foreach (ListItem item in CblNodeGroupNameCollection.Items)
-                {
-                    if (item.Selected)
-                    {
-                        list.Add(item.Value);
-                    }
-                }
-                nodeInfo.GroupNameCollection = TranslateUtils.ObjectCollectionToString(list);
-                nodeInfo.ImageUrl = TbImageUrl.Text;
-                nodeInfo.Content = ContentUtility.TextEditorContentEncode(SiteInfo, Request.Form[ChannelAttribute.Content]);
-                nodeInfo.Keywords = TbKeywords.Text;
-                nodeInfo.Description = TbDescription.Text;
-                nodeInfo.Additional.IsChannelAddable = TranslateUtils.ToBool(RblIsChannelAddable.SelectedValue);
-                nodeInfo.Additional.IsContentAddable = TranslateUtils.ToBool(RblIsContentAddable.SelectedValue);
+                channelInfo.GroupNameCollection = groupNameCollection;
+                channelInfo.ImageUrl = imageUrl;
+                channelInfo.Content = content;
+                channelInfo.Keywords = keywords;
+                channelInfo.Description = description;
+                channelInfo.Additional.IsChannelAddable = isChannelAddable;
+                channelInfo.Additional.IsContentAddable = isContentAddable;
+                channelInfo.LinkUrl = linkUrl;
+                channelInfo.LinkType = linkType;
+                channelInfo.Additional.DefaultTaxisType = defaultTaxisType;
+                channelInfo.ChannelTemplateId = channelTemplateId;
+                channelInfo.ContentTemplateId = contentTemplateId;
 
-                nodeInfo.LinkUrl = TbLinkUrl.Text;
-                nodeInfo.LinkType = DdlLinkType.SelectedValue;
-
-                nodeInfo.Additional.DefaultTaxisType = ETaxisTypeUtils.GetValue(ETaxisTypeUtils.GetEnumType(DdlTaxisType.SelectedValue));
-
-                nodeInfo.ChannelTemplateId = DdlChannelTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlChannelTemplateId.SelectedValue) : 0;
-                nodeInfo.ContentTemplateId = DdlContentTemplateId.Items.Count > 0 ? TranslateUtils.ToInt(DdlContentTemplateId.SelectedValue) : 0;
-
-                nodeInfo.AddDate = DateTime.Now;
-                insertChannelId = DataProvider.ChannelDao.Insert(nodeInfo);
+                channelInfo.AddDate = DateTime.Now;
+                insertChannelId = DataProvider.ChannelDao.Insert(channelInfo);
                 //栏目选择投票样式后，内容
             }
             catch (Exception ex)

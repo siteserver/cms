@@ -351,6 +351,16 @@ namespace SiteServer.CMS.Model
 	                dict.Remove(attributeName);
                     dict[attributeName] = value;
                 }
+                else if (StringUtils.EqualsIgnoreCase(attributeName, BackgroundContentAttribute.SubTitle))
+                {
+                    var value = GetString(BackgroundContentAttribute.SubTitle);
+                    if (siteInfo.Additional.IsContentSubTitleBreakLine)
+                    {
+                        value = value.Replace("  ", "<br />");
+                    }
+                    dict.Remove(attributeName);
+                    dict[attributeName] = value;
+                }
                 else
 	            {
 	                dict.Remove(attributeName);

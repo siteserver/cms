@@ -37,9 +37,16 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set(nameof(IsCheckContentLevel), value);
         }
 
-        public int CheckContentLevel {
+        public int CheckContentLevel
+        {
             get => IsCheckContentLevel ? GetInt(nameof(CheckContentLevel)) : 1;
             set => Set(nameof(CheckContentLevel), value);
+        }
+
+        public int CheckContentDefaultLevel
+        {
+            get => GetInt(nameof(CheckContentDefaultLevel));
+            set => Set(nameof(CheckContentDefaultLevel), value);
         }
 
         public bool IsSaveImageInTextEditor
@@ -64,6 +71,12 @@ namespace SiteServer.CMS.Model.Attributes
         {
             get => GetBool(nameof(IsContentTitleBreakLine), true);
             set => Set(nameof(IsContentTitleBreakLine), value);
+        }
+
+        public bool IsContentSubTitleBreakLine
+        {
+            get => GetBool(nameof(IsContentSubTitleBreakLine), true);
+            set => Set(nameof(IsContentSubTitleBreakLine), value);
         }
 
         public bool IsAutoCheckKeywords

@@ -3,12 +3,11 @@ using System.Web.Http;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 
-namespace SiteServer.API.Controllers.Pages.Settings
+namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
-    [RoutePrefix("pages/settings/userMenu")]
-    public class PagesUserMenuController : ApiController
+    [RoutePrefix("pages/settings/configHomeMenu")]
+    public class PagesConfigHomeMenuController : ApiController
     {
         private const string Route = "";
         private const string RouteReset = "actions/reset";
@@ -20,7 +19,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -44,7 +43,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -71,7 +70,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }
@@ -107,7 +106,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 var request = new AuthenticatedRequest();
                 if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.User))
+                    !request.AdminPermissionsImpl.HasSystemPermissions(ConfigManager.SettingsPermissions.Config))
                 {
                     return Unauthorized();
                 }

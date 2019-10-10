@@ -124,7 +124,7 @@
 
       </td>
 
-      <td class="text-center text-nowrap" style="min-width: 80px">
+      <td class="text-center text-nowrap" style="width: 80px;">
         <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
           v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
         <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id" v-on:click.stop>编辑</a>

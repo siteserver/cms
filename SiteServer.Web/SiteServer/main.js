@@ -17,6 +17,8 @@ var data = {
   productVersion: null,
   targetFramework: null,
   environmentVersion: null,
+  adminLogoUrl: null,
+  adminTitle: null,
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
@@ -52,6 +54,8 @@ var methods = {
         $this.productVersion = res.productVersion;
         $this.targetFramework = res.targetFramework;
         $this.environmentVersion = res.environmentVersion;
+        $this.adminLogoUrl = res.adminLogoUrl || './assets/icons/logo.png';
+        $this.adminTitle = res.adminTitle || 'SiteServer CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
@@ -60,6 +64,8 @@ var methods = {
         $this.pluginMenus = res.pluginMenus;
         $this.local = res.local;
         $this.activeParentMenu = $this.siteMenus[0];
+
+        document.title = $this.adminTitle;
       } else {
         location.href = res.redirectUrl;
       }

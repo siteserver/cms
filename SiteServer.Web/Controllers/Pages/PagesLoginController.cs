@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using SiteServer.CMS.Core;
+using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages
@@ -22,7 +23,8 @@ namespace SiteServer.API.Controllers.Pages
                 return Ok(new
                 {
                     Value = true,
-                    SystemManager.ProductVersion
+                    SystemManager.ProductVersion,
+                    ConfigManager.SystemConfigInfo.AdminTitle
                 });
             }
             catch (Exception ex)

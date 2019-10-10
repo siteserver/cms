@@ -9,7 +9,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.Plugin;
 using SiteServer.Utils.Enumerations;
 using Dapper;
 using SiteServer.CMS.Api.V1;
@@ -18,7 +17,6 @@ using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
 using Datory;
-using SiteServer.CMS.Plugin.Apis;
 
 namespace SiteServer.CMS.Provider
 {
@@ -850,10 +848,15 @@ namespace SiteServer.CMS.Provider
             return contentId;
         }
 
-        public int GetContentId(string tableName, int channelId, string orderByString)
+        public int GetContentId(string tableName, int channelId, bool isCheckedOnly, string orderByString)
         {
             var contentId = 0;
-            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", $"WHERE (ChannelId = {channelId})", orderByString, 1);
+            var whereString = $"WHERE {ContentAttribute.ChannelId} = {channelId}";
+            if (isCheckedOnly)
+            {
+                whereString += $" AND {ContentAttribute.IsChecked} = '{true.ToString()}'";
+            }
+            var sqlString = SqlUtils.ToTopSqlString(tableName, "Id", whereString, orderByString, 1);
 
             using (var rdr = ExecuteReader(sqlString))
             {
@@ -1191,16 +1194,9 @@ UPDATE {tableName} SET
     {ContentAttribute.GroupNameCollection} = @{ContentAttribute.GroupNameCollection},
     {ContentAttribute.Tags} = @{ContentAttribute.Tags},
     {ContentAttribute.SourceId} = @{ContentAttribute.SourceId},
-    {ContentAttribute.ReferenceId} = @{ContentAttribute.ReferenceId},";
-
-            if (contentInfo.CheckedLevel != CheckManager.LevelInt.NotChange)
-            {
-                sqlString += $@"
+    {ContentAttribute.ReferenceId} = @{ContentAttribute.ReferenceId},
     {ContentAttribute.IsChecked} = @{ContentAttribute.IsChecked},
-    {ContentAttribute.CheckedLevel} = @{ContentAttribute.CheckedLevel},";
-            }
-
-            sqlString += $@"
+    {ContentAttribute.CheckedLevel} = @{ContentAttribute.CheckedLevel},
     {ContentAttribute.Hits} = @{ContentAttribute.Hits},
     {ContentAttribute.HitsByDay} = @{ContentAttribute.HitsByDay},
     {ContentAttribute.HitsByWeek} = @{ContentAttribute.HitsByWeek},
@@ -1237,13 +1233,10 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
                 GetParameter(ContentAttribute.SourceId, DataType.Integer, contentInfo.SourceId),
                 GetParameter(ContentAttribute.ReferenceId, DataType.Integer, contentInfo.ReferenceId),
             };
-            if (contentInfo.CheckedLevel != CheckManager.LevelInt.NotChange)
-            {
-                parameters.Add(GetParameter(ContentAttribute.IsChecked, DataType.VarChar, 18,
-                    contentInfo.IsChecked.ToString()));
-                parameters.Add(GetParameter(ContentAttribute.CheckedLevel, DataType.Integer,
-                    contentInfo.CheckedLevel));
-            }
+            parameters.Add(GetParameter(ContentAttribute.IsChecked, DataType.VarChar, 18,
+                contentInfo.IsChecked.ToString()));
+            parameters.Add(GetParameter(ContentAttribute.CheckedLevel, DataType.Integer,
+                contentInfo.CheckedLevel));
             parameters.Add(GetParameter(ContentAttribute.Hits, DataType.Integer, contentInfo.Hits));
             parameters.Add(
                 GetParameter(ContentAttribute.HitsByDay, DataType.Integer, contentInfo.HitsByDay));

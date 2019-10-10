@@ -91,10 +91,8 @@
 
       <hr />
 
-      <div class="text-muted text-center">
-        <a href="https://www.siteserver.cn" target="_blank">
-          <small>Copyright &copy; SiteServer CMS</small>
-        </a>
+      <div class="text-muted text-center" v-if="adminTitle">
+        <small>{{ adminTitle }} {{ productVersion }}</small>
       </div>
 
     </form>

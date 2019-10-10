@@ -71,13 +71,13 @@ namespace SiteServer.BackgroundPages
 
             if (siteId > 0 && channelId > 0 && contentId > 0)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                url = PageUtility.GetContentUrl(siteInfo, nodeInfo, contentId, isLocal);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                url = PageUtility.GetContentUrl(siteInfo, channelInfo, contentId, isLocal);
             }
             else if (siteId > 0 && channelId > 0)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
+                url = PageUtility.GetChannelUrl(siteInfo, channelInfo, isLocal);
             }
             else if (siteId > 0 && fileTemplateId > 0)
             {
@@ -89,8 +89,8 @@ namespace SiteServer.BackgroundPages
             }
             else if (siteId > 0)
             {
-                var nodeInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-                url = PageUtility.GetChannelUrl(siteInfo, nodeInfo, isLocal);
+                var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
+                url = PageUtility.GetChannelUrl(siteInfo, channelInfo, isLocal);
             }
 
             //if (siteInfo.Additional.IsSeparatedWeb)

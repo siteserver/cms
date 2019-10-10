@@ -8,8 +8,11 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.V1
 {
+    /// <summary>
+    /// Administrators
+    /// </summary>
     [RoutePrefix("v1/administrators")]
-    public class V1AdministratorsController : ApiController
+    public class AdministratorsController : ApiController
     {
         private const string Route = "";
         private const string RouteActionsLogin = "actions/login";

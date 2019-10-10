@@ -166,6 +166,8 @@ namespace SiteServer.CMS.Model
         [JsonIgnore]
         public ChannelInfoExtend Additional => _additional ?? (_additional = new ChannelInfoExtend(_extendValues));
 
+        public IList<ChannelInfo> Children { get; set; }
+
         [JsonIgnore]
         public AttributesImpl Attributes => Additional;
 

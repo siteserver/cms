@@ -30,7 +30,7 @@ namespace SiteServer.BackgroundPages.Cms
         public CheckBoxList CblContentAttributes;
         public CheckBoxList CblContentGroups;
         public Button BtnContentGroupAdd;
-        public DropDownList DdlContentLevel;
+        public RadioButtonList RblContentLevel;
         public TextBox TbTags;
         public Literal LtlTags;
         public PlaceHolder PhTranslate;
@@ -143,18 +143,14 @@ namespace SiteServer.BackgroundPages.Cms
                 if (HasChannelPermissions(_channelInfo.Id, ConfigManager.ChannelPermissions.ContentCheck))
                 {
                     PhStatus.Visible = true;
-                    int checkedLevel;
-                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo.Id, out checkedLevel);
+                    var isChecked = CheckManager.GetUserCheckLevel(AuthRequest.AdminPermissionsImpl, SiteInfo, _channelInfo.Id, out var checkedLevel);
                     if (AuthRequest.IsQueryExists("contentLevel"))
                     {
                         checkedLevel = TranslateUtils.ToIntWithNagetive(AuthRequest.GetQueryString("contentLevel"));
-                        if (checkedLevel != CheckManager.LevelInt.NotChange)
-                        {
-                            isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
-                        }
+                        isChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
                     }
 
-                    CheckManager.LoadContentLevelToEdit(DdlContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
+                    CheckManager.LoadContentLevelToEdit(RblContentLevel, SiteInfo, contentInfo, isChecked, checkedLevel);
                 }
                 else
                 {
@@ -178,7 +174,6 @@ namespace SiteServer.BackgroundPages.Cms
                         var isClearFontSize = AuthRequest.GetQueryBool("isClearFontSize");
                         var isClearFontFamily = AuthRequest.GetQueryBool("isClearFontFamily");
                         var isClearImages = AuthRequest.GetQueryBool("isClearImages");
-                        var contentLevel = AuthRequest.GetQueryInt("contentLevel");
                         var fileName = AuthRequest.GetQueryString("fileName");
 
                         var formCollection = WordUtils.GetWordNameValueCollection(SiteId, isFirstLineTitle, isFirstLineRemove, isClearFormat, isFirstLineIndent, isClearFontSize, isClearFontFamily, isClearImages, fileName);
@@ -188,6 +183,8 @@ namespace SiteServer.BackgroundPages.Cms
                     }
 
                     AcAttributes.Attributes = attributes;
+
+                    ControlUtils.SelectSingleItem(RblContentLevel, SiteInfo.Additional.CheckContentDefaultLevel.ToString());
                 }
                 else if (contentInfo != null)
                 {
@@ -222,6 +219,13 @@ namespace SiteServer.BackgroundPages.Cms
                     ControlUtils.SelectMultiItems(CblContentGroups, TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection));
 
                     AcAttributes.Attributes = contentInfo;
+
+                    var checkedLevel = contentInfo.CheckedLevel;
+                    if (contentInfo.IsChecked)
+                    {
+                        checkedLevel = SiteInfo.Additional.CheckContentLevel;
+                    }
+                    ControlUtils.SelectSingleItem(RblContentLevel, checkedLevel.ToString());
                 }
             }
             else
@@ -272,7 +276,8 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
+                    contentInfo.CheckedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    
                     contentInfo.IsChecked = contentInfo.CheckedLevel >= SiteInfo.Additional.CheckContentLevel;
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");
 
@@ -355,12 +360,9 @@ namespace SiteServer.BackgroundPages.Cms
                     contentInfo.LinkUrl = TbLinkUrl.Text;
                     contentInfo.AddDate = TbAddDate.DateTime;
 
-                    var checkedLevel = TranslateUtils.ToIntWithNagetive(DdlContentLevel.SelectedValue);
-                    if (checkedLevel != CheckManager.LevelInt.NotChange)
-                    {
-                        contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
-                        contentInfo.CheckedLevel = checkedLevel;
-                    }
+                    var checkedLevel = TranslateUtils.ToIntWithNagetive(RblContentLevel.SelectedValue);
+                    contentInfo.IsChecked = checkedLevel >= SiteInfo.Additional.CheckContentLevel;
+                    contentInfo.CheckedLevel = checkedLevel;
 
                     TagUtils.UpdateTags(contentInfo.Tags, TbTags.Text, SiteId, contentId);
                     contentInfo.Tags = TranslateUtils.ObjectCollectionToString(TagUtils.ParseTagsString(TbTags.Text), " ");

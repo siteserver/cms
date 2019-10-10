@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>SiteServer CMS - 管理后台</title>
+  <title>管理后台</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="renderer" content="webkit" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -23,7 +23,7 @@
         <div class="topbar-main">
           <div class="logo">
             <a href="https://www.siteserver.cn" target="_blank" class="logo">
-              <img src="assets/icons/logo.png" />
+              <img :src="adminLogoUrl" style="max-width: 160px;" />
             </a>
           </div>
           <a v-if="!isDesktop" href="javascript:;" class="position-fixed" v-on:click="btnMobileMenuClick" style="right: 20px;top: 10px;">
@@ -52,7 +52,7 @@
                 </a>
                 <div class="submenu card bg-light text-dark" style="width: 19rem; z-index: 11; position: absolute;">
                   <div class="card-body" style="padding-bottom: 0;">
-                    <h5 class="card-title text-success">发现 SiteServer CMS 新版本</h5>
+                    <h5 class="card-title text-success">发现 CMS 新版本</h5>
                     <p class="card-text"> 当前版本：{{ productVersion }} <br /> 最新版本： {{ newVersion.version }} <br /> 发布日期：
                       {{ newVersion.published }} <br />
                       <hr /> {{ newVersion.releaseNotes }} <br />
