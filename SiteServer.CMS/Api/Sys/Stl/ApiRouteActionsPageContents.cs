@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsPageContents
+    public static class ApiRouteActionsPageContents
     {
         public const string Route = "sys/stl/actions/pagecontents";
 

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
-    [RoutePrefix("pages/cms/contentsLayerColumns")]
-    public class PagesContentsLayerColumnsController : ApiController
+    [OpenApiIgnore]
+    [RoutePrefix("pages/cms/contentsLayerOptions")]
+    public class PagesContentsLayerOptionsController : ApiController
     {
         private const string Route = "";
 
@@ -38,7 +39,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = attributes
+                    Value = attributes,
+                    channelInfo.Additional.IsAllContents,
+                    channelInfo.Additional.IsSelfOnly
                 });
             }
             catch (Exception ex)
@@ -57,7 +60,6 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var attributeNames = request.GetPostString("attributeNames");
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -72,15 +74,21 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
+                var attributeNames = request.GetPostString("attributeNames");
+                var isAllContents = request.GetPostBool("isAllContents");
+                var isSelfOnly = request.GetPostBool("isSelfOnly");
+
                 channelInfo.Additional.ContentAttributesOfDisplay = attributeNames;
+                channelInfo.Additional.IsAllContents = isAllContents;
+                channelInfo.Additional.IsSelfOnly = isSelfOnly;
 
                 DataProvider.ChannelDao.Update(channelInfo);
 
-                request.AddSiteLog(siteId, "设置内容显示项", $"显示项:{attributeNames}");
+                request.AddSiteLog(siteId, "设置内容选项");
 
                 return Ok(new
                 {
-                    Value = attributeNames
+                    Value = true
                 });
             }
             catch (Exception ex)

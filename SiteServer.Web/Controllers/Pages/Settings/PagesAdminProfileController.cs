@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/adminProfile")]
     public class PagesAdminProfileController : ApiController
     {

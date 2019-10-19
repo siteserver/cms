@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Packaging
 {
-    public class ApiRouteDownload
+    public static class ApiRouteDownload
     {
         public const string Route = "sys/packaging/download";
 

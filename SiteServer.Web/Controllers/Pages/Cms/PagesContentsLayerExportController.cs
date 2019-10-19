@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
@@ -12,6 +13,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerExport")]
     public class PagesContentsLayerExportController : ApiController
     {
@@ -92,7 +94,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var onlyAdminId = request.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var isAllContents = channelInfo.Additional.IsAllContents;
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
@@ -103,7 +108,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (contentIds.Count == 0)
                 {
-                    var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                    var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, isAllContents);
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                     if (pages == 0) pages = 1;
 
@@ -114,13 +119,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             var offset = siteInfo.Additional.PageSize * (page - 1);
                             var limit = siteInfo.Additional.PageSize;
 
-                            var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
+                            var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, offset, limit);
 
                             var sequence = offset + 1;
 
-                            foreach (var contentId in pageContentIds)
+                            foreach (var channelContentId in pageContentIds)
                             {
-                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                                 if (contentInfo == null) continue;
 
                                 if (!isAllCheckedLevel)

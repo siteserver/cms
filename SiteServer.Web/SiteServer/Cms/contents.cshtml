@@ -9,18 +9,18 @@
     <i class="fa fa-wikipedia-w"></i>
     Word
   </button>
-  <button v-if="count > 0 && permissions.isChannelEdit" v-on:click="btnLayerClick({title: '设置显示列', name: 'Columns', full: true}, $event)"
-    class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-columns"></i>
-    显示列
+  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true}, $event)" class="btn btn-outline-primary btn-sm">
+    <i class="fa fa-upload"></i>
+    导入
   </button>
   <button v-if="count > 0" v-on:click="btnLayerClick({title: '批量导出', name: 'Export', full: true, withOptionalContents: true}, $event)" class="btn btn-outline-primary btn-sm">
     <i class="fa fa-download"></i>
     导出
   </button>
-  <button v-if="permissions.isAdd" v-on:click="btnLayerClick({title: '批量导入', name: 'Import', full: true}, $event)" class="btn btn-outline-primary btn-sm">
-    <i class="fa fa-upload"></i>
-    导入
+  <button v-on:click="btnLayerClick({title: '设置选项', name: 'Options', full: true}, $event)"
+    class="btn btn-outline-primary btn-sm">
+    <i class="fa fa-toggle-on"></i>
+    选项
   </button>
   <button v-if="count > 0 && permissions.isEdit" v-on:click="btnLayerClick({title: '批量整理', name: 'Arrange', width: 550, height: 350}, $event)"
     class="btn btn-outline-primary btn-sm">
@@ -80,6 +80,7 @@
     <tr>
       <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
 
+      <th v-if="isAllContents" class="text-center text-nowrap">栏目</th>
       <th class="text-center text-nowrap">操作</th>
       <th class="text-center text-nowrap">状态</th>
       <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
@@ -124,10 +125,13 @@
 
       </td>
 
+      <td v-if="isAllContents" class="text-center text-nowrap">
+        {{ content.channelName }}
+      </td>
       <td class="text-center text-nowrap" style="width: 80px;">
         <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
           v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
-        <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + channelId + '&id=' + content.id" v-on:click.stop>编辑</a>
+        <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + content.channelId + '&id=' + content.id" v-on:click.stop>编辑</a>
       </td>
       <td class="text-center text-nowrap" style="width: 80px">
         <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">

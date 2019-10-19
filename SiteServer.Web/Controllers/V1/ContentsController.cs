@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.V1;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -324,6 +325,7 @@ namespace SiteServer.API.Controllers.V1
             }
         }
 
+        [OpenApiOperation("获取站点内容API", "")]
         [HttpGet, Route(RouteSite)]
         public IHttpActionResult GetSiteContents(int siteId)
         {

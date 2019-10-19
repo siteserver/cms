@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.StlParser.Model;
@@ -8,6 +9,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsIfController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsIf.Route)]

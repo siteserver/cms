@@ -2,7 +2,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsDynamic
+    public static class ApiRouteActionsDynamic
     {
         public const string Route = "sys/stl/actions/dynamic";
 
@@ -10,19 +10,5 @@ namespace SiteServer.CMS.Api.Sys.Stl
         {
             return PageUtils.Combine(apiUrl, Route);
         }
-
-//        public static string GetParameters(int siteId, int pageChannelId, int pageContentId, int pageTemplateId, string pageUrl, string ajaxDivId, bool isPageRefresh, string templateContent)
-//        {
-//            return $@"{{
-//    siteId: {siteId},
-//    channelId: {pageChannelId},
-//    contentId: {pageContentId},
-//    pageTemplateId: {pageTemplateId},
-//    isPageRefresh: {isPageRefresh.ToString().ToLower()},
-//    pageUrl: '{TranslateUtils.EncryptStringBySecretKey(pageUrl)}',
-//    ajaxDivId: '{ajaxDivId}',
-//    templateContent: '{TranslateUtils.EncryptStringBySecretKey(templateContent)}'
-//}}";
-//        }
     }
 }

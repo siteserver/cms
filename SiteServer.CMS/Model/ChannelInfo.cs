@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SiteServer.CMS.Core;
@@ -191,7 +192,17 @@ namespace SiteServer.CMS.Model
 
             jObject["NavigationUrl"] = PageUtility.GetChannelUrl(siteInfo, this, false);
 
-            return jObject.ToObject<Dictionary<string, object>>();
+            var dict = jObject.ToObject<Dictionary<string, object>>();
+
+            if (Children == null)
+            {
+                Children = ChannelManager.GetChildren(SiteId, Id);
+            }
+
+            var list = Children.Select(channelInfo => channelInfo.ToDictionary()).ToList();
+            dict["Children"] = list;
+
+            return dict;
         }
     }
 }

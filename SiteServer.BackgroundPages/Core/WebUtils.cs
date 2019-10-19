@@ -114,8 +114,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+            var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
 
             if (count > 0 && permissionsImpl.HasChannelPermissions(siteInfo.Id, channelInfo.Id, ConfigManager.ChannelPermissions.ContentDelete))
             {
@@ -206,8 +206,8 @@ namespace SiteServer.BackgroundPages.Core
 </a>");
             }
 
-            var onlyAdminId = permissionsImpl.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-            var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+            var adminId = permissionsImpl.GetAdminId(siteInfo.Id, channelInfo.Id);
+            var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
 
             if (count > 0)
             {

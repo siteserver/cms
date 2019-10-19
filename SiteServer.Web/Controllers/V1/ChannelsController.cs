@@ -147,7 +147,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = channelInfo
+                    Value = channelInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -325,7 +325,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = channelInfo
+                    Value = channelInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -360,7 +360,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = channelInfo
+                    Value = channelInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -391,7 +391,7 @@ namespace SiteServer.API.Controllers.V1
 
                 return Ok(new
                 {
-                    Value = channelInfo
+                    Value = channelInfo.ToDictionary()
                 });
             }
             catch (Exception ex)
@@ -417,9 +417,15 @@ namespace SiteServer.API.Controllers.V1
 
                 var channelInfoList = ChannelManager.GetChannelInfoList(siteId);
 
+                var dictInfoList = new List<Dictionary<string, object>>();
+                foreach (var channelInfo in channelInfoList)
+                {
+                    dictInfoList.Add(channelInfo.ToDictionary());
+                }
+
                 return Ok(new
                 {
-                    Value = channelInfoList
+                    Value = dictInfoList
                 });
             }
             catch (Exception ex)

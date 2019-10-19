@@ -70,13 +70,12 @@ var methods = {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';
-      } else if (error.response.status === 500) {
+      } else if (error.response && error.response.status === 500) {
         $this.pageAlert = utils.getPageAlert(error);
       }
     }).then(function () {
-      $this.pageLoad = true;
       setTimeout($this.ready, 100);
     });
   },
@@ -135,8 +134,6 @@ var methods = {
           }
         }
       }
-    }).then(function () {
-      $this.pageLoad = true;
     });
   },
 
@@ -178,8 +175,9 @@ var methods = {
       } else {
         $this.timeoutId = setTimeout($this.create, 100);
       }
+      $this.pageLoad = true;
     }).catch(function (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
@@ -202,14 +200,17 @@ var methods = {
     return menu.target ? menu.target : "right";
   },
 
-  btnTopMenuClick: function (menu) {
+  btnTopMenuClick: function (menu, e) {
     if (menu.target == '_layer') {
       utils.openLayer({
         title: menu.text,
         url: menu.href,
         full: true
       });
+      e.stopPropagation();
+      e.preventDefault();
     }
+    return false;
   },
 
   btnLeftMenuClick: function (menu) {

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 
 namespace SiteServer.API.Controllers.Pages.Settings.Config
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/configHomeMenu")]
     public class PagesConfigHomeMenuController : ApiController
     {

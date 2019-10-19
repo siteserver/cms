@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Pages.Cms.Config
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/configContent")]
     public class PagesConfigContentController : ApiController
     {

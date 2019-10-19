@@ -31,13 +31,13 @@
           </a>
           <ul v-if="isDesktop" id="topMenus" class="navigation-menu">
             <li v-for="topMenu in topMenus" class="has-submenu">
-              <a :href="getHref(topMenu)" v-on:click="btnTopMenuClick(topMenu)" :target="getTarget(topMenu)" v-html="topMenu.text"></a>
+              <a :href="getHref(topMenu)" v-on:click="btnTopMenuClick(topMenu, $event)" :target="getTarget(topMenu)" v-html="topMenu.text"></a>
               <ul v-if="topMenu.hasChildren" class="submenu">
                 <li v-for="parentMenu in topMenu.children" :class="{'has-submenu': parentMenu.children}">
-                  <a :href="getHref(parentMenu)" v-on:click="btnTopMenuClick(parentMenu)" :target="getTarget(parentMenu)" v-html="parentMenu.text"></a>
+                  <a :href="getHref(parentMenu)" v-on:click="btnTopMenuClick(parentMenu, $event)" :target="getTarget(parentMenu)" v-html="parentMenu.text"></a>
                   <ul v-if="parentMenu.hasChildren" class="submenu">
                     <li v-for="childMenu in parentMenu.children">
-                      <a :href="getHref(childMenu)" v-on:click="btnTopMenuClick(childMenu)" :target="getTarget(childMenu)" v-html="childMenu.text"></a>
+                      <a :href="getHref(childMenu)" v-on:click="btnTopMenuClick(childMenu, $event)" :target="getTarget(childMenu)" v-html="childMenu.text"></a>
                     </li>
                   </ul>
                 </li>

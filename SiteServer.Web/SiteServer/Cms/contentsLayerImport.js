@@ -139,7 +139,7 @@ var methods = {
         if (err) {
           return $this.pageAlert = {
             type: 'danger',
-            html: res.message
+            html: err.message
           };
         }
 

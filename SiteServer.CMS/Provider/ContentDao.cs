@@ -1698,7 +1698,7 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             }
 
             var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
-            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(parameters.OrderBy));
+            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(parameters.OrderBy), false);
             var dbArgs = new Dictionary<string, object>();
 
             if (parameters.QueryString != null && parameters.QueryString.Count > 0)
@@ -1760,7 +1760,7 @@ WHERE {ContentAttribute.Id} = @{ContentAttribute.Id}";
             var whereString = $"WHERE {ContentAttribute.SiteId} = {siteId} AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ToSqlInStringWithoutQuote(channelIdList)}) AND {ContentAttribute.IsChecked} = '{true}'";
 
             var likeList = TranslateUtils.StringCollectionToStringList(StringUtils.TrimAndToLower(like));
-            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderBy));
+            var orderString = GetOrderString(channelInfo, AttackUtils.FilterSql(orderBy), false);
             var dbArgs = new Dictionary<string, object>();
 
             if (queryString != null && queryString.Count > 0)
@@ -2426,7 +2426,7 @@ group by tmp.userName";
             return DataProvider.DatabaseDao.GetSelectSqlString(tableName, SqlUtils.Asterisk, whereString.ToString());
         }
 
-        public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, int? onlyAdminId, PermissionsImpl adminPermissions, List<string> allAttributeNameList)
+        public string GetPagerWhereSqlString(SiteInfo siteInfo, ChannelInfo channelInfo, string searchType, string keyword, string dateFrom, string dateTo, int checkLevel, bool isCheckOnly, bool isSelfOnly, bool isTrashOnly, bool isWritingOnly, int adminId, PermissionsImpl adminPermissions, List<string> allAttributeNameList)
         {
             var isAllChannels = false;
             var searchChannelIdList = new List<int>();
@@ -2538,9 +2538,9 @@ group by tmp.userName";
                 }
             }
 
-            if (onlyAdminId.HasValue)
+            if (adminId > 0)
             {
-                whereList.Add($"{nameof(ContentAttribute.AdminId)} = {onlyAdminId.Value}");
+                whereList.Add($"{nameof(ContentAttribute.AdminId)} = {adminId}");
             }
 
             if (isWritingOnly)
@@ -2641,28 +2641,42 @@ GO");
         //    return $"WHERE {ContentAttribute.SiteId} = {siteInfo.Id} AND {ContentAttribute.ChannelId} = {channelInfo.Id} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}";
         //}
 
-        public string GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public string GetCacheWhereString(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents)
         {
-            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteInfo.Id} AND {ContentAttribute.ChannelId} = {channelInfo.Id} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}";
-            if (onlyAdminId.HasValue)
+            var whereString = $"WHERE {ContentAttribute.SiteId} = {siteInfo.Id} AND {nameof(ContentAttribute.SourceId)} != {SourceManager.Preview}";
+
+            if (adminId > 0)
             {
-                whereString += $" AND {nameof(ContentAttribute.AdminId)} = {onlyAdminId.Value}";
+                whereString += $" AND {nameof(ContentAttribute.AdminId)} = {adminId}";
+            }
+
+            if (isAllContents)
+            {
+                var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.All);
+                whereString += $" AND {ContentAttribute.ChannelId} IN ({TranslateUtils.ObjectCollectionToString(channelIdList)}) ";
+            }
+            else
+            {
+                whereString += $" AND {ContentAttribute.ChannelId} = {channelInfo.Id} ";
             }
 
             return whereString;
         }
 
-        public string GetOrderString(ChannelInfo channelInfo, string orderBy)
+        public string GetOrderString(ChannelInfo channelInfo, string orderBy, bool isAllContents)
         {
-            return ETaxisTypeUtils.GetContentOrderByString(ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType), orderBy);
+            return isAllContents
+                ? ETaxisTypeUtils.GetContentOrderByString(ETaxisType.OrderByIdDesc)
+                : ETaxisTypeUtils.GetContentOrderByString(
+                    ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType), orderBy);
         }
 
-        public List<ContentInfo> GetCacheContentInfoList(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId, int offset, int limit)
+        public List<ContentInfo> GetCacheChannelContentInfoList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents, int offset, int limit)
         {
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return GetContentInfoList(tableName, GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
-                GetOrderString(channelInfo, string.Empty), offset, limit);
+            return GetContentInfoList(tableName, GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
+                GetOrderString(channelInfo, string.Empty, isAllContents), offset, limit);
         }
 
         public List<ContentInfo> GetContentInfoList(string tableName, string whereString, string orderString, int offset, int limit)
@@ -2685,17 +2699,17 @@ GO");
             return list;
         }
 
-        public List<int> GetCacheContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId, int offset, int limit)
+        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents, int offset, int limit)
         {
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-            return GetCacheContentIdList(tableName, GetCacheWhereString(siteInfo, channelInfo, onlyAdminId),
-                GetOrderString(channelInfo, string.Empty), offset, limit);
+            return GetCacheChannelContentIdList(tableName, GetCacheWhereString(siteInfo, channelInfo, adminId, isAllContents),
+                GetOrderString(channelInfo, string.Empty, isAllContents), offset, limit);
         }
 
-        public List<int> GetCacheContentIdList(string tableName, string whereString, string orderString, int offset, int limit)
+        public List<(int ChannelId, int ContentId)> GetCacheChannelContentIdList(string tableName, string whereString, string orderString, int offset, int limit)
         {
-            var list = new List<int>();
+            var list = new List<(int ChannelId, int ContentId)>();
 
             var sqlString = DataProvider.DatabaseDao.GetPageSqlString(tableName, MinListColumns, whereString, orderString, offset, limit);
 
@@ -2704,8 +2718,9 @@ GO");
                 while (rdr.Read())
                 {
                     var contentId = GetInt(rdr, 0);
+                    var channelId = GetInt(rdr, 1);
 
-                    list.Add(contentId);
+                    list.Add((channelId, contentId));
                 }
                 rdr.Close();
             }

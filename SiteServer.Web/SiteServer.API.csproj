@@ -240,7 +240,7 @@
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerArrangeController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerAttributesController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCheckController.cs" />
-    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerColumnsController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesContentsLayerOptionsController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCopyController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerCutController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerDeleteController.cs" />
@@ -253,6 +253,9 @@
     <Compile Include="Controllers\Pages\Cms\PagesContentsLayerWordController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateController.cs" />
     <Compile Include="Controllers\Pages\Cms\PagesCreateStatusController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialEditorController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialAddLayerController.cs" />
+    <Compile Include="Controllers\Pages\Cms\PagesSpecialController.cs" />
     <Compile Include="Controllers\Pages\PagesDashboardController.cs" />
     <Compile Include="Controllers\Pages\PagesLoginController.cs" />
     <Compile Include="Controllers\Pages\PagesMainController.cs" />
@@ -292,7 +295,6 @@
     <Compile Include="Controllers\Sys\SysStlActionsRelatedFieldController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsSearchController.cs" />
     <Compile Include="Controllers\Sys\SysStlActionsTriggerController.cs" />
-    <Compile Include="Controllers\Sys\SysStlActionsUploadController.cs" />
     <Compile Include="Controllers\Sys\SysUEditorController.cs" />
     <Compile Include="Controllers\V1\AdministratorsController.cs" />
     <Compile Include="Controllers\V1\CaptchaController.cs" />

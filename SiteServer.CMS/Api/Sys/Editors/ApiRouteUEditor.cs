@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Editors
 {
-    public class ApiRouteUEditor
+    public static class ApiRouteUEditor
     {
         public const string Route = "sys/editors/ueditor/{siteId}";
 

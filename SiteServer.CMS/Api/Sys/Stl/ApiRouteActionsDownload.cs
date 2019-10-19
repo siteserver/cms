@@ -3,19 +3,9 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsDownload
+    public static class ApiRouteActionsDownload
     {
         public const string Route = "sys/stl/actions/download";
-
-        public static string GetUrl(string apiUrl, int siteId, int channelId, int contentId)
-        {
-            return PageUtils.AddQueryString(PageUtils.Combine(apiUrl, Route), new NameValueCollection
-            {
-                {"siteId", siteId.ToString()},
-                {"channelId", channelId.ToString()},
-                {"contentId", contentId.ToString()}
-            });
-        }
 
         public static string GetUrl(string apiUrl, int siteId, int channelId, int contentId, string fileUrl)
         {

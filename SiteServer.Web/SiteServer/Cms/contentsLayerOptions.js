@@ -1,12 +1,15 @@
-﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerColumns');
+﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerOptions');
 
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
   channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
   pageLoad: false,
+  pageType: 'setColumns',
   pageAlert: null,
   attributes: null,
-  attributeNames: []
+  attributeNames: [],
+  isAllContents: false,
+  isSelfOnly: false
 };
 
 var methods = {
@@ -14,11 +17,13 @@ var methods = {
     var $this = this;
     $api.get({
       siteId: $this.siteId,
-      channelId: $this.channelId
+      channelId: $this.channelId,
     }, function (err, res) {
       if (err || !res || !res.value) return;
 
       $this.attributes = res.value;
+      $this.isAllContents = res.isAllContents;
+      $this.isSelfOnly = res.isSelfOnly;
       $this.attributeNames = [];
       for (var i = 0; i < $this.attributes.length; i++) {
         var attribute = $this.attributes[i];
@@ -29,6 +34,7 @@ var methods = {
       $this.pageLoad = true;
     });
   },
+
   btnSubmitClick: function () {
     var $this = this;
 
@@ -36,7 +42,9 @@ var methods = {
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      attributeNames: $this.attributeNames.join(',')
+      attributeNames: $this.attributeNames.join(','),
+      isAllContents: $this.isAllContents,
+      isSelfOnly: $this.isSelfOnly
     }, function (err, res) {
       if (err || !res || !res.value) return;
 

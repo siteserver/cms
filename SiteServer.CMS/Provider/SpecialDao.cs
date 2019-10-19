@@ -47,7 +47,7 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        public void Insert(SpecialInfo specialInfo)
+        public int Insert(SpecialInfo specialInfo)
         {
             var sqlString = $@"INSERT INTO {TableName}
            ({nameof(SpecialInfo.SiteId)}, 
@@ -68,9 +68,11 @@ namespace SiteServer.CMS.Provider
                 GetParameter(nameof(specialInfo.AddDate), DataType.DateTime, specialInfo.AddDate)
             };
 
-            ExecuteNonQuery(sqlString, parameters);
+            var specialId = ExecuteNonQueryAndReturnId(TableName, nameof(SpecialInfo.Id), sqlString, parameters);
 
             SpecialManager.RemoveCache(specialInfo.SiteId);
+
+            return specialId;
         }
 
         public void Update(SpecialInfo specialInfo)

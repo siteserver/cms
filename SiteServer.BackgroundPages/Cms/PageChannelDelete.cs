@@ -49,9 +49,9 @@ namespace SiteServer.BackgroundPages.Cms
                 if (!HasChannelPermissions(channelId, ConfigManager.ChannelPermissions.ChannelDelete)) continue;
 
                 var channelInfo = ChannelManager.GetChannelInfo(SiteId, channelId);
-                var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelId);
+                var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelId);
                 var displayName = channelInfo.ChannelName;
-                var count = ContentManager.GetCount(SiteInfo, channelInfo, onlyAdminId);
+                var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
                 if (count > 0)
                 {
                     displayName += $"({count})";

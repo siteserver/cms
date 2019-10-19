@@ -1,0 +1,47 @@
+﻿@{ Layout = "../Shared/_LayoutLayer.cshtml"; }
+
+<ul class="nav nav-tabs tabs-bordered nav-justified">
+  <li class="nav-item">
+    <a href="javascript:;" v-on:click="pageType = 'setColumns'" class="nav-link" :class="{active: pageType === 'setColumns'}">
+      显示列
+    </a>
+  </li>
+  <li class="nav-item">
+    <a href="javascript:;" v-on:click="pageType = 'setOthers'" class="nav-link" :class="{active: pageType === 'setOthers'}">
+      其他选项
+    </a>
+  </li>
+</ul>
+
+<div class="pt-4">
+  <template v-if="pageType === 'setColumns'">
+    <div class="row checkbox checkbox-primary">
+      <div class="col-4" v-for="(attribute, index) in attributes">
+        <input :id="'attr_' + index" type="checkbox" :value="attribute.value" :checked="attribute.selected" v-model="attributeNames">
+        <label :for="'attr_' + index">{{ attribute.text }}({{ attribute.value }})</label>
+      </div>
+    </div>
+  </template>
+  <template v-else-if="pageType === 'setOthers'">
+    <div class="row checkbox checkbox-primary">
+      <div class="col-4">
+        <input id="isAllContents" type="checkbox" v-model="isAllContents">
+        <label for="isAllContents">显示下级栏目内容</label>
+      </div>
+      <div class="col-4">
+        <input id="isSelfOnly" type="checkbox" v-model="isSelfOnly">
+        <label for="isSelfOnly">只显示自己添加的内容</label>
+      </div>
+    </div>
+  </template>
+</div>
+
+<hr />
+
+<div class="text-right mr-1">
+  <button v-on:click="btnSubmitClick" type="button" class="btn btn-primary m-l-5">确 定</button>
+  <button type="button" class="btn btn-default m-l-5" onclick="window.parent.layer.closeAll()">取 消</button>
+</div>
+
+@section Scripts{
+<script src="contentsLayerOptions.js" type="text/javascript"></script> }

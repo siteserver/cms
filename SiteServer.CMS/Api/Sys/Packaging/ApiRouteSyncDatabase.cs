@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Packaging
 {
-    public class ApiRouteSyncDatabase
+    public static class ApiRouteSyncDatabase
     {
         public const string Route = "sys/packaging/sync/database";
 

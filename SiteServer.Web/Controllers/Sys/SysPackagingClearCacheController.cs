@@ -1,14 +1,16 @@
 ﻿using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Packaging;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysPackagesClearCacheController : ApiController
     {
-        [HttpPost, Route(ApiRouteClearCache.Route)]
+        private const string Route = "sys/packaging/clear/cache";
+
+        [HttpPost, Route(Route)]
         public IHttpActionResult Main()
         {
             var request = new AuthenticatedRequest();

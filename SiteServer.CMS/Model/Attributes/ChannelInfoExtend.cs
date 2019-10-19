@@ -106,5 +106,19 @@ namespace SiteServer.CMS.Model.Attributes
             get => GetString(nameof(DefaultTaxisType), ETaxisTypeUtils.GetValue(ETaxisType.OrderByTaxisDesc));
             set => Set(nameof(DefaultTaxisType), value);
         }
+
+        //显示下级栏目内容
+        public bool IsAllContents
+        {
+            get => GetBool(nameof(IsAllContents));
+            set => Set(nameof(IsAllContents), value);
+        }
+
+        //只显示自己添加的内容
+        public bool IsSelfOnly
+        {
+            get => GetBool(nameof(IsSelfOnly));
+            set => Set(nameof(IsSelfOnly), value);
+        }
     }
 }

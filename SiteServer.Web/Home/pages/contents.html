@@ -145,6 +145,7 @@
             <tr>
               <th class="text-nowrap" v-for="column in columns" v-html="column.displayName"></th>
 
+              <th class="text-center text-nowrap">栏目</th>
               <th class="text-center text-nowrap">操作</th>
               <th class="text-center text-nowrap">状态</th>
               <th class="text-nowrap checkbox checkbox-primary" style="width: 34px">
@@ -200,7 +201,10 @@
               </td>
 
               <td class="text-center text-nowrap" style="width: 80px">
-                <a v-on:click="btnEditClick(content.id)" href="javascript:;" onclick="event.stopPropagation()">编辑</a>
+                {{ content.channelName }}
+              </td>
+              <td class="text-center text-nowrap" style="width: 80px">
+                <a v-on:click="btnEditClick(content)" href="javascript:;" onclick="event.stopPropagation()">编辑</a>
               </td>
               <td class="text-center text-nowrap" style="width: 80px">
                 <a v-on:click="btnLayerClick({title: '查看审核状态', name: 'State', contentId: content.id, full: true})" href="javascript:;"

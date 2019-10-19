@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Packaging;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/plugins/install")]
     public class PagesInstallController : ApiController
     {

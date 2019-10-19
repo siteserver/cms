@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -17,6 +18,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/main")]
     public class PagesMainController : ApiController
     {

@@ -24,6 +24,7 @@ var data = {
   pages: null,
   permissions: null,
   columns: null,
+  isAllContents: false,
   pageOptions: null,
   isAllChecked: false
 };
@@ -203,6 +204,7 @@ var methods = {
         $this.pages = res.pages;
         $this.permissions = res.permissions;
         $this.columns = res.columns;
+        $this.isAllContents = res.isAllContents;
         $this.page = page;
         $this.pageOptions = [];
         for (var i = 1; i <= $this.pages; i++) {

@@ -16,10 +16,17 @@ namespace SiteServer.CMS.DataCache
         private static readonly string CacheKey = DataCacheManager.GetCacheKey(nameof(SpecialManager));
         private static readonly object SyncRoot = new object();
 
-	    public static SpecialInfo DeleteSpecialInfo(int siteId, int specialId)
+	    public static SpecialInfo DeleteSpecialInfo(SiteInfo siteInfo, int specialId)
 	    {
-	        var specialInfo = GetSpecialInfo(siteId, specialId);
-	        DataProvider.SpecialDao.Delete(siteId, specialId);
+	        var specialInfo = GetSpecialInfo(siteInfo.Id, specialId);
+
+            if (!string.IsNullOrEmpty(specialInfo.Url) && specialInfo.Url != "/")
+            {
+                var directoryPath = GetSpecialDirectoryPath(siteInfo, specialInfo.Url);
+                DirectoryUtils.DeleteDirectoryIfExists(directoryPath);
+            }
+
+            DataProvider.SpecialDao.Delete(siteInfo.Id, specialId);
 
 	        return specialInfo;
 	    }
@@ -190,12 +197,17 @@ namespace SiteServer.CMS.DataCache
 	        return GetSpecialUrl(siteInfo, specialInfo.Url);
 	    }
 
-        public static string GetSpecialZipFilePath(string directoryPath)
+        public static string GetSpecialZipFilePath(string title, string directoryPath)
 	    {
-	        return PathUtils.Combine(directoryPath, "_src.zip");
+	        return PathUtils.Combine(directoryPath, $"{title}.zip");
 	    }
 
-	    public static string GetSpecialSrcDirectoryPath(string directoryPath)
+        public static string GetSpecialZipFileUrl(SiteInfo siteInfo, SpecialInfo specialInfo)
+        {
+            return PageUtility.ParseNavigationUrl(siteInfo, $"@/{specialInfo.Url}/{specialInfo.Title}.zip", true);
+        }
+
+        public static string GetSpecialSrcDirectoryPath(string directoryPath)
 	    {
 	        return PathUtils.Combine(directoryPath, "_src");
 	    }

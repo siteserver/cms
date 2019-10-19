@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contents")]
     public class PagesContentsController : ApiController
     {
@@ -42,7 +43,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var onlyAdminId = request.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var isAllContents = channelInfo.Additional.IsAllContents;
 
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
@@ -50,7 +54,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
 
                 var pageContentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, isAllContents);
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
 
@@ -59,16 +63,19 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     var offset = siteInfo.Additional.PageSize * (page - 1);
                     var limit = siteInfo.Additional.PageSize;
 
-                    var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
+                    var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, offset, limit);
 
                     var sequence = offset + 1;
-                    foreach (var contentId in pageContentIds)
+                    foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
 
                         var menus = PluginMenuManager.GetContentMenus(pluginIds, contentInfo);
                         contentInfo.Set("PluginMenus", menus);
+
+                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, channelContentId.ChannelId);
+                        contentInfo.Set("ChannelName", channelName);
 
                         pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }
@@ -91,7 +98,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     Count = count,
                     Pages = pages,
                     Permissions = permissions,
-                    Columns = columns
+                    Columns = columns,
+                    IsAllContents = isAllContents
                 });
             }
             catch (Exception ex)

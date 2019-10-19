@@ -3,7 +3,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsTrigger
+    public static class ApiRouteActionsTrigger
     {
         public const string Route = "sys/stl/actions/trigger";
 

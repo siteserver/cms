@@ -45,6 +45,14 @@ var pageUtils = {
     return decodeURIComponent(result[1]);
   },
 
+  getQueryBoolean: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return false;
+    }
+    return result[1] === 'true' || result[1] === 'True';
+  },
+
   loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {

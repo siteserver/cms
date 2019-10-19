@@ -154,8 +154,6 @@
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
-    <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
-    <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteSyncDatabase.cs" />
@@ -164,14 +162,11 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDownload.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDynamic.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsIf.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsInputAdd.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsLoadingChannels.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsPageContents.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsRelatedField.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsResumeAdd.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
     <Compile Include="Api\V1\PageResponse.cs" />
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentColumn.cs" />
