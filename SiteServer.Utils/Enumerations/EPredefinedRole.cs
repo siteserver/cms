@@ -7,7 +7,7 @@ namespace SiteServer.Utils.Enumerations
 	{
         ConsoleAdministrator,				//超级管理员
 		SystemAdministrator,				//站点管理员
-        Administrator,						//管理员
+        Administrator,						//普通管理员
 	}
 
 	public class EPredefinedRoleUtils
@@ -41,7 +41,7 @@ namespace SiteServer.Utils.Enumerations
 		    }
 		    if (type == EPredefinedRole.Administrator)
 		    {
-		        return "管理员";
+		        return "普通管理员";
 		    }
 		    return string.Empty;
 		}
@@ -190,20 +190,10 @@ namespace SiteServer.Utils.Enumerations
 		{
             return new List<string>
 		    {
-		        GetValue(EPredefinedRole.Administrator),
-		        GetValue(EPredefinedRole.SystemAdministrator),
-		        GetValue(EPredefinedRole.ConsoleAdministrator)
-		    };
-		}
-
-        public static List<EPredefinedRole> GetAllPredefinedRole()
-        {
-            return new List<EPredefinedRole>
-            {
-                EPredefinedRole.Administrator,
-                EPredefinedRole.SystemAdministrator,
-                EPredefinedRole.ConsoleAdministrator
+                GetValue(EPredefinedRole.ConsoleAdministrator),
+                GetValue(EPredefinedRole.SystemAdministrator),
+                GetValue(EPredefinedRole.Administrator)
             };
-        }
+		}
     }
 }

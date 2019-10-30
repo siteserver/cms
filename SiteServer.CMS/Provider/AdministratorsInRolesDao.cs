@@ -89,6 +89,16 @@ namespace SiteServer.CMS.Provider
             return new string[0];
         }
 
+        public void RemoveUser(string userName)
+        {
+            var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName";
+            var parms = new IDataParameter[]
+            {
+                GetParameter("@UserName", DataType.VarChar, 255, userName)
+            };
+            ExecuteNonQuery(sqlString, parms);
+        }
+
         public void RemoveUserFromRoles(string userName, string[] roleNames)
         {
             var sqlString = "DELETE FROM siteserver_AdministratorsInRoles WHERE UserName = @UserName AND RoleName = @RoleName";

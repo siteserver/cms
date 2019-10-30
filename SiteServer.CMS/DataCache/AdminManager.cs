@@ -322,17 +322,13 @@ namespace SiteServer.CMS.DataCache
             return siteIdList;
         }
 
-        public static string GetDisplayName(string userName, bool isDepartment)
+        public static string GetDisplayName(string userName)
         {
             var adminInfo = GetAdminInfoByUserName(userName);
-            if (adminInfo == null) return userName;
-
-            if (!isDepartment) return adminInfo.DisplayName;
-            var departmentName = DepartmentManager.GetDepartmentName(adminInfo.DepartmentId);
-            return !string.IsNullOrEmpty(departmentName) ? $"{adminInfo.DisplayName}({departmentName})" : adminInfo.DisplayName;
+            return adminInfo == null ? userName : adminInfo.DisplayName;
         }
 
-        public static string GetRolesHtml(string userName)
+        public static string GetRoles(string userName)
         {
             var isConsoleAdministrator = false;
             var isSystemAdministrator = false;

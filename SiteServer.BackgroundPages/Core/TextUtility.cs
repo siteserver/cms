@@ -26,7 +26,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.AddUserName + ":" + contentInfo.AddUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(contentInfo.AddUserName, false);
+                        value = AdminManager.GetDisplayName(contentInfo.AddUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -38,7 +38,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.LastEditUserName + ":" + contentInfo.LastEditUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(contentInfo.LastEditUserName, false);
+                        value = AdminManager.GetDisplayName(contentInfo.LastEditUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
@@ -51,7 +51,7 @@ namespace SiteServer.BackgroundPages.Core
                     var key = ContentAttribute.CheckUserName + ":" + checkUserName;
                     if (!nameValueCacheDict.TryGetValue(key, out value))
                     {
-                        value = AdminManager.GetDisplayName(checkUserName, false);
+                        value = AdminManager.GetDisplayName(checkUserName);
                         nameValueCacheDict[key] = value;
                     }
                 }
