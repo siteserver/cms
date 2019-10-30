@@ -2,19 +2,13 @@
 @section Navs{
 <template v-if="pageType == $pageTypeAdmin">
   <li class="nav-item">
-    <a class="nav-link active" href="pageAdministrator.aspx">管理员管理</a>
+    <a class="nav-link active" href="admin.cshtml">管理员管理</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="pageAdminRole.aspx">角色管理</a>
+    <a class="nav-link" href="adminRole.cshtml">角色管理</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageAdminDepartment.aspx">所属部门管理</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="pageAdminArea.aspx">所在区域管理</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
@@ -104,20 +98,6 @@ errors.has('confirmPassword') || password != confirmPassword}">
   </label>
   <input type="email" v-validate="'email'" v-model="adminInfo.email" name="email" class="form-control" data-vv-as="电子邮箱" :class="{'is-invalid': errors.has('email')}">
   <small class="form-text text-muted">可用于登录、找回密码等功能。</small>
-</div>
-
-<div class="form-group">
-  <label>所属部门</label>
-  <select v-model="adminInfo.departmentId" class="form-control">
-    <option v-for="department in departments" :value="department.key">{{department.value}}</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label>所在区域</label>
-  <select v-model="adminInfo.areaId" class="form-control">
-    <option v-for="area in areas" :value="area.key">{{area.value}}</option>
-  </select>
 </div>
 
 <hr />

@@ -8,8 +8,6 @@ var data = {
   pageType: utils.getQueryString('pageType'),
   userId: parseInt(utils.getQueryString('userId') || '0'),
   adminInfo: null,
-  departments: null,
-  areas: null,
   password: null,
   confirmPassword: null,
   uploadUrl: null,
@@ -24,8 +22,6 @@ var methods = {
       var res = response.data;
 
       $this.adminInfo = res.value;
-      $this.departments = res.departments;
-      $this.areas = res.areas;
       $this.uploadUrl = apiUrl + '/pages/settings/adminProfile/upload?adminToken=' + res.adminToken + '&userId=' + $this.userId;
     }).catch(function (error) {
       $this.pageAlert = utils.getPageAlert(error);
@@ -90,7 +86,7 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'admin.cshtml';
   }
 };
 

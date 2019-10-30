@@ -13,12 +13,14 @@
   <link href="../assets/css/font-awesome-4.7.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/bootstrap-4.1.0.min.css" rel="stylesheet" type="text/css" />
   <link href="../assets/css/siteserver.min.css" rel="stylesheet" type="text/css" />
+  <link href="../assets/element-ui/theme-chalk/index.css" rel="stylesheet" type="text/css" />
   <style>
     .nav .nav-link {font-weight: normal; border-radius: 1.25rem; font-size: 14px;}
     .editable, .editable a, .editable span {
       border-bottom: dashed 1px #0056b3 !important;
     }
   </style>
+  @if (IsSectionDefined("Styles")){ @RenderSection("Styles") }
 </head>
 
 <body>
@@ -73,6 +75,7 @@
 <script src="../assets/js/vue-2.5.16.min.js" type="text/javascript"></script>
 <script src="../assets/js/vee-validate-2.1.0.js" type="text/javascript"></script>
 <script src="../assets/js/vee-validate-locale-zh_CN-2.1.0.js" type="text/javascript"></script>
+<script src="../assets/element-ui/index.js"></script>
 <script type="text/javascript">
   var apiUrl = '@Sys.InnerApiUrl';
 </script>

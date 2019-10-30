@@ -285,12 +285,14 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
+#if !DEBUG
                 var sessionId = request.GetPostString("sessionId");
                 var cacheKey = Constants.GetSessionIdCacheKey(request.AdminId);
                 if (string.IsNullOrEmpty(sessionId) || CacheUtils.GetString(cacheKey) != sessionId)
                 {
                     return Unauthorized();
                 }
+#endif
 
                 if (request.AdminInfo.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
                 {

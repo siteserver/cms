@@ -80,7 +80,7 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'admin.cshtml';
   }
 };
 
