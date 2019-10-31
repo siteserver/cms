@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerTaxis")]
     public class HomeContentsLayerTaxisController : ApiController
     {

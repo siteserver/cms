@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 using SiteServer.Utils.Images;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contentAddLayerImage")]
     public class HomeContentAddLayerImageController : ApiController
     {

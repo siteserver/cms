@@ -1,5 +1,4 @@
 ﻿var $api = new apiUtils.Api(apiUrl + "/pages/cms/contents");
-var $createApi = new apiUtils.Api(apiUrl + "/pages/cms/contents/actions/create");
 
 Object.defineProperty(Object.prototype, "getProp", {
   value: function (prop) {
@@ -24,6 +23,7 @@ var data = {
   pages: null,
   permissions: null,
   columns: null,
+  isAllContents: false,
   pageOptions: null,
   isAllChecked: false
 };
@@ -31,21 +31,24 @@ var data = {
 var methods = {
   btnAddClick: function (e) {
     e.stopPropagation();
-    location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId;
+    location.href = 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + this.channelId + '&returnUrl=' + encodeURIComponent(location.href);
+  },
+
+  getPageContentAddUrl: function (content) {
+    return 'pageContentAdd.aspx?siteId=' + this.siteId + '&channelId=' + content.channelId + '&id=' + content.id + '&returnUrl=' + encodeURIComponent(location.href);
   },
 
   btnCreateClick: function (e) {
     e.stopPropagation();
 
     var $this = this;
-    $this.pageAlert = null;
-    if ($this.selectedContentIds.length === 0) return;
+    this.pageAlert = null;
+    if (!this.isContentChecked) return;
 
     pageUtils.loading(true);
-    $createApi.post({
+    $api.postAt('actions/create', {
       siteId: $this.siteId,
-      channelId: $this.channelId,
-      contentIds: $this.selectedContentIds.join(',')
+      channelContentIds: this.channelContentIds
     }, function (err, res) {
       if (err || !res || !res.value) return;
       pageUtils.loading(false);
@@ -60,21 +63,26 @@ var methods = {
     e.stopPropagation();
 
     this.pageAlert = null;
-    var url = "contentsLayer" +
-      options.name +
-      ".cshtml?siteId=" +
-      this.siteId +
-      "&channelId=" +
-      this.channelId;
+    var url = "contentsLayer" + options.name + ".cshtml?siteId=" + this.siteId;
+
+    if (options.channelId) {
+      url += "&channelId=" + options.channelId;
+    } else {
+      url += "&channelId=" + this.channelId;
+    }
+    if (options.contentId) {
+      url += "&contentId=" + options.contentId;
+    }
+
     if (options.withContents) {
-      if (this.selectedContentIds.length === 0) return;
-      url += "&contentIds=" + this.selectedContentIds.join(",");
-    } else if (options.withOptionalContents) {
-      if (this.selectedContentIds.length > 0) {
-        url += "&contentIds=" + this.selectedContentIds.join(",");
+      if (!this.isContentChecked) return;
+      url += "&channelContentIds=" + this.channelContentIdsString;
+    }
+    
+    if (options.withOptionalContents) {
+      if (this.isContentChecked) {
+        url += "&channelContentIds=" + this.channelContentIdsString;
       }
-    } else if (options.contentId) {
-      url += "&contentId=" + options.contentId
     }
     url += '&returnUrl=' + encodeURIComponent(location.href);
 
@@ -203,6 +211,7 @@ var methods = {
         $this.pages = res.pages;
         $this.permissions = res.permissions;
         $this.columns = res.columns;
+        $this.isAllContents = res.isAllContents;
         $this.page = page;
         $this.pageOptions = [];
         for (var i = 1; i <= $this.pages; i++) {
@@ -227,16 +236,40 @@ var $vue = new Vue({
   data: data,
   methods: methods,
   computed: {
-    selectedContentIds: function () {
+    isContentChecked: function () {
+      if (this.pageContents) {
+        for (var i = 0; i < this.pageContents.length; i++) {
+          if (this.pageContents[i].isSelected) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    channelContentIds: function () {
       var retVal = [];
       if (this.pageContents) {
         for (var i = 0; i < this.pageContents.length; i++) {
           if (this.pageContents[i].isSelected) {
-            retVal.push(this.pageContents[i].id);
+            retVal.push({
+              channelId: this.pageContents[i].channelId,
+              id: this.pageContents[i].id
+            });
           }
         }
       }
       return retVal;
+    },
+    channelContentIdsString: function () {
+      var retVal = [];
+      if (this.pageContents) {
+        for (var i = 0; i < this.pageContents.length; i++) {
+          if (this.pageContents[i].isSelected) {
+            retVal.push(this.pageContents[i].channelId + '_' + this.pageContents[i].id);
+          }
+        }
+      }
+      return retVal.join(',');
     }
   },
   created: function () {

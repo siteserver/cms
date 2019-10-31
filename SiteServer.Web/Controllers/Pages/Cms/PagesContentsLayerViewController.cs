@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerView")]
     public class PagesContentsLayerViewController : ApiController
     {

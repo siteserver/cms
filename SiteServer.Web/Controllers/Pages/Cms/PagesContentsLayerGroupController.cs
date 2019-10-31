@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerGroup")]
     public class PagesContentsLayerGroupController : ApiController
     {
@@ -59,16 +61,15 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                //var channelId = request.GetPostInt("channelId");
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var pageType = request.GetPostString("pageType");
                 var groupNames = TranslateUtils.StringCollectionToStringList(request.GetPostString("groupNames"));
                 var groupName = request.GetPostString("groupName");
                 var description = request.GetPostString("description");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentEdit))
+                if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
@@ -76,14 +77,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
                 if (pageType == "setGroup")
                 {
-                    foreach (var contentId in contentIdList)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -100,9 +99,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
                 else if(pageType == "cancelGroup")
                 {
-                    foreach (var contentId in contentIdList)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -137,9 +137,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                         request.AddSiteLog(siteId, "添加内容组", $"内容组:{groupInfo.GroupName}");
                     }
 
-                    foreach (var contentId in contentIdList)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         var list = TranslateUtils.StringCollectionToStringList(contentInfo.GroupNameCollection);
@@ -154,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)

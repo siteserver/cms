@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
@@ -8,10 +9,12 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerExport")]
     public class PagesContentsLayerExportController : ApiController
     {
@@ -70,7 +73,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIds = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+
                 var exportType = request.GetPostString("exportType");
                 var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
                 var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
@@ -92,16 +97,21 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var onlyAdminId = request.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+                var adminId = channelInfo.Additional.IsSelfOnly
+                    ? request.AdminId
+                    : request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
+                var isAllContents = channelInfo.Additional.IsAllContents;
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, true);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var contentInfoList = new List<ContentInfo>();
-                if (contentIds.Count == 0)
+                var calculatedContentInfoList = new List<ContentInfo>();
+
+                if (channelContentIds.Count == 0)
                 {
-                    var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                    var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, isAllContents);
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                     if (pages == 0) pages = 1;
 
@@ -112,13 +122,13 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             var offset = siteInfo.Additional.PageSize * (page - 1);
                             var limit = siteInfo.Additional.PageSize;
 
-                            var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
+                            var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, isAllContents, offset, limit);
 
                             var sequence = offset + 1;
 
-                            foreach (var contentId in pageContentIds)
+                            foreach (var channelContentId in pageContentIds)
                             {
-                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                                var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                                 if (contentInfo == null) continue;
 
                                 if (!isAllCheckedLevel)
@@ -142,7 +152,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                                     }
                                 }
 
-                                contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                                contentInfoList.Add(contentInfo);
+                                calculatedContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                             }
                         }
                     }
@@ -150,9 +161,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 else
                 {
                     var sequence = 1;
-                    foreach (var contentId in contentIds)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         if (!isAllCheckedLevel)
@@ -176,7 +187,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                             }
                         }
 
-                        contentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
+                        contentInfoList.Add(contentInfo);
+                        calculatedContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }
                 }
 
@@ -197,7 +209,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         var fileName = $"{channelInfo.ChannelName}.csv";
                         var filePath = PathUtils.GetTemporaryFilesPath(fileName);
-                        ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, contentInfoList, columnNames);
+                        ExcelObject.CreateExcelFileForContents(filePath, siteInfo, channelInfo, calculatedContentInfoList, columnNames);
                         downloadUrl = PageUtils.GetTemporaryFilesUrl(fileName);
                     }
                 }

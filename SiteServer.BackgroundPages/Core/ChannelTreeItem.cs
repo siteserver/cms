@@ -48,7 +48,7 @@ namespace SiteServer.BackgroundPages.Core
             _iconPlusUrl = PageUtils.Combine(treeDirectoryUrl, "plus.png");
         }
 
-        public string GetItemHtml(ELoadingType loadingType, string returnUrl, int? onlyAdminId, NameValueCollection additional)
+        public string GetItemHtml(ELoadingType loadingType, string returnUrl, int adminId, NameValueCollection additional)
         {
             var htmlBuilder = new StringBuilder();
             var parentsCount = _channelInfo.ParentsCount;
@@ -144,7 +144,7 @@ namespace SiteServer.BackgroundPages.Core
 
                 htmlBuilder.Append(ChannelManager.GetNodeTreeLastImageHtml(_siteInfo, _channelInfo));
 
-                var count = ContentManager.GetCount(_siteInfo, _channelInfo, onlyAdminId);
+                var count = ContentManager.GetCount(_siteInfo, _channelInfo, adminId);
 
                 htmlBuilder.Append(
                     $@"<span style=""font-size:8pt;font-family:arial"" class=""gray"">({count})</span>");

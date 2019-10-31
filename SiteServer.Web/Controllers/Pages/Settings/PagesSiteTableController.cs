@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/siteTables")]
     public class PagesSiteTablesController : ApiController
     {

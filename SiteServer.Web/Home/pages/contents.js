@@ -59,8 +59,9 @@ var methods = {
     parent.location.hash = 'pages/contentAdd.html?siteId=' + this.site.id + '&channelId=' + this.channel.id + '&returnUrl=' + encodeURIComponent(parent.location.hash);
   },
 
-  btnEditClick: function (contentId) {
-    parent.location.hash = 'pages/contentAdd.html?siteId=' + this.site.id + '&channelId=' + this.channel.id + '&contentId=' + contentId + '&returnUrl=' + encodeURIComponent(parent.location.hash);
+  btnEditClick: function (content) {
+    console.log(content);
+    parent.location.hash = 'pages/contentAdd.html?siteId=' + this.site.id + '&channelId=' + content.channelId + '&contentId=' + content.id + '&returnUrl=' + encodeURIComponent(parent.location.hash);
   },
 
   btnLayerClick: function (options) {

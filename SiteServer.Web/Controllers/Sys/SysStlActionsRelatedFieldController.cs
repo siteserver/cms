@@ -1,13 +1,14 @@
 ﻿using System.Text;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsRelatedFieldController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsRelatedField.Route)]
@@ -25,7 +26,7 @@ namespace SiteServer.API.Controllers.Sys
             HttpContext.Current.Response.End();
         }
 
-        public string GetRelatedField(int relatedFieldId, int parentId)
+        private string GetRelatedField(int relatedFieldId, int parentId)
         {
             var jsonString = new StringBuilder();
 

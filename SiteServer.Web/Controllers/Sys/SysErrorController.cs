@@ -1,12 +1,15 @@
 ﻿using System.Web.Http;
-using SiteServer.CMS.Api.Sys.Errors;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysErrorController : ApiController
     {
-        [HttpGet, Route(ApiRouteError.Route)]
+        private const string Route = "sys/errors/{id}";
+
+        [HttpGet, Route(Route)]
         public IHttpActionResult Main(int id)
         {
             return Ok(new

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsPageContentsController : ApiController
     {
         [HttpPost, Route(ApiRouteActionsPageContents.Route)]

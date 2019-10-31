@@ -17,6 +17,8 @@ var data = {
   productVersion: null,
   targetFramework: null,
   environmentVersion: null,
+  adminLogoUrl: null,
+  adminTitle: null,
   isSuperAdmin: null,
   packageList: null,
   packageIds: null,
@@ -52,6 +54,8 @@ var methods = {
         $this.productVersion = res.productVersion;
         $this.targetFramework = res.targetFramework;
         $this.environmentVersion = res.environmentVersion;
+        $this.adminLogoUrl = res.adminLogoUrl || './assets/icons/logo.png';
+        $this.adminTitle = res.adminTitle || 'SiteServer CMS';
         $this.isSuperAdmin = res.isSuperAdmin;
         $this.packageList = res.packageList;
         $this.packageIds = res.packageIds;
@@ -60,17 +64,18 @@ var methods = {
         $this.pluginMenus = res.pluginMenus;
         $this.local = res.local;
         $this.activeParentMenu = $this.siteMenus[0];
+
+        document.title = $this.adminTitle;
       } else {
         location.href = res.redirectUrl;
       }
     }).catch(function (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';
-      } else if (error.response.status === 500) {
+      } else if (error.response && error.response.status === 500) {
         $this.pageAlert = utils.getPageAlert(error);
       }
     }).then(function () {
-      $this.pageLoad = true;
       setTimeout($this.ready, 100);
     });
   },
@@ -129,8 +134,6 @@ var methods = {
           }
         }
       }
-    }).then(function () {
-      $this.pageLoad = true;
     });
   },
 
@@ -172,8 +175,9 @@ var methods = {
       } else {
         $this.timeoutId = setTimeout($this.create, 100);
       }
+      $this.pageLoad = true;
     }).catch(function (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         location.href = 'pageLogin.cshtml';
       }
       $this.timeoutId = setTimeout($this.create, 1000);
@@ -196,14 +200,17 @@ var methods = {
     return menu.target ? menu.target : "right";
   },
 
-  btnTopMenuClick: function (menu) {
+  btnTopMenuClick: function (menu, e) {
     if (menu.target == '_layer') {
       utils.openLayer({
         title: menu.text,
         url: menu.href,
         full: true
       });
+      e.stopPropagation();
+      e.preventDefault();
     }
+    return false;
   },
 
   btnLeftMenuClick: function (menu) {

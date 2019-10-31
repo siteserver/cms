@@ -27,8 +27,6 @@ namespace SiteServer.CMS.Model
             IsLockedOut = false;
             SiteIdCollection = string.Empty;
             SiteId = 0;
-            DepartmentId = 0;
-            AreaId = 0;
             _displayName = string.Empty;
             Mobile = string.Empty;
             Email = string.Empty;
@@ -37,8 +35,7 @@ namespace SiteServer.CMS.Model
 
         public AdministratorInfo(int id, string userName, string password, string passwordFormat,
             string passwordSalt, DateTime? creationDate, DateTime? lastActivityDate, DateTime? lastChangePasswordDate, int countOfLogin,
-            int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId,
-            int departmentId, int areaId, string displayName, string mobile, string email, string avatarUrl)
+            int countOfFailedLogin, string creatorUserName, bool isLockedOut, string siteIdCollection, int siteId, string displayName, string mobile, string email, string avatarUrl)
         {
             Id = id;
             UserName = userName;
@@ -54,8 +51,6 @@ namespace SiteServer.CMS.Model
             IsLockedOut = isLockedOut;
             SiteIdCollection = siteIdCollection;
             SiteId = siteId;
-            DepartmentId = departmentId;
-            AreaId = areaId;
             _displayName = displayName;
             Mobile = mobile;
             Email = email;
@@ -83,17 +78,18 @@ namespace SiteServer.CMS.Model
         public int CountOfFailedLogin { get; set; }
 
         public string CreatorUserName { get; set; }
-        public bool Locked { get; set; }
+
+        public bool Locked
+        {
+            get => IsLockedOut;
+            set => IsLockedOut = value;
+        }
 
         public bool IsLockedOut { get; set; }
 
         public string SiteIdCollection { get; set; }
 
         public int SiteId { get; set; }
-
-        public int DepartmentId { get; set; }
-
-        public int AreaId { get; set; }
 
         public string DisplayName
         {
@@ -135,8 +131,6 @@ namespace SiteServer.CMS.Model
             IsLockedOut = false.ToString();
             SiteIdCollection = string.Empty;
             SiteId = 0;
-            DepartmentId = 0;
-            AreaId = 0;
             DisplayName = string.Empty;
             Mobile = string.Empty;
             Email = string.Empty;
@@ -159,8 +153,6 @@ namespace SiteServer.CMS.Model
             IsLockedOut = adminInfo.IsLockedOut.ToString();
             SiteIdCollection = adminInfo.SiteIdCollection;
             SiteId = adminInfo.SiteId;
-            DepartmentId = adminInfo.DepartmentId;
-            AreaId = adminInfo.AreaId;
             DisplayName = adminInfo.DisplayName;
             Mobile = adminInfo.Mobile;
             Email = adminInfo.Email;
@@ -185,8 +177,6 @@ namespace SiteServer.CMS.Model
                 IsLockedOut = TranslateUtils.ToBool(IsLockedOut),
                 SiteIdCollection = SiteIdCollection,
                 SiteId = SiteId,
-                DepartmentId = DepartmentId,
-                AreaId = AreaId,
                 DisplayName = DisplayName,
                 Mobile = Mobile,
                 Email = Email,
@@ -224,10 +214,6 @@ namespace SiteServer.CMS.Model
 
         public int SiteId { get; set; }
 
-        public int DepartmentId { get; set; }
-
-        public int AreaId { get; set; }
-
         public string DisplayName { get; set; }
 
         public string Mobile { get; set; }
@@ -260,10 +246,6 @@ namespace SiteServer.CMS.Model
         public string SiteIdCollection { get; set; }
 
         public int? SiteId { get; set; }
-
-        public int? DepartmentId { get; set; }
-
-        public int? AreaId { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -328,16 +310,6 @@ namespace SiteServer.CMS.Model
             if (SiteId != null)
             {
                 dbInfo.SiteId = (int) SiteId;
-            }
-
-            if (DepartmentId != null)
-            {
-                dbInfo.DepartmentId = (int) DepartmentId;
-            }
-
-            if (AreaId != null)
-            {
-                dbInfo.AreaId = (int) AreaId;
             }
 
             if (DisplayName != null)

@@ -1,12 +1,13 @@
 ﻿using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Packaging;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Packaging;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysPackagesDownloadController : ApiController
     {
         [HttpPost, Route(ApiRouteDownload.Route)]

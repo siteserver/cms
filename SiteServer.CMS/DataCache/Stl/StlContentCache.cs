@@ -165,7 +165,7 @@ namespace SiteServer.CMS.DataCache.Stl
             return retVal;
         }
 
-        public static int GetContentId(string tableName, int channelId, string orderByString)
+        public static int GetContentId(string tableName, int channelId, bool isCheckedOnly, string orderByString)
         {
             var cacheKey = StlCacheManager.GetCacheKey(nameof(StlContentCache), nameof(GetContentId), tableName,
                     channelId.ToString(), orderByString);
@@ -177,7 +177,7 @@ namespace SiteServer.CMS.DataCache.Stl
                 retVal = StlCacheManager.GetInt(cacheKey);
                 if (retVal == -1)
                 {
-                    retVal = DataProvider.ContentDao.GetContentId(tableName, channelId, orderByString);
+                    retVal = DataProvider.ContentDao.GetContentId(tableName, channelId, isCheckedOnly, orderByString);
                     StlCacheManager.Set(cacheKey, retVal);
                 }
             }

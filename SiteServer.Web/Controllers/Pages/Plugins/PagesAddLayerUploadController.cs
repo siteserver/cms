@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
-using SiteServer.CMS.ImportExport;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Plugins
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/plugins/addLayerUpload")]
     public class PagesAddLayerUploadController : ApiController
     {

@@ -15,7 +15,9 @@ var data = {
   password: null,
   isAutoLogin: false,
   captcha: null,
-  captchaUrl: null
+  captchaUrl: null,
+  productVersion: null,
+  adminTitle: null
 };
 
 var methods = {
@@ -26,6 +28,8 @@ var methods = {
       var res = response.data;
 
       if (res.value) {
+        $this.productVersion = res.productVersion;
+        $this.adminTitle = res.adminTitle;
         $this.reload();
       } else {
         location.href = res.redirectUrl;

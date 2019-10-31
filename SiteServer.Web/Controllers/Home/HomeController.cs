@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home")]
     public class HomeController : ApiController
     {
@@ -64,7 +65,7 @@ namespace SiteServer.API.Controllers.Home
             }
         }
 
-        public object GetRegister(AuthenticatedRequest request)
+        private object GetRegister(AuthenticatedRequest request)
         {
             return new
             {
@@ -75,7 +76,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetIndex(AuthenticatedRequest request)
+        private object GetIndex(AuthenticatedRequest request)
         {
             var menus = new List<object>();
             var defaultPageUrl = string.Empty;
@@ -126,7 +127,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetProfile(AuthenticatedRequest request)
+        private object GetProfile(AuthenticatedRequest request)
         {
             return new
             {
@@ -136,7 +137,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContents(AuthenticatedRequest request)
+        private object GetContents(AuthenticatedRequest request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -217,7 +218,7 @@ namespace SiteServer.API.Controllers.Home
             };
         }
 
-        public object GetContentAdd(AuthenticatedRequest request)
+        private object GetContentAdd(AuthenticatedRequest request)
         {
             var requestSiteId = request.SiteId;
             var requestChannelId = request.ChannelId;
@@ -302,8 +303,8 @@ namespace SiteServer.API.Controllers.Home
 
                     if (requestContentId != 0)
                     {
-                        checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
-                        checkedLevel = CheckManager.LevelInt.NotChange;
+                        //checkedLevels.Insert(0, new KeyValuePair<int, string>(CheckManager.LevelInt.NotChange, CheckManager.Level.NotChange));
+                        //checkedLevel = CheckManager.LevelInt.NotChange;
 
                         contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, requestContentId);
                         if (contentInfo != null &&

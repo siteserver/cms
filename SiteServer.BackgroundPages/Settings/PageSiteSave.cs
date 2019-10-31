@@ -174,8 +174,8 @@ namespace SiteServer.BackgroundPages.Settings
                     : $"<img align=\"absmiddle\" src=\"{treeDirectoryUrl}/tree_empty.gif\"/>");
             }
 
-            var onlyAdminId = AuthRequest.AdminPermissionsImpl.GetOnlyAdminId(SiteId, channelInfo.Id);
-            var count = ContentManager.GetCount(SiteInfo, channelInfo, onlyAdminId);
+            var adminId = AuthRequest.AdminPermissionsImpl.GetAdminId(SiteId, channelInfo.Id);
+            var count = ContentManager.GetCount(SiteInfo, channelInfo, adminId);
 
             itemBuilder.Append($@"
 <span class=""checkbox checkbox-primary"" style=""padding-left: 0px;"">

@@ -21,7 +21,12 @@
   <small v-if="importType === 'txt'" class="help-block">请选择以.txt结尾的纯文本文件，文件名将作为内容标题，文件内容将作为正文导入。</small>
 </div>
 
-<div id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
+<div v-if="uploading" id="drop-area" style="height: 200px;line-height: 50px;padding-top: 40px;text-align: center;font-size: 18px;color: rgb(119, 119, 119);border: 2px dashed rgba(0, 0, 0, 0.3);background: rgb(238, 238, 238);border-radius: 6px;cursor: pointer;margin-bottom: 20px;">
+  <img class="mt-3" src="../assets/images/loading.gif" />
+  <br />
+  文件上传中，请稍后...
+</div>
+<div v-else id="drop-area" style="height: 200px; line-height: 200px; text-align: center; font-size: 18px; color: #777; border: 2px dashed #0000004d; background: #eee;	border-radius: 6px; cursor: pointer; margin-bottom: 20px">
   点击批量上传文件或者将文件拖拽到此区域
 </div>
 

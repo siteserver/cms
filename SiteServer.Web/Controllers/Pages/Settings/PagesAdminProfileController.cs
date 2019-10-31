@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/adminProfile")]
     public class PagesAdminProfileController : ApiController
     {
@@ -42,38 +42,9 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     adminInfo = new AdministratorInfo();
                 }
 
-                var departments = new List<KeyValuePair<int, string>>
-                {
-                    new KeyValuePair<int, string>(0, "<无所属部门>")
-                };
-                var departmentIdList = DepartmentManager.GetDepartmentIdList();
-                var isLastNodeArrayOfDepartment = new bool[departmentIdList.Count];
-                foreach (var departmentId in departmentIdList)
-                {
-                    var departmentInfo = DepartmentManager.GetDepartmentInfo(departmentId);
-                    departments.Add(new KeyValuePair<int, string>(departmentId,
-                        GetDepartment(isLastNodeArrayOfDepartment, departmentInfo.DepartmentName,
-                            departmentInfo.ParentsCount, departmentInfo.IsLastNode)));
-                }
-
-                var areas = new List<KeyValuePair<int, string>>
-                {
-                    new KeyValuePair<int, string>(0, "<无所在区域>")
-                };
-                var areaIdList = AreaManager.GetAreaIdList();
-                var isLastNodeArrayOfArea = new bool[areaIdList.Count];
-                foreach (var areaId in areaIdList)
-                {
-                    var areaInfo = AreaManager.GetAreaInfo(areaId);
-                    areas.Add(new KeyValuePair<int, string>(areaId,
-                        GetArea(isLastNodeArrayOfArea, areaInfo.AreaName, areaInfo.ParentsCount, areaInfo.IsLastNode)));
-                }
-
                 return Ok(new
                 {
                     Value = adminInfo,
-                    Departments = departments,
-                    Areas = areas,
                     request.AdminToken
                 });
             }
@@ -81,46 +52,6 @@ namespace SiteServer.API.Controllers.Pages.Settings
             {
                 return InternalServerError(ex);
             }
-        }
-
-        private static string GetDepartment(IList<bool> isLastNodeArrayOfDepartment, string departmentName, int parentsCount, bool isLastNode)
-        {
-            var str = "";
-            if (isLastNode == false)
-            {
-                isLastNodeArrayOfDepartment[parentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArrayOfDepartment[parentsCount] = true;
-            }
-            for (var i = 0; i < parentsCount; i++)
-            {
-                str = string.Concat(str, isLastNodeArrayOfDepartment[i] ? "　" : "│");
-            }
-            str = string.Concat(str, isLastNode ? "└" : "├");
-            str = string.Concat(str, departmentName);
-            return str;
-        }
-
-        private static string GetArea(IList<bool> isLastNodeArrayOfArea, string areaName, int parentsCount, bool isLastNode)
-        {
-            var str = "";
-            if (isLastNode == false)
-            {
-                isLastNodeArrayOfArea[parentsCount] = false;
-            }
-            else
-            {
-                isLastNodeArrayOfArea[parentsCount] = true;
-            }
-            for (var i = 0; i < parentsCount; i++)
-            {
-                str = string.Concat(str, isLastNodeArrayOfArea[i] ? "　" : "│");
-            }
-            str = string.Concat(str, isLastNode ? "└" : "├");
-            str = string.Concat(str, areaName);
-            return str;
         }
 
         [HttpPost, Route(RouteUpload)]
@@ -206,8 +137,6 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var avatarUrl = request.GetPostString("avatarUrl");
                 var mobile = request.GetPostString("mobile");
                 var email = request.GetPostString("email");
-                var departmentId = request.GetPostInt("departmentId");
-                var areaId = request.GetPostInt("areaId");
 
                 if (adminInfo.Id == 0)
                 {
@@ -233,8 +162,6 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 adminInfo.AvatarUrl = avatarUrl;
                 adminInfo.Mobile = mobile;
                 adminInfo.Email = email;
-                adminInfo.DepartmentId = departmentId;
-                adminInfo.AreaId = areaId;
 
                 if (adminInfo.Id == 0)
                 {

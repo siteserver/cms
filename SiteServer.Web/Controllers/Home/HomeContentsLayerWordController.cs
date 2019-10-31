@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
@@ -9,11 +10,11 @@ using SiteServer.CMS.Core.Office;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerWord")]
     public class HomeContentsLayerWordController : ApiController
     {

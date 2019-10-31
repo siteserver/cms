@@ -98,6 +98,25 @@ namespace SiteServer.CMS.DataCache
             return channelInfo;
         }
 
+        public static IList<ChannelInfo> GetChildren(int siteId, int parentId)
+        {
+            var list = new List<ChannelInfo>();
+
+            var dic = ChannelManagerCache.GetChannelInfoDictionaryBySiteId(siteId);
+
+            foreach (var channelInfo in dic.Values)
+            {
+                if (channelInfo == null) continue;
+                if (channelInfo.ParentId == parentId)
+                {
+                    channelInfo.Children = GetChildren(siteId, channelInfo.Id);
+                    list.Add(channelInfo);
+                }
+            }
+
+            return list;
+        }
+
         public static int GetChannelId(int siteId, int channelId, string channelIndex, string channelName)
         {
             var retVal = channelId;
@@ -454,6 +473,11 @@ namespace SiteServer.CMS.DataCache
 
         public static string GetChannelNameNavigation(int siteId, int channelId)
         {
+            return GetChannelNameNavigation(siteId, siteId, channelId);
+        }
+
+        public static string GetChannelNameNavigation(int siteId, int currentChannelId, int channelId)
+        {
             var nodeNameList = new List<string>();
 
             if (channelId == 0) channelId = siteId;
@@ -463,21 +487,27 @@ namespace SiteServer.CMS.DataCache
                 var nodeInfo = GetChannelInfo(siteId, siteId);
                 return nodeInfo.ChannelName;
             }
+
             var parentsPath = GetParentsPath(siteId, channelId);
             var channelIdList = new List<int>();
+            var indexOf = -1;
             if (!string.IsNullOrEmpty(parentsPath))
             {
                 channelIdList = TranslateUtils.StringCollectionToIntList(parentsPath);
+                indexOf = channelIdList.IndexOf(currentChannelId);
             }
             channelIdList.Add(channelId);
-            channelIdList.Remove(siteId);
+            //channelIdList.Remove(siteId);
 
-            foreach (var theChannelId in channelIdList)
+            for (var index = 0; index < channelIdList.Count; index++)
             {
-                var nodeInfo = GetChannelInfo(siteId, theChannelId);
-                if (nodeInfo != null)
+                if (index > indexOf)
                 {
-                    nodeNameList.Add(nodeInfo.ChannelName);
+                    var nodeInfo = GetChannelInfo(siteId, channelIdList[index]);
+                    if (nodeInfo != null)
+                    {
+                        nodeNameList.Add(nodeInfo.ChannelName);
+                    }
                 }
             }
 
@@ -625,8 +655,8 @@ namespace SiteServer.CMS.DataCache
 
             if (isShowContentNum)
             {
-                var onlyAdminId = adminPermissions.GetOnlyAdminId(siteInfo.Id, channelInfo.Id);
-                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var adminId = adminPermissions.GetAdminId(siteInfo.Id, channelInfo.Id);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId);
                 retVal = string.Concat(retVal, " (", count, ")");
             }
 

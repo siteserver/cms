@@ -3,7 +3,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.Utils;
 
 namespace SiteServer.CMS.DataCache
 {
@@ -26,6 +25,7 @@ namespace SiteServer.CMS.DataCache
             public const string User = "settings_user";
             public const string Chart = "settings_chart";
             public const string Log = "settings_log";
+            public const string Config = "settings_config";
             public const string Utility = "settings_utility";
         }
 

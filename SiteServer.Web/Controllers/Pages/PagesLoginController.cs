@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
-using SiteServer.CMS.Plugin.Impl;
+using SiteServer.CMS.DataCache;
 
 namespace SiteServer.API.Controllers.Pages
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/login")]
     public class PagesLoginController : ApiController
     {
@@ -22,7 +24,8 @@ namespace SiteServer.API.Controllers.Pages
                 return Ok(new
                 {
                     Value = true,
-                    SystemManager.ProductVersion
+                    SystemManager.ProductVersion,
+                    ConfigManager.SystemConfigInfo.AdminTitle
                 });
             }
             catch (Exception ex)

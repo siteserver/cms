@@ -1,0 +1,125 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; }
+
+<div class="card-box">
+    <div class="m-t-0 header-title">
+      站点设置
+    </div>
+    <p class="text-muted font-13 m-b-25">请点击链接更改站点设置</p>
+
+    <template v-if="pageType === 'list'">
+
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>站点名称</td>
+            <td>
+              <a href="javascript:;" v-on:click="pageType = 'siteName'" class="editable">
+                {{ siteInfo.siteName }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>网页编码</td>
+            <td>
+              <a href="javascript:;" v-on:click="pageType = 'charset'" class="editable">
+                {{ getCharsetName(config.charset) }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>后台信息每页显示数目</td>
+            <td>
+              <a href="javascript:;" v-on:click="pageType = 'pageSize'" class="editable">
+                {{ config.pageSize }} 条
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>是否启用双击生成页面</td>
+            <td>
+              <a href="javascript:;" v-on:click="pageType = 'isCreateDoubleClick'" class="editable">
+                {{ config.isCreateDoubleClick ? '启用双击生成' : '不启用' }}
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <template v-else>
+
+    <template v-if="pageType === 'siteName'">
+      <div class="form-group">
+        <label>
+          站点名称
+          <small v-show="errors.has('siteName')" class="text-danger">{{ errors.first('siteName') }}</small>
+        </label>
+        <input v-model="siteName" name="siteName" data-vv-as="站点名称" v-validate="'required'" :class="{'is-invalid': errors.has('siteName') }"
+          type="text" class="form-control" />
+      </div>
+    </template>
+    <template v-else-if="pageType === 'charset'">
+      <div class="form-group">
+        <label>
+          网页编码
+          <small v-show="errors.has('charset')" class="text-danger">{{
+            errors.first('charset') }}</small>
+          </label>
+          <select v-model="charset" data-vv-as="网页编码" v-validate="'required'" :class="{'is-invalid': errors.has('charset') }" class="form-control">
+            <option value="utf-8">Unicode (UTF-8)</option>
+            <option value="gb2312">简体中文 (GB2312)</option>
+            <option value="big5">繁体中文 (Big5)</option>
+            <option value="iso-8859-1">西欧 (iso-8859-1)</option>
+            <option value="euc-kr">韩文 (euc-kr)</option>
+            <option value="euc-jp">日文 (euc-jp)</option>
+            <option value="iso-8859-6">阿拉伯文 (iso-8859-6)</option>
+            <option value="windows-874">泰文 (windows-874)</option>
+            <option value="iso-8859-9">土耳其文 (iso-8859-9)</option>
+            <option value="iso-8859-5">西里尔文 (iso-8859-5)</option>
+            <option value="iso-8859-8">希伯来文 (iso-8859-8)</option>
+            <option value="iso-8859-7">希腊文 (iso-8859-7)</option>
+            <option value="windows-1258">越南文 (windows-1258)</option>
+            <option value="iso-8859-2">中欧 (iso-8859-2)</option>
+          </select>
+          <small class="form-text text-muted">设置站点页面编码，模板编码将同步修改，推荐Unicode (UTF-8)</small>
+      </div>
+    </template>
+    <template v-else-if="pageType === 'pageSize'">
+      <div class="form-group">
+        <label>
+          后台信息每页显示数目
+          <small v-show="errors.has('pageSize')" class="text-danger">{{
+            errors.first('pageSize') }}</small>
+        </label>
+        <input v-model="pageSize" name="pageSize" data-vv-as="后台信息每页显示数目" v-validate="'required|numeric|min_value:1'" :class="{'is-invalid': errors.has('pageSize') }"
+          type="text" class="form-control" />
+        <small class="form-text text-muted">设置管理后台信息每页显示数目</small>
+      </div>
+    </template>
+    <template v-else-if="pageType === 'isCreateDoubleClick'">
+      <div class="form-group">
+        <label>
+          是否启用双击生成页面
+          <small v-show="errors.has('isCreateDoubleClick')" class="text-danger">{{
+            errors.first('isCreateDoubleClick') }}</small>
+        </label>
+        <select v-model="isCreateDoubleClick" data-vv-as="是否启用双击生成页面" v-validate="'required'" :class="{'is-invalid': errors.has('isCreateDoubleClick') }" class="form-control">
+          <option :value="true">启用双击生成</option>
+          <option :value="false">不启用</option>
+        </select>
+        <small class="form-text text-muted">此功能通常用于制作调试期间，网站正式上线后不建议启用</small>
+      </div>
+    </template>
+
+    <hr />
+
+    <div class="text-center">
+      <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">保 存</button>
+      <button class="btn m-r-5" v-on:click="pageType = 'list'">返 回</button>
+    </div>
+
+  </template>
+</div>
+
+@section Scripts{
+<script src="../assets/js/vue-upload-component-2.8.14.js" type="text/javascript"></script>
+<script src="configSite.js" type="text/javascript"></script> }

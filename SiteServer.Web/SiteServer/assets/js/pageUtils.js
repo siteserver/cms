@@ -45,6 +45,22 @@ var pageUtils = {
     return decodeURIComponent(result[1]);
   },
 
+  getQueryBoolean: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return false;
+    }
+    return result[1] === 'true' || result[1] === 'True';
+  },
+
+  getQueryInt: function (name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (!result || result.length < 1) {
+      return 0;
+    }
+    return parseInt(result[1]);
+  },
+
   loading: function (isLoading) {
     if (isLoading) {
       return layer.load(1, {
@@ -99,9 +115,30 @@ var pageUtils = {
     alert({
         title: config.title,
         text: config.text,
-        type: 'question',
+        type: 'warning',
         confirmButtonText: config.button || '删 除',
         confirmButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        cancelButtonText: '取 消'
+      })
+      .then(function (result) {
+        if (result.value) {
+          config.callback();
+        }
+      });
+
+    return false;
+  },
+
+  alertWarning: function (config) {
+    if (!config) return false;
+
+    alert({
+        title: config.title,
+        text: config.text,
+        type: 'question',
+        confirmButtonText: config.button || '确 定',
+        confirmButtonClass: 'btn btn-primary',
         showCancelButton: true,
         cancelButtonText: '取 消'
       })

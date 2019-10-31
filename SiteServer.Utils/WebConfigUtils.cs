@@ -353,7 +353,7 @@ namespace SiteServer.Utils
                 connectionString = $"Server={server};";
                 if (!isDefaultPort && port > 0)
                 {
-                    connectionString += $"Port={port};";
+                    connectionString = $"Server={server},{port};";
                 }
                 connectionString += $"Uid={userName};Pwd={password};";
                 if (!string.IsNullOrEmpty(database))

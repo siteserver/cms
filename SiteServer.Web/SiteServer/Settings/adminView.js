@@ -8,8 +8,6 @@ var data = {
   pageType: utils.getQueryString('pageType'),
   userId: parseInt(utils.getQueryString('userId') || '0'),
   adminInfo: null,
-  departmentName: null,
-  areaName: null,
   level: null,
   isSuperAdmin: null,
   siteNames: null,
@@ -25,8 +23,6 @@ var methods = {
       var res = response.data;
 
       $this.adminInfo = res.value;
-      $this.departmentName = res.departmentName;
-      $this.areaName = res.areaName;
       $this.level = res.level;
       $this.isSuperAdmin = res.isSuperAdmin;
       $this.siteNames = res.siteNames;
@@ -40,7 +36,7 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    location.href = 'pageAdministrator.aspx';
+    location.href = 'admin.cshtml';
   }
 };
 

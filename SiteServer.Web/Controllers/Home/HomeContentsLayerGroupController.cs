@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerGroup")]
     public class HomeContentsLayerGroupController : ApiController
     {

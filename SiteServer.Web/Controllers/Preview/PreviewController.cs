@@ -125,7 +125,9 @@ namespace SiteServer.API.Controllers.Preview
             var contentBuilder = new StringBuilder(TemplateManager.GetTemplateContent(siteInfo, templateInfo));
             if (templateInfo.CreatedFileExtName == ".shtml")
             {
-                var content = Regex.Replace(contentBuilder.ToString(), @"<!-- #include virtual=""([^""]+)"" --->", @"<stl:include file=""$1""></stl:include>");
+                //<!-- #include virtual="{Stl.SiteUrl}/include/head.html" -->
+
+                var content = Regex.Replace(contentBuilder.ToString(), @"<!-- #include virtual=""([^""]+)"" -->", @"<stl:include file=""$1""></stl:include>");
                 contentBuilder = new StringBuilder(content);
             }
             HttpResponseMessage message = null;

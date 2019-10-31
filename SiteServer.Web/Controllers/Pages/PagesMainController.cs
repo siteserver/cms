@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Api.Preview;
 using SiteServer.CMS.Core;
@@ -17,6 +18,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/main")]
     public class PagesMainController : ApiController
     {
@@ -124,6 +126,8 @@ namespace SiteServer.API.Controllers.Pages
                     SystemManager.PluginVersion,
                     SystemManager.TargetFramework,
                     SystemManager.EnvironmentVersion,
+                    ConfigManager.SystemConfigInfo.AdminLogoUrl,
+                    ConfigManager.SystemConfigInfo.AdminTitle,
                     IsSuperAdmin = isSuperAdmin,
                     PackageList = packageList,
                     PackageIds = packageIds,
@@ -281,12 +285,14 @@ namespace SiteServer.API.Controllers.Pages
                     return Unauthorized();
                 }
 
+#if !DEBUG
                 var sessionId = request.GetPostString("sessionId");
                 var cacheKey = Constants.GetSessionIdCacheKey(request.AdminId);
                 if (string.IsNullOrEmpty(sessionId) || CacheUtils.GetString(cacheKey) != sessionId)
                 {
                     return Unauthorized();
                 }
+#endif
 
                 if (request.AdminInfo.LastActivityDate != null && ConfigManager.SystemConfigInfo.IsAdminEnforceLogout)
                 {

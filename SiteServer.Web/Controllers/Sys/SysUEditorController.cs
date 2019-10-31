@@ -1,11 +1,13 @@
 ﻿using System.Web;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Editors;
 using SiteServer.CMS.UEditor;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysUEditorController : ApiController
     {
         [HttpGet, Route(ApiRouteUEditor.Route)]
@@ -20,7 +22,7 @@ namespace SiteServer.API.Controllers.Sys
             Main(siteId);
         }
 
-        public void Main(int siteId)
+        private void Main(int siteId)
         {
             var queryString = HttpContext.Current.Request.QueryString;
 

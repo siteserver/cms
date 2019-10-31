@@ -81,8 +81,8 @@ namespace SiteServer.BackgroundPages.Cms
             }
 
             LtlLastEditDate.Text = DateUtils.GetDateAndTimeString(_contentInfo.LastEditDate);
-            LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName, true);
-            LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName, true);
+            LtlAddUserName.Text = AdminManager.GetDisplayName(_contentInfo.AddUserName);
+            LtlLastEditUserName.Text = AdminManager.GetDisplayName(_contentInfo.LastEditUserName);
 
             LtlContentLevel.Text = CheckManager.GetCheckState(SiteInfo, _contentInfo);
 

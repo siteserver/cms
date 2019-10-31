@@ -68,8 +68,9 @@ namespace SiteServer.CMS.Core
                 assetsUrl = siteInfo.Additional.AssetsUrl;
             }
             StringUtils.ReplaceHrefOrSrc(builder, virtualAssetsUrl, assetsUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl);
-            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl);
+            StringUtils.ReplaceHrefOrSrc(builder, "@/", siteInfo.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "@", siteInfo.Additional.WebUrl + "/");
+            StringUtils.ReplaceHrefOrSrc(builder, "//", "/");
 
             builder.Replace("&#xa0;", "&nbsp;");
 
@@ -186,6 +187,23 @@ namespace SiteServer.CMS.Core
                 if (PageUtility.IsVirtualUrl(src))
                 {
                     collection[src] = PathUtility.MapPath(siteInfo, src);
+                }
+                else if (PageUtility.IsRelativeUrl(src))
+                {
+                    collection[src] = PathUtils.MapPath(src);
+                }
+            }
+
+            var hrefList = RegexUtils.GetOriginalLinkHrefs(content);
+            foreach (var href in hrefList)
+            {
+                if (PageUtility.IsVirtualUrl(href))
+                {
+                    collection[href] = PathUtility.MapPath(siteInfo, href);
+                }
+                else if (PageUtility.IsRelativeUrl(href))
+                {
+                    collection[href] = PathUtils.MapPath(href);
                 }
             }
         }

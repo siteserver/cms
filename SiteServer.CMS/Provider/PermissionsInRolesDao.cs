@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
 using Datory;
-using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.Model;
 using SiteServer.Utils;
@@ -39,111 +38,40 @@ namespace SiteServer.CMS.Provider
 		private const string SqlInsert = "INSERT INTO siteserver_PermissionsInRoles (RoleName, GeneralPermissions) VALUES (@RoleName, @GeneralPermissions)";
 		private const string SqlDelete = "DELETE FROM siteserver_PermissionsInRoles WHERE RoleName = @RoleName";
 
-		private const string ParmRoleRoleName = "@RoleName";
-		private const string ParmGeneralPermissions = "@GeneralPermissions";
+		private const string ParamRoleRoleName = "@RoleName";
+		private const string ParamGeneralPermissions = "@GeneralPermissions";
 
-        public void InsertRoleAndPermissions(string roleName, string creatorUserName, string description, List<string> generalPermissionList)
-        {
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        if (generalPermissionList != null && generalPermissionList.Count > 0)
-                        {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
-                            DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-            DataProvider.RoleDao.InsertRole(new RoleInfo
-            {
-                RoleName = roleName,
-                CreatorUserName = creatorUserName,
-                Description = description
-            });
-        }
-
-		public void InsertWithTrans(PermissionsInRolesInfo info, IDbTransaction trans) 
+        public void Insert(PermissionsInRolesInfo info) 
 		{
-			var insertParms = new IDataParameter[]
+			var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, info.RoleName),
-				GetParameter(ParmGeneralPermissions, DataType.Text, info.GeneralPermissions)
+				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, info.RoleName),
+				GetParameter(ParamGeneralPermissions, DataType.Text, info.GeneralPermissions)
 			};
 							
-			ExecuteNonQuery(trans, SqlInsert, insertParms);
-		}
-
-
-		public void DeleteWithTrans(string roleName, IDbTransaction trans)
-		{
-			var parms = new IDataParameter[]
-			{
-				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
-			};
-
-			ExecuteNonQuery(trans, SqlDelete, parms);
+			ExecuteNonQuery(SqlInsert, parameters);
 		}
 
         public void Delete(string roleName)
         {
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
+				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 
-            ExecuteNonQuery(SqlDelete, parms);
+            ExecuteNonQuery(SqlDelete, parameters);
         }
 
-        public void UpdateRoleAndGeneralPermissions(string roleName, string description, List<string> generalPermissionList)
-        {
-            using (var conn = GetConnection())
-            {
-                conn.Open();
-                using (var trans = conn.BeginTransaction())
-                {
-                    try
-                    {
-                        DataProvider.PermissionsInRolesDao.DeleteWithTrans(roleName, trans);
-                        if (generalPermissionList != null && generalPermissionList.Count > 0)
-                        {
-                            var permissionsInRolesInfo = new PermissionsInRolesInfo(0, roleName, TranslateUtils.ObjectCollectionToString(generalPermissionList));
-                            DataProvider.PermissionsInRolesDao.InsertWithTrans(permissionsInRolesInfo, trans);
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
-                }
-            }
-            DataProvider.RoleDao.UpdateRole(roleName, description);
-        }
-
-		private PermissionsInRolesInfo GetPermissionsInRolesInfo(string roleName)
+        private PermissionsInRolesInfo GetPermissionsInRolesInfo(string roleName)
 		{
             PermissionsInRolesInfo info = null;
 			
-			var parms = new IDataParameter[]
+			var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmRoleRoleName, DataType.VarChar, 255, roleName)
+				GetParameter(ParamRoleRoleName, DataType.VarChar, 255, roleName)
 			};
 			
-			using (var rdr = ExecuteReader(SqlSelect, parms)) 
+			using (var rdr = ExecuteReader(SqlSelect, parameters)) 
 			{
 				if (rdr.Read())
 				{

@@ -46,9 +46,6 @@ namespace SiteServer.CMS.Core
         private static AdministratorsInRolesDao _administratorsInRolesDao;
         public static AdministratorsInRolesDao AdministratorsInRolesDao => _administratorsInRolesDao ?? (_administratorsInRolesDao = new AdministratorsInRolesDao());
 
-        private static AreaDao _areaDao;
-        public static AreaDao AreaDao => _areaDao ?? (_areaDao = new AreaDao());
-
         private static ChannelDao _channelDao;
         public static ChannelDao ChannelDao => _channelDao ?? (_channelDao = new ChannelDao());
 
@@ -75,9 +72,6 @@ namespace SiteServer.CMS.Core
 
         private static DbCacheDao _dbCacheDao;
         public static DbCacheDao DbCacheDao => _dbCacheDao ?? (_dbCacheDao = new DbCacheDao());
-
-        private static DepartmentDao _departmentDao;
-        public static DepartmentDao DepartmentDao => _departmentDao ?? (_departmentDao = new DepartmentDao());
 
         private static ErrorLogDao _errorLogDao;
         public static ErrorLogDao ErrorLogDao => _errorLogDao ?? (_errorLogDao = new ErrorLogDao());
@@ -155,17 +149,14 @@ namespace SiteServer.CMS.Core
             _accessTokenDao = null;
             _administratorDao = null;
             _administratorsInRolesDao = null;
-            _areaDao = null;
             _channelDao = null;
             _channelGroupDao = null;
             _configDao = null;
             _contentCheckDao = null;
             _contentDao = null;
             _contentGroupDao = null;
-            //_contentTagDao = null;
             _databaseDao = null;
             _dbCacheDao = null;
-            _departmentDao = null;
             _errorLogDao = null;
             _keywordDao = null;
             _logDao = null;
@@ -196,7 +187,6 @@ namespace SiteServer.CMS.Core
             AccessTokenDao,
             AdministratorDao,
             AdministratorsInRolesDao,
-            AreaDao,
             ChannelDao,
             ChannelGroupDao,
             ConfigDao,
@@ -206,7 +196,6 @@ namespace SiteServer.CMS.Core
             //ContentTagDao,
             DatabaseDao,
             DbCacheDao,
-            DepartmentDao,
             ErrorLogDao,
             KeywordDao,
             LogDao,

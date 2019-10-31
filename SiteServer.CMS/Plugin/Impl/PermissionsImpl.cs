@@ -488,14 +488,14 @@ namespace SiteServer.CMS.Plugin.Impl
             return false;
         }
 
-        public int? GetOnlyAdminId(int siteId, int channelId)
+        public int GetAdminId(int siteId, int channelId)
         {
             if (!ConfigManager.Instance.SystemConfigInfo.IsViewContentOnlySelf
                 || IsConsoleAdministrator
                 || IsSystemAdministrator
                 || HasChannelPermissions(siteId, channelId, ConfigManager.ChannelPermissions.ContentCheck))
             {
-                return null;
+                return 0;
             }
             return _adminInfo.Id;
         }

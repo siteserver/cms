@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Api.Sys.Stl;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.StlParser;
 using SiteServer.CMS.StlParser.Model;
 using SiteServer.CMS.StlParser.StlElement;
@@ -19,19 +19,9 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Sys
 {
+    [OpenApiIgnore]
     public class SysStlActionsSearchController : ApiController
     {
-        public NameValueCollection GetPostCollection(AuthenticatedRequest request)
-        {
-            var formCollection = new NameValueCollection();
-            foreach (var item in request.PostData)
-            {
-                formCollection[item.Key] = item.Value.ToString();
-            }
-
-            return formCollection;
-        }
-
         [HttpPost, Route(ApiRouteActionsSearch.Route)]
         public IHttpActionResult Main()
         {
@@ -153,6 +143,17 @@ namespace SiteServer.API.Controllers.Sys
                 var message = LogUtils.AddStlErrorLog(pageInfo, StlSearch.ElementName, template, ex);
                 return BadRequest(message);
             }
+        }
+
+        private NameValueCollection GetPostCollection(AuthenticatedRequest request)
+        {
+            var formCollection = new NameValueCollection();
+            foreach (var item in request.PostData)
+            {
+                formCollection[item.Key] = item.Value.ToString();
+            }
+
+            return formCollection;
         }
     }
 }

@@ -12,7 +12,8 @@ var data = {
   file: null,
   files: [],
   checkedLevel: null,
-  isOverride: false
+  isOverride: false,
+  uploading: false
 };
 
 var methods = {
@@ -57,8 +58,10 @@ var methods = {
             });
             return false;
           }
+          $this.uploading = true;
         },
         complete: function (task) {
+          $this.uploading = false;
           var json = task.json;
           if (!json || json.ret != 1) {
             return alert({
@@ -136,7 +139,7 @@ var methods = {
         if (err) {
           return $this.pageAlert = {
             type: 'danger',
-            html: res.message
+            html: err.message
           };
         }
 

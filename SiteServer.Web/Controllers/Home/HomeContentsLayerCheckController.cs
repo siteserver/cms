@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contentsLayerCheck")]
     public class HomeContentsLayerCheckController : ApiController
     {
@@ -53,7 +54,7 @@ namespace SiteServer.API.Controllers.Home
                     retVal.Add(dict);
                 }
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, channelId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 var allChannels =

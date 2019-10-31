@@ -120,17 +120,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
-                    isClearTags = true;
                     startIndex = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
-                    isClearTags = true;
                     length = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
-                    isClearTags = true;
                     wordNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
@@ -269,6 +266,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                         parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
                     }
                 }
+                else if (BackgroundContentAttribute.SubTitle.ToLower().Equals(type))
+                {
+                    parsedContent = InputTypeUtils.ParseString(InputType.Text, contentInfo.GetString(BackgroundContentAttribute.SubTitle), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
+                    if (pageInfo.SiteInfo.Additional.IsContentSubTitleBreakLine)
+                    {
+                        parsedContent = parsedContent.Replace("  ", !contextInfo.IsInnerElement ? "<br />" : string.Empty);
+                    }
+                }
                 else if (BackgroundContentAttribute.Summary.ToLower().Equals(type))
                 {
                     parsedContent = InputTypeUtils.ParseString(InputType.TextArea,  contentInfo.GetString(BackgroundContentAttribute.Summary), replace, to, startIndex, length, wordNum, ellipsis, isClearTags, isReturnToBr, isLower, isUpper, formatString);
@@ -330,6 +335,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (ContentAttribute.LastEditDate.ToLower().Equals(type))
                 {
                     parsedContent = DateUtils.Format(contentInfo.LastEditDate, formatString);
+                }
+                else if (ContentAttribute.LastHitsDate.ToLower().Equals(type))
+                {
+                    parsedContent = DateUtils.Format(contentInfo.LastHitsDate, formatString);
                 }
                 else if (BackgroundContentAttribute.ImageUrl.ToLower().Equals(type))
                 {

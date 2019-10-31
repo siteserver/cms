@@ -3,7 +3,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsRelatedField
+    public static class ApiRouteActionsRelatedField
     {
         public const string Route = "sys/stl/actions/related_field/{siteId}";
 

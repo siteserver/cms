@@ -3,6 +3,7 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
+using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.DataCache.Content
 {
@@ -153,24 +154,49 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static int GetChannelCountByOnlyAdminId(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+            public static int GetChannelCount(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents)
+            {
+                return isAllContents
+                    ? GetChannelCountAll(siteInfo, channelInfo, adminId)
+                    : GetChannelCountSelf(siteInfo, channelInfo, adminId);
+            }
+
+            private static int GetChannelCountSelf(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId)
             {
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
                 lock (LockObject)
                 {
                     var list = GetContentCountInfoList(tableName);
-                    return onlyAdminId.HasValue
+                    return adminId > 0
                         ? list.Where(x =>
                                 x.SiteId == siteInfo.Id &&
                                 x.ChannelId == channelInfo.Id &&
-                                x.AdminId == onlyAdminId.Value)
+                                x.AdminId == adminId)
                             .Sum(x => x.Count)
                         : list.Where(x =>
                                 x.SiteId == siteInfo.Id &&
                                 x.ChannelId == channelInfo.Id)
                             .Sum(x => x.Count);
                 }
+            }
+
+            private static int GetChannelCountAll(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId)
+            {
+                var count = 0;
+                var channelInfoList = new List<ChannelInfo> {channelInfo};
+                var channelIdList = ChannelManager.GetChannelIdList(channelInfo, EScopeType.Descendant);
+                foreach (var channelId in channelIdList)
+                {
+                    channelInfoList.Add(ChannelManager.GetChannelInfo(siteInfo.Id, channelId));
+                }
+
+                foreach (var info in channelInfoList)
+                {
+                    count += GetChannelCountSelf(siteInfo, info, adminId);
+                }
+
+                return count;
             }
 
             public static int GetChannelCountByIsChecked(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)
@@ -198,9 +224,9 @@ namespace SiteServer.CMS.DataCache.Content
             return CountCache.GetSiteCountIsChecking(siteInfo);
         }
 
-        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int? onlyAdminId)
+        public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, int adminId, bool isAllContents = false)
         {
-            return CountCache.GetChannelCountByOnlyAdminId(siteInfo, channelInfo, onlyAdminId);
+            return CountCache.GetChannelCount(siteInfo, channelInfo, adminId, isAllContents);
         }
 
         public static int GetCount(SiteInfo siteInfo, ChannelInfo channelInfo, bool isChecked)

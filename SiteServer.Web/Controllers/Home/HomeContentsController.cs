@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
-using SiteServer.CMS.Plugin.Impl;
 
 namespace SiteServer.API.Controllers.Home
 {
+    [OpenApiIgnore]
     [RoutePrefix("home/contents")]
     public class HomeContentsController : ApiController
     {
@@ -39,14 +40,14 @@ namespace SiteServer.API.Controllers.Home
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                var onlyAdminId = request.AdminPermissionsImpl.GetOnlyAdminId(siteId, channelId);
+                var adminId = request.AdminPermissionsImpl.GetAdminId(siteId, channelId);
 
                 var columns = ContentManager.GetContentColumns(siteInfo, channelInfo, false);
                 var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
                 var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
 
                 var pageContentInfoList = new List<ContentInfo>();
-                var count = ContentManager.GetCount(siteInfo, channelInfo, onlyAdminId);
+                var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, true);
 
                 var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
                 if (pages == 0) pages = 1;
@@ -56,13 +57,16 @@ namespace SiteServer.API.Controllers.Home
                     var offset = siteInfo.Additional.PageSize * (page - 1);
                     var limit = siteInfo.Additional.PageSize;
 
-                    var pageContentIds = ContentManager.GetContentIdList(siteInfo, channelInfo, onlyAdminId, offset, limit);
+                    var pageContentIds = ContentManager.GetChannelContentIdList(siteInfo, channelInfo, adminId, true, offset, limit);
 
                     var sequence = offset + 1;
-                    foreach (var contentId in pageContentIds)
+                    foreach (var channelContentId in pageContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.ContentId);
                         if (contentInfo == null) continue;
+
+                        var channelName = ChannelManager.GetChannelNameNavigation(siteId, channelId, channelContentId.ChannelId);
+                        contentInfo.Set("ChannelName", channelName);
 
                         pageContentInfoList.Add(ContentManager.Calculate(sequence++, contentInfo, columns, pluginColumns));
                     }

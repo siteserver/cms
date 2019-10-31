@@ -81,8 +81,8 @@
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.3.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.3.13\lib\net452\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.3.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.3.15\lib\net452\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -155,11 +155,9 @@
     <Compile Include="Updater\ConvertInfo.cs" />
     <Compile Include="Updater\Tables\TableAdministrator.cs" />
     <Compile Include="Updater\Tables\TableAdministratorsInRoles.cs" />
-    <Compile Include="Updater\Tables\TableArea.cs" />
     <Compile Include="Updater\Tables\TableDbCache.cs" />
     <Compile Include="Updater\Tables\TableConfig.cs" />
     <Compile Include="Updater\Tables\TableContentCheck.cs" />
-    <Compile Include="Updater\Tables\TableDepartment.cs" />
     <Compile Include="Updater\Tables\TableErrorLog.cs" />
     <Compile Include="Updater\Tables\TableLog.cs" />
     <Compile Include="Updater\Tables\TablePermissionsInRoles.cs" />

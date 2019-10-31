@@ -1,0 +1,103 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link active" href="configAdmin.cshtml">管理后台设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="configHome.cshtml">用户中心设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="configHomeMenu.cshtml">用户中心菜单</a>
+</li>
+}
+
+<template v-if="pageType === 'list'">
+  <p class="text-muted font-14">
+    请点击链接更改管理后台设置
+  </p>
+
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr>
+        <td>管理后台Logo</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'adminLogoUrl'">
+            <img style="max-width: 160px;" :src="config.adminLogoUrl ? '../' + config.adminLogoUrl : '../assets/icons/logo.png'" />
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>管理后台名称</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'adminTitle'" class="editable">
+            {{ config.adminTitle }}
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>管理后台欢迎语</td>
+        <td>
+          <a href="javascript:;" v-on:click="pageType = 'adminWelcomeHtml'" class="editable" v-html="adminWelcomeHtml">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+<template v-else>
+
+  <template v-if="pageType === 'adminTitle'">
+
+    <div class="form-group">
+      <label>
+        管理后台名称
+        <small v-show="errors.has('adminTitle')" class="text-danger">{{
+          errors.first('adminTitle') }}</small>
+      </label>
+      <input v-model="adminTitle" name="adminTitle" data-vv-as="管理后台名称" v-validate="'required'" :class="{'is-invalid': errors.has('adminTitle') }"
+        type="text" class="form-control" />
+      <small class="form-text text-muted">设置管理后台显示名称</small>
+    </div>
+
+  </template>
+  <template v-else-if="pageType === 'adminLogoUrl'">
+
+    <div class="form-group">
+      <label>管理后台Logo</label>
+      <div>
+        <img style="max-width: 160px;" :src="adminLogoUrl ? '../' + adminLogoUrl : '../assets/icons/logo.png'" />
+        <file-upload class="btn btn-success btn-sm m-t-10" :post-action="uploadUrl" extensions="gif,jpg,jpeg,png,webp"
+          accept="image/png,image/gif,image/jpeg,image/webp" :multiple="false" v-model="files" v-on:input-file="inputLogo"
+          ref="logo">
+          上 传
+        </file-upload>
+      </div>
+    </div>
+
+  </template>
+  
+  <template v-else-if="pageType === 'adminWelcomeHtml'">
+    <div class="form-group">
+      <label>
+        管理后台欢迎语
+        <small v-show="errors.has('adminWelcomeHtml')" class="text-danger">{{
+          errors.first('adminWelcomeHtml') }}</small>
+      </label>
+      <textarea v-model="adminWelcomeHtml" name="adminWelcomeHtml" data-vv-as="管理后台欢迎语" v-validate="'required'" :class="{'is-invalid': errors.has('homeAgreement') }"
+        style="height: 100px" class="form-control"></textarea>
+      <small class="form-text text-muted">请在管理后台欢迎语中填写进入管理后台后显示的欢迎文字，支持HTML格式。</small>
+    </div>
+
+  </template>
+
+  <hr />
+
+  <div class="text-center">
+    <button class="btn btn-primary m-r-5" v-on:click="btnSubmitClick">保 存</button>
+    <button class="btn m-r-5" v-on:click="pageType = 'list'">返 回</button>
+  </div>
+
+</template>
+
+@section Scripts{
+<script src="../assets/js/vue-upload-component-2.8.14.js" type="text/javascript"></script>
+<script src="configAdmin.js" type="text/javascript"></script> }

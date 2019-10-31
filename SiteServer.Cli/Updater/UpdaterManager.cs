@@ -187,10 +187,6 @@ namespace SiteServer.Cli.Updater
             {
                 converter = TableAdministratorsInRoles.Converter;
             }
-            else if (StringUtils.EqualsIgnoreCase(TableArea.OldTableName, oldTableName))
-            {
-                converter = TableArea.Converter;
-            }
             else if (StringUtils.ContainsIgnoreCase(TableChannel.OldTableNames, oldTableName))
             {
                 converter = TableChannel.Converter;
@@ -214,10 +210,6 @@ namespace SiteServer.Cli.Updater
             else if (StringUtils.EqualsIgnoreCase(TableDbCache.OldTableName, oldTableName))
             {
                 converter = TableDbCache.Converter;
-            }
-            else if (StringUtils.EqualsIgnoreCase(TableDepartment.OldTableName, oldTableName))
-            {
-                converter = TableDepartment.Converter;
             }
             else if (StringUtils.EqualsIgnoreCase(TableErrorLog.OldTableName, oldTableName))
             {

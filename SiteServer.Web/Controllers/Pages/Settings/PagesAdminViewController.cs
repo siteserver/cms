@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Plugin.Impl;
@@ -8,6 +9,7 @@ using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/adminView")]
     public class PagesAdminViewController : ApiController
     {
@@ -29,9 +31,6 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     return Unauthorized();
                 }
 
-                var departmentName = DepartmentManager.GetDepartmentName(adminInfo.DepartmentId);
-                var areaName = AreaManager.GetAreaName(adminInfo.AreaId);
-
                 var permissions = new PermissionsImpl(adminInfo);
                 var level = permissions.GetAdminLevel();
                 var isSuperAdmin = permissions.IsConsoleAdministrator;
@@ -48,14 +47,12 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 var roleNames = string.Empty;
                 if (isOrdinaryAdmin)
                 {
-                    roleNames = AdminManager.GetRolesHtml(adminInfo.UserName);
+                    roleNames = AdminManager.GetRoles(adminInfo.UserName);
                 }
                 
                 return Ok(new
                 {
                     Value = adminInfo,
-                    DepartmentName = departmentName,
-                    AreaName = areaName,
                     Level = level,
                     IsSuperAdmin = isSuperAdmin,
                     SiteNames = TranslateUtils.ObjectCollectionToString(siteNames, "<br />"),

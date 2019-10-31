@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Core;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerDelete")]
     public class PagesContentsLayerDeleteController : ApiController
     {
@@ -26,7 +28,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -42,9 +45,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<Dictionary<string, object>>();
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -75,7 +79,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var isRetainFiles = request.GetPostBool("isRetainFiles");
 
                 if (!request.IsAdminLoggin ||
@@ -93,31 +98,39 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (!isRetainFiles)
                 {
-                    DeleteManager.DeleteContents(siteInfo, channelId, contentIdList);
+                    foreach (var channelContentId in channelContentIds)
+                    {
+                        DeleteManager.DeleteContent(siteInfo, channelContentId.ChannelId, channelContentId.Id);
+                    }
                 }
 
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
-                if (contentIdList.Count == 1)
+                if (channelContentIds.Count == 1)
                 {
-                    var contentId = contentIdList[0];
-                    var contentTitle = DataProvider.ContentDao.GetValue(tableName, contentId, ContentAttribute.Title);
-                    request.AddSiteLog(siteId, channelId, contentId, "删除内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容标题:{contentTitle}");
+                    var channelContentId = channelContentIds[0];
+                    var contentTitle = DataProvider.ContentDao.GetValue(tableName, channelContentId.Id, ContentAttribute.Title);
+                    request.AddSiteLog(siteId, channelContentId.ChannelId, channelContentId.Id, "删除内容",
+                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelContentId.ChannelId)},内容标题:{contentTitle}");
                 }
                 else
                 {
                     request.AddSiteLog(siteId, "批量删除内容",
-                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{contentIdList.Count}");
+                        $"栏目:{ChannelManager.GetChannelNameNavigation(siteId, channelId)},内容条数:{channelContentIds.Count}");
                 }
 
-                DataProvider.ContentDao.UpdateTrashContents(siteId, channelId, tableName, contentIdList);
+                foreach (var distinctChannelId in channelContentIds.Select(x => x.ChannelId).Distinct())
+                {
+                    var contentIdList = channelContentIds.Where(x => x.ChannelId == distinctChannelId)
+                        .Select(x => x.Id).ToList();
+                    DataProvider.ContentDao.UpdateTrashContents(siteId, distinctChannelId, tableName, contentIdList);
 
-                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                    CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
+                }
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)

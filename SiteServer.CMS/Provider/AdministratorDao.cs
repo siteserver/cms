@@ -7,6 +7,7 @@ using System.Text;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Datory;
+using Org.BouncyCastle.Asn1.Crmf;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
@@ -105,16 +106,6 @@ namespace SiteServer.CMS.Provider
             },
             new TableColumn
             {
-                AttributeName = nameof(AdministratorInfoDatabase.DepartmentId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
-                AttributeName = nameof(AdministratorInfoDatabase.AreaId),
-                DataType = DataType.Integer
-            },
-            new TableColumn
-            {
                 AttributeName = nameof(AdministratorInfoDatabase.DisplayName),
                 DataType = DataType.VarChar,
                 DataLength = 50
@@ -140,16 +131,16 @@ namespace SiteServer.CMS.Provider
         };
 
         private const string SqlSelectUserByUserName =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE UserName = @UserName";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE UserName = @UserName";
 
         private const string SqlSelectUserByUserId =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Id = @Id";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Id = @Id";
 
         private const string SqlSelectUserByEmail =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Email = @Email";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Email = @Email";
 
         private const string SqlSelectUserByMobile =
-            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Mobile = @Mobile";
+            "SELECT Id, UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DisplayName, Mobile, Email, AvatarUrl FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlSelectUsername = "SELECT UserName FROM siteserver_Administrator WHERE UserName = @UserName";
 
@@ -160,10 +151,10 @@ namespace SiteServer.CMS.Provider
             "SELECT UserName FROM siteserver_Administrator WHERE Mobile = @Mobile";
 
         private const string SqlInsertUser =
-            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DepartmentId, AreaId, DisplayName, Mobile, Email, AvatarUrl) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @LastChangePasswordDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DepartmentId, @AreaId, @DisplayName, @Mobile, @Email, @AvatarUrl)";
+            "INSERT INTO siteserver_Administrator (UserName, Password, PasswordFormat, PasswordSalt, CreationDate, LastActivityDate, LastChangePasswordDate, CountOfLogin, CountOfFailedLogin, CreatorUserName, IsLockedOut, SiteIdCollection, SiteId, DisplayName, Mobile, Email, AvatarUrl) VALUES (@UserName, @Password, @PasswordFormat, @PasswordSalt, @CreationDate, @LastActivityDate, @LastChangePasswordDate, @CountOfLogin, @CountOfFailedLogin, @CreatorUserName, @IsLockedOut, @SiteIdCollection, @SiteId, @DisplayName, @Mobile, @Email, @AvatarUrl)";
 
         private const string SqlUpdateUser =
-            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, LastChangePasswordDate = @LastChangePasswordDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DepartmentId = @DepartmentId, AreaId = @AreaId, DisplayName = @DisplayName, Mobile = @Mobile, Email = @Email, AvatarUrl = @AvatarUrl WHERE UserName = @UserName";
+            "UPDATE siteserver_Administrator SET LastActivityDate = @LastActivityDate, LastChangePasswordDate = @LastChangePasswordDate, CountOfLogin = @CountOfLogin, CountOfFailedLogin = @CountOfFailedLogin, IsLockedOut = @IsLockedOut, SiteIdCollection = @SiteIdCollection, SiteId = @SiteId, DisplayName = @DisplayName, Mobile = @Mobile, Email = @Email, AvatarUrl = @AvatarUrl WHERE UserName = @UserName";
 
         private const string ParmId = "@Id";
         private const string ParmUsername = "@UserName";
@@ -179,8 +170,6 @@ namespace SiteServer.CMS.Provider
         private const string ParmIsLockedOut = "@IsLockedOut";
         private const string ParmSiteIdCollection = "@SiteIdCollection";
         private const string ParmSiteId = "@SiteId";
-        private const string ParmDepartmentId = "@DepartmentId";
-        private const string ParmAreaId = "@AreaId";
         private const string ParmDisplayname = "@DisplayName";
         private const string ParmMobile = "@Mobile";
         private const string ParmEmail = "@Email";
@@ -201,8 +190,6 @@ namespace SiteServer.CMS.Provider
                 GetParameter(ParmIsLockedOut, DataType.VarChar, 18, info.IsLockedOut.ToString()),
                 GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, info.SiteIdCollection),
                 GetParameter(ParmSiteId, DataType.Integer, info.SiteId),
-                GetParameter(ParmDepartmentId, DataType.Integer, info.DepartmentId),
-                GetParameter(ParmAreaId, DataType.Integer, info.AreaId),
                 GetParameter(ParmDisplayname, DataType.VarChar, 255, info.DisplayName),
                 GetParameter(ParmMobile, DataType.VarChar, 20, info.Mobile),
                 GetParameter(ParmEmail, DataType.VarChar, 255, info.Email),
@@ -211,9 +198,6 @@ namespace SiteServer.CMS.Provider
             };
 
             ExecuteNonQuery(SqlUpdateUser, parameters);
-
-            DataProvider.DepartmentDao.UpdateCountOfAdmin();
-            DataProvider.AreaDao.UpdateCountOfAdmin();
 
             AdminManager.UpdateCache(info);
         }
@@ -245,7 +229,7 @@ namespace SiteServer.CMS.Provider
 
             adminInfo.LastActivityDate = DateTime.Now;
 
-            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate, CountOfFailedLogin = @CountOfFailedLogin WHERE Id = @Id";
+            var sqlString = $"UPDATE {TableName} SET LastActivityDate = @LastActivityDate WHERE Id = @Id";
 
             IDataParameter[] parameters =
             {
@@ -371,9 +355,6 @@ namespace SiteServer.CMS.Provider
             ExecuteNonQuery(sqlString, parameters);
 
             AdminManager.RemoveCache(adminInfo);
-
-            DataProvider.DepartmentDao.UpdateCountOfAdmin();
-            DataProvider.AreaDao.UpdateCountOfAdmin();
         }
 
         public void Lock(List<string> userNameList)
@@ -425,7 +406,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -453,7 +434,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -481,7 +462,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -509,7 +490,7 @@ namespace SiteServer.CMS.Provider
                     info = new AdministratorInfo(GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i++), GetString(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetDateTimeNullable(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++),
                         GetString(rdr, i++), TranslateUtils.ToBool(GetString(rdr, i++)), GetString(rdr, i++),
-                        GetInt(rdr, i++), GetInt(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
+                        GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i++),
                         GetString(rdr, i));
                 }
                 rdr.Close();
@@ -518,7 +499,150 @@ namespace SiteServer.CMS.Provider
             return info;
         }
 
-        public string GetWhereSqlString(bool isConsoleAdministrator, string creatorUserName, string searchWord, string roleName, int dayOfLastActivity, int departmentId, int areaId)
+        public int GetCount(string creatorUserName, string role, string order, int lastActivityDate, string keyword)
+        {
+            var whereBuilder = new StringBuilder();
+            if (!string.IsNullOrEmpty(creatorUserName))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                whereBuilder.Append($"CreatorUserName = '{AttackUtils.FilterSql(creatorUserName)}'");
+            }
+            if (lastActivityDate > 0)
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                var dateTime = DateTime.Now.AddDays(-lastActivityDate);
+                whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                var filterSearchWord = AttackUtils.FilterSql(keyword);
+                whereBuilder.Append(
+                    $"(UserName LIKE '%{filterSearchWord}%' OR Mobile LIKE '%{filterSearchWord}%' OR EMAIL LIKE '%{filterSearchWord}%' OR DisplayName LIKE '%{filterSearchWord}%')");
+            }
+
+            var whereString = string.Empty;
+            if (!string.IsNullOrEmpty(role))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereString = $"AND {whereBuilder}";
+                }
+                whereString =
+                    $"WHERE (UserName IN (SELECT UserName FROM {DataProvider.AdministratorsInRolesDao.TableName} WHERE RoleName = '{AttackUtils.FilterSql(role)}')) {whereString}";
+            }
+            else
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereString = $"WHERE {whereBuilder}";
+                }
+            }
+
+            var sqlString = $"SELECT COUNT(*) FROM {TableName} {whereString}";
+            var count = 0;
+
+            using (var rdr = ExecuteReader(sqlString))
+            {
+                if (rdr.Read())
+                {
+                    count = GetInt(rdr, 0);
+                }
+                rdr.Close();
+            }
+            return count;
+        }
+
+        public List<AdministratorInfo> GetAdministrators(string creatorUserName, string role, string order, int lastActivityDate, string keyword, int offset, int limit)
+        {
+            var list = new List<AdministratorInfo>();
+            List<AdministratorInfoDatabase> dbList;
+
+            var whereBuilder = new StringBuilder();
+            if (!string.IsNullOrEmpty(creatorUserName))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                whereBuilder.Append($"CreatorUserName = '{AttackUtils.FilterSql(creatorUserName)}'");
+            }
+            if (lastActivityDate > 0)
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                var dateTime = DateTime.Now.AddDays(-lastActivityDate);
+                whereBuilder.Append($"(LastActivityDate >= {SqlUtils.GetComparableDate(dateTime)}) ");
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereBuilder.Append(" AND ");
+                }
+                var filterSearchWord = AttackUtils.FilterSql(keyword);
+                whereBuilder.Append(
+                    $"(UserName LIKE '%{filterSearchWord}%' OR Mobile LIKE '%{filterSearchWord}%' OR EMAIL LIKE '%{filterSearchWord}%' OR DisplayName LIKE '%{filterSearchWord}%')");
+            }
+
+            var whereString = string.Empty;
+            if (!string.IsNullOrEmpty(role))
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereString = $"AND {whereBuilder}";
+                }
+                whereString =
+                    $"WHERE (UserName IN (SELECT UserName FROM {DataProvider.AdministratorsInRolesDao.TableName} WHERE RoleName = '{AttackUtils.FilterSql(role)}')) {whereString}";
+            }
+            else
+            {
+                if (whereBuilder.Length > 0)
+                {
+                    whereString = $"WHERE {whereBuilder}";
+                }
+            }
+
+            var orderString = "ORDER BY Id";
+            if (!string.IsNullOrEmpty(order))
+            {
+                orderString = $"ORDER BY {order} {(StringUtils.EqualsIgnoreCase(order, nameof(AdministratorInfo.UserName)) ? "ASC" : "DESC")}";
+            }
+
+            var sqlString =
+                DataProvider.DatabaseDao.GetPageSqlString(TableName, "*", whereString, orderString, offset, limit);
+
+            using (var connection = GetConnection())
+            {
+                dbList = connection.Query<AdministratorInfoDatabase>(sqlString).ToList();
+            }
+
+            if (dbList.Count > 0)
+            {
+                foreach (var dbInfo in dbList)
+                {
+                    if (dbInfo != null)
+                    {
+                        list.Add(dbInfo.ToAdministratorInfo());
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        public string GetWhereSqlString(bool isConsoleAdministrator, string creatorUserName, string searchWord, string roleName, int dayOfLastActivity)
         {
             var whereBuilder = new StringBuilder();
 
@@ -546,24 +670,6 @@ namespace SiteServer.CMS.Provider
                     whereBuilder.Append(" AND ");
                 }
                 whereBuilder.Append($"CreatorUserName = '{AttackUtils.FilterSql(creatorUserName)}'");
-            }
-
-            if (departmentId != 0)
-            {
-                if (whereBuilder.Length > 0)
-                {
-                    whereBuilder.Append(" AND ");
-                }
-                whereBuilder.Append($"DepartmentId = {departmentId}");
-            }
-
-            if (areaId != 0)
-            {
-                if (whereBuilder.Length > 0)
-                {
-                    whereBuilder.Append(" AND ");
-                }
-                whereBuilder.Append($"AreaId = {areaId}");
             }
 
             var whereString = string.Empty;
@@ -716,47 +822,10 @@ namespace SiteServer.CMS.Provider
             return userName;
         }
 
-        public int GetCountByAreaId(int areaId)
-        {
-            var sqlString = $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(AdministratorInfo.AreaId)} = {areaId}";
-            
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
-        public int GetCountByDepartmentId(int departmentId)
-        {
-            var sqlString = $"SELECT COUNT(*) FROM {TableName} WHERE {nameof(AdministratorInfo.DepartmentId)} = {departmentId}";
-
-            return DataProvider.DatabaseDao.GetIntResult(sqlString);
-        }
-
         public List<string> GetUserNameList()
         {
             var list = new List<string>();
             var sqlSelect = $"SELECT UserName FROM {TableName}";
-
-            using (var rdr = ExecuteReader(sqlSelect))
-            {
-                while (rdr.Read())
-                {
-                    list.Add(GetString(rdr, 0));
-                }
-                rdr.Close();
-            }
-            return list;
-        }
-
-        public List<string> GetUserNameList(int departmentId, bool isAll)
-        {
-            var list = new List<string>();
-            var sqlSelect = $"SELECT UserName FROM {TableName} WHERE DepartmentId = {departmentId}";
-            if (isAll)
-            {
-                var departmentIdList = DataProvider.DepartmentDao.GetIdListForDescendant(departmentId);
-                departmentIdList.Add(departmentId);
-                sqlSelect =
-                    $"SELECT UserName FROM {TableName} WHERE DepartmentId IN ({TranslateUtils.ObjectCollectionToString(departmentIdList)})";
-            }
 
             using (var rdr = ExecuteReader(sqlSelect))
             {
@@ -944,8 +1013,6 @@ namespace SiteServer.CMS.Provider
                     GetParameter(ParmIsLockedOut, DataType.VarChar, 18, adminInfo.IsLockedOut.ToString()),
                     GetParameter(ParmSiteIdCollection, DataType.VarChar, 50, adminInfo.SiteIdCollection),
                     GetParameter(ParmSiteId, DataType.Integer, adminInfo.SiteId),
-                    GetParameter(ParmDepartmentId, DataType.Integer, adminInfo.DepartmentId),
-                    GetParameter(ParmAreaId, DataType.Integer, adminInfo.AreaId),
                     GetParameter(ParmDisplayname, DataType.VarChar, 255, adminInfo.DisplayName),
                     GetParameter(ParmMobile, DataType.VarChar, 20, adminInfo.Mobile),
                     GetParameter(ParmEmail, DataType.VarChar, 255, adminInfo.Email),
@@ -953,9 +1020,6 @@ namespace SiteServer.CMS.Provider
                 };
 
                 ExecuteNonQuery(SqlInsertUser, parameters);
-
-                DataProvider.DepartmentDao.UpdateCountOfAdmin();
-                DataProvider.AreaDao.UpdateCountOfAdmin();
 
                 var roles = new[] { EPredefinedRoleUtils.GetValue(EPredefinedRole.Administrator) };
                 DataProvider.AdministratorsInRolesDao.AddUserToRoles(adminInfo.UserName, roles);

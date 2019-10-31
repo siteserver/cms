@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SiteServer.CMS.Core;
+﻿using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Stl;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
@@ -10,22 +7,14 @@ using SiteServer.CMS.Plugin;
 using SiteServer.CMS.Plugin.Impl;
 using SiteServer.Plugin;
 using SiteServer.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SiteServer.CMS.DataCache.Content
 {
     public static partial class ContentManager
     {
-        public static void RemoveCacheBySiteId(string tableName, int siteId)
-        {
-            foreach (var channelId in ChannelManager.GetChannelIdList(siteId))
-            {
-                ListCache.Remove(channelId);
-                ContentCache.Remove(channelId);
-            }
-            CountCache.Clear(tableName);
-            StlContentCache.ClearCache();
-        }
-
         public static void RemoveCache(string tableName, int channelId)
         {
             ListCache.Remove(channelId);
@@ -43,8 +32,6 @@ namespace SiteServer.CMS.DataCache.Content
         public static void InsertCache(SiteInfo siteInfo, ChannelInfo channelInfo, ContentInfo contentInfo)
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
-
-            ListCache.Add(channelInfo, contentInfo);
 
             var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
@@ -73,7 +60,7 @@ namespace SiteServer.CMS.DataCache.Content
         public static List<ContentColumn> GetContentColumns(SiteInfo siteInfo, ChannelInfo channelInfo, bool includeAll)
         {
             var columns = new List<ContentColumn>();
-            
+
             var attributesOfDisplay = TranslateUtils.StringCollectionToStringCollection(channelInfo.Additional.ContentAttributesOfDisplay);
             var pluginIds = PluginContentManager.GetContentPluginIds(channelInfo);
             var pluginColumns = PluginContentManager.GetContentColumns(pluginIds);
@@ -271,7 +258,7 @@ namespace SiteServer.CMS.DataCache.Content
             {
                 return false;
             }
-            
+
             return channelInfo.Additional.IsContentCreatable && string.IsNullOrEmpty(contentInfo.LinkUrl) && contentInfo.IsChecked && contentInfo.SourceId != SourceManager.Preview && contentInfo.ChannelId > 0;
         }
     }

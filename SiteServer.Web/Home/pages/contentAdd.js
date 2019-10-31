@@ -269,11 +269,11 @@ var methods = {
   },
 
   btnReturnClick: function () {
-    var url = "contents.html?siteId=" +
+    var url = "pages/contents.html?siteId=" +
       this.site.id +
       "&channelId=" +
       this.channel.id;
-    location.href = url;
+    parent.location.hash = url;
   },
 
   btnSubmitClick: function () {

@@ -10,7 +10,8 @@ new Vue({
     lastActivityDate: null,
     updateDate: null,
     unCheckedList: null,
-    unCheckedListTotalCount: 0
+    unCheckedListTotalCount: 0,
+    adminWelcomeHtml: null
   },
   created: function () {
     var $this = this;
@@ -22,6 +23,7 @@ new Vue({
       $this.version = res.value.version;
       $this.lastActivityDate = res.value.lastActivityDate;
       $this.updateDate = res.value.updateDate;
+      $this.adminWelcomeHtml = res.value.adminWelcomeHtml || '欢迎使用 SiteServer CMS 管理后台';
 
       $this.getUnCheckedList();
     });

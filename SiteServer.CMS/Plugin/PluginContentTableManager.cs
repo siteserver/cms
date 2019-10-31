@@ -57,140 +57,148 @@ namespace SiteServer.CMS.Plugin
         {
             var styleInfoList = new List<TableStyleInfo>();
             var columnTaxis = 0;
-            foreach (var inputStyle in inputStyles)
+            if (inputStyles != null)
             {
-                columnTaxis++;
-                var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
-
-                var isEquals = true;
-
-                if (styleInfo.InputType != inputStyle.InputType)
+                foreach (var inputStyle in inputStyles)
                 {
-                    isEquals = false;
-                    styleInfo.InputType = inputStyle.InputType;
-                }
+                    columnTaxis++;
+                    var styleInfo = TableStyleManager.GetTableStyleInfo(tableName, inputStyle.AttributeName, new List<int> { 0 });
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
-                {
-                    isEquals = false;
-                    styleInfo.DisplayName = inputStyle.DisplayName;
-                }
+                    var isEquals = true;
 
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.HelpText, inputStyle.HelpText))
-                {
-                    isEquals = false;
-                    styleInfo.HelpText = inputStyle.HelpText;
-                }
-
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.DefaultValue, inputStyle.DefaultValue))
-                {
-                    isEquals = false;
-                    styleInfo.DefaultValue = inputStyle.DefaultValue;
-                }
-
-                if (styleInfo.Taxis != columnTaxis)
-                {
-                    isEquals = false;
-                    styleInfo.Taxis = columnTaxis;
-                }
-
-                if (styleInfo.Additional.IsRequired != inputStyle.IsRequired)
-                {
-                    isEquals = false;
-                    styleInfo.Additional.IsRequired = inputStyle.IsRequired;
-                }
-
-                if (styleInfo.Additional.ValidateType != inputStyle.ValidateType)
-                {
-                    isEquals = false;
-                    styleInfo.Additional.ValidateType = inputStyle.ValidateType;
-                }
-
-                if (styleInfo.Additional.MinNum != inputStyle.MinNum)
-                {
-                    isEquals = false;
-                    styleInfo.Additional.MinNum = inputStyle.MinNum;
-                }
-
-                if (styleInfo.Additional.MaxNum != inputStyle.MaxNum)
-                {
-                    isEquals = false;
-                    styleInfo.Additional.MaxNum = inputStyle.MaxNum;
-                }
-
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.RegExp, inputStyle.RegExp))
-                {
-                    isEquals = false;
-                    styleInfo.Additional.RegExp = inputStyle.RegExp;
-                }
-
-                if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.Width, inputStyle.Width))
-                {
-                    isEquals = false;
-                    styleInfo.Additional.Width = inputStyle.Width;
-                }
-
-                if (!(styleInfo.Additional.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Additional.Height != TranslateUtils.ToInt(inputStyle.Height))
-                {
-                    isEquals = false;
-                    styleInfo.Additional.Height = TranslateUtils.ToInt(inputStyle.Height);
-                }
-
-                if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
-                {
-                    var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
-                    var listItems = inputStyle.ListItems ?? new List<InputListItem>();
-
-                    if (styleItems.Count > listItems.Count)
+                    if (styleInfo.InputType != inputStyle.InputType)
                     {
                         isEquals = false;
-                        styleItems.RemoveRange(listItems.Count, styleItems.Count - listItems.Count);
+                        styleInfo.InputType = inputStyle.InputType;
                     }
 
-                    for (var i = 0; i < listItems.Count; i++)
+                    if (styleInfo.InputType == null)
                     {
-                        var listItem = listItems[i];
-                        if (styleItems.Count < i + 1)
+                        styleInfo.InputType = InputType.Text;
+                    }
+
+                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DisplayName, inputStyle.DisplayName))
+                    {
+                        isEquals = false;
+                        styleInfo.DisplayName = inputStyle.DisplayName;
+                    }
+
+                    if (!StringUtils.EqualsIgnoreNull(styleInfo.HelpText, inputStyle.HelpText))
+                    {
+                        isEquals = false;
+                        styleInfo.HelpText = inputStyle.HelpText;
+                    }
+
+                    if (!StringUtils.EqualsIgnoreNull(styleInfo.DefaultValue, inputStyle.DefaultValue))
+                    {
+                        isEquals = false;
+                        styleInfo.DefaultValue = inputStyle.DefaultValue;
+                    }
+
+                    if (styleInfo.Taxis != columnTaxis)
+                    {
+                        isEquals = false;
+                        styleInfo.Taxis = columnTaxis;
+                    }
+
+                    if (styleInfo.Additional.IsRequired != inputStyle.IsRequired)
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.IsRequired = inputStyle.IsRequired;
+                    }
+
+                    if (styleInfo.Additional.ValidateType != inputStyle.ValidateType)
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.ValidateType = inputStyle.ValidateType;
+                    }
+
+                    if (styleInfo.Additional.MinNum != inputStyle.MinNum)
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.MinNum = inputStyle.MinNum;
+                    }
+
+                    if (styleInfo.Additional.MaxNum != inputStyle.MaxNum)
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.MaxNum = inputStyle.MaxNum;
+                    }
+
+                    if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.RegExp, inputStyle.RegExp))
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.RegExp = inputStyle.RegExp;
+                    }
+
+                    if (!StringUtils.EqualsIgnoreNull(styleInfo.Additional.Width, inputStyle.Width))
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.Width = inputStyle.Width;
+                    }
+
+                    if (!(styleInfo.Additional.Height == 0 && string.IsNullOrEmpty(inputStyle.Height)) && styleInfo.Additional.Height != TranslateUtils.ToInt(inputStyle.Height))
+                    {
+                        isEquals = false;
+                        styleInfo.Additional.Height = TranslateUtils.ToInt(inputStyle.Height);
+                    }
+
+                    if (!(styleInfo.StyleItems == null && inputStyle.ListItems == null))
+                    {
+                        var styleItems = styleInfo.StyleItems ?? new List<TableStyleItemInfo>();
+                        var listItems = inputStyle.ListItems ?? new List<InputListItem>();
+
+                        if (styleItems.Count > listItems.Count)
                         {
                             isEquals = false;
-                            styleItems.Add(new TableStyleItemInfo
-                            {
-                                TableStyleId = styleInfo.Id,
-                                ItemTitle = listItem.Text,
-                                ItemValue = listItem.Value,
-                                IsSelected = listItem.Selected
-                            });
+                            styleItems.RemoveRange(listItems.Count, styleItems.Count - listItems.Count);
                         }
-                        else
+
+                        for (var i = 0; i < listItems.Count; i++)
                         {
-                            var styleItem = styleItems[i];
-
-                            if (!StringUtils.EqualsIgnoreNull(styleItem.ItemTitle, listItem.Text))
+                            var listItem = listItems[i];
+                            if (styleItems.Count < i + 1)
                             {
                                 isEquals = false;
-                                styleItem.ItemTitle = listItem.Text;
+                                styleItems.Add(new TableStyleItemInfo
+                                {
+                                    TableStyleId = styleInfo.Id,
+                                    ItemTitle = listItem.Text,
+                                    ItemValue = listItem.Value,
+                                    IsSelected = listItem.Selected
+                                });
                             }
-
-                            if (!StringUtils.EqualsIgnoreNull(styleItem.ItemValue, listItem.Value))
+                            else
                             {
-                                isEquals = false;
-                                styleItem.ItemValue = listItem.Value;
-                            }
+                                var styleItem = styleItems[i];
 
-                            if (styleItem.IsSelected != listItem.Selected)
-                            {
-                                isEquals = false;
-                                styleItem.IsSelected = listItem.Selected;
+                                if (!StringUtils.EqualsIgnoreNull(styleItem.ItemTitle, listItem.Text))
+                                {
+                                    isEquals = false;
+                                    styleItem.ItemTitle = listItem.Text;
+                                }
+
+                                if (!StringUtils.EqualsIgnoreNull(styleItem.ItemValue, listItem.Value))
+                                {
+                                    isEquals = false;
+                                    styleItem.ItemValue = listItem.Value;
+                                }
+
+                                if (styleItem.IsSelected != listItem.Selected)
+                                {
+                                    isEquals = false;
+                                    styleItem.IsSelected = listItem.Selected;
+                                }
                             }
                         }
                     }
+
+                    if (isEquals) continue;
+
+                    styleInfo.IsVisibleInList = false;
+                    styleInfo.Additional.IsValidate = true;
+                    styleInfoList.Add(styleInfo);
                 }
-
-                if (isEquals) continue;
-
-                styleInfo.IsVisibleInList = false;
-                styleInfo.Additional.IsValidate = true;
-                styleInfoList.Add(styleInfo);
             }
 
             foreach (var styleInfo in styleInfoList)

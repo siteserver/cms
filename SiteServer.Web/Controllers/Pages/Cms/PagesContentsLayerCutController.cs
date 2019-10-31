@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
-using SiteServer.Utils;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/cms/contentsLayerCut")]
     public class PagesContentsLayerCutController : ApiController
     {
@@ -26,7 +27,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -42,9 +44,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<Dictionary<string, object>>();
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -137,7 +140,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var targetSiteId = request.GetPostInt("targetSiteId");
                 var targetChannelId = request.GetPostInt("targetChannelId");
 
@@ -154,9 +158,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    ContentUtility.Translate(siteInfo, channelId, contentId, targetSiteId, targetChannelId, ETranslateContentType.Cut);
+                    ContentUtility.Translate(siteInfo, channelContentId.ChannelId, channelContentId.Id, targetSiteId, targetChannelId, ETranslateContentType.Cut);
                 }
 
                 request.AddSiteLog(siteId, channelId, "转移内容", string.Empty);
@@ -165,7 +169,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)

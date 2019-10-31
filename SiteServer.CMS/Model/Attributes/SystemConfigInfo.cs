@@ -223,6 +223,26 @@ namespace SiteServer.CMS.Model.Attributes
             set => Set("UserDefaultGroupAdminName", value);
         }
 
+        /****************管理后台设置********************/
+
+        public string AdminTitle
+        {
+            get => GetString("AdminTitle", "SiteServer CMS");
+            set => Set("AdminTitle", value);
+        }
+
+        public string AdminLogoUrl
+        {
+            get => GetString("AdminLogoUrl");
+            set => Set("AdminLogoUrl", value);
+        }
+
+        public string AdminWelcomeHtml
+        {
+            get => GetString("AdminWelcomeHtml", @"欢迎使用 SiteServer CMS 管理后台");
+            set => Set("AdminWelcomeHtml", value);
+        }
+
         /****************用户中心设置********************/
 
         public bool IsHomeClosed

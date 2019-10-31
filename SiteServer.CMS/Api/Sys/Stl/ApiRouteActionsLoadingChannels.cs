@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Stl
 {
-    public class ApiRouteActionsLoadingChannels
+    public static class ApiRouteActionsLoadingChannels
     {
         public const string Route = "sys/stl/actions/loading_channels";
 

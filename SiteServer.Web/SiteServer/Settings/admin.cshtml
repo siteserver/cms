@@ -1,0 +1,198 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link active" href="admin.cshtml">管理员管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminRole.cshtml">角色管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+</li>
+}
+@section Styles {
+  <style>
+    .drawer__content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .drawer__content form {
+        flex: 1;
+    }
+    .drawer__footer {
+        display: flex;
+        padding: 10px;
+    }
+    .drawer__footer button {
+        flex: 1;
+    }
+  </style>
+}
+
+<el-form :inline="true" :model="formInline" size="mini">
+  <el-form-item label="角色">
+    <el-select v-model="formInline.role" placeholder="管理员角色">
+      <el-option label="全部角色" value=""></el-option>
+      <el-option
+        v-for="role in roles"
+        :key="role.key"
+        :label="role.value"
+        :value="role.key">
+      </el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="排序">
+    <el-select v-model="formInline.order" placeholder="排序">
+      <el-option label="默认" value=""></el-option>
+      <el-option label="登录名称" value="UserName"></el-option>
+      <el-option label="最后登录日期" value="LastActivityDate"></el-option>
+      <el-option label="创建日期" value="CreationDate"></el-option>
+      <el-option label="登录次数" value="CountOfLogin"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="最后登录">
+    <el-select v-model="formInline.lastActivityDate" placeholder="最后登录">
+      <el-option label="全部时间" value="0"></el-option>
+      <el-option label="1天内" value="1"></el-option>
+      <el-option label="2天内" value="2"></el-option>
+      <el-option label="3天内" value="3"></el-option>
+      <el-option label="1周内" value="7"></el-option>
+      <el-option label="1个月内" value="30"></el-option>
+      <el-option label="3个月内" value="90"></el-option>
+      <el-option label="半年内" value="180"></el-option>
+      <el-option label="1年内" value="365"></el-option>
+    </el-select>
+  </el-form-item>
+  <el-form-item label="关键字">
+    <el-input v-model="formInline.keyword" placeholder="关键字"></el-input>
+  </el-form-item>
+  
+  <el-form-item>
+    <el-button type="primary" v-on:click="btnSearchClick">查询</el-button>
+  </el-form-item>
+</el-form>
+
+<el-table
+  :data="items"
+  style="width: 100%">
+  <el-table-column
+    label="头像" width="80">
+    <template slot-scope="scope">
+      <el-badge v-if="scope.row.locked" style="margin-top: 10px;" value="锁定">
+        <img :src="scope.row.avatar || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+      </el-badge>
+      <img v-else :src="scope.row.avatar || '../assets/images/default_avatar.png'" class="rounded-circle" style="height: 36px; width: 36px;"/>
+    </template>
+  </el-table-column>
+  <el-table-column
+    label="账号">
+    <template slot-scope="scope">
+      <a :href="'adminView.cshtml?pageType=admin&userId=' + scope.row.id">{{scope.row.userName}}</a>
+    </template>
+  </el-table-column>
+  <el-table-column
+    prop="userName"
+    label="账号">
+  </el-table-column>
+  <el-table-column
+    prop="displayName"
+    label="姓名">
+  </el-table-column>
+  <el-table-column
+    prop="mobile"
+    label="手机">
+  </el-table-column>
+  <el-table-column
+    width="180"
+    prop="lastActivityDate"
+    label="最后登录">
+  </el-table-column>
+  <el-table-column
+    prop="countOfLogin"
+    label="登录次数">
+  </el-table-column>
+  <el-table-column
+    prop="roles"
+    label="角色">
+  </el-table-column>
+  <el-table-column label="操作" width="350">
+    <template slot-scope="scope">
+      <el-button-group v-if="adminId !== scope.row.id">
+        <el-button
+          size="mini"
+          v-on:click="btnEditClick(scope.row)">编辑</el-button>
+        <el-button
+          size="mini"
+          v-on:click="btnPasswordClick(scope.row)">更改密码</el-button>
+        <el-button
+          size="mini"
+          v-if="isSuperAdmin"
+          v-on:click="btnPermissionsClick(scope.row)">权限设置</el-button>
+        <el-button
+          v-if="scope.row.locked"
+          size="mini"
+          v-on:click="btnUnLockClick(scope.row)">解锁</el-button>
+        <el-button
+          v-else
+          size="mini"
+          v-on:click="btnLockClick(scope.row)">锁定</el-button>
+        <el-button
+          size="mini"
+          type="danger"
+          v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+      </el-button-group>
+    </template>
+  </el-table-column>
+</el-table>
+
+<div class="text-center mt-3">
+  <el-pagination
+    v-on:current-change="handleCurrentChange"
+    :current-page="formInline.currentPage"
+    :page-size="formInline.limit"
+    layout="total, prev, pager, next, jumper"
+    :total="count">
+  </el-pagination>
+</div>
+
+<hr />
+
+<a href="adminProfile.cshtml?pageType=admin" class="btn btn-primary btn-sm m-r-5">新 增</a>
+
+<el-drawer
+  title="权限设置"
+  ref="drawer"
+  :visible.sync="drawer"
+  direction="rtl"
+  size="80%">
+  <div class="drawer__content">
+    <el-form ref="form" :model="permissionInfo" label-width="140px">
+      <el-form-item label="管理员级别">
+        <el-select v-model="permissionInfo.adminLevel" placeholder="请选择管理员级别">
+          <el-option label="超级管理员" value="SuperAdmin"></el-option>
+          <el-option label="站点管理员" value="SiteAdmin"></el-option>
+          <el-option label="普通管理员" value="Admin"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="permissionInfo.adminLevel === 'SiteAdmin'" label="可以管理的站点">
+        <el-checkbox-group v-model="permissionInfo.checkedSites">
+          <el-checkbox v-for="site in permissionInfo.allSites" :label="site.id" :key="site.id">{{site.siteName}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item v-if="permissionInfo.adminLevel === 'Admin'" label="管理员角色">
+        <el-transfer :titles="['可用角色', '管理员角色']" v-model="permissionInfo.checkedRoles" :data="permissionInfo.allRoles"></el-transfer>
+      </el-form-item>
+    </el-form>
+    <div class="drawer__footer">
+      <el-button type="primary" v-on:click="btnPermissionSubmitClick" :loading="permissionInfo.loading">{{ permissionInfo.loading ? '提交中 ...' : '确 定' }}</el-button>
+      <el-button v-on:click="drawer = false">取 消</el-button>
+    </div>
+  </div>
+  
+</el-drawer>
+
+@section Scripts{
+<script src="admin.js" type="text/javascript"></script> }

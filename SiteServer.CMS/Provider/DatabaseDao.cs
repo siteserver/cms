@@ -16,7 +16,6 @@ using SiteServer.CMS.Core;
 using SiteServer.CMS.Data;
 using SiteServer.CMS.DataCache;
 using SiteServer.Utils;
-using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.CMS.Provider
 {
@@ -929,7 +928,7 @@ SELECT * FROM (
                 TableColumnManager.ClearCache();
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -1787,7 +1786,17 @@ FROM (SELECT TOP {totalNum} *
 
         public int GetCount(string tableName)
         {
-            return GetIntResult($"select count(*) from {tableName}");
+            int count;
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+
+                count = conn.ExecuteScalar<int>($"SELECT COUNT(*) FROM {SqlUtils.GetQuotedIdentifier(tableName)}");
+            }
+            return count;
+
+            //return GetIntResult();
         }
 
         public IEnumerable<dynamic> GetObjects(string tableName)

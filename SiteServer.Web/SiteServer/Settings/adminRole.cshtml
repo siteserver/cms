@@ -1,0 +1,45 @@
+﻿@{ Layout = "../Shared/_Layout.cshtml"; } @section Navs{
+<li class="nav-item">
+  <a class="nav-link" href="admin.cshtml">管理员管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="adminRole.cshtml">角色管理</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminConfig.cshtml">管理员设置</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="adminAccessTokens.cshtml">API密钥管理</a>
+</li>
+}
+
+<el-table
+  :data="items"
+  style="width: 100%">
+  <el-table-column
+    prop="roleName"
+    label="角色名称">
+  </el-table-column>
+  <el-table-column
+    prop="description"
+    label="备注">
+  </el-table-column>
+  <el-table-column label="操作" width="150">
+    <template slot-scope="scope">
+      <el-button
+        size="mini"
+        v-on:click="btnEditClick(scope.row)">编辑</el-button>
+      <el-button
+        size="mini"
+        type="danger"
+        v-on:click="btnDeleteClick(scope.row)">删除</el-button>
+    </template>
+  </el-table-column>
+</el-table>
+
+<hr />
+
+<a href="adminRoleAdd.cshtml" class="btn btn-primary btn-sm m-r-5">创建角色</a>
+
+@section Scripts{
+<script src="adminRole.js" type="text/javascript"></script> }

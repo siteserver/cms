@@ -36,9 +36,9 @@ namespace SiteServer.CMS.StlParser.Model
             var values = TranslateUtils.EncryptStringBySecretKey(TranslateUtils.JsonSerialize(this));
 
             return $@"
-<div id=""{AjaxDivId}_loading"">{LoadingTemplate}</div>
-<div id=""{AjaxDivId}_success"" style=""display: none""></div>
-<div id=""{AjaxDivId}_failure"" style=""display: none""></div>
+<span id=""{AjaxDivId}_loading"">{LoadingTemplate}</span>
+<span id=""{AjaxDivId}_success"" style=""display: none""></span>
+<span id=""{AjaxDivId}_failure"" style=""display: none""></span>
 <script type=""text/javascript"" language=""javascript"">
 function stlDynamic{AjaxDivId}(page)
 {{

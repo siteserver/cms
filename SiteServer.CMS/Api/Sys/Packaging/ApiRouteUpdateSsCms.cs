@@ -2,7 +2,7 @@
 
 namespace SiteServer.CMS.Api.Sys.Packaging
 {
-    public class ApiRouteUpdateSsCms
+    public static class ApiRouteUpdateSsCms
     {
         public const string Route = "sys/packaging/update/sscms";
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -11,6 +12,7 @@ using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/dashboard")]
     public class PagesDashboardController : ApiController
     {
@@ -36,7 +38,8 @@ namespace SiteServer.API.Controllers.Pages
                     {
                         Version = SystemManager.ProductVersion == PackageUtils.VersionDev ? "dev" : SystemManager.ProductVersion,
                         LastActivityDate = DateUtils.GetDateString(lastActivityDate, EDateFormatType.Chinese),
-                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese)
+                        UpdateDate = DateUtils.GetDateString(ConfigManager.Instance.UpdateDate, EDateFormatType.Chinese),
+                        ConfigManager.SystemConfigInfo.AdminWelcomeHtml
                     }
                 });
             }

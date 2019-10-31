@@ -40,49 +40,89 @@ namespace SiteServer.CMS.Provider
             }
         };
 
-        private const string ParmRoleName = "@RoleName";
-        private const string ParmCreatorUsername= "@CreatorUserName";
-        private const string ParmDescription = "@Description";
+        private const string ParamId = "@Id";
+        private const string ParamRoleName = "@RoleName";
+        private const string ParamCreatorUsername= "@CreatorUserName";
+        private const string ParamDescription = "@Description";
 
-		public string GetRoleDescription(string roleName)
-		{
-			var roleDescription = string.Empty;
-            var sqlString = "SELECT Description FROM siteserver_Role WHERE RoleName = @RoleName";
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
-			};
+        public RoleInfo GetRoleInfo(int roleId)
+        {
+            RoleInfo roleInfo = null;
+            var sqlString = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role WHERE Id = @Id";
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParamId, DataType.Integer, roleId)
+            };
 
-            using (var rdr = ExecuteReader(sqlString, parms))
-			{
-				if (rdr.Read())
-				{
-                    roleDescription = GetString(rdr, 0);
+            using (var rdr = ExecuteReader(sqlString, parameters))
+            {
+                if (rdr.Read())
+                {
+                    roleInfo = new RoleInfo
+                    {
+                        Id = GetInt(rdr, 0),
+                        RoleName = GetString(rdr, 1),
+                        CreatorUserName = GetString(rdr, 2),
+                        Description = GetString(rdr, 3)
+                    };
                 }
-				rdr.Close();
-			}
-			return roleDescription;
-		}
+                rdr.Close();
+            }
+            return roleInfo;
+        }
 
-		public string GetRolesCreatorUserName(string roleName)
-		{
-			var creatorUserName = string.Empty;
-            var sqlString = "SELECT CreatorUserName FROM siteserver_Role WHERE RoleName = @RoleName";
-            var parms = new IDataParameter[]
-			{
-				GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
-			};
+        public List<RoleInfo> GetRoleInfoList()
+        {
+            var list = new List<RoleInfo>();
+            const string sqlSelect = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role ORDER BY RoleName";
 
-            using (var rdr = ExecuteReader(sqlString, parms)) 
-			{
-				if (rdr.Read()) 
-				{
-                    creatorUserName = GetString(rdr, 0);
+            using (var rdr = ExecuteReader(sqlSelect))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(new RoleInfo
+                    {
+                        Id = GetInt(rdr, 0),
+                        RoleName = GetString(rdr, 1),
+                        CreatorUserName = GetString(rdr, 2),
+                        Description = GetString(rdr, 3)
+                    });
                 }
-				rdr.Close();
-			}
-			return creatorUserName;
-		}
+                rdr.Close();
+            }
+
+            return list;
+        }
+
+        public List<RoleInfo> GetRoleInfoListByCreatorUserName(string creatorUserName)
+        {
+            var list = new List<RoleInfo>();
+
+            if (string.IsNullOrEmpty(creatorUserName)) return list;
+
+            const string sqlString = "SELECT Id, RoleName, CreatorUserName, Description FROM siteserver_Role WHERE CreatorUserName = @CreatorUserName ORDER BY RoleName";
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParamCreatorUsername, DataType.VarChar, 255, creatorUserName)
+            };
+
+            using (var rdr = ExecuteReader(sqlString, parameters))
+            {
+                while (rdr.Read())
+                {
+                    list.Add(new RoleInfo
+                    {
+                        Id = GetInt(rdr, 0),
+                        RoleName = GetString(rdr, 1),
+                        CreatorUserName = GetString(rdr, 2),
+                        Description = GetString(rdr, 3)
+                    });
+                }
+                rdr.Close();
+            }
+
+            return list;
+        }
 
         public List<string> GetRoleNameList()
         {
@@ -108,12 +148,12 @@ namespace SiteServer.CMS.Provider
 		    if (string.IsNullOrEmpty(creatorUserName)) return list;
 
 		    const string sqlString = "SELECT RoleName FROM siteserver_Role WHERE CreatorUserName = @CreatorUserName";
-		    var parms = new IDataParameter[]
+		    var parameters = new IDataParameter[]
 		    {
-		        GetParameter(ParmCreatorUsername, DataType.VarChar, 255, creatorUserName)
+		        GetParameter(ParamCreatorUsername, DataType.VarChar, 255, creatorUserName)
 		    };
 
-		    using (var rdr = ExecuteReader(sqlString, parms)) 
+		    using (var rdr = ExecuteReader(sqlString, parameters)) 
 		    {
 		        while (rdr.Read()) 
 		        {
@@ -130,43 +170,43 @@ namespace SiteServer.CMS.Provider
 
             const string sqlString = "INSERT INTO siteserver_Role (RoleName, CreatorUserName, Description) VALUES (@RoleName, @CreatorUserName, @Description)";
 
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
 			{
-				GetParameter(ParmRoleName, DataType.VarChar, 255, roleInfo.RoleName),
-                GetParameter(ParmCreatorUsername, DataType.VarChar, 255, roleInfo.CreatorUserName),
-                GetParameter(ParmDescription, DataType.VarChar, 255, roleInfo.Description)
+				GetParameter(ParamRoleName, DataType.VarChar, 255, roleInfo.RoleName),
+                GetParameter(ParamCreatorUsername, DataType.VarChar, 255, roleInfo.CreatorUserName),
+                GetParameter(ParamDescription, DataType.VarChar, 255, roleInfo.Description)
 			};
 
-            ExecuteNonQuery(sqlString, parms);
+            ExecuteNonQuery(sqlString, parameters);
         }
 
-        public virtual void UpdateRole(string roleName, string description) 
+        public virtual void UpdateRole(RoleInfo roleInfo) 
 		{
-            var sqlString = "UPDATE siteserver_Role SET Description = @Description WHERE RoleName = @RoleName";
+            var sqlString = "UPDATE siteserver_Role SET RoleName = @RoleName, Description = @Description WHERE Id = @Id";
 
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
 			{
-                GetParameter(ParmDescription, DataType.VarChar, 255, description),
-                GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
+                GetParameter(ParamRoleName, DataType.VarChar, 255, roleInfo.RoleName),
+                GetParameter(ParamDescription, DataType.VarChar, 255, roleInfo.Description),
+                GetParameter(ParamId, DataType.Integer, roleInfo.Id)
 			};
 
-            ExecuteNonQuery(sqlString, parms);
+            ExecuteNonQuery(sqlString, parameters);
 		}
 
-
-		public bool DeleteRole(string roleName)
+        public bool DeleteRole(int roleId)
 		{
             var isSuccess = false;
             try
             {
-                var sqlString = "DELETE FROM siteserver_Role WHERE RoleName = @RoleName";
+                var sqlString = "DELETE FROM siteserver_Role WHERE Id = @Id";
 
-                var parms = new IDataParameter[]
+                var parameters = new IDataParameter[]
 			    {
-                    GetParameter(ParmRoleName, DataType.VarChar, 255, roleName)
+                    GetParameter(ParamId, DataType.Integer, roleId)
 			    };
 
-                ExecuteNonQuery(sqlString, parms);
+                ExecuteNonQuery(sqlString, parameters);
                 isSuccess = true;
             }
 		    catch
@@ -180,11 +220,11 @@ namespace SiteServer.CMS.Provider
         {
             var exists = false;
             var sqlString = "SELECT RoleName FROM siteserver_Role WHERE RoleName = @RoleName";
-            var parms = new IDataParameter[]
+            var parameters = new IDataParameter[]
 			{
                 GetParameter("@RoleName", DataType.VarChar, 255, roleName)
 			};
-            using (var rdr = ExecuteReader(sqlString, parms))
+            using (var rdr = ExecuteReader(sqlString, parameters))
             {
                 if (rdr.Read())
                 {

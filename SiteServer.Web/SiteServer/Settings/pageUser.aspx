@@ -25,12 +25,6 @@
         <li class="nav-item">
           <a class="nav-link" href="userConfig.cshtml">用户设置</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="userHome.cshtml">用户中心设置</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="userMenu.cshtml">用户中心菜单</a>
-        </li>
       </ul>
     </div>
 

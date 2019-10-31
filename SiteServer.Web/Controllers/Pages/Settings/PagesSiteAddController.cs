@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
+using NSwag.Annotations;
 using SiteServer.BackgroundPages.Cms;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.CMS.Plugin.Impl;
 using SiteServer.CMS.Provider;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
 namespace SiteServer.API.Controllers.Pages.Settings
 {
+    [OpenApiIgnore]
     [RoutePrefix("pages/settings/siteAdd")]
     public class PagesSiteAddController : ApiController
     {

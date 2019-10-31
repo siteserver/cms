@@ -68,8 +68,30 @@ var apiUtils = {
       return this.request("GET", url, data, cb);
     };
 
+    this.getAt = function (url, data, cb, name, id) {
+      url = this.apiUrl + '/' + url;
+      if (name) {
+        url += '/' + name;
+        if (id) {
+          url += '/' + id;
+        }
+      }
+      return this.request("GET", url, data, cb);
+    };
+
     this.post = function (data, cb, name, id) {
       var url = this.apiUrl;
+      if (name) {
+        url += '/' + name;
+        if (id) {
+          url += '/' + id;
+        }
+      }
+      return this.request("POST", url, data, cb);
+    };
+
+    this.postAt = function (url, data, cb, name, id) {
+      url = this.apiUrl + '/' + url;
       if (name) {
         url += '/' + name;
         if (id) {
@@ -90,6 +112,17 @@ var apiUtils = {
       return this.request("PUT", url, data, cb);
     };
 
+    this.putAt = function (url, data, cb, name, id) {
+      url = this.apiUrl + '/' + url;
+      if (name) {
+        url += '/' + name;
+        if (id) {
+          url += '/' + id;
+        }
+      }
+      return this.request("PUT", url, data, cb);
+    };
+
     this.delete = function (data, cb, name, id) {
       var url = this.apiUrl;
       if (name) {
@@ -101,8 +134,30 @@ var apiUtils = {
       return this.request("DELETE", url, data, cb);
     };
 
+    this.deleteAt = function (url, data, cb, name, id) {
+      var url = this.apiUrl + '/' + url;
+      if (name) {
+        url += '/' + name;
+        if (id) {
+          url += '/' + id;
+        }
+      }
+      return this.request("DELETE", url, data, cb);
+    };
+
     this.patch = function (data, cb, name, id) {
       var url = this.apiUrl;
+      if (name) {
+        url += '/' + name;
+        if (id) {
+          url += '/' + id;
+        }
+      }
+      return this.request("PATCH", url, data, cb);
+    };
+
+    this.patchAt = function (url, data, cb, name, id) {
+      var url = this.apiUrl + '/' + url;
       if (name) {
         url += '/' + name;
         if (id) {

@@ -94,8 +94,8 @@
     <Reference Include="QueryBuilder, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SqlKata.1.1.7\lib\net45\QueryBuilder.dll</HintPath>
     </Reference>
-    <Reference Include="SiteServer.Plugin, Version=2.3.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SiteServer.Plugin.2.3.13\lib\net452\SiteServer.Plugin.dll</HintPath>
+    <Reference Include="SiteServer.Plugin, Version=2.3.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SiteServer.Plugin.2.3.15\lib\net452\SiteServer.Plugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -154,8 +154,6 @@
     <Compile Include="Api\V1\StlRequest.cs" />
     <Compile Include="Api\ApiRoutePlugin.cs" />
     <Compile Include="Api\Preview\ApiRoutePreview.cs" />
-    <Compile Include="Api\Sys\Errors\ApiRouteError.cs" />
-    <Compile Include="Api\Sys\Packaging\ApiRouteClearCache.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdateSsCms.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteUpdate.cs" />
     <Compile Include="Api\Sys\Packaging\ApiRouteSyncDatabase.cs" />
@@ -164,14 +162,11 @@
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDownload.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsDynamic.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsIf.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsInputAdd.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsLoadingChannels.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsPageContents.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsRelatedField.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsResumeAdd.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsSearch.cs" />
     <Compile Include="Api\Sys\Stl\ApiRouteActionsTrigger.cs" />
-    <Compile Include="Api\Sys\Stl\ApiRouteActionsUpload.cs" />
     <Compile Include="Api\V1\PageResponse.cs" />
     <Compile Include="Core\CmsPages.cs" />
     <Compile Include="Core\ContentColumn.cs" />
@@ -190,7 +185,6 @@
     <Compile Include="DataCache\Core\DataCacheManager.cs" />
     <Compile Include="DataCache\AdminManager.cs" />
     <Compile Include="Api\ApiManager.cs" />
-    <Compile Include="DataCache\AreaManager.cs" />
     <Compile Include="Core\CacheDbUtils.cs" />
     <Compile Include="DataCache\ChannelManager.cs" />
     <Compile Include="Core\CheckManager.cs" />
@@ -202,7 +196,6 @@
     <Compile Include="Core\Create\ICreateTaskManager.cs" />
     <Compile Include="Core\CrossSiteTransUtility.cs" />
     <Compile Include="Core\DataProvider.cs" />
-    <Compile Include="DataCache\DepartmentManager.cs" />
     <Compile Include="Core\DirectoryUtility.cs" />
     <Compile Include="Core\FileUtility.cs" />
     <Compile Include="Core\InputParserUtility.cs" />
@@ -260,7 +253,6 @@
     <Compile Include="Model\AdministratorInfo.cs" />
     <Compile Include="Model\Attributes\UserAttribute.cs" />
     <Compile Include="Model\DbCacheInfo.cs" />
-    <Compile Include="Model\AreaInfo.cs" />
     <Compile Include="Model\Attributes\BackgroundContentAttribute.cs" />
     <Compile Include="Model\Attributes\ChannelAttribute.cs" />
     <Compile Include="Model\ChannelGroupInfo.cs" />
@@ -275,7 +267,6 @@
     <Compile Include="Core\Create\CreateTaskLogInfo.cs" />
     <Compile Include="Core\Create\CreateTaskSummary.cs" />
     <Compile Include="Core\Create\CreateTaskSummaryItem.cs" />
-    <Compile Include="Model\DepartmentInfo.cs" />
     <Compile Include="Model\Enumerations\EAccessControlEntry.cs" />
     <Compile Include="Model\Enumerations\EBackupType.cs" />
     <Compile Include="Model\Enumerations\EChangedType.cs" />
@@ -366,7 +357,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\AdministratorDao.cs" />
     <Compile Include="Provider\AdministratorsInRolesDao.cs" />
-    <Compile Include="Provider\AreaDao.cs" />
     <Compile Include="Provider\ChannelDao.cs" />
     <Compile Include="Provider\ChannelGroupDao.cs" />
     <Compile Include="Provider\ConfigDao.cs" />
@@ -375,7 +365,6 @@
     <Compile Include="Provider\ContentGroupDao.cs" />
     <Compile Include="Provider\DatabaseDao.cs" />
     <Compile Include="Provider\DbCacheDao.cs" />
-    <Compile Include="Provider\DepartmentDao.cs" />
     <Compile Include="Provider\ErrorLogDao.cs" />
     <Compile Include="Provider\KeywordDao.cs" />
     <Compile Include="Provider\LogDao.cs" />
