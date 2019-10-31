@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.CMS.Core;
@@ -6,7 +7,7 @@ using SiteServer.CMS.Core.Create;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model.Enumerations;
-using SiteServer.Utils;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -25,7 +26,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var isUp = request.GetPostBool("isUp");
                 var taxis = request.GetPostInt("taxis");
 
@@ -49,14 +51,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 if (isUp == false)
                 {
-                    contentIdList.Reverse();
+                    channelContentIds.Reverse();
                 }
 
-                var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
-
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                    var tableName = ChannelManager.GetTableName(siteInfo, contentChannelInfo);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var isTop = contentInfo.IsTop;
@@ -64,14 +66,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     {
                         if (isUp)
                         {
-                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelId, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToUp(tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }
                         }
                         else
                         {
-                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelId, contentId, isTop) == false)
+                            if (DataProvider.ContentDao.SetTaxisToDown(tableName, channelContentId.ChannelId, channelContentId.Id, isTop) == false)
                             {
                                 break;
                             }
@@ -79,13 +81,16 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     }
                 }
 
-                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+                foreach (var distinctChannelId in channelContentIds.Select(x => x.ChannelId).Distinct())
+                {
+                    CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
+                }
 
                 request.AddSiteLog(siteId, channelId, 0, "对内容排序", string.Empty);
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)

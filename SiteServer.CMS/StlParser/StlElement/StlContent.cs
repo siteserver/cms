@@ -120,17 +120,14 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, StartIndex))
                 {
-                    isClearTags = true;
                     startIndex = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Length))
                 {
-                    isClearTags = true;
                     length = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, WordNum))
                 {
-                    isClearTags = true;
                     wordNum = TranslateUtils.ToInt(value);
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Ellipsis))
@@ -338,6 +335,10 @@ namespace SiteServer.CMS.StlParser.StlElement
                 else if (ContentAttribute.LastEditDate.ToLower().Equals(type))
                 {
                     parsedContent = DateUtils.Format(contentInfo.LastEditDate, formatString);
+                }
+                else if (ContentAttribute.LastHitsDate.ToLower().Equals(type))
+                {
+                    parsedContent = DateUtils.Format(contentInfo.LastHitsDate, formatString);
                 }
                 else if (BackgroundContentAttribute.ImageUrl.ToLower().Equals(type))
                 {

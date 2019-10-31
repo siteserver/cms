@@ -169,7 +169,7 @@ namespace SiteServer.CMS.StlParser.Utility
         {
             if (content == null) return false;
             content = content.ToLower();
-            return StringUtils.Contains(content, "}") && (StringUtils.Contains(content, "{stl.") || StringUtils.Contains(content, "{content.") || StringUtils.Contains(content, "{channel."));
+            return StringUtils.Contains(content, "}") && (StringUtils.Contains(content, "{stl:") || StringUtils.Contains(content, "{stl.") || StringUtils.Contains(content, "{content.") || StringUtils.Contains(content, "{channel."));
         }
 
         public static bool IsSpecifiedStlElement(string stlElement, string elementName)

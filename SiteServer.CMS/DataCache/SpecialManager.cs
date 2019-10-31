@@ -188,6 +188,10 @@ namespace SiteServer.CMS.DataCache
 	    public static string GetSpecialUrl(SiteInfo siteInfo, string url)
 	    {
 	        var virtualPath = PageUtils.RemoveFileNameFromUrl(url);
+            if (!PageUtils.IsVirtualUrl(virtualPath))
+            {
+                virtualPath = $"@/{StringUtils.TrimSlash(virtualPath)}";
+            }
 	        return PageUtility.ParseNavigationUrl(siteInfo, virtualPath, false);
 	    }
 

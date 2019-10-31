@@ -48,10 +48,8 @@
   <div class="form-group">
     <label>
       备注
-      <small v-show="errors.has('description')" class="text-danger">{{ errors.first('description') }}</small>
     </label>
-    <textarea v-model="description" name="description" data-vv-as=" 备注" v-validate="'required'"
-      :class="{'is-invalid': errors.has('description') }" type="text" class="form-control"></textarea>
+    <textarea v-model="description" type="text" class="form-control"></textarea>
   </div>
 
   <div class="form-group">
@@ -77,7 +75,7 @@
     <div style="height:10px"></div>
 
     <el-row :gutter="20">
-      <el-col :span="8" v-for="siteInfo in siteInfoList">
+      <el-col :span="8" v-for="siteInfo in siteInfoList" style="margin-bottom: 20px;">
         <el-card>
           <div slot="header" class="clearfix">
             <span :class="checkedSiteIdList.indexOf(siteInfo.id) !== -1 ? 'hasPermission' : 'noPermission'">{{siteInfo.siteName}}</span>
@@ -157,7 +155,7 @@
     :default-expanded-keys="[permissionInfo.channelInfo.id]"
     :default-checked-keys="permissionInfo.checkedChannelIdList"
     :expand-on-click-node="true"
-    v-on:node-click="handleTreeClick">
+    v-on:check-change="handleTreeChanged">
     <span class="custom-tree-node" slot-scope="{ node, data }">
       {{ data.channelName }}
     </span>

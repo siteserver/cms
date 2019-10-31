@@ -1,9 +1,9 @@
 ﻿var $api = new apiUtils.Api(apiUrl + '/pages/cms/contentsLayerAttributes');
 
 var data = {
-  siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
-  channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+  siteId: parseInt(pageUtils.getQueryString('siteId')),
+  channelId: parseInt(pageUtils.getQueryString('channelId')),
+  channelContentIds: pageUtils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   pageType: 'setAttributes',
@@ -25,7 +25,7 @@ var methods = {
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      contentIds: $this.contentIds,
+      channelContentIds: $this.channelContentIds,
       pageType: $this.pageType,
       isRecommend: $this.isRecommend,
       isHot: $this.isHot,

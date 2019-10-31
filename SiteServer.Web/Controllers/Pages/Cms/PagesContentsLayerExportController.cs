@@ -9,6 +9,7 @@ using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.ImportExport;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Plugin;
+using SiteServer.CMS.StlParser.Model;
 using SiteServer.Utils;
 
 namespace SiteServer.API.Controllers.Pages.Cms
@@ -72,7 +73,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIds = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
+
                 var exportType = request.GetPostString("exportType");
                 var isAllCheckedLevel = request.GetPostBool("isAllCheckedLevel");
                 var checkedLevelKeys = request.GetPostObject<List<int>>("checkedLevelKeys");
@@ -106,7 +109,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var contentInfoList = new List<ContentInfo>();
                 var calculatedContentInfoList = new List<ContentInfo>();
 
-                if (contentIds.Count == 0)
+                if (channelContentIds.Count == 0)
                 {
                     var count = ContentManager.GetCount(siteInfo, channelInfo, adminId, isAllContents);
                     var pages = Convert.ToInt32(Math.Ceiling((double)count / siteInfo.Additional.PageSize));
@@ -158,9 +161,9 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 else
                 {
                     var sequence = 1;
-                    foreach (var contentId in contentIds)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelContentId.ChannelId, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         if (!isAllCheckedLevel)

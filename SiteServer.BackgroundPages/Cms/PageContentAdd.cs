@@ -253,6 +253,7 @@ namespace SiteServer.BackgroundPages.Cms
                         ChannelId = _channelInfo.Id,
                         SiteId = SiteId,
                         AddUserName = AuthRequest.AdminName,
+                        AdminId = AuthRequest.AdminId,
                         LastEditDate = DateTime.Now,
                         GroupNameCollection = ControlUtils.SelectedItemsValueToStringCollection(CblContentGroups.Items),
                         Title = TbTitle.Text

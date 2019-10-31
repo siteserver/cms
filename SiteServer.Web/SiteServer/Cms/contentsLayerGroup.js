@@ -3,7 +3,7 @@
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
   channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+  channelContentIds: pageUtils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   pageType: 'setGroup',
@@ -20,7 +20,7 @@ var methods = {
     $api.get({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      contentIds: $this.contentIds
+      channelContentIds: $this.channelContentIds
     }, function (err, res) {
       if (err || !res || !res.value) return;
 
@@ -35,7 +35,7 @@ var methods = {
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      contentIds: $this.contentIds,
+      channelContentIds: $this.channelContentIds,
       pageType: $this.pageType,
       groupNames: $this.selected.join(','),
       groupName: $this.groupName,

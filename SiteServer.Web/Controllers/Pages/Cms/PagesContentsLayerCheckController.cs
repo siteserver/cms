@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using NSwag.Annotations;
 using SiteServer.BackgroundPages.Core;
@@ -9,7 +10,7 @@ using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
 using SiteServer.CMS.Model;
 using SiteServer.CMS.Model.Attributes;
-using SiteServer.Utils;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -28,7 +29,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetQueryInt("siteId");
                 var channelId = request.GetQueryInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetQueryString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetQueryString("channelContentIds"));
 
                 if (!request.IsAdminLoggin ||
                     !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
@@ -44,9 +46,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
 
                 var retVal = new List<Dictionary<string, object>>();
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     var dict = contentInfo.ToDictionary();
@@ -56,7 +59,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     retVal.Add(dict);
                 }
 
-                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, siteId, out var checkedLevel);
+                var isChecked = CheckManager.GetUserCheckLevel(request.AdminPermissionsImpl, siteInfo, channelId, out var checkedLevel);
                 var checkedLevels = CheckManager.GetCheckedLevels(siteInfo, isChecked, checkedLevel, true);
 
                 var allChannels =
@@ -86,7 +89,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 var siteId = request.GetPostInt("siteId");
                 var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var checkedLevel = request.GetPostInt("checkedLevel");
                 var isTranslate = request.GetPostBool("isTranslate");
                 var translateChannelId = request.GetPostInt("translateChannelId");
@@ -113,9 +117,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
                 var contentInfoList = new List<ContentInfo>();
-                foreach (var contentId in contentIdList)
+                foreach (var channelContentId in channelContentIds)
                 {
-                    var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                    var contentChannelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                    var contentInfo = ContentManager.GetContentInfo(siteInfo, contentChannelInfo, channelContentId.Id);
                     if (contentInfo == null) continue;
 
                     contentInfo.Set(ContentAttribute.CheckUserName, request.AdminName);
@@ -133,7 +138,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                     }
                     else
                     {
-                        DataProvider.ContentDao.Update(siteInfo, channelInfo, contentInfo);
+                        DataProvider.ContentDao.Update(siteInfo, contentChannelInfo, contentInfo);
                     }
 
                     contentInfoList.Add(contentInfo);
@@ -155,7 +160,12 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     CreateManager.CreateContent(siteId, contentInfo.ChannelId, contentInfo.Id);
                 }
-                CreateManager.TriggerContentChangedEvent(siteId, channelId);
+
+                foreach (var distinctChannelId in channelContentIds.Select(x => x.ChannelId).Distinct())
+                {
+                    CreateManager.TriggerContentChangedEvent(siteId, distinctChannelId);
+                }
+
                 if (isTranslate && translateChannelId > 0)
                 {
                     CreateManager.TriggerContentChangedEvent(siteId, translateChannelId);
@@ -163,7 +173,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)

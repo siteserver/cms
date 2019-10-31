@@ -27,43 +27,43 @@
     <i class="fa fa-list-ol"></i>
     整理
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true}, $event)"
     class="btn btn-sm">
     <i class="fa fa-flag"></i>
     属性
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-check-square"></i>
     内容组
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-sort"></i>
     排序
   </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-cut"></i>
     转移
   </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-copy"></i>
     复制
   </button>
-  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-trash"></i>
     删除
   </button>
-  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-shield"></i>
     审核
   </button>
-  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnCreateClick" class="btn btn-sm">
     <i class="ion-wand"></i>
     生成
@@ -98,7 +98,7 @@
             <a :href="content.navigationUrl" v-html="content.title" target="_blank" v-on:click.stop></a>
           </template>
           <template v-else>
-            <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', contentId: content.id, full: true}, $event)"></a>
+            <a href="javascript:;" v-html="content.title" v-on:click="btnLayerClick({title: '查看内容', name: 'View', channelId: content.channelId, contentId: content.id, full: true}, $event)"></a>
           </template>
           <i v-if="content.isTop" class="text-primary fa fa-arrow-up" title="置顶"></i>
           <i v-if="content.isRecommend" class="text-primary fa fa-star" title="推荐"></i>
@@ -131,7 +131,7 @@
       <td class="text-center text-nowrap" style="width: 80px;">
         <a v-for="pluginMenu in content.pluginMenus" :target="pluginMenu.target" :href="(pluginMenu.target === '_layer' ? 'javascript:;' : getPluginMenuUrl(pluginMenu))"
           v-on:click="btnPluginMenuClick(pluginMenu, $event)" class="mr-2" v-html="pluginMenu.text"></a>
-        <a :href="'pageContentAdd.aspx?siteId=' + siteId + '&channelId=' + content.channelId + '&id=' + content.id" v-on:click.stop>编辑</a>
+        <a :href="getPageContentAddUrl(content)" v-on:click.stop>编辑</a>
       </td>
       <td class="text-center text-nowrap" style="width: 80px">
         <a v-on:click="btnContentStateClick(content.id, $event)" href="javascript:;" :class="{'text-danger' : !content.isChecked}">
@@ -173,43 +173,43 @@
     <i class="fa fa-list-ol"></i>
     整理
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量设置属性', name: 'Attributes', width: 450, height: 320, withContents: true}, $event)"
     class="btn btn-sm">
     <i class="fa fa-flag"></i>
     属性
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量设置组别', name: 'Group', withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-check-square"></i>
     内容组
   </button>
-  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isEdit" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量排序', name: 'Taxis', width: 450, height: 280, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-sort"></i>
     排序
   </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量转移', name: 'Cut', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-cut"></i>
     转移
   </button>
-  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isTranslate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量复制', name: 'Copy', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-copy"></i>
     复制
   </button>
-  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isDelete" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量删除', name: 'Delete', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-trash"></i>
     删除
   </button>
-  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isCheck" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnLayerClick({title: '批量审核', name: 'Check', full: true, withContents: true}, $event)" class="btn btn-sm">
     <i class="fa fa-shield"></i>
     审核
   </button>
-  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': selectedContentIds.length > 0, disabled: selectedContentIds.length === 0}"
+  <button v-if="count > 0 && permissions.isCreate" :class="{'btn-outline-primary': isContentChecked, disabled: !isContentChecked}"
     v-on:click="btnCreateClick" class="btn btn-sm">
     <i class="ion-wand"></i>
     生成

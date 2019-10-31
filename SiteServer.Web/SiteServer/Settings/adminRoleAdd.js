@@ -16,28 +16,7 @@ var data = {
   checkedSiteIdList: null,
   siteInfo: null,
   
-  permissionInfo: {
-    sitePermissions: null,
-    siteCheckAll: false,
-    isSiteIndeterminate: true,
-    allSitePermissions: null,
-    checkedSitePermissions: null,
-
-    pluginPermissions: null,
-    pluginCheckAll: false,
-    isPluginIndeterminate: true,
-    allPluginPermissions: null,
-    checkedPluginPermissions: null,
-
-    channelPermissions: null,
-    channelCheckAll: false,
-    isChannelIndeterminate: true,
-    allChannelPermissions: null,
-    checkedChannelPermissions: null,
-
-    channelInfo: null,
-    checkedChannelIdList: null
-  }
+  permissionInfo: null
 };
 
 var methods = {
@@ -247,7 +226,7 @@ var methods = {
     this.permissionInfo.isChannelIndeterminate = false;
   },
 
-  handleTreeClick: function() {
+  handleTreeChanged: function() {
     this.permissionInfo.checkedChannelIdList = this.$refs.tree.getCheckedKeys();
   },
 
@@ -279,7 +258,7 @@ var methods = {
           channelIdCollection: _.join(siteInfo.permissionInfo.checkedChannelIdList, ','),
           channelPermissions: _.join(siteInfo.permissionInfo.checkedChannelPermissions, ','),
           websitePermissions: _.join(_.union(siteInfo.permissionInfo.checkedSitePermissions, siteInfo.permissionInfo.checkedPluginPermissions), ','),
-        })
+        });
       }
     }
 

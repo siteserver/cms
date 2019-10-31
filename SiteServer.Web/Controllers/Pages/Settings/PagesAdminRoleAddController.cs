@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using NSwag.Annotations;
-using SiteServer.API.Results;
 using SiteServer.API.Results.Pages.Settings;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
@@ -136,25 +135,15 @@ namespace SiteServer.API.Controllers.Pages.Settings
 
         private object GetSitePermissionsObject(int roleId, int siteId, AuthenticatedRequest request)
         {
-            var systemPermissionsInfoList = new List<SitePermissionsInfo>();
+            SitePermissionsInfo sitePermissionsInfo = null;
             if (roleId > 0)
             {
                 var roleInfo = DataProvider.RoleDao.GetRoleInfo(roleId);
-                systemPermissionsInfoList = DataProvider.SitePermissionsDao.GetSystemPermissionsInfoList(roleInfo.RoleName);
+                sitePermissionsInfo = DataProvider.SitePermissionsDao.GetSystemPermissionsInfo(roleInfo.RoleName, siteId);
             }
+            if (sitePermissionsInfo == null) sitePermissionsInfo = new SitePermissionsInfo();
 
             var siteInfo = SiteManager.GetSiteInfo(siteId);
-            SitePermissionsInfo systemPermissionsInfo = null;
-            foreach (var sitePermissionsInfo in systemPermissionsInfoList)
-            {
-                if (sitePermissionsInfo.SiteId == siteId)
-                {
-                    systemPermissionsInfo = sitePermissionsInfo;
-                    break;
-                }
-            }
-            if (systemPermissionsInfo == null) systemPermissionsInfo = new SitePermissionsInfo();
-
             var sitePermissions = new List<Permission>();
             var pluginPermissions = new List<Permission>();
             var channelPermissions = new List<Permission>();
@@ -166,7 +155,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(systemPermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
@@ -176,7 +165,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(systemPermissionsInfo.WebsitePermissions, permission.Name)
+                        Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
                     });
                 }
 
@@ -258,7 +247,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                     {
                         Name = permission.Name,
                         Text = permission.Text,
-                        Selected = StringUtils.In(systemPermissionsInfo.ChannelPermissions, permission.Name)
+                        Selected = StringUtils.In(sitePermissionsInfo.ChannelPermissions, permission.Name)
                     });
                 }
             }
@@ -277,7 +266,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.In(systemPermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
@@ -290,7 +279,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                                 {
                                     Name = permission.Name,
                                     Text = permission.Text,
-                                    Selected = StringUtils.In(systemPermissionsInfo.WebsitePermissions, permission.Name)
+                                    Selected = StringUtils.In(sitePermissionsInfo.WebsitePermissions, permission.Name)
                                 });
                             }
                         }
@@ -333,7 +322,7 @@ namespace SiteServer.API.Controllers.Pages.Settings
                             {
                                 Name = permission.Name,
                                 Text = permission.Text,
-                                Selected = StringUtils.In(systemPermissionsInfo.ChannelPermissions, permission.Name)
+                                Selected = StringUtils.In(sitePermissionsInfo.ChannelPermissions, permission.Name)
                             });
                         }
                     }
@@ -343,9 +332,12 @@ namespace SiteServer.API.Controllers.Pages.Settings
             var channelInfo = ChannelManager.GetChannelInfo(siteId, siteId);
             channelInfo.Children = ChannelManager.GetChildren(siteId, siteId);
             var checkedChannelIdList = new List<int>();
-            foreach (var permissionsInfo in systemPermissionsInfoList)
+            foreach (var i in TranslateUtils.StringCollectionToIntList(sitePermissionsInfo.ChannelIdCollection))
             {
-                checkedChannelIdList.AddRange(TranslateUtils.StringCollectionToIntList(permissionsInfo.ChannelIdCollection));
+                if (!checkedChannelIdList.Contains(i))
+                {
+                    checkedChannelIdList.Add(i);
+                }
             }
 
             return new
@@ -469,7 +461,6 @@ namespace SiteServer.API.Controllers.Pages.Settings
                 {
                     foreach (var sitePermissionsInfo in sitePermissionsInRolesInfoList)
                     {
-                        
                         sitePermissionsInfo.RoleName = roleName;
                         DataProvider.SitePermissionsDao.Insert(sitePermissionsInfo);
                     }

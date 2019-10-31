@@ -51,6 +51,8 @@ namespace SiteServer.CMS.Provider
 
         private const string SqlSelectAllByRoleName = "SELECT RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions FROM siteserver_SitePermissions WHERE RoleName = @RoleName ORDER BY SiteId DESC";
 
+        private const string SqlSelectAllByRoleNameAndSiteId = "SELECT RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions FROM siteserver_SitePermissions WHERE RoleName = @RoleName AND SiteId = @SiteId";
+
         private const string SqlInsert = "INSERT INTO siteserver_SitePermissions (RoleName, SiteId, ChannelIdCollection, ChannelPermissions, WebsitePermissions) VALUES (@RoleName, @SiteId, @ChannelIdCollection, @ChannelPermissions, @WebsitePermissions)";
 
         private const string SqlDelete = "DELETE FROM siteserver_SitePermissions WHERE RoleName = @RoleName";
@@ -107,6 +109,29 @@ namespace SiteServer.CMS.Provider
             }
 
             return list;
+        }
+
+        public SitePermissionsInfo GetSystemPermissionsInfo(string roleName, int siteId)
+        {
+            SitePermissionsInfo permissionsInfo = null; 
+
+            var parameters = new IDataParameter[]
+            {
+                GetParameter(ParamRoleName, DataType.VarChar, 255, roleName),
+                GetParameter(ParamSiteId, DataType.Integer, siteId)
+            };
+
+            using (var rdr = ExecuteReader(SqlSelectAllByRoleNameAndSiteId, parameters))
+            {
+                if (rdr.Read())
+                {
+                    var i = 0;
+                    permissionsInfo = new SitePermissionsInfo(GetString(rdr, i++), GetInt(rdr, i++), GetString(rdr, i++), GetString(rdr, i++), GetString(rdr, i));
+                }
+                rdr.Close();
+            }
+
+            return permissionsInfo;
         }
 
         public Dictionary<int, List<string>> GetWebsitePermissionSortedList(IEnumerable<string> roles)

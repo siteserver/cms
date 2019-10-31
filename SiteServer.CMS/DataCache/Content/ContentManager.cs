@@ -33,8 +33,6 @@ namespace SiteServer.CMS.DataCache.Content
         {
             if (contentInfo.SourceId == SourceManager.Preview) return;
 
-            ListCache.Add(channelInfo, contentInfo);
-
             var dict = ContentCache.GetContentDict(contentInfo.ChannelId);
             dict[contentInfo.Id] = contentInfo;
 

@@ -3,7 +3,6 @@ using System.Linq;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache.Core;
 using SiteServer.CMS.Model;
-using SiteServer.CMS.Model.Enumerations;
 using SiteServer.Utils;
 using SiteServer.Utils.Enumerations;
 
@@ -43,31 +42,19 @@ namespace SiteServer.CMS.DataCache.Content
                 }
             }
 
-            public static void Add(ChannelInfo channelInfo, ContentInfo contentInfo)
+            public static void Set(ContentInfo contentInfo)
             {
-                if (ETaxisTypeUtils.Equals(ETaxisType.OrderByTaxisDesc, channelInfo.Additional.DefaultTaxisType))
+                var contentIdList = GetContentIdList(contentInfo.ChannelId, 0);
+                if (!contentIdList.Contains(contentInfo.Id))
                 {
-                    var contentIdList = GetContentIdList(channelInfo.Id, 0);
-                    contentIdList.Insert(0, contentInfo.Id);
-
-                    contentIdList = GetContentIdList(channelInfo.Id, contentInfo.AdminId);
-                    contentIdList.Insert(0, contentInfo.Id);
+                    contentIdList.Add(contentInfo.Id);
                 }
-                else
+
+                contentIdList = GetContentIdList(contentInfo.ChannelId, contentInfo.AdminId);
+                if (!contentIdList.Contains(contentInfo.Id))
                 {
-                    Remove(channelInfo.Id);
+                    contentIdList.Add(contentInfo.Id);
                 }
-            }
-
-            public static bool IsChanged(ChannelInfo channelInfo, ContentInfo contentInfo1, ContentInfo contentInfo2)
-            {
-                if (contentInfo1.IsTop != contentInfo2.IsTop) return true;
-
-                var orderAttributeName =
-                    ETaxisTypeUtils.GetContentOrderAttributeName(
-                        ETaxisTypeUtils.GetEnumType(channelInfo.Additional.DefaultTaxisType));
-
-                return contentInfo1.Get(orderAttributeName) != contentInfo2.Get(orderAttributeName);
             }
         }
 
@@ -76,8 +63,7 @@ namespace SiteServer.CMS.DataCache.Content
             var tableName = ChannelManager.GetTableName(siteInfo, channelInfo);
 
             var channelContentIdList = new List<(int ChannelId, int ContentId)>();
-            var list = ListCache.GetContentIdList(channelInfo.Id, adminId);
-            foreach (var contentId in list)
+            foreach (var contentId in ListCache.GetContentIdList(channelInfo.Id, adminId))
             {
                 channelContentIdList.Add((channelInfo.Id, contentId));
             }
@@ -90,8 +76,7 @@ namespace SiteServer.CMS.DataCache.Content
                     var channelTableName = ChannelManager.GetTableName(siteInfo, contentChannelInfo);
                     if (!StringUtils.EqualsIgnoreCase(tableName, channelTableName)) continue;
 
-                    list = ListCache.GetContentIdList(contentChannelId, adminId);
-                    foreach (var contentId in list)
+                    foreach (var contentId in ListCache.GetContentIdList(contentChannelId, adminId))
                     {
                         channelContentIdList.Add((contentChannelId, contentId));
                     }
@@ -103,7 +88,7 @@ namespace SiteServer.CMS.DataCache.Content
                 return channelContentIdList.Skip(offset).Take(limit).ToList();
             }
 
-            if (list.Count == offset)
+            if (channelContentIdList.Count == offset)
             {
                 var dict = ContentCache.GetContentDict(channelInfo.Id);
 
@@ -112,6 +97,7 @@ namespace SiteServer.CMS.DataCache.Content
 
                 foreach (var contentInfo in pageContentInfoList)
                 {
+                    ListCache.Set(contentInfo);
                     dict[contentInfo.Id] = contentInfo;
                 }
 

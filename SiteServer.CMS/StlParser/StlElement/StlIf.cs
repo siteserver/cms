@@ -129,7 +129,7 @@ namespace SiteServer.CMS.StlParser.StlElement
                 }
                 else if (StringUtils.EqualsIgnoreCase(name, Value) || StringUtils.EqualsIgnoreCase(name, "testValue"))
                 {
-                    testValue = value;
+                    testValue = StlEntityParser.ReplaceStlEntitiesForAttributeValue(value, pageInfo, contextInfo);
                     if (string.IsNullOrEmpty(testOperate))
                     {
                         testOperate = OperateEquals;

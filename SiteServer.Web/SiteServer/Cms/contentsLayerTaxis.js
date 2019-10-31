@@ -3,7 +3,7 @@
 var data = {
   siteId: parseInt(pageUtils.getQueryStringByName('siteId')),
   channelId: parseInt(pageUtils.getQueryStringByName('channelId')),
-  contentIds: pageUtils.getQueryStringByName('contentIds'),
+  channelContentIds: pageUtils.getQueryString('channelContentIds'),
   pageLoad: false,
   pageAlert: null,
   isUp: true,
@@ -21,7 +21,7 @@ var methods = {
     $api.post({
       siteId: $this.siteId,
       channelId: $this.channelId,
-      contentIds: $this.contentIds,
+      channelContentIds: $this.channelContentIds,
       isUp: $this.isUp,
       taxis: $this.taxis
     }, function (err, res) {

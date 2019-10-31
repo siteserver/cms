@@ -4,7 +4,7 @@ using NSwag.Annotations;
 using SiteServer.CMS.Core;
 using SiteServer.CMS.DataCache;
 using SiteServer.CMS.DataCache.Content;
-using SiteServer.Utils;
+using SiteServer.CMS.StlParser.Model;
 
 namespace SiteServer.API.Controllers.Pages.Cms
 {
@@ -22,8 +22,8 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var request = new AuthenticatedRequest();
 
                 var siteId = request.GetPostInt("siteId");
-                var channelId = request.GetPostInt("channelId");
-                var contentIdList = TranslateUtils.StringCollectionToIntList(request.GetPostString("contentIds"));
+                var channelContentIds =
+                    MinContentInfo.ParseMinContentInfoList(request.GetPostString("channelContentIds"));
                 var pageType = request.GetPostString("pageType");
                 var isRecommend = request.GetPostBool("isRecommend");
                 var isHot = request.GetPostBool("isHot");
@@ -31,9 +31,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var isTop = request.GetPostBool("isTop");
                 var hits = request.GetPostInt("hits");
 
-                if (!request.IsAdminLoggin ||
-                    !request.AdminPermissionsImpl.HasChannelPermissions(siteId, channelId,
-                        ConfigManager.ChannelPermissions.ContentEdit))
+                if (!request.IsAdminLoggin)
                 {
                     return Unauthorized();
                 }
@@ -41,16 +39,14 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 var siteInfo = SiteManager.GetSiteInfo(siteId);
                 if (siteInfo == null) return BadRequest("无法确定内容对应的站点");
 
-                var channelInfo = ChannelManager.GetChannelInfo(siteId, channelId);
-                if (channelInfo == null) return BadRequest("无法确定内容对应的栏目");
-
                 if (pageType == "setAttributes")
                 {
                     if (isRecommend || isHot || isColor || isTop)
                     {
-                        foreach (var contentId in contentIdList)
+                        foreach (var channelContentId in channelContentIds)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -79,9 +75,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 {
                     if (isRecommend || isHot || isColor || isTop)
                     {
-                        foreach (var contentId in contentIdList)
+                        foreach (var channelContentId in channelContentIds)
                         {
-                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                            var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                            var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                             if (contentInfo == null) continue;
 
                             if (isRecommend)
@@ -108,9 +105,10 @@ namespace SiteServer.API.Controllers.Pages.Cms
                 }
                 else if (pageType == "setHits")
                 {
-                    foreach (var contentId in contentIdList)
+                    foreach (var channelContentId in channelContentIds)
                     {
-                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, contentId);
+                        var channelInfo = ChannelManager.GetChannelInfo(siteId, channelContentId.ChannelId);
+                        var contentInfo = ContentManager.GetContentInfo(siteInfo, channelInfo, channelContentId.Id);
                         if (contentInfo == null) continue;
 
                         contentInfo.Hits = hits;
@@ -122,7 +120,7 @@ namespace SiteServer.API.Controllers.Pages.Cms
 
                 return Ok(new
                 {
-                    Value = contentIdList
+                    Value = true
                 });
             }
             catch (Exception ex)
